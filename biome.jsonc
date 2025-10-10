@@ -10,6 +10,7 @@
 	"organizeImports": { "enabled": true },
 	"linter": {
 		"enabled": true,
+		"ignore": ["./src/app/(payload)/**"],
 		"rules": {
 			"nursery": {
 				"useSortedClasses": {

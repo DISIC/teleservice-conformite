@@ -1,3 +1,5 @@
+import { withPayload } from "@payloadcms/next/withPayload";
+
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
@@ -18,4 +20,4 @@ const config = {
   },
 };
 
-export default config;
+export default withPayload(config, { devBundleServerPackages: false });
