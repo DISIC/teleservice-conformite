@@ -10,7 +10,7 @@
 	"organizeImports": { "enabled": true },
 	"linter": {
 		"enabled": true,
-		"ignore": ["./src/app/(payload)/**"],
+		"ignore": ["./src/app/(payload)/**", "./src/payload/payload-types.ts"],
 		"rules": {
 			"nursery": {
 				"useSortedClasses": {
