@@ -18,6 +18,9 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  devIndicators: {
+    position: "bottom-right",
+  },
 };
 
 export default withPayload(config, { devBundleServerPackages: false });

@@ -4,19 +4,26 @@ import { postgresAdapter } from "@payloadcms/db-postgres";
 import { buildConfig } from "payload";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { betterAuthPlugin } from "payload-auth/better-auth";
+import { betterAuthPluginOptions } from "./auth/options";
+import { Admins } from "./collections/Admin";
+import { Users } from "./collections/User";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 export default buildConfig({
+  admin: { user: "admins" },
   editor: lexicalEditor(),
-  collections: [],
+  collections: [Admins, Users],
   secret: process.env.PAYLOAD_SECRET || "",
   db: postgresAdapter({
     pool: {
       connectionString: process.env.POSTGRESQL_ADDON_URI || "",
     },
+    migrationDir: path.resolve(dirname, "migrations"),
   }),
+  plugins: [betterAuthPlugin(betterAuthPluginOptions)],
   sharp,
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),

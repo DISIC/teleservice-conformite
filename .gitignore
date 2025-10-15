@@ -46,4 +46,4 @@ yarn-error.log*
 .idea
 
 # payload
-/src/payload/
+/src/payload/payload-types.ts
