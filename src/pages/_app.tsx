@@ -8,10 +8,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 import { api } from "~/utils/api";
-
 import "~/styles/globals.css";
 import type { MainNavigationProps } from "@codegouvfr/react-dsfr/MainNavigation";
 import Head from "next/head";
+import { authClient } from "~/payload/auth/client";
+import { useMemo } from "react";
 
 // Only in TypeScript projects
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
@@ -42,16 +43,47 @@ const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
 
 export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
 
-const navigationItems: MainNavigationProps.Item[] = [
-  { text: "Accueil", linkProps: { href: "/" } },
+const userNavigationItems: MainNavigationProps.Item[] = [
+  { text: "Accueil", linkProps: { href: "/dashboard" } },
 ];
 
 function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
-  const logout = async () => {
-    router.push("/");
-  };
+  const { data: authSession, isPending: isPendingAuth } =
+    authClient.useSession();
+  const isAuthenticated = !!authSession;
+
+  const navigationItems =
+    isAuthenticated || router.pathname.startsWith("/dashboard")
+      ? userNavigationItems.map((item) => ({
+          ...item,
+          isActive: router.asPath === item?.linkProps?.href,
+        }))
+      : [];
+
+  const quickAccessItems = useMemo(() => {
+    const items = [] as HeaderProps.QuickAccessItem[];
+
+    if (isPendingAuth) return [];
+
+    if (isAuthenticated) {
+      items.push({
+        iconId: "ri-logout-box-line",
+        text: "Se déconnecter",
+        linkProps: {
+          href: "/",
+          onClick: async () => {
+            await authClient.signOut();
+            router.push("/");
+          },
+          style: { color: fr.colors.decisions.text.default.error.default },
+        },
+      });
+    }
+
+    return items;
+  }, [authSession?.session, authSession?.user, isAuthenticated, isPendingAuth]);
 
   return (
     <>
@@ -78,6 +110,7 @@ function App({ Component, pageProps }: AppProps) {
             title: "Accueil Téléservice Conformité",
           }}
           navigation={navigationItems}
+          quickAccessItems={quickAccessItems}
           serviceTitle="Téléservice Conformité"
         />
         <main className={fr.cx("fr-container")} style={{ flex: 1 }}>

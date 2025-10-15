@@ -36,8 +36,8 @@ const useStyles = tss.withName(Home.name).create({
     alignItems: "initial",
   },
   heroSection: {
-    gridColumn: "span 6",
-    marginLeft: fr.spacing("4w"),
-    marginTop: fr.spacing("10w"),
+    gridColumn: "4 / span 6",
+    marginTop: fr.spacing("14w"),
+    textAlign: "center",
   },
 });

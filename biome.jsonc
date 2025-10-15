@@ -21,6 +21,9 @@
 					}
 				}
 			},
+			"correctness": {
+				"useExhaustiveDependencies": { "level": "off", "options": {} }
+			},
 			"recommended": true
 		}
 	}

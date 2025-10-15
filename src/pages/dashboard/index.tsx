@@ -12,5 +12,7 @@ export default function Home() {
 }
 
 const useStyles = tss.withName(Home.name).create({
-  main: {},
+  main: {
+    marginTop: fr.spacing("6v"),
+  },
 });

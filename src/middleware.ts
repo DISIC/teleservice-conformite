@@ -5,11 +5,11 @@ import { auth } from "./payload/auth";
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  const sessionCookie = await auth.api.getSession({
+  const authSession = await auth.api.getSession({
     headers: await headers(),
   });
 
-  if (sessionCookie) {
+  if (authSession) {
     if (!pathname.startsWith("/dashboard")) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
@@ -26,6 +26,6 @@ export const config = {
   runtime: "nodejs",
   matcher: [
     "/",
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|admin).*)",
   ],
 };
