@@ -2,6 +2,14 @@ import type { CollectionConfig } from "payload";
 
 export const AccessRights: CollectionConfig = {
   slug: "access-rights",
+  labels: {
+    singular: {
+      fr: "Droit d'accès",
+    },
+    plural: {
+      fr: "Droits d'accès",
+    },
+  },
   fields: [
     {
       name: "role",

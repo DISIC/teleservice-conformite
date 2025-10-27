@@ -3,6 +3,14 @@ import type { CollectionConfig } from "payload";
 export const Declarations: CollectionConfig = {
   slug: "declarations",
   versions: true,
+  labels: {
+    singular: {
+      fr: "Déclaration",
+    },
+    plural: {
+      fr: "Déclarations",
+    },
+  },
   fields: [
     {
       name: "name",
