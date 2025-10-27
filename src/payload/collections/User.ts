@@ -2,6 +2,9 @@ import type { CollectionConfig } from "payload";
 
 export const Users: CollectionConfig = {
   slug: "users",
+  admin: {
+    group: "Authentification",
+  },
   labels: {
     singular: {
       fr: "Utilisateur",
@@ -13,6 +16,7 @@ export const Users: CollectionConfig = {
   fields: [
     {
       name: "name",
+      label: { fr: "Nom" },
       type: "text",
       required: true,
     },
@@ -26,6 +30,13 @@ export const Users: CollectionConfig = {
       name: "emailVerified",
       type: "checkbox",
       defaultValue: false,
+    },
+    {
+      name: "accessRights",
+      label: { fr: "Droits d'accès" },
+      type: "relationship",
+      relationTo: "access-rights",
+      hasMany: true,
     },
     {
       name: "sessions",

@@ -2,6 +2,9 @@ import type { CollectionConfig } from "payload";
 
 export const Accounts: CollectionConfig = {
   slug: "accounts",
+  admin: {
+    group: "Authentification",
+  },
   labels: {
     singular: {
       fr: "Compte",

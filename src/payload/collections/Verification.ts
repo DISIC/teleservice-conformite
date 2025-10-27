@@ -2,6 +2,9 @@ import type { CollectionConfig } from "payload";
 
 export const Verifications: CollectionConfig = {
   slug: "verifications",
+  admin: {
+    group: "Authentification",
+  },
   labels: {
     singular: {
       fr: "Vérification",
