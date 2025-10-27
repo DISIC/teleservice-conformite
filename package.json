@@ -21,9 +21,9 @@
 		"@emotion/server": "^11.11.0",
 		"@emotion/styled": "^11.14.1",
 		"@mui/material": "^7.3.4",
-		"@payloadcms/db-postgres": "^3.59.1",
-		"@payloadcms/next": "^3.59.1",
-		"@payloadcms/richtext-lexical": "^3.59.1",
+		"@payloadcms/db-postgres": "^3.61.1",
+		"@payloadcms/next": "^3.61.1",
+		"@payloadcms/richtext-lexical": "^3.61.1",
 		"@t3-oss/env-nextjs": "^0.12.0",
 		"@tanstack/react-query": "^5.69.0",
 		"@trpc/client": "^11.0.0",
@@ -34,11 +34,11 @@
 		"graphql": "^16.11.0",
 		"js-cookie": "^3.0.5",
 		"jwt-decode": "^4.0.0",
-		"next": "^15.2.3",
-		"payload": "^3.59.1",
+		"next": "16.0.0",
+		"payload": "^3.61.1",
 		"payload-auth": "^1.6.5",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0",
+		"react": "19.2.0",
+		"react-dom": "19.2.0",
 		"sharp": "^0.34.4",
 		"superjson": "^2.2.1",
 		"tss-react": "^4.9.19",
@@ -48,12 +48,16 @@
 		"@biomejs/biome": "1.9.4",
 		"@types/js-cookie": "^3.0.6",
 		"@types/node": "^20.14.10",
-		"@types/react": "^19.0.0",
-		"@types/react-dom": "^19.0.0",
+		"@types/react": "19.2.2",
+		"@types/react-dom": "19.2.2",
 		"typescript": "^5.8.2"
 	},
 	"ct3aMetadata": {
 		"initVersion": "7.39.3"
 	},
-	"packageManager": "yarn@1.22.18"
+	"packageManager": "yarn@1.22.18",
+	"resolutions": {
+		"@types/react": "19.2.2",
+		"@types/react-dom": "19.2.2"
+	}
 }

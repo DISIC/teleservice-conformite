@@ -16,7 +16,7 @@ function stripBetterAuthCookies(cookieHeader: string | null) {
   return kept.join("; ");
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // To remove better auth cookies from admin and api requests to prevent user conflicts
@@ -59,9 +59,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  runtime: "nodejs",
   matcher: [
     "/",
     "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
-  ],
+  ]
 };
