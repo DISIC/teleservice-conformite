@@ -1,14 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "./utils/auth";
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Bypass middleware for admin and admin API routes
-  const isAdminShell = pathname === "/admin" || pathname.startsWith("/admin/");
-  const isApi = pathname.startsWith("/api/");
-  const referer = request.headers.get("referer") || "";
-  const isFromAdmin = referer.includes("/admin");
+  const isAdminShell = pathname.startsWith("/admin");
+  const isApi = pathname.startsWith("/api");
 
   if (isAdminShell || isApi) return NextResponse.next();
 
@@ -31,6 +29,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
+  runtime: "nodejs",
   matcher: [
     "/",
     "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
