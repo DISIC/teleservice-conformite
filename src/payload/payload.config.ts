@@ -6,8 +6,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { betterAuthPlugin } from "payload-auth/better-auth";
 import { betterAuthPluginOptions } from "./auth/options";
+
 import { Admins } from "./collections/Admin";
 import { Users } from "./collections/User";
+import { Domains } from "./collections/Domain";
+import { Entities } from "./collections/Entity";
+import { Declarations } from "./collections/Declaration";
+import { AccessRights } from "./collections/AccessRight";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -15,7 +20,7 @@ const dirname = path.dirname(filename);
 export default buildConfig({
   admin: { user: "admins" },
   editor: lexicalEditor(),
-  collections: [Admins, Users],
+  collections: [Admins, Users, Domains, Entities, Declarations, AccessRights],
   secret: process.env.PAYLOAD_SECRET || "",
   db: postgresAdapter({
     pool: {
