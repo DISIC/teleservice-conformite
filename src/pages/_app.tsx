@@ -71,11 +71,11 @@ function App({ Component, pageProps }: AppProps) {
       items.push({
         iconId: "ri-logout-box-line",
         text: "Se déconnecter",
-        linkProps: {
-          href: "/",
+        buttonProps: {
           onClick: async () => {
-            await authClient.signOut();
-            router.push("/");
+            await authClient.signOut({
+              fetchOptions: { onSuccess: () => void router.push("/") },
+            });
           },
           style: { color: fr.colors.decisions.text.default.error.default },
         },

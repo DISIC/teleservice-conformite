@@ -10,7 +10,7 @@ export async function proxy(request: NextRequest) {
   const referer = request.headers.get("referer") || "";
   const isFromAdmin = referer.includes("/admin");
 
-  if (isAdminShell || (isApi && isFromAdmin)) return NextResponse.next();
+  if (isAdminShell || isApi) return NextResponse.next();
 
   // Classic middleware
   const authSession = await auth.api.getSession({

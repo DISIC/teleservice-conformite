@@ -8,6 +8,9 @@ import { fr } from "@payloadcms/translations/languages/fr";
 
 import { Admins } from "./collections/Admin";
 import { Users } from "./collections/User";
+import { Sessions } from "./collections/Session";
+import { Accounts } from "./collections/Account";
+import { Verifications } from "./collections/Verification";
 import { Domains } from "./collections/Domain";
 import { Entities } from "./collections/Entity";
 import { Declarations } from "./collections/Declaration";
@@ -19,7 +22,17 @@ const dirname = path.dirname(filename);
 export default buildConfig({
   admin: { user: "admins" },
   editor: lexicalEditor(),
-  collections: [Admins, Users, Domains, Entities, Declarations, AccessRights],
+  collections: [
+    Admins,
+    Users,
+    Sessions,
+    Accounts,
+    Verifications,
+    Domains,
+    Entities,
+    Declarations,
+    AccessRights,
+  ],
   secret: process.env.PAYLOAD_SECRET || "",
   db: postgresAdapter({
     pool: {
