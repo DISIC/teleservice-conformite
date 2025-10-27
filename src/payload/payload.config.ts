@@ -4,8 +4,6 @@ import { postgresAdapter } from "@payloadcms/db-postgres";
 import { buildConfig } from "payload";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { betterAuthPlugin } from "payload-auth/better-auth";
-import { betterAuthPluginOptions } from "./auth/options";
 import { fr } from "@payloadcms/translations/languages/fr";
 
 import { Admins } from "./collections/Admin";
@@ -29,7 +27,6 @@ export default buildConfig({
     },
     migrationDir: path.resolve(dirname, "migrations"),
   }),
-  plugins: [betterAuthPlugin(betterAuthPluginOptions)],
   sharp,
   i18n: {
     fallbackLanguage: "fr",

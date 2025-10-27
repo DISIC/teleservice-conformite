@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { ProConnectButton } from "@codegouvfr/react-dsfr/ProConnectButton";
 import { tss } from "tss-react";
-import { authClient } from "~/payload/auth/client";
+import { authClient } from "~/utils/auth-client";
 import Cookies from "js-cookie";
 
 export default function Home() {

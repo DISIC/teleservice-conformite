@@ -11,7 +11,7 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import type { MainNavigationProps } from "@codegouvfr/react-dsfr/MainNavigation";
 import Head from "next/head";
-import { authClient } from "~/payload/auth/client";
+import { authClient } from "~/utils/auth-client";
 import { useMemo } from "react";
 
 // Only in TypeScript projects
