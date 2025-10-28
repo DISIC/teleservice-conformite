@@ -15,6 +15,7 @@ import { Domains } from "./collections/Domain";
 import { Entities } from "./collections/Entity";
 import { Declarations } from "./collections/Declaration";
 import { AccessRights } from "./collections/AccessRight";
+import { ThirdPartyAccess } from "./collections/ThirdPartyAccess";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -32,6 +33,7 @@ export default buildConfig({
     Entities,
     Declarations,
     AccessRights,
+    ThirdPartyAccess,
   ],
   secret: process.env.PAYLOAD_SECRET || "",
   db: postgresAdapter({
