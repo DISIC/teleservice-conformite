@@ -27,5 +27,17 @@ export const AccessRights: CollectionConfig = {
       ],
       required: true,
     },
+    {
+      name: "user",
+      type: "relationship",
+      relationTo: "users",
+      required: true,
+    },
+    {
+      name: "declaration",
+      type: "relationship",
+      relationTo: "declarations",
+      required: true,
+    },
   ],
 };
