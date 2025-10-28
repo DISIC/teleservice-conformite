@@ -115,7 +115,6 @@ export const Declarations: CollectionConfig = {
       name: "access_right",
       type: "relationship",
       relationTo: "access-rights",
-      required: true,
     },
   ],
 };
