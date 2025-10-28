@@ -18,11 +18,9 @@ export const Entities: CollectionConfig = {
     },
     {
       name: "siret",
-      type: "text",
+      type: "number",
       required: true,
       unique: true,
-      minLength: 14,
-      maxLength: 14,
     },
   ],
 };

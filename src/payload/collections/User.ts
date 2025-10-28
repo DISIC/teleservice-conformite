@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import type { Entity } from "../payload-types";
 
 export const Users: CollectionConfig = {
   slug: "users",
@@ -39,6 +40,13 @@ export const Users: CollectionConfig = {
       hasMany: true,
     },
     {
+      name: "siret",
+      type: "number",
+      admin: {
+        hidden: true,
+      },
+    },
+    {
       name: "sessions",
       type: "join",
       collection: "sessions",
@@ -49,6 +57,14 @@ export const Users: CollectionConfig = {
       type: "join",
       collection: "accounts",
       on: "user",
+    },
+    {
+      name: "entity",
+      type: "relationship",
+      relationTo: "entities",
+      admin: {
+        position: "sidebar",
+      },
     },
   ],
 };

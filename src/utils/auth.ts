@@ -3,6 +3,7 @@ import { nextCookies } from "better-auth/next-js";
 import { genericOAuth } from "better-auth/plugins";
 import { jwtDecode } from "jwt-decode";
 import { Pool } from "pg";
+import { upsertEntityToUser } from "./auth-hooks";
 
 const pool = new Pool({
   connectionString: process.env.POSTGRESQL_ADDON_URI,
@@ -51,13 +52,15 @@ export const auth = betterAuth({
             if (
               typeof data.sub === "string" &&
               typeof data.given_name === "string" &&
-              typeof data.email === "string"
+              typeof data.email === "string" &&
+              typeof data.siret === "string"
             ) {
               return {
                 id: data.sub,
                 name: data.given_name,
                 email: data.email,
                 emailVerified: true,
+                siret: Number.parseInt(data.siret),
                 createdAt: data.created_at
                   ? new Date(data.created_at)
                   : new Date(),
@@ -68,10 +71,23 @@ export const auth = betterAuth({
             }
             return null;
           },
+          mapProfileToUser(profile) {
+            return {
+              name: profile.name,
+              email: profile.email,
+              emailVerified: profile.emailVerified,
+              siret: profile.siret,
+              createdAt: profile.createdAt,
+              updatedAt: profile.updatedAt,
+            };
+          },
         },
       ],
     }),
   ],
+  hooks: {
+    after: upsertEntityToUser,
+  },
   verification: {
     modelName: "verifications",
     fields: {
@@ -112,6 +128,11 @@ export const auth = betterAuth({
       emailVerified: "email_verified",
       createdAt: "created_at",
       updatedAt: "updated_at",
+    },
+    additionalFields: {
+      siret: {
+        type: "number",
+      },
     },
   },
   emailAndPassword: {
