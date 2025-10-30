@@ -1,5 +1,4 @@
 import requests
-from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from requests_html import HTMLSession
 import os
@@ -52,3 +51,17 @@ if __name__ == "__main__":
     is_verified = verify_url_href(url, href)
 
     print(f"Declaration {declaration.get('id')} verification result: {is_verified}")
+
+    update_response = requests.patch(
+      f"http://localhost:3000/api/declarations/{declaration.get('id')}",
+      headers={
+        "Authorization": authorization_header,
+        "Content-Type": "application/json",
+      },
+      json={"verified": is_verified},
+    )
+
+    if update_response.status_code == 200:
+      print(f"Successfully updated declaration {declaration.get('id')} verification status to {is_verified}.")
+    else:
+      print(f"Failed to update declaration {declaration.get('id')} verification status.")
