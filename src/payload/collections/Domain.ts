@@ -2,6 +2,9 @@ import type { CollectionConfig } from "payload";
 
 export const Domains: CollectionConfig = {
   slug: "domains",
+  admin: {
+    useAsTitle: "name",
+  },
   labels: {
     singular: {
       fr: "Domaine",
@@ -14,6 +17,7 @@ export const Domains: CollectionConfig = {
     {
       name: "name",
       type: "text",
+      label: { fr: "Nom" },
       required: true,
     },
   ],

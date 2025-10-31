@@ -15,11 +15,13 @@ export const Declarations: CollectionConfig = {
     {
       name: "name",
       type: "text",
+      label: { fr: "Nom" },
       required: true,
     },
     {
       name: "app_kind",
       type: "select",
+      label: { fr: "Type d'application" },
       required: true,
       options: [
         {
@@ -39,6 +41,7 @@ export const Declarations: CollectionConfig = {
     {
       name: "url",
       type: "text",
+      label: { fr: "URL" },
       admin: {
         condition: (_, siblingData) => siblingData?.app_kind === "website",
       },
@@ -46,6 +49,7 @@ export const Declarations: CollectionConfig = {
     {
       name: "rate",
       type: "number",
+      label: { fr: "Taux" },
       required: true,
       min: 0,
       max: 100,
@@ -53,6 +57,7 @@ export const Declarations: CollectionConfig = {
     {
       name: "status",
       type: "select",
+      label: { fr: "Statut" },
       options: [
         {
           label: "En attente",
@@ -67,10 +72,22 @@ export const Declarations: CollectionConfig = {
       required: true,
     },
     {
+      name: "verified",
+      type: "checkbox",
+      label: { fr: "Vérifié" },
+      defaultValue: false,
+      admin: {
+        readOnly: true,
+        position: "sidebar",
+      },
+    },
+    {
       name: "published_at",
       type: "date",
+      label: { fr: "Date de publication" },
       required: true,
       admin: {
+        position: "sidebar",
         date: {
           pickerAppearance: "dayOnly",
         },
@@ -79,6 +96,7 @@ export const Declarations: CollectionConfig = {
     {
       name: "rgaa_version",
       type: "select",
+      label: { fr: "Version RGAA" },
       options: [
         {
           label: "RGAA 4",
@@ -95,27 +113,30 @@ export const Declarations: CollectionConfig = {
       name: "created_by",
       type: "relationship",
       relationTo: "users",
-      required: true,
-    },
-    {
-      name: "verified",
-      type: "checkbox",
-      defaultValue: false,
+      label: { fr: "Créé par" },
       admin: {
-        readOnly: true,
+        position: "sidebar",
       },
+      required: true,
     },
     {
       name: "domain",
       type: "relationship",
       relationTo: "domains",
+      label: { fr: "Domaine" },
+      admin: {
+        position: "sidebar",
+      },
       required: true,
     },
     {
       name: "access_right",
       type: "relationship",
       relationTo: "access-rights",
-      required: true,
+      label: { fr: "Droit d'accès" },
+      admin: {
+        position: "sidebar",
+      },
     },
   ],
 };

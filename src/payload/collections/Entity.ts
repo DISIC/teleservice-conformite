@@ -14,12 +14,14 @@ export const Entities: CollectionConfig = {
     {
       name: "name",
       type: "text",
+      label: { fr: "Nom" },
       required: true,
     },
     {
       name: "siret",
       type: "number",
       required: true,
+      label: { fr: "SIRET" },
       unique: true,
     },
   ],
