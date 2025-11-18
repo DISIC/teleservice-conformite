@@ -26,7 +26,8 @@
 				}
 			},
 			"correctness": {
-				"useExhaustiveDependencies": { "level": "off", "options": {} }
+				"useExhaustiveDependencies": { "level": "off", "options": {} },
+				"noChildrenProp": { "level": "off" }
 			},
 			"recommended": true
 		}
