@@ -14,7 +14,6 @@ export const rgaaVersionOptions = [
 
 export const Audits: CollectionConfig = {
 	slug: "audits",
-	versions: true,
 	admin: {
 		defaultColumns: ["id", "date", "rate", "declaration"],
 	},
@@ -84,15 +83,7 @@ export const Audits: CollectionConfig = {
 			name: "rate",
 			type: "number",
 			label: { fr: "Taux de conformité" },
-			virtual: true,
-			admin: {
-				readOnly: true,
-				description:
-					"Calculé automatiquement à partir des critères conformes et non conformes. (C / (C + NC))",
-			},
-			hooks: {
-				afterRead: [getCalcRateFromTwoCriterion],
-			},
+			required: true,
 		},
 	],
 };

@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import { Select } from "@codegouvfr/react-dsfr/SelectNext";
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 
@@ -8,7 +9,12 @@ interface SelectFieldProps extends DefaultFieldProps {
 	}>;
 }
 
-export function SelectField({ label, options }: SelectFieldProps) {
+export function SelectField({
+	label,
+	options,
+	disabled,
+	className,
+}: SelectFieldProps) {
 	const field = useFieldContext<string>();
 
 	return (
@@ -20,10 +26,12 @@ export function SelectField({ label, options }: SelectFieldProps) {
 				onChange: (e) => field.setValue(e.target.value),
 			}}
 			options={options}
+			disabled={disabled}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={
 				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
 			}
+			className={className}
 		/>
 	);
 }

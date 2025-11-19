@@ -9,8 +9,6 @@ interface NumberFieldProps extends DefaultFieldProps {
 export function NumberField({ label }: NumberFieldProps) {
 	const field = useFieldContext<number>();
 
-	console.log("Rendering NumberField for", field);
-
 	return (
 		<Input
 			label={label}

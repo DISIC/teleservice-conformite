@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useState } from "react";
 import { tss } from "tss-react";
 import z from "zod";
@@ -28,14 +27,10 @@ export default function Home() {
 
 	const { mutateAsync: getInfoFromAra, isPending } =
 		api.declaration.getInfoFromAra.useMutation({
-			onSuccess: (data) =>
-				setGeneralFormDefaultValues({
-					appKind: data.app_kind,
-					appName: data.name,
-					appUrl: data.url,
-					organisation: data.administration,
-					domain: "",
-				}),
+			onSuccess: (data) => {
+				setGeneralFormDefaultValues({ ...data.declaration });
+				setAuditFormDefaultValues({ isAchieved: true, ...data.audit });
+			},
 			onError: (error) => console.error("error", error),
 		});
 
@@ -75,23 +70,20 @@ export default function Home() {
 					araForm.handleSubmit();
 				}}
 			>
-				<h2>Test Ara Informations</h2>
-				<araForm.AppField
-					name="id"
-					children={(field) => <field.TextField label="Identifiant ARA" />}
-				/>
-				<araForm.Subscribe
-					selector={(form) => [form.canSubmit]}
-					children={(canSubmit) => (
-						<Button type="submit" disabled={!canSubmit || isPending}>
-							Valider
-						</Button>
-					)}
-				/>
+				<araForm.AppForm>
+					<h2>Test Ara Informations</h2>
+					<araForm.AppField
+						name="id"
+						children={(field) => <field.TextField label="Identifiant ARA" />}
+					/>
+					<araForm.SubscribeButton
+						label={isPending ? "Chargement..." : "Importer depuis ARA"}
+					/>
+				</araForm.AppForm>
 			</form>
 			<form
 				id="declaration-form"
-				className={fr.cx("fr-pb-12w")}
+				className={fr.cx("fr-pb-6w")}
 				onSubmit={(e) => {
 					e.preventDefault();
 					declarationGeneralForm.handleSubmit();
@@ -99,16 +91,9 @@ export default function Home() {
 			>
 				<declarationGeneralForm.AppForm>
 					<div className={classes.formWrapper}>
-						<h2 className={fr.cx("fr-mb-0")}>Déclaration - section générale</h2>
+						<h2 className={fr.cx("fr-mb-0")}>Déclaration - Section générale</h2>
 						<DeclarationGeneralForm form={declarationGeneralForm} />
-						<declarationGeneralForm.Subscribe
-							selector={(store) => store.canSubmit}
-							children={(canSubmit) => (
-								<Button type="submit" disabled={!canSubmit}>
-									Valider la déclaration
-								</Button>
-							)}
-						/>
+						<declarationGeneralForm.SubscribeButton label="Valider la déclaration" />
 					</div>
 				</declarationGeneralForm.AppForm>
 			</form>
@@ -121,16 +106,9 @@ export default function Home() {
 			>
 				<declarationAuditForm.AppForm>
 					<div className={classes.formWrapper}>
-						<h2 className={fr.cx("fr-mb-0")}>Déclaration - section générale</h2>
+						<h2 className={fr.cx("fr-mb-0")}>Déclaration - Section audit</h2>
 						<DeclarationAuditForm form={declarationAuditForm} />
-						<declarationAuditForm.Subscribe
-							selector={(store) => store.canSubmit}
-							children={(canSubmit) => (
-								<Button type="submit" disabled={!canSubmit}>
-									Valider la déclaration
-								</Button>
-							)}
-						/>
+						<declarationAuditForm.SubscribeButton label="Valider l'audit" />
 					</div>
 				</declarationAuditForm.AppForm>
 			</form>
@@ -146,5 +124,7 @@ const useStyles = tss.withName(Home.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
+		backgroundColor: fr.colors.decisions.background.default.grey.hover,
+		padding: fr.spacing("4w"),
 	},
 });

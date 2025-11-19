@@ -1,4 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import Accordion from "@codegouvfr/react-dsfr/Accordion";
+import Button from "@codegouvfr/react-dsfr/Button";
 import { tss } from "tss-react";
 import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import { appKindOptions } from "~/payload/collections/Declaration";
@@ -7,6 +9,22 @@ import {
 	declarationAuditDefaultValues,
 	declarationGeneralDefaultValues,
 } from "./schema";
+
+const envKindOptions = [
+	{ label: "Mobile", value: "mobile" },
+	{ label: "Ordinateur", value: "ordinateur" },
+];
+
+const envDesktopOsOptions = [
+	{ label: "Windows", value: "windows" },
+	{ label: "macOS", value: "macos" },
+	{ label: "Linux", value: "linux" },
+];
+
+const envMobileOsOptions = [
+	{ label: "iOS", value: "ios" },
+	{ label: "Android", value: "android" },
+];
 
 export const DeclarationGeneralForm = withForm({
 	defaultValues: declarationGeneralDefaultValues,
@@ -22,7 +40,7 @@ export const DeclarationGeneralForm = withForm({
 					)}
 				/>
 				<form.AppField
-					name="appKind"
+					name="kind"
 					children={(field) => (
 						<field.SelectField
 							label="Type de l'application"
@@ -31,7 +49,7 @@ export const DeclarationGeneralForm = withForm({
 					)}
 				/>
 				<form.AppField
-					name="appName"
+					name="name"
 					children={(field) => <field.TextField label="Nom de l'application" />}
 				/>
 				<form.AppField
@@ -72,43 +90,184 @@ export const DeclarationAuditForm = withForm({
 									)}
 								/>
 								<form.AppField
-									name="date"
-									children={(field) => (
-										<field.TextField label="Date de l'audit" kind="date" />
-									)}
-								/>
-								<form.AppField
 									name="rgaa_version"
 									children={(field) => (
-										<field.SelectField
-											label="Date de l'audit"
+										<field.RadioField
+											label="Version du RGAA utilisée"
 											options={[...rgaaVersionOptions]}
 										/>
 									)}
 								/>
-								<form.AppField
-									name="rate"
-									children={(field) => (
-										<field.NumberField label="Taux de conformité RGAA (%)" />
-									)}
-								/>
-								<form.AppField name="pages" mode="array">
-									{(field) => (
-										<div>
-											{field.state.value.map((_, index) => (
-												<form.AppField
-													key={index}
-													name={`pages[${index}].label`}
-													children={(subField) => (
-														<subField.TextField
-															label={`Page ${index + 1} - Label`}
+								<div className={classes.gridRow}>
+									<form.AppField
+										name="date"
+										children={(field) => (
+											<field.TextField label="Date de l'audit" kind="date" />
+										)}
+									/>
+									<form.AppField
+										name="rate"
+										children={(field) => (
+											<field.NumberField label="Taux de conformité (%)" />
+										)}
+									/>
+								</div>
+								<div className={fr.cx("fr-accordions-group")}>
+									<form.AppField name="pages" mode="array">
+										{(field) => (
+											<Accordion
+												label="Pages auditées"
+												defaultExpanded
+												className={classes.pagesAccordion}
+											>
+												{field.state.value.map((_, index) => (
+													<div
+														key={index}
+														className={classes.pagesAccordionContent}
+													>
+														<div className={classes.pagesWrapper}>
+															<form.AppField
+																name={`pages[${index}].label`}
+																children={(subField) => (
+																	<subField.TextField
+																		label={`Page ${index + 1} - Label`}
+																		className={fr.cx("fr-mb-0")}
+																	/>
+																)}
+															/>
+															<form.AppField
+																name={`pages[${index}].url`}
+																children={(subField) => (
+																	<subField.TextField
+																		label={`Page ${index + 1} - URL`}
+																	/>
+																)}
+															/>
+														</div>
+														<Button
+															type="button"
+															priority="secondary"
+															iconId="fr-icon-delete-bin-line"
+															onClick={() => field.removeValue(index)}
+															title="Supprimer la page"
 														/>
-													)}
-												/>
-											))}
-										</div>
-									)}
-								</form.AppField>
+													</div>
+												))}
+												<Button
+													type="button"
+													onClick={() =>
+														field.pushValue({ url: "", label: "" })
+													}
+												>
+													Ajouter une page
+												</Button>
+											</Accordion>
+										)}
+									</form.AppField>
+									<form.AppField name="testEnvironments" mode="array">
+										{(field) => (
+											<Accordion
+												label="Environnements de test"
+												defaultExpanded
+												className={classes.pagesAccordion}
+											>
+												{field.state.value.map((_, index) => (
+													<div
+														key={index}
+														className={classes.pagesAccordionContent}
+													>
+														<div className={classes.pagesWrapper}>
+															<form.AppField
+																name={`testEnvironments[${index}].kind`}
+																children={(subField) => (
+																	<subField.SelectField
+																		label={`Environnement ${index + 1} - Type`}
+																		options={envKindOptions}
+																		className={fr.cx("fr-mb-0")}
+																	/>
+																)}
+															/>
+															<form.Subscribe
+																selector={(store) =>
+																	store.values.testEnvironments?.[index]?.kind
+																}
+																children={(kind) => (
+																	<form.AppField
+																		name={`testEnvironments[${index}].os`}
+																		children={(subField) => (
+																			<subField.SelectField
+																				label={`Environnement ${index + 1} - OS`}
+																				disabled={!kind && kind === ""}
+																				options={
+																					kind === "mobile"
+																						? envMobileOsOptions
+																						: envDesktopOsOptions
+																				}
+																			/>
+																		)}
+																	/>
+																)}
+															/>
+														</div>
+														<Button
+															type="button"
+															priority="secondary"
+															iconId="fr-icon-delete-bin-line"
+															onClick={() => field.removeValue(index)}
+															title="Supprimer l'environnement de test"
+														/>
+													</div>
+												))}
+												<Button
+													type="button"
+													onClick={() => field.pushValue({ kind: "", os: "" })}
+												>
+													Ajouter un environnement de test
+												</Button>
+											</Accordion>
+										)}
+									</form.AppField>
+									<form.AppField name="technologies" mode="array">
+										{(field) => (
+											<Accordion
+												label="Technologies utilisées"
+												defaultExpanded
+												className={classes.pagesAccordion}
+											>
+												{field.state.value.map((_, index) => (
+													<div
+														key={index}
+														className={classes.pagesAccordionContent}
+													>
+														<div className={classes.pagesWrapper}>
+															<form.AppField
+																name={`technologies[${index}]`}
+																children={(subField) => (
+																	<subField.TextField
+																		label={`Technologie ${index + 1}`}
+																	/>
+																)}
+															/>
+														</div>
+														<Button
+															type="button"
+															priority="secondary"
+															iconId="fr-icon-delete-bin-line"
+															onClick={() => field.removeValue(index)}
+															title="Supprimer la technologie"
+														/>
+													</div>
+												))}
+												<Button
+													type="button"
+													onClick={() => field.pushValue("")}
+												>
+													Ajouter une technologie
+												</Button>
+											</Accordion>
+										)}
+									</form.AppField>
+								</div>
 							</>
 						)
 					}
@@ -122,5 +281,30 @@ const useStyles = tss.withName(DeclarationGeneralForm.name).create({
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
+	},
+	gridRow: {
+		display: "grid",
+		gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
+		gap: fr.spacing("4w"),
+	},
+	pagesAccordion: {
+		backgroundColor: fr.colors.decisions.background.default.grey.default,
+		"& .fr-collapse": {
+			margin: 0,
+		},
+	},
+	pagesAccordionContent: {
+		display: "flex",
+		alignItems: "end",
+		gap: fr.spacing("4w"),
+		paddingBottom: fr.spacing("2w"),
+	},
+	pagesWrapper: {
+		width: "100%",
+		display: "grid",
+		gap: fr.spacing("4w"),
+		gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
+		alignItems: "center",
+		backgroundColor: fr.colors.decisions.background.default.grey.default,
 	},
 });

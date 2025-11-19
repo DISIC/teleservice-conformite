@@ -7,8 +7,8 @@ export const declarationGeneral = z.object({
 		.string()
 		.meta({ kind: "select" })
 		.min(1, { message: "Le nom de l'organisation est requis" }),
-	appKind: z.enum(appKindOptions.map((option) => option.value)),
-	appName: z.string().min(1, { message: "Le nom de l'application est requis" }),
+	kind: z.enum(appKindOptions.map((option) => option.value)),
+	name: z.string().min(1, { message: "Le nom de l'application est requis" }),
 	appUrl: z.url(),
 	domain: z
 		.string()
@@ -19,12 +19,12 @@ export const declarationGeneral = z.object({
 	// uploadMultiYearSchema: z.file().optional(),
 });
 
-type ZDeclarationGeneral = z.infer<typeof declarationGeneral>;
+export type ZDeclarationGeneral = z.infer<typeof declarationGeneral>;
 
 export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 	organisation: "",
-	appKind: "website",
-	appName: "",
+	kind: "website",
+	name: "",
 	appUrl: "",
 	domain: "",
 	// hasMultiYearSchema: false,
@@ -41,20 +41,20 @@ export const declarationAudit = z.object({
 	realisedBy: z.string(),
 	rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
 	rate: z.number().min(0).max(100),
+	pages: z
+		.array(z.object({ label: z.string(), url: z.url() }))
+		.min(1, { message: "Au moins une page doit être renseignée" }),
 	technologies: z.array(z.string()).min(1, {
 		message: "Au moins une technologie doit être sélectionnée",
 	}),
-	testEnvironnements: z
+	testEnvironments: z
 		.array(z.object({ kind: z.string(), os: z.string() }))
 		.min(1, {
 			message: "Au moins un environnement de test doit être sélectionné",
 		}),
-	pages: z
-		.array(z.object({ label: z.string(), url: z.url() }))
-		.min(1, { message: "Au moins une page doit être renseignée" }),
 });
 
-type ZDeclarationAudit = z.infer<typeof declarationAudit>;
+export type ZDeclarationAudit = z.infer<typeof declarationAudit>;
 
 export const declarationAuditDefaultValues: ZDeclarationAudit = {
 	isAchieved: false,
@@ -65,9 +65,9 @@ export const declarationAuditDefaultValues: ZDeclarationAudit = {
 	realisedBy: "",
 	rgaa_version: "rgaa_4",
 	rate: 0,
-	technologies: [],
-	testEnvironnements: [],
 	pages: [{ label: "", url: "" }],
+	technologies: [],
+	testEnvironments: [{ kind: "", os: "" }],
 };
 
 export const declarationContact = z.object({

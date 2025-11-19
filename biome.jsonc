@@ -37,7 +37,8 @@
 				"noChildrenProp": { "level": "off" }
 			},
 			"suspicious": {
-				"noArrayIndexKey": { "level": "off" }
+				"noArrayIndexKey": { "level": "off" },
+				"noExplicitAny": { "level": "off" }
 			},
 			"recommended": true
 		}
