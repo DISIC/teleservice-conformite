@@ -1,6 +1,17 @@
 import type { CollectionConfig } from "payload";
 import { getCalcRateFromTwoCriterion } from "../hooks";
 
+export const rgaaVersionOptions = [
+	{
+		label: "RGAA 4",
+		value: "rgaa_4",
+	},
+	{
+		label: "RGAA 5",
+		value: "rgaa_5",
+	},
+] as const;
+
 export const Audits: CollectionConfig = {
 	slug: "audits",
 	versions: true,
@@ -41,16 +52,7 @@ export const Audits: CollectionConfig = {
 			name: "rgaa_version",
 			type: "select",
 			label: { fr: "Version RGAA" },
-			options: [
-				{
-					label: "RGAA 4",
-					value: "rgaa_4",
-				},
-				{
-					label: "RGAA 5",
-					value: "rgaa_5",
-				},
-			],
+			options: [...rgaaVersionOptions],
 			required: true,
 		},
 		{

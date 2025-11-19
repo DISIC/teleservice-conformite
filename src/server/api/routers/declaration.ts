@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
+import type { appKindOptions } from "~/payload/collections/Declaration";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const declarationRouter = createTRPCRouter({
@@ -23,7 +24,7 @@ export const declarationRouter = createTRPCRouter({
 
 			const returnValue = {
 				name: "",
-				app_kind: "",
+				app_kind: "website" as (typeof appKindOptions)[number]["value"],
 				administration: araJson.procedureInitiator,
 				url: araJson.procedureUrl,
 				published_at: new Date(araJson.publishDate).toISOString(),

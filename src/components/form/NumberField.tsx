@@ -1,27 +1,28 @@
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 
-type TextFieldProps = {
-	kind?: "date";
-};
+interface NumberFieldProps extends DefaultFieldProps {
+	min?: number;
+	max?: number;
+}
 
-export function TextField({
-	label,
-	disabled,
-	kind,
-}: DefaultFieldProps & TextFieldProps) {
-	const field = useFieldContext<string>();
+export function NumberField({ label }: NumberFieldProps) {
+	const field = useFieldContext<number>();
+
+	console.log("Rendering NumberField for", field);
 
 	return (
 		<Input
 			label={label}
 			nativeInputProps={{
-				type: kind ?? "text",
+				type: "number",
+				inputMode: "numeric",
+				pattern: "[0-9]*",
+				min: 1,
 				name: field.name,
 				value: field.state.value,
-				onChange: (e) => field.setValue(e.target.value),
+				onChange: (e) => field.setValue(e.target.valueAsNumber),
 			}}
-			disabled={disabled}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={
 				field.state.meta.errors.map((error) => error.message).join(",") ?? ""

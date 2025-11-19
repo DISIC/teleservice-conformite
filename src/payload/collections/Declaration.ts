@@ -1,5 +1,20 @@
 import type { CollectionConfig } from "payload";
 
+export const appKindOptions = [
+	{
+		label: "Site web",
+		value: "website",
+	},
+	{
+		label: "Application mobile",
+		value: "mobile_app",
+	},
+	{
+		label: "Autre",
+		value: "other",
+	},
+] as const;
+
 export const Declarations: CollectionConfig = {
 	slug: "declarations",
 	versions: true,
@@ -26,20 +41,7 @@ export const Declarations: CollectionConfig = {
 			type: "select",
 			label: { fr: "Type d'application" },
 			required: true,
-			options: [
-				{
-					label: "Site web",
-					value: "website",
-				},
-				{
-					label: "Application mobile",
-					value: "mobile_app",
-				},
-				{
-					label: "Autre",
-					value: "other",
-				},
-			],
+			options: [...appKindOptions],
 		},
 		{
 			name: "url",

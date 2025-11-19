@@ -1,27 +1,25 @@
-import { Input } from "@codegouvfr/react-dsfr/Input";
+import { Select } from "@codegouvfr/react-dsfr/SelectNext";
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 
-type TextFieldProps = {
-	kind?: "date";
-};
+interface SelectFieldProps extends DefaultFieldProps {
+	options: Array<{
+		label: string;
+		value: string;
+	}>;
+}
 
-export function TextField({
-	label,
-	disabled,
-	kind,
-}: DefaultFieldProps & TextFieldProps) {
+export function SelectField({ label, options }: SelectFieldProps) {
 	const field = useFieldContext<string>();
 
 	return (
-		<Input
+		<Select
 			label={label}
-			nativeInputProps={{
-				type: kind ?? "text",
+			nativeSelectProps={{
 				name: field.name,
 				value: field.state.value,
 				onChange: (e) => field.setValue(e.target.value),
 			}}
-			disabled={disabled}
+			options={options}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={
 				field.state.meta.errors.map((error) => error.message).join(",") ?? ""

@@ -36,6 +36,9 @@
 				"useExhaustiveDependencies": { "level": "off", "options": {} },
 				"noChildrenProp": { "level": "off" }
 			},
+			"suspicious": {
+				"noArrayIndexKey": { "level": "off" }
+			},
 			"recommended": true
 		}
 	}
