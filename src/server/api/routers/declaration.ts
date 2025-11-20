@@ -38,7 +38,7 @@ export const declarationRouter = createTRPCRouter({
 				} as ZDeclarationGeneral,
 				audit: {
 					url: `https://ara.numerique.gouv.fr/rapport/${id}/resultats`,
-					date: new Date(araJson.publishDate),
+					date: new Date(araJson.publishDate).toISOString().split("T")[0] || "",
 					rgaa_version: "rgaa_4",
 					realisedBy: araJson.context.auditorOrganization,
 					rate: araJson.accessibilityRate,

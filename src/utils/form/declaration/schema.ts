@@ -35,7 +35,7 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 export const declarationAudit = z.object({
 	isAchieved: z.boolean(),
 	url: z.url(),
-	date: z.date(),
+	date: z.iso.date().min(1, { message: "La date de l'audit est requise" }),
 	report: z.file().optional(),
 	matrix: z.file().optional(),
 	realisedBy: z.string(),
@@ -59,7 +59,7 @@ export type ZDeclarationAudit = z.infer<typeof declarationAudit>;
 export const declarationAuditDefaultValues: ZDeclarationAudit = {
 	isAchieved: false,
 	url: "",
-	date: new Date(),
+	date: "",
 	report: undefined,
 	matrix: undefined,
 	realisedBy: "",
