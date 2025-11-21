@@ -31,16 +31,16 @@ export const declarationRouter = createTRPCRouter({
 				audit: Omit<ZDeclarationAudit, "isAchieved">;
 			} = {
 				declaration: {
-					name: "",
-					kind: "mobile_app" as (typeof appKindOptions)[number]["value"],
+					name: araJson.procedureName,
+					kind: "website" as (typeof appKindOptions)[number]["value"],
 					organisation: araJson.procedureInitiator,
 					appUrl: araJson.procedureUrl,
 				} as ZDeclarationGeneral,
 				audit: {
-					url: `https://ara.numerique.gouv.fr/rapport/${id}/resultats`,
+					url: `https://ara.numerique.gouv.fr/declaration/${id}`,
 					date: new Date(araJson.publishDate).toISOString().split("T")[0] || "",
 					rgaa_version: "rgaa_4",
-					realisedBy: araJson.context.auditorOrganization,
+					realisedBy: araJson.context.auditorOrganisation,
 					rate: araJson.accessibilityRate,
 					pages: araJson.context.samples
 						.filter((page: any) => page.url && page.name)
@@ -53,6 +53,7 @@ export const declarationRouter = createTRPCRouter({
 						os: env.operatingSystem.toLowerCase(),
 					})),
 					technologies: araJson.context.technologies,
+					tools: araJson.context.tools,
 				},
 			};
 

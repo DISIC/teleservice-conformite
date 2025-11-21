@@ -9,7 +9,6 @@ import { useAppForm } from "~/utils/form/context";
 export default function Home() {
 	const { classes } = useStyles();
 
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const [result, setResult] = useState<any | null>(null);
 
 	const { mutateAsync: getInfoFromAra, isPending } =

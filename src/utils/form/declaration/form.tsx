@@ -43,23 +43,25 @@ export const DeclarationGeneralForm = withForm({
 					name="kind"
 					children={(field) => (
 						<field.SelectField
-							label="Type de l'application"
+							label="Type de de produit numérique"
 							options={[...appKindOptions]}
 						/>
 					)}
 				/>
 				<form.AppField
 					name="name"
-					children={(field) => <field.TextField label="Nom de l'application" />}
+					children={(field) => (
+						<field.TextField label="Nom du service numérique" />
+					)}
 				/>
 				<form.AppField
 					name="appUrl"
-					children={(field) => <field.TextField label="URL de l'application" />}
+					children={(field) => <field.TextField label="URL" />}
 				/>
 				<form.AppField
 					name="domain"
 					children={(field) => (
-						<field.TextField label="Nom du domaine d'activité de l'entité" />
+						<field.TextField label="Secteur d'activité de l'entité" />
 					)}
 				/>
 			</div>
@@ -102,7 +104,11 @@ export const DeclarationAuditForm = withForm({
 									<form.AppField
 										name="date"
 										children={(field) => (
-											<field.TextField label="Date de l'audit" kind="date" />
+											<field.TextField
+												label="Date de l'audit"
+												kind="date"
+												max={new Date().toISOString().split("T")[0]}
+											/>
 										)}
 									/>
 									<form.AppField
@@ -112,6 +118,12 @@ export const DeclarationAuditForm = withForm({
 										)}
 									/>
 								</div>
+								<form.AppField
+									name="realisedBy"
+									children={(field) => (
+										<field.TextField label="Réalisé par l'organisation" />
+									)}
+								/>
 								<div className={fr.cx("fr-accordions-group")}>
 									<form.AppField name="pages" mode="array">
 										{(field) => (
@@ -167,7 +179,7 @@ export const DeclarationAuditForm = withForm({
 									<form.AppField name="testEnvironments" mode="array">
 										{(field) => (
 											<Accordion
-												label="Environnements de test"
+												label="Environnements de test (dans l'audit)"
 												defaultExpanded
 												className={classes.pagesAccordion}
 											>
@@ -230,7 +242,7 @@ export const DeclarationAuditForm = withForm({
 									<form.AppField name="technologies" mode="array">
 										{(field) => (
 											<Accordion
-												label="Technologies utilisées"
+												label="Technologies utilisées (dans l'audit)"
 												defaultExpanded
 												className={classes.pagesAccordion}
 											>
@@ -263,6 +275,46 @@ export const DeclarationAuditForm = withForm({
 													onClick={() => field.pushValue("")}
 												>
 													Ajouter une technologie
+												</Button>
+											</Accordion>
+										)}
+									</form.AppField>
+									<form.AppField name="tools" mode="array">
+										{(field) => (
+											<Accordion
+												label="Outils utilisés (dans l'audit)"
+												defaultExpanded
+												className={classes.pagesAccordion}
+											>
+												{field.state.value.map((_, index) => (
+													<div
+														key={index}
+														className={classes.pagesAccordionContent}
+													>
+														<div className={classes.pagesWrapper}>
+															<form.AppField
+																name={`tools[${index}]`}
+																children={(subField) => (
+																	<subField.TextField
+																		label={`Outil ${index + 1}`}
+																	/>
+																)}
+															/>
+														</div>
+														<Button
+															type="button"
+															priority="secondary"
+															iconId="fr-icon-delete-bin-line"
+															onClick={() => field.removeValue(index)}
+															title="Supprimer l'outil"
+														/>
+													</div>
+												))}
+												<Button
+													type="button"
+													onClick={() => field.pushValue("")}
+												>
+													Ajouter un outil
 												</Button>
 											</Accordion>
 										)}

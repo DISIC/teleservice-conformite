@@ -34,13 +34,20 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 
 export const declarationAudit = z.object({
 	isAchieved: z.boolean(),
-	url: z.url(),
-	date: z.iso.date().min(1, { message: "La date de l'audit est requise" }),
+	url: z
+		.url({ error: "L'URL n'est pas valide" })
+		.min(1, { message: "L'URL est requise" }),
+	date: z.iso.date().min(1, { message: "La date est requise" }),
 	report: z.file().optional(),
 	matrix: z.file().optional(),
-	realisedBy: z.string(),
+	realisedBy: z.string().min(1, {
+		message: "L'organisation ayant réalisé l'audit est requise",
+	}),
 	rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
-	rate: z.number().min(0).max(100),
+	rate: z
+		.number()
+		.min(0, { message: "Le taux doit être entre 0 et 100" })
+		.max(100, { message: "Le taux doit être entre 0 et 100" }),
 	pages: z
 		.array(z.object({ label: z.string(), url: z.url() }))
 		.min(1, { message: "Au moins une page doit être renseignée" }),
@@ -52,6 +59,9 @@ export const declarationAudit = z.object({
 		.min(1, {
 			message: "Au moins un environnement de test doit être sélectionné",
 		}),
+	tools: z.array(z.string()).min(1, {
+		message: "Au moins un outil doit être sélectionné",
+	}),
 });
 
 export type ZDeclarationAudit = z.infer<typeof declarationAudit>;
@@ -68,6 +78,7 @@ export const declarationAuditDefaultValues: ZDeclarationAudit = {
 	pages: [{ label: "", url: "" }],
 	technologies: [],
 	testEnvironments: [{ kind: "", os: "" }],
+	tools: [],
 };
 
 export const declarationContact = z.object({

@@ -91,7 +91,9 @@ export default function Home() {
 			>
 				<declarationGeneralForm.AppForm>
 					<div className={classes.formWrapper}>
-						<h2 className={fr.cx("fr-mb-0")}>Déclaration - Section générale</h2>
+						<h2 className={fr.cx("fr-mb-0")}>
+							Déclaration - Section Informations Générales
+						</h2>
 						<DeclarationGeneralForm form={declarationGeneralForm} />
 						<declarationGeneralForm.SubscribeButton label="Valider la déclaration" />
 					</div>
@@ -106,7 +108,7 @@ export default function Home() {
 			>
 				<declarationAuditForm.AppForm>
 					<div className={classes.formWrapper}>
-						<h2 className={fr.cx("fr-mb-0")}>Déclaration - Section audit</h2>
+						<h2 className={fr.cx("fr-mb-0")}>Déclaration - Section Audit</h2>
 						<DeclarationAuditForm form={declarationAuditForm} />
 						<declarationAuditForm.SubscribeButton label="Valider l'audit" />
 					</div>
