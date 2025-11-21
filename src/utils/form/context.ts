@@ -1,11 +1,12 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 
-import { CheckboxField } from "~/components/form/CheckboxField";
-import { NumberField } from "~/components/form/NumberField";
-import { RadioField } from "~/components/form/RadioField";
-import { SelectField } from "~/components/form/SelectField";
 import { SubscribeButton } from "~/components/form/SubmitButton";
-import { TextField } from "~/components/form/TextField";
+
+import { CheckboxField } from "~/components/form/fields/CheckboxField";
+import { NumberField } from "~/components/form/fields/NumberField";
+import { RadioField } from "~/components/form/fields/RadioField";
+import { SelectField } from "~/components/form/fields/SelectField";
+import { TextField } from "~/components/form/fields/TextField";
 
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
 	createFormHookContexts();

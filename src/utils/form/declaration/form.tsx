@@ -5,10 +5,7 @@ import { tss } from "tss-react";
 import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import { appKindOptions } from "~/payload/collections/Declaration";
 import { withForm } from "../context";
-import {
-	declarationAuditDefaultValues,
-	declarationGeneralDefaultValues,
-} from "./schema";
+import { declarationMultiStepFormOptions } from "./schema";
 
 const envKindOptions = [
 	{ label: "Mobile", value: "mobile" },
@@ -27,105 +24,88 @@ const envMobileOsOptions = [
 ];
 
 export const DeclarationGeneralForm = withForm({
-	defaultValues: declarationGeneralDefaultValues,
+	...declarationMultiStepFormOptions,
 	render: function Render({ form }) {
 		const { classes, cx } = useStyles();
 
 		return (
 			<div className={cx(classes.formWrapper)}>
-				<form.AppField
-					name="organisation"
-					children={(field) => (
-						<field.TextField label="Nom de l'organisation" />
-					)}
-				/>
-				<form.AppField
-					name="kind"
-					children={(field) => (
+				<form.AppField name="general.organisation">
+					{(field) => <field.TextField label="Nom de l'organisation" />}
+				</form.AppField>
+				<form.AppField name="general.kind">
+					{(field) => (
 						<field.SelectField
-							label="Type de de produit numérique"
+							label="Type de service numérique"
 							options={[...appKindOptions]}
 						/>
 					)}
-				/>
-				<form.AppField
-					name="name"
-					children={(field) => (
-						<field.TextField label="Nom du service numérique" />
-					)}
-				/>
-				<form.AppField
-					name="appUrl"
-					children={(field) => <field.TextField label="URL" />}
-				/>
-				<form.AppField
-					name="domain"
-					children={(field) => (
+				</form.AppField>
+				<form.AppField name="general.name">
+					{(field) => <field.TextField label="Nom du service numérique" />}
+				</form.AppField>
+				<form.AppField name="general.url">
+					{(field) => <field.TextField label="URL du service numérique" />}
+				</form.AppField>
+				<form.AppField name="general.domain">
+					{(field) => (
 						<field.TextField label="Secteur d'activité de l'entité" />
 					)}
-				/>
+				</form.AppField>
 			</div>
 		);
 	},
 });
 
 export const DeclarationAuditForm = withForm({
-	defaultValues: declarationAuditDefaultValues,
+	...declarationMultiStepFormOptions,
 	render: function Render({ form }) {
 		const { classes, cx } = useStyles();
 
 		return (
 			<div className={cx(classes.formWrapper)}>
-				<form.AppField
-					name="isAchieved"
-					children={(field) => <field.CheckboxField label="Audit réalisé" />}
-				/>
-				<form.Subscribe
-					selector={(store) => store.values.isAchieved}
-					children={(isAchieved) =>
-						isAchieved && (
+				<form.AppField name="audit.isAchieved">
+					{(field) => <field.CheckboxField label="Audit réalisé" />}
+				</form.AppField>
+				<form.Subscribe selector={(store) => store.values.audit.isAchieved}>
+					{(isAchieved) => {
+						if (!isAchieved) return null;
+						return (
 							<>
-								<form.AppField
-									name="url"
-									children={(field) => (
-										<field.TextField label="Url de l'audit" />
-									)}
-								/>
-								<form.AppField
-									name="rgaa_version"
-									children={(field) => (
+								<form.AppField name="audit.url">
+									{(field) => <field.TextField label="Url de l'audit" />}
+								</form.AppField>
+								<form.AppField name="audit.rgaa_version">
+									{(field) => (
 										<field.RadioField
 											label="Version du RGAA utilisée"
 											options={[...rgaaVersionOptions]}
 										/>
 									)}
-								/>
+								</form.AppField>
 								<div className={classes.gridRow}>
-									<form.AppField
-										name="date"
-										children={(field) => (
+									<form.AppField name="audit.date">
+										{(field) => (
 											<field.TextField
 												label="Date de l'audit"
 												kind="date"
 												max={new Date().toISOString().split("T")[0]}
 											/>
 										)}
-									/>
-									<form.AppField
-										name="rate"
-										children={(field) => (
+									</form.AppField>
+									<form.AppField name="audit.rate">
+										{(field) => (
 											<field.NumberField label="Taux de conformité (%)" />
 										)}
-									/>
+									</form.AppField>
 								</div>
-								<form.AppField
-									name="realisedBy"
-									children={(field) => (
+								<form.AppField name="audit.realisedBy">
+									{(field) => (
 										<field.TextField label="Réalisé par l'organisation" />
 									)}
-								/>
+								</form.AppField>
 								<div className={fr.cx("fr-accordions-group")}>
-									<form.AppField name="pages" mode="array">
+									<form.AppField name="audit.pages" mode="array">
 										{(field) => (
 											<Accordion
 												label="Pages auditées"
@@ -139,22 +119,22 @@ export const DeclarationAuditForm = withForm({
 													>
 														<div className={classes.pagesWrapper}>
 															<form.AppField
-																name={`pages[${index}].label`}
-																children={(subField) => (
+																name={`audit.pages[${index}].label`}
+															>
+																{(subField) => (
 																	<subField.TextField
 																		label={`Page ${index + 1} - Label`}
 																		className={fr.cx("fr-mb-0")}
 																	/>
 																)}
-															/>
-															<form.AppField
-																name={`pages[${index}].url`}
-																children={(subField) => (
+															</form.AppField>
+															<form.AppField name={`audit.pages[${index}].url`}>
+																{(subField) => (
 																	<subField.TextField
 																		label={`Page ${index + 1} - URL`}
 																	/>
 																)}
-															/>
+															</form.AppField>
 														</div>
 														<Button
 															type="button"
@@ -176,7 +156,7 @@ export const DeclarationAuditForm = withForm({
 											</Accordion>
 										)}
 									</form.AppField>
-									<form.AppField name="testEnvironments" mode="array">
+									<form.AppField name="audit.testEnvironments" mode="array">
 										{(field) => (
 											<Accordion
 												label="Environnements de test (dans l'audit)"
@@ -190,23 +170,27 @@ export const DeclarationAuditForm = withForm({
 													>
 														<div className={classes.pagesWrapper}>
 															<form.AppField
-																name={`testEnvironments[${index}].kind`}
-																children={(subField) => (
+																name={`audit.testEnvironments[${index}].kind`}
+															>
+																{(subField) => (
 																	<subField.SelectField
 																		label={`Environnement ${index + 1} - Type`}
 																		options={envKindOptions}
 																		className={fr.cx("fr-mb-0")}
 																	/>
 																)}
-															/>
+															</form.AppField>
 															<form.Subscribe
 																selector={(store) =>
-																	store.values.testEnvironments?.[index]?.kind
+																	store.values.audit.testEnvironments?.[index]
+																		?.kind
 																}
-																children={(kind) => (
+															>
+																{(kind) => (
 																	<form.AppField
-																		name={`testEnvironments[${index}].os`}
-																		children={(subField) => (
+																		name={`audit.testEnvironments[${index}].os`}
+																	>
+																		{(subField) => (
 																			<subField.SelectField
 																				label={`Environnement ${index + 1} - OS`}
 																				disabled={!kind && kind === ""}
@@ -217,9 +201,9 @@ export const DeclarationAuditForm = withForm({
 																				}
 																			/>
 																		)}
-																	/>
+																	</form.AppField>
 																)}
-															/>
+															</form.Subscribe>
 														</div>
 														<Button
 															type="button"
@@ -239,7 +223,7 @@ export const DeclarationAuditForm = withForm({
 											</Accordion>
 										)}
 									</form.AppField>
-									<form.AppField name="technologies" mode="array">
+									<form.AppField name="audit.technologies" mode="array">
 										{(field) => (
 											<Accordion
 												label="Technologies utilisées (dans l'audit)"
@@ -253,13 +237,14 @@ export const DeclarationAuditForm = withForm({
 													>
 														<div className={classes.pagesWrapper}>
 															<form.AppField
-																name={`technologies[${index}]`}
-																children={(subField) => (
+																name={`audit.technologies[${index}]`}
+															>
+																{(subField) => (
 																	<subField.TextField
 																		label={`Technologie ${index + 1}`}
 																	/>
 																)}
-															/>
+															</form.AppField>
 														</div>
 														<Button
 															type="button"
@@ -279,7 +264,7 @@ export const DeclarationAuditForm = withForm({
 											</Accordion>
 										)}
 									</form.AppField>
-									<form.AppField name="tools" mode="array">
+									<form.AppField name="audit.tools" mode="array">
 										{(field) => (
 											<Accordion
 												label="Outils utilisés (dans l'audit)"
@@ -292,14 +277,13 @@ export const DeclarationAuditForm = withForm({
 														className={classes.pagesAccordionContent}
 													>
 														<div className={classes.pagesWrapper}>
-															<form.AppField
-																name={`tools[${index}]`}
-																children={(subField) => (
+															<form.AppField name={`audit.tools[${index}]`}>
+																{(subField) => (
 																	<subField.TextField
 																		label={`Outil ${index + 1}`}
 																	/>
 																)}
-															/>
+															</form.AppField>
 														</div>
 														<Button
 															type="button"
@@ -321,9 +305,9 @@ export const DeclarationAuditForm = withForm({
 									</form.AppField>
 								</div>
 							</>
-						)
-					}
-				/>
+						);
+					}}
+				</form.Subscribe>
 			</div>
 		);
 	},

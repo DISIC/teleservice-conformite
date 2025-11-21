@@ -44,6 +44,7 @@ export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
 
 const userNavigationItems: MainNavigationProps.Item[] = [
 	{ text: "Accueil", linkProps: { href: "/dashboard" } },
+	{ text: "Test - Ara", linkProps: { href: "/dashboard/ara" } },
 	{ text: "Test - Déclaration", linkProps: { href: "/dashboard/declaration" } },
 ];
 

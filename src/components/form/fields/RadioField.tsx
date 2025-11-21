@@ -12,8 +12,6 @@ interface CheckboxFieldProps extends DefaultFieldProps {
 export function RadioField({ label, options }: CheckboxFieldProps) {
 	const field = useFieldContext<string>();
 
-	console.log("RadioField render", field.state.value);
-
 	return (
 		<RadioButtons
 			legend={label}

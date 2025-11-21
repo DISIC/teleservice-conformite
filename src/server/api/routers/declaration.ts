@@ -4,6 +4,7 @@ import type { appKindOptions } from "~/payload/collections/Declaration";
 import type {
 	ZDeclarationAudit,
 	ZDeclarationGeneral,
+	ZDeclarationMultiStepFormSchema,
 } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -26,17 +27,16 @@ export const declarationRouter = createTRPCRouter({
 
 			const araJson = await araResponse.json();
 
-			const returnValue: {
-				declaration: ZDeclarationGeneral;
-				audit: Omit<ZDeclarationAudit, "isAchieved">;
-			} = {
-				declaration: {
+			const returnValue: Omit<ZDeclarationMultiStepFormSchema, "section"> = {
+				general: {
 					name: araJson.procedureName,
 					kind: "website" as (typeof appKindOptions)[number]["value"],
 					organisation: araJson.procedureInitiator,
-					appUrl: araJson.procedureUrl,
-				} as ZDeclarationGeneral,
+					url: araJson.procedureUrl,
+					domain: "",
+				},
 				audit: {
+					isAchieved: true,
 					url: `https://ara.numerique.gouv.fr/declaration/${id}`,
 					date: new Date(araJson.publishDate).toISOString().split("T")[0] || "",
 					rgaa_version: "rgaa_4",

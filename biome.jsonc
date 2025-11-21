@@ -33,8 +33,7 @@
 				}
 			},
 			"correctness": {
-				"useExhaustiveDependencies": { "level": "off", "options": {} },
-				"noChildrenProp": { "level": "off" }
+				"useExhaustiveDependencies": { "level": "off", "options": {} }
 			},
 			"suspicious": {
 				"noArrayIndexKey": { "level": "off" },

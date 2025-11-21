@@ -1,124 +1,66 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { useState } from "react";
+import { useStore } from "@tanstack/react-form";
 import { tss } from "tss-react";
-import z from "zod";
-import { api } from "~/utils/api";
+import { MultiStep } from "~/components/MultiStep";
 import { useAppForm } from "~/utils/form/context";
 import {
 	DeclarationAuditForm,
 	DeclarationGeneralForm,
 } from "~/utils/form/declaration/form";
-import {
-	declarationAudit,
-	declarationAuditDefaultValues,
-	declarationGeneral,
-	declarationGeneralDefaultValues,
-} from "~/utils/form/declaration/schema";
+import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
 
-export default function Home() {
+type Steps<T> = {
+	slug: T;
+	title: string;
+};
+
+export default function DashboardMultiStep() {
 	const { classes } = useStyles();
 
-	const [generalFormDefaultValues, setGeneralFormDefaultValues] = useState(
-		declarationGeneralDefaultValues,
-	);
-	const [auditFormDefaultValues, setAuditFormDefaultValues] = useState(
-		declarationAuditDefaultValues,
-	);
-
-	const { mutateAsync: getInfoFromAra, isPending } =
-		api.declaration.getInfoFromAra.useMutation({
-			onSuccess: (data) => {
-				setGeneralFormDefaultValues({ ...data.declaration });
-				setAuditFormDefaultValues({ isAchieved: true, ...data.audit });
-			},
-			onError: (error) => console.error("error", error),
-		});
-
-	const araForm = useAppForm({
-		defaultValues: { id: "" },
-		validators: {
-			onSubmit: z.object({
-				id: z.string().min(1, "L'identifiant ARA est requis"),
-			}),
-		},
-		onSubmit: async ({ value }) => getInfoFromAra(value),
-	});
-
-	const declarationGeneralForm = useAppForm({
-		defaultValues: generalFormDefaultValues,
-		validators: { onSubmit: declarationGeneral },
-		onSubmit: async ({ value }) => {
-			console.log("Submitted values:", value);
+	const form = useAppForm({
+		...declarationMultiStepFormOptions,
+		onSubmit: async ({ value, formApi }) => {
+			if (value.section === "general") {
+				formApi.setFieldValue("section", "audit");
+			} else {
+				alert(JSON.stringify(value, null, 2));
+			}
 		},
 	});
 
-	const declarationAuditForm = useAppForm({
-		defaultValues: auditFormDefaultValues,
-		validators: { onSubmit: declarationAudit },
-		onSubmit: async ({ value }) => {
-			console.log("Submitted values:", value);
-		},
-	});
+	const section = useStore(form.store, (state) => state.values.section);
+
+	const steps: Steps<typeof section>[] = [
+		{ slug: "general", title: "Déclaration d’accessibilité existante" },
+		{ slug: "audit", title: "Audit existant" },
+	];
 
 	return (
 		<div className={classes.main}>
-			<form
-				id="ara-form"
-				className={fr.cx("fr-mb-6v")}
-				onSubmit={(e) => {
-					e.preventDefault();
-					araForm.handleSubmit();
-				}}
-			>
-				<araForm.AppForm>
-					<h2>Test Ara Informations</h2>
-					<araForm.AppField
-						name="id"
-						children={(field) => <field.TextField label="Identifiant ARA" />}
-					/>
-					<araForm.SubscribeButton
-						label={isPending ? "Chargement..." : "Importer depuis ARA"}
-					/>
-				</araForm.AppForm>
-			</form>
-			<form
-				id="declaration-form"
-				className={fr.cx("fr-pb-6w")}
-				onSubmit={(e) => {
-					e.preventDefault();
-					declarationGeneralForm.handleSubmit();
-				}}
-			>
-				<declarationGeneralForm.AppForm>
+			<h2>Votre déclaration d'accessibilité</h2>
+			<MultiStep steps={steps} currentStep={section}>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						form.handleSubmit();
+					}}
+				>
 					<div className={classes.formWrapper}>
-						<h2 className={fr.cx("fr-mb-0")}>
-							Déclaration - Section Informations Générales
-						</h2>
-						<DeclarationGeneralForm form={declarationGeneralForm} />
-						<declarationGeneralForm.SubscribeButton label="Valider la déclaration" />
+						{section === "general" && <DeclarationGeneralForm form={form} />}
+						{section === "audit" && <DeclarationAuditForm form={form} />}
+						<form.AppForm>
+							<form.SubscribeButton
+								label={section === "general" ? "Suivant" : "Soumettre"}
+							/>
+						</form.AppForm>
 					</div>
-				</declarationGeneralForm.AppForm>
-			</form>
-			<form
-				className={fr.cx("fr-pb-12w")}
-				onSubmit={(e) => {
-					e.preventDefault();
-					declarationAuditForm.handleSubmit();
-				}}
-			>
-				<declarationAuditForm.AppForm>
-					<div className={classes.formWrapper}>
-						<h2 className={fr.cx("fr-mb-0")}>Déclaration - Section Audit</h2>
-						<DeclarationAuditForm form={declarationAuditForm} />
-						<declarationAuditForm.SubscribeButton label="Valider l'audit" />
-					</div>
-				</declarationAuditForm.AppForm>
-			</form>
+				</form>
+			</MultiStep>
 		</div>
 	);
 }
 
-const useStyles = tss.withName(Home.name).create({
+const useStyles = tss.withName(DashboardMultiStep.name).create({
 	main: {
 		marginTop: fr.spacing("6v"),
 	},
@@ -128,5 +70,6 @@ const useStyles = tss.withName(Home.name).create({
 		gap: fr.spacing("3w"),
 		backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		padding: fr.spacing("4w"),
+		marginBottom: fr.spacing("6w"),
 	},
 });
