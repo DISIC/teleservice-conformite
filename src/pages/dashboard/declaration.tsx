@@ -47,7 +47,9 @@ export default function DashboardMultiStep() {
 				>
 					<div className={classes.formWrapper}>
 						{section === "general" && <DeclarationGeneralForm form={form} />}
-						{section === "audit" && <DeclarationAuditForm form={form} />}
+						{section === "audit" && (
+							<DeclarationAuditForm form={form} isAchievedCondition={false} />
+						)}
 						<form.AppForm>
 							<form.SubscribeButton
 								label={section === "general" ? "Suivant" : "Soumettre"}

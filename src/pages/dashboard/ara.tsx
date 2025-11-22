@@ -91,7 +91,7 @@ export default function Home() {
 			>
 				<div className={classes.formWrapper}>
 					<h2 className={fr.cx("fr-mb-0")}>Déclaration - Section Audit</h2>
-					<DeclarationAuditForm form={auditForm} />
+					<DeclarationAuditForm form={auditForm} isAchievedCondition />
 					<auditForm.AppForm>
 						<auditForm.SubscribeButton label="Valider l'audit" />
 					</auditForm.AppForm>

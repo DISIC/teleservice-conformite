@@ -41,7 +41,6 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 
 export const declarationAudit = z.object({
 	audit: z.object({
-		isAchieved: z.boolean(),
 		url: z
 			.url({ error: "L'URL n'est pas valide" })
 			.min(1, { message: "L'URL est requise" }),
@@ -77,7 +76,6 @@ export type ZDeclarationAudit = z.infer<typeof declarationAudit>;
 
 export const declarationAuditDefaultValues: ZDeclarationAudit = {
 	audit: {
-		isAchieved: false,
 		url: "",
 		date: "",
 		report: undefined,
