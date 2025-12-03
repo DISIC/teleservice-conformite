@@ -2,27 +2,32 @@ import type { CollectionConfig } from "payload";
 
 export const Entities: CollectionConfig = {
   slug: "entities",
+  admin: {
+    useAsTitle: "name",
+  },
   labels: {
     singular: {
-      fr: "Entité",
+      fr: "Administration",
     },
     plural: {
-      fr: "Entités",
+      fr: "Administrations",
     },
   },
   fields: [
     {
       name: "name",
       type: "text",
-      label: { fr: "Nom" },
-      required: true,
+      label: { fr: "Nom de l'administration" },
     },
     {
       name: "siret",
       type: "number",
-      required: true,
       label: { fr: "SIRET" },
-      unique: true,
+    },
+    {
+      name: "field",
+      type: "text",
+      label: { fr: "Secteur d'activité de l'administration" },
     },
   ],
 };
