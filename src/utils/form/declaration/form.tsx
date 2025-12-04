@@ -8,6 +8,7 @@ import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import { appKindOptions } from "~/payload/collections/Declaration";
 import { withForm } from "../context";
 import { declarationMultiStepFormOptions } from "./schema";
+import { read } from "node:fs";
 
 const envKindOptions = [
 	{ label: "Mobile", value: "mobile" },
@@ -27,31 +28,43 @@ const envMobileOsOptions = [
 
 export const DeclarationGeneralForm = withForm({
 	...declarationMultiStepFormOptions,
-	render: function Render({ form }) {
+	props: { readOnly: false },
+	render: function Render({ form, readOnly }) {
 		const { classes, cx } = useStyles();
 
 		return (
 			<div className={cx(classes.formWrapper)}>
 				<form.AppField name="general.organisation">
-					{(field) => <field.TextField label="Nom de l'organisation" />}
+					{(field) => (
+						<field.TextField label="Administration" readOnly={readOnly} />
+					)}
 				</form.AppField>
 				<form.AppField name="general.kind">
 					{(field) => (
 						<field.SelectField
-							label="Type de service numérique"
+							label="Type de produit numérique"
 							options={[...appKindOptions]}
+							readOnly={readOnly}
 						/>
 					)}
 				</form.AppField>
 				<form.AppField name="general.name">
-					{(field) => <field.TextField label="Nom du service numérique" />}
+					{(field) => (
+						<field.TextField
+							label="Nom du service numérique"
+							readOnly={readOnly}
+						/>
+					)}
 				</form.AppField>
 				<form.AppField name="general.url">
-					{(field) => <field.TextField label="URL du service numérique" />}
+					{(field) => <field.TextField label="URL" readOnly={readOnly} />}
 				</form.AppField>
 				<form.AppField name="general.domain">
 					{(field) => (
-						<field.TextField label="Secteur d'activité de l'entité" />
+						<field.TextField
+							label="Secteur d'activité de l'entité"
+							readOnly={readOnly}
+						/>
 					)}
 				</form.AppField>
 			</div>
@@ -63,8 +76,9 @@ export const DeclarationAuditForm = withForm({
 	...declarationMultiStepFormOptions,
 	props: {
 		isAchievedCondition: false,
+		readOnly: false,
 	},
-	render: function Render({ form, isAchievedCondition }) {
+	render: function Render({ form, isAchievedCondition, readOnly }) {
 		const { classes, cx } = useStyles();
 
 		const [isAchieved, setIsAchieved] = useState(false);
@@ -89,13 +103,16 @@ export const DeclarationAuditForm = withForm({
 				{(!isAchievedCondition || (isAchievedCondition && isAchieved)) && (
 					<>
 						<form.AppField name="audit.url">
-							{(field) => <field.TextField label="Url de l'audit" />}
+							{(field) => (
+								<field.TextField label="Url de l'audit" readOnly={readOnly} />
+							)}
 						</form.AppField>
 						<form.AppField name="audit.rgaa_version">
 							{(field) => (
 								<field.RadioField
 									label="Version du RGAA utilisée"
 									options={[...rgaaVersionOptions]}
+									readOnly={readOnly}
 								/>
 							)}
 						</form.AppField>
@@ -106,18 +123,25 @@ export const DeclarationAuditForm = withForm({
 										label="Date de l'audit"
 										kind="date"
 										max={new Date().toISOString().split("T")[0]}
+										readOnly={readOnly}
 									/>
 								)}
 							</form.AppField>
 							<form.AppField name="audit.rate">
 								{(field) => (
-									<field.NumberField label="Taux de conformité (%)" />
+									<field.NumberField
+										label="Taux de conformité (%)"
+										readOnly={readOnly}
+									/>
 								)}
 							</form.AppField>
 						</div>
 						<form.AppField name="audit.realisedBy">
 							{(field) => (
-								<field.TextField label="Réalisé par l'organisation" />
+								<field.TextField
+									label="Réalisé par l'organisation"
+									readOnly={readOnly}
+								/>
 							)}
 						</form.AppField>
 						<div className={fr.cx("fr-accordions-group")}>
@@ -139,6 +163,7 @@ export const DeclarationAuditForm = withForm({
 															<subField.TextField
 																label={`Page ${index + 1} - Label`}
 																className={fr.cx("fr-mb-0")}
+																readOnly={readOnly}
 															/>
 														)}
 													</form.AppField>
@@ -146,25 +171,30 @@ export const DeclarationAuditForm = withForm({
 														{(subField) => (
 															<subField.TextField
 																label={`Page ${index + 1} - URL`}
+																readOnly={readOnly}
 															/>
 														)}
 													</form.AppField>
 												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer la page"
-												/>
+												{!readOnly && (
+													<Button
+														type="button"
+														priority="secondary"
+														iconId="fr-icon-delete-bin-line"
+														onClick={() => field.removeValue(index)}
+														title="Supprimer la page"
+													/>
+												)}
 											</div>
 										))}
-										<Button
-											type="button"
-											onClick={() => field.pushValue({ url: "", label: "" })}
-										>
-											Ajouter une page
-										</Button>
+										{!readOnly && (
+											<Button
+												type="button"
+												onClick={() => field.pushValue({ url: "", label: "" })}
+											>
+												Ajouter une page
+											</Button>
+										)}
 									</Accordion>
 								)}
 							</form.AppField>
@@ -189,6 +219,7 @@ export const DeclarationAuditForm = withForm({
 																label={`Environnement ${index + 1} - Type`}
 																options={envKindOptions}
 																className={fr.cx("fr-mb-0")}
+																readOnly={readOnly}
 															/>
 														)}
 													</form.AppField>
@@ -210,27 +241,32 @@ export const DeclarationAuditForm = withForm({
 																				? envMobileOsOptions
 																				: envDesktopOsOptions
 																		}
+																		readOnly={readOnly}
 																	/>
 																)}
 															</form.AppField>
 														)}
 													</form.Subscribe>
 												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer l'environnement de test"
-												/>
+												{!readOnly && (
+													<Button
+														type="button"
+														priority="secondary"
+														iconId="fr-icon-delete-bin-line"
+														onClick={() => field.removeValue(index)}
+														title="Supprimer l'environnement de test"
+													/>
+												)}
 											</div>
 										))}
-										<Button
-											type="button"
-											onClick={() => field.pushValue({ kind: "", os: "" })}
-										>
-											Ajouter un environnement de test
-										</Button>
+										{!readOnly && (
+											<Button
+												type="button"
+												onClick={() => field.pushValue({ kind: "", os: "" })}
+											>
+												Ajouter un environnement de test
+											</Button>
+										)}
 									</Accordion>
 								)}
 							</form.AppField>
@@ -251,22 +287,27 @@ export const DeclarationAuditForm = withForm({
 														{(subField) => (
 															<subField.TextField
 																label={`Technologie ${index + 1}`}
+																readOnly={readOnly}
 															/>
 														)}
 													</form.AppField>
 												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer la technologie"
-												/>
+												{!readOnly && (
+													<Button
+														type="button"
+														priority="secondary"
+														iconId="fr-icon-delete-bin-line"
+														onClick={() => field.removeValue(index)}
+														title="Supprimer la technologie"
+													/>
+												)}
 											</div>
 										))}
-										<Button type="button" onClick={() => field.pushValue("")}>
-											Ajouter une technologie
-										</Button>
+										{!readOnly && (
+											<Button type="button" onClick={() => field.pushValue("")}>
+												Ajouter une technologie
+											</Button>
+										)}
 									</Accordion>
 								)}
 							</form.AppField>
@@ -287,22 +328,27 @@ export const DeclarationAuditForm = withForm({
 														{(subField) => (
 															<subField.TextField
 																label={`Outil ${index + 1}`}
+																readOnly={readOnly}
 															/>
 														)}
 													</form.AppField>
 												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer l'outil"
-												/>
+												{!readOnly && (
+													<Button
+														type="button"
+														priority="secondary"
+														iconId="fr-icon-delete-bin-line"
+														onClick={() => field.removeValue(index)}
+														title="Supprimer l'outil"
+													/>
+												)}
 											</div>
 										))}
-										<Button type="button" onClick={() => field.pushValue("")}>
-											Ajouter un outil
-										</Button>
+										{!readOnly && (
+											<Button type="button" onClick={() => field.pushValue("")}>
+												Ajouter un outil
+											</Button>
+										)}
 									</Accordion>
 								)}
 							</form.AppField>

@@ -7,6 +7,7 @@ interface SelectFieldProps extends DefaultFieldProps {
 		label: string;
 		value: string;
 	}>;
+	readOnly?: boolean;
 }
 
 export function SelectField({
@@ -14,10 +15,11 @@ export function SelectField({
 	options,
 	disabled,
 	className,
+	readOnly = false,
 }: SelectFieldProps) {
 	const field = useFieldContext<string>();
 
-	return (
+	return !readOnly ? (
 		<Select
 			label={label}
 			nativeSelectProps={{
@@ -33,5 +35,11 @@ export function SelectField({
 			}
 			className={className}
 		/>
+	) : (
+		<div>
+			<p>
+				<strong>{label}</strong>: {field.state.value}
+			</p>
+		</div>
 	);
 }
