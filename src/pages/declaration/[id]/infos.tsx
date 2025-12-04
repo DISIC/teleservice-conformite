@@ -76,32 +76,39 @@ export default function GeneralInformationsPage() {
 			<div
 				style={{
 					display: "flex",
-					flexDirection: "row",
-					justifyContent: "space-between",
+					flexDirection: "column",
 				}}
 			>
-				<h2 style={{ fontSize: "16px", color: "grey" }}>
-					Verifiez les informations et modifiez-les si necessaire
-				</h2>
-				<Button priority="secondary" onClick={onEditInfos}>
-					{!editMode ? "Modifier" : "Annuler"}
-				</Button>
-			</div>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-					form.handleSubmit();
-				}}
-			>
-				<div className={classes.formWrapper}>
-					<DeclarationGeneralForm form={form} readOnly={!editMode} />
-					{editMode && (
-						<form.AppForm>
-							<form.SubscribeButton label={"Valider"} />
-						</form.AppForm>
-					)}
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "space-between",
+					}}
+				>
+					<h2 style={{ fontSize: "16px", color: "grey" }}>
+						Verifiez les informations et modifiez-les si necessaire
+					</h2>
+					<Button priority="secondary" onClick={onEditInfos}>
+						{!editMode ? "Modifier" : "Annuler"}
+					</Button>
 				</div>
-			</form>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						form.handleSubmit();
+					}}
+				>
+					<div className={classes.formWrapper}>
+						<DeclarationGeneralForm form={form} readOnly={!editMode} />
+						{editMode && (
+							<form.AppForm>
+								<form.SubscribeButton label={"Valider"} />
+							</form.AppForm>
+						)}
+					</div>
+				</form>
+			</div>
 		</section>
 	);
 }

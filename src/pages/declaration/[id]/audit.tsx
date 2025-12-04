@@ -28,13 +28,19 @@ export default function AuditPage() {
 		setEditMode((prev) => !prev);
 	};
 
-	// declarationMultiStepFormOptions.defaultValues.general = {
-	// 	organisation: "Nom de l'administration",
-	// 	kind: "website" as const,
-	// 	name: "France Titres - Immatriculation",
-	// 	url: "https://www.francetitre/immatriculation.gouv.fr",
-	// 	domain: "agriculture",
-	// };
+	declarationMultiStepFormOptions.defaultValues.audit = {
+		url: "",
+		date: "",
+		report: undefined,
+		matrix: undefined,
+		realisedBy: "",
+		rgaa_version: "rgaa_4",
+		rate: 0,
+		pages: [{ label: "", url: "" }],
+		technologies: [""],
+		testEnvironments: [{ kind: "", os: "" }],
+		tools: [""],
+	};
 
 	const form = useAppForm({
 		...declarationMultiStepFormOptions,
@@ -84,25 +90,32 @@ export default function AuditPage() {
 					{!editMode ? "Modifier" : "Annuler"}
 				</Button>
 			</div>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-					form.handleSubmit();
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
 				}}
 			>
-				<div className={classes.formWrapper}>
-					<DeclarationAuditForm
-						form={form}
-						readOnly={!editMode}
-						isAchievedCondition={false}
-					/>
-					{editMode && (
-						<form.AppForm>
-							<form.SubscribeButton label={"Valider"} />
-						</form.AppForm>
-					)}
-				</div>
-			</form>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						form.handleSubmit();
+					}}
+				>
+					<div className={classes.formWrapper}>
+						<DeclarationAuditForm
+							form={form}
+							readOnly={!editMode}
+							isAchievedCondition={false}
+						/>
+						{editMode && (
+							<form.AppForm>
+								<form.SubscribeButton label={"Valider"} />
+							</form.AppForm>
+						)}
+					</div>
+				</form>
+			</div>
 		</section>
 	);
 }
