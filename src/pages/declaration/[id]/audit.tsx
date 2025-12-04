@@ -115,7 +115,7 @@ const useStyles = tss.withName(AuditPage.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
-		backgroundColor: fr.colors.decisions.background.default.grey.hover,
+		// backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
