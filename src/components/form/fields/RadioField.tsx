@@ -7,12 +7,13 @@ interface CheckboxFieldProps extends DefaultFieldProps {
 		label: string;
 		value: string;
 	}>;
+	readOnly?: boolean;
 }
 
-export function RadioField({ label, options }: CheckboxFieldProps) {
+export function RadioField({ label, options, readOnly }: CheckboxFieldProps) {
 	const field = useFieldContext<string>();
 
-	return (
+	return !readOnly ? (
 		<RadioButtons
 			legend={label}
 			name={field.name}
@@ -30,5 +31,11 @@ export function RadioField({ label, options }: CheckboxFieldProps) {
 				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
 			}
 		/>
+	) : (
+		<div>
+			<p>
+				<strong>{label}</strong>: {field.state.value}
+			</p>
+		</div>
 	);
 }

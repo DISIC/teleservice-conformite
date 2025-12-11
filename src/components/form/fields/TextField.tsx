@@ -7,13 +7,14 @@ interface TextFieldProps extends DefaultFieldProps {
 	kind?: Exclude<HTMLInputTypeAttribute, "text" | "date">;
 	min?: string;
 	max?: string;
+	readOnly?: boolean;
 }
 
 export function TextField(props: TextFieldProps) {
-	const { label, disabled, className, kind } = props;
+	const { label, disabled, className, kind, readOnly = false } = props;
 	const field = useFieldContext<string>();
 
-	return (
+	return !readOnly ? (
 		<Input
 			label={label}
 			nativeInputProps={{
@@ -31,5 +32,11 @@ export function TextField(props: TextFieldProps) {
 			}
 			className={className}
 		/>
+	) : (
+		<div>
+			<p>
+				<strong>{label}</strong>: {field.state.value}
+			</p>
+		</div>
 	);
 }

@@ -1,5 +1,4 @@
 import type { CollectionConfig } from "payload";
-import { getCalcRateFromTwoCriterion } from "../hooks";
 
 export const rgaaVersionOptions = [
 	{
@@ -14,9 +13,6 @@ export const rgaaVersionOptions = [
 
 export const Audits: CollectionConfig = {
 	slug: "audits",
-	admin: {
-		defaultColumns: ["id", "date", "rate", "declaration"],
-	},
 	labels: {
 		singular: {
 			fr: "Audit",
@@ -27,19 +23,9 @@ export const Audits: CollectionConfig = {
 	},
 	fields: [
 		{
-			name: "declaration",
-			type: "relationship",
-			relationTo: "declarations",
-			required: true,
-			admin: {
-				position: "sidebar",
-			},
-		},
-		{
 			name: "date",
 			type: "date",
-			label: { fr: "Date de l'audit" },
-			required: true,
+			label: { fr: "Date de realisation de l'audit" },
 			admin: {
 				position: "sidebar",
 				date: {
@@ -52,38 +38,81 @@ export const Audits: CollectionConfig = {
 			type: "select",
 			label: { fr: "Version RGAA" },
 			options: [...rgaaVersionOptions],
-			required: true,
 		},
 		{
 			name: "conductedBy",
 			type: "text",
-			label: { fr: "Réalisé par" },
-			required: true,
-		},
-		{
-			type: "row",
-			fields: [
-				{
-					name: "compliant_criterion",
-					type: "number",
-					label: { fr: "Critères conformes" },
-					required: true,
-					min: 0,
-				},
-				{
-					name: "non_compliant_criterion",
-					type: "number",
-					label: { fr: "Critères non conformes" },
-					required: true,
-					min: 0,
-				},
-			],
+			label: { fr: "Entite ou personne ayant realise l'audit" },
 		},
 		{
 			name: "rate",
 			type: "number",
 			label: { fr: "Taux de conformité" },
-			required: true,
+		},
+		{
+			name: "pagesAudited",
+			type: "array",
+			label: { fr: "Pages ayant fait l’objet de vérification" },
+			fields: [
+				{
+					name: "pageName",
+					type: "text",
+					label: { fr: "Nom de la page" },
+				},
+				{
+					name: "pageURL",
+					type: "text",
+					label: { fr: "URL de la page" },
+				},
+			],
+		},
+		{
+			name: "nonCompliances",
+			type: "array",
+			label: { fr: "Éléments non conformes" },
+			fields: [
+				{
+					name: "nonComplianceDescription",
+					type: "text",
+					label: { fr: "Description de l'élément non conforme" },
+				},
+			],
+		},
+		{
+			name: "exemption",
+			type: "array",
+			label: { fr: "Dérogation pour charge disproportionnée" },
+			fields: [
+				{
+					name: "exemptionDescription",
+					type: "text",
+					label: { fr: "Description de la justification de la dérogation" },
+				},
+			],
+		},
+		{
+			name: "nonDeclaredContent",
+			type: "array",
+			label: { fr: "Contenus non soumis à la déclaration" },
+			fields: [
+				{
+					name: "nonDeclaredContentDescription",
+					type: "text",
+					label: { fr: "Description du contenu non déclaré" },
+				},
+			],
+		},
+		{
+			name: "auditReport",
+			type: "upload",
+			label: { fr: "Rapport d'audit" },
+			relationTo: "media",
+		},
+		{
+			name: "auditGrid",
+			type: "upload",
+			label: { fr: "Grille d'audit" },
+			relationTo: "media",
 		},
 	],
 };

@@ -33,23 +33,7 @@ export const Declarations: CollectionConfig = {
 		{
 			name: "name",
 			type: "text",
-			label: { fr: "Nom" },
-			required: true,
-		},
-		{
-			name: "app_kind",
-			type: "select",
-			label: { fr: "Type d'application" },
-			required: true,
-			options: [...appKindOptions],
-		},
-		{
-			name: "url",
-			type: "text",
-			label: { fr: "URL" },
-			admin: {
-				condition: (_, siblingData) => siblingData?.app_kind === "website",
-			},
+			label: { fr: "Nom de la déclaration" },
 		},
 		{
 			name: "status",
@@ -57,32 +41,20 @@ export const Declarations: CollectionConfig = {
 			label: { fr: "Statut" },
 			options: [
 				{
-					label: "En attente",
-					value: "pending",
+					label: "Publié",
+					value: "published",
 				},
 
 				{
-					label: "Terminé",
-					value: "completed",
+					label: "Non publié",
+					value: "unpublished",
 				},
 			],
-			required: true,
-		},
-		{
-			name: "verified",
-			type: "checkbox",
-			label: { fr: "Vérifié" },
-			defaultValue: false,
-			admin: {
-				readOnly: true,
-				position: "sidebar",
-			},
 		},
 		{
 			name: "published_at",
 			type: "date",
 			label: { fr: "Date de publication" },
-			required: true,
 			admin: {
 				position: "sidebar",
 				date: {
@@ -98,33 +70,24 @@ export const Declarations: CollectionConfig = {
 			admin: {
 				position: "sidebar",
 			},
-			required: true,
 		},
 		{
-			name: "domain",
+			name: "service",
 			type: "relationship",
-			relationTo: "domains",
-			label: { fr: "Domaine" },
-			admin: {
-				position: "sidebar",
-			},
-			required: true,
+			relationTo: "services",
+			label: { fr: "Service" },
 		},
 		{
-			name: "access_right",
+			name: "audit",
 			type: "relationship",
-			relationTo: "access-rights",
-			label: { fr: "Droit d'accès" },
-			admin: {
-				position: "sidebar",
-			},
+			relationTo: "audits",
+			label: { fr: "Audit associé" },
 		},
 		{
-			name: "audits",
-			type: "join",
-			collection: "audits",
-			on: "declaration",
-			label: { fr: "Audits" },
-		},
+			name: "actionPlan",
+			type: "relationship",
+			relationTo: "action-plans",
+			label: { fr: "Plan d'actions" },
+		}
 	],
 };
