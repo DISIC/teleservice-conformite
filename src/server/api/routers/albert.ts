@@ -94,10 +94,10 @@ RÈGLES POUR L'ENTITÉ RESPONSABLE :
 RÈGLES POUR LES TECHNOLOGIES :
 1. Cherche une section avec les mots-clés : "Technologies utilisées", "Technologies", "Technologie utilisée", "Technologies employées", "Technologies mises en œuvre"
 2. Extrait la liste des technologies mentionnées (souvent présentées en liste ou séparées par des espaces/virgules)
-3. Technologies courantes à rechercher : HTML5, HTML, CSS, JavaScript, SVG, ARIA, PHP, React, Vue.js, Angular, Bootstrap, jQuery, etc.
+3. Technologies courantes à rechercher : HTML5, HTML, CSS, JavaScript, SVG, PHP, React, Vue.js, Angular, Bootstrap, jQuery, etc.
 4. Exemples de formats trouvés :
-   - "Technologies utilisées pour la réalisation du site HTML5 SVG ARIA CSS JavaScript"
-   - "Technologies : HTML5, CSS3, JavaScript, ARIA"
+   - "Technologies utilisées pour la réalisation du site HTML5 SVG CSS JavaScript"
+   - "Technologies : HTML5, CSS3, JavaScript"
    - Liste à puces avec chaque technologie
 5. Retourne chaque technologie comme un élément séparé dans le tableau
 6. Si aucune technologie n'est trouvée → technologies = []
