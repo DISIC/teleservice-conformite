@@ -9,7 +9,71 @@ interface DemarchesProps {
 
 export default function Demarches({ declaration }: DemarchesProps) {
 	return (
-		<section id="demarches-tab">
+		<section
+			id="demarches-tab"
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				gap: "2rem",
+			}}
+		>
+			<div
+				style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}
+			>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						gap: "10px",
+						backgroundColor: "#3a3a68",
+						paddingInline: "30px",
+						paddingBlock: "40px",
+						borderRadius: "5px",
+						justifyContent: "space-between",
+					}}
+				>
+					<p
+						style={{
+							margin: "0px",
+							fontWeight: 400,
+							fontFamily: "Marianne",
+							fontSize: "16px",
+							lineHeight: "24px",
+						}}
+					>
+						Taux de conformite
+					</p>
+					<p
+						style={{
+							margin: "0px",
+							fontWeight: 400,
+							fontFamily: "Marianne",
+							fontSize: "16px",
+							lineHeight: "24px",
+						}}
+					>
+						<strong>73%</strong>
+					</p>
+				</div>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						gap: "10px",
+						backgroundColor: "#3a3a68",
+						padding: "10px",
+						borderRadius: "5px",
+						paddingInline: "30px",
+						paddingBlock: "40px",
+						fontWeight: 400,
+						fontFamily: "Marianne",
+						fontSize: "16px",
+						lineHeight: "24px",
+					}}
+				>
+					Derniere mise a jour: <strong>XX/XX/2025</strong>
+				</div>
+			</div>
 			<div
 				style={{
 					display: "flex",
@@ -19,6 +83,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				}}
 			>
 				<Tile
+					desc="Informations à propos du service et l’administration à laquelle il est lié"
 					title="Informations générales"
 					linkProps={{
 						href: `/declaration/${declaration?.id ?? 1}/infos`,
@@ -32,7 +97,8 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					}
 				/>
 				<Tile
-					title="Plans d'actions"
+					title="Schéma et plans d'actions"
+					desc="État des lieux et actions prévues pour améliorer l'accessibilité"
 					linkProps={{
 						href: `/declaration/${declaration?.id ?? 1}/plans-actions`,
 					}}
@@ -45,7 +111,8 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					}
 				/>
 				<Tile
-					title="Resultat de l'audit"
+					title="Résultat de l’audit"
+					desc="Taux de conformité et détails de l'audit"
 					linkProps={{
 						href: `/declaration/${declaration?.id ?? 1}/audit`,
 					}}
@@ -59,6 +126,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				/>
 				<Tile
 					title="Contact"
+					desc="Moyen de contact pour pouvoir accéder aux éventuels contenus inaccessibles"
 					linkProps={{
 						href: `/declaration/${declaration?.id ?? 1}/contact`,
 					}}

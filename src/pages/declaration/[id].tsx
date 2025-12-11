@@ -35,10 +35,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 		<section id="declaration-page">
 			<section id="breadcrumbs">
 				<Breadcrumb
-					segments={[
-						{ label: "Accueil", linkProps: { href: "/" } },
-						{ label: "%Nom du service", linkProps: { href: "/" } },
-					]}
+					segments={[{ label: "Accueil", linkProps: { href: "/" } }]}
 					currentPageLabel={declaration?.name ?? "Nom de la declaration"}
 				/>
 			</section>
