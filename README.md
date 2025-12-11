@@ -31,10 +31,16 @@ Copy the example environment file and update it as needed:
 cp .env.example .env
 ```
 
-3. **Start the development server:**
+3. **Start the database:**
+
+```bash
+docker compose up -d
+```
+
+4. **Start the development server:**
 
 ```bash
 yarn dev
 ```
 
-4. Visit [http://localhost:3000](http://localhost:3000) to view the app.
+5. Visit [http://localhost:3000](http://localhost:3000) to view the app.
