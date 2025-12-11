@@ -1,18 +1,18 @@
 import type { CollectionConfig } from "payload";
 
 export const appKindOptions = [
-	{
-		label: "Site web",
-		value: "website",
-	},
-	{
-		label: "Application mobile",
-		value: "mobile_app",
-	},
-	{
-		label: "Autre",
-		value: "other",
-	},
+  {
+    label: "Site web",
+    value: "website",
+  },
+  {
+    label: "Application mobile",
+    value: "mobile_app",
+  },
+  {
+    label: "Autre",
+    value: "other",
+  },
 ] as const;
 
 export const Declarations: CollectionConfig = {
@@ -72,10 +72,33 @@ export const Declarations: CollectionConfig = {
 			},
 		},
 		{
-			name: "service",
+			name: "entity",
 			type: "relationship",
-			relationTo: "services",
-			label: { fr: "Service" },
+			relationTo: "entities",
+			label: { fr: "Administration" },
+		},
+		{
+			name: "app_kind",
+			type: "select",
+			label: { fr: "Type de produit numérique" },
+			options: [...appKindOptions],
+		},
+		{
+			name: "url",
+			type: "text",
+			label: { fr: "URL du service numérique" },
+		},
+		{
+			name: "technologies",
+			type: "array",
+			label: { fr: "Technologies utilisées" },
+			fields: [
+				{
+					name: "technology_name",
+					type: "text",
+					label: { fr: "Nom de la technologie" },
+				},
+			],
 		},
 		{
 			name: "audit",
@@ -88,6 +111,6 @@ export const Declarations: CollectionConfig = {
 			type: "relationship",
 			relationTo: "action-plans",
 			label: { fr: "Plan d'actions" },
-		}
+		},
 	],
 };

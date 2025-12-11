@@ -16,7 +16,6 @@ import { Entities } from "./collections/Entity";
 import { Sessions } from "./collections/Session";
 import { Users } from "./collections/User";
 import { Verifications } from "./collections/Verification";
-import { Services } from "./collections/Service";
 import { Media } from "./collections/Media";
 import { ActionPlans } from "./collections/ActionPlans";
 import { Contacts } from "./collections/Contact";
@@ -38,7 +37,6 @@ export default buildConfig({
 		Audits,
 		Declarations,
 		AccessRights,
-		Services,
 		Media,
 		ActionPlans,
 		Contacts,
