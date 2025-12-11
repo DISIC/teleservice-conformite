@@ -40,7 +40,7 @@ export default function TestAlbert() {
         <Input
           label="URL à analyser:"
           nativeInputProps={{
-            id: "url",
+            id: "pageUrl",
             type: "url",
             value: url,
             onChange: (e) => setUrl(e.target.value),

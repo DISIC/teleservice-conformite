@@ -5,8 +5,9 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 interface AlbertResponse {
   taux: string | null;
   publishedAt: string | null;
-  auditedPages: string[];
   responsibleEntity: string | null;
+  auditedPages: string[];
+  technologies: string[];
 }
 
 async function downloadHtmlWithPlaywright(url: string): Promise<string> {
@@ -53,7 +54,7 @@ async function extractAccessibilityRateWithAlbert(
 
   const relevantContent = `${footerContent}\n\n${mainContent.substring(0, 15000)}`;
 
-  const prompt = `Analyse le contenu HTML et extrait le taux d'accessibilité numérique, la date de publication, la liste des pages auditées ET l'entité responsable.
+  const prompt = `Analyse le contenu HTML et extrait le taux d'accessibilité numérique, la date de publication, la liste des pages auditées, l'entité responsable ET les technologies utilisées.
 
 RÈGLES POUR LE TAUX :
 1. Si tu trouves "Accessibilité : totalement conforme" → taux = "100%"
@@ -90,10 +91,22 @@ RÈGLES POUR L'ENTITÉ RESPONSABLE :
    - "L'Agence Nationale de la Cohésion des Territoires s'engage..." → "L'Agence Nationale de la Cohésion des Territoires"
 5. Si non trouvé → responsibleEntity = null
 
+RÈGLES POUR LES TECHNOLOGIES :
+1. Cherche une section avec les mots-clés : "Technologies utilisées", "Technologies", "Technologie utilisée", "Technologies employées", "Technologies mises en œuvre"
+2. Extrait la liste des technologies mentionnées (souvent présentées en liste ou séparées par des espaces/virgules)
+3. Technologies courantes à rechercher : HTML5, HTML, CSS, JavaScript, SVG, ARIA, PHP, React, Vue.js, Angular, Bootstrap, jQuery, etc.
+4. Exemples de formats trouvés :
+   - "Technologies utilisées pour la réalisation du site HTML5 SVG ARIA CSS JavaScript"
+   - "Technologies : HTML5, CSS3, JavaScript, ARIA"
+   - Liste à puces avec chaque technologie
+5. Retourne chaque technologie comme un élément séparé dans le tableau
+6. Si aucune technologie n'est trouvée → technologies = []
+7. Limite à 15 technologies maximum
+
 Exemples de réponses attendues :
-- {"taux": "100%", "publishedAt": "09/10/2024", "auditedPages": ["Accueil - https://site.gouv.fr/"], "responsibleEntity": "Le ministère de la Culture"}
-- {"taux": "83.08%", "publishedAt": "17/11/2025", "auditedPages": [], "responsibleEntity": "La DINUM"}
-- {"taux": null, "publishedAt": null, "auditedPages": [], "responsibleEntity": null} si rien n'est trouvé
+- {"taux": "100%", "publishedAt": "09/10/2024", "auditedPages": ["Accueil - https://site.gouv.fr/"], "responsibleEntity": "Le ministère de la Culture", "technologies": ["HTML5", "CSS", "JavaScript"]}
+- {"taux": "83.08%", "publishedAt": "17/11/2025", "auditedPages": [], "responsibleEntity": "La DINUM", "technologies": ["HTML5", "SVG", "ARIA", "CSS", "JavaScript"]}
+- {"taux": null, "publishedAt": null, "auditedPages": [], "responsibleEntity": null, "technologies": []} si rien n'est trouvé
 
 Réponds UNIQUEMENT avec le JSON, sans texte avant ou après.
 
@@ -133,8 +146,9 @@ function parseAlbertResponse(response: any): AlbertResponse {
     return {
       taux: null,
       publishedAt: null,
-      auditedPages: [],
       responsibleEntity: null,
+      auditedPages: [],
+      technologies: [],
     };
   }
 
@@ -156,18 +170,22 @@ function parseAlbertResponse(response: any): AlbertResponse {
     return {
       taux: result.taux || null,
       publishedAt: result.publishedAt || null,
+      responsibleEntity: result.responsibleEntity || null,
       auditedPages: Array.isArray(result.auditedPages)
         ? result.auditedPages
         : [],
-      responsibleEntity: result.responsibleEntity || null,
+      technologies: Array.isArray(result.technologies)
+        ? result.technologies
+        : [],
     };
   } catch (error) {
     console.error("Error parsing Albert response:", error);
     return {
       taux: null,
       publishedAt: null,
-      auditedPages: [],
       responsibleEntity: null,
+      auditedPages: [],
+      technologies: [],
     };
   }
 }
