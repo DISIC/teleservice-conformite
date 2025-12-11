@@ -48,3 +48,6 @@ yarn-error.log*
 
 # payload
 /src/payload/payload-types.ts
+
+# albert folder (Python project)
+/albert/
