@@ -60,19 +60,6 @@ export default function GeneralInformationsPage() {
 				gap: fr.spacing("6w"),
 			}}
 		>
-			<section id="breadcrumbs">
-				<Breadcrumb
-					segments={[
-						{ label: "Accueil", linkProps: { href: "/" } },
-						{ label: "%Nom du service", linkProps: { href: "/" } },
-						{
-							label: "%Nom de la declaration",
-							linkProps: { href: "/declaration/1" },
-						},
-					]}
-					currentPageLabel="Informations générales"
-				/>
-			</section>
 			<div
 				style={{
 					display: "flex",

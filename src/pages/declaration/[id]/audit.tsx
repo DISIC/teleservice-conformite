@@ -63,19 +63,6 @@ export default function AuditPage() {
 				gap: fr.spacing("6w"),
 			}}
 		>
-			<section id="breadcrumbs">
-				<Breadcrumb
-					segments={[
-						{ label: "Accueil", linkProps: { href: "/" } },
-						{ label: "%Nom du service", linkProps: { href: "/" } },
-						{
-							label: "%Nom de la declaration",
-							linkProps: { href: "/declaration/1" },
-						},
-					]}
-					currentPageLabel="Resultat de l'audit"
-				/>
-			</section>
 			<div
 				style={{
 					display: "flex",
@@ -106,7 +93,7 @@ export default function AuditPage() {
 						<DeclarationAuditForm
 							form={form}
 							readOnly={!editMode}
-							isAchievedCondition={false}
+							isAchieved={true}
 						/>
 						{editMode && (
 							<form.AppForm>
