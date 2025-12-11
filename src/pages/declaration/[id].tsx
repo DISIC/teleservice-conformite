@@ -6,9 +6,11 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import { Tile } from "@codegouvfr/react-dsfr/Tile";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 
 import type { Declaration } from "payload/payload-types";
+import Demarches from "~/components/declaration/Demarches";
+import Membres from "~/components/declaration/Membres";
 
 interface DeclarationPageProps {
 	declaration: Declaration | null;
@@ -19,71 +21,11 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 
 	const TabContent = ({ selectedTabId }: { selectedTabId: string }) => {
 		if (selectedTabId === "demarches") {
-			return (
-				<section id="demarches-tab">
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							gap: "1rem",
-							justifyContent: "center",
-						}}
-					>
-						<Tile
-							title="Informations générales"
-							linkProps={{
-								href: `/declaration/${declaration?.id ?? 1}/infos`,
-							}}
-							enlargeLinkOrButton={true}
-							orientation="horizontal"
-							start={
-								<Badge noIcon severity="new">
-									A verifier
-								</Badge>
-							}
-						/>
-						<Tile
-							title="Plans d'actions"
-							linkProps={{
-								href: `/declaration/${declaration?.id ?? 1}/plans-actions`,
-							}}
-							enlargeLinkOrButton={true}
-							orientation="horizontal"
-							start={
-								<Badge noIcon severity="new">
-									A verifier
-								</Badge>
-							}
-						/>
-						<Tile
-							title="Resultat de l'audit"
-							linkProps={{
-								href: `/declaration/${declaration?.id ?? 1}/audit`,
-							}}
-							enlargeLinkOrButton={true}
-							orientation="horizontal"
-							start={
-								<Badge noIcon severity="new">
-									A verifier
-								</Badge>
-							}
-						/>
-						<Tile
-							title="Contact"
-							linkProps={{
-								href: `/declaration/${declaration?.id ?? 1}/contact`,
-							}}
-							enlargeLinkOrButton={true}
-							orientation="horizontal"
-							start={
-								<Badge noIcon severity="new">
-									A verifier
-								</Badge>
-							}
-						/>
-					</div>
-				</section>
-			);
+			return <Demarches declaration={declaration} />;
+		}
+
+		if (selectedTabId === "members") {
+			return <Membres declaration={declaration} />;
 		}
 
 		return null;
@@ -100,27 +42,57 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 					currentPageLabel={declaration?.name ?? "Nom de la declaration"}
 				/>
 			</section>
-
-			<div
+			<section
+				id="header"
 				style={{
 					display: "flex",
 					flexDirection: "row",
 					alignItems: "center",
-					justifyContent: "flex-start",
-					gap: "10px",
+					justifyContent: "space-between",
 				}}
 			>
-				<h1>{declaration?.name ?? "Nom de la declaration"}</h1>
-				<Badge noIcon={true} small={true} severity="success">
-					{declaration?.status ?? "Publié"}
-				</Badge>
-			</div>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "flex-start",
+						gap: "10px",
+					}}
+				>
+					<h1>{declaration?.name ?? "Nom de la declaration"}</h1>
+					<Badge
+						noIcon={true}
+						small={true}
+						severity={
+							declaration?.status === "published" ? "success" : undefined
+						}
+					>
+						{declaration?.status ?? "Brouillon"}
+					</Badge>
+				</div>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						gap: "1rem",
+					}}
+				>
+					<Button priority="tertiary" iconId="fr-icon-edit-box-fill">
+						Renommer
+					</Button>
+					<Button
+						iconId="fr-icon-checkbox-circle-line"
+						priority="tertiary"
+						title="Supprimer la declaration"
+					/>
+				</div>
+			</section>
 			<Tabs
 				selectedTabId={selectedTabId}
 				tabs={[
 					{ tabId: "demarches", label: "Démarches" },
 					{ tabId: "members", label: "Membres" },
-					{ tabId: "documentation", label: "Documentation" },
 				]}
 				onTabChange={setSelectedTabId}
 			>
