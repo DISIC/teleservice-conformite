@@ -39,6 +39,7 @@ export const Declarations: CollectionConfig = {
 			name: "status",
 			type: "select",
 			label: { fr: "Statut" },
+			defaultValue: "unpublished",
 			options: [
 				{
 					label: "Publié",
