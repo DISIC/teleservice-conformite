@@ -19,6 +19,7 @@ interface MembresProps {
 }
 
 export default function Membres({ declaration }: MembresProps) {
+	console.log("declaration in Membres:", declaration);
 	const [value, setValue] = useState<"reader" | "admin">("reader");
 
 	const StatusBadge = ({ status }: { status: string }) => {
@@ -201,9 +202,9 @@ export default function Membres({ declaration }: MembresProps) {
 					fixed
 					data={[
 						[
-							"Prenom Nom",
-							"prenomnom@gouv.fr",
-							<StatusBadge key="status" status="undefined" />,
+							declaration.created_by?.name,
+							declaration.created_by?.email,
+							<StatusBadge key="status" status="admin" />,
 						],
 					]}
 					headers={[

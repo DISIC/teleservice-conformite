@@ -52,7 +52,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							lineHeight: "24px",
 						}}
 					>
-						<strong>73%</strong>
+						<strong>
+							{declaration?.audit?.rate ? `${declaration.audit.rate}%` : "N/A"}
+						</strong>
 					</p>
 				</div>
 				<div
@@ -71,7 +73,12 @@ export default function Demarches({ declaration }: DemarchesProps) {
 						lineHeight: "24px",
 					}}
 				>
-					Derniere mise a jour: <strong>XX/XX/2025</strong>
+					Derniere mise a jour:{" "}
+					<strong>
+						{declaration?.updatedAt
+							? new Date(declaration.updatedAt).toLocaleString()
+							: "N/A"}
+					</strong>
 				</div>
 			</div>
 			<div
@@ -86,56 +93,57 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					desc="Informations à propos du service et l’administration à laquelle il est lié"
 					title="Informations générales"
 					linkProps={{
-						href: `/declaration/${declaration?.id ?? 1}/infos`,
+						href: `/declaration/${declaration?.id}/infos`,
 					}}
 					enlargeLinkOrButton={true}
 					orientation="horizontal"
-					start={
-						<Badge noIcon severity="new">
-							A verifier
-						</Badge>
-					}
 				/>
 				<Tile
 					title="Schéma et plans d'actions"
 					desc="État des lieux et actions prévues pour améliorer l'accessibilité"
 					linkProps={{
-						href: `/declaration/${declaration?.id ?? 1}/plans-actions`,
+						href: `/declaration/${declaration?.id}/schema`,
 					}}
 					enlargeLinkOrButton={true}
 					orientation="horizontal"
 					start={
-						<Badge noIcon severity="new">
-							A verifier
-						</Badge>
+						declaration?.actionPlan ? null : (
+							<Badge noIcon severity="new">
+								A valider
+							</Badge>
+						)
 					}
 				/>
 				<Tile
 					title="Résultat de l’audit"
 					desc="Taux de conformité et détails de l'audit"
 					linkProps={{
-						href: `/declaration/${declaration?.id ?? 1}/audit`,
+						href: `/declaration/${declaration?.id}/audit`,
 					}}
 					enlargeLinkOrButton={true}
 					orientation="horizontal"
 					start={
-						<Badge noIcon severity="new">
-							A verifier
-						</Badge>
+						declaration?.audit ? null : (
+							<Badge noIcon severity="new">
+								A valider
+							</Badge>
+						)
 					}
 				/>
 				<Tile
 					title="Contact"
 					desc="Moyen de contact pour pouvoir accéder aux éventuels contenus inaccessibles"
 					linkProps={{
-						href: `/declaration/${declaration?.id ?? 1}/contact`,
+						href: `/declaration/${declaration?.id}/contact`,
 					}}
 					enlargeLinkOrButton={true}
 					orientation="horizontal"
 					start={
-						<Badge noIcon severity="new">
-							A verifier
-						</Badge>
+						declaration?.contact ? null : (
+							<Badge noIcon severity="new">
+								A valider
+							</Badge>
+						)
 					}
 				/>
 			</div>

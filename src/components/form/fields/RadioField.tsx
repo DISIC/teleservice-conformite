@@ -5,20 +5,31 @@ import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 interface CheckboxFieldProps extends DefaultFieldProps {
 	options: Array<{
 		label: string;
-		value: string;
+		value: string | boolean;
+		description?: string;
 	}>;
 	readOnly?: boolean;
+	description?: string;
+	onChange?: (value: string | boolean) => void;
 }
 
-export function RadioField({ label, options, readOnly }: CheckboxFieldProps) {
-	const field = useFieldContext<string>();
+export function RadioField({
+	label,
+	description,
+	options,
+	readOnly,
+	onChange,
+}: CheckboxFieldProps) {
+	const field = useFieldContext<string | boolean>();
 
 	return !readOnly ? (
 		<RadioButtons
 			legend={label}
+			hintText={description}
 			name={field.name}
-			options={options.map(({ label, value }) => ({
+			options={options.map(({ label, value, description }) => ({
 				label,
+				hintText: description,
 				nativeInputProps: {
 					checked: field.state.value === value,
 					onChange: () => field.setValue(value),
