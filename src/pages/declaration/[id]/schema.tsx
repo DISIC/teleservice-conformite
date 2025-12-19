@@ -15,6 +15,7 @@ import { useAppForm } from "~/utils/form/context";
 import {
 	DeclarationAuditForm,
 	DeclarationGeneralForm,
+	// DeclarationSchemaForm,
 } from "~/utils/form/declaration/form";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
 
@@ -23,9 +24,7 @@ type Steps<T> = {
 	title: string;
 };
 
-export default function GeneralInformationsPage({
-	declaration,
-}: { declaration?: Declaration }) {
+export default function SchemaPage() {
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
 
@@ -33,12 +32,13 @@ export default function GeneralInformationsPage({
 		setEditMode((prev) => !prev);
 	};
 
-	declarationMultiStepFormOptions.defaultValues.general = {
-		organisation: declaration?.entity?.name,
-		kind: declaration?.app_kind,
-		name: declaration?.name,
-		url: declaration?.url,
-		domain: declaration?.entity?.field,
+	declarationMultiStepFormOptions.defaultValues.schema = {
+		annualSchemaDone: true,
+		currentYearSchemaDone: true,
+		currentSchemaUrl: "https://www.example.com/schema.pdf",
+		currentSchemaFile: new File(["Schema content"], "schema.pdf", {
+			type: "application/pdf",
+		}),
 	};
 
 	const form = useAppForm({
@@ -54,7 +54,7 @@ export default function GeneralInformationsPage({
 
 	return (
 		<section
-			id="general-informations"
+			id="schema"
 			className={classes.main}
 			style={{
 				display: "flex",
@@ -89,7 +89,7 @@ export default function GeneralInformationsPage({
 					}}
 				>
 					<div className={classes.formWrapper}>
-						<DeclarationGeneralForm form={form} readOnly={!editMode} />
+						{/* <SchemaForm form={form} readOnly={!editMode} /> */}
 						{editMode && (
 							<form.AppForm>
 								<form.SubscribeButton label={"Valider"} />
@@ -102,7 +102,7 @@ export default function GeneralInformationsPage({
 	);
 }
 
-const useStyles = tss.withName(GeneralInformationsPage.name).create({
+const useStyles = tss.withName(SchemaPage.name).create({
 	main: {
 		marginTop: fr.spacing("6v"),
 	},
@@ -115,41 +115,3 @@ const useStyles = tss.withName(GeneralInformationsPage.name).create({
 		marginBottom: fr.spacing("6w"),
 	},
 });
-
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.params as Params;
-
-	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			// redirect: { destination: "/" },
-		};
-	}
-
-	const payload = await getPayload({ config });
-
-	try {
-		const declaration = await payload.findByID({
-			collection: "declarations",
-			id: Number.parseInt(id),
-			depth: 3,
-		});
-
-		return {
-			props: {
-				declaration: declaration || null,
-			},
-		};
-	} catch (error) {
-		console.error("Error fetching declaration:", error);
-
-		return {
-			// redirect: { destination: "/" },
-			props: {},
-		};
-	}
-};

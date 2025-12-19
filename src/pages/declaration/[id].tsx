@@ -17,6 +17,7 @@ interface DeclarationPageProps {
 }
 
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {
+	console.log("DeclarationPage declaration:", declaration);
 	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
 
 	const TabContent = ({ selectedTabId }: { selectedTabId: string }) => {
@@ -35,8 +36,10 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 		<section id="declaration-page">
 			<section id="breadcrumbs">
 				<Breadcrumb
-					segments={[{ label: "Accueil", linkProps: { href: "/" } }]}
-					currentPageLabel={declaration?.name ?? "Nom de la declaration"}
+					segments={[
+						{ label: "Accueil", linkProps: { href: "/declarations" } },
+					]}
+					currentPageLabel={declaration?.name}
 				/>
 			</section>
 			<section
@@ -57,7 +60,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						gap: "10px",
 					}}
 				>
-					<h1>{declaration?.name ?? "Nom de la declaration"}</h1>
+					<h1>{declaration?.name}</h1>
 					<Badge
 						noIcon={true}
 						small={true}
@@ -65,7 +68,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							declaration?.status === "published" ? "success" : undefined
 						}
 					>
-						{declaration?.status ?? "Brouillon"}
+						{declaration?.status === "published" ? "Publiée" : "Brouillon"}
 					</Badge>
 				</div>
 				<div
@@ -113,18 +116,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		};
 	}
 
-	// const payload = await getPayload({ config });
+	const payload = await getPayload({ config });
 
 	try {
-		// const declaration = await payload.findByID({
-		// 	collection: "declarations",
-		// 	id: Number.parseInt(id),
-		// 	depth: 3,
-		// });
+		const declaration = await payload.findByID({
+			collection: "declarations",
+			id: Number.parseInt(id),
+			depth: 3,
+		});
 
 		return {
 			props: {
-				declaration: null,
+				declaration: declaration || null,
 			},
 		};
 	} catch (error) {
