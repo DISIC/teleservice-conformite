@@ -4,10 +4,15 @@ export const appKindOptions = [
   {
     label: "Site web",
     value: "website",
+		description: "Site internet, intranet, extranet, application métier, ...",
   },
   {
-    label: "Application mobile",
-    value: "mobile_app",
+    label: "Application mobile iOs",
+    value: "mobile_app_ios",
+  },
+  {
+    label: "Application mobile Android",
+    value: "mobile_app_android",
   },
   {
     label: "Autre",
@@ -80,9 +85,8 @@ export const Declarations: CollectionConfig = {
 		},
 		{
 			name: "app_kind",
-			type: "select",
+			type: "text",
 			label: { fr: "Type de produit numérique" },
-			options: [...appKindOptions],
 		},
 		{
 			name: "url",

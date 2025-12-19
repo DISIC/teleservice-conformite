@@ -30,18 +30,22 @@ export const DeclarationGeneralForm = withForm({
 	...declarationMultiStepFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
-		const { classes, cx } = useStyles();
+		// const { classes, cx } = useStyles();
 
 		return (
-			<div className={cx(classes.formWrapper)}>
+			<div>
 				<form.AppField name="general.organisation">
 					{(field) => (
-						<field.TextField label="Administration" readOnly={readOnly} />
+						<field.TextField
+							label="Organisation"
+							readOnly={readOnly}
+							placeholder="Direction Générale des Finances (DGFIP)"
+						/>
 					)}
 				</form.AppField>
 				<form.AppField name="general.kind">
 					{(field) => (
-						<field.SelectField
+						<field.RadioField
 							label="Type de produit numérique"
 							options={[...appKindOptions]}
 							readOnly={readOnly}
@@ -53,17 +57,31 @@ export const DeclarationGeneralForm = withForm({
 						<field.TextField
 							label="Nom du service numérique"
 							readOnly={readOnly}
+							description="Exemples : Demande de logement social, Service public.fr, Outil de gestion des congés"
 						/>
 					)}
 				</form.AppField>
-				<form.AppField name="general.url">
-					{(field) => <field.TextField label="URL" readOnly={readOnly} />}
-				</form.AppField>
+				<form.Subscribe selector={(store) => store.values.general?.kind}>
+					{(kind) =>
+						kind === "website" ? (
+							<form.AppField name="general.url">
+								{(field) => <field.TextField label="URL" readOnly={readOnly} />}
+							</form.AppField>
+						) : null
+					}
+				</form.Subscribe>
 				<form.AppField name="general.domain">
 					{(field) => (
-						<field.TextField
-							label="Secteur d'activité de l'entité"
+						<field.SelectField
+							label="Secteur d'activité de l'organisation"
+							placeholder="Sélectionnez un secteur"
+							defaultStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
 							readOnly={readOnly}
+							options={[
+								{ label: "Agriculture", value: "Agriculture" },
+								{ label: "Finance", value: "Finance" },
+								{ label: "Aucun de ces domaines", value: "none" },
+							]}
 						/>
 					)}
 				</form.AppField>
@@ -79,12 +97,10 @@ export const DeclarationAuditForm = withForm({
 		readOnly: false,
 	},
 	render: function Render({ form, isAchieved: initialIsAchieved, readOnly }) {
-		const { classes, cx } = useStyles();
-
 		const [isAchieved, setIsAchieved] = useState(initialIsAchieved);
 
 		return (
-			<div className={cx(classes.formWrapper)}>
+			<div>
 				{!readOnly ? (
 					<Checkbox
 						options={[
@@ -173,7 +189,7 @@ export const DeclarationAuditForm = withForm({
 								display: "block",
 							}}
 						/>
-						<div className={classes.gridRow}>
+						<div>
 							<form.AppField name="audit.rate">
 								{(field) => (
 									<field.NumberField label="Résultats" readOnly={readOnly} />
@@ -196,14 +212,10 @@ export const DeclarationAuditForm = withForm({
 									<Accordion
 										label="Technologies utilisées (dans l'audit)"
 										defaultExpanded
-										className={classes.pagesAccordion}
 									>
 										{field.state.value.map((_, index) => (
-											<div
-												key={index}
-												className={classes.pagesAccordionContent}
-											>
-												<div className={classes.pagesWrapper}>
+											<div key={index}>
+												<div>
 													<form.AppField name={`audit.technologies[${index}]`}>
 														{(subField) => (
 															<subField.TextField
@@ -247,14 +259,10 @@ export const DeclarationAuditForm = withForm({
 									<Accordion
 										label="Environnements de test (dans l'audit)"
 										defaultExpanded
-										className={classes.pagesAccordion}
 									>
 										{field.state.value.map((_, index) => (
-											<div
-												key={index}
-												className={classes.pagesAccordionContent}
-											>
-												<div className={classes.pagesWrapper}>
+											<div key={index}>
+												<div>
 													<form.AppField
 														name={`audit.testEnvironments[${index}].kind`}
 													>
@@ -278,7 +286,7 @@ export const DeclarationAuditForm = withForm({
 																{(subField) => (
 																	<subField.SelectField
 																		label={`Environnement ${index + 1} - OS`}
-																		disabled={!kind && kind === ""}
+																		disabled={!kind || kind === ""}
 																		options={
 																			kind === "mobile"
 																				? envMobileOsOptions
@@ -339,17 +347,10 @@ export const DeclarationAuditForm = withForm({
 							<form.AppField name="audit.pages" mode="array">
 								{(field) =>
 									!readOnly ? (
-										<Accordion
-											label="Pages auditées"
-											defaultExpanded
-											className={classes.pagesAccordion}
-										>
+										<Accordion label="Pages auditées" defaultExpanded>
 											{field.state.value.map((_, index) => (
-												<div
-													key={index}
-													className={classes.pagesAccordionContent}
-												>
-													<div className={classes.pagesWrapper}>
+												<div key={index}>
+													<div>
 														<form.AppField name={`audit.pages[${index}].label`}>
 															{(subField) => (
 																<subField.TextField
@@ -408,14 +409,10 @@ export const DeclarationAuditForm = withForm({
 										<Accordion
 											label="Outils utilisés (dans l'audit)"
 											defaultExpanded
-											className={classes.pagesAccordion}
 										>
 											{field.state.value.map((_, index) => (
-												<div
-													key={index}
-													className={classes.pagesAccordionContent}
-												>
-													<div className={classes.pagesWrapper}>
+												<div key={index}>
+													<div>
 														<form.AppField name={`audit.tools[${index}]`}>
 															{(subField) => (
 																<subField.TextField
@@ -462,34 +459,81 @@ export const DeclarationAuditForm = withForm({
 	},
 });
 
-const useStyles = tss.withName(DeclarationGeneralForm.name).create({
-	formWrapper: {
-		display: "flex",
-		flexDirection: "column",
-	},
-	gridRow: {
-		display: "grid",
-		gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
-		gap: fr.spacing("4w"),
-	},
-	pagesAccordion: {
-		backgroundColor: fr.colors.decisions.background.default.grey.default,
-		"& .fr-collapse": {
-			margin: 0,
-		},
-	},
-	pagesAccordionContent: {
-		display: "flex",
-		alignItems: "end",
-		gap: fr.spacing("4w"),
-		paddingBottom: fr.spacing("2w"),
-	},
-	pagesWrapper: {
-		width: "100%",
-		display: "grid",
-		gap: fr.spacing("4w"),
-		gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
-		alignItems: "center",
-		backgroundColor: fr.colors.decisions.background.default.grey.default,
+export const InitialDeclarationForm = withForm({
+	...declarationMultiStepFormOptions,
+	render: function Render({ form }) {
+		return (
+			<div>
+				<form.AppField name="initialDeclaration.isNewDeclaration">
+					{(field) => (
+						<field.RadioField
+							label="Une déclaration d’accessibilité a-t--elle déjà été publiée sur votre service ?"
+							description="Une déclaration d’accessibilité est une page publique qui informe les usagers du niveau de conformité de votre service, liste les contenus non accessibles et indique comment demander une alternative ou signaler un problème."
+							options={[
+								{ label: "Oui", value: true },
+								{ label: "Non", value: false },
+							]}
+						/>
+					)}
+				</form.AppField>
+				<form.Subscribe
+					selector={(store) =>
+						store.values.initialDeclaration?.isNewDeclaration
+					}
+				>
+					{(isNew) =>
+						isNew ? (
+							<form.AppField name="initialDeclaration.publishedDate">
+								{(field) => (
+									<field.TextField
+										label="À quelle date ?"
+										description="Format attendu : JJ/MM/AAAA"
+										kind="date"
+									/>
+								)}
+							</form.AppField>
+						) : null
+					}
+				</form.Subscribe>
+				<form.Subscribe
+					selector={(store) =>
+						store.values.initialDeclaration?.isNewDeclaration
+					}
+				>
+					{(isNew) =>
+						isNew ? (
+							<form.AppField name="initialDeclaration.usedAra">
+								{(field) => (
+									<field.RadioField
+										label="Votre auditeur a t-il utilisé l’outil Ara ?"
+										description="Ara est un outil destiné aux auditeurs formés à l’accessibilité. Il permet de réaliser un audit complet et de générer automatiquement une déclaration d’accessibilité."
+										options={[
+											{ label: "Oui", value: true },
+											{ label: "Non", value: false },
+										]}
+									/>
+								)}
+							</form.AppField>
+						) : null
+					}
+				</form.Subscribe>
+				<form.Subscribe
+					selector={(store) => store.values.initialDeclaration?.usedAra}
+				>
+					{(usedAra) =>
+						usedAra ? (
+							<form.AppField name="initialDeclaration.araUrl">
+								{(field) => (
+									<field.TextField
+										label="Lien URL de la déclaration Ara"
+										description="Format attendu : https://www.example.fr. Vous pouvez trouver le lien à TEL ENDROIT sur votre interface Ara"
+									/>
+								)}
+							</form.AppField>
+						) : null
+					}
+				</form.Subscribe>
+			</div>
+		);
 	},
 });

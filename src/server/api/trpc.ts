@@ -1,3 +1,4 @@
+import { TRPCError, initTRPC } from "@trpc/server";
 /**
  * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
  * 1. You want to modify request context (see Part 1).
@@ -6,11 +7,14 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-
-import { initTRPC } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { jwtDecode } from "jwt-decode";
+import type { NextApiRequest } from "next";
+import type { Payload } from "payload";
 import superjson from "superjson";
 import { ZodError } from "zod";
+
+import getPayloadClient from "../../payload/payloadClient";
 
 /**
  * 1. CONTEXT
@@ -32,8 +36,15 @@ type CreateContextOptions = Record<string, never>;
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (_opts: CreateContextOptions) => {
-	return {};
+const createInnerTRPCContext = async (_opts: CreateContextOptions) => {
+	const payload = await getPayloadClient({
+		seed: false,
+	});
+
+	return {
+		payload,
+		req: _opts.req,
+	};
 };
 
 /**
@@ -42,8 +53,8 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-	return createInnerTRPCContext({});
+export const createTRPCContext = async (_opts: CreateNextContextOptions) => {
+	return await createInnerTRPCContext({});
 };
 
 /**
