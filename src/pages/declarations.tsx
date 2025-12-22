@@ -97,44 +97,79 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 									Dernière modification le{" "}
 									{new Date(declaration.updatedAt).toLocaleString()}
 								</p>
-							</div>
-							<div>
 								<p
 									style={{
 										margin: 0,
-										fontWeight: 700,
-										fontSize: "28px",
+										fontWeight: 400,
+										fontSize: "14px",
 										fontFamily: "Marianne",
-										lineHeight: "36px",
+										lineHeight: "24px",
+										color: "#666666",
 									}}
 								>
-									{declaration.rate}%
+									{declaration.entity.name}
 								</p>
 								<p
 									style={{
 										margin: 0,
 										fontWeight: 400,
-										fontSize: "16px",
+										fontSize: "14px",
 										fontFamily: "Marianne",
 										lineHeight: "24px",
+										color: "#666666",
 									}}
 								>
-									taux conformité
+									Site web - {declaration.siteUrl}
 								</p>
 							</div>
-							<div style={{ display: "flex", gap: "10px" }}>
+							{declaration.rate && (
+								<div>
+									<p
+										style={{
+											margin: 0,
+											fontWeight: 700,
+											fontSize: "28px",
+											fontFamily: "Marianne",
+											lineHeight: "36px",
+										}}
+									>
+										{declaration.rate}%
+									</p>
+									<p
+										style={{
+											margin: 0,
+											fontWeight: 400,
+											fontSize: "16px",
+											fontFamily: "Marianne",
+											lineHeight: "24px",
+										}}
+									>
+										taux conformité
+									</p>
+								</div>
+							)}
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "10px",
+								}}
+							>
 								<Button
 									iconId="fr-icon-edit-box-fill"
-									priority="tertiary"
-									title="Modifier la declaration"
+									priority="primary"
 									onClick={() => router.push(`/declaration/${declaration.id}`)}
-								/>
+									style={{ width: "100%" }}
+								>
+									Mettre à jour
+								</Button>
 								<Button
-									iconId="fr-icon-delete-fill"
+									iconId="fr-icon-share-line"
 									priority="tertiary"
-									title="Supprimer la declaration"
-									onClick={() => alert("Supprimer la declaration")}
-								/>
+									style={{ width: "100%" }}
+								>
+									Copier le lien
+								</Button>
 							</div>
 						</div>
 					))}
