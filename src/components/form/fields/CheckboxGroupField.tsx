@@ -3,10 +3,12 @@ import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 
 interface CheckboxGroupFieldProps extends DefaultFieldProps {
 	options: Array<{ label: string; value: string }>;
+	description?: string;
 }
 
 export function CheckboxGroupField({
 	label,
+	description,
 	options,
 	className,
 	disabled,
@@ -18,6 +20,7 @@ export function CheckboxGroupField({
 	return (
 		<Checkbox
 			legend={label}
+			hintText={description}
 			className={className}
 			disabled={disabled}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
