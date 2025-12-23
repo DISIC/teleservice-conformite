@@ -7,7 +7,9 @@ import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { useRouter } from "next/router";
 
+import { api } from "~/utils/api";
 import type { Declaration } from "payload/payload-types";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
@@ -17,8 +19,27 @@ interface DeclarationPageProps {
 }
 
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {
-	console.log("DeclarationPage declaration:", declaration);
+	const router = useRouter();
 	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
+
+	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
+		{
+			onSuccess: async (result) => {
+				router.push("/declarations");
+			},
+			onError: (error) => {
+				console.error("Error adding declaration:", error);
+			},
+		},
+	);
+
+	const onDelete = async () => {
+		try {
+			await deleteDeclaration({ id: declaration?.id });
+		} catch (error) {
+			console.error("Error deleting declaration:", error);
+		}
+	};
 
 	const TabContent = ({ selectedTabId }: { selectedTabId: string }) => {
 		if (selectedTabId === "demarches") {
@@ -85,7 +106,11 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 					<Button priority="tertiary" iconId="fr-icon-eye-fill">
 						Copier le lien
 					</Button>
-					<Button iconId="fr-icon-delete-fill" priority="tertiary">
+					<Button
+						iconId="fr-icon-delete-fill"
+						priority="tertiary"
+						onClick={onDelete}
+					>
 						Supprimer
 					</Button>
 				</div>

@@ -84,5 +84,17 @@ export const declarationRouter = createTRPCRouter({
       });
 
       return { data: declaration.id };
-    })
+    }),
+  delete: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const { id } = input;
+
+      await ctx.payload.delete({
+        collection: "declarations",
+        id,
+      });
+
+      return { success: true };
+    }),
 });
