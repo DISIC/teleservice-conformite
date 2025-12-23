@@ -30,7 +30,9 @@ type Steps<T> = {
 	title: string;
 };
 
-export default function AuditMultiStepForm() {
+export default function AuditMultiStepForm({
+	declarationId,
+}: { declarationId: number }) {
 	const { classes } = useStyles();
 	const router = useRouter();
 
@@ -121,7 +123,7 @@ export default function AuditMultiStepForm() {
 								label="Retour"
 								onClick={() => {
 									if (section === "auditDate") {
-										router.back();
+										router.push(`/declaration/${declarationId}`);
 									} else {
 										const previousSection = goToPreviousSection(section);
 										if (previousSection) {

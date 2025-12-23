@@ -14,10 +14,7 @@ import { useStore } from "@tanstack/react-form";
 import { tss } from "tss-react";
 import { MultiStep } from "~/components/MultiStep";
 import { useAppForm } from "~/utils/form/context";
-import {
-	DeclarationAuditForm,
-	InitialAuditForm,
-} from "~/utils/form/declaration/form";
+import { DeclarationAuditForm } from "~/utils/form/declaration/form";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
 import AuditMultiStepForm from "~/components/declaration/AuditMultiStepForm";
 
@@ -63,7 +60,7 @@ export default function AuditPage({
 	});
 
 	if (!declaration?.audit) {
-		return <AuditMultiStepForm />;
+		return <AuditMultiStepForm declarationId={declaration?.id} />;
 	}
 
 	return (
