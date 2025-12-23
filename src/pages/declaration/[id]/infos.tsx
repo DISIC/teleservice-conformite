@@ -15,7 +15,7 @@ import { useAppForm } from "~/utils/form/context";
 import {
 	DeclarationAuditForm,
 	DeclarationGeneralForm,
-} from "~/utils/form/declaration/form";
+} from "~/utils/form/readonly/form";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
 
 type Steps<T> = {

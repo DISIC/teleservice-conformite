@@ -14,7 +14,7 @@ import { useStore } from "@tanstack/react-form";
 import { tss } from "tss-react";
 import { MultiStep } from "~/components/MultiStep";
 import { useAppForm } from "~/utils/form/context";
-import { DeclarationAuditForm } from "~/utils/form/declaration/form";
+import { DeclarationAuditForm } from "~/utils/form/readonly/form";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
 import AuditMultiStepForm from "~/components/declaration/AuditMultiStepForm";
 
