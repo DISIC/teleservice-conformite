@@ -1,5 +1,6 @@
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 
 import type { Declaration } from "payload/payload-types";
 
@@ -17,70 +18,89 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				gap: "2rem",
 			}}
 		>
-			<div
-				style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}
-			>
+			{declaration?.audit?.rate && (
 				<div
 					style={{
-						display: "flex",
-						flexDirection: "row",
-						gap: "10px",
-						backgroundColor: "#3a3a68",
-						paddingInline: "30px",
-						paddingBlock: "40px",
-						borderRadius: "5px",
-						justifyContent: "space-between",
+						display: "grid",
+						gridTemplateColumns: "1fr 1fr",
+						gap: "1rem",
 					}}
 				>
-					<p
+					<div
 						style={{
-							margin: "0px",
+							display: "flex",
+							flexDirection: "row",
+							gap: "10px",
+							backgroundColor: "#3a3a68",
+							paddingInline: "30px",
+							paddingBlock: "40px",
+							borderRadius: "5px",
+							justifyContent: "space-between",
+						}}
+					>
+						<p
+							style={{
+								margin: "0px",
+								fontWeight: 400,
+								fontFamily: "Marianne",
+								fontSize: "16px",
+								lineHeight: "24px",
+							}}
+						>
+							Taux de conformite
+						</p>
+						<p
+							style={{
+								margin: "0px",
+								fontWeight: 400,
+								fontFamily: "Marianne",
+								fontSize: "16px",
+								lineHeight: "24px",
+							}}
+						>
+							<strong>
+								{declaration?.audit?.rate
+									? `${declaration.audit.rate}%`
+									: "N/A"}
+							</strong>
+						</p>
+					</div>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							gap: "10px",
+							backgroundColor: "#3a3a68",
+							padding: "10px",
+							borderRadius: "5px",
+							paddingInline: "30px",
+							paddingBlock: "40px",
 							fontWeight: 400,
 							fontFamily: "Marianne",
 							fontSize: "16px",
 							lineHeight: "24px",
 						}}
 					>
-						Taux de conformite
-					</p>
-					<p
-						style={{
-							margin: "0px",
-							fontWeight: 400,
-							fontFamily: "Marianne",
-							fontSize: "16px",
-							lineHeight: "24px",
-						}}
-					>
-						<strong>
-							{declaration?.audit?.rate ? `${declaration.audit.rate}%` : "N/A"}
-						</strong>
-					</p>
+						<span>
+							Derniere mise a jour:{" "}
+							<strong>
+								{declaration?.updatedAt
+									? new Date(declaration.updatedAt).toLocaleString()
+									: "N/A"}
+							</strong>
+						</span>
+						{declaration?.updatedAt > declaration?.published_at && (
+							<Button
+								iconId="fr-icon-edit-box-fill"
+								priority="primary"
+								style={{ width: "100%" }}
+							>
+								Mettre à jour
+							</Button>
+						)}
+					</div>
 				</div>
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "row",
-						gap: "10px",
-						backgroundColor: "#3a3a68",
-						padding: "10px",
-						borderRadius: "5px",
-						paddingInline: "30px",
-						paddingBlock: "40px",
-						fontWeight: 400,
-						fontFamily: "Marianne",
-						fontSize: "16px",
-						lineHeight: "24px",
-					}}
-				>
-					Derniere mise a jour:{" "}
-					<strong>
-						{declaration?.updatedAt
-							? new Date(declaration.updatedAt).toLocaleString()
-							: "N/A"}
-					</strong>
-				</div>
-			</div>
+			)}
 			<div
 				style={{
 					display: "flex",
@@ -104,12 +124,12 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `/declaration/${declaration?.id}/schema`,
 					}}
-					enlargeLinkOrButton={true}
+					enlargeLinkOrButton={false}
 					orientation="horizontal"
 					start={
 						declaration?.actionPlan ? null : (
 							<Badge noIcon severity="new">
-								A valider
+								A Remplir
 							</Badge>
 						)
 					}
@@ -120,12 +140,12 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `/declaration/${declaration?.id}/audit`,
 					}}
-					enlargeLinkOrButton={true}
+					enlargeLinkOrButton={false}
 					orientation="horizontal"
 					start={
 						declaration?.audit ? null : (
 							<Badge noIcon severity="new">
-								A valider
+								A Remplir
 							</Badge>
 						)
 					}
@@ -136,12 +156,12 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `/declaration/${declaration?.id}/contact`,
 					}}
-					enlargeLinkOrButton={true}
+					enlargeLinkOrButton={false}
 					orientation="horizontal"
 					start={
 						declaration?.contact ? null : (
 							<Badge noIcon severity="new">
-								A valider
+								A Remplir
 							</Badge>
 						)
 					}

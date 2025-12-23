@@ -5,6 +5,8 @@ import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
+import { useRouter } from "next/router";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 
 import type { Declaration } from "payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
@@ -12,17 +14,24 @@ import { useStore } from "@tanstack/react-form";
 import { tss } from "tss-react";
 import { MultiStep } from "~/components/MultiStep";
 import { useAppForm } from "~/utils/form/context";
-import { DeclarationAuditForm } from "~/utils/form/declaration/form";
+import {
+	DeclarationAuditForm,
+	InitialAuditForm,
+} from "~/utils/form/declaration/form";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
+import AuditMultiStepForm from "~/components/declaration/AuditMultiStepForm";
 
 type Steps<T> = {
 	slug: T;
 	title: string;
 };
 
-export default function AuditPage() {
+export default function AuditPage({
+	declaration,
+}: { declaration: Declaration | null }) {
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
+	const router = useRouter();
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
@@ -52,6 +61,10 @@ export default function AuditPage() {
 			}
 		},
 	});
+
+	if (!declaration?.audit) {
+		return <AuditMultiStepForm />;
+	}
 
 	return (
 		<section
@@ -120,3 +133,41 @@ const useStyles = tss.withName(AuditPage.name).create({
 		marginBottom: fr.spacing("6w"),
 	},
 });
+
+interface Params extends ParsedUrlQuery {
+	id: string;
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+	const { id } = context.params as Params;
+
+	if (!id || typeof id !== "string") {
+		return {
+			props: {},
+			// redirect: { destination: "/" },
+		};
+	}
+
+	const payload = await getPayload({ config });
+
+	try {
+		const declaration = await payload.findByID({
+			collection: "declarations",
+			id: Number.parseInt(id),
+			depth: 3,
+		});
+
+		return {
+			props: {
+				declaration: declaration || null,
+			},
+		};
+	} catch (error) {
+		console.error("Error fetching declaration:", error);
+
+		return {
+			// redirect: { destination: "/" },
+			props: {},
+		};
+	}
+};

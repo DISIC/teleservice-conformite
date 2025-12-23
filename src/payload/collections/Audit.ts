@@ -11,6 +11,25 @@ export const rgaaVersionOptions = [
 	},
 ] as const;
 
+export const toolOptions = [
+	{ label: "Wave", value: "wave" },
+	{ label: "NVDA", value: "nvda" },
+	{ label: "Web Developer Toolbar", value: "web_developer_toolbar" },
+	{ label: "HeadingsMap", value: "headings_map" },
+	{ label: "JAWS", value: "jaws" },
+	{ label: "Assistant RGAA", value: "assistant_rgaa" },
+	{ label: "Tanaguru", value: "tanaguru" },
+	{ label: "Autre", value: "autre" },
+]
+
+export const testEnvironmentOptions = [
+	{ label: "NVDA (Firefox)", value: "nvda_firefox" },
+	{ label: "JAWS (Firefox)", value: "jaws_firefox" },
+	{ label: "VoiceOver (Safari)", value: "voiceover_safari" },
+	{ label: "ZoomText (Windows ou Mac OSX)", value: "zoomtext_windows_mac" },
+	{ label: "Dragon Naturally Speaking (Windows ou Mac OSX)", value: "dragon_naturally_speaking_windows_mac" },
+]
+
 export const Audits: CollectionConfig = {
 	slug: "audits",
 	labels: {

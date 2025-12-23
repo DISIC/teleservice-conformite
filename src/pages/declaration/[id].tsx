@@ -46,9 +46,9 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 				id="header"
 				style={{
 					display: "flex",
-					flexDirection: "row",
-					alignItems: "center",
-					justifyContent: "space-between",
+					flexDirection: "column",
+					alignItems: "start",
+					justifyContent: "flex-start",
 				}}
 			>
 				<div
@@ -60,7 +60,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						gap: "10px",
 					}}
 				>
-					<h1>{declaration?.name}</h1>
+					<h1>{`${declaration?.name} - ${declaration?.app_kind}`}</h1>
 					<Badge
 						noIcon={true}
 						small={true}
@@ -76,16 +76,18 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						display: "flex",
 						flexDirection: "row",
 						gap: "1rem",
+						marginBottom: "3rem",
 					}}
 				>
-					<Button priority="tertiary" iconId="fr-icon-edit-box-fill">
-						Renommer
+					<Button priority="tertiary" iconId="fr-icon-eye-fill">
+						Voir la declaration
 					</Button>
-					<Button
-						iconId="fr-icon-checkbox-circle-line"
-						priority="tertiary"
-						title="Supprimer la declaration"
-					/>
+					<Button priority="tertiary" iconId="fr-icon-eye-fill">
+						Copier le lien
+					</Button>
+					<Button iconId="fr-icon-delete-fill" priority="tertiary">
+						Supprimer
+					</Button>
 				</div>
 			</section>
 			<Tabs

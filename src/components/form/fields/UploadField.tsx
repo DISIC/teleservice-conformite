@@ -1,8 +1,5 @@
-import { fr } from "@codegouvfr/react-dsfr";
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import type { HTMLInputTypeAttribute } from "react";
-import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 
 interface UploadFieldProps extends DefaultFieldProps {
 	description?: string;
@@ -10,12 +7,13 @@ interface UploadFieldProps extends DefaultFieldProps {
 
 export function UploadField(props: UploadFieldProps) {
 	const { label, description, disabled, className } = props;
-	const field = useFieldContext<string>();
+	const field = useFieldContext<File | undefined>();
 
 	return (
 		<Upload
 			label={label}
 			hint={description}
+			disabled={disabled}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={
 				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
@@ -23,8 +21,8 @@ export function UploadField(props: UploadFieldProps) {
 			className={className}
 			nativeInputProps={{
 				name: field.name,
-				value: field.state.value,
-				onChange: (e) => field.setValue(e.target.value),
+				onChange: (e) =>
+					field.setValue(e.currentTarget.files?.[0] ?? undefined),
 			}}
 		/>
 	);
