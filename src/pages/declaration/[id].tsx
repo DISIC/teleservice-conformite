@@ -7,18 +7,41 @@ import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useRouter } from "next/router";
 
+import { api } from "~/utils/api";
 import type { Declaration } from "payload/payload-types";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
+
+const deleteModal = createModal({
+	id: "delete-modal",
+	isOpenedByDefault: false,
+});
 
 interface DeclarationPageProps {
 	declaration: Declaration | null;
 }
 
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {
-	console.log("DeclarationPage declaration:", declaration);
+	const router = useRouter();
 	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
+
+	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
+		{
+			onSuccess: async (result) => {
+				router.push("/declarations");
+			},
+			onError: (error) => {
+				console.error("Error adding declaration:", error);
+			},
+		},
+	);
+
+	const onDelete = async () => {
+		deleteModal.open();
+	};
 
 	const TabContent = ({ selectedTabId }: { selectedTabId: string }) => {
 		if (selectedTabId === "demarches") {
@@ -33,74 +56,125 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	};
 
 	return (
-		<section id="declaration-page">
-			<section id="breadcrumbs">
-				<Breadcrumb
-					segments={[
-						{ label: "Accueil", linkProps: { href: "/declarations" } },
-					]}
-					currentPageLabel={declaration?.name}
-				/>
-			</section>
-			<section
-				id="header"
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					alignItems: "start",
-					justifyContent: "flex-start",
-				}}
-			>
-				<div
+		<>
+			<section id="declaration-page">
+				<section id="breadcrumbs">
+					<Breadcrumb
+						segments={[
+							{ label: "Accueil", linkProps: { href: "/declarations" } },
+						]}
+						currentPageLabel={declaration?.name}
+					/>
+				</section>
+				<section
+					id="header"
 					style={{
 						display: "flex",
-						flexDirection: "row",
-						alignItems: "center",
+						flexDirection: "column",
+						alignItems: "start",
 						justifyContent: "flex-start",
-						gap: "10px",
 					}}
 				>
-					<h1>{`${declaration?.name} - ${declaration?.app_kind}`}</h1>
-					<Badge
-						noIcon={true}
-						small={true}
-						severity={
-							declaration?.status === "published" ? "success" : undefined
-						}
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							alignItems: "center",
+							justifyContent: "flex-start",
+							gap: "10px",
+						}}
 					>
-						{declaration?.status === "published" ? "Publiée" : "Brouillon"}
-					</Badge>
-				</div>
+						<h1>{`${declaration?.name} - ${declaration?.app_kind}`}</h1>
+						<Badge
+							noIcon={true}
+							small={true}
+							severity={
+								declaration?.status === "published" ? "success" : undefined
+							}
+						>
+							{declaration?.status === "published" ? "Publiée" : "Brouillon"}
+						</Badge>
+					</div>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							gap: "1rem",
+							marginBottom: "3rem",
+						}}
+					>
+						<Button priority="tertiary" iconId="fr-icon-eye-fill">
+							Voir la declaration
+						</Button>
+						<Button priority="tertiary" iconId="fr-icon-eye-fill">
+							Copier le lien
+						</Button>
+						<Button
+							iconId="fr-icon-delete-fill"
+							priority="tertiary"
+							onClick={onDelete}
+						>
+							Supprimer
+						</Button>
+					</div>
+				</section>
+				<Tabs
+					selectedTabId={selectedTabId}
+					tabs={[
+						{ tabId: "demarches", label: "Démarches" },
+						{ tabId: "members", label: "Membres" },
+					]}
+					onTabChange={setSelectedTabId}
+				>
+					{<TabContent selectedTabId={selectedTabId} />}
+				</Tabs>
+			</section>
+			<deleteModal.Component
+				title="Supprimer la déclaration"
+				buttons={[
+					{
+						doClosesModal: true,
+						children: "Annuler",
+					},
+					{
+						doClosesModal: false,
+						priority: "primary",
+						children: "Supprimer",
+						iconId: "fr-icon-delete-fill",
+
+						onClick: async () => {
+							try {
+								await deleteDeclaration({ id: declaration?.id });
+							} catch (error) {
+								console.error("Error deleting declaration:", error);
+							}
+
+							deleteModal.close();
+						},
+					},
+				]}
+			>
 				<div
 					style={{
 						display: "flex",
-						flexDirection: "row",
+						flexDirection: "column",
 						gap: "1rem",
-						marginBottom: "3rem",
 					}}
 				>
-					<Button priority="tertiary" iconId="fr-icon-eye-fill">
-						Voir la declaration
-					</Button>
-					<Button priority="tertiary" iconId="fr-icon-eye-fill">
-						Copier le lien
-					</Button>
-					<Button iconId="fr-icon-delete-fill" priority="tertiary">
-						Supprimer
-					</Button>
+					<image />
+					<p>
+						Cette action est irréversible et entrainera la suppression de la
+						page publique de la déclaration.
+						<br />
+						Nous vous rappelons que chaque site doit fournir une déclaration
+						d'accessibilité accessible aux usagers.
+						<br />
+						Si votre déclaration arrive en fin de validité, vous pouvez la
+						mettre à jour depuis l’onglet “Démarche” de votre déclaration.
+					</p>
 				</div>
-			</section>
-			<Tabs
-				selectedTabId={selectedTabId}
-				tabs={[
-					{ tabId: "demarches", label: "Démarches" },
-					{ tabId: "members", label: "Membres" },
-				]}
-				onTabChange={setSelectedTabId}
-			>
-				{<TabContent selectedTabId={selectedTabId} />}
-			</Tabs>
-		</section>
+			</deleteModal.Component>
+		</>
 	);
 }
 
