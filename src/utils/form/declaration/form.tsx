@@ -1,347 +1,81 @@
-import { fr } from "@codegouvfr/react-dsfr";
-import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import Button from "@codegouvfr/react-dsfr/Button";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-import { useState } from "react";
-import { tss } from "tss-react";
-import { rgaaVersionOptions } from "~/payload/collections/Audit";
-import { appKindOptions } from "~/payload/collections/Declaration";
 import { withForm } from "../context";
 import { declarationMultiStepFormOptions } from "./schema";
 
-const envKindOptions = [
-	{ label: "Mobile", value: "mobile" },
-	{ label: "Ordinateur", value: "ordinateur" },
-];
-
-const envDesktopOsOptions = [
-	{ label: "Windows", value: "windows" },
-	{ label: "macOS", value: "macos" },
-	{ label: "Linux", value: "linux" },
-];
-
-const envMobileOsOptions = [
-	{ label: "iOS", value: "ios" },
-	{ label: "Android", value: "android" },
-];
-
-export const DeclarationGeneralForm = withForm({
+export const InitialDeclarationForm = withForm({
 	...declarationMultiStepFormOptions,
 	render: function Render({ form }) {
-		const { classes, cx } = useStyles();
-
 		return (
-			<div className={cx(classes.formWrapper)}>
-				<form.AppField name="general.organisation">
-					{(field) => <field.TextField label="Nom de l'organisation" />}
-				</form.AppField>
-				<form.AppField name="general.kind">
+			<div>
+				<form.AppField name="initialDeclaration.isNewDeclaration">
 					{(field) => (
-						<field.SelectField
-							label="Type de service numérique"
-							options={[...appKindOptions]}
+						<field.RadioField
+							label="Une déclaration d’accessibilité a-t--elle déjà été publiée sur votre service ?"
+							description="Une déclaration d’accessibilité est une page publique qui informe les usagers du niveau de conformité de votre service, liste les contenus non accessibles et indique comment demander une alternative ou signaler un problème."
+							options={[
+								{ label: "Oui", value: true },
+								{ label: "Non", value: false },
+							]}
 						/>
 					)}
 				</form.AppField>
-				<form.AppField name="general.name">
-					{(field) => <field.TextField label="Nom du service numérique" />}
-				</form.AppField>
-				<form.AppField name="general.url">
-					{(field) => <field.TextField label="URL du service numérique" />}
-				</form.AppField>
-				<form.AppField name="general.domain">
-					{(field) => (
-						<field.TextField label="Secteur d'activité de l'entité" />
-					)}
-				</form.AppField>
-			</div>
-		);
-	},
-});
-
-export const DeclarationAuditForm = withForm({
-	...declarationMultiStepFormOptions,
-	props: {
-		isAchievedCondition: false,
-	},
-	render: function Render({ form, isAchievedCondition }) {
-		const { classes, cx } = useStyles();
-
-		const [isAchieved, setIsAchieved] = useState(false);
-
-		return (
-			<div className={cx(classes.formWrapper)}>
-				{isAchievedCondition && (
-					<Checkbox
-						options={[
-							{
-								label: "L'audit d'accessibilité a-t-il été réalisé ?",
-								nativeInputProps: {
-									checked: isAchieved,
-									onChange: (e) => setIsAchieved(e.target.checked),
-								},
-							},
-						]}
-						className={fr.cx("fr-mb-3w")}
-						style={{ userSelect: "none" }}
-					/>
-				)}
-				{(!isAchievedCondition || (isAchievedCondition && isAchieved)) && (
-					<>
-						<form.AppField name="audit.url">
-							{(field) => <field.TextField label="Url de l'audit" />}
-						</form.AppField>
-						<form.AppField name="audit.rgaa_version">
-							{(field) => (
-								<field.RadioField
-									label="Version du RGAA utilisée"
-									options={[...rgaaVersionOptions]}
-								/>
-							)}
-						</form.AppField>
-						<div className={classes.gridRow}>
-							<form.AppField name="audit.date">
+				<form.Subscribe
+					selector={(store) =>
+						store.values.initialDeclaration?.isNewDeclaration
+					}
+				>
+					{(isNew) =>
+						isNew ? (
+							<form.AppField name="initialDeclaration.publishedDate">
 								{(field) => (
 									<field.TextField
-										label="Date de l'audit"
+										label="À quelle date ?"
+										description="Format attendu : JJ/MM/AAAA"
 										kind="date"
-										max={new Date().toISOString().split("T")[0]}
 									/>
 								)}
 							</form.AppField>
-							<form.AppField name="audit.rate">
+						) : null
+					}
+				</form.Subscribe>
+				<form.Subscribe
+					selector={(store) =>
+						store.values.initialDeclaration?.isNewDeclaration
+					}
+				>
+					{(isNew) =>
+						isNew ? (
+							<form.AppField name="initialDeclaration.usedAra">
 								{(field) => (
-									<field.NumberField label="Taux de conformité (%)" />
+									<field.RadioField
+										label="Votre auditeur a t-il utilisé l’outil Ara ?"
+										description="Ara est un outil destiné aux auditeurs formés à l’accessibilité. Il permet de réaliser un audit complet et de générer automatiquement une déclaration d’accessibilité."
+										options={[
+											{ label: "Oui", value: true },
+											{ label: "Non", value: false },
+										]}
+									/>
 								)}
 							</form.AppField>
-						</div>
-						<form.AppField name="audit.realisedBy">
-							{(field) => (
-								<field.TextField label="Réalisé par l'organisation" />
-							)}
-						</form.AppField>
-						<div className={fr.cx("fr-accordions-group")}>
-							<form.AppField name="audit.pages" mode="array">
+						) : null
+					}
+				</form.Subscribe>
+				<form.Subscribe
+					selector={(store) => store.values.initialDeclaration?.usedAra}
+				>
+					{(usedAra) =>
+						usedAra ? (
+							<form.AppField name="initialDeclaration.araUrl">
 								{(field) => (
-									<Accordion
-										label="Pages auditées"
-										defaultExpanded
-										className={classes.pagesAccordion}
-									>
-										{field.state.value.map((_, index) => (
-											<div
-												key={index}
-												className={classes.pagesAccordionContent}
-											>
-												<div className={classes.pagesWrapper}>
-													<form.AppField name={`audit.pages[${index}].label`}>
-														{(subField) => (
-															<subField.TextField
-																label={`Page ${index + 1} - Label`}
-																className={fr.cx("fr-mb-0")}
-															/>
-														)}
-													</form.AppField>
-													<form.AppField name={`audit.pages[${index}].url`}>
-														{(subField) => (
-															<subField.TextField
-																label={`Page ${index + 1} - URL`}
-															/>
-														)}
-													</form.AppField>
-												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer la page"
-												/>
-											</div>
-										))}
-										<Button
-											type="button"
-											onClick={() => field.pushValue({ url: "", label: "" })}
-										>
-											Ajouter une page
-										</Button>
-									</Accordion>
+									<field.TextField
+										label="Lien URL de la déclaration Ara"
+										description="Format attendu : https://www.example.fr. Vous pouvez trouver le lien à TEL ENDROIT sur votre interface Ara"
+									/>
 								)}
 							</form.AppField>
-							<form.AppField name="audit.testEnvironments" mode="array">
-								{(field) => (
-									<Accordion
-										label="Environnements de test (dans l'audit)"
-										defaultExpanded
-										className={classes.pagesAccordion}
-									>
-										{field.state.value.map((_, index) => (
-											<div
-												key={index}
-												className={classes.pagesAccordionContent}
-											>
-												<div className={classes.pagesWrapper}>
-													<form.AppField
-														name={`audit.testEnvironments[${index}].kind`}
-													>
-														{(subField) => (
-															<subField.SelectField
-																label={`Environnement ${index + 1} - Type`}
-																options={envKindOptions}
-																className={fr.cx("fr-mb-0")}
-															/>
-														)}
-													</form.AppField>
-													<form.Subscribe
-														selector={(store) =>
-															store.values.audit.testEnvironments?.[index]?.kind
-														}
-													>
-														{(kind) => (
-															<form.AppField
-																name={`audit.testEnvironments[${index}].os`}
-															>
-																{(subField) => (
-																	<subField.SelectField
-																		label={`Environnement ${index + 1} - OS`}
-																		disabled={!kind && kind === ""}
-																		options={
-																			kind === "mobile"
-																				? envMobileOsOptions
-																				: envDesktopOsOptions
-																		}
-																	/>
-																)}
-															</form.AppField>
-														)}
-													</form.Subscribe>
-												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer l'environnement de test"
-												/>
-											</div>
-										))}
-										<Button
-											type="button"
-											onClick={() => field.pushValue({ kind: "", os: "" })}
-										>
-											Ajouter un environnement de test
-										</Button>
-									</Accordion>
-								)}
-							</form.AppField>
-							<form.AppField name="audit.technologies" mode="array">
-								{(field) => (
-									<Accordion
-										label="Technologies utilisées (dans l'audit)"
-										defaultExpanded
-										className={classes.pagesAccordion}
-									>
-										{field.state.value.map((_, index) => (
-											<div
-												key={index}
-												className={classes.pagesAccordionContent}
-											>
-												<div className={classes.pagesWrapper}>
-													<form.AppField name={`audit.technologies[${index}]`}>
-														{(subField) => (
-															<subField.TextField
-																label={`Technologie ${index + 1}`}
-															/>
-														)}
-													</form.AppField>
-												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer la technologie"
-												/>
-											</div>
-										))}
-										<Button type="button" onClick={() => field.pushValue("")}>
-											Ajouter une technologie
-										</Button>
-									</Accordion>
-								)}
-							</form.AppField>
-							<form.AppField name="audit.tools" mode="array">
-								{(field) => (
-									<Accordion
-										label="Outils utilisés (dans l'audit)"
-										defaultExpanded
-										className={classes.pagesAccordion}
-									>
-										{field.state.value.map((_, index) => (
-											<div
-												key={index}
-												className={classes.pagesAccordionContent}
-											>
-												<div className={classes.pagesWrapper}>
-													<form.AppField name={`audit.tools[${index}]`}>
-														{(subField) => (
-															<subField.TextField
-																label={`Outil ${index + 1}`}
-															/>
-														)}
-													</form.AppField>
-												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer l'outil"
-												/>
-											</div>
-										))}
-										<Button type="button" onClick={() => field.pushValue("")}>
-											Ajouter un outil
-										</Button>
-									</Accordion>
-								)}
-							</form.AppField>
-						</div>
-					</>
-				)}
+						) : null
+					}
+				</form.Subscribe>
 			</div>
 		);
-	},
-});
-
-const useStyles = tss.withName(DeclarationGeneralForm.name).create({
-	formWrapper: {
-		display: "flex",
-		flexDirection: "column",
-	},
-	gridRow: {
-		display: "grid",
-		gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
-		gap: fr.spacing("4w"),
-	},
-	pagesAccordion: {
-		backgroundColor: fr.colors.decisions.background.default.grey.default,
-		"& .fr-collapse": {
-			margin: 0,
-		},
-	},
-	pagesAccordionContent: {
-		display: "flex",
-		alignItems: "end",
-		gap: fr.spacing("4w"),
-		paddingBottom: fr.spacing("2w"),
-	},
-	pagesWrapper: {
-		width: "100%",
-		display: "grid",
-		gap: fr.spacing("4w"),
-		gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
-		alignItems: "center",
-		backgroundColor: fr.colors.decisions.background.default.grey.default,
 	},
 });

@@ -6,6 +6,7 @@ import type {
   ZDeclarationGeneral,
   ZDeclarationMultiStepFormSchema,
 } from "~/utils/form/declaration/schema";
+import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const declarationRouter = createTRPCRouter({
@@ -27,7 +28,7 @@ export const declarationRouter = createTRPCRouter({
 
       const araJson = await araResponse.json();
 
-      const returnValue: Omit<ZDeclarationMultiStepFormSchema, "section"> = {
+      const returnValue: Pick<ZDeclarationMultiStepFormSchema, "general" | "audit"> = {
         general: {
           name: araJson.procedureName,
           kind: "website" as (typeof appKindOptions)[number]["value"],
@@ -57,5 +58,43 @@ export const declarationRouter = createTRPCRouter({
       };
 
       return returnValue;
+    }),
+  create: publicProcedure
+    .input(declarationGeneral)
+    .mutation(async ({ input, ctx }) => {
+      const { organisation, kind, url, domain, name } = input.general;
+
+      const entity = await ctx.payload.create({
+        collection: "entities",
+        data: {
+          name: organisation,
+          field: domain,
+        },
+      });
+
+      const declaration = await ctx.payload.create({
+        collection: "declarations",
+        data: {
+          name,
+          app_kind: kind,
+          url,
+          entity: entity.id,
+          created_by: 2,
+        },
+      });
+
+      return { data: declaration.id };
+    }),
+  delete: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const { id } = input;
+
+      await ctx.payload.delete({
+        collection: "declarations",
+        id,
+      });
+
+      return { success: true };
     }),
 });

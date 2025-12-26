@@ -16,6 +16,9 @@ import { Entities } from "./collections/Entity";
 import { Sessions } from "./collections/Session";
 import { Users } from "./collections/User";
 import { Verifications } from "./collections/Verification";
+import { Media } from "./collections/Media";
+import { ActionPlans } from "./collections/ActionPlans";
+import { Contacts } from "./collections/Contact";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -34,6 +37,9 @@ export default buildConfig({
 		Audits,
 		Declarations,
 		AccessRights,
+		Media,
+		ActionPlans,
+		Contacts,
 	],
 	secret: process.env.PAYLOAD_SECRET || "",
 	db: postgresAdapter({

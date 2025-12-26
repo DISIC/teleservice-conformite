@@ -90,6 +90,62 @@ export const declarationAuditDefaultValues: ZDeclarationAudit = {
 	},
 };
 
+export const initialDeclaration = z.object({
+	initialDeclaration: z.object({
+		isNewDeclaration: z.boolean(),
+		publishedDate: z.iso.date().optional(),
+		usedAra: z.boolean(),
+		araUrl: z.url().optional(),
+	}),
+});
+
+export type ZInitialDeclaration = z.infer<typeof initialDeclaration>;
+
+export const initialDeclarationDefaultValues: ZInitialDeclaration = {
+	initialDeclaration: {
+		isNewDeclaration: false,
+		publishedDate: undefined,
+		usedAra: false,
+		araUrl: undefined,
+	},
+};
+
+export const existingAudit = z.object({
+	existingAudit: z.object({
+		auditDone: z.boolean(),
+		auditGrid: z.file().optional(),
+	}),
+});
+
+export type ZExistingAudit = z.infer<typeof existingAudit>;
+
+export const existingAuditDefaultValues: ZExistingAudit = {
+	existingAudit: {
+		auditDone: false,
+		auditGrid: undefined,
+	},
+};
+
+export const schema = z.object({
+	schema: z.object({
+		annualSchemaDone: z.boolean(),
+		currentYearSchemaDone: z.boolean(),
+		currentSchemaUrl: z.url().optional(),
+		currentSchemaFile: z.file().optional(),
+	}),
+});
+
+export type ZSchema = z.infer<typeof schema>;
+
+export const schemaDefaultValues: ZSchema = {
+	schema: {
+		annualSchemaDone: false,
+		currentYearSchemaDone: false,
+		currentSchemaUrl: undefined,
+		currentSchemaFile: undefined,
+	},
+};
+
 export const declarationContact = z.object({
 	contactName: z.string(),
 	contactEmail: z.email(),
@@ -97,9 +153,13 @@ export const declarationContact = z.object({
 });
 
 export const declarationMultiStepFormSchema = z.object({
-	section: z.enum(["general", "audit"]),
+	section: z.enum(["general", "audit", "schema", "initialDeclaration", "existingAudit"]),
 	...declarationGeneral.shape,
 	...declarationAudit.shape,
+	...schema.shape,
+	// ...declarationContact.shape,
+	...initialDeclaration.shape,
+	...existingAudit.shape,
 });
 
 export type ZDeclarationMultiStepFormSchema = z.infer<
@@ -110,6 +170,9 @@ const defaultValues: ZDeclarationMultiStepFormSchema = {
 	section: "general",
 	...declarationGeneralDefaultValues,
 	...declarationAuditDefaultValues,
+	...schemaDefaultValues,
+	...initialDeclarationDefaultValues,
+	...existingAuditDefaultValues,
 };
 
 export const declarationMultiStepFormOptions = formOptions({
@@ -121,9 +184,28 @@ export const declarationMultiStepFormOptions = formOptions({
 					declarationGeneral as typeof declarationMultiStepFormSchema,
 				);
 			}
+
 			if (value.section === "audit") {
 				return formApi.parseValuesWithSchema(
 					declarationAudit as typeof declarationMultiStepFormSchema,
+				);
+			}
+
+			if (value.section === "schema") {
+				return formApi.parseValuesWithSchema(
+					schema as typeof declarationMultiStepFormSchema,
+				);
+			}
+
+			if (value.section === "initialDeclaration") {
+				return formApi.parseValuesWithSchema(
+					initialDeclaration as typeof declarationMultiStepFormSchema,
+				);
+			}
+
+			if (value.section === "existingAudit") {
+				return formApi.parseValuesWithSchema(
+					existingAudit as typeof declarationMultiStepFormSchema,
 				);
 			}
 		},

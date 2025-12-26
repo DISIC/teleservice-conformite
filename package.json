@@ -13,7 +13,8 @@
 		"start": "next start",
 		"typecheck": "tsc --noEmit",
 		"predev": "react-dsfr update-icons",
-		"prebuild": "react-dsfr update-icons"
+		"prebuild": "react-dsfr update-icons",
+		"seed:dev": "NODE_ENV=development PAYLOAD_CONFIG_PATH=./src/payload/payload.config.ts PAYLOAD_DROP_DATABASE=true"
 	},
 	"dependencies": {
 		"@codegouvfr/react-dsfr": "^1.28.0",

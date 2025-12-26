@@ -1,12 +1,14 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 
-import { SubscribeButton } from "~/components/form/SubmitButton";
+import { SubscribeButton, CancelButton } from "~/components/form/SubmitButton";
 
 import { CheckboxField } from "~/components/form/fields/CheckboxField";
+import { CheckboxGroupField } from "~/components/form/fields/CheckboxGroupField";
 import { NumberField } from "~/components/form/fields/NumberField";
 import { RadioField } from "~/components/form/fields/RadioField";
 import { SelectField } from "~/components/form/fields/SelectField";
 import { TextField } from "~/components/form/fields/TextField";
+import { UploadField } from "~/components/form/fields/UploadField";
 
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
 	createFormHookContexts();
@@ -14,13 +16,16 @@ export const { fieldContext, formContext, useFieldContext, useFormContext } =
 export const { useAppForm, withForm } = createFormHook({
 	fieldComponents: {
 		TextField,
+		UploadField,
 		SelectField,
 		CheckboxField,
+		CheckboxGroupField,
 		NumberField,
 		RadioField,
 	},
 	formComponents: {
 		SubscribeButton,
+		CancelButton,
 	},
 	fieldContext,
 	formContext,

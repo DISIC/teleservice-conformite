@@ -7,17 +7,23 @@ interface SelectFieldProps extends DefaultFieldProps {
 		label: string;
 		value: string;
 	}>;
+	readOnly?: boolean;
+	placeholder?: string;
+	defaultStateMessage?: string;
 }
 
 export function SelectField({
 	label,
+	placeholder,
 	options,
 	disabled,
 	className,
+	readOnly = false,
+	defaultStateMessage = "",
 }: SelectFieldProps) {
 	const field = useFieldContext<string>();
 
-	return (
+	return !readOnly ? (
 		<Select
 			label={label}
 			nativeSelectProps={{
@@ -29,9 +35,16 @@ export function SelectField({
 			disabled={disabled}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={
-				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
+				field.state.meta.errors.map((error) => error.message).join(",") ??
+				defaultStateMessage
 			}
 			className={className}
 		/>
+	) : (
+		<div>
+			<p>
+				<strong>{label}</strong>: {field.state.value}
+			</p>
+		</div>
 	);
 }
