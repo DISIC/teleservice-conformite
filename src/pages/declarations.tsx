@@ -6,6 +6,7 @@ import type { ParsedUrlQuery } from "node:querystring";
 import type { Declaration } from "payload/payload-types";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import { useRouter } from "next/router";
 
 interface DeclarationsPageProps {
@@ -36,7 +37,12 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 			>
 				Vos déclarations d'accessibilité
 			</h1>
-			<div style={{ display: "flex", justifyContent: "flex-end" }}>
+			<div
+				style={{
+					display: declarations?.length ? "flex" : "none",
+					justifyContent: "flex-end",
+				}}
+			>
 				<Button
 					iconId="fr-icon-add-line"
 					priority="tertiary"
@@ -175,10 +181,43 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 					))}
 				</div>
 			) : (
-				<>
-					<p>Aucune declaration</p>
-					<p> Créez une declaration d'accessibilité.</p>
-				</>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						gap: "20px",
+						justifyContent: "center",
+						alignItems: "center",
+						marginTop: "100px",
+					}}
+				>
+					<Conclusion fontSize="120px" />
+					<h2
+						style={{
+							fontFamily: "Marianne",
+							fontWeight: 700,
+							fontSize: "22px",
+							lineHeight: "28px",
+						}}
+					>
+						Créez votre déclaration d’accessibilité
+					</h2>
+					<p
+						style={{
+							fontFamily: "Marianne",
+							fontWeight: 400,
+							fontSize: "20px",
+							lineHeight: "32px",
+							color: "#666666",
+						}}
+					>
+						Publiez une déclaration conforme pour répondre aux obligations
+						légales
+					</p>
+					<Button onClick={() => router.push("/form")} priority="primary">
+						Créer une déclaration
+					</Button>
+				</div>
 			)}
 		</section>
 	);
