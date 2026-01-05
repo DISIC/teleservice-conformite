@@ -19,6 +19,7 @@ import {
 	CurrentYearSchemaLinksForm,
 } from "~/utils/form/schema/form";
 import { schemaFormOptions } from "~/utils/form/schema/schema";
+import { api } from "~/utils/api";
 
 type Steps<T> = {
 	slug: T;
@@ -32,6 +33,15 @@ export default function SchemaForm({
 	const router = useRouter();
 
 	const sections: string[] = ["schema", "currentYearSchemaLinks"];
+
+	const { mutateAsync: createSchema } = api.schema.create.useMutation({
+		onSuccess: async () => {
+			router.push(`/declaration/${declarationId}`);
+		},
+		onError: (error) => {
+			console.error("Error adding schema:", error);
+		},
+	});
 
 	const goToPreviousSection = (currentSection: string): string => {
 		const currentIndex = sections.indexOf(currentSection);
@@ -49,11 +59,26 @@ export default function SchemaForm({
 		return "";
 	};
 
+	const addSchema = async ({
+		annualSchemaLink,
+		declarationId,
+	}: { annualSchemaLink: string; declarationId: number }) => {
+		try {
+			createSchema({ annualSchemaLink, declarationId });
+		} catch (error) {
+			console.error("Error adding schema:", error);
+		}
+	};
+
 	const form = useAppForm({
 		...schemaFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (value.section === "currentYearSchemaLinks") {
 				alert(JSON.stringify(value, null, 2));
+				await addSchema({
+					annualSchemaLink: value?.annualSchemaLink ?? "",
+					declarationId,
+				});
 			} else {
 				const nextSection = goToNextSection(value.section);
 

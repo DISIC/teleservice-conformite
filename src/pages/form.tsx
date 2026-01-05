@@ -48,7 +48,6 @@ export default function FormPage() {
 				formApi.setFieldValue("section", "general");
 			} else {
 				alert(JSON.stringify(value, null, 2));
-				console.log("value", value.general);
 				await addDeclaration(value.general);
 			}
 		},
