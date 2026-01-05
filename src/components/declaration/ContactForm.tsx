@@ -6,6 +6,7 @@ import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
 import { ContactTypeForm } from "~/utils/form/contact/form";
 import { contactFormOptions } from "~/utils/form/contact/schema";
+import { api } from "~/utils/api";
 
 export default function ContactForm({
 	declarationId,
@@ -13,10 +14,36 @@ export default function ContactForm({
 	const { classes } = useStyles();
 	const router = useRouter();
 
+	const { mutateAsync: createContact } = api.contact.create.useMutation({
+		onSuccess: async () => {
+			router.push(`/declaration/${declarationId}`);
+		},
+		onError: (error) => {
+			console.error("Error adding contact:", error);
+		},
+	});
+
+	const addContact = async ({
+		email,
+		url,
+		declarationId,
+	}: { email: string; url: string; declarationId: number }) => {
+		try {
+			await createContact({ email, url, declarationId });
+		} catch (error) {
+			console.error("Error adding contact:", error);
+		}
+	};
+
 	const form = useAppForm({
 		...contactFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			alert(JSON.stringify(value, null, 2));
+			await addContact({
+				email: value?.emailContact ?? "",
+				url: value?.contactLink ?? "",
+				declarationId,
+			});
 		},
 	});
 

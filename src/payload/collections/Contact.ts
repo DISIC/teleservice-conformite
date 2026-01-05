@@ -1,5 +1,16 @@
 import type { CollectionConfig } from "payload";
 
+export const contactMeanOptions = [
+  {
+    label: "Formulaire en ligne",
+    value: "form_url",
+  },
+  {
+    label: "Point de contact",
+    value: "email",
+  },
+] as const;
+
 export const Contacts: CollectionConfig = {
   slug: "contacts",
   admin: {
@@ -11,29 +22,21 @@ export const Contacts: CollectionConfig = {
   },
   fields: [
     {
-      name: "mean",
-      label: { fr: "Moyen de contact" },
-      type: "select",
-      options: [
-        {
-          label: "Email",
-          value: "email",
-        },
-        {
-          label: "Téléphone",
-          value: "phone",
-        },
-        {
-          label: "Formulaire en ligne",
-          value: "online_form",
-        },
-      ],
-      required: true,
-    },
-    {
       name: "email",
-      label: { fr: "Adresse email" },
+      label: { fr: "Email de contact email" },
       type: "email",
     },
+    {
+      name: "url",
+      label: { fr: "Lien URL du formulaire" },
+      type: "text",
+    },
+    {
+      name: "declaration",
+      label: { fr: "Déclaration associée" },
+      type: "relationship",
+      relationTo: "declarations",
+      required: true,
+    }
   ],
 };
