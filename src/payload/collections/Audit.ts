@@ -57,9 +57,10 @@ export const Audits: CollectionConfig = {
 			type: "select",
 			label: { fr: "Version RGAA" },
 			options: [...rgaaVersionOptions],
+			index: true,
 		},
 		{
-			name: "conductedBy",
+			name: "realisedBy",
 			type: "text",
 			label: { fr: "Entite ou personne ayant realise l'audit" },
 		},
@@ -69,57 +70,58 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Taux de conformité" },
 		},
 		{
-			name: "pagesAudited",
+			name: "compliantElements",
 			type: "array",
-			label: { fr: "Pages ayant fait l’objet de vérification" },
+			label: { fr: "Échantillon contrôlé" },
 			fields: [
 				{
-					name: "pageName",
+					name: "name",
 					type: "text",
 					label: { fr: "Nom de la page" },
 				},
 				{
-					name: "pageURL",
+					name: "url",
 					type: "text",
 					label: { fr: "URL de la page" },
 				},
 			],
 		},
 		{
-			name: "nonCompliances",
-			type: "array",
+			name: "nonCompliantElements",
+			type: "text",
 			label: { fr: "Éléments non conformes" },
+		},
+		{
+			name: "disproportionnedCharge",
+			type: "array",
+			label: { fr: "Éléments avec dérogation pour charge disproportionnée" },
 			fields: [
 				{
-					name: "nonComplianceDescription",
+					name: "name",
 					type: "text",
-					label: { fr: "Description de l'élément non conforme" },
+					label: { fr: "Nom de l’élément" },
+				},
+				{
+					name: "reason",
+					type: "text",
+					label: { fr: "Raison de la dérogation" },
+				},
+				{
+					name: "duration",
+					type: "text",
+					label: { fr: "Durée de la dérogation (facultatif)" },
+				},
+				{
+					name: "alternative",
+					type: "text",
+					label: { fr: "Alternative accessible proposée" },
 				},
 			],
 		},
 		{
 			name: "exemption",
-			type: "array",
-			label: { fr: "Dérogation pour charge disproportionnée" },
-			fields: [
-				{
-					name: "exemptionDescription",
-					type: "text",
-					label: { fr: "Description de la justification de la dérogation" },
-				},
-			],
-		},
-		{
-			name: "nonDeclaredContent",
-			type: "array",
-			label: { fr: "Contenus non soumis à la déclaration" },
-			fields: [
-				{
-					name: "nonDeclaredContentDescription",
-					type: "text",
-					label: { fr: "Description du contenu non déclaré" },
-				},
-			],
+			type: "text",
+			label: { fr: "Éléments non soumis à l’obligation d’accessibilité" },
 		},
 		{
 			name: "auditReport",
@@ -132,6 +134,28 @@ export const Audits: CollectionConfig = {
 			type: "upload",
 			label: { fr: "Grille d'audit" },
 			relationTo: "media",
+		},
+		{
+			name: "toolsUsed",
+			type: "select",
+			hasMany: true,
+			label: { fr: "Outils utilisés" },
+			options: [...toolOptions],
+			index: true,
+		},
+		{
+			name: "testEnvironments",
+			type: "select",
+			hasMany: true,
+			label: { fr: "Environnements de test" },
+			options: [...testEnvironmentOptions],
+			index: true,
+		},
+		{
+			name: "declaration",
+			type: "relationship",
+			relationTo: "declarations",
+			label: { fr: "déclaration associée" },
 		},
 	],
 };

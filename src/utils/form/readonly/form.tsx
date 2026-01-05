@@ -7,6 +7,7 @@ import { useState } from "react";
 import { tss } from "tss-react";
 import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import { appKindOptions } from "~/payload/collections/Declaration";
+import { kindOptions } from "~/payload/collections/Entity";
 import { withForm } from "../context";
 import { readOnlyFormOptions } from "./schema";
 
@@ -77,11 +78,7 @@ export const DeclarationGeneralForm = withForm({
 							placeholder="Sélectionnez un secteur"
 							defaultStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
 							readOnly={readOnly}
-							options={[
-								{ label: "Agriculture", value: "Agriculture" },
-								{ label: "Finance", value: "Finance" },
-								{ label: "Aucun de ces domaines", value: "none" },
-							]}
+							options={[...kindOptions]}
 						/>
 					)}
 				</form.AppField>

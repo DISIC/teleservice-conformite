@@ -7,6 +7,7 @@ import { useState } from "react";
 import { tss } from "tss-react";
 import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import { appKindOptions } from "~/payload/collections/Declaration";
+import { kindOptions } from "~/payload/collections/Entity";
 import { withForm } from "../context";
 import { declarationMultiStepFormOptions } from "./schema";
 
@@ -82,38 +83,7 @@ export const DeclarationGeneralForm = withForm({
 							placeholder="Sélectionnez un secteur"
 							defaultStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
 							readOnly={readOnly}
-							options={[
-								{ label: "Protection sociale", value: "Protection sociale" },
-								{ label: "Santé", value: "Santé" },
-								{ label: "Transport", value: "Transport" },
-								{ label: "Enseignement", value: "Enseignement" },
-								{ label: "Emploi", value: "Emploi" },
-								{ label: "Fiscalité", value: "Fiscalité" },
-								{
-									label: "Protection de l'environnement",
-									value: "Protection de l'environnement",
-								},
-								{ label: "Loisirs - culture", value: "Loisirs - culture" },
-								{
-									label: "Logement - équipements collectifs",
-									value: "Logement - équipements collectifs",
-								},
-								{
-									label: "Ordre et sécurité publics",
-									value: "Ordre et sécurité publics",
-								},
-								{
-									label: "État civil - Identité - Citoyenneté",
-									value: "État civil - Identité - Citoyenneté",
-								},
-								{ label: "Justice", value: "Justice" },
-								{ label: "Agriculture", value: "Agriculture" },
-								{
-									label: "Vie / séjour à l'étranger",
-									value: "Vie / séjour à l'étranger",
-								},
-								{ label: "Aucun de ces domaines", value: "none" },
-							]}
+							options={[...kindOptions]}
 						/>
 					)}
 				</form.AppField>
@@ -521,6 +491,7 @@ export const InitialDeclarationForm = withForm({
 										label="À quelle date ?"
 										description="Format attendu : JJ/MM/AAAA"
 										kind="date"
+										max={new Date().toISOString().split("T")[0]}
 									/>
 								)}
 							</form.AppField>

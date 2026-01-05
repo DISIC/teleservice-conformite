@@ -1,7 +1,7 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
-import { rgaaVersionOptions } from "~/payload/collections/Audit";
+import { rgaaVersionOptions, toolOptions, testEnvironmentOptions } from "~/payload/collections/Audit";
 
 export const auditDate = z.object({
   date: z.iso.date().min(1, { message: "La date est requise" }),
@@ -9,8 +9,7 @@ export const auditDate = z.object({
     message: "L'organisation ayant réalisé l'audit est requise",
   }),
   rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
-  rate: z
-    .number()
+  rate: z.number()
     .min(0, { message: "Le taux doit être entre 0 et 100" })
     .max(100, { message: "Le taux doit être entre 0 et 100" }),
 });
@@ -25,11 +24,21 @@ export const auditDateDefaultValues: ZAuditDate = {
 };
 
 export const tools = z.object({
-  technologies: z.array(z.string()).min(1, {
-    message: "Au moins une technologie doit être sélectionnée",
-  }),
+  technologies: z
+    .array(
+      z.enum(
+        toolOptions.map((tool) => tool.value) as [string, ...string[]]
+      )
+    )
+    .min(1, {
+      message: "Au moins une technologie doit être sélectionnée",
+    }),
   testEnvironments: z
-    .array(z.string())
+    .array(
+      z.enum(
+        testEnvironmentOptions.map((test) => test.value) as [string, ...string[]]
+      )
+    )
     .min(1, {
       message: "Au moins un environnement de test doit être sélectionné",
     }),
@@ -38,8 +47,8 @@ export const tools = z.object({
 export type ZTools = z.infer<typeof tools>;
 
 export const toolsDefaultValues: ZTools = {
-  technologies: [""],
-  testEnvironments: [""],
+  technologies: [],
+  testEnvironments: [],
 };
 
 export const compliantElements = z.object({
@@ -51,7 +60,7 @@ export const compliantElements = z.object({
 export type ZCompliantElements = z.infer<typeof compliantElements>;
 
 export const compliantElementsDefaultValues: ZCompliantElements = {
-  compliantElements: [{ name: "", url: "" }],
+  compliantElements: [],
 };
 
 export const nonCompliantElements = z.object({
@@ -92,16 +101,18 @@ export type ZDisproportionnedCharge = z.infer<typeof disproportionnedCharge>;
 
 export const disproportionnedChargeDefaultValues: ZDisproportionnedCharge = {
   hasDisproportionnedCharge: false,
-  disproportionnedCharge: [{ name: "", reason: "", duration: "", alternative: "" }],
+  disproportionnedCharge: [],
 };
 
 export const optionalElements = z.object({
+  hasOptionalElements: z.boolean(),
   optionalElements: z.string()
 });
 
 export type ZOptionalElements = z.infer<typeof optionalElements>;
 
 export const optionalElementsDefaultValues: ZOptionalElements = {
+  hasOptionalElements: false,
   optionalElements: "",
 };
 

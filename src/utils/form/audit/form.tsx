@@ -43,10 +43,8 @@ export const AuditDateForm = withForm({
 				</form.AppField>
 				<form.AppField name="rate">
 					{(field) => (
-						<field.TextField
-							kind="number"
+						<field.NumberField
 							label="Pourcentage de critères du RGAA respectés"
-							description="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
 						/>
 					)}
 				</form.AppField>
@@ -292,14 +290,30 @@ export const OptionElementsForm = withForm({
 	...auditMultiStepFormOptions,
 	render: function Render({ form }) {
 		return (
-			<form.AppField name="optionalElements">
+			<form.AppField name="hasOptionalElements">
 				{(field) => (
-					<field.TextField
-						label="Éléments exemptés"
-						description="Format attendu : Listez les éléments exemptés les uns à la suite des autres BESOIN d’URL ? D’autres infos ?"
-						kind="text"
-						textArea
-					/>
+					<>
+						<field.RadioField
+							label="Avez-vous des contenus non soumis à l’obligation d’accessibilité ?"
+							description="Certaines catégories de contenus ne sont pas soumises à l’obligation d’accessibilité :"
+							options={[
+								{ label: "Oui", value: true },
+								{ label: "Non", value: false },
+							]}
+						/>
+						{field.state.value && (
+							<form.AppField name="optionalElements">
+								{(field) => (
+									<field.TextField
+										label="Éléments exemptés"
+										description="Format attendu : Listez les éléments exemptés les uns à la suite des autres BESOIN d’URL ? D’autres infos ?"
+										kind="text"
+										textArea
+									/>
+								)}
+							</form.AppField>
+						)}
+					</>
 				)}
 			</form.AppField>
 		);

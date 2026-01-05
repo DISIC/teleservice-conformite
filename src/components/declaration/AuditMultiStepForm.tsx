@@ -24,6 +24,7 @@ import {
 	FilesForm,
 } from "~/utils/form/audit/form";
 import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
+import { api } from "~/utils/api";
 
 type Steps<T> = {
 	slug: T;
@@ -35,6 +36,18 @@ export default function AuditMultiStepForm({
 }: { declarationId: number }) {
 	const { classes } = useStyles();
 	const router = useRouter();
+
+	const { mutateAsync: createAudit } = api.audit.create.useMutation({
+		onSuccess: async () => {
+			router.push(`/declaration/${declarationId}`);
+		},
+		onError: (error) => {
+			console.error(
+				`Error adding audit for declarationId ${declarationId}:`,
+				error,
+			);
+		},
+	});
 
 	const sections: string[] = [
 		"auditDate",
@@ -62,11 +75,25 @@ export default function AuditMultiStepForm({
 		return "";
 	};
 
+	const addAudit = async (auditData: any, declarationId: number) => {
+		try {
+			const audit = {
+				...auditData,
+			};
+
+			await createAudit({ ...audit, declarationId });
+		} catch (error) {
+			console.error("Error adding audit:", error);
+		}
+	};
+
 	const form = useAppForm({
 		...auditMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (value.section === "files") {
 				alert(JSON.stringify(value, null, 2));
+				console.log("value", value);
+				await addAudit(value, declarationId);
 			} else {
 				const nextSection = goToNextSection(value.section);
 
@@ -85,7 +112,10 @@ export default function AuditMultiStepForm({
 		{ slug: "compliantElements", title: "Échantillon contrôlé" },
 		{ slug: "nonCompliantElements", title: "Éléments non conformes" },
 		{ slug: "disproportionnedCharge", title: "Charge disproportionnée" },
-		{ slug: "optionalElements", title: "Éléments optionnels" },
+		{
+			slug: "optionalElements",
+			title: "Éléments non soumis à l’obligation d’accessibilité",
+		},
 		{ slug: "files", title: "Fichiers" },
 	];
 

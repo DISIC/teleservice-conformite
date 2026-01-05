@@ -2,8 +2,6 @@ import { TRPCError } from "@trpc/server";
 import z from "zod";
 import type { appKindOptions } from "~/payload/collections/Declaration";
 import type {
-  ZDeclarationAudit,
-  ZDeclarationGeneral,
   ZDeclarationMultiStepFormSchema,
 } from "~/utils/form/declaration/schema";
 import { declarationGeneral } from "~/utils/form/declaration/schema";
@@ -68,7 +66,7 @@ export const declarationRouter = createTRPCRouter({
         collection: "entities",
         data: {
           name: organisation,
-          field: domain,
+          field: domain as any,
         },
       });
 
@@ -79,7 +77,7 @@ export const declarationRouter = createTRPCRouter({
           app_kind: kind,
           url,
           entity: entity.id,
-          created_by: 2,
+          created_by: 1, //Change to dynamic user ID when auth is implemented
         },
       });
 
