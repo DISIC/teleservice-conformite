@@ -4,30 +4,17 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 
-import type { Declaration } from "payload/payload-types";
+import type { Declaration } from "~/payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
-import { useStore } from "@tanstack/react-form";
 import { tss } from "tss-react";
-import { MultiStep } from "~/components/MultiStep";
 import { useAppForm } from "~/utils/form/context";
-import {
-	DeclarationAuditForm,
-	DeclarationGeneralForm,
-	// DeclarationSchemaForm,
-} from "~/utils/form/declaration/form";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
 import SchemaForm from "~/components/declaration/SchemaForm";
 
-type Steps<T> = {
-	slug: T;
-	title: string;
-};
-
 export default function SchemaPage({
 	declaration,
-}: { declaration: Declaration | null }) {
+}: { declaration: Declaration }) {
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
 
@@ -129,7 +116,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			// redirect: { destination: "/" },
+			redirect: { destination: "/declarations" },
 		};
 	}
 
@@ -142,16 +129,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			depth: 3,
 		});
 
+		if (!declaration) {
+			return {
+				props: {},
+				redirect: { destination: "/declarations" },
+			};
+		}
+
 		return {
 			props: {
-				declaration: declaration || null,
+				declaration: declaration,
 			},
 		};
 	} catch (error) {
 		console.error("Error fetching declaration:", error);
 
 		return {
-			// redirect: { destination: "/" },
+			redirect: { destination: "/declarations" },
 			props: {},
 		};
 	}

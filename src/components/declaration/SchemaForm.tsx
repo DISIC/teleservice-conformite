@@ -8,7 +8,7 @@ import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { useRouter } from "next/router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 
-import type { Declaration } from "payload/payload-types";
+import type { Declaration } from "~/payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
 import { useStore } from "@tanstack/react-form";
 import { tss } from "tss-react";
@@ -32,7 +32,9 @@ export default function SchemaForm({
 	const { classes } = useStyles();
 	const router = useRouter();
 
-	const sections: string[] = ["schema", "currentYearSchemaLinks"];
+	const sections = ["schema", "currentYearSchemaLinks"] as const;
+
+	type Section = (typeof sections)[number];
 
 	const { mutateAsync: createSchema } = api.schema.create.useMutation({
 		onSuccess: async () => {
@@ -43,20 +45,20 @@ export default function SchemaForm({
 		},
 	});
 
-	const goToPreviousSection = (currentSection: string): string => {
+	const goToPreviousSection = (currentSection: Section): Section | null => {
 		const currentIndex = sections.indexOf(currentSection);
 		if (currentIndex > 0) {
-			return sections[currentIndex - 1] ?? "";
+			return sections[currentIndex - 1] ?? null;
 		}
-		return "";
+		return null;
 	};
 
-	const goToNextSection = (currentSection: string): string => {
+	const goToNextSection = (currentSection: Section): Section | null => {
 		const currentIndex = sections.indexOf(currentSection);
 		if (currentIndex < sections.length - 1) {
-			return sections[currentIndex + 1] ?? "";
+			return sections[currentIndex + 1] ?? null;
 		}
-		return "";
+		return null;
 	};
 
 	const addSchema = async ({
@@ -80,11 +82,8 @@ export default function SchemaForm({
 					declarationId,
 				});
 			} else {
-				const nextSection = goToNextSection(value.section);
-
-				if (nextSection) {
-					formApi.setFieldValue("section", nextSection);
-				}
+				const nextSection = goToNextSection(value.section as Section);
+				if (nextSection) formApi.setFieldValue("section", nextSection);
 			}
 		},
 	});

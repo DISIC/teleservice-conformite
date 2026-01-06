@@ -8,27 +8,25 @@ import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import Search from "@codegouvfr/react-dsfr/picto/Search";
 import Community from "@codegouvfr/react-dsfr/picto/Community";
 
-import type { Declaration } from "payload/payload-types";
+import type { Declaration } from "~/payload/payload-types";
+import { getPopulated } from "~/utils/payload-helper";
 
 interface DemarchesProps {
-	declaration: Declaration | null;
+	declaration: Declaration;
 }
 
 export default function Demarches({ declaration }: DemarchesProps) {
 	const { classes } = useStyles();
+	const { rate } = getPopulated(declaration?.audit) || {};
 
 	return (
 		<section id="demarches-tab" className={classes.main}>
-			{declaration?.audit?.rate && (
+			{rate && (
 				<div className={classes.summaryCardsContainer}>
 					<div className={classes.summaryRateCard}>
 						<p className={classes.rateLabel}>Taux de conformite</p>
 						<p className={classes.rateValue}>
-							<strong>
-								{declaration?.audit?.rate
-									? `${declaration.audit.rate}%`
-									: "N/A"}
-							</strong>
+							<strong>{rate ? `${rate}%` : "N/A"}</strong>
 						</p>
 					</div>
 					<div className={classes.updateDateLabel}>
@@ -40,15 +38,17 @@ export default function Demarches({ declaration }: DemarchesProps) {
 									: "N/A"}
 							</strong>
 						</span>
-						{declaration?.updatedAt > declaration?.published_at && (
-							<Button
-								iconId="fr-icon-edit-box-fill"
-								priority="primary"
-								style={{ width: "100%" }}
-							>
-								Mettre à jour
-							</Button>
-						)}
+						{declaration?.updatedAt &&
+							declaration?.published_at &&
+							declaration?.updatedAt > declaration?.published_at && (
+								<Button
+									iconId="fr-icon-edit-box-fill"
+									priority="primary"
+									style={{ width: "100%" }}
+								>
+									Mettre à jour
+								</Button>
+							)}
 					</div>
 				</div>
 			)}

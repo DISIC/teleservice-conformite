@@ -14,7 +14,7 @@ import { tss } from "tss-react";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 
 import { api } from "~/utils/api";
-import type { Declaration } from "payload/payload-types";
+import type { Declaration } from "~/payload/payload-types";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
 
@@ -24,7 +24,7 @@ const deleteModal = createModal({
 });
 
 interface DeclarationPageProps {
-	declaration: Declaration | null;
+	declaration: Declaration;
 }
 
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {
@@ -199,7 +199,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			// redirect: { destination: "/" },
+			redirect: { destination: "/declarations" },
 		};
 	}
 
@@ -214,6 +214,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 		if (!result) {
 			return {
+				redirect: { destination: "/declarations" },
 				props: {
 					declaration: null,
 				},
@@ -238,7 +239,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		console.error("Error fetching declaration:", error);
 
 		return {
-			// redirect: { destination: "/" },
+			redirect: { destination: "/declarations" },
 			props: {},
 		};
 	}

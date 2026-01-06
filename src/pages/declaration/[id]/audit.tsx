@@ -4,31 +4,24 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { useRouter } from "next/router";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-
-import type { Declaration } from "payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
-import { useStore } from "@tanstack/react-form";
 import { tss } from "tss-react";
-import { MultiStep } from "~/components/MultiStep";
+
+import type { Declaration } from "~/payload/payload-types";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationAuditForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import AuditMultiStepForm from "~/components/declaration/AuditMultiStepForm";
-
-type Steps<T> = {
-	slug: T;
-	title: string;
-};
+import { getPopulated } from "~/utils/payload-helper";
 
 export default function AuditPage({
 	declaration,
-}: { declaration: Declaration | null }) {
+}: { declaration: Declaration }) {
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
 	const router = useRouter();
+	const audit = getPopulated(declaration?.audit);
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
@@ -36,18 +29,18 @@ export default function AuditPage({
 
 	readOnlyFormOptions.defaultValues.audit = {
 		...readOnlyFormOptions.defaultValues.audit,
-		date: new Date(declaration?.audit?.date).toLocaleDateString() ?? "",
-		grid: declaration?.audit?.auditGrid ?? null,
-		report: declaration?.audit?.auditReport ?? null,
-		realisedBy: declaration?.audit?.realisedBy,
-		rgaa_version: declaration?.audit?.auditRgaaVersion ?? "rgaa_4",
-		rate: declaration?.audit?.rate ?? 0,
-		compliantElements: declaration?.audit?.compliantElements ?? "Non",
-		technologies: declaration?.audit?.toolsUsed ?? [""],
-		testEnvironments: declaration?.audit?.testEnvironments ?? [""],
-		nonCompliantElements: declaration?.audit?.nonCompliantElements ?? "Non",
-		disproportionnedCharge: declaration?.audit?.disproportionnedCharge ?? "Non",
-		optionalElements: declaration?.audit?.exemption ?? "Non",
+		date: new Date(audit?.date ?? "").toLocaleDateString() ?? "",
+		grid: audit?.auditGrid ?? undefined,
+		report: audit?.auditReport ?? undefined,
+		realisedBy: audit?.realisedBy ?? "",
+		rgaa_version: audit?.rgaa_version ?? "rgaa_4",
+		rate: audit?.rate ?? 0,
+		compliantElements: audit?.compliantElements ?? [],
+		technologies: audit?.toolsUsed ?? [],
+		testEnvironments: audit?.testEnvironments ?? [],
+		nonCompliantElements: audit?.nonCompliantElements ?? "Non",
+		disproportionnedCharge: audit?.disproportionnedCharge ?? "Non",
+		optionalElements: audit?.exemption ?? "Non",
 	};
 
 	const form = useAppForm({
@@ -106,7 +99,6 @@ const useStyles = tss.withName(AuditPage.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
-		backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
@@ -131,7 +123,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			// redirect: { destination: "/" },
+			redirect: { destination: "/declarations" },
 		};
 	}
 
@@ -144,6 +136,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			depth: 3,
 		});
 
+		if (!declaration) {
+			return {
+				props: {},
+				redirect: { destination: "/declarations" },
+			};
+		}
+
 		return {
 			props: {
 				declaration: declaration || null,
@@ -153,7 +152,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		console.error("Error fetching declaration:", error);
 
 		return {
-			// redirect: { destination: "/" },
+			redirect: { destination: "/declarations" },
 			props: {},
 		};
 	}

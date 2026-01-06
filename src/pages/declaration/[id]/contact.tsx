@@ -5,40 +5,42 @@ import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 
-import type { Declaration } from "payload/payload-types";
+import type { Declaration } from "~/payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationContactForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import ContactForm from "~/components/declaration/ContactForm";
+import { getPopulated } from "~/utils/payload-helper";
 
 export default function ContactPage({
 	declaration,
-}: { declaration: Declaration | null }) {
+}: { declaration: Declaration }) {
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
+	const { email, url } = getPopulated(declaration?.contact) || {};
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
 	};
 
-	const contactOptions = [
-		declaration?.contact.email,
-		declaration?.contact.url,
-	].reduce((acc, option) => {
-		if (!option) return acc;
+	const contactOptions = [email, url].reduce(
+		(acc: ("email" | "url")[], option) => {
+			if (!option) return acc;
 
-		if (option === declaration.contact.email) acc.push("email");
-		if (option === declaration.contact.url) acc.push("url");
+			if (option === email) acc.push("email");
+			if (option === url) acc.push("url");
 
-		return acc;
-	}, []);
+			return acc;
+		},
+		[],
+	);
 
 	readOnlyFormOptions.defaultValues.contact = {
 		contactOptions,
-		contactEmail: declaration?.contact.email ?? "",
-		contactName: declaration?.contact.url ?? "",
+		contactEmail: email ?? "",
+		contactName: getPopulated(declaration?.contact)?.url ?? "",
 	};
 
 	const form = useAppForm({
@@ -49,7 +51,7 @@ export default function ContactPage({
 	});
 
 	if (!declaration?.actionPlan) {
-		return <ContactForm declarationId={declaration?.id} />;
+		return <ContactForm declarationId={declaration?.id ?? -1} />;
 	}
 
 	return (
@@ -122,7 +124,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			// redirect: { destination: "/" },
+			redirect: { destination: "/declarations" },
 		};
 	}
 
@@ -135,16 +137,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			depth: 3,
 		});
 
+		if (!declaration) {
+			return {
+				props: {},
+				redirect: { destination: "/declarations" },
+			};
+		}
+
 		return {
 			props: {
-				declaration: declaration || null,
+				declaration,
 			},
 		};
 	} catch (error) {
 		console.error("Error fetching declaration:", error);
 
 		return {
-			// redirect: { destination: "/" },
+			redirect: { destination: "/declarations" },
 			props: {},
 		};
 	}

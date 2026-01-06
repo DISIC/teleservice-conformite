@@ -10,7 +10,8 @@ import NextLink from "next/link";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 
-import type { Declaration } from "payload/payload-types";
+import type { Declaration } from "~/payload/payload-types";
+import { getPopulated } from "~/utils/payload-helper";
 
 interface DeclarationsPageProps {
 	declarations: Array<Declaration & { updatedAtFormatted: string }>;
@@ -40,64 +41,69 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 			</div>
 			{declarations.length ? (
 				<div>
-					{declarations.map((declaration) => (
-						<div key={declaration.id} className={classes.declarationCard}>
-							<div>
-								<div className={classes.declarationTitleWrapper}>
-									<h6 className={classes.declarationTitle}>
-										<NextLink href={`/declaration/${declaration.id}`}>
-											{declaration.name}
-										</NextLink>
-									</h6>
+					{declarations.map((declaration) => {
+						const { name } = getPopulated(declaration.entity) || {};
+						const { rate } = getPopulated(declaration.audit) || {};
 
-									<Badge
-										noIcon={true}
-										small={true}
-										severity={
-											declaration?.status === "published"
-												? "success"
-												: undefined
-										}
-									>
-										{declaration?.status === "published"
-											? "Publié"
-											: "Brouillon"}
-									</Badge>
-								</div>
-								<p className={classes.details}>
-									Dernière modification le {declaration.updatedAtFormatted}
-								</p>
-								<p className={classes.details}>{declaration.entity.name}</p>
-								<p className={classes.details}>Site web - {declaration.url}</p>
-							</div>
-							{declaration?.audit?.rate && (
+						return (
+							<div key={declaration.id} className={classes.declarationCard}>
 								<div>
-									<p className={classes.auditRateValue}>
-										{declaration?.audit?.rate}%
+									<div className={classes.declarationTitleWrapper}>
+										<h6 className={classes.declarationTitle}>
+											<NextLink href={`/declaration/${declaration.id}`}>
+												{declaration.name}
+											</NextLink>
+										</h6>
+
+										<Badge
+											noIcon={true}
+											small={true}
+											severity={
+												declaration?.status === "published"
+													? "success"
+													: undefined
+											}
+										>
+											{declaration?.status === "published"
+												? "Publié"
+												: "Brouillon"}
+										</Badge>
+									</div>
+									<p className={classes.details}>
+										Dernière modification le {declaration.updatedAtFormatted}
 									</p>
-									<p className={classes.auditRateLabel}>taux conformité</p>
+									<p className={classes.details}>{name}</p>
+									<p className={classes.details}>
+										Site web - {declaration.url}
+									</p>
 								</div>
-							)}
-							<div className={classes.buttonsContainer}>
-								{declaration.status === "published" && (
+								{rate && (
+									<div>
+										<p className={classes.auditRateValue}>{rate}%</p>
+										<p className={classes.auditRateLabel}>taux conformité</p>
+									</div>
+								)}
+								<div className={classes.buttonsContainer}>
+									{declaration.status === "published" && (
+										<Button
+											iconId="fr-icon-edit-line"
+											priority="primary"
+											style={{ width: "100%" }}
+										>
+											Mettre à jour
+										</Button>
+									)}
 									<Button
-										iconId="fr-icon-edit-line"
-										priority="primary"
+										iconId="fr-icon-share-line"
+										priority="tertiary"
 										style={{ width: "100%" }}
 									>
-										Mettre à jour
+										Copier le lien
 									</Button>
-								)}
-								<Button
-									iconId="fr-icon-share-line"
-									priority="tertiary"
-									style={{ width: "100%" }}
-								>
-									Copier le lien
-								</Button>
+								</div>
 							</div>
-						</div>
-					))}
+						);
+					})}
 				</div>
 			) : (
 				<div className={classes.emptyStateContainer}>
@@ -223,7 +229,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		console.error("Error fetching declaration:", error);
 
 		return {
-			// redirect: { destination: "/" },
+			redirect: { destination: "/" },
 			props: {},
 		};
 	}

@@ -47,9 +47,7 @@ export const declarationAudit = z.object({
       .number()
       .min(0, { message: "Le taux doit être entre 0 et 100" })
       .max(100, { message: "Le taux doit être entre 0 et 100" }),
-    compliantElements: z
-      .array(z.object({ name: z.string(), url: z.url() }))
-      .min(1, { message: "Au moins une page doit être renseignée" }),
+    compliantElements: z.array(z.object({ name: z.string(), url: z.url() })).optional(),
     technologies: z.array(z.string()).min(1, {
       message: "Au moins une technologie doit être sélectionnée",
     }),

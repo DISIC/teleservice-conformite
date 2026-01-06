@@ -38,7 +38,6 @@ export default function ContactForm({
 	const form = useAppForm({
 		...contactFormOptions,
 		onSubmit: async ({ value, formApi }) => {
-			alert(JSON.stringify(value, null, 2));
 			await addContact({
 				email: value?.emailContact ?? "",
 				url: value?.contactLink ?? "",
@@ -46,8 +45,6 @@ export default function ContactForm({
 			});
 		},
 	});
-
-	// Single-section contact form; no section state needed
 
 	return (
 		<div className={classes.main}>

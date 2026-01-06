@@ -17,7 +17,6 @@ export async function seedDeclarations(payload: Payload) {
       data: declaration,
     });
 
-    console.log("Declaration seeded successfully.");
   } catch (error) {
     console.error("Error seeding declaration:", error);
   }

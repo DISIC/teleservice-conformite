@@ -8,7 +8,7 @@ import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { useRouter } from "next/router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 
-import type { Declaration } from "payload/payload-types";
+import type { Declaration } from "~/payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
 import { useStore } from "@tanstack/react-form";
 import { tss } from "tss-react";
@@ -49,7 +49,7 @@ export default function AuditMultiStepForm({
 		},
 	});
 
-	const sections: string[] = [
+	const sections = [
 		"auditDate",
 		"tools",
 		"compliantElements",
@@ -57,22 +57,24 @@ export default function AuditMultiStepForm({
 		"disproportionnedCharge",
 		"optionalElements",
 		"files",
-	];
+	] as const;
 
-	const goToPreviousSection = (currentSection: string): string => {
+	type Section = (typeof sections)[number];
+
+	const goToPreviousSection = (currentSection: Section): Section | null => {
 		const currentIndex = sections.indexOf(currentSection);
 		if (currentIndex > 0) {
-			return sections[currentIndex - 1] ?? "";
+			return sections[currentIndex - 1] ?? null;
 		}
-		return "";
+		return null;
 	};
 
-	const goToNextSection = (currentSection: string): string => {
+	const goToNextSection = (currentSection: Section): Section | null => {
 		const currentIndex = sections.indexOf(currentSection);
 		if (currentIndex < sections.length - 1) {
-			return sections[currentIndex + 1] ?? "";
+			return sections[currentIndex + 1] ?? null;
 		}
-		return "";
+		return null;
 	};
 
 	const addAudit = async (auditData: any, declarationId: number) => {
@@ -91,22 +93,20 @@ export default function AuditMultiStepForm({
 		...auditMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (value.section === "files") {
-				alert(JSON.stringify(value, null, 2));
-				console.log("value", value);
 				await addAudit(value, declarationId);
 			} else {
-				const nextSection = goToNextSection(value.section);
-
-				if (nextSection) {
-					formApi.setFieldValue("section", nextSection);
-				}
+				const nextSection = goToNextSection(value.section as Section);
+				if (nextSection) formApi.setFieldValue("section", nextSection);
 			}
 		},
 	});
 
-	const section = useStore(form.store, (state) => state.values.section);
+	const section = useStore(
+		form.store,
+		(state) => state.values.section as Section,
+	);
 
-	const steps: Steps<typeof section>[] = [
+	const steps: Steps<Section>[] = [
 		{ slug: "auditDate", title: "Date & référentiel RGAA" },
 		{ slug: "tools", title: "Outils de test" },
 		{ slug: "compliantElements", title: "Échantillon contrôlé" },
@@ -156,9 +156,8 @@ export default function AuditMultiStepForm({
 										router.push(`/declaration/${declarationId}`);
 									} else {
 										const previousSection = goToPreviousSection(section);
-										if (previousSection) {
+										if (previousSection)
 											form.setFieldValue("section", previousSection);
-										}
 									}
 								}}
 								priority="tertiary"

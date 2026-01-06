@@ -7,8 +7,9 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
+import { getPopulated } from "~/utils/payload-helper";
 
-import type { Declaration } from "payload/payload-types";
+import type { Declaration } from "~/payload/payload-types";
 
 const inviteMembersModal = createModal({
 	id: "inviteMembersModal",
@@ -16,13 +17,13 @@ const inviteMembersModal = createModal({
 });
 
 interface MembresProps {
-	declaration: Declaration | null;
+	declaration: Declaration;
 }
 
 export default function Membres({ declaration }: MembresProps) {
-	console.log("declaration in Membres:", declaration);
 	const [value, setValue] = useState<"reader" | "admin">("reader");
 	const { classes } = useStyles();
+	const { name, email } = getPopulated(declaration?.created_by) || {};
 
 	const StatusBadge = ({ status }: { status: string }) => {
 		switch (status) {
@@ -134,13 +135,7 @@ export default function Membres({ declaration }: MembresProps) {
 			<div style={{}}>
 				<Table
 					fixed
-					data={[
-						[
-							declaration.created_by?.name,
-							declaration.created_by?.email,
-							<StatusBadge key="status" status="admin" />,
-						],
-					]}
+					data={[[name, email, <StatusBadge key="status" status="admin" />]]}
 					headers={[
 						<div key="user" className={classes.tableHeader}>
 							Utilisateur{" "}

@@ -185,7 +185,7 @@ export const DeclarationAuditForm = withForm({
 							style={{
 								backgroundColor:
 									fr.colors.decisions.background.default.grey.hover,
-								height: "125rem",
+								height: "0.125rem",
 								width: "100%",
 								marginBottom: fr.spacing("4w"),
 								display: "block",
@@ -331,7 +331,7 @@ export const DeclarationAuditForm = withForm({
 										label="Éléments ayant fait l’objet de vérification : "
 										defaultExpanded
 									>
-										{field.state.value.map((_, index) => (
+										{field.state.value?.map((_, index) => (
 											<div key={index}>
 												<div>
 													<form.AppField
@@ -376,9 +376,9 @@ export const DeclarationAuditForm = withForm({
 										<strong>
 											Éléments ayant fait l’objet de vérification :{" "}
 										</strong>{" "}
-										{field.state.value.length > 0 ? (
+										{field.state.value && field.state.value?.length > 0 ? (
 											<div>
-												{field.state.value.map((value) => (
+												{field.state.value?.map((value) => (
 													<ul key={value.name}>
 														<li>{value.name}</li>
 														{value?.url && <li>{value.url}</li>}
