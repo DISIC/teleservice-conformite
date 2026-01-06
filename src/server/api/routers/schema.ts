@@ -24,7 +24,7 @@ const linkToDeclaration = async (
 
 };
 
-export const SchemaRouter = createTRPCRouter({
+export const schemaRouter = createTRPCRouter({
   create: publicProcedure
     .input(
       z.object({
