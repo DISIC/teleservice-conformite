@@ -23,7 +23,20 @@ export default function ContactPage({
 		setEditMode((prev) => !prev);
 	};
 
+	const contactOptions = [
+		declaration?.contact.email,
+		declaration?.contact.url,
+	].reduce((acc, option) => {
+		if (!option) return acc;
+
+		if (option === declaration.contact.email) acc.push("email");
+		if (option === declaration.contact.url) acc.push("url");
+
+		return acc;
+	}, []);
+
 	readOnlyFormOptions.defaultValues.contact = {
+		contactOptions,
 		contactEmail: declaration?.contact.email ?? "",
 		contactName: declaration?.contact.url ?? "",
 	};

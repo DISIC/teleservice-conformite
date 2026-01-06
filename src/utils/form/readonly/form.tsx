@@ -277,11 +277,9 @@ export const DeclarationAuditForm = withForm({
 													<form.AppField
 														name={`audit.testEnvironments[${index}]`}
 													>
-														{(subField) => (
-															<subField.SelectField
-																label={`Environnement ${index + 1} - Type`}
-																options={envKindOptions}
-																className={fr.cx("fr-mb-0")}
+														{(field) => (
+															<field.TextField
+																label={`Environnement de test ${index + 1}`}
 															/>
 														)}
 													</form.AppField>
@@ -532,17 +530,39 @@ export const DeclarationContactForm = withForm({
 
 		return (
 			<div>
-				<form.AppField name="contact.contactName">
+				<form.AppField name="contact.contactOptions">
 					{(field) => (
-						<field.TextField
-							label="Lien URL du formulaire : "
-							readOnly={readOnly}
-						/>
-					)}
-				</form.AppField>
-				<form.AppField name="contact.contactEmail">
-					{(field) => (
-						<field.TextField label="Email de contact : " readOnly={readOnly} />
+						<>
+							{!readOnly && (
+								<field.CheckboxGroupField
+									label="Manière de contacter la personne responsable de l’accessibilité : "
+									options={[
+										{ label: "Formulaire en ligne", value: "url" },
+										{ label: "Point de contact", value: "email" },
+									]}
+								/>
+							)}
+							{field.state.value.includes("url") && (
+								<form.AppField name="contact.contactName">
+									{(field) => (
+										<field.TextField
+											label="Lien URL du formulaire : "
+											readOnly={readOnly}
+										/>
+									)}
+								</form.AppField>
+							)}
+							{field.state.value.includes("email") && (
+								<form.AppField name="contact.contactEmail">
+									{(field) => (
+										<field.TextField
+											label="Email de contact : "
+											readOnly={readOnly}
+										/>
+									)}
+								</form.AppField>
+							)}
+						</>
 					)}
 				</form.AppField>
 			</div>

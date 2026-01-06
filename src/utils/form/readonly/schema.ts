@@ -54,7 +54,7 @@ export const declarationAudit = z.object({
       message: "Au moins une technologie doit être sélectionnée",
     }),
     testEnvironments: z
-      .array(z.object(z.string()))
+      .array(z.string())
       .min(1, {
         message: "Au moins un environnement de test doit être sélectionné",
       }),
@@ -105,6 +105,7 @@ export const declarationSchemaDefaultValues: ZSchema = {
 
 export const declarationContact = z.object({
   contact: z.object({
+    contactOptions: z.array(z.enum(["email", "url"])),
     contactName: z.string(),
     contactEmail: z.string(),
   }),
@@ -114,6 +115,7 @@ export type ZDeclarationContact = z.infer<typeof declarationContact>;
 
 export const declarationContactDefaultValues: ZDeclarationContact = {
   contact: {
+    contactOptions: [],
     contactName: "",
     contactEmail: "",
   },
