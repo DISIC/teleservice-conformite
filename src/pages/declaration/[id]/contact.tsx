@@ -9,12 +9,8 @@ import type { Declaration } from "payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
-import {
-	DeclarationAuditForm,
-	DeclarationGeneralForm,
-	// DeclarationSchemaForm,
-} from "~/utils/form/declaration/form";
-import { contactFormOptions } from "~/utils/form/contact/schema";
+import { DeclarationContactForm } from "~/utils/form/readonly/form";
+import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import ContactForm from "~/components/declaration/ContactForm";
 
 export default function ContactPage({
@@ -27,17 +23,13 @@ export default function ContactPage({
 		setEditMode((prev) => !prev);
 	};
 
-	// declarationMultiStepFormOptions.defaultValues.contact = {
-	// 	annualSchemaDone: true,
-	// 	currentYearSchemaDone: true,
-	// 	currentSchemaUrl: "https://www.example.com/schema.pdf",
-	// 	currentSchemaFile: new File(["Schema content"], "schema.pdf", {
-	// 		type: "application/pdf",
-	// 	}),
-	// };
+	readOnlyFormOptions.defaultValues.contact = {
+		contactEmail: declaration?.contact.email ?? "",
+		contactName: declaration?.contact.url ?? "",
+	};
 
 	const form = useAppForm({
-		...contactFormOptions,
+		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			alert(JSON.stringify(value, null, 2));
 		},
@@ -84,7 +76,7 @@ export default function ContactPage({
 					}}
 				>
 					<div className={classes.formWrapper}>
-						{/* <ContactForm form={form} readOnly={!editMode} /> */}
+						<DeclarationContactForm form={form} readOnly={!editMode} />
 						{editMode && (
 							<form.AppForm>
 								<form.SubscribeButton label={"Valider"} />

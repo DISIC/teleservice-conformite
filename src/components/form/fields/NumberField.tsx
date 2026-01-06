@@ -30,7 +30,7 @@ export function NumberField({ label, readOnly = false }: NumberFieldProps) {
 	) : (
 		<div>
 			<p>
-				<strong>{label}</strong>: {field.state.value}
+				<strong>{label}</strong> {field.state.value}
 			</p>
 		</div>
 	);

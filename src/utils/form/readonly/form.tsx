@@ -38,7 +38,7 @@ export const DeclarationGeneralForm = withForm({
 				<form.AppField name="general.organisation">
 					{(field) => (
 						<field.TextField
-							label="Organisation"
+							label="Organisation : "
 							readOnly={readOnly}
 							placeholder="Direction Générale des Finances (DGFIP)"
 						/>
@@ -47,7 +47,7 @@ export const DeclarationGeneralForm = withForm({
 				<form.AppField name="general.kind">
 					{(field) => (
 						<field.RadioField
-							label="Type de produit numérique"
+							label="Type de produit numérique : "
 							options={[...appKindOptions]}
 							readOnly={readOnly}
 						/>
@@ -56,7 +56,7 @@ export const DeclarationGeneralForm = withForm({
 				<form.AppField name="general.name">
 					{(field) => (
 						<field.TextField
-							label="Nom du service numérique"
+							label="Nom du service numérique : "
 							readOnly={readOnly}
 							description="Exemples : Demande de logement social, Service public.fr, Outil de gestion des congés"
 						/>
@@ -74,7 +74,7 @@ export const DeclarationGeneralForm = withForm({
 				<form.AppField name="general.domain">
 					{(field) => (
 						<field.SelectField
-							label="Secteur d'activité de l'organisation"
+							label="Secteur d'activité de l'organisation : "
 							placeholder="Sélectionnez un secteur"
 							defaultStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
 							readOnly={readOnly}
@@ -131,13 +131,14 @@ export const DeclarationAuditForm = withForm({
 						<form.AppField name="audit.date">
 							{(field) => (
 								<field.TextField
-									label="Date de realisation"
+									label="Date de réalisation : "
 									kind="date"
 									max={new Date().toISOString().split("T")[0]}
 									readOnly={readOnly}
 								/>
 							)}
 						</form.AppField>
+
 						<span
 							style={{
 								backgroundColor:
@@ -148,15 +149,17 @@ export const DeclarationAuditForm = withForm({
 								display: "block",
 							}}
 						/>
+
 						<form.AppField name="audit.realisedBy">
 							{(field) => (
-								<field.RadioField
-									label="Entité ou personne ayant réalisé l'audit"
-									options={[...rgaaVersionOptions]}
+								<field.TextField
+									kind="text"
+									label="Entité ou personne ayant réalisé l'audit : "
 									readOnly={readOnly}
 								/>
 							)}
 						</form.AppField>
+
 						<span
 							style={{
 								backgroundColor:
@@ -167,15 +170,17 @@ export const DeclarationAuditForm = withForm({
 								display: "block",
 							}}
 						/>
+
 						<form.AppField name="audit.rgaa_version">
 							{(field) => (
 								<field.RadioField
-									label="Référentiel RGAA utilisé"
+									label="Référentiel RGAA utilisé : "
 									options={[...rgaaVersionOptions]}
 									readOnly={readOnly}
 								/>
 							)}
 						</form.AppField>
+
 						<span
 							style={{
 								backgroundColor:
@@ -186,13 +191,21 @@ export const DeclarationAuditForm = withForm({
 								display: "block",
 							}}
 						/>
+
 						<div>
 							<form.AppField name="audit.rate">
-								{(field) => (
-									<field.NumberField label="Résultats" readOnly={readOnly} />
-								)}
+								{(field) =>
+									readOnly ? (
+										<p>
+											<strong>Résultats:</strong> {field.state.value}%
+										</p>
+									) : (
+										<field.NumberField label="Résultats : " />
+									)
+								}
 							</form.AppField>
 						</div>
+
 						<span
 							style={{
 								backgroundColor:
@@ -203,11 +216,12 @@ export const DeclarationAuditForm = withForm({
 								display: "block",
 							}}
 						/>
+
 						<form.AppField name="audit.technologies" mode="array">
 							{(field) =>
 								!readOnly ? (
 									<Accordion
-										label="Technologies utilisées (dans l'audit)"
+										label="Outils utilisés pour évaluer l’accessibilité : "
 										defaultExpanded
 									>
 										{field.state.value.map((_, index) => (
@@ -236,7 +250,9 @@ export const DeclarationAuditForm = withForm({
 									</Accordion>
 								) : (
 									<p>
-										<strong>Technologies utilisées:</strong>{" "}
+										<strong>
+											Outils utilisés pour évaluer l’accessibilité :{" "}
+										</strong>{" "}
 										{field.state.value.length > 0 ? (
 											<ul>
 												{field.state.value.map((value) => (
@@ -250,18 +266,16 @@ export const DeclarationAuditForm = withForm({
 								)
 							}
 						</form.AppField>
+
 						<form.AppField name="audit.testEnvironments" mode="array">
 							{(field) =>
 								!readOnly ? (
-									<Accordion
-										label="Environnements de test (dans l'audit)"
-										defaultExpanded
-									>
+									<Accordion label="Environnement de test : " defaultExpanded>
 										{field.state.value.map((_, index) => (
 											<div key={index}>
 												<div>
 													<form.AppField
-														name={`audit.testEnvironments[${index}].kind`}
+														name={`audit.testEnvironments[${index}]`}
 													>
 														{(subField) => (
 															<subField.SelectField
@@ -271,30 +285,6 @@ export const DeclarationAuditForm = withForm({
 															/>
 														)}
 													</form.AppField>
-													<form.Subscribe
-														selector={(store) =>
-															store.values.audit.testEnvironments?.[index]?.kind
-														}
-													>
-														{(kind) => (
-															<form.AppField
-																name={`audit.testEnvironments[${index}].os`}
-															>
-																{(subField) => (
-																	<subField.SelectField
-																		label={`Environnement ${index + 1} - OS`}
-																		disabled={!kind || kind === ""}
-																		options={
-																			kind === "mobile"
-																				? envMobileOsOptions
-																				: envDesktopOsOptions
-																		}
-																		readOnly={readOnly}
-																	/>
-																)}
-															</form.AppField>
-														)}
-													</form.Subscribe>
 												</div>
 												<Button
 													type="button"
@@ -305,10 +295,7 @@ export const DeclarationAuditForm = withForm({
 												/>
 											</div>
 										))}
-										<Button
-											type="button"
-											onClick={() => field.pushValue({ kind: "", os: "" })}
-										>
+										<Button type="button" onClick={() => field.pushValue("")}>
 											Ajouter un environnement de test
 										</Button>
 									</Accordion>
@@ -318,9 +305,7 @@ export const DeclarationAuditForm = withForm({
 										{field.state.value.length > 0 ? (
 											<ul>
 												{field.state.value.map((value) => (
-													<li key={value.kind}>
-														{value.kind} - {value.os}
-													</li>
+													<li key={value}>{value}</li>
 												))}
 											</ul>
 										) : (
@@ -330,6 +315,7 @@ export const DeclarationAuditForm = withForm({
 								)
 							}
 						</form.AppField>
+
 						<span
 							style={{
 								backgroundColor:
@@ -340,117 +326,225 @@ export const DeclarationAuditForm = withForm({
 								display: "block",
 							}}
 						/>
-						<div className={fr.cx("fr-accordions-group")}>
-							<form.AppField name="audit.pages" mode="array">
-								{(field) =>
-									!readOnly ? (
-										<Accordion label="Pages auditées" defaultExpanded>
-											{field.state.value.map((_, index) => (
-												<div key={index}>
-													<div>
-														<form.AppField name={`audit.pages[${index}].label`}>
-															{(subField) => (
-																<subField.TextField
-																	label={`Page ${index + 1} - Label`}
-																	className={fr.cx("fr-mb-0")}
-																/>
-															)}
-														</form.AppField>
-														<form.AppField name={`audit.pages[${index}].url`}>
-															{(subField) => (
-																<subField.TextField
-																	label={`Page ${index + 1} - URL`}
-																	readOnly={readOnly}
-																/>
-															)}
-														</form.AppField>
-													</div>
-													<Button
-														type="button"
-														priority="secondary"
-														iconId="fr-icon-delete-bin-line"
-														onClick={() => field.removeValue(index)}
-														title="Supprimer la page"
-													/>
+						<form.AppField name="audit.compliantElements" mode="array">
+							{(field) =>
+								!readOnly ? (
+									<Accordion
+										label="Éléments ayant fait l’objet de vérification : "
+										defaultExpanded
+									>
+										{field.state.value.map((_, index) => (
+											<div key={index}>
+												<div>
+													<form.AppField
+														name={`audit.compliantElements[${index}].name`}
+													>
+														{(subField) => (
+															<subField.TextField
+																label={`Page ${index + 1} - Label`}
+																className={fr.cx("fr-mb-0")}
+															/>
+														)}
+													</form.AppField>
+													<form.AppField
+														name={`audit.compliantElements[${index}].url`}
+													>
+														{(subField) => (
+															<subField.TextField
+																label={`Page ${index + 1} - URL`}
+																readOnly={readOnly}
+															/>
+														)}
+													</form.AppField>
 												</div>
-											))}
-											<Button
-												type="button"
-												onClick={() => field.pushValue({ url: "", label: "" })}
-											>
-												Ajouter une page
-											</Button>
-										</Accordion>
-									) : (
-										<p>
-											<strong>Environnement de test :</strong>{" "}
-											{field.state.value.length > 0 ? (
-												<ul>
-													{field.state.value.map((value) => (
-														<li key={value.label}>
-															{value.label} - {value.url}
-														</li>
-													))}
-												</ul>
-											) : (
-												"None"
-											)}
-										</p>
-									)
-								}
-							</form.AppField>
-
-							<form.AppField name="audit.tools" mode="array">
-								{(field) =>
-									!readOnly ? (
-										<Accordion
-											label="Outils utilisés (dans l'audit)"
-											defaultExpanded
+												<Button
+													type="button"
+													priority="secondary"
+													iconId="fr-icon-delete-bin-line"
+													onClick={() => field.removeValue(index)}
+													title="Supprimer la page"
+												/>
+											</div>
+										))}
+										<Button
+											type="button"
+											onClick={() => field.pushValue({ url: "", name: "" })}
 										>
-											{field.state.value.map((_, index) => (
-												<div key={index}>
-													<div>
-														<form.AppField name={`audit.tools[${index}]`}>
-															{(subField) => (
-																<subField.TextField
-																	label={`Outil ${index + 1}`}
-																	readOnly={readOnly}
-																/>
-															)}
-														</form.AppField>
-													</div>
-													<Button
-														type="button"
-														priority="secondary"
-														iconId="fr-icon-delete-bin-line"
-														onClick={() => field.removeValue(index)}
-														title="Supprimer l'outil"
-													/>
+											Ajouter une page
+										</Button>
+									</Accordion>
+								) : (
+									<p>
+										<strong>
+											Éléments ayant fait l’objet de vérification :{" "}
+										</strong>{" "}
+										{field.state.value.length > 0 ? (
+											<div>
+												{field.state.value.map((value) => (
+													<ul key={value.name}>
+														<li>{value.name}</li>
+														{value?.url && <li>{value.url}</li>}
+													</ul>
+												))}
+											</div>
+										) : (
+											"None"
+										)}
+									</p>
+								)
+							}
+						</form.AppField>
+						<form.AppField name="audit.nonCompliantElements">
+							{(field) => (
+								<field.TextField
+									label="Éléments non conforme : "
+									readOnly={readOnly}
+								/>
+							)}
+						</form.AppField>
+						<form.AppField name="audit.disproportionnedCharge" mode="array">
+							{(field) =>
+								!readOnly ? (
+									<Accordion
+										label="Dérogation pour charge disproportionnée :"
+										defaultExpanded
+									>
+										{field.state.value?.map((_, index) => (
+											<div key={index}>
+												<div>
+													<form.AppField
+														name={`audit.disproportionnedCharge[${index}].name`}
+													>
+														{(subField) => (
+															<subField.TextField label="Nom de l’élément : " />
+														)}
+													</form.AppField>
+													<form.AppField
+														name={`audit.disproportionnedCharge[${index}].reason`}
+													>
+														{(subField) => (
+															<subField.TextField label="Raison de la dérogation : " />
+														)}
+													</form.AppField>
+													<form.AppField
+														name={`audit.disproportionnedCharge[${index}].duration`}
+													>
+														{(subField) => (
+															<subField.TextField label="Durée de la dérogation (facultatif) : " />
+														)}
+													</form.AppField>
+													<form.AppField
+														name={`audit.disproportionnedCharge[${index}].alternative`}
+													>
+														{(subField) => (
+															<subField.TextField label="Alternative accessible proposée : " />
+														)}
+													</form.AppField>
 												</div>
-											))}
-											<Button type="button" onClick={() => field.pushValue("")}>
-												Ajouter un outil
-											</Button>
-										</Accordion>
-									) : (
+												<Button
+													type="button"
+													priority="secondary"
+													iconId="fr-icon-delete-bin-line"
+													onClick={() => field.removeValue(index)}
+													title="Supprimer la dérogation pour charge disproportionnée"
+												/>
+											</div>
+										))}
+										<Button
+											type="button"
+											onClick={() =>
+												field.pushValue({
+													name: "",
+													reason: "",
+													duration: "",
+													alternative: "",
+												})
+											}
+										>
+											Ajouter une dérogation pour charge disproportionnée
+										</Button>
+									</Accordion>
+								) : (field?.state?.value?.length ?? 0) ? (
+									<>
 										<p>
-											<strong>Environnement de test :</strong>{" "}
-											{field.state.value.length > 0 ? (
-												<ul>
-													{field.state.value.map((value) => (
-														<li key={value}>{value}</li>
-													))}
-												</ul>
-											) : (
-												"None"
-											)}
+											<strong>Dérogation pour charge disproportionnée: </strong>{" "}
+											{field.state.value?.map((value) => (
+												<p key={value.name}>
+													{value.name} - {value.reason} - {value.duration} -{" "}
+													{value.alternative}
+												</p>
+											))}
 										</p>
-									)
-								}
-							</form.AppField>
-						</div>
+									</>
+								) : (
+									<p>Non</p>
+								)
+							}
+						</form.AppField>
+						<form.AppField name="audit.optionalElements">
+							{(field) => (
+								<field.TextField
+									label="Contenus non soumis à la déclaration :"
+									readOnly={readOnly}
+								/>
+							)}
+						</form.AppField>
+
+						<span
+							style={{
+								backgroundColor:
+									fr.colors.decisions.background.default.grey.hover,
+								height: "10px",
+								width: "100%",
+								marginBottom: fr.spacing("4w"),
+								display: "block",
+							}}
+						/>
+
+						<form.AppField name="audit.grid">
+							{(field) => (
+								<field.UploadField
+									label="Rapport d’audit : "
+									readOnly={readOnly}
+								/>
+							)}
+						</form.AppField>
+						<form.AppField name="audit.report">
+							{(field) => (
+								<field.UploadField
+									label="Grille d’audit : "
+									readOnly={readOnly}
+								/>
+							)}
+						</form.AppField>
 					</>
 				)}
+			</div>
+		);
+	},
+});
+
+export const DeclarationContactForm = withForm({
+	...readOnlyFormOptions,
+	props: { readOnly: false },
+	render: function Render({ form, readOnly }) {
+		// const { classes, cx } = useStyles();
+
+		return (
+			<div>
+				<form.AppField name="contact.contactName">
+					{(field) => (
+						<field.TextField
+							label="Lien URL du formulaire : "
+							readOnly={readOnly}
+						/>
+					)}
+				</form.AppField>
+				<form.AppField name="contact.contactEmail">
+					{(field) => (
+						<field.TextField label="Email de contact : " readOnly={readOnly} />
+					)}
+				</form.AppField>
 			</div>
 		);
 	},

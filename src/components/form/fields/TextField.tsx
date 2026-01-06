@@ -65,7 +65,7 @@ export function TextField(props: TextFieldProps) {
 	) : (
 		<div>
 			<p>
-				<strong>{label}</strong>: {field.state.value}
+				<strong>{label}</strong> {field.state.value}
 			</p>
 		</div>
 	);

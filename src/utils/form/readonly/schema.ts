@@ -2,6 +2,7 @@ import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import { appKindOptions } from "~/payload/collections/Declaration";
+import type { disproportionnedCharge } from "../audit/schema";
 
 export const declarationGeneral = z.object({
   general: z.object({
@@ -35,12 +36,9 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 
 export const declarationAudit = z.object({
   audit: z.object({
-    url: z
-      .url({ error: "L'URL n'est pas valide" })
-      .min(1, { message: "L'URL est requise" }),
     date: z.iso.date().min(1, { message: "La date est requise" }),
     report: z.file().optional(),
-    matrix: z.file().optional(),
+    grid: z.file().optional(),
     realisedBy: z.string().min(1, {
       message: "L'organisation ayant réalisé l'audit est requise",
     }),
@@ -49,20 +47,20 @@ export const declarationAudit = z.object({
       .number()
       .min(0, { message: "Le taux doit être entre 0 et 100" })
       .max(100, { message: "Le taux doit être entre 0 et 100" }),
-    pages: z
-      .array(z.object({ label: z.string(), url: z.url() }))
+    compliantElements: z
+      .array(z.object({ name: z.string(), url: z.url() }))
       .min(1, { message: "Au moins une page doit être renseignée" }),
     technologies: z.array(z.string()).min(1, {
       message: "Au moins une technologie doit être sélectionnée",
     }),
     testEnvironments: z
-      .array(z.object({ kind: z.string(), os: z.string() }))
+      .array(z.object(z.string()))
       .min(1, {
         message: "Au moins un environnement de test doit être sélectionné",
       }),
-    tools: z.array(z.string()).min(1, {
-      message: "Au moins un outil doit être sélectionné",
-    }),
+    disproportionnedCharge: z.array(z.object({ name: z.string(), reason: z.string(), duration: z.string(), alternative: z.string() })).optional(),
+    nonCompliantElements: z.string().optional(),
+    optionalElements: z.string().optional(),
   }),
 });
 
@@ -70,17 +68,18 @@ export type ZDeclarationAudit = z.infer<typeof declarationAudit>;
 
 export const declarationAuditDefaultValues: ZDeclarationAudit = {
   audit: {
-    url: "",
     date: "",
     report: undefined,
-    matrix: undefined,
+    grid: undefined,
     realisedBy: "",
     rgaa_version: "rgaa_4",
     rate: 0,
-    pages: [{ label: "", url: "" }],
-    technologies: [""],
-    testEnvironments: [{ kind: "", os: "" }],
-    tools: [""],
+    technologies: [],
+    testEnvironments: [],
+    nonCompliantElements: "",
+    optionalElements: "",
+    disproportionnedCharge: [],
+    compliantElements: [],
   },
 };
 
@@ -105,17 +104,19 @@ export const declarationSchemaDefaultValues: ZSchema = {
 };
 
 export const declarationContact = z.object({
-  contactName: z.string(),
-  contactEmail: z.email(),
-  contactPhone: z.string().optional(),
+  contact: z.object({
+    contactName: z.string(),
+    contactEmail: z.string(),
+  }),
 });
 
 export type ZDeclarationContact = z.infer<typeof declarationContact>;
 
 export const declarationContactDefaultValues: ZDeclarationContact = {
-  contactName: "",
-  contactEmail: "",
-  contactPhone: undefined,
+  contact: {
+    contactName: "",
+    contactEmail: "",
+  },
 };
 
 export const declarationMultiStepFormSchema = z.object({

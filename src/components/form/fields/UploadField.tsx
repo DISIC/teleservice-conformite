@@ -3,13 +3,14 @@ import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 
 interface UploadFieldProps extends DefaultFieldProps {
 	description?: string;
+	readOnly?: boolean;
 }
 
 export function UploadField(props: UploadFieldProps) {
-	const { label, description, disabled, className } = props;
+	const { readOnly, label, description, disabled, className } = props;
 	const field = useFieldContext<File | undefined>();
 
-	return (
+	return !readOnly ? (
 		<Upload
 			label={label}
 			hint={description}
@@ -25,5 +26,12 @@ export function UploadField(props: UploadFieldProps) {
 					field.setValue(e.currentTarget.files?.[0] ?? undefined),
 			}}
 		/>
+	) : (
+		<div>
+			<p>
+				<strong>{label}</strong>
+				{field.state.value?.name ?? "Aucun fichier sélectionné"}
+			</p>
+		</div>
 	);
 }

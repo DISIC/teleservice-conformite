@@ -15,7 +15,7 @@ import { tss } from "tss-react";
 import { MultiStep } from "~/components/MultiStep";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationAuditForm } from "~/utils/form/readonly/form";
-import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
+import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import AuditMultiStepForm from "~/components/declaration/AuditMultiStepForm";
 
 type Steps<T> = {
@@ -34,28 +34,26 @@ export default function AuditPage({
 		setEditMode((prev) => !prev);
 	};
 
-	declarationMultiStepFormOptions.defaultValues.audit = {
-		url: "",
-		date: "",
-		report: undefined,
-		matrix: undefined,
-		realisedBy: "",
-		rgaa_version: "rgaa_4",
-		rate: 0,
-		pages: [{ label: "", url: "" }],
-		technologies: [""],
-		testEnvironments: [{ kind: "", os: "" }],
-		tools: [""],
+	readOnlyFormOptions.defaultValues.audit = {
+		...readOnlyFormOptions.defaultValues.audit,
+		date: new Date(declaration?.audit?.date).toLocaleDateString() ?? "",
+		grid: declaration?.audit?.auditGrid ?? null,
+		report: declaration?.audit?.auditReport ?? null,
+		realisedBy: declaration?.audit?.realisedBy,
+		rgaa_version: declaration?.audit?.auditRgaaVersion ?? "rgaa_4",
+		rate: declaration?.audit?.rate ?? 0,
+		compliantElements: declaration?.audit?.compliantElements ?? "Non",
+		technologies: declaration?.audit?.toolsUsed ?? [""],
+		testEnvironments: declaration?.audit?.testEnvironments ?? [""],
+		nonCompliantElements: declaration?.audit?.nonCompliantElements ?? "Non",
+		disproportionnedCharge: declaration?.audit?.disproportionnedCharge ?? "Non",
+		optionalElements: declaration?.audit?.exemption ?? "Non",
 	};
 
 	const form = useAppForm({
-		...declarationMultiStepFormOptions,
+		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
-			if (value.section === "general") {
-				formApi.setFieldValue("section", "audit");
-			} else {
-				alert(JSON.stringify(value, null, 2));
-			}
+			alert(JSON.stringify(value, null, 2));
 		},
 	});
 
