@@ -26,6 +26,41 @@ export const Declarations: CollectionConfig = {
 	admin: {
 		useAsTitle: "name",
 	},
+	hooks: {
+		beforeDelete: [
+			async ({ req, id }) => {
+				const payload = req.payload;
+				const declarationId = id;
+
+				await payload.delete({
+					collection: "audits",
+					where: {
+						declaration: {
+							equals: declarationId,
+						},
+					},
+				});
+
+				await payload.delete({
+					collection: "action-plans",
+					where: {
+						declaration: {
+							equals: declarationId,
+						},
+					},
+				});
+
+				await payload.delete({
+					collection: "contacts",
+					where: {
+						declaration: {
+							equals: declarationId,
+						},
+					},
+				});
+			},
+		],
+	},
 	labels: {
 		singular: {
 			fr: "Déclaration",
