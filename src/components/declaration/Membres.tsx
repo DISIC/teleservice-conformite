@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Table } from "@codegouvfr/react-dsfr/Table";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import { fr } from "@codegouvfr/react-dsfr";
+import { Table } from "@codegouvfr/react-dsfr/Table";
+import { TRPCClientError } from "@trpc/client";
 import { tss } from "tss-react";
-
-import type { Declaration } from "payload/payload-types";
+import z from "zod";
+import type { Declaration } from "~/payload/payload-types";
+import { api } from "~/utils/api";
+import { useAppForm } from "~/utils/form/context";
 
 const inviteMembersModal = createModal({
 	id: "inviteMembersModal",
@@ -16,13 +16,50 @@ const inviteMembersModal = createModal({
 });
 
 interface MembresProps {
-	declaration: Declaration | null;
+	declaration: Declaration;
 }
 
+const inviteMemberFormSchema = z.object({
+	email: z.email("Adresse e-mail invalide"),
+	role: z.enum(["reader", "admin"], { message: "Rôle invalide" }),
+});
+
 export default function Membres({ declaration }: MembresProps) {
-	console.log("declaration in Membres:", declaration);
-	const [value, setValue] = useState<"reader" | "admin">("reader");
 	const { classes } = useStyles();
+
+	const { data: tmpAccessRights, isLoading: isLoadingAccessRights } =
+		api.accessRight.getByDeclarationId.useQuery({ id: declaration.id });
+
+	const accessRights = tmpAccessRights ?? [];
+
+	const { mutateAsync: createAccessRight, error: createAccessRightError } =
+		api.accessRight.create.useMutation();
+
+	const form = useAppForm({
+		defaultValues: {
+			email: "",
+			role: "reader",
+		} as z.infer<typeof inviteMemberFormSchema>,
+		validators: { onSubmit: inviteMemberFormSchema },
+		onSubmit: async ({ value, formApi }) => {
+			try {
+				await createAccessRight({
+					declarationId: declaration.id,
+					email: value.email,
+					role: value.role,
+				});
+				inviteMembersModal.close();
+				form.reset();
+			} catch (e) {
+				if (e instanceof TRPCClientError && e.data?.code === "NOT_FOUND") {
+					console.log(e.message);
+					formApi.fieldInfo.email.instance?.setErrorMap({
+						onSubmit: { message: e.message },
+					});
+				}
+			}
+		},
+	});
 
 	const StatusBadge = ({ status }: { status: string }) => {
 		switch (status) {
@@ -76,99 +113,99 @@ export default function Membres({ declaration }: MembresProps) {
 				>
 					Inviter un membre
 				</Button>
-				<inviteMembersModal.Component
-					buttons={[
-						{
-							children: "Annuler",
-						},
-						{
-							children: "Inviter",
-						},
-					]}
-					title={
-						<section id="modal-header">
-							<h1 className={classes.modalHeading}>Inviter un membre</h1>
-							<p className={classes.modalSubheading}>
-								Tous les champs sont obligatoires
-							</p>
-						</section>
-					}
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						form.handleSubmit();
+					}}
 				>
-					<form>
-						<Input
-							hintText="Format attendu : nom@domaine.fr"
-							label="Adresse e-mail"
-							state="default"
-							stateRelatedMessage="Text de validation / d'explication de l'erreur"
-						/>
-
-						<RadioButtons
-							legend="Rôle"
-							name="my-radio"
-							options={[
-								{
-									hintText:
-										"Peut voir les informations de la déclaration, mais ne peut pas faire de modification ou inviter d’autres membres",
-									label: "Lecteur",
-									nativeInputProps: {
-										value: "reader",
-										checked: value === "reader",
-										onChange: () => setValue("reader"),
-									},
-								},
-								{
-									hintText:
-										"Peut modifier tout aspect de la déclaration et inviter de nouveaux membres",
-									label: "Administrateur",
-									nativeInputProps: {
-										value: "admin",
-										checked: value === "admin",
-										onChange: () => setValue("admin"),
-									},
-								},
-							]}
-						/>
-					</form>
-				</inviteMembersModal.Component>
+					<inviteMembersModal.Component
+						buttons={[
+							{
+								children: "Annuler",
+								onClick: () => inviteMembersModal.close(),
+							},
+							{ children: "Inviter", type: "submit", doClosesModal: false },
+						]}
+						title={
+							<section id="modal-header">
+								<h1 className={classes.modalHeading}>Inviter un membre</h1>
+								<p className={classes.modalSubheading}>
+									Tous les champs sont obligatoires
+								</p>
+							</section>
+						}
+					>
+						<form.AppField name="email">
+							{(field) => (
+								<field.TextField
+									description="Format attendu : nom@domaine.fr"
+									label="Adresse e-mail"
+									{...field}
+								/>
+							)}
+						</form.AppField>
+						<form.AppField name="role">
+							{(field) => (
+								<field.RadioField
+									label="Rôle"
+									options={[
+										{
+											description:
+												"Peut voir les informations de la déclaration, mais ne peut pas faire de modification ou inviter d’autres membres",
+											label: "Lecteur",
+											value: "reader",
+										},
+										{
+											description:
+												"Peut modifier tout aspect de la déclaration et inviter de nouveaux membres",
+											label: "Administrateur",
+											value: "admin",
+										},
+									]}
+								/>
+							)}
+						</form.AppField>
+					</inviteMembersModal.Component>
+				</form>
 			</div>
-			<div style={{}}>
-				<Table
-					fixed
-					data={[
-						[
-							declaration.created_by?.name,
-							declaration.created_by?.email,
-							<StatusBadge key="status" status="admin" />,
-						],
-					]}
-					headers={[
-						<div key="user" className={classes.tableHeader}>
-							Utilisateur{" "}
-							<Button
-								iconId="fr-icon-settings-5-line"
-								priority="tertiary"
-								title=""
-							/>
-						</div>,
-						<div key="user" className={classes.tableHeader}>
-							Mail{" "}
-							<Button
-								iconId="fr-icon-settings-5-line"
-								priority="tertiary"
-								title=""
-							/>
-						</div>,
-						<div key="user" className={classes.tableHeader}>
-							Statut{" "}
-							<Button
-								iconId="fr-icon-settings-5-line"
-								priority="tertiary"
-								title=""
-							/>
-						</div>,
-					]}
-				/>
-			</div>
+			<Table
+				fixed
+				data={accessRights.map(({ user, role }) => [
+					<div key={`user-${user.id}`}>{user.email}</div>,
+					<div key={`mail-${user.id}`}>{user.email}</div>,
+					<div key={`status-${user.id}`}>
+						<StatusBadge status={role} />
+					</div>,
+				])}
+				headers={[
+					<div key="user" className={classes.tableHeader}>
+						Utilisateur{" "}
+						<Button
+							iconId="fr-icon-arrow-up-down-fill"
+							priority="tertiary"
+							title=""
+						/>
+					</div>,
+					<div key="mail" className={classes.tableHeader}>
+						Mail{" "}
+						<Button
+							iconId="fr-icon-arrow-up-down-fill"
+							priority="tertiary"
+							title=""
+						/>
+					</div>,
+					<div key="status" className={classes.tableHeader}>
+						Statut{" "}
+						<Button
+							iconId="fr-icon-arrow-up-down-fill"
+							priority="tertiary"
+							title=""
+						/>
+					</div>,
+				]}
+			/>
 		</section>
 	);
 }

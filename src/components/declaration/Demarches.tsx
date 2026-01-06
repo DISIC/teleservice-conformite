@@ -1,14 +1,14 @@
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import { Tile } from "@codegouvfr/react-dsfr/Tile";
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
-import Document from "@codegouvfr/react-dsfr/picto/Document";
-import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
-import Search from "@codegouvfr/react-dsfr/picto/Search";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import Community from "@codegouvfr/react-dsfr/picto/Community";
+import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
+import Document from "@codegouvfr/react-dsfr/picto/Document";
+import Search from "@codegouvfr/react-dsfr/picto/Search";
+import { tss } from "tss-react";
 
-import type { Declaration } from "payload/payload-types";
+import type { Declaration } from "~/payload/payload-types";
 
 interface DemarchesProps {
 	declaration: Declaration | null;

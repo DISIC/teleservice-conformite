@@ -1,7 +1,8 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import { declarationRouter } from "./routers/declaration";
+import { accessRightRouter } from "./routers/accessRight";
 import { auditRouter } from "./routers/audit";
 import { contactRouter } from "./routers/contact";
+import { declarationRouter } from "./routers/declaration";
 import { SchemaRouter } from "./routers/schema";
 
 /**
@@ -10,10 +11,11 @@ import { SchemaRouter } from "./routers/schema";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  declaration: declarationRouter,
-  audit: auditRouter,
-  contact: contactRouter,
-  schema: SchemaRouter,
+	declaration: declarationRouter,
+	audit: auditRouter,
+	contact: contactRouter,
+	schema: SchemaRouter,
+	accessRight: accessRightRouter,
 });
 
 // export type definition of API

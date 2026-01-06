@@ -1,45 +1,43 @@
-import { useState } from "react";
-import config from "@payload-config";
-import type { GetServerSideProps } from "next";
-import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
-import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
+import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
+import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { useRouter } from "next/router";
-import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
+import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
+import config from "@payload-config";
+import type {
+	GetServerSideProps,
+	InferGetServerSidePropsType,
+	Redirect,
+} from "next";
+import { useRouter } from "next/router";
+import { tss } from "tss-react";
 
-import { api } from "~/utils/api";
+import { getPayload } from "payload";
 import type { Declaration } from "payload/payload-types";
+import { useState } from "react";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
+import { api } from "~/utils/api";
 
 const deleteModal = createModal({
 	id: "delete-modal",
 	isOpenedByDefault: false,
 });
 
-interface DeclarationPageProps {
-	declaration: Declaration | null;
-}
-
-export default function DeclarationPage({ declaration }: DeclarationPageProps) {
+export default function DeclarationPage({
+	declaration,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
 	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
 	const { classes } = useStyles();
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
-			onSuccess: async (result) => {
-				router.push("/declarations");
-			},
-			onError: (error) => {
-				console.error("Error adding declaration:", error);
-			},
+			onSuccess: () => router.push("/declarations"),
+			onError: (error) => console.error("Error adding declaration:", error),
 		},
 	);
 
@@ -107,7 +105,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 					]}
 					onTabChange={setSelectedTabId}
 				>
-					{<TabContent selectedTabId={selectedTabId} />}
+					<TabContent selectedTabId={selectedTabId} />
 				</Tabs>
 			</section>
 			<deleteModal.Component
@@ -193,14 +191,16 @@ interface Params extends ParsedUrlQuery {
 	id: string;
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = (async (context) => {
 	const { id } = context.params as Params;
 
+	const redirect: Redirect = {
+		destination: "/declarations",
+		permanent: false,
+	};
+
 	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			// redirect: { destination: "/" },
-		};
+		return { redirect };
 	}
 
 	const payload = await getPayload({ config });
@@ -213,11 +213,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		});
 
 		if (!result) {
-			return {
-				props: {
-					declaration: null,
-				},
-			};
+			return { redirect };
 		}
 
 		const declaration = {
@@ -229,17 +225,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			}).format(new Date(result.updatedAt)),
 		};
 
-		return {
-			props: {
-				declaration: declaration,
-			},
-		};
+		return { props: { declaration } };
 	} catch (error) {
 		console.error("Error fetching declaration:", error);
 
-		return {
-			// redirect: { destination: "/" },
-			props: {},
-		};
+		return { redirect };
 	}
-};
+}) satisfies GetServerSideProps<{ declaration: Declaration }>;

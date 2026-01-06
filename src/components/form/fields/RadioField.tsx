@@ -8,6 +8,7 @@ interface CheckboxFieldProps extends DefaultFieldProps {
 		value: string | boolean;
 		description?: string;
 	}>;
+	legend?: string;
 	readOnly?: boolean;
 	description?: string;
 	onChange?: (value: string | boolean) => void;
@@ -19,6 +20,7 @@ export function RadioField({
 	options,
 	readOnly,
 	onChange,
+	legend,
 }: CheckboxFieldProps) {
 	const field = useFieldContext<string | boolean>();
 
