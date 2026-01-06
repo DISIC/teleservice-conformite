@@ -42,5 +42,28 @@ export const AccessRights: CollectionConfig = {
 			relationTo: "declarations",
 			required: true,
 		},
+		{
+			name: "invitedBy",
+			type: "relationship",
+			relationTo: "users",
+			admin: {
+				position: "sidebar",
+			},
+		},
+		{
+			name: "inviteExpiresAt",
+			type: "date",
+			admin: {
+				position: "sidebar",
+			},
+		},
+		{
+			name: "inviteTokenHash",
+			type: "text",
+			admin: {
+				readOnly: true,
+				position: "sidebar",
+			},
+		},
 	],
 };

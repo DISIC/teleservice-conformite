@@ -23,6 +23,9 @@
 			"./src/payload/migrations/**"
 		],
 		"rules": {
+			"a11y": {
+				"useSemanticElements": { "level": "info" }
+			},
 			"nursery": {
 				"useSortedClasses": {
 					"level": "warn",

@@ -6,7 +6,7 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 import { TRPCClientError } from "@trpc/client";
 import { tss } from "tss-react";
 import z from "zod";
-import type { Declaration } from "~/payload/payload-types";
+import type { AccessRight, Declaration, User } from "~/payload/payload-types";
 import { api } from "~/utils/api";
 import { useAppForm } from "~/utils/form/context";
 
@@ -26,14 +26,22 @@ const inviteMemberFormSchema = z.object({
 
 export default function Membres({ declaration }: MembresProps) {
 	const { classes } = useStyles();
+	const apiUtils = api.useUtils();
 
-	const { data: tmpAccessRights, isLoading: isLoadingAccessRights } =
-		api.accessRight.getByDeclarationId.useQuery({ id: declaration.id });
+	const { data: tmpAccessRights } = api.accessRight.getByDeclarationId.useQuery(
+		{ id: declaration.id },
+	);
 
 	const accessRights = tmpAccessRights ?? [];
 
-	const { mutateAsync: createAccessRight, error: createAccessRightError } =
-		api.accessRight.create.useMutation();
+	const { mutateAsync: createAccessRight } = api.accessRight.create.useMutation(
+		{
+			onSuccess: () =>
+				apiUtils.accessRight.getByDeclarationId.invalidate({
+					id: declaration.id,
+				}),
+		},
+	);
 
 	const form = useAppForm({
 		defaultValues: {
@@ -61,15 +69,22 @@ export default function Membres({ declaration }: MembresProps) {
 		},
 	});
 
-	const StatusBadge = ({ status }: { status: string }) => {
-		switch (status) {
+	const StatusBadge = ({
+		role,
+		status,
+	}: { role: AccessRight["role"]; status: AccessRight["status"] }) => {
+		if (status === "pending") {
+			return <Badge key="status">Invitation envoyée</Badge>;
+		}
+
+		switch (role) {
 			case "admin":
 				return (
 					<Badge key="status" className={classes.adminBadge}>
 						Administrateur
 					</Badge>
 				);
-			default:
+			case "reader":
 				return (
 					<div
 						style={{
@@ -82,25 +97,22 @@ export default function Membres({ declaration }: MembresProps) {
 						<Badge key="status" className={classes.readerBadge}>
 							Lecteur
 						</Badge>
-						<div className={classes.buttonsContainer}>
-							<Button
-								size="small"
-								priority="tertiary"
-								className={classes.button}
-							>
-								Retirer l’accès
-							</Button>
-							<Button
-								size="small"
-								priority="tertiary"
-								className={classes.button}
-							>
-								Renvoyer l'invitation
-							</Button>
-						</div>
 					</div>
 				);
 		}
+	};
+
+	const ActionsButtons = ({ user }: { user: User }) => {
+		return (
+			<div className={classes.buttonsContainer}>
+				<Button size="small" priority="tertiary" className={classes.button}>
+					Retirer l’accès
+				</Button>
+				<Button size="small" priority="tertiary" className={classes.button}>
+					Renvoyer l'invitation
+				</Button>
+			</div>
+		);
 	};
 
 	return (
@@ -172,11 +184,15 @@ export default function Membres({ declaration }: MembresProps) {
 			</div>
 			<Table
 				fixed
-				data={accessRights.map(({ user, role }) => [
+				bordered
+				data={accessRights.map(({ user, role, status }) => [
 					<div key={`user-${user.id}`}>{user.email}</div>,
 					<div key={`mail-${user.id}`}>{user.email}</div>,
 					<div key={`status-${user.id}`}>
-						<StatusBadge status={role} />
+						<StatusBadge role={role} status={status} />
+					</div>,
+					<div key={`buttons-${user.id}`} className={classes.buttonsContainer}>
+						<ActionsButtons user={user} />
 					</div>,
 				])}
 				headers={[
@@ -204,6 +220,7 @@ export default function Membres({ declaration }: MembresProps) {
 							title=""
 						/>
 					</div>,
+					<div key="actions" />,
 				]}
 			/>
 		</section>
