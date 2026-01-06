@@ -4,6 +4,7 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { useRouter } from "next/router";
 
 import type { Declaration } from "~/payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
@@ -12,13 +13,27 @@ import { useAppForm } from "~/utils/form/context";
 import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { getPopulated } from "~/utils/payload-helper";
+import { api } from "~/utils/api";
 
 export default function GeneralInformationsPage({
 	declaration,
 }: { declaration?: Declaration }) {
+	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
 	const { name, field } = getPopulated(declaration?.entity) || {};
+
+	const { mutateAsync: update } = api.declaration.update.useMutation({
+		onSuccess: async (result) => {
+			router.reload();
+		},
+		onError: async (error) => {
+			console.error(
+				`Error updating declaration with id ${declaration?.id}:`,
+				error,
+			);
+		},
+	});
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
@@ -32,14 +47,34 @@ export default function GeneralInformationsPage({
 		domain: field ?? "",
 	};
 
+	const updateDeclaration = async (
+		generalValues: typeof readOnlyFormOptions.defaultValues.general,
+		declarationId: number,
+	) => {
+		try {
+			await update({
+				general: {
+					domain: generalValues.domain,
+					name: generalValues.name,
+					url: generalValues.url,
+					kind: generalValues.kind,
+					organisation: generalValues.organisation,
+					declarationId,
+					entityId: getPopulated(declaration?.entity)?.id ?? -1,
+				},
+			});
+		} catch (error) {
+			console.error(
+				`Error updating declaration with id ${declarationId}:`,
+				error,
+			);
+		}
+	};
+
 	const form = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
-			if (value.section === "general") {
-				formApi.setFieldValue("section", "audit");
-			} else {
-				alert(JSON.stringify(value, null, 2));
-			}
+			await updateDeclaration(value.general, declaration?.id ?? -1);
 		},
 	});
 
