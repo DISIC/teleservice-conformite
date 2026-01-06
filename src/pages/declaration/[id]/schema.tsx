@@ -60,29 +60,10 @@ export default function SchemaPage({
 	}
 
 	return (
-		<section
-			id="schema"
-			className={classes.main}
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				gap: fr.spacing("6w"),
-			}}
-		>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-				}}
-			>
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "row",
-						justifyContent: "space-between",
-					}}
-				>
-					<h2 style={{ fontSize: "16px", color: "grey" }}>
+		<section id="schema" className={classes.main}>
+			<div className={classes.container}>
+				<div className={classes.main}>
+					<h2 className={classes.title}>
 						Verifiez les informations et modifiez-les si necessaire
 					</h2>
 					<Button priority="secondary" onClick={onEditInfos}>
@@ -111,15 +92,30 @@ export default function SchemaPage({
 
 const useStyles = tss.withName(SchemaPage.name).create({
 	main: {
-		marginTop: fr.spacing("6v"),
+		marginTop: fr.spacing("10v"),
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6w"),
 	},
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
-		// backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
+	},
+	container: {
+		display: "flex",
+		flexDirection: "column",
+	},
+	header: {
+		display: "flex",
+		flexDirection: "row",
+		justifyContent: "space-between",
+	},
+	title: {
+		fontSize: "1rem",
+		color: fr.colors.decisions.text.mention.grey.default,
 	},
 });
 

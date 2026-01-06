@@ -1,6 +1,12 @@
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { fr } from "@codegouvfr/react-dsfr";
+import { tss } from "tss-react";
+import Document from "@codegouvfr/react-dsfr/picto/Document";
+import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
+import Search from "@codegouvfr/react-dsfr/picto/Search";
+import Community from "@codegouvfr/react-dsfr/picto/Community";
 
 import type { Declaration } from "payload/payload-types";
 
@@ -9,55 +15,15 @@ interface DemarchesProps {
 }
 
 export default function Demarches({ declaration }: DemarchesProps) {
+	const { classes } = useStyles();
+
 	return (
-		<section
-			id="demarches-tab"
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				gap: "2rem",
-			}}
-		>
+		<section id="demarches-tab" className={classes.main}>
 			{declaration?.audit?.rate && (
-				<div
-					style={{
-						display: "grid",
-						gridTemplateColumns: "1fr 1fr",
-						gap: "1rem",
-					}}
-				>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							gap: "10px",
-							backgroundColor: "#3a3a68",
-							paddingInline: "30px",
-							paddingBlock: "40px",
-							borderRadius: "5px",
-							justifyContent: "space-between",
-						}}
-					>
-						<p
-							style={{
-								margin: "0px",
-								fontWeight: 400,
-								fontFamily: "Marianne",
-								fontSize: "16px",
-								lineHeight: "24px",
-							}}
-						>
-							Taux de conformite
-						</p>
-						<p
-							style={{
-								margin: "0px",
-								fontWeight: 400,
-								fontFamily: "Marianne",
-								fontSize: "16px",
-								lineHeight: "24px",
-							}}
-						>
+				<div className={classes.summaryCardsContainer}>
+					<div className={classes.summaryRateCard}>
+						<p className={classes.rateLabel}>Taux de conformite</p>
+						<p className={classes.rateValue}>
 							<strong>
 								{declaration?.audit?.rate
 									? `${declaration.audit.rate}%`
@@ -65,22 +31,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							</strong>
 						</p>
 					</div>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							gap: "10px",
-							backgroundColor: "#3a3a68",
-							padding: "10px",
-							borderRadius: "5px",
-							paddingInline: "30px",
-							paddingBlock: "40px",
-							fontWeight: 400,
-							fontFamily: "Marianne",
-							fontSize: "16px",
-							lineHeight: "24px",
-						}}
-					>
+					<div className={classes.updateDateLabel}>
 						<span>
 							Derniere mise a jour:{" "}
 							<strong>
@@ -101,14 +52,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					</div>
 				</div>
 			)}
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "row",
-					gap: "1rem",
-					justifyContent: "center",
-				}}
-			>
+			<div className={classes.tilesContainer}>
 				<Tile
 					desc="Informations à propos du service et l’administration à laquelle il est lié"
 					title="Informations générales"
@@ -116,7 +60,8 @@ export default function Demarches({ declaration }: DemarchesProps) {
 						href: `/declaration/${declaration?.id}/infos`,
 					}}
 					enlargeLinkOrButton={true}
-					orientation="horizontal"
+					orientation="vertical"
+					pictogram={<Document fontSize="2rem" />}
 				/>
 				<Tile
 					title="Schéma et plans d'actions"
@@ -125,7 +70,8 @@ export default function Demarches({ declaration }: DemarchesProps) {
 						href: `/declaration/${declaration?.id}/schema`,
 					}}
 					enlargeLinkOrButton={false}
-					orientation="horizontal"
+					orientation="vertical"
+					pictogram={<Conclusion fontSize="2rem" />}
 					start={
 						declaration?.actionPlan ? null : (
 							<Badge noIcon severity="new">
@@ -141,7 +87,8 @@ export default function Demarches({ declaration }: DemarchesProps) {
 						href: `/declaration/${declaration?.id}/audit`,
 					}}
 					enlargeLinkOrButton={false}
-					orientation="horizontal"
+					orientation="vertical"
+					pictogram={<Search fontSize="2rem" />}
 					start={
 						declaration?.audit ? null : (
 							<Badge noIcon severity="new">
@@ -157,7 +104,8 @@ export default function Demarches({ declaration }: DemarchesProps) {
 						href: `/declaration/${declaration?.id}/contact`,
 					}}
 					enlargeLinkOrButton={false}
-					orientation="horizontal"
+					orientation="vertical"
+					pictogram={<Community fontSize="2rem" />}
 					start={
 						declaration?.contact ? null : (
 							<Badge noIcon severity="new">
@@ -170,3 +118,60 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		</section>
 	);
 }
+
+const useStyles = tss.withName(Demarches.name).create({
+	main: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("8v"),
+	},
+	summaryCardsContainer: {
+		display: "grid",
+		gridTemplateColumns: "1fr 1fr",
+		gap: fr.spacing("4v"),
+	},
+	summaryRateCard: {
+		display: "flex",
+		flexDirection: "row",
+		gap: fr.spacing("3v"),
+		backgroundColor: fr.colors.decisions.background.alt.blueFrance.hover,
+		paddingInline: fr.spacing("7v"),
+		paddingBlock: fr.spacing("10v"),
+		borderRadius: "0.375rem",
+		justifyContent: "space-between",
+	},
+	rateLabel: {
+		margin: 0,
+		fontWeight: 400,
+		fontFamily: "Marianne",
+		fontSize: "1rem",
+		lineHeight: "1.5rem",
+	},
+	rateValue: {
+		margin: 0,
+		fontWeight: 400,
+		fontFamily: "Marianne",
+		fontSize: "1rem",
+		lineHeight: "1.5rem",
+	},
+	updateDateLabel: {
+		display: "flex",
+		flexDirection: "row",
+		gap: fr.spacing("3v"),
+		backgroundColor: fr.colors.decisions.background.alt.blueFrance.hover,
+		padding: fr.spacing("3v"),
+		borderRadius: "0.375rem",
+		paddingInline: fr.spacing("7v"),
+		paddingBlock: fr.spacing("10v"),
+		fontWeight: 400,
+		fontFamily: "Marianne",
+		fontSize: "1rem",
+		lineHeight: "1.5rem",
+	},
+	tilesContainer: {
+		display: "flex",
+		flexDirection: "row",
+		gap: fr.spacing("4v"),
+		justifyContent: "center",
+	},
+});

@@ -76,7 +76,7 @@ export default function FormPage() {
 						<DeclarationGeneralForm form={form} readOnly={false} />
 					)}
 					<form.AppForm>
-						<div style={{ display: "flex", justifyContent: "space-between" }}>
+						<div className={classes.actionButtonsContainer}>
 							<form.CancelButton
 								label="Retour"
 								onClick={() => {
@@ -99,14 +99,17 @@ export default function FormPage() {
 
 const useStyles = tss.withName(FormPage.name).create({
 	main: {
-		marginTop: fr.spacing("6v"),
+		marginTop: fr.spacing("10v"),
 	},
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
-		backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
+	},
+	actionButtonsContainer: {
+		display: "flex",
+		justifyContent: "space-between",
 	},
 });

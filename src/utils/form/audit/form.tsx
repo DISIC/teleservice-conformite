@@ -1,4 +1,5 @@
 import Button from "@codegouvfr/react-dsfr/Button";
+import { fr } from "@codegouvfr/react-dsfr";
 
 import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import {
@@ -43,9 +44,7 @@ export const AuditDateForm = withForm({
 				</form.AppField>
 				<form.AppField name="rate">
 					{(field) => (
-						<field.NumberField
-							label="Pourcentage de critères du RGAA respectés"
-						/>
+						<field.NumberField label="Pourcentage de critères du RGAA respectés" />
 					)}
 				</form.AppField>
 			</>
@@ -86,7 +85,11 @@ export const CompliantElementsForm = withForm({
 			<form.AppField name="compliantElements" mode="array">
 				{(field) => (
 					<div
-						style={{ display: "flex", flexDirection: "column", gap: "30px" }}
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							gap: fr.spacing("8v"),
+						}}
 					>
 						<h2>
 							Éléments ayant fait l’objet de la vérification de conformité
@@ -97,10 +100,10 @@ export const CompliantElementsForm = withForm({
 								style={{
 									display: "grid",
 									gridTemplateColumns: "1fr auto",
-									gap: "30px",
+									gap: fr.spacing("8v"),
 									borderBottom:
 										field.state.value.length === 1 ? "" : "1px solid grey",
-									paddingBottom: "30px",
+									paddingBottom: fr.spacing("8v"),
 									width: "100%",
 								}}
 							>
@@ -205,12 +208,12 @@ export const DisproportionnedChargeForm = withForm({
 												style={{
 													display: "grid",
 													gridTemplateColumns: "1fr auto",
-													gap: "30px",
+													gap: fr.spacing("8v"),
 													borderBottom:
 														field.state.value.length === 1
 															? ""
 															: "1px solid grey",
-													paddingBottom: "30px",
+													paddingBottom: fr.spacing("8v"),
 													width: "100%",
 												}}
 											>

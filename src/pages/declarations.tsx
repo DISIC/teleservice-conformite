@@ -1,47 +1,34 @@
-import { useState } from "react";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
-import type { Declaration } from "payload/payload-types";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import { useRouter } from "next/router";
+import NextLink from "next/link";
+import { fr } from "@codegouvfr/react-dsfr";
+import { tss } from "tss-react";
+
+import type { Declaration } from "payload/payload-types";
 
 interface DeclarationsPageProps {
-	declarations: Declaration[];
+	declarations: Array<Declaration & { updatedAtFormatted: string }>;
 }
 
 export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { declarations } = props;
 	const router = useRouter();
+	const { classes } = useStyles();
 
 	return (
-		<section
-			id="declarations-page"
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				gap: "30px",
-				padding: "40px",
-			}}
-		>
-			<h1
-				style={{
-					fontFamily: "Marianne",
-					fontWeight: 700,
-					fontSize: "40px",
-					lineHeight: "48px",
-				}}
-			>
-				Vos déclarations d'accessibilité
-			</h1>
+		<section id="declarations-page" className={classes.main}>
+			<h1>Vos déclarations d'accessibilité</h1>
 			<div
 				style={{
 					display: declarations?.length ? "flex" : "none",
-					justifyContent: "flex-end",
 				}}
+				className={classes.buttonWrapper}
 			>
 				<Button
 					iconId="fr-icon-add-line"
@@ -54,30 +41,15 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 			{declarations.length ? (
 				<div>
 					{declarations.map((declaration) => (
-						<div
-							key={declaration.id}
-							style={{ display: "flex", justifyContent: "space-between" }}
-						>
+						<div key={declaration.id} className={classes.declarationCard}>
 							<div>
-								<div
-									style={{
-										display: "flex",
-										alignItems: "flex-start",
-										gap: "10px",
-									}}
-								>
-									<h2
-										style={{
-											margin: 0,
-											color: "#8585f6",
-											fontWeight: 700,
-											fontSize: "18px",
-											fontFamily: "Marianne",
-											lineHeight: "28px",
-										}}
-									>
-										{declaration.name}
-									</h2>
+								<div className={classes.declarationTitleWrapper}>
+									<h6 className={classes.declarationTitle}>
+										<NextLink href={`/declaration/${declaration.id}`}>
+											{declaration.name}
+										</NextLink>
+									</h6>
+
 									<Badge
 										noIcon={true}
 										small={true}
@@ -87,88 +59,35 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 												: undefined
 										}
 									>
-										{declaration?.status ?? "Brouillon"}
+										{declaration?.status === "published"
+											? "Publié"
+											: "Brouillon"}
 									</Badge>
 								</div>
-								<p
-									style={{
-										margin: 0,
-										fontWeight: 400,
-										fontSize: "14px",
-										fontFamily: "Marianne",
-										lineHeight: "24px",
-										color: "#666666",
-									}}
-								>
-									Dernière modification le{" "}
-									{new Date(declaration.updatedAt).toLocaleString()}
+								<p className={classes.details}>
+									Dernière modification le {declaration.updatedAtFormatted}
 								</p>
-								<p
-									style={{
-										margin: 0,
-										fontWeight: 400,
-										fontSize: "14px",
-										fontFamily: "Marianne",
-										lineHeight: "24px",
-										color: "#666666",
-									}}
-								>
-									{declaration.entity.name}
-								</p>
-								<p
-									style={{
-										margin: 0,
-										fontWeight: 400,
-										fontSize: "14px",
-										fontFamily: "Marianne",
-										lineHeight: "24px",
-										color: "#666666",
-									}}
-								>
-									Site web - {declaration.siteUrl}
-								</p>
+								<p className={classes.details}>{declaration.entity.name}</p>
+								<p className={classes.details}>Site web - {declaration.url}</p>
 							</div>
-							{declaration.rate && (
+							{declaration?.audit?.rate && (
 								<div>
-									<p
-										style={{
-											margin: 0,
-											fontWeight: 700,
-											fontSize: "28px",
-											fontFamily: "Marianne",
-											lineHeight: "36px",
-										}}
-									>
-										{declaration.rate}%
+									<p className={classes.auditRateValue}>
+										{declaration?.audit?.rate}%
 									</p>
-									<p
-										style={{
-											margin: 0,
-											fontWeight: 400,
-											fontSize: "16px",
-											fontFamily: "Marianne",
-											lineHeight: "24px",
-										}}
-									>
-										taux conformité
-									</p>
+									<p className={classes.auditRateLabel}>taux conformité</p>
 								</div>
 							)}
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									gap: "10px",
-								}}
-							>
-								<Button
-									iconId="fr-icon-edit-box-fill"
-									priority="primary"
-									onClick={() => router.push(`/declaration/${declaration.id}`)}
-									style={{ width: "100%" }}
-								>
-									Mettre à jour
-								</Button>
+							<div className={classes.buttonsContainer}>
+								{declaration.status === "published" && (
+									<Button
+										iconId="fr-icon-edit-line"
+										priority="primary"
+										style={{ width: "100%" }}
+									>
+										Mettre à jour
+									</Button>
+								)}
 								<Button
 									iconId="fr-icon-share-line"
 									priority="tertiary"
@@ -181,36 +100,12 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 					))}
 				</div>
 			) : (
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "column",
-						gap: "20px",
-						justifyContent: "center",
-						alignItems: "center",
-						marginTop: "100px",
-					}}
-				>
+				<div className={classes.emptyStateContainer}>
 					<Conclusion fontSize="120px" />
-					<h2
-						style={{
-							fontFamily: "Marianne",
-							fontWeight: 700,
-							fontSize: "22px",
-							lineHeight: "28px",
-						}}
-					>
+					<h2 className={classes.emptyStateTitle}>
 						Créez votre déclaration d’accessibilité
 					</h2>
-					<p
-						style={{
-							fontFamily: "Marianne",
-							fontWeight: 400,
-							fontSize: "20px",
-							lineHeight: "32px",
-							color: "#666666",
-						}}
-					>
+					<p className={classes.emptyStateDescription}>
 						Publiez une déclaration conforme pour répondre aux obligations
 						légales
 					</p>
@@ -223,6 +118,80 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	);
 }
 
+const useStyles = tss.withName(DeclarationsPage.name).create({
+	main: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("8v"),
+		padding: fr.spacing("10v"),
+	},
+	buttonWrapper: {
+		justifyContent: "flex-end",
+	},
+	declarationCard: {
+		display: "flex",
+		justifyContent: "space-between",
+		alignItems: "center",
+		border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+		padding: fr.spacing("4v"),
+	},
+	declarationTitleWrapper: {
+		display: "flex",
+		alignItems: "flex-start",
+		gap: "10px",
+	},
+	declarationTitle: {
+		marginBottom: fr.spacing("4v"),
+		color: fr.colors.decisions.background.actionHigh.blueFrance.default,
+	},
+	details: {
+		fontWeight: 400,
+		fontSize: "14px",
+		lineHeight: "24px",
+		margin: 0,
+		color: fr.colors.decisions.border.contrast.grey.default,
+	},
+	auditRateValue: {
+		lineHeight: "36px",
+		fontWeight: 700,
+		color: fr.colors.decisions.text.label.grey.default,
+		fontSize: fr.typography[3].style.fontSize,
+		margin: 0,
+	},
+	auditRateLabel: {
+		lineHeight: "24px",
+		fontWeight: 400,
+		color: fr.colors.decisions.text.label.grey.default,
+		fontSize: fr.typography[1].style.fontSize,
+	},
+	buttonsContainer: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("4v"),
+	},
+	emptyStateContainer: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("5v"),
+		justifyContent: "center",
+		alignItems: "center",
+		marginTop: fr.spacing("25v"),
+	},
+	emptyStateTitle: {
+		fontFamily: "Marianne",
+		fontWeight: 700,
+		fontSize: "1.25rem",
+		lineHeight: "1.75rem",
+	},
+	emptyStateDescription: {
+		fontFamily: "Marianne",
+		fontWeight: 400,
+		fontSize: "1.25rem",
+		lineHeight: "2rem",
+		color: fr.colors.decisions.text.mention.grey.default,
+	},
+});
+
 interface Params extends ParsedUrlQuery {
 	id: string;
 }
@@ -231,24 +200,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	const payload = await getPayload({ config });
 
 	try {
-		const declarations = await payload.find({
+		const result = await payload.find({
 			collection: "declarations",
 			depth: 3,
 		});
 
-		// const declarations = [
-		// 	{
-		// 		id: "1",
-		// 		name: "Nom de la declaration 1",
-		// 		status: "unpublished",
-		// 		updatedAt: "2024-01-15",
-		// 		rate: 83,
-		// 	},
-		// ];
+		const declarations = (result?.docs || []).map((doc) => ({
+			...doc,
+			updatedAtFormatted: new Intl.DateTimeFormat("fr-FR", {
+				dateStyle: "short",
+				timeStyle: "short",
+				timeZone: "Europe/Paris",
+			}).format(new Date((doc as any).updatedAt)),
+		}));
 
 		return {
 			props: {
-				declarations: declarations?.docs || [],
+				declarations,
 			},
 		};
 	} catch (error) {

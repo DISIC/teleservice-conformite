@@ -120,7 +120,7 @@ export const DeclarationAuditForm = withForm({
 				<span
 					style={{
 						backgroundColor: fr.colors.decisions.background.default.grey.hover,
-						height: "10px",
+						height: "0.75rem",
 						width: "100%",
 						marginBottom: fr.spacing("4w"),
 						display: "block",
@@ -143,7 +143,7 @@ export const DeclarationAuditForm = withForm({
 							style={{
 								backgroundColor:
 									fr.colors.decisions.background.default.grey.hover,
-								height: "2px",
+								height: "0.125rem",
 								width: "100%",
 								marginBottom: fr.spacing("4w"),
 								display: "block",
@@ -164,7 +164,7 @@ export const DeclarationAuditForm = withForm({
 							style={{
 								backgroundColor:
 									fr.colors.decisions.background.default.grey.hover,
-								height: "2px",
+								height: "0.125rem",
 								width: "100%",
 								marginBottom: fr.spacing("4w"),
 								display: "block",
@@ -185,7 +185,7 @@ export const DeclarationAuditForm = withForm({
 							style={{
 								backgroundColor:
 									fr.colors.decisions.background.default.grey.hover,
-								height: "2px",
+								height: "125rem",
 								width: "100%",
 								marginBottom: fr.spacing("4w"),
 								display: "block",
@@ -210,7 +210,7 @@ export const DeclarationAuditForm = withForm({
 							style={{
 								backgroundColor:
 									fr.colors.decisions.background.default.grey.hover,
-								height: "10px",
+								height: "0.75rem",
 								width: "100%",
 								marginBottom: fr.spacing("4w"),
 								display: "block",
@@ -318,7 +318,7 @@ export const DeclarationAuditForm = withForm({
 							style={{
 								backgroundColor:
 									fr.colors.decisions.background.default.grey.hover,
-								height: "10px",
+								height: "0.75rem",
 								width: "100%",
 								marginBottom: fr.spacing("4w"),
 								display: "block",
@@ -492,7 +492,7 @@ export const DeclarationAuditForm = withForm({
 							style={{
 								backgroundColor:
 									fr.colors.decisions.background.default.grey.hover,
-								height: "10px",
+								height: "0.75rem",
 								width: "100%",
 								marginBottom: fr.spacing("4w"),
 								display: "block",

@@ -5,7 +5,8 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { fr } from "@codegouvfr/react-dsfr";
+import { tss } from "tss-react";
 
 import type { Declaration } from "payload/payload-types";
 
@@ -21,31 +22,14 @@ interface MembresProps {
 export default function Membres({ declaration }: MembresProps) {
 	console.log("declaration in Membres:", declaration);
 	const [value, setValue] = useState<"reader" | "admin">("reader");
+	const { classes } = useStyles();
 
 	const StatusBadge = ({ status }: { status: string }) => {
 		switch (status) {
 			case "admin":
 				return (
-					<Badge
-						key="status"
-						style={{
-							backgroundColor: "#fee7fc",
-							color: "#6E445A",
-						}}
-					>
+					<Badge key="status" className={classes.adminBadge}>
 						Administrateur
-					</Badge>
-				);
-			case "reader":
-				return (
-					<Badge
-						key="status"
-						style={{
-							backgroundColor: "#E8EDFF",
-							color: "#0063CB",
-						}}
-					>
-						Lecteur
 					</Badge>
 				);
 			default:
@@ -58,43 +42,21 @@ export default function Membres({ declaration }: MembresProps) {
 							justifyContent: "space-between",
 						}}
 					>
-						<Badge
-							key="status"
-							style={{
-								backgroundColor: "#e7f3fe",
-								color: "#2a5d9f",
-							}}
-						>
+						<Badge key="status" className={classes.readerBadge}>
 							Lecteur
 						</Badge>
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "row",
-								gap: "1rem",
-							}}
-						>
+						<div className={classes.buttonsContainer}>
 							<Button
 								size="small"
 								priority="tertiary"
-								style={{
-									fontSize: "14px",
-									lineHeight: "24px",
-									fontFamily: "Marianne",
-									fontWeight: "500",
-								}}
+								className={classes.button}
 							>
 								Retirer l’accès
 							</Button>
 							<Button
 								size="small"
 								priority="tertiary"
-								style={{
-									fontSize: "14px",
-									lineHeight: "24px",
-									fontFamily: "Marianne",
-									fontWeight: "500",
-								}}
+								className={classes.button}
 							>
 								Renvoyer l'invitation
 							</Button>
@@ -106,14 +68,7 @@ export default function Membres({ declaration }: MembresProps) {
 
 	return (
 		<section id="members-tab">
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					gap: "1rem",
-					alignItems: "flex-end",
-				}}
-			>
+			<div className={classes.modal}>
 				<Button
 					priority="secondary"
 					iconId="fr-icon-user-add-line"
@@ -132,29 +87,8 @@ export default function Membres({ declaration }: MembresProps) {
 					]}
 					title={
 						<section id="modal-header">
-							<h1
-								style={{
-									// color: "#161616",
-									fontFamily: "Marianne",
-									fontSize: "24px",
-									fontStyle: "normal",
-									fontWeight: "700",
-									lineHeight: "32px",
-									marginBottom: "0px",
-								}}
-							>
-								Inviter un membre
-							</h1>
-							<p
-								style={{
-									color: "#929292",
-									fontFamily: "Marianne",
-									fontSize: "12px",
-									fontStyle: "normal",
-									fontWeight: "400",
-									lineHeight: "20px",
-								}}
-							>
+							<h1 className={classes.modalHeading}>Inviter un membre</h1>
+							<p className={classes.modalSubheading}>
 								Tous les champs sont obligatoires
 							</p>
 						</section>
@@ -208,14 +142,7 @@ export default function Membres({ declaration }: MembresProps) {
 						],
 					]}
 					headers={[
-						<div
-							key="user"
-							style={{
-								display: "flex",
-								alignItems: "center",
-								gap: "1rem",
-							}}
-						>
+						<div key="user" className={classes.tableHeader}>
 							Utilisateur{" "}
 							<Button
 								iconId="fr-icon-settings-5-line"
@@ -223,14 +150,7 @@ export default function Membres({ declaration }: MembresProps) {
 								title=""
 							/>
 						</div>,
-						<div
-							key="user"
-							style={{
-								display: "flex",
-								alignItems: "center",
-								gap: "1rem",
-							}}
-						>
+						<div key="user" className={classes.tableHeader}>
 							Mail{" "}
 							<Button
 								iconId="fr-icon-settings-5-line"
@@ -238,14 +158,7 @@ export default function Membres({ declaration }: MembresProps) {
 								title=""
 							/>
 						</div>,
-						<div
-							key="user"
-							style={{
-								display: "flex",
-								alignItems: "center",
-								gap: "1rem",
-							}}
-						>
+						<div key="user" className={classes.tableHeader}>
 							Statut{" "}
 							<Button
 								iconId="fr-icon-settings-5-line"
@@ -259,3 +172,54 @@ export default function Membres({ declaration }: MembresProps) {
 		</section>
 	);
 }
+
+const useStyles = tss.withName(Membres.name).create({
+	adminBadge: {
+		backgroundColor:
+			fr.colors.decisions.background.contrast.purpleGlycine.default,
+		color: fr.colors.decisions.text.label.purpleGlycine.default,
+	},
+	readerBadge: {
+		backgroundColor: fr.colors.decisions.background.contrast.info.default,
+		color: fr.colors.decisions.text.default.info.default,
+	},
+	buttonsContainer: {
+		display: "flex",
+		flexDirection: "row",
+		gap: fr.spacing("4v"),
+	},
+	button: {
+		fontSize: "1rem",
+		lineHeight: "1.5rem",
+		fontFamily: "Marianne",
+		fontWeight: 500,
+	},
+	modal: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("4v"),
+		alignItems: "flex-end",
+	},
+	modalHeading: {
+		color: fr.colors.decisions.text.title.grey.default,
+		fontFamily: "Marianne",
+		fontSize: "1.5rem",
+		fontStyle: "normal",
+		fontWeight: 700,
+		lineHeight: "2rem",
+		marginBottom: 0,
+	},
+	modalSubheading: {
+		color: fr.colors.decisions.text.mention.grey.default,
+		fontFamily: "Marianne",
+		fontSize: "0.75rem",
+		fontStyle: "normal",
+		fontWeight: 400,
+		lineHeight: fr.spacing("5v"),
+	},
+	tableHeader: {
+		display: "flex",
+		alignItems: "center",
+		gap: fr.spacing("4v"),
+	},
+});

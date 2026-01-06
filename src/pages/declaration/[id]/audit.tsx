@@ -62,70 +62,62 @@ export default function AuditPage({
 	}
 
 	return (
-		<section
-			id="audit"
-			className={classes.main}
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				gap: fr.spacing("6w"),
-			}}
-		>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "row",
-					justifyContent: "space-between",
-				}}
-			>
-				<h2 style={{ fontSize: "16px", color: "grey" }}>
+		<section id="audit" className={classes.main}>
+			<div className={classes.header}>
+				<h2 className={classes.description}>
 					Verifiez les informations et modifiez-les si necessaire
 				</h2>
 				<Button priority="secondary" onClick={onEditInfos}>
 					{!editMode ? "Modifier" : "Annuler"}
 				</Button>
 			</div>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
+
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					form.handleSubmit();
 				}}
 			>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-				>
-					<div className={classes.formWrapper}>
-						<DeclarationAuditForm
-							form={form}
-							readOnly={!editMode}
-							isAchieved={true}
-						/>
-						{editMode && (
-							<form.AppForm>
-								<form.SubscribeButton label={"Valider"} />
-							</form.AppForm>
-						)}
-					</div>
-				</form>
-			</div>
+				<div className={classes.formWrapper}>
+					<DeclarationAuditForm
+						form={form}
+						readOnly={!editMode}
+						isAchieved={true}
+					/>
+					{editMode && (
+						<form.AppForm>
+							<form.SubscribeButton label={"Valider"} />
+						</form.AppForm>
+					)}
+				</div>
+			</form>
 		</section>
 	);
 }
 
 const useStyles = tss.withName(AuditPage.name).create({
 	main: {
-		marginTop: fr.spacing("6v"),
+		marginTop: fr.spacing("10v"),
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6w"),
 	},
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
-		// backgroundColor: fr.colors.decisions.background.default.grey.hover,
+		backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
+	},
+	header: {
+		display: "flex",
+		flexDirection: "row",
+		justifyContent: "space-between",
+	},
+	description: {
+		fontSize: "1rem",
+		color: "grey",
 	},
 });
 
