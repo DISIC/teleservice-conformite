@@ -121,7 +121,7 @@ export default function AuditMultiStepForm({
 
 	return (
 		<div className={classes.main}>
-			<h2>Résultats d’audit</h2>
+			<h1>Résultats de l’audit</h1>
 			<MultiStep steps={steps} currentStep={section}>
 				<form
 					onSubmit={(e) => {

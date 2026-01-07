@@ -80,4 +80,41 @@ export const auditRouter = createTRPCRouter({
 
       return { data: audit.id };
     }),
+  delete: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const { id } = input;
+
+      await ctx.payload.delete({
+        collection: "audits",
+        id,
+      });
+
+      return { data: true };
+    }),
+  update: publicProcedure
+    .input(
+      z.object({
+        audit: auditFormSchema
+          .omit({
+            section: true,
+            hasDisproportionnedCharge: true,
+            hasOptionalElements: true,
+            hasNonCompliantElements: true,
+          }).extend({ id: z.number() }),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id, ...rest } = input.audit;
+
+      const updatedAudit = await ctx.payload.update({
+        collection: "audits",
+        id,
+        data: {
+          ...rest,
+        },
+      });
+
+      return { data: updatedAudit };
+    }),
 });

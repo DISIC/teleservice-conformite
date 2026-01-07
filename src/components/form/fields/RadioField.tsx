@@ -44,7 +44,7 @@ export function RadioField({
 		/>
 	) : (
 		<div>
-			<p>
+			<p style={{ margin: 0 }}>
 				<strong>{label}</strong> {field.state.value}
 			</p>
 		</div>

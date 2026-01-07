@@ -66,7 +66,9 @@ export const DeclarationGeneralForm = withForm({
 					{(kind) =>
 						kind === "website" ? (
 							<form.AppField name="general.url">
-								{(field) => <field.TextField label="URL" readOnly={readOnly} />}
+								{(field) => (
+									<field.TextField label="URL : " readOnly={readOnly} />
+								)}
 							</form.AppField>
 						) : null
 					}
@@ -92,16 +94,28 @@ export const DeclarationAuditForm = withForm({
 	props: {
 		isAchieved: false,
 		readOnly: false,
+		onChangeIsAchieved: (value: boolean) => {},
 	},
-	render: function Render({ form, isAchieved: initialIsAchieved, readOnly }) {
+	render: function Render({
+		form,
+		isAchieved: initialIsAchieved,
+		readOnly,
+		onChangeIsAchieved,
+	}) {
 		const [isAchieved, setIsAchieved] = useState(initialIsAchieved);
+
+		const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+			const checked = event.target.checked;
+			setIsAchieved(checked);
+			onChangeIsAchieved(checked);
+		};
 
 		return (
 			<div
 				style={{
 					display: "flex",
 					flexDirection: "column",
-					gap: !readOnly ? fr.spacing("6v") : fr.spacing("2v"),
+					gap: !readOnly ? fr.spacing("6v") : fr.spacing("3v"),
 				}}
 			>
 				{!readOnly ? (
@@ -111,7 +125,7 @@ export const DeclarationAuditForm = withForm({
 								label: "L'audit d'accessibilité a-t-il été réalisé ?",
 								nativeInputProps: {
 									checked: isAchieved,
-									// onChange: (e) => setIsAchieved(e.target.checked),
+									onChange,
 								},
 							},
 						]}
@@ -119,19 +133,10 @@ export const DeclarationAuditForm = withForm({
 						style={{ userSelect: "none" }}
 					/>
 				) : (
-					<p>
+					<p style={{ margin: 0 }}>
 						<strong>Audit réalisé:</strong> {isAchieved ? "Oui" : "Non"}
 					</p>
 				)}
-				<span
-					style={{
-						backgroundColor: fr.colors.decisions.background.default.grey.hover,
-						height: "0.75rem",
-						width: "100%",
-						marginBottom: fr.spacing("4w"),
-						display: "block",
-					}}
-				/>
 				{isAchieved && (
 					<>
 						<form.AppField name="audit.date">
@@ -144,18 +149,6 @@ export const DeclarationAuditForm = withForm({
 								/>
 							)}
 						</form.AppField>
-
-						<span
-							style={{
-								backgroundColor:
-									fr.colors.decisions.background.default.grey.hover,
-								height: "0.125rem",
-								width: "100%",
-								marginBottom: fr.spacing("4w"),
-								display: "block",
-							}}
-						/>
-
 						<form.AppField name="audit.realisedBy">
 							{(field) => (
 								<field.TextField
@@ -165,18 +158,6 @@ export const DeclarationAuditForm = withForm({
 								/>
 							)}
 						</form.AppField>
-
-						<span
-							style={{
-								backgroundColor:
-									fr.colors.decisions.background.default.grey.hover,
-								height: "0.125rem",
-								width: "100%",
-								marginBottom: fr.spacing("4w"),
-								display: "block",
-							}}
-						/>
-
 						<form.AppField name="audit.rgaa_version">
 							{(field) => (
 								<field.RadioField
@@ -186,23 +167,11 @@ export const DeclarationAuditForm = withForm({
 								/>
 							)}
 						</form.AppField>
-
-						<span
-							style={{
-								backgroundColor:
-									fr.colors.decisions.background.default.grey.hover,
-								height: "0.125rem",
-								width: "100%",
-								marginBottom: fr.spacing("4w"),
-								display: "block",
-							}}
-						/>
-
 						<div>
 							<form.AppField name="audit.rate">
 								{(field) =>
 									readOnly ? (
-										<p>
+										<p style={{ margin: 0 }}>
 											<strong>Résultats:</strong> {field.state.value}%
 										</p>
 									) : (
@@ -211,18 +180,6 @@ export const DeclarationAuditForm = withForm({
 								}
 							</form.AppField>
 						</div>
-
-						<span
-							style={{
-								backgroundColor:
-									fr.colors.decisions.background.default.grey.hover,
-								height: "0.75rem",
-								width: "100%",
-								marginBottom: fr.spacing("4w"),
-								display: "block",
-							}}
-						/>
-
 						<form.AppField name="audit.technologies" mode="array">
 							{(field) =>
 								!readOnly ? (
@@ -264,7 +221,7 @@ export const DeclarationAuditForm = withForm({
 										</Button>
 									</Accordion>
 								) : (
-									<p>
+									<>
 										<strong>
 											Outils utilisés pour évaluer l’accessibilité :{" "}
 										</strong>{" "}
@@ -277,11 +234,10 @@ export const DeclarationAuditForm = withForm({
 										) : (
 											"None"
 										)}
-									</p>
+									</>
 								)
 							}
 						</form.AppField>
-
 						<form.AppField name="audit.testEnvironments" mode="array">
 							{(field) =>
 								!readOnly ? (
@@ -322,7 +278,7 @@ export const DeclarationAuditForm = withForm({
 										</Button>
 									</Accordion>
 								) : (
-									<p>
+									<>
 										<strong>Environnement de test :</strong>{" "}
 										{field.state.value.length > 0 ? (
 											<ul>
@@ -333,21 +289,10 @@ export const DeclarationAuditForm = withForm({
 										) : (
 											"None"
 										)}
-									</p>
+									</>
 								)
 							}
 						</form.AppField>
-
-						<span
-							style={{
-								backgroundColor:
-									fr.colors.decisions.background.default.grey.hover,
-								height: "0.75rem",
-								width: "100%",
-								marginBottom: fr.spacing("4w"),
-								display: "block",
-							}}
-						/>
 						<form.AppField name="audit.compliantElements" mode="array">
 							{(field) =>
 								!readOnly ? (
@@ -412,7 +357,7 @@ export const DeclarationAuditForm = withForm({
 										</Button>
 									</Accordion>
 								) : (
-									<p>
+									<>
 										<strong>
 											Éléments ayant fait l’objet de vérification :{" "}
 										</strong>{" "}
@@ -428,7 +373,7 @@ export const DeclarationAuditForm = withForm({
 										) : (
 											"None"
 										)}
-									</p>
+									</>
 								)
 							}
 						</form.AppField>
@@ -504,18 +449,18 @@ export const DeclarationAuditForm = withForm({
 									</Accordion>
 								) : (field?.state?.value?.length ?? 0) ? (
 									<>
-										<p>
+										<>
 											<strong>Dérogation pour charge disproportionnée: </strong>{" "}
 											{field.state.value?.map((value) => (
-												<p key={value.name}>
+												<p key={value.name} style={{ margin: 0 }}>
 													{value.name} - {value.reason} - {value.duration} -{" "}
 													{value.alternative}
 												</p>
 											))}
-										</p>
+										</>
 									</>
 								) : (
-									<p>Non</p>
+									<>Non</>
 								)
 							}
 						</form.AppField>
@@ -527,18 +472,6 @@ export const DeclarationAuditForm = withForm({
 								/>
 							)}
 						</form.AppField>
-
-						<span
-							style={{
-								backgroundColor:
-									fr.colors.decisions.background.default.grey.hover,
-								height: "0.75rem",
-								width: "100%",
-								marginBottom: fr.spacing("4w"),
-								display: "block",
-							}}
-						/>
-
 						<form.AppField name="audit.grid">
 							{(field) => (
 								<field.UploadField

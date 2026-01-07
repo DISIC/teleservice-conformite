@@ -28,7 +28,7 @@ export function UploadField(props: UploadFieldProps) {
 		/>
 	) : (
 		<div>
-			<p>
+			<p style={{ margin: 0 }}>
 				<strong>{label}</strong>
 				{field.state.value?.name ?? "Aucun fichier sélectionné"}
 			</p>

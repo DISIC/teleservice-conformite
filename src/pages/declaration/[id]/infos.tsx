@@ -39,13 +39,15 @@ export default function GeneralInformationsPage({
 		setEditMode((prev) => !prev);
 	};
 
-	readOnlyFormOptions.defaultValues.general = {
-		organisation: name ?? "",
-		kind: declaration?.app_kind as (typeof readOnlyFormOptions)["defaultValues"]["general"]["kind"],
-		name: declaration?.name ?? "",
-		url: declaration?.url ?? "",
-		domain: field ?? "",
-	};
+	if (declaration) {
+		readOnlyFormOptions.defaultValues.general = {
+			organisation: name ?? "",
+			kind: declaration?.app_kind as (typeof readOnlyFormOptions)["defaultValues"]["general"]["kind"],
+			name: declaration?.name ?? "",
+			url: declaration?.url ?? "",
+			domain: field ?? "",
+		};
+	}
 
 	const updateDeclaration = async (
 		generalValues: typeof readOnlyFormOptions.defaultValues.general,

@@ -7,6 +7,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
+import type { z } from "zod";
 
 import type { Declaration } from "~/payload/payload-types";
 import { useAppForm } from "~/utils/form/context";
@@ -14,39 +15,113 @@ import { DeclarationAuditForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import AuditMultiStepForm from "~/components/declaration/AuditMultiStepForm";
 import { getPopulated } from "~/utils/payload-helper";
+import { api } from "~/utils/api";
+import type { auditFormSchema } from "~/utils/form/audit/schema";
+
+type AuditFormSchema = z.infer<typeof auditFormSchema>;
 
 export default function AuditPage({
 	declaration,
 }: { declaration: Declaration }) {
+	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
-	const router = useRouter();
+	const [isAchieved, setIsAchieved] = useState(!!declaration?.audit);
 	const audit = getPopulated(declaration?.audit);
+
+	const { mutateAsync: updateAudit } = api.audit.update.useMutation({
+		onSuccess: async () => {
+			router.reload();
+		},
+		onError: async (error) => {
+			console.error(`Error updating audit with id ${audit?.id}`, error);
+		},
+	});
+
+	const { mutateAsync: deleteAudit } = api.audit.delete.useMutation({
+		onSuccess: async () => {
+			router.push(`/declaration/${declaration?.id}`);
+		},
+		onError: async (error) => {
+			console.error(`Error deleting audit with id ${audit?.id}`, error);
+		},
+	});
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
 	};
 
-	readOnlyFormOptions.defaultValues.audit = {
-		...readOnlyFormOptions.defaultValues.audit,
-		date: new Date(audit?.date ?? "").toLocaleDateString() ?? "",
-		grid: audit?.auditGrid ?? undefined,
-		report: audit?.auditReport ?? undefined,
-		realisedBy: audit?.realisedBy ?? "",
-		rgaa_version: audit?.rgaa_version ?? "rgaa_4",
-		rate: audit?.rate ?? 0,
-		compliantElements: audit?.compliantElements ?? [],
-		technologies: audit?.toolsUsed ?? [],
-		testEnvironments: audit?.testEnvironments ?? [],
-		nonCompliantElements: audit?.nonCompliantElements ?? "Non",
-		disproportionnedCharge: audit?.disproportionnedCharge ?? "Non",
-		optionalElements: audit?.exemption ?? "Non",
+	if (audit) {
+		readOnlyFormOptions.defaultValues = {
+			...readOnlyFormOptions.defaultValues,
+			section: "audit",
+			audit: {
+				date: audit?.date
+					? new Date(audit.date).toISOString().slice(0, 10)
+					: "",
+				// grid: audit?.auditGrid ?? undefined,
+				// report: audit?.auditReport ?? undefined,
+				realisedBy: audit?.realisedBy ?? "",
+				rgaa_version: audit?.rgaa_version ?? "rgaa_4",
+				rate: audit?.rate ?? 0,
+				// compliantElements: audit?.compliantElements ?? [],
+				technologies: audit?.toolsUsed ?? [],
+				testEnvironments: audit?.testEnvironments ?? [],
+				nonCompliantElements: audit?.nonCompliantElements ?? "Non",
+				// disproportionnedCharge: audit?.disproportionnedCharge ?? "Non",
+				optionalElements: audit?.exemption ?? "Non",
+			},
+		};
+	}
+
+	const deleteDeclarationAudit = async (auditId: number) => {
+		try {
+			await deleteAudit({ id: auditId });
+		} catch (error) {
+			console.error(`Error deleting audit with id ${auditId}:`, error);
+		}
+	};
+
+	const updateDeclarationAudit = async (
+		auditId: number,
+		auditData: AuditFormSchema,
+	) => {
+		try {
+			await updateAudit({
+				audit: {
+					id: auditId,
+					compliantElements: auditData.compliantElements ?? [
+						{ name: "", url: "" },
+					],
+					nonCompliantElements: auditData.nonCompliantElements,
+					optionalElements: auditData.optionalElements,
+					date: auditData.date,
+					realisedBy: auditData.realisedBy,
+					rgaa_version: auditData.rgaa_version,
+					rate: auditData.rate,
+					technologies: auditData.technologies,
+					testEnvironments: auditData.testEnvironments,
+					disproportionnedCharge: auditData.disproportionnedCharge ?? [],
+					grid: auditData.grid,
+					report: auditData.report,
+				},
+			});
+		} catch (error) {
+			console.error(`Error deleting audit with id ${auditId}:`, error);
+		}
 	};
 
 	const form = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
-			alert(JSON.stringify(value, null, 2));
+			console.log("value", value);
+			if (!isAchieved && declaration?.audit) {
+				await deleteDeclarationAudit(audit?.id ?? -1);
+
+				return;
+			}
+
+			await updateDeclarationAudit(audit?.id ?? -1, value.audit);
 		},
 	});
 
@@ -56,15 +131,17 @@ export default function AuditPage({
 
 	return (
 		<section id="audit" className={classes.main}>
-			<div className={classes.header}>
-				<h2 className={classes.description}>
-					Verifiez les informations et modifiez-les si necessaire
-				</h2>
-				<Button priority="secondary" onClick={onEditInfos}>
-					{!editMode ? "Modifier" : "Annuler"}
-				</Button>
+			<div>
+				<h1>Résultat de l’audit</h1>
+				<div className={classes.headerAction}>
+					<h3 className={classes.description}>
+						Verifiez les informations et modifiez-les si necessaire
+					</h3>
+					<Button priority="secondary" onClick={onEditInfos}>
+						{!editMode ? "Modifier" : "Annuler"}
+					</Button>
+				</div>
 			</div>
-
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
@@ -75,11 +152,16 @@ export default function AuditPage({
 					<DeclarationAuditForm
 						form={form}
 						readOnly={!editMode}
-						isAchieved={true}
+						isAchieved={isAchieved}
+						onChangeIsAchieved={(value) => setIsAchieved(value)}
 					/>
 					{editMode && (
 						<form.AppForm>
-							<form.SubscribeButton label={"Valider"} />
+							<form.SubscribeButton
+								label="Valider les informations"
+								iconId="fr-icon-arrow-right-line"
+								iconPosition="right"
+							/>
 						</form.AppForm>
 					)}
 				</div>
@@ -99,10 +181,9 @@ const useStyles = tss.withName(AuditPage.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
-		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
-	header: {
+	headerAction: {
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-between",
