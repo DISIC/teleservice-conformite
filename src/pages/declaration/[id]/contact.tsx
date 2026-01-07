@@ -13,13 +13,26 @@ import { DeclarationContactForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import ContactForm from "~/components/declaration/ContactForm";
 import { getPopulated } from "~/utils/payload-helper";
+import { api } from "~/utils/api";
 
 export default function ContactPage({
 	declaration,
 }: { declaration: Declaration }) {
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
-	const { email, url } = getPopulated(declaration?.contact) || {};
+	const { id, email, url } = getPopulated(declaration?.contact) || {};
+
+	const { mutateAsync: updateContact } = api.contact.update.useMutation({
+		onSuccess: async () => {
+			window.location.reload();
+		},
+		onError: async (error) => {
+			console.error(
+				`Error updating contact for declaration with id ${declaration?.id}:`,
+				error,
+			);
+		},
+	});
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
@@ -37,16 +50,41 @@ export default function ContactPage({
 		[],
 	);
 
-	readOnlyFormOptions.defaultValues.contact = {
-		contactOptions,
-		contactEmail: email ?? "",
-		contactName: getPopulated(declaration?.contact)?.url ?? "",
+	if (declaration?.contact) {
+		readOnlyFormOptions.defaultValues = {
+			...readOnlyFormOptions.defaultValues,
+			section: "contact",
+			contact: {
+				contactOptions,
+				contactEmail: email ?? "",
+				contactName: url ?? "",
+			},
+		};
+	}
+
+	const updateDeclarationContact = async (
+		id: number,
+		email: string,
+		url: string,
+	) => {
+		try {
+			await updateContact({ id, email, url });
+		} catch (error) {
+			console.error(
+				`Error updating contact for declaration with id ${declaration?.id}:`,
+				error,
+			);
+		}
 	};
 
 	const form = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
-			alert(JSON.stringify(value, null, 2));
+			await updateDeclarationContact(
+				id ?? -1,
+				value.contact.contactEmail ?? "",
+				value.contact.contactName ?? "",
+			);
 		},
 	});
 
