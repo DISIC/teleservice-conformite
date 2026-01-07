@@ -97,7 +97,13 @@ export const DeclarationAuditForm = withForm({
 		const [isAchieved, setIsAchieved] = useState(initialIsAchieved);
 
 		return (
-			<div>
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					gap: !readOnly ? fr.spacing("6v") : fr.spacing("2v"),
+				}}
+			>
 				{!readOnly ? (
 					<Checkbox
 						options={[
@@ -225,7 +231,16 @@ export const DeclarationAuditForm = withForm({
 										defaultExpanded
 									>
 										{field.state.value.map((_, index) => (
-											<div key={index}>
+											<div
+												key={index}
+												style={{
+													display: "flex",
+													flexDirection: "column",
+													gap: fr.spacing("4v"),
+													width: "100%",
+													paddingBlock: fr.spacing("4v"),
+												}}
+											>
 												<div>
 													<form.AppField name={`audit.technologies[${index}]`}>
 														{(subField) => (
@@ -272,7 +287,16 @@ export const DeclarationAuditForm = withForm({
 								!readOnly ? (
 									<Accordion label="Environnement de test : " defaultExpanded>
 										{field.state.value.map((_, index) => (
-											<div key={index}>
+											<div
+												key={index}
+												style={{
+													display: "flex",
+													flexDirection: "column",
+													gap: fr.spacing("4v"),
+													width: "100%",
+													paddingBlock: fr.spacing("4v"),
+												}}
+											>
 												<div>
 													<form.AppField
 														name={`audit.testEnvironments[${index}]`}
@@ -332,8 +356,24 @@ export const DeclarationAuditForm = withForm({
 										defaultExpanded
 									>
 										{field.state.value?.map((_, index) => (
-											<div key={index}>
-												<div>
+											<div
+												key={index}
+												style={{
+													display: "flex",
+													flexDirection: "column",
+													gap: fr.spacing("4v"),
+													width: "100%",
+													paddingBlock: fr.spacing("4v"),
+												}}
+											>
+												<div
+													style={{
+														display: "flex",
+														flexDirection: "column",
+														gap: fr.spacing("4v"),
+														width: "100%",
+													}}
+												>
 													<form.AppField
 														name={`audit.compliantElements[${index}].name`}
 													>
