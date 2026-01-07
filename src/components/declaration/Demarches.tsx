@@ -24,20 +24,16 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			{rate && (
 				<div className={classes.summaryCardsContainer}>
 					<div className={classes.summaryRateCard}>
-						<p className={classes.rateLabel}>Taux de conformite</p>
-						<p className={classes.rateValue}>
-							<strong>{rate ? `${rate}%` : "N/A"}</strong>
-						</p>
+						<p className={classes.cardLabel}>Taux de conformite</p>
+						<p className={classes.cardValue}>{rate ? `${rate}%` : "N/A"}</p>
 					</div>
-					<div className={classes.updateDateLabel}>
-						<span>
-							Derniere mise a jour:{" "}
-							<strong>
-								{declaration?.updatedAt
-									? new Date(declaration.updatedAt).toLocaleString()
-									: "N/A"}
-							</strong>
-						</span>
+					<div className={classes.summaryUpdateDateCard}>
+						<p className={classes.cardLabel}>Derniere mise a jour</p>
+						<p className={classes.cardValue}>
+							{declaration?.updatedAt
+								? new Date(declaration.updatedAt).toLocaleString()
+								: "N/A"}
+						</p>
 						{declaration?.updatedAt &&
 							declaration?.published_at &&
 							declaration?.updatedAt > declaration?.published_at && (
@@ -62,6 +58,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					enlargeLinkOrButton={true}
 					orientation="vertical"
 					pictogram={<Document fontSize="2rem" />}
+					className={classes.tile}
 				/>
 				<Tile
 					title="Schéma et plans d'actions"
@@ -69,7 +66,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `/declaration/${declaration?.id}/schema`,
 					}}
-					enlargeLinkOrButton={false}
+					enlargeLinkOrButton={true}
 					orientation="vertical"
 					pictogram={<Conclusion fontSize="2rem" />}
 					start={
@@ -79,6 +76,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							</Badge>
 						)
 					}
+					className={classes.tile}
 				/>
 				<Tile
 					title="Résultat de l’audit"
@@ -86,7 +84,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `/declaration/${declaration?.id}/audit`,
 					}}
-					enlargeLinkOrButton={false}
+					enlargeLinkOrButton={true}
 					orientation="vertical"
 					pictogram={<Search fontSize="2rem" />}
 					start={
@@ -96,6 +94,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							</Badge>
 						)
 					}
+					className={classes.tile}
 				/>
 				<Tile
 					title="Contact"
@@ -103,7 +102,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `/declaration/${declaration?.id}/contact`,
 					}}
-					enlargeLinkOrButton={false}
+					enlargeLinkOrButton={true}
 					orientation="vertical"
 					pictogram={<Community fontSize="2rem" />}
 					start={
@@ -113,6 +112,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							</Badge>
 						)
 					}
+					className={classes.tile}
 				/>
 			</div>
 		</section>
@@ -140,38 +140,39 @@ const useStyles = tss.withName(Demarches.name).create({
 		borderRadius: "0.375rem",
 		justifyContent: "space-between",
 	},
-	rateLabel: {
-		margin: 0,
-		fontWeight: 400,
-		fontFamily: "Marianne",
-		fontSize: "1rem",
-		lineHeight: "1.5rem",
-	},
-	rateValue: {
-		margin: 0,
-		fontWeight: 400,
-		fontFamily: "Marianne",
-		fontSize: "1rem",
-		lineHeight: "1.5rem",
-	},
-	updateDateLabel: {
+	summaryUpdateDateCard: {
 		display: "flex",
 		flexDirection: "row",
 		gap: fr.spacing("3v"),
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.hover,
-		padding: fr.spacing("3v"),
-		borderRadius: "0.375rem",
 		paddingInline: fr.spacing("7v"),
 		paddingBlock: fr.spacing("10v"),
+		borderRadius: "0.375rem",
+		justifyContent: "flex-start",
+	},
+	cardLabel: {
+		margin: 0,
 		fontWeight: 400,
 		fontFamily: "Marianne",
 		fontSize: "1rem",
 		lineHeight: "1.5rem",
+	},
+	cardValue: {
+		margin: 0,
+		fontWeight: 500,
+		fontFamily: "Marianne",
+		fontSize: "1.25rem",
+		lineHeight: "1.75rem",
 	},
 	tilesContainer: {
 		display: "flex",
 		flexDirection: "row",
 		gap: fr.spacing("4v"),
 		justifyContent: "center",
+	},
+	tile: {
+		"& a::after": {
+			display: "none",
+		},
 	},
 });

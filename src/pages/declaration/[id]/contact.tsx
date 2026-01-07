@@ -50,7 +50,7 @@ export default function ContactPage({
 		},
 	});
 
-	if (!declaration?.actionPlan) {
+	if (!declaration?.contact) {
 		return <ContactForm declarationId={declaration?.id ?? -1} />;
 	}
 
