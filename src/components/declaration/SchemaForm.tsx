@@ -61,6 +61,17 @@ export default function SchemaForm({
 		return null;
 	};
 
+	const onClickCancel = () => {
+		if (section === "schema") {
+			router.push(`/declaration/${declarationId}`);
+		} else {
+			const previousSection = goToPreviousSection(section);
+			if (previousSection) {
+				form.setFieldValue("section", previousSection);
+			}
+		}
+	};
+
 	const addSchema = async ({
 		annualSchemaLink,
 		declarationId,
@@ -107,19 +118,10 @@ export default function SchemaForm({
 					)}
 				</div>
 				<form.AppForm>
-					<div style={{ display: "flex", justifyContent: "space-between" }}>
+					<div className={classes.actionButtonsContainer}>
 						<form.CancelButton
 							label="Retour"
-							onClick={() => {
-								if (section === "schema") {
-									router.push(`/declaration/${declarationId}`);
-								} else {
-									const previousSection = goToPreviousSection(section);
-									if (previousSection) {
-										form.setFieldValue("section", previousSection);
-									}
-								}
-							}}
+							onClick={onClickCancel}
 							priority="tertiary"
 						/>
 						<form.SubscribeButton
@@ -145,5 +147,9 @@ const useStyles = tss.withName(SchemaForm.name).create({
 		// backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
+	},
+	actionButtonsContainer: {
+		display: "flex",
+		justifyContent: "space-between",
 	},
 });

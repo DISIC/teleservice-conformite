@@ -60,12 +60,10 @@ export default function ContactForm({
 					<ContactTypeForm form={form} />
 				</div>
 				<form.AppForm>
-					<div style={{ display: "flex", justifyContent: "space-between" }}>
+					<div className={classes.actionButtonsContainer}>
 						<form.CancelButton
 							label="Retour"
-							onClick={() => {
-								router.push(`/declaration/${declarationId}`);
-							}}
+							onClick={() => router.push(`/declaration/${declarationId}`)}
 							priority="tertiary"
 						/>
 						<form.SubscribeButton
@@ -91,5 +89,9 @@ const useStyles = tss.withName(ContactForm.name).create({
 		// backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
+	},
+	actionButtonsContainer: {
+		display: "flex",
+		justifyContent: "space-between",
 	},
 });

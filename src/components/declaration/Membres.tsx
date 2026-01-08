@@ -132,7 +132,7 @@ export default function Membres({ declaration }: MembresProps) {
 					</form>
 				</inviteMembersModal.Component>
 			</div>
-			<div style={{}}>
+			<div>
 				<Table
 					fixed
 					data={[[name, email, <StatusBadge key="status" status="admin" />]]}
