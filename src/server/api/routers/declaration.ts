@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
+
 import type { appKindOptions } from "~/payload/collections/Declaration";
 import type { ZDeclarationMultiStepFormSchema } from "~/utils/form/declaration/schema";
 import { declarationGeneral } from "~/utils/form/declaration/schema";
@@ -68,7 +69,7 @@ export const declarationRouter = createTRPCRouter({
 				collection: "entities",
 				data: {
 					name: organisation,
-					field: domain as any,
+					kind: domain as any,
 				},
 			});
 
@@ -95,7 +96,7 @@ export const declarationRouter = createTRPCRouter({
 				id,
 			});
 
-			return { success: true };
+			return { data: id };
 		}),
 	update: publicProcedure
 		.input(
@@ -105,8 +106,8 @@ export const declarationRouter = createTRPCRouter({
 		)
 		.mutation(async ({ input, ctx }) => {
 			const { organisation, kind, url, domain, name, declarationId, entityId } = input.general;
-      console.log(input);
-			const declaration = await ctx.payload.update({
+
+      const declaration = await ctx.payload.update({
 				collection: "declarations",
 				id: declarationId,
 				data: {
@@ -121,7 +122,7 @@ export const declarationRouter = createTRPCRouter({
 				id: entityId,
 				data: {
 					name: organisation,
-					field: kindOptions.find((field) => field.label === domain)?.value,
+					kind: kindOptions.find((field) => field.label === domain)?.value,
 				},
 			});
 

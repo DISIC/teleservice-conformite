@@ -19,6 +19,11 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const { classes } = useStyles();
 	const { rate } = getPopulated(declaration?.audit) || {};
 
+	const wasUpdated =
+		declaration?.updatedAt &&
+		declaration?.published_at &&
+		declaration?.updatedAt > declaration?.published_at;
+
 	return (
 		<section id="demarches-tab" className={classes.main}>
 			{rate && (
@@ -34,17 +39,15 @@ export default function Demarches({ declaration }: DemarchesProps) {
 								? new Date(declaration.updatedAt).toLocaleString()
 								: "N/A"}
 						</p>
-						{declaration?.updatedAt &&
-							declaration?.published_at &&
-							declaration?.updatedAt > declaration?.published_at && (
-								<Button
-									iconId="fr-icon-edit-box-fill"
-									priority="primary"
-									style={{ width: "100%" }}
-								>
-									Mettre à jour
-								</Button>
-							)}
+						{wasUpdated && (
+							<Button
+								iconId="fr-icon-edit-box-fill"
+								priority="primary"
+								style={{ width: "100%" }}
+							>
+								Mettre à jour
+							</Button>
+						)}
 					</div>
 				</div>
 			)}

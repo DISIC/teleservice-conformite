@@ -4,6 +4,7 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { useRouter } from "next/router";
 
 import type { Declaration } from "~/payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
@@ -14,17 +15,19 @@ import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import ContactForm from "~/components/declaration/ContactForm";
 import { getPopulated } from "~/utils/payload-helper";
 import { api } from "~/utils/api";
+import { getDeclarationById } from "~/utils/payload-helper";
 
 export default function ContactPage({
 	declaration,
 }: { declaration: Declaration }) {
+	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
 	const { id, email, url } = getPopulated(declaration?.contact) || {};
 
 	const { mutateAsync: updateContact } = api.contact.update.useMutation({
 		onSuccess: async () => {
-			window.location.reload();
+			router.reload();
 		},
 		onError: async (error) => {
 			console.error(
@@ -168,31 +171,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const payload = await getPayload({ config });
 
-	try {
-		const declaration = await payload.findByID({
-			collection: "declarations",
-			id: Number.parseInt(id),
-			depth: 3,
-		});
+	const declaration = await getDeclarationById(payload, Number.parseInt(id));
 
-		if (!declaration) {
-			return {
-				props: {},
-				redirect: { destination: "/declarations" },
-			};
-		}
-
+	if (!declaration) {
 		return {
-			props: {
-				declaration,
-			},
-		};
-	} catch (error) {
-		console.error("Error fetching declaration:", error);
-
-		return {
-			redirect: { destination: "/declarations" },
 			props: {},
+			redirect: { destination: "/declarations" },
 		};
 	}
+
+	return {
+		props: {
+			declaration: declaration,
+		},
+	};
 };

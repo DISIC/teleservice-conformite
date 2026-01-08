@@ -11,6 +11,7 @@ import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
 import SchemaForm from "~/components/declaration/SchemaForm";
+import { getDeclarationById } from "~/utils/payload-helper";
 
 export default function SchemaPage({
 	declaration,
@@ -122,31 +123,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const payload = await getPayload({ config });
 
-	try {
-		const declaration = await payload.findByID({
-			collection: "declarations",
-			id: Number.parseInt(id),
-			depth: 3,
-		});
+	const declaration = await getDeclarationById(payload, Number.parseInt(id));
 
-		if (!declaration) {
-			return {
-				props: {},
-				redirect: { destination: "/declarations" },
-			};
-		}
-
+	if (!declaration) {
 		return {
-			props: {
-				declaration: declaration,
-			},
-		};
-	} catch (error) {
-		console.error("Error fetching declaration:", error);
-
-		return {
-			redirect: { destination: "/declarations" },
 			props: {},
+			redirect: { destination: "/declarations" },
 		};
 	}
+
+	return {
+		props: {
+			declaration: declaration,
+		},
+	};
 };

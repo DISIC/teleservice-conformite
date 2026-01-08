@@ -17,6 +17,7 @@ import AuditMultiStepForm from "~/components/declaration/AuditMultiStepForm";
 import { getPopulated } from "~/utils/payload-helper";
 import { api } from "~/utils/api";
 import type { auditFormSchema } from "~/utils/form/audit/schema";
+import { getDeclarationById } from "~/utils/payload-helper";
 
 type AuditFormSchema = z.infer<typeof auditFormSchema>;
 
@@ -90,20 +91,11 @@ export default function AuditPage({
 			await updateAudit({
 				audit: {
 					id: auditId,
+					...auditData,
 					compliantElements: auditData.compliantElements ?? [
 						{ name: "", url: "" },
 					],
-					nonCompliantElements: auditData.nonCompliantElements,
-					optionalElements: auditData.optionalElements,
-					date: auditData.date,
-					realisedBy: auditData.realisedBy,
-					rgaa_version: auditData.rgaa_version,
-					rate: auditData.rate,
-					technologies: auditData.technologies,
-					testEnvironments: auditData.testEnvironments,
 					disproportionnedCharge: auditData.disproportionnedCharge ?? [],
-					grid: auditData.grid,
-					report: auditData.report,
 				},
 			});
 		} catch (error) {
@@ -113,8 +105,10 @@ export default function AuditPage({
 
 	const form = useAppForm({
 		...readOnlyFormOptions,
+		// defaultValues: {
+
+		// },
 		onSubmit: async ({ value, formApi }) => {
-			console.log("value", value);
 			if (!isAchieved && declaration?.audit) {
 				await deleteDeclarationAudit(audit?.id ?? -1);
 
@@ -210,31 +204,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const payload = await getPayload({ config });
 
-	try {
-		const declaration = await payload.findByID({
-			collection: "declarations",
-			id: Number.parseInt(id),
-			depth: 3,
-		});
+	const declaration = await getDeclarationById(payload, Number.parseInt(id));
 
-		if (!declaration) {
-			return {
-				props: {},
-				redirect: { destination: "/declarations" },
-			};
-		}
-
+	if (!declaration) {
 		return {
-			props: {
-				declaration: declaration || null,
-			},
-		};
-	} catch (error) {
-		console.error("Error fetching declaration:", error);
-
-		return {
-			redirect: { destination: "/declarations" },
 			props: {},
+			redirect: { destination: "/declarations" },
 		};
 	}
+
+	return {
+		props: {
+			declaration: declaration,
+		},
+	};
 };

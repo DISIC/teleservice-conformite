@@ -17,6 +17,7 @@ import { api } from "~/utils/api";
 import type { Declaration } from "~/payload/payload-types";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
+import { getDeclarationById } from "~/utils/payload-helper";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -205,42 +206,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const payload = await getPayload({ config });
 
-	try {
-		const result = await payload.findByID({
-			collection: "declarations",
-			id: Number.parseInt(id),
-			depth: 3,
-		});
+	const declaration = await getDeclarationById(payload, Number.parseInt(id));
 
-		if (!result) {
-			return {
-				redirect: { destination: "/declarations" },
-				props: {
-					declaration: null,
-				},
-			};
-		}
-
-		const declaration = {
-			...result,
-			updatedAtFormatted: new Intl.DateTimeFormat("fr-FR", {
-				dateStyle: "short",
-				timeStyle: "short",
-				timeZone: "Europe/Paris",
-			}).format(new Date(result.updatedAt)),
-		};
-
+	if (!declaration) {
 		return {
-			props: {
-				declaration: declaration,
-			},
-		};
-	} catch (error) {
-		console.error("Error fetching declaration:", error);
-
-		return {
-			redirect: { destination: "/declarations" },
 			props: {},
+			redirect: { destination: "/declarations" },
 		};
 	}
+
+	return {
+		props: {
+			declaration: declaration,
+		},
+	};
 };

@@ -1,28 +1,7 @@
 import z from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { TRPCError } from "@trpc/server";
 
-const linkToDeclaration = async (
-  ctx: any,
-  declarationId: number,
-  actionPlanId: number
-) => {
-  try {
-    await ctx.payload.update({
-      collection: "declarations",
-      id: declarationId,
-      data: {
-        actionPlan: actionPlanId,
-      },
-    });
-  } catch(error) {
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: `Failed to link contact to declaration: ${(error as Error).message}`,
-    });
-  }
-
-};
+import { linkToDeclaration } from "../utils/payload-helper";
 
 export const schemaRouter = createTRPCRouter({
   create: publicProcedure
@@ -43,7 +22,7 @@ export const schemaRouter = createTRPCRouter({
         },
       });
 
-      await linkToDeclaration(ctx, declarationId, schema.id);
+      await linkToDeclaration(ctx.payload, declarationId, schema.id);
 
       return { data: schema.id };
     }),

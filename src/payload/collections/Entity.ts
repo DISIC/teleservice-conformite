@@ -58,7 +58,7 @@ export const Entities: CollectionConfig = {
       label: { fr: "SIRET" },
     },
     {
-      name: "field",
+      name: "kind",
       type: "select",
       label: { fr: "Secteur d'activité de l'administration" },
       options: [...kindOptions],

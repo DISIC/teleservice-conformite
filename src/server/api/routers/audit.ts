@@ -1,36 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
+
 import { toolOptions, testEnvironmentOptions } from "~/payload/collections/Audit";
-import type { appKindOptions } from "~/payload/collections/Declaration";
-import type {
-  ZDeclarationAudit,
-  ZDeclarationGeneral,
-  ZDeclarationMultiStepFormSchema,
-} from "~/utils/form/declaration/schema";
 import { auditFormSchema } from "~/utils/form/audit/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-
-const linkToDeclaration = async (
-  ctx: any,
-  declarationId: number,
-  auditId: number
-) => {
-  try {
-    await ctx.payload.update({
-      collection: "declarations",
-      id: declarationId,
-      data: {
-        audit: auditId,
-      },
-    });
-  } catch(error) {
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: `Failed to link audit to declaration: ${(error as Error).message}`,
-    });
-  }
-
-};
+import { linkToDeclaration } from "../utils/payload-helper";
 
 export const auditRouter = createTRPCRouter({
   create: publicProcedure
@@ -76,7 +50,7 @@ export const auditRouter = createTRPCRouter({
         },
       });
 
-      await linkToDeclaration(ctx, declarationId, audit.id);
+      await linkToDeclaration(ctx.payload, declarationId, audit.id);
 
       return { data: audit.id };
     }),

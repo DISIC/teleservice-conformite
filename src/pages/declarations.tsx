@@ -20,17 +20,12 @@ interface DeclarationsPageProps {
 export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { declarations } = props;
 	const router = useRouter();
-	const { classes } = useStyles();
+	const { classes } = useStyles({ declarationLength: declarations.length });
 
 	return (
 		<section id="declarations-page" className={classes.main}>
 			<h1>Vos déclarations d'accessibilité</h1>
-			<div
-				style={{
-					display: declarations?.length ? "flex" : "none",
-				}}
-				className={classes.buttonWrapper}
-			>
+			<div className={classes.buttonWrapper}>
 				<Button
 					iconId="fr-icon-add-line"
 					priority="tertiary"
@@ -124,79 +119,83 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	);
 }
 
-const useStyles = tss.withName(DeclarationsPage.name).create({
-	main: {
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("8v"),
-		padding: fr.spacing("10v"),
-	},
-	buttonWrapper: {
-		justifyContent: "flex-end",
-	},
-	declarationCard: {
-		display: "flex",
-		justifyContent: "space-between",
-		alignItems: "center",
-		border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-		padding: fr.spacing("4v"),
-	},
-	declarationTitleWrapper: {
-		display: "flex",
-		alignItems: "flex-start",
-		gap: "10px",
-	},
-	declarationTitle: {
-		marginBottom: fr.spacing("4v"),
-		color: fr.colors.decisions.background.actionHigh.blueFrance.default,
-	},
-	details: {
-		fontWeight: 400,
-		fontSize: "14px",
-		lineHeight: "24px",
-		margin: 0,
-		color: fr.colors.decisions.border.contrast.grey.default,
-	},
-	auditRateValue: {
-		lineHeight: "36px",
-		fontWeight: 700,
-		color: fr.colors.decisions.text.label.grey.default,
-		fontSize: fr.typography[3].style.fontSize,
-		margin: 0,
-	},
-	auditRateLabel: {
-		lineHeight: "24px",
-		fontWeight: 400,
-		color: fr.colors.decisions.text.label.grey.default,
-		fontSize: fr.typography[1].style.fontSize,
-	},
-	buttonsContainer: {
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("4v"),
-	},
-	emptyStateContainer: {
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("5v"),
-		justifyContent: "center",
-		alignItems: "center",
-		marginTop: fr.spacing("25v"),
-	},
-	emptyStateTitle: {
-		fontFamily: "Marianne",
-		fontWeight: 700,
-		fontSize: "1.25rem",
-		lineHeight: "1.75rem",
-	},
-	emptyStateDescription: {
-		fontFamily: "Marianne",
-		fontWeight: 400,
-		fontSize: "1.25rem",
-		lineHeight: "2rem",
-		color: fr.colors.decisions.text.mention.grey.default,
-	},
-});
+const useStyles = tss
+	.withName(DeclarationsPage.name)
+	.withParams<{ declarationLength: number }>()
+	.create(({ declarationLength }) => ({
+		main: {
+			display: "flex",
+			flexDirection: "column",
+			gap: fr.spacing("8v"),
+			padding: fr.spacing("10v"),
+		},
+		buttonWrapper: {
+			justifyContent: "flex-end",
+			display: declarationLength ? "flex" : "none",
+		},
+		declarationCard: {
+			display: "flex",
+			justifyContent: "space-between",
+			alignItems: "center",
+			border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+			padding: fr.spacing("4v"),
+		},
+		declarationTitleWrapper: {
+			display: "flex",
+			alignItems: "flex-start",
+			gap: "10px",
+		},
+		declarationTitle: {
+			marginBottom: fr.spacing("4v"),
+			color: fr.colors.decisions.background.actionHigh.blueFrance.default,
+		},
+		details: {
+			fontWeight: 400,
+			fontSize: "14px",
+			lineHeight: "24px",
+			margin: 0,
+			color: fr.colors.decisions.border.contrast.grey.default,
+		},
+		auditRateValue: {
+			lineHeight: "36px",
+			fontWeight: 700,
+			color: fr.colors.decisions.text.label.grey.default,
+			fontSize: fr.typography[3].style.fontSize,
+			margin: 0,
+		},
+		auditRateLabel: {
+			lineHeight: "24px",
+			fontWeight: 400,
+			color: fr.colors.decisions.text.label.grey.default,
+			fontSize: fr.typography[1].style.fontSize,
+		},
+		buttonsContainer: {
+			display: "flex",
+			flexDirection: "column",
+			gap: fr.spacing("4v"),
+		},
+		emptyStateContainer: {
+			display: "flex",
+			flexDirection: "column",
+			gap: fr.spacing("5v"),
+			justifyContent: "center",
+			alignItems: "center",
+			marginTop: fr.spacing("25v"),
+		},
+		emptyStateTitle: {
+			fontFamily: "Marianne",
+			fontWeight: 700,
+			fontSize: "1.25rem",
+			lineHeight: "1.75rem",
+		},
+		emptyStateDescription: {
+			fontFamily: "Marianne",
+			fontWeight: 400,
+			fontSize: "1.25rem",
+			lineHeight: "2rem",
+			color: fr.colors.decisions.text.mention.grey.default,
+		},
+	}));
 
 interface Params extends ParsedUrlQuery {
 	id: string;

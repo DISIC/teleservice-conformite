@@ -14,6 +14,7 @@ import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { getPopulated } from "~/utils/payload-helper";
 import { api } from "~/utils/api";
+import { getDeclarationById } from "~/utils/payload-helper";
 
 export default function GeneralInformationsPage({
 	declaration,
@@ -21,7 +22,7 @@ export default function GeneralInformationsPage({
 	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
-	const { name, field } = getPopulated(declaration?.entity) || {};
+	const { name, kind } = getPopulated(declaration?.entity) || {};
 
 	const { mutateAsync: update } = api.declaration.update.useMutation({
 		onSuccess: async (result) => {
@@ -45,7 +46,7 @@ export default function GeneralInformationsPage({
 			kind: declaration?.app_kind as (typeof readOnlyFormOptions)["defaultValues"]["general"]["kind"],
 			name: declaration?.name ?? "",
 			url: declaration?.url ?? "",
-			domain: field ?? "",
+			domain: kind ?? "",
 		};
 	}
 
@@ -150,37 +151,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			redirect: { destination: "/" },
+			redirect: { destination: "/declarations" },
 		};
 	}
 
 	const payload = await getPayload({ config });
 
-	try {
-		const declaration = await payload.findByID({
-			collection: "declarations",
-			id: Number.parseInt(id),
-			depth: 3,
-		});
+	const declaration = await getDeclarationById(payload, Number.parseInt(id));
 
-		if (!declaration) {
-			return {
-				props: {},
-				redirect: { destination: "/declarations" },
-			};
-		}
-
+	if (!declaration) {
 		return {
-			props: {
-				declaration,
-			},
-		};
-	} catch (error) {
-		console.error("Error fetching declaration:", error);
-
-		return {
-			redirect: { destination: "/declarations" },
 			props: {},
+			redirect: { destination: "/declarations" },
 		};
 	}
+
+	return {
+		props: {
+			declaration: declaration,
+		},
+	};
 };
