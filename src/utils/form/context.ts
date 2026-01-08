@@ -1,6 +1,6 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 
-import { SubscribeButton, CancelButton } from "~/components/form/SubmitButton";
+import { SubscribeButton, CancelButton } from "~/components/form/ActionButtons";
 
 import { CheckboxField } from "~/components/form/fields/CheckboxField";
 import { CheckboxGroupField } from "~/components/form/fields/CheckboxGroupField";
@@ -35,4 +35,7 @@ export type DefaultFieldProps = {
 	label: string;
 	className?: string;
 	disabled?: boolean;
+	readOnly?: boolean;
+	description?: string;
+	placeholder?: string;
 };
