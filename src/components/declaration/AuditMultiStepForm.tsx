@@ -1,14 +1,5 @@
-import { useState } from "react";
-import config from "@payload-config";
-import type { GetServerSideProps } from "next";
-import { getPayload } from "payload";
-import type { ParsedUrlQuery } from "node:querystring";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { useRouter } from "next/router";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 
-import type { Declaration } from "~/payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
 import { useStore } from "@tanstack/react-form";
 import { tss } from "tss-react";

@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 
 import { fr } from "@codegouvfr/react-dsfr";
-import { useStore } from "@tanstack/react-form";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
 import { ContactTypeForm } from "~/utils/form/contact/form";
