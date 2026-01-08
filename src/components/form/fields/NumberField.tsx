@@ -6,7 +6,6 @@ import { ReadOnlyField } from "./ReadOnlyField";
 interface NumberFieldProps extends DefaultFieldProps {
 	min?: number;
 	max?: number;
-	readOnly?: boolean;
 }
 
 export function NumberField({ label, readOnly = false }: NumberFieldProps) {

@@ -5,8 +5,6 @@ import { ReadOnlyField } from "./ReadOnlyField";
 
 interface CheckboxGroupFieldProps extends DefaultFieldProps {
 	options: Array<{ label: string; value: string }>;
-	description?: string;
-	readOnly?: boolean;
 }
 
 export function CheckboxGroupField({

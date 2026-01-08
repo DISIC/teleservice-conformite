@@ -3,12 +3,7 @@ import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
-interface UploadFieldProps extends DefaultFieldProps {
-	description?: string;
-	readOnly?: boolean;
-}
-
-export function UploadField(props: UploadFieldProps) {
+export function UploadField(props: DefaultFieldProps) {
 	const { readOnly, label, description, disabled, className } = props;
 	const field = useFieldContext<File | undefined>();
 

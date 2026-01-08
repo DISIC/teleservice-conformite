@@ -8,9 +8,6 @@ interface TextFieldProps extends DefaultFieldProps {
 	kind?: Exclude<HTMLInputTypeAttribute, "text" | "date">;
 	min?: string;
 	max?: string;
-	readOnly?: boolean;
-	description?: string;
-	placeholder?: string;
 	textArea?: boolean;
 }
 

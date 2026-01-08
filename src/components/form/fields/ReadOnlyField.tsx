@@ -4,9 +4,7 @@ import { tss } from "tss-react";
 import type { DefaultFieldProps } from "~/utils/form/context";
 
 interface ReadOnlyFieldProps extends DefaultFieldProps {
-	label: string;
 	value: string | string[];
-	placeholder?: string;
 }
 
 export function ReadOnlyField(props: ReadOnlyFieldProps) {
