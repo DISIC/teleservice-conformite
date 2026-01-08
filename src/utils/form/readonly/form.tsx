@@ -5,11 +5,16 @@ import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 
 import { useState } from "react";
 import { tss } from "tss-react";
-import { rgaaVersionOptions } from "~/payload/collections/Audit";
+import {
+	rgaaVersionOptions,
+	toolOptions,
+	testEnvironmentOptions,
+} from "~/payload/collections/Audit";
 import { appKindOptions } from "~/payload/collections/Declaration";
 import { kindOptions } from "~/payload/collections/Entity";
 import { withForm } from "../context";
 import { readOnlyFormOptions } from "./schema";
+import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
 
 const envKindOptions = [
 	{ label: "Mobile", value: "mobile" },
@@ -31,10 +36,8 @@ export const DeclarationGeneralForm = withForm({
 	...readOnlyFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
-		// const { classes, cx } = useStyles();
-
 		return (
-			<div>
+			<>
 				<form.AppField name="general.organisation">
 					{(field) => (
 						<field.TextField
@@ -84,7 +87,7 @@ export const DeclarationGeneralForm = withForm({
 						/>
 					)}
 				</form.AppField>
-			</div>
+			</>
 		);
 	},
 });
@@ -111,13 +114,7 @@ export const DeclarationAuditForm = withForm({
 		};
 
 		return (
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					gap: !readOnly ? fr.spacing("6v") : fr.spacing("3v"),
-				}}
-			>
+			<>
 				{!readOnly ? (
 					<Checkbox
 						options={[
@@ -201,8 +198,9 @@ export const DeclarationAuditForm = withForm({
 												<div>
 													<form.AppField name={`audit.technologies[${index}]`}>
 														{(subField) => (
-															<subField.TextField
+															<subField.SelectField
 																label={`Technologie ${index + 1}`}
+																options={[...toolOptions]}
 															/>
 														)}
 													</form.AppField>
@@ -221,20 +219,11 @@ export const DeclarationAuditForm = withForm({
 										</Button>
 									</Accordion>
 								) : (
-									<>
-										<strong>
-											Outils utilisés pour évaluer l’accessibilité :{" "}
-										</strong>{" "}
-										{field.state.value.length > 0 ? (
-											<ul>
-												{field.state.value.map((value) => (
-													<li key={value}>{value}</li>
-												))}
-											</ul>
-										) : (
-											"None"
-										)}
-									</>
+									<field.CheckboxGroupField
+										label="Outils utilisés pour évaluer l’accessibilité : "
+										options={[...toolOptions]}
+										readOnly={readOnly}
+									/>
 								)
 							}
 						</form.AppField>
@@ -258,8 +247,9 @@ export const DeclarationAuditForm = withForm({
 														name={`audit.testEnvironments[${index}]`}
 													>
 														{(field) => (
-															<field.TextField
+															<field.SelectField
 																label={`Environnement de test ${index + 1}`}
+																options={[...testEnvironmentOptions]}
 															/>
 														)}
 													</form.AppField>
@@ -278,18 +268,11 @@ export const DeclarationAuditForm = withForm({
 										</Button>
 									</Accordion>
 								) : (
-									<>
-										<strong>Environnement de test :</strong>{" "}
-										{field.state.value.length > 0 ? (
-											<ul>
-												{field.state.value.map((value) => (
-													<li key={value}>{value}</li>
-												))}
-											</ul>
-										) : (
-											"None"
-										)}
-									</>
+									<field.CheckboxGroupField
+										label="Environnement de test : "
+										options={[...testEnvironmentOptions]}
+										readOnly={readOnly}
+									/>
 								)
 							}
 						</form.AppField>
@@ -357,23 +340,14 @@ export const DeclarationAuditForm = withForm({
 										</Button>
 									</Accordion>
 								) : (
-									<>
-										<strong>
-											Éléments ayant fait l’objet de vérification :{" "}
-										</strong>{" "}
-										{field.state.value && field.state.value?.length > 0 ? (
-											<div>
-												{field.state.value?.map((value) => (
-													<ul key={value.name}>
-														<li>{value.name}</li>
-														{value?.url && <li>{value.url}</li>}
-													</ul>
-												))}
-											</div>
-										) : (
-											"None"
-										)}
-									</>
+									<ReadOnlyField
+										label="Éléments ayant fait l’objet de vérification : "
+										value={
+											field?.state?.value?.map(
+												(item) => `${item.name} (${item.url})`,
+											) ?? "Non"
+										}
+									/>
 								)
 							}
 						</form.AppField>
@@ -447,20 +421,16 @@ export const DeclarationAuditForm = withForm({
 											Ajouter une dérogation pour charge disproportionnée
 										</Button>
 									</Accordion>
-								) : (field?.state?.value?.length ?? 0) ? (
-									<>
-										<>
-											<strong>Dérogation pour charge disproportionnée: </strong>{" "}
-											{field.state.value?.map((value) => (
-												<p key={value.name} style={{ margin: 0 }}>
-													{value.name} - {value.reason} - {value.duration} -{" "}
-													{value.alternative}
-												</p>
-											))}
-										</>
-									</>
 								) : (
-									<>Non</>
+									<ReadOnlyField
+										label="Dérogation pour charge disproportionnée :"
+										value={
+											field?.state?.value?.map(
+												(item) =>
+													`${item.name} - ${item.reason} - ${item.duration} - ${item.alternative}`,
+											) ?? "Non"
+										}
+									/>
 								)
 							}
 						</form.AppField>
@@ -490,7 +460,7 @@ export const DeclarationAuditForm = withForm({
 						</form.AppField>
 					</>
 				)}
-			</div>
+			</>
 		);
 	},
 });
@@ -502,7 +472,7 @@ export const DeclarationContactForm = withForm({
 		// const { classes, cx } = useStyles();
 
 		return (
-			<div>
+			<>
 				<form.AppField name="contact.contactOptions">
 					{(field) => (
 						<>
@@ -538,7 +508,7 @@ export const DeclarationContactForm = withForm({
 						</>
 					)}
 				</form.AppField>
-			</div>
+			</>
 		);
 	},
 });

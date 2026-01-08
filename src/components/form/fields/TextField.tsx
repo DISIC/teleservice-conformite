@@ -1,6 +1,8 @@
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import type { HTMLInputTypeAttribute } from "react";
+
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 interface TextFieldProps extends DefaultFieldProps {
 	kind?: Exclude<HTMLInputTypeAttribute, "text" | "date">;
@@ -63,10 +65,6 @@ export function TextField(props: TextFieldProps) {
 			/>
 		)
 	) : (
-		<div>
-			<p style={{ margin: 0 }}>
-				<strong>{label}</strong> {field.state.value}
-			</p>
-		</div>
+		<ReadOnlyField label={label} value={String(field.state.value)} />
 	);
 }

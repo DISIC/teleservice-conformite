@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
+
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 
 interface CheckboxFieldProps extends DefaultFieldProps {}

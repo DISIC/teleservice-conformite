@@ -1,9 +1,12 @@
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
+
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 interface CheckboxGroupFieldProps extends DefaultFieldProps {
 	options: Array<{ label: string; value: string }>;
 	description?: string;
+	readOnly?: boolean;
 }
 
 export function CheckboxGroupField({
@@ -12,12 +15,13 @@ export function CheckboxGroupField({
 	options,
 	className,
 	disabled,
+	readOnly = false,
 }: CheckboxGroupFieldProps) {
 	const field = useFieldContext<string[]>();
 
 	const valueSet = new Set(field.state.value ?? []);
 
-	return (
+	return !readOnly ? (
 		<Checkbox
 			legend={label}
 			hintText={description}
@@ -45,6 +49,13 @@ export function CheckboxGroupField({
 					value: opt.value,
 				},
 			}))}
+		/>
+	) : (
+		<ReadOnlyField
+			label={label}
+			value={options
+				.filter((opt) => valueSet.has(opt.value))
+				.map((opt) => opt.label)}
 		/>
 	);
 }

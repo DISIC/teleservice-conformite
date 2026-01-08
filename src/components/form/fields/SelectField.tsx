@@ -1,6 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Select } from "@codegouvfr/react-dsfr/SelectNext";
+
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 interface SelectFieldProps extends DefaultFieldProps {
 	options: Array<{
@@ -41,10 +43,12 @@ export function SelectField({
 			className={className}
 		/>
 	) : (
-		<div>
-			<p style={{ margin: 0 }}>
-				<strong>{label}</strong> {field.state.value}
-			</p>
-		</div>
+		<ReadOnlyField
+			label={label}
+			value={
+				options.find((option) => option.value === field.state.value)?.label ??
+				""
+			}
+		/>
 	);
 }

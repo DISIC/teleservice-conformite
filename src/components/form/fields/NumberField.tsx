@@ -1,5 +1,7 @@
 import { Input } from "@codegouvfr/react-dsfr/Input";
+
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 interface NumberFieldProps extends DefaultFieldProps {
 	min?: number;
@@ -28,10 +30,6 @@ export function NumberField({ label, readOnly = false }: NumberFieldProps) {
 			}
 		/>
 	) : (
-		<div>
-			<p style={{ margin: 0 }}>
-				<strong>{label}</strong> {field.state.value}
-			</p>
-		</div>
+		<ReadOnlyField label={label} value={`${field.state.value}`} />
 	);
 }

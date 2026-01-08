@@ -1,5 +1,7 @@
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
+
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 interface UploadFieldProps extends DefaultFieldProps {
 	description?: string;
@@ -27,11 +29,10 @@ export function UploadField(props: UploadFieldProps) {
 			}}
 		/>
 	) : (
-		<div>
-			<p style={{ margin: 0 }}>
-				<strong>{label}</strong>
-				{field.state.value?.name ?? "Aucun fichier sélectionné"}
-			</p>
-		</div>
+		<ReadOnlyField
+			label={label}
+			value={field.state.value?.name ?? ""}
+			placeholder="Aucun fichier sélectionné"
+		/>
 	);
 }
