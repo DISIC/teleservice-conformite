@@ -41,7 +41,7 @@ export const DeclarationGeneralForm = withForm({
 				<form.AppField name="general.organisation">
 					{(field) => (
 						<field.TextField
-							label="Organisation : "
+							label="Organisation"
 							readOnly={readOnly}
 							placeholder="Direction Générale des Finances (DGFIP)"
 						/>
@@ -50,7 +50,7 @@ export const DeclarationGeneralForm = withForm({
 				<form.AppField name="general.kind">
 					{(field) => (
 						<field.RadioField
-							label="Type de produit numérique : "
+							label="Type de produit numérique"
 							options={[...appKindOptions]}
 							readOnly={readOnly}
 						/>
@@ -59,7 +59,7 @@ export const DeclarationGeneralForm = withForm({
 				<form.AppField name="general.name">
 					{(field) => (
 						<field.TextField
-							label="Nom du service numérique : "
+							label="Nom du service numérique"
 							readOnly={readOnly}
 							description="Exemples : Demande de logement social, Service public.fr, Outil de gestion des congés"
 						/>
@@ -69,9 +69,7 @@ export const DeclarationGeneralForm = withForm({
 					{(kind) =>
 						kind === "website" ? (
 							<form.AppField name="general.url">
-								{(field) => (
-									<field.TextField label="URL : " readOnly={readOnly} />
-								)}
+								{(field) => <field.TextField label="URL" readOnly={readOnly} />}
 							</form.AppField>
 						) : null
 					}
@@ -79,7 +77,7 @@ export const DeclarationGeneralForm = withForm({
 				<form.AppField name="general.domain">
 					{(field) => (
 						<field.SelectField
-							label="Secteur d'activité de l'organisation : "
+							label="Secteur d'activité de l'organisation"
 							placeholder="Sélectionnez un secteur"
 							defaultStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
 							readOnly={readOnly}
@@ -139,7 +137,7 @@ export const DeclarationAuditForm = withForm({
 						<form.AppField name="audit.date">
 							{(field) => (
 								<field.TextField
-									label="Date de réalisation : "
+									label="Date de réalisation"
 									kind="date"
 									max={new Date().toISOString().split("T")[0]}
 									readOnly={readOnly}
@@ -150,7 +148,7 @@ export const DeclarationAuditForm = withForm({
 							{(field) => (
 								<field.TextField
 									kind="text"
-									label="Entité ou personne ayant réalisé l'audit : "
+									label="Entité ou personne ayant réalisé l'audit"
 									readOnly={readOnly}
 								/>
 							)}
@@ -158,7 +156,7 @@ export const DeclarationAuditForm = withForm({
 						<form.AppField name="audit.rgaa_version">
 							{(field) => (
 								<field.RadioField
-									label="Référentiel RGAA utilisé : "
+									label="Référentiel RGAA utilisé"
 									options={[...rgaaVersionOptions]}
 									readOnly={readOnly}
 								/>
@@ -172,7 +170,7 @@ export const DeclarationAuditForm = withForm({
 											<strong>Résultats:</strong> {field.state.value}%
 										</p>
 									) : (
-										<field.NumberField label="Résultats : " />
+										<field.NumberField label="Résultats" />
 									)
 								}
 							</form.AppField>
@@ -181,7 +179,7 @@ export const DeclarationAuditForm = withForm({
 							{(field) =>
 								!readOnly ? (
 									<Accordion
-										label="Outils utilisés pour évaluer l’accessibilité : "
+										label="Outils utilisés pour évaluer l’accessibilité"
 										defaultExpanded
 									>
 										{field.state.value.map((_, index) => (
@@ -220,7 +218,7 @@ export const DeclarationAuditForm = withForm({
 									</Accordion>
 								) : (
 									<field.CheckboxGroupField
-										label="Outils utilisés pour évaluer l’accessibilité : "
+										label="Outils utilisés pour évaluer l’accessibilité"
 										options={[...toolOptions]}
 										readOnly={readOnly}
 									/>
@@ -230,7 +228,7 @@ export const DeclarationAuditForm = withForm({
 						<form.AppField name="audit.testEnvironments" mode="array">
 							{(field) =>
 								!readOnly ? (
-									<Accordion label="Environnement de test : " defaultExpanded>
+									<Accordion label="Environnement de test" defaultExpanded>
 										{field.state.value.map((_, index) => (
 											<div
 												key={index}
@@ -269,7 +267,7 @@ export const DeclarationAuditForm = withForm({
 									</Accordion>
 								) : (
 									<field.CheckboxGroupField
-										label="Environnement de test : "
+										label="Environnement de test"
 										options={[...testEnvironmentOptions]}
 										readOnly={readOnly}
 									/>
@@ -280,7 +278,7 @@ export const DeclarationAuditForm = withForm({
 							{(field) =>
 								!readOnly ? (
 									<Accordion
-										label="Éléments ayant fait l’objet de vérification : "
+										label="Éléments ayant fait l’objet de vérification"
 										defaultExpanded
 									>
 										{field.state.value?.map((_, index) => (
@@ -341,11 +339,14 @@ export const DeclarationAuditForm = withForm({
 									</Accordion>
 								) : (
 									<ReadOnlyField
-										label="Éléments ayant fait l’objet de vérification : "
+										label="Éléments ayant fait l’objet de vérification"
 										value={
-											field?.state?.value?.map(
-												(item) => `${item.name} (${item.url})`,
-											) ?? "Non"
+											field?.state?.value?.length
+												? field.state.value.map(
+														(item) =>
+															`${item.name} ${item.url ? `(${item.url})` : ""}`,
+													)
+												: ""
 										}
 									/>
 								)
@@ -354,7 +355,7 @@ export const DeclarationAuditForm = withForm({
 						<form.AppField name="audit.nonCompliantElements">
 							{(field) => (
 								<field.TextField
-									label="Éléments non conforme : "
+									label="Éléments non conforme"
 									readOnly={readOnly}
 								/>
 							)}
@@ -373,28 +374,28 @@ export const DeclarationAuditForm = withForm({
 														name={`audit.disproportionnedCharge[${index}].name`}
 													>
 														{(subField) => (
-															<subField.TextField label="Nom de l’élément : " />
+															<subField.TextField label="Nom de l’élément" />
 														)}
 													</form.AppField>
 													<form.AppField
 														name={`audit.disproportionnedCharge[${index}].reason`}
 													>
 														{(subField) => (
-															<subField.TextField label="Raison de la dérogation : " />
+															<subField.TextField label="Raison de la dérogation" />
 														)}
 													</form.AppField>
 													<form.AppField
 														name={`audit.disproportionnedCharge[${index}].duration`}
 													>
 														{(subField) => (
-															<subField.TextField label="Durée de la dérogation (facultatif) : " />
+															<subField.TextField label="Durée de la dérogation (facultatif)" />
 														)}
 													</form.AppField>
 													<form.AppField
 														name={`audit.disproportionnedCharge[${index}].alternative`}
 													>
 														{(subField) => (
-															<subField.TextField label="Alternative accessible proposée : " />
+															<subField.TextField label="Alternative accessible proposée" />
 														)}
 													</form.AppField>
 												</div>
@@ -423,12 +424,14 @@ export const DeclarationAuditForm = withForm({
 									</Accordion>
 								) : (
 									<ReadOnlyField
-										label="Dérogation pour charge disproportionnée :"
+										label="Dérogation pour charge disproportionnée"
 										value={
-											field?.state?.value?.map(
-												(item) =>
-													`${item.name} - ${item.reason} - ${item.duration} - ${item.alternative}`,
-											) ?? "Non"
+											field?.state?.value?.length
+												? field.state.value.map(
+														(item) =>
+															`${item.name} - ${item.reason} - ${item.duration} - ${item.alternative}`,
+													)
+												: ""
 										}
 									/>
 								)
@@ -437,25 +440,19 @@ export const DeclarationAuditForm = withForm({
 						<form.AppField name="audit.optionalElements">
 							{(field) => (
 								<field.TextField
-									label="Contenus non soumis à la déclaration :"
+									label="Contenus non soumis à la déclaration"
 									readOnly={readOnly}
 								/>
 							)}
 						</form.AppField>
 						<form.AppField name="audit.grid">
 							{(field) => (
-								<field.UploadField
-									label="Rapport d’audit : "
-									readOnly={readOnly}
-								/>
+								<field.TextField label="Rapport d’audit" readOnly={readOnly} />
 							)}
 						</form.AppField>
 						<form.AppField name="audit.report">
 							{(field) => (
-								<field.UploadField
-									label="Grille d’audit : "
-									readOnly={readOnly}
-								/>
+								<field.TextField label="Grille d’audit" readOnly={readOnly} />
 							)}
 						</form.AppField>
 					</>
@@ -469,8 +466,6 @@ export const DeclarationContactForm = withForm({
 	...readOnlyFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
-		// const { classes, cx } = useStyles();
-
 		return (
 			<>
 				<form.AppField name="contact.contactOptions">
@@ -478,7 +473,7 @@ export const DeclarationContactForm = withForm({
 						<>
 							{!readOnly && (
 								<field.CheckboxGroupField
-									label="Manière de contacter la personne responsable de l’accessibilité : "
+									label="Manière de contacter la personne responsable de l’accessibilité"
 									options={[
 										{ label: "Formulaire en ligne", value: "url" },
 										{ label: "Point de contact", value: "email" },
@@ -489,7 +484,7 @@ export const DeclarationContactForm = withForm({
 								<form.AppField name="contact.contactName">
 									{(field) => (
 										<field.TextField
-											label="Lien URL du formulaire : "
+											label="Lien URL du formulaire"
 											readOnly={readOnly}
 										/>
 									)}
@@ -499,7 +494,7 @@ export const DeclarationContactForm = withForm({
 								<form.AppField name="contact.contactEmail">
 									{(field) => (
 										<field.TextField
-											label="Email de contact : "
+											label="Email de contact"
 											readOnly={readOnly}
 										/>
 									)}

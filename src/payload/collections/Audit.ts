@@ -19,7 +19,6 @@ export const toolOptions = [
 	{ label: "JAWS", value: "jaws" },
 	{ label: "Assistant RGAA", value: "assistant_rgaa" },
 	{ label: "Tanaguru", value: "tanaguru" },
-	{ label: "Autre", value: "autre" },
 ]
 
 export const testEnvironmentOptions = [
@@ -76,6 +75,7 @@ export const Audits: CollectionConfig = {
 			fields: [
 				{
 					name: "name",
+					required: true,
 					type: "text",
 					label: { fr: "Nom de la page" },
 				},
@@ -100,21 +100,25 @@ export const Audits: CollectionConfig = {
 					name: "name",
 					type: "text",
 					label: { fr: "Nom de l’élément" },
+					required: true,
 				},
 				{
 					name: "reason",
 					type: "text",
 					label: { fr: "Raison de la dérogation" },
+					required: true,
 				},
 				{
 					name: "duration",
 					type: "text",
 					label: { fr: "Durée de la dérogation (facultatif)" },
+					required: true,
 				},
 				{
 					name: "alternative",
 					type: "text",
 					label: { fr: "Alternative accessible proposée" },
+					required: true,
 				},
 			],
 		},
@@ -125,15 +129,13 @@ export const Audits: CollectionConfig = {
 		},
 		{
 			name: "auditReport",
-			type: "upload",
+			type: "text",
 			label: { fr: "Rapport d'audit" },
-			relationTo: "media",
 		},
 		{
 			name: "auditGrid",
-			type: "upload",
+			type: "text",
 			label: { fr: "Grille d'audit" },
-			relationTo: "media",
 		},
 		{
 			name: "toolsUsed",

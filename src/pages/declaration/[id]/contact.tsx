@@ -16,6 +16,7 @@ import ContactForm from "~/components/declaration/ContactForm";
 import { getPopulated } from "~/utils/payload-helper";
 import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
+import { contact } from "~/utils/form/contact/schema";
 
 export default function ContactPage({
 	declaration,
@@ -83,10 +84,23 @@ export default function ContactPage({
 	const form = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
+			const data = value.contact.contactOptions.reduce(
+				(acc: { email?: string; url?: string }, option) => {
+					if (option === "email") {
+						acc.email = value.contact.contactEmail ?? "";
+					}
+					if (option === "url") {
+						acc.url = value.contact.contactName ?? "";
+					}
+					return acc;
+				},
+				{},
+			);
+
 			await updateDeclarationContact(
 				id ?? -1,
-				value.contact.contactEmail ?? "",
-				value.contact.contactName ?? "",
+				data.email ?? "",
+				data.url ?? "",
 			);
 		},
 	});
@@ -98,13 +112,16 @@ export default function ContactPage({
 	return (
 		<section id="contact" className={classes.main}>
 			<div className={classes.container}>
-				<div className={classes.header}>
-					<h2 className={classes.title}>
-						Verifiez les informations et modifiez-les si necessaire
-					</h2>
-					<Button priority="secondary" onClick={onEditInfos}>
-						{!editMode ? "Modifier" : "Annuler"}
-					</Button>
+				<div>
+					<h1>Contact</h1>
+					<div className={classes.headerAction}>
+						<h3 className={classes.description}>
+							Verifiez les informations et modifiez-les si necessaire
+						</h3>
+						<Button priority="secondary" onClick={onEditInfos}>
+							{!editMode ? "Modifier" : "Annuler"}
+						</Button>
+					</div>
 				</div>
 				<form
 					onSubmit={(e) => {
@@ -144,10 +161,14 @@ const useStyles = tss.withName(ContactPage.name).create({
 		display: "flex",
 		flexDirection: "column",
 	},
-	header: {
+	headerAction: {
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-between",
+	},
+	description: {
+		fontSize: "1rem",
+		color: "grey",
 	},
 	title: {
 		fontSize: "1rem",

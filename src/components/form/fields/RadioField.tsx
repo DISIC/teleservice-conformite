@@ -4,12 +4,13 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
-interface CheckboxFieldProps extends DefaultFieldProps {
+interface RadioFieldProps extends DefaultFieldProps {
 	options: Array<{
 		label: string;
 		value: string | boolean;
 		description?: string;
 	}>;
+	onChange?: (value: string | boolean) => void;
 }
 
 export function RadioField({
@@ -17,7 +18,8 @@ export function RadioField({
 	description,
 	options,
 	readOnly,
-}: CheckboxFieldProps) {
+	onChange,
+}: RadioFieldProps) {
 	const field = useFieldContext<string | boolean>();
 
 	return !readOnly ? (
@@ -30,7 +32,10 @@ export function RadioField({
 				hintText: description,
 				nativeInputProps: {
 					checked: field.state.value === value,
-					onChange: () => field.setValue(value),
+					onChange: () => {
+						field.setValue(value);
+						onChange?.(value);
+					},
 				},
 			}))}
 			className={fr.cx("fr-mb-0")}

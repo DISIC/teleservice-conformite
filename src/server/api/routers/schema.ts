@@ -22,7 +22,7 @@ export const schemaRouter = createTRPCRouter({
         },
       });
 
-      await linkToDeclaration(ctx.payload, declarationId, schema.id);
+      await linkToDeclaration(ctx.payload, declarationId, schema.id, "actionPlan");
 
       return { data: schema.id };
     }),

@@ -60,17 +60,29 @@ export default function AuditPage({
 				date: audit?.date
 					? new Date(audit.date).toISOString().slice(0, 10)
 					: "",
-				// grid: audit?.auditGrid ?? undefined,
-				// report: audit?.auditReport ?? undefined,
+				grid: audit?.auditGrid ?? "",
+				report: audit?.auditReport ?? "",
 				realisedBy: audit?.realisedBy ?? "",
 				rgaa_version: audit?.rgaa_version ?? "rgaa_4",
 				rate: audit?.rate ?? 0,
-				// compliantElements: audit?.compliantElements ?? [],
+				compliantElements:
+					audit?.compliantElements?.map((element) => ({
+						name: element.name,
+						url: element.url ?? "",
+					})) ?? [],
 				technologies: audit?.toolsUsed ?? [],
 				testEnvironments: audit?.testEnvironments ?? [],
-				nonCompliantElements: audit?.nonCompliantElements ?? "Non",
-				// disproportionnedCharge: audit?.disproportionnedCharge ?? "Non",
-				optionalElements: audit?.exemption ?? "Non",
+				nonCompliantElements: audit?.nonCompliantElements ?? "",
+				disproportionnedCharge:
+					audit?.disproportionnedCharge
+						?.map((element) => ({
+							name: element.name,
+							reason: element.reason,
+							duration: element.duration,
+							alternative: element.alternative,
+						}))
+						.filter((element) => !!element.name) ?? [],
+				optionalElements: audit?.exemption ?? "",
 			},
 		};
 	}
@@ -109,6 +121,7 @@ export default function AuditPage({
 
 		// },
 		onSubmit: async ({ value, formApi }) => {
+			console.log(value);
 			if (!isAchieved && declaration?.audit) {
 				await deleteDeclarationAudit(audit?.id ?? -1);
 

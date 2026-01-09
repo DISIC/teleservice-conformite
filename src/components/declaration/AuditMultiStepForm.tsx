@@ -71,10 +71,36 @@ export default function AuditMultiStepForm({
 	const onClickCancel = () => {
 		if (section === "auditDate") {
 			router.push(`/declaration/${declarationId}`);
-		} else {
-			const previousSection = goToPreviousSection(section);
-			if (previousSection) form.setFieldValue("section", previousSection);
+			return;
 		}
+
+		if (section === "tools") {
+			form.setFieldValue("technologies", []);
+			form.setFieldValue("testEnvironments", []);
+		}
+
+		if (section === "nonCompliantElements") {
+			form.setFieldValue("hasNonCompliantElements", false);
+			form.setFieldValue("nonCompliantElements", "");
+		}
+
+		if (section === "disproportionnedCharge") {
+			form.setFieldValue("hasDisproportionnedCharge", false);
+			form.setFieldValue("disproportionnedCharge", []);
+		}
+
+		if (section === "optionalElements") {
+			form.setFieldValue("hasOptionalElements", false);
+			form.setFieldValue("optionalElements", "");
+		}
+
+		if (section === "files") {
+			form.setFieldValue("grid", "");
+			form.setFieldValue("report", "");
+		}
+
+		const previousSection = goToPreviousSection(section);
+		if (previousSection) form.setFieldValue("section", previousSection);
 	};
 
 	const addAudit = async (auditData: any, declarationId: number) => {

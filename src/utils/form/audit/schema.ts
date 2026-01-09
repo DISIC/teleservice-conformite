@@ -24,11 +24,8 @@ export const auditDateDefaultValues: ZAuditDate = {
 };
 
 export const tools = z.object({
-  technologies: z
-    .array(
-      z.enum(
-        toolOptions.map((tool) => tool.value) as [string, ...string[]]
-      )
+  technologies: z.array(
+      z.string()
     )
     .min(1, {
       message: "Au moins une technologie doit être sélectionnée",
@@ -52,9 +49,7 @@ export const toolsDefaultValues: ZTools = {
 };
 
 export const compliantElements = z.object({
-  compliantElements: z.array(z.object({ name: z.string(), url: z.string() })).min(1, {
-    message: "Au moins un élément conforme doit être renseigné",
-  }),
+  compliantElements: z.array(z.object({ name: z.string(), url: z.string() })),
 });
 
 export type ZCompliantElements = z.infer<typeof compliantElements>;
@@ -63,10 +58,21 @@ export const compliantElementsDefaultValues: ZCompliantElements = {
   compliantElements: [],
 };
 
-export const nonCompliantElements = z.object({
-  hasNonCompliantElements: z.boolean(),
-  nonCompliantElements: z.string()
-});
+export const nonCompliantElements = z.discriminatedUnion(
+  "hasNonCompliantElements",
+  [
+    z.object({
+      hasNonCompliantElements: z.literal(false),
+      nonCompliantElements: z.string().optional(),
+    }),
+    z.object({
+      hasNonCompliantElements: z.literal(true),
+      nonCompliantElements: z.string().trim().min(1, {
+        message: "Ajoutez un élément non conforme",
+      }),
+    }),
+  ]
+);
 
 export type ZNonCompliantElements = z.infer<typeof nonCompliantElements>;
 
@@ -75,27 +81,28 @@ export const nonCompliantElementsDefaultValues: ZNonCompliantElements = {
   nonCompliantElements: "",
 };
 
-export const disproportionnedCharge = z
-  .object({
-    hasDisproportionnedCharge: z.boolean(),
-    disproportionnedCharge: z.array(
+export const disproportionnedCharge = z.discriminatedUnion(
+  "hasDisproportionnedCharge",
+  [
+    z.object({
+      hasDisproportionnedCharge: z.literal(false),
+      disproportionnedCharge: z.array(
       z.object({
         name: z.string(),
         reason: z.string(),
         duration: z.string(),
         alternative: z.string(),
       })
-    ),
-  })
-  .superRefine((data, ctx) => {
-    if (data.hasDisproportionnedCharge && data.disproportionnedCharge.length < 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["disproportionnedCharge"],
-        message: "Ajoutez au moins un élément de dérogation",
-      });
-    }
-  });
+    ).optional(),
+    }),
+    z.object({
+      hasDisproportionnedCharge: z.literal(true),
+      disproportionnedCharge: z.string().trim().min(1, {
+        message: "Ajoutez au moins une dérogation pour charge disproportionnée",
+      }),
+    }),
+  ]
+);
 
 export type ZDisproportionnedCharge = z.infer<typeof disproportionnedCharge>;
 
@@ -104,10 +111,21 @@ export const disproportionnedChargeDefaultValues: ZDisproportionnedCharge = {
   disproportionnedCharge: [],
 };
 
-export const optionalElements = z.object({
-  hasOptionalElements: z.boolean(),
-  optionalElements: z.string()
-});
+export const optionalElements = z.discriminatedUnion(
+  "hasOptionalElements",
+  [
+    z.object({
+      hasOptionalElements: z.literal(false),
+      optionalElements: z.string().optional(),
+    }),
+    z.object({
+      hasOptionalElements: z.literal(true),
+      optionalElements: z.string().trim().min(1, {
+        message: "Ajoutez une exemption",
+      }),
+    }),
+  ]
+);
 
 export type ZOptionalElements = z.infer<typeof optionalElements>;
 
@@ -117,15 +135,15 @@ export const optionalElementsDefaultValues: ZOptionalElements = {
 };
 
 export const files = z.object({
-  grid: z.file().optional(),
-  report: z.file().optional(),
+  grid: z.union([z.url(), z.literal("")]),
+  report: z.union([z.url(), z.literal("")]),
 });
 
 export type ZFiles = z.infer<typeof files>;
 
 export const filesDefaultValues: ZFiles = {
-  grid: undefined,
-  report: undefined,
+  grid: "",
+  report: "",
 };
 
 const sections = [
@@ -145,11 +163,8 @@ export const auditFormSchema = z.object({
   ...auditDate.shape,
   ...tools.shape,
   ...compliantElements.shape,
-  ...nonCompliantElements.shape,
-  ...disproportionnedCharge.shape,
-  ...optionalElements.shape,
   ...files.shape,
-});
+}).and(nonCompliantElements).and(disproportionnedCharge).and(optionalElements);
 
 export type ZAuditFormSchema = z.infer<
   typeof auditFormSchema

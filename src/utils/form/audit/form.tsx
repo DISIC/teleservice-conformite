@@ -61,7 +61,7 @@ export const ToolsForm = withForm({
 					{(field) => (
 						<field.CheckboxGroupField
 							label="Outils utilisés pour évaluer l’accessibilité"
-							options={[...toolOptions]}
+							options={[...toolOptions, { label: "Autre", value: "other" }]}
 						/>
 					)}
 				</form.AppField>
@@ -160,13 +160,33 @@ export const NonCompliantElementsForm = withForm({
 								{ label: "Oui", value: true },
 								{ label: "Non", value: false },
 							]}
+							onChange={(value) => {
+								field.handleChange(value);
+
+								if (value === false) {
+									form.setFieldValue("nonCompliantElements", "");
+								}
+							}}
 						/>
-						{field.state.value && (
+						{field.state.value === true && (
 							<form.AppField name="nonCompliantElements">
 								{(field) => (
 									<field.TextField
 										label="Éléments non conforme"
-										description="Précisez les points non conformes et leur volume en utilisant les mentions “quelques / la plupart des / aucun(e)”. Vous pouvez trouver ces informations dans votre déclaration existante ou votre audit. Exemples : - Aucune image n’a de texte équivalent - Quelques vidéos n’ont pas de sous-titres"
+										description={
+											<>
+												Précisez les points non conformes et leur volume en
+												utilisant les mentions “quelques / la plupart des /
+												aucun(e)”.
+												<br />
+												Vous pouvez trouver ces informations dans votre
+												déclaration existante ou votre audit.
+												<br />
+												Exemples :
+												<br />- Aucune image n’a de texte équivalent
+												<br />- Quelques vidéos n’ont pas de sous-titres
+											</>
+										}
 										kind="text"
 										textArea
 									/>
@@ -194,6 +214,13 @@ export const DisproportionnedChargeForm = withForm({
 								{ label: "Oui", value: true },
 								{ label: "Non", value: false },
 							]}
+							onChange={(value) => {
+								field.handleChange(value);
+
+								if (value === false) {
+									form.setFieldValue("disproportionnedCharge", []);
+								}
+							}}
 						/>
 						{field.state.value && (
 							<form.AppField name="disproportionnedCharge" mode="array">
@@ -303,6 +330,13 @@ export const OptionElementsForm = withForm({
 								{ label: "Oui", value: true },
 								{ label: "Non", value: false },
 							]}
+							onChange={(value) => {
+								field.handleChange(value);
+
+								if (value === false) {
+									form.setFieldValue("optionalElements", "");
+								}
+							}}
 						/>
 						{field.state.value && (
 							<form.AppField name="optionalElements">
@@ -329,20 +363,10 @@ export const FilesForm = withForm({
 		return (
 			<>
 				<form.AppField name="grid">
-					{(field) => (
-						<field.UploadField
-							label="Grille d’audit"
-							description="Formats supportés : csv, ods (Open document Calc) - Taille maximale : 5 Mo"
-						/>
-					)}
+					{(field) => <field.TextField label="Grille d’audit" />}
 				</form.AppField>
 				<form.AppField name="report">
-					{(field) => (
-						<field.UploadField
-							label="Rapport d’audit (facultatif)"
-							description="Formats supportés : pdf, odt - Taille maximale : 5 Mo"
-						/>
-					)}
+					{(field) => <field.TextField label="Rapport d’audit (facultatif)" />}
 				</form.AppField>
 			</>
 		);

@@ -6,51 +6,49 @@ import { auditFormSchema } from "~/utils/form/audit/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { linkToDeclaration } from "../utils/payload-helper";
 
+const auditSchema = z.object({
+  date: z.iso.date(),
+  realisedBy: z.string(),
+  rgaa_version: z.enum(["rgaa_4", "rgaa_5"]),
+  rate: z.number().min(0).max(100),
+  compliantElements: z.array(z.object({ name: z.string(), url: z.string() })).optional(),
+  technologies: z.array(
+    z.string()
+  ).min(1),
+  testEnvironments: z.array(
+    z.enum(testEnvironmentOptions.map((test) => test.value) as [string, ...string[]])
+  ).min(1),
+  nonCompliantElements: z.string().optional(),
+  disproportionnedCharge: z.array(z.object({
+    name: z.string(),
+    reason: z.string(),
+    duration: z.string(),
+    alternative: z.string(),
+  })),
+  optionalElements: z.string().optional(),
+  grid: z.string().optional(),
+  report: z.string().optional(),
+});
+
 export const auditRouter = createTRPCRouter({
   create: publicProcedure
     .input(
-      auditFormSchema
-        .omit({
-          section: true,
-          hasDisproportionnedCharge: true,
-          hasOptionalElements: true,
-          hasNonCompliantElements: true,
-          grid: true,
-          report: true,
-        })
-        .extend({ declarationId: z.number() })
+      auditSchema.extend({ declarationId: z.number() }),
     )
     .mutation(async ({ input, ctx }) => {
       const { declarationId, technologies, testEnvironments, ...rest } = input;
-
-      // Normalize values to valid enum strings (guard against numeric indices)
-      const normalizedTools: (typeof toolOptions)[number]["value"][] = technologies.map((v) => {
-        const byValue = toolOptions.find((o) => o.value === v)?.value;
-        if (byValue) return byValue;
-        const idx = Number(v);
-        if (!Number.isNaN(idx) && toolOptions[idx]) return toolOptions[idx].value;
-        throw new TRPCError({ code: "BAD_REQUEST", message: `Invalid tool value: ${v}` });
-      }) as any;
-
-      const normalizedEnvs: (typeof testEnvironmentOptions)[number]["value"][] = testEnvironments.map((v) => {
-        const byValue = testEnvironmentOptions.find((o) => o.value === v)?.value;
-        if (byValue) return byValue;
-        const idx = Number(v);
-        if (!Number.isNaN(idx) && testEnvironmentOptions[idx]) return testEnvironmentOptions[idx].value;
-        throw new TRPCError({ code: "BAD_REQUEST", message: `Invalid environment value: ${v}` });
-      }) as any;
 
       const audit = await ctx.payload.create({
         collection: "audits",
         data: {
           ...rest,
-          toolsUsed: normalizedTools as any,
-          testEnvironments: normalizedEnvs as any,
+          toolsUsed: technologies,
+          testEnvironments: testEnvironments,
           declaration: declarationId,
         },
       });
 
-      await linkToDeclaration(ctx.payload, declarationId, audit.id);
+      await linkToDeclaration(ctx.payload, declarationId, audit.id, "audit");
 
       return { data: audit.id };
     }),
@@ -69,13 +67,7 @@ export const auditRouter = createTRPCRouter({
   update: publicProcedure
     .input(
       z.object({
-        audit: auditFormSchema
-          .omit({
-            section: true,
-            hasDisproportionnedCharge: true,
-            hasOptionalElements: true,
-            hasNonCompliantElements: true,
-          }).extend({ id: z.number() }),
+        audit: auditSchema.extend({ declarationId: z.number(), id: z.number() }),
       })
     )
     .mutation(async ({ input, ctx }) => {

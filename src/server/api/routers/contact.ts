@@ -24,7 +24,7 @@ export const contactRouter = createTRPCRouter({
         },
       });
 
-      await linkToDeclaration(ctx.payload, declarationId, contact.id);
+      await linkToDeclaration(ctx.payload, declarationId, contact.id, "contact");
 
       return { data: contact.id };
     }),

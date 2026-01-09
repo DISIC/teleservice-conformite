@@ -26,31 +26,31 @@ export default function Demarches({ declaration }: DemarchesProps) {
 
 	return (
 		<section id="demarches-tab" className={classes.main}>
-			{rate && (
-				<div className={classes.summaryCardsContainer}>
+			<div className={classes.summaryCardsContainer}>
+				{typeof rate === "number" && (
 					<div className={classes.summaryRateCard}>
-						<p className={classes.cardLabel}>Taux de conformite</p>
-						<p className={classes.cardValue}>{rate ? `${rate}%` : "N/A"}</p>
+						<p className={classes.cardLabel}>Taux de conformité</p>
+						<p className={classes.cardValue}>{`${rate}%`}</p>
 					</div>
-					<div className={classes.summaryUpdateDateCard}>
-						<p className={classes.cardLabel}>Derniere mise a jour</p>
-						<p className={classes.cardValue}>
-							{declaration?.updatedAt
-								? new Date(declaration.updatedAt).toLocaleString()
-								: "N/A"}
-						</p>
-						{wasUpdated && (
-							<Button
-								iconId="fr-icon-edit-box-fill"
-								priority="primary"
-								style={{ width: "100%" }}
-							>
-								Mettre à jour
-							</Button>
-						)}
-					</div>
+				)}
+				<div className={classes.summaryUpdateDateCard}>
+					<p className={classes.cardLabel}>Dernière mise à jour</p>
+					<p className={classes.cardValue}>
+						{declaration?.updatedAt
+							? new Date(declaration.updatedAt).toLocaleString()
+							: "N/A"}
+					</p>
+					{wasUpdated && (
+						<Button
+							iconId="fr-icon-edit-box-fill"
+							priority="primary"
+							style={{ width: "100%" }}
+						>
+							Mettre à jour
+						</Button>
+					)}
 				</div>
-			)}
+			</div>
 			<div className={classes.tilesContainer}>
 				<Tile
 					desc="Informations à propos du service et l’administration à laquelle il est lié"
@@ -168,10 +168,9 @@ const useStyles = tss.withName(Demarches.name).create({
 		lineHeight: "1.75rem",
 	},
 	tilesContainer: {
-		display: "flex",
-		flexDirection: "row",
+		display: "grid",
+		gridTemplateColumns: "1fr 1fr 1fr 1fr",
 		gap: fr.spacing("4v"),
-		justifyContent: "center",
 	},
 	tile: {
 		"& a::after": {

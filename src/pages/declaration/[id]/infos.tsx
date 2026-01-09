@@ -83,14 +83,17 @@ export default function GeneralInformationsPage({
 
 	return (
 		<section id="general-informations" className={classes.main}>
-			<div className={classes.container}>
-				<div className={classes.header}>
-					<h2 className={classes.title}>
-						Verifiez les informations et modifiez-les si necessaire
-					</h2>
-					<Button priority="secondary" onClick={onEditInfos}>
-						{!editMode ? "Modifier" : "Annuler"}
-					</Button>
+			<div>
+				<div>
+					<h1>Informations générales</h1>
+					<div className={classes.headerAction}>
+						<h3 className={classes.description}>
+							Verifiez les informations et modifiez-les si necessaire
+						</h3>
+						<Button priority="secondary" onClick={onEditInfos}>
+							{!editMode ? "Modifier" : "Annuler"}
+						</Button>
+					</div>
 				</div>
 				<form
 					onSubmit={(e) => {
@@ -126,14 +129,14 @@ const useStyles = tss.withName(GeneralInformationsPage.name).create({
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
-	container: {
-		display: "flex",
-		flexDirection: "column",
-	},
-	header: {
+	headerAction: {
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-between",
+	},
+	description: {
+		fontSize: "1rem",
+		color: "grey",
 	},
 	title: {
 		fontSize: "1rem",

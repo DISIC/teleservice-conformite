@@ -8,13 +8,14 @@ interface ReadOnlyFieldProps extends DefaultFieldProps {
 }
 
 export function ReadOnlyField(props: ReadOnlyFieldProps) {
-	const { label, placeholder, className, value } = props;
+	const { label, placeholder = "Non", className, value } = props;
 	const { classes } = useStyles();
 	const valueIsArray = Array.isArray(value);
+	console.log("label:", label, "value:", value);
 
 	return (
 		<div className={valueIsArray ? classes.flexWrapper : classes.inlineWrapper}>
-			<p className={classes.label}>{label}</p>
+			<p className={classes.label}>{label} :</p>
 			{valueIsArray ? (
 				<ul className={classes.list}>
 					{value.map((item, index) => (
@@ -24,7 +25,7 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 					))}
 				</ul>
 			) : (
-				<p className={classes.value}>{value || placeholder}</p>
+				<p className={classes.value}> {value || placeholder}</p>
 			)}
 		</div>
 	);

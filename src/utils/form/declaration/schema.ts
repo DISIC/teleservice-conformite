@@ -113,7 +113,7 @@ export const initialDeclarationDefaultValues: ZInitialDeclaration = {
 export const existingAudit = z.object({
 	existingAudit: z.object({
 		auditDone: z.boolean(),
-		auditGrid: z.file().optional(),
+		auditGrid: z.string().optional(),
 	}),
 });
 
@@ -122,7 +122,7 @@ export type ZExistingAudit = z.infer<typeof existingAudit>;
 export const existingAuditDefaultValues: ZExistingAudit = {
 	existingAudit: {
 		auditDone: false,
-		auditGrid: undefined,
+		auditGrid: "",
 	},
 };
 

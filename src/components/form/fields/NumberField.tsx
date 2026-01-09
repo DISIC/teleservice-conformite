@@ -18,7 +18,7 @@ export function NumberField({ label, readOnly = false }: NumberFieldProps) {
 				type: "number",
 				inputMode: "numeric",
 				pattern: "[0-9]*",
-				min: 1,
+				min: 0,
 				name: field.name,
 				value: field.state.value,
 				onChange: (e) => field.setValue(e.target.valueAsNumber),
