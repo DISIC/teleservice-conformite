@@ -6,23 +6,22 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
 
-import type { Declaration } from "~/payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
-import { getPopulated } from "~/utils/payload-helper";
 import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
+import type { DeclarationWithPopulated } from "~/utils/payload-helper";
 
 export default function GeneralInformationsPage({
 	declaration,
-}: { declaration?: Declaration }) {
+}: { declaration?: DeclarationWithPopulated }) {
 	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
-	const { name, kind } = getPopulated(declaration?.entity) || {};
+	const { name, kind } = declaration?.entity || {};
 
 	const { mutateAsync: update } = api.declaration.update.useMutation({
 		onSuccess: async (result) => {
@@ -63,7 +62,7 @@ export default function GeneralInformationsPage({
 					kind: generalValues.kind,
 					organisation: generalValues.organisation,
 					declarationId,
-					entityId: getPopulated(declaration?.entity)?.id ?? -1,
+					entityId: declaration?.entity?.id ?? -1,
 				},
 			});
 		} catch (error) {

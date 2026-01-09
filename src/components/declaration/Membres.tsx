@@ -7,9 +7,8 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
-import { getPopulated } from "~/utils/payload-helper";
 
-import type { Declaration } from "~/payload/payload-types";
+import type { DeclarationWithPopulated } from "~/utils/payload-helper";
 
 const inviteMembersModal = createModal({
 	id: "inviteMembersModal",
@@ -17,13 +16,13 @@ const inviteMembersModal = createModal({
 });
 
 interface MembresProps {
-	declaration: Declaration;
+	declaration: DeclarationWithPopulated;
 }
 
 export default function Membres({ declaration }: MembresProps) {
 	const [value, setValue] = useState<"reader" | "admin">("reader");
 	const { classes } = useStyles();
-	const { name, email } = getPopulated(declaration?.created_by) || {};
+	const { name, email } = declaration?.created_by || {};
 
 	const StatusBadge = ({ status }: { status: string }) => {
 		switch (status) {

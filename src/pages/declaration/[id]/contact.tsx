@@ -6,25 +6,24 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
 
-import type { Declaration } from "~/payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationContactForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import ContactForm from "~/components/declaration/ContactForm";
-import { getPopulated } from "~/utils/payload-helper";
 import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
 import { contact } from "~/utils/form/contact/schema";
+import type { DeclarationWithPopulated } from "~/utils/payload-helper";
 
 export default function ContactPage({
 	declaration,
-}: { declaration: Declaration }) {
+}: { declaration: DeclarationWithPopulated }) {
 	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
-	const { id, email, url } = getPopulated(declaration?.contact) || {};
+	const { id, email, url } = declaration?.contact || {};
 
 	const { mutateAsync: updateContact } = api.contact.update.useMutation({
 		onSuccess: async () => {

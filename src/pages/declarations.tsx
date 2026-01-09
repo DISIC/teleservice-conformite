@@ -10,11 +10,12 @@ import NextLink from "next/link";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 
-import type { Declaration } from "~/payload/payload-types";
-import { getPopulated } from "~/utils/payload-helper";
+import type { DeclarationWithPopulated } from "~/utils/payload-helper";
 
 interface DeclarationsPageProps {
-	declarations: Array<Declaration & { updatedAtFormatted: string }>;
+	declarations: Array<
+		DeclarationWithPopulated & { updatedAtFormatted: string }
+	>;
 }
 
 export default function DeclarationsPage(props: DeclarationsPageProps) {
@@ -37,8 +38,8 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 			{declarations.length ? (
 				<div>
 					{declarations.map((declaration) => {
-						const { name } = getPopulated(declaration.entity) || {};
-						const { rate } = getPopulated(declaration.audit) || {};
+						const { name } = declaration.entity || {};
+						const { rate } = declaration.audit || {};
 
 						return (
 							<div key={declaration.id} className={classes.declarationCard}>

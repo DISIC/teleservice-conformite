@@ -8,16 +8,15 @@ import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import Search from "@codegouvfr/react-dsfr/picto/Search";
 import Community from "@codegouvfr/react-dsfr/picto/Community";
 
-import type { Declaration } from "~/payload/payload-types";
-import { getPopulated } from "~/utils/payload-helper";
+import type { DeclarationWithPopulated } from "~/utils/payload-helper";
 
 interface DemarchesProps {
-	declaration: Declaration;
+	declaration: DeclarationWithPopulated;
 }
 
 export default function Demarches({ declaration }: DemarchesProps) {
 	const { classes } = useStyles();
-	const { rate } = getPopulated(declaration?.audit) || {};
+	const { rate } = declaration?.audit || {};
 
 	const wasUpdated =
 		declaration?.updatedAt &&
