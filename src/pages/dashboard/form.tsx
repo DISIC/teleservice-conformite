@@ -2,6 +2,10 @@ import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
 import { useStore } from "@tanstack/react-form";
 import { useRouter } from "next/router";
+import type { GetServerSideProps } from "next";
+import { getPayload } from "payload";
+import type { ParsedUrlQuery } from "node:querystring";
+import config from "@payload-config";
 
 import { useAppForm } from "~/utils/form/context";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
@@ -10,15 +14,17 @@ import {
 	InitialDeclarationForm,
 } from "~/utils/form/declaration/form";
 import { api } from "~/utils/api";
+import { auth } from "~/utils/auth";
+import type { Entity } from "~/payload/payload-types";
 
-export default function FormPage() {
+export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { classes } = useStyles();
 	const router = useRouter();
 
 	const { mutateAsync: createDeclaration } = api.declaration.create.useMutation(
 		{
 			onSuccess: async (result) => {
-				router.push(`/declaration/${result.data}`);
+				router.push(`/dashboard/declaration/${result.data}`);
 			},
 			onError: (error) => {
 				console.error("Error adding declaration:", error);
@@ -38,6 +44,11 @@ export default function FormPage() {
 		} catch (error) {
 			console.error("Error adding declaration:", error);
 		}
+	};
+
+	declarationMultiStepFormOptions.defaultValues.general = {
+		...declarationMultiStepFormOptions.defaultValues.general,
+		organisation: entity?.name || "",
 	};
 
 	const form = useAppForm({
@@ -111,3 +122,39 @@ const useStyles = tss.withName(FormPage.name).create({
 		justifyContent: "space-between",
 	},
 });
+
+interface Params extends ParsedUrlQuery {
+	id: string;
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+	const payload = await getPayload({ config });
+	const authSession = await auth.api.getSession({
+		headers: context.req.headers,
+	});
+
+	if (!authSession) {
+		return { redirect: { destination: "/" }, props: {} };
+	}
+
+	try {
+		const user = await payload.findByID({
+			collection: "users",
+			id: authSession?.user?.id,
+			depth: 3,
+		});
+
+		return {
+			props: {
+				entity: user?.entity || null,
+			},
+		};
+	} catch (error) {
+		console.error("Error fetching declaration:", error);
+
+		return {
+			redirect: { destination: "/dashboard" },
+			props: {},
+		};
+	}
+};

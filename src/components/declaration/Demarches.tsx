@@ -55,7 +55,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					desc="Informations à propos du service et l’administration à laquelle il est lié"
 					title="Informations générales"
 					linkProps={{
-						href: `/declaration/${declaration?.id}/infos`,
+						href: `/dashboard/declaration/${declaration?.id}/infos`,
 					}}
 					enlargeLinkOrButton={true}
 					orientation="vertical"
@@ -66,7 +66,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					title="Schéma et plans d'actions"
 					desc="État des lieux et actions prévues pour améliorer l'accessibilité"
 					linkProps={{
-						href: `/declaration/${declaration?.id}/schema`,
+						href: `/dashboard/declaration/${declaration?.id}/schema`,
 					}}
 					enlargeLinkOrButton={true}
 					orientation="vertical"
@@ -84,7 +84,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					title="Résultat de l’audit"
 					desc="Taux de conformité et détails de l'audit"
 					linkProps={{
-						href: `/declaration/${declaration?.id}/audit`,
+						href: `/dashboard/declaration/${declaration?.id}/audit`,
 					}}
 					enlargeLinkOrButton={true}
 					orientation="vertical"
@@ -102,7 +102,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					title="Contact"
 					desc="Moyen de contact pour pouvoir accéder aux éventuels contenus inaccessibles"
 					linkProps={{
-						href: `/declaration/${declaration?.id}/contact`,
+						href: `/dashboard/declaration/${declaration?.id}/contact`,
 					}}
 					enlargeLinkOrButton={true}
 					orientation="vertical"

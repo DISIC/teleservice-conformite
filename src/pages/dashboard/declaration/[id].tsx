@@ -36,7 +36,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
 			onSuccess: async (result) => {
-				router.push("/declarations");
+				router.push("/dashboard");
 			},
 			onError: (error) => {
 				console.error("Error adding declaration:", error);
@@ -65,9 +65,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 			<section id="declaration-page">
 				<section id="breadcrumbs">
 					<Breadcrumb
-						segments={[
-							{ label: "Accueil", linkProps: { href: "/declarations" } },
-						]}
+						segments={[{ label: "Accueil", linkProps: { href: "/dashboard" } }]}
 						currentPageLabel={declaration?.name}
 					/>
 				</section>
@@ -200,7 +198,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 
@@ -211,7 +209,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!declaration) {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 
