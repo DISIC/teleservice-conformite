@@ -40,7 +40,7 @@ export default function AuditPage({
 
 	const { mutateAsync: deleteAudit } = api.audit.delete.useMutation({
 		onSuccess: async () => {
-			router.push(`/declaration/${declaration?.id}`);
+			router.push(`/dashboard/declaration/${declaration?.id}`);
 		},
 		onError: async (error) => {
 			console.error(`Error deleting audit with id ${audit?.id}`, error);
@@ -210,7 +210,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 
@@ -221,7 +221,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!declaration) {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 

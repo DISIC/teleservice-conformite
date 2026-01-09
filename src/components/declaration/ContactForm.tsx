@@ -15,7 +15,7 @@ export default function ContactForm({
 
 	const { mutateAsync: createContact } = api.contact.create.useMutation({
 		onSuccess: async () => {
-			router.push(`/declaration/${declarationId}`);
+			router.push(`/dashboard/declaration/${declarationId}`);
 		},
 		onError: (error) => {
 			console.error("Error adding contact:", error);
@@ -62,7 +62,9 @@ export default function ContactForm({
 					<div className={classes.actionButtonsContainer}>
 						<form.CancelButton
 							label="Retour"
-							onClick={() => router.push(`/declaration/${declarationId}`)}
+							onClick={() =>
+								router.push(`/dashboard/declaration/${declarationId}`)
+							}
 							priority="tertiary"
 						/>
 						<form.SubscribeButton

@@ -30,7 +30,7 @@ export default function AuditMultiStepForm({
 
 	const { mutateAsync: createAudit } = api.audit.create.useMutation({
 		onSuccess: async () => {
-			router.push(`/declaration/${declarationId}`);
+			router.push(`/dashboard/declaration/${declarationId}`);
 		},
 		onError: (error) => {
 			console.error(
@@ -70,7 +70,7 @@ export default function AuditMultiStepForm({
 
 	const onClickCancel = () => {
 		if (section === "auditDate") {
-			router.push(`/declaration/${declarationId}`);
+			router.push(`/dashboard/declaration/${declarationId}`);
 			return;
 		}
 

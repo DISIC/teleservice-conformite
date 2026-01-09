@@ -4,7 +4,7 @@ import z from "zod";
 import type { appKindOptions } from "~/payload/collections/Declaration";
 import type { ZDeclarationMultiStepFormSchema } from "~/utils/form/declaration/schema";
 import { declarationGeneral } from "~/utils/form/declaration/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure, userProtectedProcedure } from "../trpc";
 import { kindOptions } from "~/payload/collections/Entity";
 
 export const declarationRouter = createTRPCRouter({
@@ -60,10 +60,17 @@ export const declarationRouter = createTRPCRouter({
 
 			return returnValue;
 		}),
-	create: publicProcedure
+	create: userProtectedProcedure
 		.input(declarationGeneral)
 		.mutation(async ({ input, ctx }) => {
 			const { organisation, kind, url, domain, name } = input.general;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
 
 			const entity = await ctx.payload.create({
 				collection: "entities",
@@ -80,7 +87,7 @@ export const declarationRouter = createTRPCRouter({
 					app_kind: kind,
 					url,
 					entity: entity.id,
-					created_by: 1, //Change to dynamic user ID when auth is implemented
+					created_by: Number(ctx.session.user.id),
 				},
 			});
 
@@ -98,7 +105,7 @@ export const declarationRouter = createTRPCRouter({
 
 			return { data: id };
 		}),
-	update: publicProcedure
+	update: userProtectedProcedure
 		.input(
 			z.object({
 				general: declarationGeneral.shape.general.extend({ declarationId: z.number(), entityId: z.number() }),
@@ -106,6 +113,13 @@ export const declarationRouter = createTRPCRouter({
 		)
 		.mutation(async ({ input, ctx }) => {
 			const { organisation, kind, url, domain, name, declarationId, entityId } = input.general;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
 
       const declaration = await ctx.payload.update({
 				collection: "declarations",

@@ -31,8 +31,6 @@ export const DeclarationGeneralForm = withForm({
 	...declarationMultiStepFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
-		// const { classes, cx } = useStyles();
-
 		return (
 			<div>
 				<form.AppField name="general.organisation">

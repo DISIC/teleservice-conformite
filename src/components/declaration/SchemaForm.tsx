@@ -28,7 +28,7 @@ export default function SchemaForm({
 
 	const { mutateAsync: createSchema } = api.schema.create.useMutation({
 		onSuccess: async () => {
-			router.push(`/declaration/${declarationId}`);
+			router.push(`/dashboard/declaration/${declarationId}`);
 		},
 		onError: (error) => {
 			console.error("Error adding schema:", error);
@@ -53,7 +53,7 @@ export default function SchemaForm({
 
 	const onClickCancel = () => {
 		if (section === "schema") {
-			router.push(`/declaration/${declarationId}`);
+			router.push(`/dashboard/declaration/${declarationId}`);
 		} else {
 			const previousSection = goToPreviousSection(section);
 			if (previousSection) {

@@ -153,7 +153,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 
@@ -164,7 +164,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!declaration) {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 
