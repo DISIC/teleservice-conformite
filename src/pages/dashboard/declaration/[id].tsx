@@ -14,10 +14,12 @@ import { tss } from "tss-react";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 
 import { api } from "~/utils/api";
-import type { Declaration } from "~/payload/payload-types";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
-import { getDeclarationById } from "~/utils/payload-helper";
+import {
+	getDeclarationById,
+	type DeclarationWithPopulated,
+} from "~/utils/payload-helper";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -25,7 +27,7 @@ const deleteModal = createModal({
 });
 
 interface DeclarationPageProps {
-	declaration: Declaration;
+	declaration: DeclarationWithPopulated;
 }
 
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {
