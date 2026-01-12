@@ -238,19 +238,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			},
 		});
 
-		const deletedDeclarations = (result?.docs || []).filter(
-			(doc) => doc?.deletedAt,
-		);
-
-		if (!deletedDeclarations.length) {
-			return {
-				props: {
-					firstDeclaration: true,
-					declarations: [],
-				},
-			};
-		}
-
 		const declarations = (result?.docs || [])
 			.filter((doc) => !doc?.deletedAt)
 			.map((doc) => ({
@@ -261,6 +248,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 					timeZone: "Europe/Paris",
 				}).format(new Date((doc as any).updatedAt)),
 			}));
+
+		const deletedDeclarations = (result?.docs || []).filter(
+			(doc) => doc?.deletedAt,
+		);
+
+		if (!deletedDeclarations.length && declarations?.length === 0) {
+			return {
+				props: {
+					firstDeclaration: true,
+					declarations: [],
+				},
+			};
+		}
 
 		return {
 			props: {
