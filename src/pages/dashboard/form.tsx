@@ -16,6 +16,8 @@ import {
 import { api } from "~/utils/api";
 import { auth } from "~/utils/auth";
 import type { Entity } from "~/payload/payload-types";
+import type { kindOptions } from "~/payload/collections/Entity";
+import type { appKindOptions } from "~/payload/collections/Declaration";
 
 export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { classes } = useStyles();
@@ -34,10 +36,17 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 	declarationMultiStepFormOptions.defaultValues.section = "initialDeclaration";
 
-	const addDeclaration = async (generalData: any) => {
+	const addDeclaration = async (generalData: {
+		name: string;
+		url: string;
+		organisation: string;
+		kind: (typeof appKindOptions)[number]["value"];
+		domain: (typeof kindOptions)[number]["value"];
+	}) => {
 		try {
 			const general = {
 				...generalData,
+				entityId: entity?.id,
 			};
 
 			await createDeclaration({ general });

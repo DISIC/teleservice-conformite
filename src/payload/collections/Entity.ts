@@ -31,7 +31,7 @@ export const kindOptions = [
     value: "Vie / séjour à l'étranger",
   },
   { label: "Aucun de ces domaines", value: "none" },
-] as const;
+];
 
 export const Entities: CollectionConfig = {
   slug: "entities",

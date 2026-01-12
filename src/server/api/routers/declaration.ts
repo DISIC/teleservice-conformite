@@ -1,11 +1,38 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
+import type { Payload } from "payload";
 
 import type { appKindOptions } from "~/payload/collections/Declaration";
 import type { ZDeclarationMultiStepFormSchema } from "~/utils/form/declaration/schema";
 import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, publicProcedure, userProtectedProcedure } from "../trpc";
 import { kindOptions } from "~/payload/collections/Entity";
+import { getDeclarationById } from "~/utils/payload-helper";
+
+const createOrUpdateEntity = async (payload: Payload, entityId: number | undefined, organisation: string, domain: (typeof kindOptions)[number]["value"]) => {
+	if (!entityId) {
+		const entity = await payload.create({
+			collection: "entities",
+			data: {
+				name: organisation,
+				kind: domain as any,
+			},
+		});
+
+		return entity.id;
+	}
+
+	await payload.update({
+		collection: "entities",
+		id: entityId,
+		data: {
+			name: organisation,
+			kind: domain as any,
+		},
+	});
+
+	return entityId;
+};
 
 export const declarationRouter = createTRPCRouter({
 	getInfoFromAra: publicProcedure
@@ -61,9 +88,9 @@ export const declarationRouter = createTRPCRouter({
 			return returnValue;
 		}),
 	create: userProtectedProcedure
-		.input(declarationGeneral)
+		.input(declarationGeneral.extend({ general: declarationGeneral.shape.general.extend({ entityId: z.number().optional() }) }))
 		.mutation(async ({ input, ctx }) => {
-			const { organisation, kind, url, domain, name } = input.general;
+			const { organisation, kind, url, domain, name, entityId } = input.general;
 
       if (!ctx.session?.user?.id) {
         throw new TRPCError({
@@ -72,31 +99,41 @@ export const declarationRouter = createTRPCRouter({
         });
       }
 
-			const entity = await ctx.payload.create({
-				collection: "entities",
-				data: {
-					name: organisation,
-					kind: domain as any,
-				},
-			});
-
+			const newEntityId = await createOrUpdateEntity(ctx.payload, entityId ?? undefined, organisation, domain);
+			
 			const declaration = await ctx.payload.create({
 				collection: "declarations",
 				data: {
 					name,
 					app_kind: kind,
 					url,
-					entity: entity.id,
+					entity: newEntityId,
 					created_by: Number(ctx.session.user.id),
 				},
 			});
 
 			return { data: declaration.id };
 		}),
-	delete: publicProcedure
+	delete: userProtectedProcedure
 		.input(z.object({ id: z.number() }))
 		.mutation(async ({ input, ctx }) => {
 			const { id } = input;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
+
+      const declaration = await getDeclarationById(ctx.payload, id);
+
+      if (declaration?.created_by?.id !== Number(ctx.session.user.id)) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User cannot delete this declaration",
+        });
+      }
 
 			await ctx.payload.delete({
 				collection: "declarations",
@@ -121,7 +158,16 @@ export const declarationRouter = createTRPCRouter({
         });
       }
 
-      const declaration = await ctx.payload.update({
+      const declaration = await getDeclarationById(ctx.payload, declarationId);
+
+      if (declaration?.created_by?.id !== Number(ctx.session.user.id)) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User cannot delete this declaration",
+        });
+      }
+
+      const updatedDeclaration = await ctx.payload.update({
 				collection: "declarations",
 				id: declarationId,
 				data: {
@@ -140,6 +186,6 @@ export const declarationRouter = createTRPCRouter({
 				},
 			});
 
-			return { data: declaration.id };
+			return { data: updatedDeclaration.id };
 		}),
 });

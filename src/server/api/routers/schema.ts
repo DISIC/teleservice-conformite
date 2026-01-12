@@ -1,10 +1,11 @@
 import z from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { TRPCError } from "@trpc/server";
 
+import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { linkToDeclaration } from "../utils/payload-helper";
 
 export const schemaRouter = createTRPCRouter({
-  create: publicProcedure
+  create: userProtectedProcedure
     .input(
       z.object({
         annualSchemaLink: z.string().optional(),
@@ -13,6 +14,13 @@ export const schemaRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const { annualSchemaLink, declarationId } = input;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
 
       const schema = await ctx.payload.create({
         collection: "action-plans",
