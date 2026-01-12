@@ -31,7 +31,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 				<Button
 					iconId="fr-icon-add-line"
 					priority="tertiary"
-					onClick={() => router.push("/form")}
+					onClick={() => router.push("/dashboard/form")}
 				>
 					Ajouter une declaration
 				</Button>

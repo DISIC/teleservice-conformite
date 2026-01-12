@@ -77,7 +77,6 @@ export default function SchemaForm({
 		...schemaFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (value.section === "currentYearSchemaLinks") {
-				alert(JSON.stringify(value, null, 2));
 				await addSchema({
 					annualSchemaLink: value?.annualSchemaLink ?? "",
 					declarationId,

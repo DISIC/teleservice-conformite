@@ -1,9 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
-import { toolOptions, testEnvironmentOptions } from "~/payload/collections/Audit";
-import { auditFormSchema } from "~/utils/form/audit/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { testEnvironmentOptions } from "~/payload/collections/Audit";
+import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { linkToDeclaration } from "../utils/payload-helper";
 
 const auditSchema = z.object({
@@ -31,12 +30,19 @@ const auditSchema = z.object({
 });
 
 export const auditRouter = createTRPCRouter({
-  create: publicProcedure
+  create: userProtectedProcedure
     .input(
       auditSchema.extend({ declarationId: z.number() }),
     )
     .mutation(async ({ input, ctx }) => {
       const { declarationId, technologies, testEnvironments, ...rest } = input;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
 
       const audit = await ctx.payload.create({
         collection: "audits",
@@ -52,10 +58,17 @@ export const auditRouter = createTRPCRouter({
 
       return { data: audit.id };
     }),
-  delete: publicProcedure
+  delete: userProtectedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input, ctx }) => {
       const { id } = input;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
 
       await ctx.payload.delete({
         collection: "audits",
@@ -64,7 +77,7 @@ export const auditRouter = createTRPCRouter({
 
       return { data: true };
     }),
-  update: publicProcedure
+  update: userProtectedProcedure
     .input(
       z.object({
         audit: auditSchema.extend({ declarationId: z.number(), id: z.number() }),
@@ -72,6 +85,13 @@ export const auditRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const { id, ...rest } = input.audit;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
 
       const updatedAudit = await ctx.payload.update({
         collection: "audits",

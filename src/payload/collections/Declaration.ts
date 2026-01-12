@@ -120,8 +120,9 @@ export const Declarations: CollectionConfig = {
 		},
 		{
 			name: "app_kind",
-			type: "text",
+			type: "select",
 			label: { fr: "Type de produit numérique" },
+			options: [...appKindOptions],
 		},
 		{
 			name: "url",

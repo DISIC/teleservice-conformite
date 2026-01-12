@@ -1,10 +1,11 @@
 import z from "zod";
+import { TRPCError } from "@trpc/server";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure, userProtectedProcedure } from "../trpc";
 import { linkToDeclaration } from "../utils/payload-helper";
 
 export const contactRouter = createTRPCRouter({
-  create: publicProcedure
+  create: userProtectedProcedure
     .input(
       z.object({
         email: z.string().optional(),
@@ -14,6 +15,13 @@ export const contactRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const { email, url, declarationId } = input;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
 
       const contact = await ctx.payload.create({
         collection: "contacts",
@@ -28,7 +36,7 @@ export const contactRouter = createTRPCRouter({
 
       return { data: contact.id };
     }),
-  update: publicProcedure
+  update: userProtectedProcedure
     .input(
       z.object({
         id: z.number(),
@@ -38,6 +46,13 @@ export const contactRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const { id, email, url } = input;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
 
       const contact = await ctx.payload.update({
         collection: "contacts",
