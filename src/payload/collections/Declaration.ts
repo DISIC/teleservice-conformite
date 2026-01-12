@@ -23,6 +23,7 @@ export const appKindOptions = [
 export const Declarations: CollectionConfig = {
 	slug: "declarations",
 	versions: true,
+	trash: true,
 	admin: {
 		useAsTitle: "name",
 	},

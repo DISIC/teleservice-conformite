@@ -138,6 +138,7 @@ export const declarationRouter = createTRPCRouter({
 			await ctx.payload.delete({
 				collection: "declarations",
 				id,
+				trash: true,
 			});
 
 			return { data: id };

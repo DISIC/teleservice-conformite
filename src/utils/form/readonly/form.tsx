@@ -90,6 +90,58 @@ export const DeclarationGeneralForm = withForm({
 	},
 });
 
+export const DeclarationSchema = withForm({
+	...readOnlyFormOptions,
+	props: { readOnly: false },
+	render: function Render({ form, readOnly }) {
+		return (
+			<>
+				<form.AppField name="schema.annualSchemaDone">
+					{(field) => (
+						<field.RadioField
+							label="Réalisation d’un schéma pluriannuel entre 2023 et 2025"
+							readOnly={readOnly}
+							options={[
+								{ label: "Oui", value: true },
+								{ label: "Non", value: false },
+							]}
+						/>
+					)}
+				</form.AppField>
+				<form.AppField name="schema.currentYearSchemaDone">
+					{(field) => (
+						<field.RadioField
+							label="Réalisation d’un schéma annuel - année en cours"
+							readOnly={readOnly}
+							options={[
+								{ label: "Oui", value: true },
+								{ label: "Non", value: false },
+							]}
+						/>
+					)}
+				</form.AppField>
+				<form.AppField name="schema.currentSchemaUrl">
+					{(field) => (
+						<field.TextField
+							kind="url"
+							label="Lien du schéma annuel"
+							readOnly={readOnly}
+						/>
+					)}
+				</form.AppField>
+				<form.AppField name="schema.currentSchemaFile">
+					{(field) => (
+						<field.UploadField
+							label="Fichier du schéma annuel"
+							readOnly={readOnly}
+						/>
+					)}
+				</form.AppField>
+			</>
+		);
+	},
+});
+
 export const DeclarationAuditForm = withForm({
 	...readOnlyFormOptions,
 	props: {
