@@ -12,6 +12,7 @@ import { useAppForm } from "~/utils/form/context";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
 import SchemaForm from "~/components/declaration/SchemaForm";
 import { getDeclarationById } from "~/utils/payload-helper";
+import { DeclarationSchema } from "~/utils/form/readonly/form";
 
 export default function SchemaPage({
 	declaration,
@@ -22,6 +23,8 @@ export default function SchemaPage({
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
 	};
+
+	declarationMultiStepFormOptions.defaultValues.section = "schema";
 
 	declarationMultiStepFormOptions.defaultValues.schema = {
 		annualSchemaDone: true,
@@ -49,14 +52,17 @@ export default function SchemaPage({
 
 	return (
 		<section id="schema" className={classes.main}>
-			<div className={classes.container}>
-				<div className={classes.main}>
-					<h2 className={classes.title}>
-						Verifiez les informations et modifiez-les si necessaire
-					</h2>
-					<Button priority="secondary" onClick={onEditInfos}>
-						{!editMode ? "Modifier" : "Annuler"}
-					</Button>
+			<div>
+				<div>
+					<h1>Plans d'actions</h1>
+					<div className={classes.headerAction}>
+						<h3 className={classes.description}>
+							Verifiez les informations et modifiez-les si necessaire
+						</h3>
+						<Button priority="secondary" onClick={onEditInfos}>
+							{!editMode ? "Modifier" : "Annuler"}
+						</Button>
+					</div>
 				</div>
 				<form
 					onSubmit={(e) => {
@@ -65,7 +71,7 @@ export default function SchemaPage({
 					}}
 				>
 					<div className={classes.formWrapper}>
-						{/* <SchemaForm form={form} readOnly={!editMode} /> */}
+						<DeclarationSchema form={form} readOnly={!editMode} />
 						{editMode && (
 							<form.AppForm>
 								<form.SubscribeButton label={"Valider"} />
@@ -92,14 +98,14 @@ const useStyles = tss.withName(SchemaPage.name).create({
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
-	container: {
-		display: "flex",
-		flexDirection: "column",
-	},
-	header: {
+	headerAction: {
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-between",
+	},
+	description: {
+		fontSize: "1rem",
+		color: "grey",
 	},
 	title: {
 		fontSize: "1rem",

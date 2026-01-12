@@ -12,17 +12,25 @@ import { tss } from "tss-react";
 import { auth } from "~/utils/auth";
 
 import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
 
 interface DeclarationsPageProps {
 	declarations: Array<
 		DeclarationWithPopulated & { updatedAtFormatted: string }
 	>;
+	firstDeclaration?: boolean;
 }
 
 export default function DeclarationsPage(props: DeclarationsPageProps) {
-	const { declarations } = props;
+	const { declarations, firstDeclaration = false } = props;
 	const router = useRouter();
-	const { classes } = useStyles({ declarationLength: declarations.length });
+	const { classes } = useStyles({
+		declarationLength: declarations.length || 0,
+	});
+
+	if (firstDeclaration) {
+		return <AddFirstDeclaration />;
+	}
 
 	return (
 		<section id="declarations-page" className={classes.main}>
@@ -221,6 +229,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	try {
 		const result = await payload.find({
 			collection: "declarations",
+			trash: true,
 			depth: 3,
 			where: {
 				"created_by.id": {
@@ -229,14 +238,29 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			},
 		});
 
-		const declarations = (result?.docs || []).map((doc) => ({
-			...doc,
-			updatedAtFormatted: new Intl.DateTimeFormat("fr-FR", {
-				dateStyle: "short",
-				timeStyle: "short",
-				timeZone: "Europe/Paris",
-			}).format(new Date((doc as any).updatedAt)),
-		}));
+		const deletedDeclarations = (result?.docs || []).filter(
+			(doc) => doc?.deletedAt,
+		);
+
+		if (!deletedDeclarations.length) {
+			return {
+				props: {
+					firstDeclaration: true,
+					declarations: [],
+				},
+			};
+		}
+
+		const declarations = (result?.docs || [])
+			.filter((doc) => !doc?.deletedAt)
+			.map((doc) => ({
+				...doc,
+				updatedAtFormatted: new Intl.DateTimeFormat("fr-FR", {
+					dateStyle: "short",
+					timeStyle: "short",
+					timeZone: "Europe/Paris",
+				}).format(new Date((doc as any).updatedAt)),
+			}));
 
 		return {
 			props: {
@@ -248,7 +272,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 		return {
 			redirect: { destination: "/" },
-			props: {},
+			props: {
+				declarations: [],
+			},
 		};
 	}
 };
