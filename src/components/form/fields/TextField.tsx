@@ -9,6 +9,7 @@ interface TextFieldProps extends DefaultFieldProps {
 	min?: string;
 	max?: string;
 	textArea?: boolean;
+	inputReadOnly?: boolean;
 }
 
 export function TextField(props: TextFieldProps) {
@@ -21,6 +22,7 @@ export function TextField(props: TextFieldProps) {
 		kind,
 		readOnly = false,
 		textArea = false,
+		inputReadOnly,
 	} = props;
 	const field = useFieldContext<string>();
 	const state: "error" | "success" | "info" | "default" =
@@ -45,6 +47,7 @@ export function TextField(props: TextFieldProps) {
 					value: field.state.value,
 					onChange: (e) => field.setValue(e.target.value),
 					placeholder,
+					readOnly: inputReadOnly,
 				}}
 			/>
 		) : (
@@ -58,6 +61,7 @@ export function TextField(props: TextFieldProps) {
 					min: kind === "date" && props.min ? props.min : undefined,
 					max: kind === "date" && props.max ? props.max : undefined,
 					placeholder,
+					readOnly: inputReadOnly,
 				}}
 			/>
 		)

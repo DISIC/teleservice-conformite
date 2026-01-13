@@ -39,6 +39,7 @@ export const DeclarationGeneralForm = withForm({
 							label="Organisation"
 							readOnly={readOnly}
 							placeholder="Direction Générale des Finances (DGFIP)"
+							inputReadOnly
 						/>
 					)}
 				</form.AppField>
