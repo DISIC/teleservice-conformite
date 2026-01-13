@@ -9,13 +9,13 @@ import { createTRPCRouter, publicProcedure, userProtectedProcedure } from "../tr
 import { kindOptions } from "~/payload/collections/Entity";
 import { getDeclarationById } from "~/utils/payload-helper";
 
-const createOrUpdateEntity = async (payload: Payload, entityId: number | undefined, organisation: string, domain: (typeof kindOptions)[number]["value"]) => {
+const createOrUpdateEntity = async (payload: Payload, entityId: number | undefined, organisation: string, domain: string) => {
 	if (!entityId) {
 		const entity = await payload.create({
 			collection: "entities",
 			data: {
 				name: organisation,
-				kind: domain as any,
+				kind: kindOptions.find((field) => field.label === domain)?.value ?? "none",
 			},
 		});
 
@@ -27,7 +27,7 @@ const createOrUpdateEntity = async (payload: Payload, entityId: number | undefin
 		id: entityId,
 		data: {
 			name: organisation,
-			kind: domain as any,
+			kind: kindOptions.find((field) => field.label === domain)?.value ?? "none",
 		},
 	});
 
@@ -184,7 +184,7 @@ export const declarationRouter = createTRPCRouter({
 				id: entityId,
 				data: {
 					name: organisation,
-					kind: kindOptions.find((field) => field.label === domain)?.value,
+					kind: kindOptions.find((field) => field.label === domain)?.value ?? "none",
 				},
 			});
 

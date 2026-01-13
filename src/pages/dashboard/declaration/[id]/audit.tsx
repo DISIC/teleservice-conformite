@@ -7,18 +7,15 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
-import type { z } from "zod";
 
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationAuditForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import AuditMultiStepForm from "~/components/declaration/AuditMultiStepForm";
 import { api } from "~/utils/api";
-import type { auditFormSchema } from "~/utils/form/audit/schema";
+import type { ZAuditFormSchema } from "~/utils/form/audit/schema";
 import { getDeclarationById } from "~/utils/payload-helper";
 import type { DeclarationWithPopulated } from "~/utils/payload-helper";
-
-type AuditFormSchema = z.infer<typeof auditFormSchema>;
 
 export default function AuditPage({
 	declaration,
@@ -69,7 +66,7 @@ export default function AuditPage({
 						name: element.name,
 						url: element.url ?? "",
 					})) ?? [],
-				technologies: audit?.toolsUsed ?? [],
+				technologies: audit?.toolsUsed?.map((tech) => tech.name) ?? [],
 				testEnvironments: audit?.testEnvironments ?? [],
 				nonCompliantElements: audit?.nonCompliantElements ?? "",
 				disproportionnedCharge:
@@ -94,10 +91,7 @@ export default function AuditPage({
 		}
 	};
 
-	const updateDeclarationAudit = async (
-		auditId: number,
-		auditData: AuditFormSchema,
-	) => {
+	const updateDeclarationAudit = async (auditId: number, auditData: any) => {
 		try {
 			await updateAudit({
 				audit: {
@@ -106,7 +100,10 @@ export default function AuditPage({
 					compliantElements: auditData.compliantElements ?? [
 						{ name: "", url: "" },
 					],
-					disproportionnedCharge: auditData.disproportionnedCharge ?? [],
+					disproportionnedCharge:
+						typeof auditData.disproportionnedCharge === "string"
+							? []
+							: auditData.disproportionnedCharge,
 				},
 			});
 		} catch (error) {
@@ -116,11 +113,7 @@ export default function AuditPage({
 
 	const form = useAppForm({
 		...readOnlyFormOptions,
-		// defaultValues: {
-
-		// },
 		onSubmit: async ({ value, formApi }) => {
-			console.log(value);
 			if (!isAchieved && declaration?.audit) {
 				await deleteDeclarationAudit(audit?.id ?? -1);
 

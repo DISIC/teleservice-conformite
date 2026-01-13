@@ -19,7 +19,7 @@ export const toolOptions = [
 	{ label: "JAWS", value: "jaws" },
 	{ label: "Assistant RGAA", value: "assistant_rgaa" },
 	{ label: "Tanaguru", value: "tanaguru" },
-]
+] as const;
 
 export const testEnvironmentOptions = [
 	{ label: "NVDA (Firefox)", value: "nvda_firefox" },
@@ -27,7 +27,7 @@ export const testEnvironmentOptions = [
 	{ label: "VoiceOver (Safari)", value: "voiceover_safari" },
 	{ label: "ZoomText (Windows ou Mac OSX)", value: "zoomtext_windows_mac" },
 	{ label: "Dragon Naturally Speaking (Windows ou Mac OSX)", value: "dragon_naturally_speaking_windows_mac" },
-]
+] as const;
 
 export const Audits: CollectionConfig = {
 	slug: "audits",
@@ -139,19 +139,24 @@ export const Audits: CollectionConfig = {
 		},
 		{
 			name: "toolsUsed",
-			type: "select",
-			hasMany: true,
+			type: "array",
 			label: { fr: "Outils utilisés" },
-			options: [...toolOptions],
-			index: true,
+			fields: [
+				{
+					name: "name",
+					type: "text",
+					label: { fr: "Nom de l’outil" },
+					required: true,
+				},
+			],
 		},
 		{
 			name: "testEnvironments",
 			type: "select",
-			hasMany: true,
 			label: { fr: "Environnements de test" },
-			options: [...testEnvironmentOptions],
 			index: true,
+			options : [...testEnvironmentOptions],
+			hasMany: true,
 		},
 		{
 			name: "declaration",

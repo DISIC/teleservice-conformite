@@ -11,7 +11,6 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 	const { label, placeholder = "Non", className, value } = props;
 	const { classes } = useStyles();
 	const valueIsArray = Array.isArray(value);
-	console.log("label:", label, "value:", value);
 
 	return (
 		<div className={valueIsArray ? classes.flexWrapper : classes.inlineWrapper}>

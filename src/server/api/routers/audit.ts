@@ -15,7 +15,7 @@ const auditSchema = z.object({
     z.string()
   ).min(1),
   testEnvironments: z.array(
-    z.enum(testEnvironmentOptions.map((test) => test.value) as [string, ...string[]])
+    z.string()
   ).min(1),
   nonCompliantElements: z.string().optional(),
   disproportionnedCharge: z.array(z.object({
@@ -23,7 +23,7 @@ const auditSchema = z.object({
     reason: z.string(),
     duration: z.string(),
     alternative: z.string(),
-  })),
+  })).optional(),
   optionalElements: z.string().optional(),
   grid: z.string().optional(),
   report: z.string().optional(),
@@ -48,8 +48,16 @@ export const auditRouter = createTRPCRouter({
         collection: "audits",
         data: {
           ...rest,
-          toolsUsed: technologies,
-          testEnvironments: testEnvironments,
+          toolsUsed: technologies.map((tech) => ({ name: tech })),
+          testEnvironments: testEnvironments.reduce((acc: (typeof testEnvironmentOptions[number]["value"])[], env) => {
+            const value = testEnvironmentOptions.find((test) => test.value === env)?.value;
+
+            if (value) {
+              acc.push(value);
+            }
+
+            return acc;
+          }, []),
           declaration: declarationId,
         },
       });
@@ -80,7 +88,7 @@ export const auditRouter = createTRPCRouter({
   update: userProtectedProcedure
     .input(
       z.object({
-        audit: auditSchema.extend({ declarationId: z.number(), id: z.number() }),
+        audit: auditSchema.extend({ id: z.number() }),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -98,6 +106,16 @@ export const auditRouter = createTRPCRouter({
         id,
         data: {
           ...rest,
+          testEnvironments: rest.testEnvironments.reduce((acc: (typeof testEnvironmentOptions[number]["value"])[], env) => {
+            const value = testEnvironmentOptions.find((test) => test.value === env)?.value;
+
+            if (value) {
+              acc.push(value);
+            }
+
+            return acc;
+          }, []),
+          toolsUsed: rest.technologies.map((tech) => ({ name: tech })),
         },
       });
 

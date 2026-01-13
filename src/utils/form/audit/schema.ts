@@ -49,7 +49,7 @@ export const toolsDefaultValues: ZTools = {
 };
 
 export const compliantElements = z.object({
-  compliantElements: z.array(z.object({ name: z.string(), url: z.string() })),
+  compliantElements: z.array(z.object({ name: z.string(), url: z.string() })).optional(),
 });
 
 export type ZCompliantElements = z.infer<typeof compliantElements>;

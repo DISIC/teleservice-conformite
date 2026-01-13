@@ -40,7 +40,6 @@ export const upsertEntityToUser = createAuthMiddleware(async (ctx) => {
 					data: {
 						name: entityInfos.name,
 						siret: entityInfos.siret,
-						kind: entityInfos.kind,
 					},
 				});
 
