@@ -1,6 +1,7 @@
 import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
 import NextLink from "next/link";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
 import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import {
@@ -9,6 +10,8 @@ import {
 } from "~/payload/collections/Audit";
 import { withForm } from "../context";
 import { auditMultiStepFormOptions } from "./schema";
+import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
+import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
 
 export const AuditDateForm = withForm({
 	...auditMultiStepFormOptions,
@@ -106,6 +109,16 @@ export const CompliantElementsForm = withForm({
 	},
 });
 
+const exemptionListmodal = createModal({
+	id: "exemption-list-modal",
+	isOpenedByDefault: false,
+});
+
+const disproportionnedChargeModal = createModal({
+	id: "disproportionned-charge-modal",
+	isOpenedByDefault: false,
+});
+
 export const NonCompliantElementsForm = withForm({
 	...auditMultiStepFormOptions,
 	render: function Render({ form }) {
@@ -141,9 +154,21 @@ export const NonCompliantElementsForm = withForm({
 							label="Éléments non soumis à l’obligation d’accessibilité"
 							description={
 								<>
-									<NextLink href="">
+									<NextLink
+										style={{
+											color: fr.colors.decisions.text.active.blueFrance.default,
+										}}
+										onClick={(e) => {
+											e.preventDefault();
+											exemptionListmodal.open();
+										}}
+										href="#"
+									>
 										Liste des contenus non soumis à l’obligation d’accessibilité
 									</NextLink>
+									<exemptionListmodal.Component title="">
+										<ExemptionListModalContent />
+									</exemptionListmodal.Component>
 									<br />
 									Format attendu : Listez les éléments exemptés les uns à la
 									suite des autres
@@ -160,9 +185,21 @@ export const NonCompliantElementsForm = withForm({
 							label="Éléments avec dérogation pour charge disproportionnée"
 							description={
 								<>
-									<NextLink href="">
+									<NextLink
+										style={{
+											color: fr.colors.decisions.text.active.blueFrance.default,
+										}}
+										onClick={(e) => {
+											e.preventDefault();
+											disproportionnedChargeModal.open();
+										}}
+										href="#"
+									>
 										Qu’est-ce qu’une charge disproportionnée ?
 									</NextLink>
+									<disproportionnedChargeModal.Component title="">
+										<DisproportionnedChargeContent />
+									</disproportionnedChargeModal.Component>
 									<br />
 									Renseigner, pour chaque élément, son nom, la raison de la
 									dérogation et l’alternative accessible proposée.
