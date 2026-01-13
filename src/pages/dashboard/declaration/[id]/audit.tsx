@@ -56,28 +56,15 @@ export default function AuditPage({
 				date: audit?.date
 					? new Date(audit.date).toISOString().slice(0, 10)
 					: "",
-				grid: audit?.auditGrid ?? "",
 				report: audit?.auditReport ?? "",
 				realisedBy: audit?.realisedBy ?? "",
 				rgaa_version: audit?.rgaa_version ?? "rgaa_4",
 				rate: audit?.rate ?? 0,
-				compliantElements:
-					audit?.compliantElements?.map((element) => ({
-						name: element.name,
-						url: element.url ?? "",
-					})) ?? [],
+				compliantElements: audit?.compliantElements ?? "",
 				technologies: audit?.toolsUsed?.map((tech) => tech.name) ?? [],
 				testEnvironments: audit?.testEnvironments ?? [],
 				nonCompliantElements: audit?.nonCompliantElements ?? "",
-				disproportionnedCharge:
-					audit?.disproportionnedCharge
-						?.map((element) => ({
-							name: element.name,
-							reason: element.reason,
-							duration: element.duration,
-							alternative: element.alternative,
-						}))
-						.filter((element) => !!element.name) ?? [],
+				disproportionnedCharge: audit?.disproportionnedCharge ?? "",
 				optionalElements: audit?.exemption ?? "",
 			},
 		};
@@ -97,13 +84,6 @@ export default function AuditPage({
 				audit: {
 					id: auditId,
 					...auditData,
-					compliantElements: auditData.compliantElements ?? [
-						{ name: "", url: "" },
-					],
-					disproportionnedCharge:
-						typeof auditData.disproportionnedCharge === "string"
-							? []
-							: auditData.disproportionnedCharge,
 				},
 			});
 		} catch (error) {

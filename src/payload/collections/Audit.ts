@@ -70,72 +70,28 @@ export const Audits: CollectionConfig = {
 		},
 		{
 			name: "compliantElements",
-			type: "array",
+			type: "textarea",
 			label: { fr: "Échantillon contrôlé" },
-			fields: [
-				{
-					name: "name",
-					required: true,
-					type: "text",
-					label: { fr: "Nom de la page" },
-				},
-				{
-					name: "url",
-					type: "text",
-					label: { fr: "URL de la page" },
-				},
-			],
 		},
 		{
 			name: "nonCompliantElements",
-			type: "text",
+			type: "textarea",
 			label: { fr: "Éléments non conformes" },
 		},
 		{
 			name: "disproportionnedCharge",
-			type: "array",
+			type: "textarea",
 			label: { fr: "Éléments avec dérogation pour charge disproportionnée" },
-			fields: [
-				{
-					name: "name",
-					type: "text",
-					label: { fr: "Nom de l’élément" },
-					required: true,
-				},
-				{
-					name: "reason",
-					type: "text",
-					label: { fr: "Raison de la dérogation" },
-					required: true,
-				},
-				{
-					name: "duration",
-					type: "text",
-					label: { fr: "Durée de la dérogation (facultatif)" },
-					required: true,
-				},
-				{
-					name: "alternative",
-					type: "text",
-					label: { fr: "Alternative accessible proposée" },
-					required: true,
-				},
-			],
 		},
 		{
 			name: "exemption",
-			type: "text",
+			type: "textarea",
 			label: { fr: "Éléments non soumis à l’obligation d’accessibilité" },
 		},
 		{
 			name: "auditReport",
 			type: "text",
 			label: { fr: "Rapport d'audit" },
-		},
-		{
-			name: "auditGrid",
-			type: "text",
-			label: { fr: "Grille d'audit" },
 		},
 		{
 			name: "toolsUsed",

@@ -36,7 +36,6 @@ export const declarationAudit = z.object({
   audit: z.object({
     date: z.iso.date().min(1, { message: "La date est requise" }),
     report: z.union([z.url(), z.literal("")]),
-    grid: z.union([z.url(), z.literal("")]),
     realisedBy: z.string().min(1, {
       message: "L'organisation ayant réalisé l'audit est requise",
     }),
@@ -45,7 +44,7 @@ export const declarationAudit = z.object({
       .number()
       .min(0, { message: "Le taux doit être entre 0 et 100" })
       .max(100, { message: "Le taux doit être entre 0 et 100" }),
-    compliantElements: z.array(z.object({ name: z.string(), url: z.union([z.url(), z.literal("")]) })).optional(),
+    compliantElements: z.string().optional(),
     technologies: z.array(z.string()).min(1, {
       message: "Au moins une technologie doit être sélectionnée",
     }),
@@ -54,7 +53,7 @@ export const declarationAudit = z.object({
       .min(1, {
         message: "Au moins un environnement de test doit être sélectionné",
       }),
-    disproportionnedCharge: z.array(z.object({ name: z.string(), reason: z.string(), duration: z.string(), alternative: z.string() })),
+    disproportionnedCharge: z.string().optional(),
     nonCompliantElements: z.string().optional(),
     optionalElements: z.string().optional(),
   }),
@@ -66,7 +65,6 @@ export const declarationAuditDefaultValues: ZDeclarationAudit = {
   audit: {
     date: "",
     report: "",
-    grid: "",
     realisedBy: "",
     rgaa_version: "rgaa_4",
     rate: 0,
@@ -74,8 +72,8 @@ export const declarationAuditDefaultValues: ZDeclarationAudit = {
     testEnvironments: [],
     nonCompliantElements: "",
     optionalElements: "",
-    disproportionnedCharge: [],
-    compliantElements: [],
+    disproportionnedCharge: "",
+    compliantElements: "",
   },
 };
 

@@ -41,7 +41,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		url: string;
 		organisation: string;
 		kind: (typeof appKindOptions)[number]["value"];
-		domain: (typeof kindOptions)[number]["value"];
+		domain: string;
 	}) => {
 		try {
 			const general = {
@@ -77,7 +77,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		<div className={classes.main}>
 			<h2>
 				{section === "initialDeclaration"
-					? "Votre déclaration d'accessibilité"
+					? "Contexte"
 					: "Informations générales"}
 			</h2>
 			<form

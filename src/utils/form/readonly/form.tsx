@@ -327,83 +327,13 @@ export const DeclarationAuditForm = withForm({
 								)
 							}
 						</form.AppField>
-						<form.AppField name="audit.compliantElements" mode="array">
-							{(field) =>
-								!readOnly ? (
-									<Accordion
-										label="Éléments ayant fait l’objet de vérification"
-										defaultExpanded
-									>
-										{field.state.value?.map((_, index) => (
-											<div
-												key={index}
-												style={{
-													display: "flex",
-													flexDirection: "column",
-													gap: fr.spacing("4v"),
-													width: "100%",
-													paddingBlock: fr.spacing("4v"),
-												}}
-											>
-												<div
-													style={{
-														display: "flex",
-														flexDirection: "column",
-														gap: fr.spacing("4v"),
-														width: "100%",
-													}}
-												>
-													<form.AppField
-														name={`audit.compliantElements[${index}].name`}
-													>
-														{(subField) => (
-															<subField.TextField
-																label={`Page ${index + 1} - Label`}
-																className={fr.cx("fr-mb-0")}
-															/>
-														)}
-													</form.AppField>
-													<form.AppField
-														name={`audit.compliantElements[${index}].url`}
-													>
-														{(subField) => (
-															<subField.TextField
-																label={`Page ${index + 1} - URL`}
-																readOnly={readOnly}
-															/>
-														)}
-													</form.AppField>
-												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer la page"
-												/>
-											</div>
-										))}
-										<Button
-											type="button"
-											onClick={() => field.pushValue({ url: "", name: "" })}
-										>
-											Ajouter une page
-										</Button>
-									</Accordion>
-								) : (
-									<ReadOnlyField
-										label="Éléments ayant fait l’objet de vérification"
-										value={
-											field?.state?.value?.length
-												? field.state.value.map(
-														(item) =>
-															`${item.name} ${item.url ? `(${item.url})` : ""}`,
-													)
-												: ""
-										}
-									/>
-								)
-							}
+						<form.AppField name="audit.compliantElements">
+							{(field) => (
+								<field.TextField
+									label="Éléments ayant fait l’objet de vérification"
+									readOnly={readOnly}
+								/>
+							)}
 						</form.AppField>
 						<form.AppField name="audit.nonCompliantElements">
 							{(field) => (
@@ -413,82 +343,13 @@ export const DeclarationAuditForm = withForm({
 								/>
 							)}
 						</form.AppField>
-						<form.AppField name="audit.disproportionnedCharge" mode="array">
-							{(field) =>
-								!readOnly ? (
-									<Accordion
-										label="Dérogation pour charge disproportionnée :"
-										defaultExpanded
-									>
-										{field.state.value?.map((_, index) => (
-											<div key={index}>
-												<div>
-													<form.AppField
-														name={`audit.disproportionnedCharge[${index}].name`}
-													>
-														{(subField) => (
-															<subField.TextField label="Nom de l’élément" />
-														)}
-													</form.AppField>
-													<form.AppField
-														name={`audit.disproportionnedCharge[${index}].reason`}
-													>
-														{(subField) => (
-															<subField.TextField label="Raison de la dérogation" />
-														)}
-													</form.AppField>
-													<form.AppField
-														name={`audit.disproportionnedCharge[${index}].duration`}
-													>
-														{(subField) => (
-															<subField.TextField label="Durée de la dérogation (facultatif)" />
-														)}
-													</form.AppField>
-													<form.AppField
-														name={`audit.disproportionnedCharge[${index}].alternative`}
-													>
-														{(subField) => (
-															<subField.TextField label="Alternative accessible proposée" />
-														)}
-													</form.AppField>
-												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer la dérogation pour charge disproportionnée"
-												/>
-											</div>
-										))}
-										<Button
-											type="button"
-											onClick={() =>
-												field.pushValue({
-													name: "",
-													reason: "",
-													duration: "",
-													alternative: "",
-												})
-											}
-										>
-											Ajouter une dérogation pour charge disproportionnée
-										</Button>
-									</Accordion>
-								) : (
-									<ReadOnlyField
-										label="Dérogation pour charge disproportionnée"
-										value={
-											field?.state?.value?.length
-												? field.state.value.map(
-														(item) =>
-															`${item.name} - ${item.reason} - ${item.duration} - ${item.alternative}`,
-													)
-												: ""
-										}
-									/>
-								)
-							}
+						<form.AppField name="audit.disproportionnedCharge">
+							{(field) => (
+								<field.TextField
+									label="Dérogation pour charge disproportionnée"
+									readOnly={readOnly}
+								/>
+							)}
 						</form.AppField>
 						<form.AppField name="audit.optionalElements">
 							{(field) => (
@@ -496,11 +357,6 @@ export const DeclarationAuditForm = withForm({
 									label="Contenus non soumis à la déclaration"
 									readOnly={readOnly}
 								/>
-							)}
-						</form.AppField>
-						<form.AppField name="audit.grid">
-							{(field) => (
-								<field.TextField label="Rapport d’audit" readOnly={readOnly} />
 							)}
 						</form.AppField>
 						<form.AppField name="audit.report">

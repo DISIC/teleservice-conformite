@@ -10,7 +10,7 @@ const auditSchema = z.object({
   realisedBy: z.string(),
   rgaa_version: z.enum(["rgaa_4", "rgaa_5"]),
   rate: z.number().min(0).max(100),
-  compliantElements: z.array(z.object({ name: z.string(), url: z.string() })).optional(),
+  compliantElements: z.string().optional(),
   technologies: z.array(
     z.string()
   ).min(1),
@@ -18,12 +18,7 @@ const auditSchema = z.object({
     z.string()
   ).min(1),
   nonCompliantElements: z.string().optional(),
-  disproportionnedCharge: z.array(z.object({
-    name: z.string(),
-    reason: z.string(),
-    duration: z.string(),
-    alternative: z.string(),
-  })).optional(),
+  disproportionnedCharge: z.string().optional(),
   optionalElements: z.string().optional(),
   grid: z.string().optional(),
   report: z.string().optional(),

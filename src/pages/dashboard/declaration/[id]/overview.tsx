@@ -68,14 +68,7 @@ export default function DeclarationOverviewPage({
 				<h4>Non-conformités</h4>
 				<p>{declaration?.audit?.nonCompliantElements}</p>
 				<h4>Dérogations pour charge disproportionnée</h4>
-				<ul>
-					{declaration?.audit?.disproportionnedCharge?.map((charge) => (
-						<li key={charge.id}>
-							<strong>{charge.name}</strong> {charge.reason} {charge.duration}{" "}
-							{charge.alternative}
-						</li>
-					))}
-				</ul>
+				<ul>{declaration?.audit?.disproportionnedCharge}</ul>
 				<h4>Contenus non soumis à l’obligation d’accessibilité</h4>
 				<p>{declaration?.audit?.exemption}</p>
 				<h3>Établissement de cette déclaration d’accessibilité</h3>
@@ -104,13 +97,7 @@ export default function DeclarationOverviewPage({
 				<h3>
 					Pages du site ayant fait l’objet de la vérification de conformité
 				</h3>
-				<ul>
-					{declaration.audit?.compliantElements?.map((page) => (
-						<li key={page.url}>
-							{page.name}: {page.url}
-						</li>
-					))}
-				</ul>
+				{declaration.audit?.compliantElements}
 				<h4>Retour d’information et contact</h4>
 				<p>
 					Si vous n’arrivez pas à accéder à un contenu ou à un service, vous

@@ -10,8 +10,6 @@ import {
 	ToolsForm,
 	CompliantElementsForm,
 	NonCompliantElementsForm,
-	DisproportionnedChargeForm,
-	OptionElementsForm,
 	FilesForm,
 } from "~/utils/form/audit/form";
 import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
@@ -45,8 +43,6 @@ export default function AuditMultiStepForm({
 		"tools",
 		"compliantElements",
 		"nonCompliantElements",
-		"disproportionnedCharge",
-		"optionalElements",
 		"files",
 	] as const;
 
@@ -80,22 +76,12 @@ export default function AuditMultiStepForm({
 		}
 
 		if (section === "nonCompliantElements") {
-			form.setFieldValue("hasNonCompliantElements", false);
 			form.setFieldValue("nonCompliantElements", "");
-		}
-
-		if (section === "disproportionnedCharge") {
-			form.setFieldValue("hasDisproportionnedCharge", false);
-			form.setFieldValue("disproportionnedCharge", []);
-		}
-
-		if (section === "optionalElements") {
-			form.setFieldValue("hasOptionalElements", false);
+			form.setFieldValue("disproportionnedCharge", "");
 			form.setFieldValue("optionalElements", "");
 		}
 
 		if (section === "files") {
-			form.setFieldValue("grid", "");
 			form.setFieldValue("report", "");
 		}
 
@@ -137,11 +123,6 @@ export default function AuditMultiStepForm({
 		{ slug: "tools", title: "Outils de test" },
 		{ slug: "compliantElements", title: "Échantillon contrôlé" },
 		{ slug: "nonCompliantElements", title: "Éléments non conformes" },
-		{ slug: "disproportionnedCharge", title: "Charge disproportionnée" },
-		{
-			slug: "optionalElements",
-			title: "Éléments non soumis à l’obligation d’accessibilité",
-		},
 		{ slug: "files", title: "Fichiers" },
 	];
 
@@ -164,12 +145,6 @@ export default function AuditMultiStepForm({
 						)}
 						{section === "nonCompliantElements" && (
 							<NonCompliantElementsForm form={form} />
-						)}
-						{section === "disproportionnedCharge" && (
-							<DisproportionnedChargeForm form={form} />
-						)}
-						{section === "optionalElements" && (
-							<OptionElementsForm form={form} />
 						)}
 						{section === "files" && <FilesForm form={form} />}
 					</div>
@@ -201,7 +176,6 @@ const useStyles = tss.withName(AuditMultiStepForm.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
-		// backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
