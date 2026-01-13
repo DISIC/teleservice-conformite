@@ -9,7 +9,7 @@ import type { Declaration } from "~/payload/payload-types";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
-import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
+import { schemaFormOptions } from "~/utils/form/schema/schema";
 import SchemaForm from "~/components/declaration/SchemaForm";
 import { getDeclarationById } from "~/utils/payload-helper";
 import { DeclarationSchema } from "~/utils/form/readonly/form";
@@ -24,25 +24,19 @@ export default function SchemaPage({
 		setEditMode((prev) => !prev);
 	};
 
-	declarationMultiStepFormOptions.defaultValues.section = "schema";
-
-	declarationMultiStepFormOptions.defaultValues.schema = {
-		annualSchemaDone: true,
-		currentYearSchemaDone: true,
-		currentSchemaUrl: "https://www.example.com/schema.pdf",
-		currentSchemaFile: new File(["Schema content"], "schema.pdf", {
-			type: "application/pdf",
-		}),
-	};
+	// schemaFormOptions.defaultValues = {
+	// annualSchemaDone: true,
+	// currentYearSchemaDone: true,
+	// currentSchemaUrl: "https://www.example.com/schema.pdf",
+	// currentSchemaFile: new File(["Schema content"], "schema.pdf", {
+	// 	type: "application/pdf",
+	// }),
+	// };
 
 	const form = useAppForm({
-		...declarationMultiStepFormOptions,
+		...schemaFormOptions,
 		onSubmit: async ({ value, formApi }) => {
-			if (value.section === "general") {
-				formApi.setFieldValue("section", "audit");
-			} else {
-				alert(JSON.stringify(value, null, 2));
-			}
+			alert(JSON.stringify(value, null, 2));
 		},
 	});
 
