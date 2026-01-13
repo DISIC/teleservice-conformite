@@ -16,7 +16,6 @@ export async function getEntityInfosFromSiret(siret: number): Promise<{
         method: "GET",
         headers: {
           Accept: "application/json",
-          // Authorization: `Bearer ${apiKey}`,
           "X-INSEE-Api-Key-Integration": apiKey,
         },
       },

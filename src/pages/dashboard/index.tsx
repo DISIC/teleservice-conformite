@@ -242,11 +242,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			.filter((doc) => !doc?.deletedAt)
 			.map((doc) => ({
 				...doc,
-				updatedAtFormatted: new Intl.DateTimeFormat("fr-FR", {
-					dateStyle: "short",
-					timeStyle: "short",
-					timeZone: "Europe/Paris",
-				}).format(new Date((doc as any).updatedAt)),
+				updatedAtFormatted: new Date(doc.updatedAt).toLocaleDateString("fr-FR"),
 			}));
 
 		const deletedDeclarations = (result?.docs || []).filter(

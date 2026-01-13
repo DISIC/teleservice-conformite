@@ -112,11 +112,7 @@ export async function getDeclarationById(
 			actionPlan: sanitizedActionPlan,
 			created_by: sanitizedUser,
 			entity: sanitizedEntity,
-			updatedAtFormatted: new Intl.DateTimeFormat("fr-FR", {
-				dateStyle: "short",
-				timeStyle: "short",
-				timeZone: "Europe/Paris",
-			}).format(new Date(result.updatedAt)),
+			updatedAtFormatted: new Date(result.updatedAt).toLocaleDateString("fr-FR"),
 		};
 
 		return declaration;
