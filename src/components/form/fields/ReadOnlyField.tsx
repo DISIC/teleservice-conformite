@@ -5,15 +5,26 @@ import type { DefaultFieldProps } from "~/utils/form/context";
 
 interface ReadOnlyFieldProps extends DefaultFieldProps {
 	value: string | string[];
+	textArea?: boolean;
 }
 
 export function ReadOnlyField(props: ReadOnlyFieldProps) {
-	const { label, placeholder = "Non", className, value } = props;
+	const {
+		label,
+		placeholder = "Non",
+		className,
+		value,
+		textArea = false,
+	} = props;
 	const { classes } = useStyles();
 	const valueIsArray = Array.isArray(value);
 
 	return (
-		<div className={valueIsArray ? classes.flexWrapper : classes.inlineWrapper}>
+		<div
+			className={
+				valueIsArray || textArea ? classes.flexWrapper : classes.inlineWrapper
+			}
+		>
 			<p className={classes.label}>{label} :</p>
 			{valueIsArray ? (
 				<ul className={classes.list}>

@@ -163,6 +163,7 @@ export const NonCompliantElementsForm = withForm({
 									<NextLink href="">
 										Qu’est-ce qu’une charge disproportionnée ?
 									</NextLink>
+									<br />
 									Renseigner, pour chaque élément, son nom, la raison de la
 									dérogation et l’alternative accessible proposée.
 									<br />

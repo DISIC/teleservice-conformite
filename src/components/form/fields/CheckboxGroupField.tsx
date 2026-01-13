@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
+import { set } from "zod";
 
 interface CheckboxGroupFieldProps extends DefaultFieldProps {
 	options: Array<{ label: string; value: string }>;
@@ -19,10 +20,19 @@ export function CheckboxGroupField({
 }: CheckboxGroupFieldProps) {
 	const field = useFieldContext<string[]>();
 	const valueSet = new Set(field.state.value ?? []);
-	const [checkedValues, setCheckedValues] = useState<string[]>(
-		field.state.value ?? [],
-	);
+	const [hasOtherOption, setHasOtherOption] = useState<boolean>(false);
 	const [otherLabel, setOtherLabel] = useState<string>("");
+
+	const onBlur = () => {
+		if (otherLabel) {
+			field.setValue([
+				...field.state.value.filter((v) => v !== "other"),
+				otherLabel,
+			]);
+			setHasOtherOption(false);
+			setOtherLabel("");
+		}
+	};
 
 	return !readOnly ? (
 		<div>
@@ -39,25 +49,35 @@ export function CheckboxGroupField({
 					label: opt.label,
 					nativeInputProps: {
 						name: field.name,
-						checked: valueSet.has(opt.value),
+						checked:
+							valueSet.has(opt.value) ||
+							(opt.value === "other" && hasOtherOption),
 						onChange: (e) => {
 							const checked = e.target.checked;
 							const current = field.state.value ?? [];
 							if (checked) {
 								if (!current.includes(opt.value)) {
+									if (opt.value === "other") {
+										setHasOtherOption(true);
+										return;
+									}
+
 									field.setValue([...current, opt.value]);
-									setCheckedValues([...current, opt.value]);
 								}
 							} else {
+								if (opt.value === "other") {
+									setHasOtherOption(false);
+									return;
+								}
+
 								field.setValue(current.filter((v) => v !== opt.value));
-								setCheckedValues(current.filter((v) => v !== opt.value));
 							}
 						},
 						value: opt.value,
 					},
 				}))}
 			/>
-			{checkedValues.includes("other") && (
+			{hasOtherOption && (
 				<Input
 					label=""
 					nativeInputProps={{
@@ -65,7 +85,7 @@ export function CheckboxGroupField({
 						name: "other",
 						value: otherLabel,
 						onChange: (e) => setOtherLabel(e.target.value),
-						onBlur: () => field.setValue([...field.state.value, otherLabel]),
+						onBlur,
 						placeholder: "Autre",
 					}}
 				/>

@@ -37,35 +37,41 @@ export function TextField(props: TextFieldProps) {
 		disabled,
 	};
 
-	return !readOnly ? (
-		textArea ? (
-			<Input
-				{...commonState}
-				textArea={true}
-				nativeTextAreaProps={{
-					name: field.name,
-					value: field.state.value,
-					onChange: (e) => field.setValue(e.target.value),
-					placeholder,
-					readOnly: inputReadOnly,
-				}}
+	if (readOnly) {
+		return (
+			<ReadOnlyField
+				label={label}
+				value={String(field.state.value)}
+				textArea={textArea}
 			/>
-		) : (
-			<Input
-				{...commonState}
-				nativeInputProps={{
-					type: kind ?? "text",
-					name: field.name,
-					value: field.state.value,
-					onChange: (e) => field.setValue(e.target.value),
-					min: kind === "date" && props.min ? props.min : undefined,
-					max: kind === "date" && props.max ? props.max : undefined,
-					placeholder,
-					readOnly: inputReadOnly,
-				}}
-			/>
-		)
+		);
+	}
+
+	return textArea ? (
+		<Input
+			{...commonState}
+			textArea={true}
+			nativeTextAreaProps={{
+				name: field.name,
+				value: field.state.value,
+				onChange: (e) => field.setValue(e.target.value),
+				placeholder,
+				readOnly: inputReadOnly,
+			}}
+		/>
 	) : (
-		<ReadOnlyField label={label} value={String(field.state.value)} />
+		<Input
+			{...commonState}
+			nativeInputProps={{
+				type: kind ?? "text",
+				name: field.name,
+				value: field.state.value,
+				onChange: (e) => field.setValue(e.target.value),
+				min: kind === "date" && props.min ? props.min : undefined,
+				max: kind === "date" && props.max ? props.max : undefined,
+				placeholder,
+				readOnly: inputReadOnly,
+			}}
+		/>
 	);
 }

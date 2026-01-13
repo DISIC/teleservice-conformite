@@ -228,110 +228,42 @@ export const DeclarationAuditForm = withForm({
 								}
 							</form.AppField>
 						</div>
-						<form.AppField name="audit.technologies" mode="array">
-							{(field) =>
-								!readOnly ? (
-									<Accordion
-										label="Outils utilisés pour évaluer l’accessibilité"
-										defaultExpanded
-									>
-										{field.state.value.map((_, index) => (
-											<div
-												key={index}
-												style={{
-													display: "flex",
-													flexDirection: "column",
-													gap: fr.spacing("4v"),
-													width: "100%",
-													paddingBlock: fr.spacing("4v"),
-												}}
-											>
-												<div>
-													<form.AppField name={`audit.technologies[${index}]`}>
-														{(subField) => (
-															<subField.SelectField
-																label={`Technologie ${index + 1}`}
-																options={[...toolOptions]}
-															/>
-														)}
-													</form.AppField>
-												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer la technologie"
-												/>
-											</div>
-										))}
-										<Button type="button" onClick={() => field.pushValue("")}>
-											Ajouter une technologie
-										</Button>
-									</Accordion>
-								) : (
+						<form.AppField name="audit.technologies">
+							{(field) => {
+								const options = new Set([
+									...toolOptions,
+									...field.state.value
+										.filter((v) => !toolOptions.find((opt) => opt.value === v))
+										.map((v: string) => ({
+											label: v,
+											value: v,
+										})),
+								]);
+
+								return (
 									<field.CheckboxGroupField
 										label="Outils utilisés pour évaluer l’accessibilité"
-										options={[...toolOptions]}
+										options={[...options, { label: "Autre", value: "other" }]}
 										readOnly={readOnly}
 									/>
-								)
-							}
+								);
+							}}
 						</form.AppField>
-						<form.AppField name="audit.testEnvironments" mode="array">
-							{(field) =>
-								!readOnly ? (
-									<Accordion label="Environnement de test" defaultExpanded>
-										{field.state.value.map((_, index) => (
-											<div
-												key={index}
-												style={{
-													display: "flex",
-													flexDirection: "column",
-													gap: fr.spacing("4v"),
-													width: "100%",
-													paddingBlock: fr.spacing("4v"),
-												}}
-											>
-												<div>
-													<form.AppField
-														name={`audit.testEnvironments[${index}]`}
-													>
-														{(field) => (
-															<field.SelectField
-																label={`Environnement de test ${index + 1}`}
-																options={[...testEnvironmentOptions]}
-															/>
-														)}
-													</form.AppField>
-												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer l'environnement de test"
-												/>
-											</div>
-										))}
-										<Button type="button" onClick={() => field.pushValue("")}>
-											Ajouter un environnement de test
-										</Button>
-									</Accordion>
-								) : (
-									<field.CheckboxGroupField
-										label="Environnement de test"
-										options={[...testEnvironmentOptions]}
-										readOnly={readOnly}
-									/>
-								)
-							}
+						<form.AppField name="audit.testEnvironments">
+							{(field) => (
+								<field.CheckboxGroupField
+									label="Environnement de tests"
+									options={[...testEnvironmentOptions]}
+									readOnly={readOnly}
+								/>
+							)}
 						</form.AppField>
 						<form.AppField name="audit.compliantElements">
 							{(field) => (
 								<field.TextField
 									label="Éléments ayant fait l’objet de vérification"
 									readOnly={readOnly}
+									textArea
 								/>
 							)}
 						</form.AppField>
@@ -339,6 +271,7 @@ export const DeclarationAuditForm = withForm({
 							{(field) => (
 								<field.TextField
 									label="Éléments non conforme"
+									textArea
 									readOnly={readOnly}
 								/>
 							)}
@@ -347,6 +280,7 @@ export const DeclarationAuditForm = withForm({
 							{(field) => (
 								<field.TextField
 									label="Dérogation pour charge disproportionnée"
+									textArea
 									readOnly={readOnly}
 								/>
 							)}
@@ -355,6 +289,7 @@ export const DeclarationAuditForm = withForm({
 							{(field) => (
 								<field.TextField
 									label="Contenus non soumis à la déclaration"
+									textArea
 									readOnly={readOnly}
 								/>
 							)}
