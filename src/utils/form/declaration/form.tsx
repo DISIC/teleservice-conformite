@@ -2,14 +2,16 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-
+import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
 import { useState } from "react";
 import { tss } from "tss-react";
+
 import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import { appKindOptions } from "~/payload/collections/Declaration";
 import { kindOptions } from "~/payload/collections/Entity";
 import { withForm } from "../context";
 import { declarationMultiStepFormOptions } from "./schema";
+import PopupMessage from "~/components/declaration/PopupMessage";
 
 const envKindOptions = [
 	{ label: "Mobile", value: "mobile" },
@@ -468,7 +470,7 @@ export const InitialDeclarationForm = withForm({
 				<form.AppField name="initialDeclaration.isNewDeclaration">
 					{(field) => (
 						<field.RadioField
-							label="Une déclaration d’accessibilité a-t--elle déjà été publiée sur votre service ?"
+							label="Avez-vous déjà publié une déclaration d’accessibilité sur votre service ?"
 							description="Une déclaration d’accessibilité est une page publique qui informe les usagers du niveau de conformité de votre service, liste les contenus non accessibles et indique comment demander une alternative ou signaler un problème."
 							options={[
 								{ label: "Oui", value: true },
@@ -484,54 +486,40 @@ export const InitialDeclarationForm = withForm({
 				>
 					{(isNew) =>
 						isNew ? (
-							<form.AppField name="initialDeclaration.publishedDate">
-								{(field) => (
-									<field.TextField
-										label="À quelle date ?"
-										description="Format attendu : JJ/MM/AAAA"
-										kind="date"
-										max={new Date().toISOString().split("T")[0]}
-									/>
-								)}
-							</form.AppField>
-						) : null
-					}
-				</form.Subscribe>
-				<form.Subscribe
-					selector={(store) =>
-						store.values.initialDeclaration?.isNewDeclaration
-					}
-				>
-					{(isNew) =>
-						isNew ? (
-							<form.AppField name="initialDeclaration.usedAra">
-								{(field) => (
-									<field.RadioField
-										label="Votre auditeur a t-il utilisé l’outil Ara ?"
-										description="Ara est un outil destiné aux auditeurs formés à l’accessibilité. Il permet de réaliser un audit complet et de générer automatiquement une déclaration d’accessibilité."
-										options={[
-											{ label: "Oui", value: true },
-											{ label: "Non", value: false },
-										]}
-									/>
-								)}
-							</form.AppField>
-						) : null
-					}
-				</form.Subscribe>
-				<form.Subscribe
-					selector={(store) => store.values.initialDeclaration?.usedAra}
-				>
-					{(usedAra) =>
-						usedAra ? (
-							<form.AppField name="initialDeclaration.araUrl">
-								{(field) => (
-									<field.TextField
-										label="Lien URL de la déclaration Ara"
-										description="Format attendu : https://www.example.fr. Vous pouvez trouver le lien à TEL ENDROIT sur votre interface Ara"
-									/>
-								)}
-							</form.AppField>
+							<>
+								<form.AppField name="initialDeclaration.publishedDate">
+									{(field) => (
+										<field.TextField
+											label="À quelle date ?"
+											description="Format attendu : JJ/MM/AAAA"
+											kind="date"
+											max={new Date().toISOString().split("T")[0]}
+										/>
+									)}
+								</form.AppField>
+								<PopupMessage
+									message={
+										<>
+											<strong>
+												Votre auditeur a utilisé Ara pour faire l’audit de cette
+												déclaration ?
+											</strong>
+											<br /> Importez automatiquement l’intégralité des
+											informations de votre déclaration en une seule fois en
+											renseignant le lien Ara associé !
+										</>
+									}
+									image={<Innovation fontSize="6rem" />}
+								/>
+								<form.AppField name="initialDeclaration.araUrl">
+									{(field) => (
+										<field.TextField
+											label="Lien URL de la déclaration Ara (facultatif)"
+											description="Format attendu : https://www.example.fr."
+										/>
+									)}
+								</form.AppField>
+							</>
 						) : null
 					}
 				</form.Subscribe>

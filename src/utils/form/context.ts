@@ -1,5 +1,4 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
-import type { JSX } from "react";
 
 import { SubscribeButton, CancelButton } from "~/components/form/ActionButtons";
 
@@ -37,6 +36,6 @@ export type DefaultFieldProps = {
 	className?: string;
 	disabled?: boolean;
 	readOnly?: boolean;
-	description?: string | JSX.Element;
+	description?: string | React.ReactNode;
 	placeholder?: string;
 };

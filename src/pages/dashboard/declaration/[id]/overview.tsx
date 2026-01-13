@@ -74,8 +74,9 @@ export default function DeclarationOverviewPage({
 				<h3>Établissement de cette déclaration d’accessibilité</h3>
 				<p>
 					Cette déclaration a été établie le{" "}
-					{new Date(declaration.createdAt).toLocaleDateString()}. Elle a été
-					mise à jour le {new Date(declaration.updatedAt).toLocaleDateString()}.
+					{new Date(declaration.createdAt).toLocaleDateString("fr-FR")}. Elle a
+					été mise à jour le{" "}
+					{new Date(declaration.updatedAt).toLocaleDateString("fr-FR")}.
 				</p>
 				<h3>Environnement de test</h3>
 				<p>

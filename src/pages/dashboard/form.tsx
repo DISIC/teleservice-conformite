@@ -16,7 +16,6 @@ import {
 import { api } from "~/utils/api";
 import { auth } from "~/utils/auth";
 import type { Entity } from "~/payload/payload-types";
-import type { kindOptions } from "~/payload/collections/Entity";
 import type { appKindOptions } from "~/payload/collections/Declaration";
 
 export default function FormPage({ entity }: { entity: Entity | null }) {
@@ -35,6 +34,12 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	);
 
 	declarationMultiStepFormOptions.defaultValues.section = "initialDeclaration";
+
+	const onClickCancel = () => {
+		if (section === "general")
+			form.setFieldValue("section", "initialDeclaration");
+		else router.back();
+	};
 
 	const addDeclaration = async (generalData: {
 		name: string;
@@ -97,9 +102,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						<div className={classes.actionButtonsContainer}>
 							<form.CancelButton
 								label="Retour"
-								onClick={() => {
-									router.back();
-								}}
+								onClick={onClickCancel}
 								priority="tertiary"
 							/>
 							<form.SubscribeButton

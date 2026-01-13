@@ -36,7 +36,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					<p className={classes.cardLabel}>Dernière mise à jour</p>
 					<p className={classes.cardValue}>
 						{declaration?.updatedAt
-							? new Date(declaration.updatedAt).toLocaleDateString()
+							? new Date(declaration.updatedAt).toLocaleDateString("fr-FR")
 							: "N/A"}
 					</p>
 					{wasUpdated && (
