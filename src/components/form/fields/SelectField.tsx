@@ -1,12 +1,15 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Select } from "@codegouvfr/react-dsfr/SelectNext";
+
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 interface SelectFieldProps extends DefaultFieldProps {
 	options: Array<{
 		label: string;
 		value: string;
 	}>;
+	defaultStateMessage?: string;
 }
 
 export function SelectField({
@@ -14,10 +17,12 @@ export function SelectField({
 	options,
 	disabled,
 	className,
+	readOnly = false,
+	defaultStateMessage = "",
 }: SelectFieldProps) {
 	const field = useFieldContext<string>();
 
-	return (
+	return !readOnly ? (
 		<Select
 			label={label}
 			nativeSelectProps={{
@@ -29,9 +34,18 @@ export function SelectField({
 			disabled={disabled}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={
-				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
+				field.state.meta.errors.map((error) => error.message).join(",") ??
+				defaultStateMessage
 			}
 			className={className}
+		/>
+	) : (
+		<ReadOnlyField
+			label={label}
+			value={
+				options.find((option) => option.value === field.state.value)?.label ??
+				""
+			}
 		/>
 	);
 }

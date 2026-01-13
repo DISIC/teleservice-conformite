@@ -1,26 +1,41 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 
-interface CheckboxFieldProps extends DefaultFieldProps {
+import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { ReadOnlyField } from "./ReadOnlyField";
+
+interface RadioFieldProps extends DefaultFieldProps {
 	options: Array<{
 		label: string;
-		value: string;
+		value: string | boolean;
+		description?: string;
 	}>;
+	onChange?: (value: string | boolean) => void;
 }
 
-export function RadioField({ label, options }: CheckboxFieldProps) {
-	const field = useFieldContext<string>();
+export function RadioField({
+	label,
+	description,
+	options,
+	readOnly,
+	onChange,
+}: RadioFieldProps) {
+	const field = useFieldContext<string | boolean>();
 
-	return (
+	return !readOnly ? (
 		<RadioButtons
 			legend={label}
+			hintText={description}
 			name={field.name}
-			options={options.map(({ label, value }) => ({
+			options={options.map(({ label, value, description }) => ({
 				label,
+				hintText: description,
 				nativeInputProps: {
 					checked: field.state.value === value,
-					onChange: () => field.setValue(value),
+					onChange: () => {
+						field.setValue(value);
+						onChange?.(value);
+					},
 				},
 			}))}
 			className={fr.cx("fr-mb-0")}
@@ -28,6 +43,13 @@ export function RadioField({ label, options }: CheckboxFieldProps) {
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={
 				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
+			}
+		/>
+	) : (
+		<ReadOnlyField
+			label={label}
+			value={
+				options.find((opt) => field.state.value === opt.value)?.label ?? ""
 			}
 		/>
 	);

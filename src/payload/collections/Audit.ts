@@ -1,5 +1,4 @@
 import type { CollectionConfig } from "payload";
-import { getCalcRateFromTwoCriterion } from "../hooks";
 
 export const rgaaVersionOptions = [
 	{
@@ -12,11 +11,26 @@ export const rgaaVersionOptions = [
 	},
 ] as const;
 
+export const toolOptions = [
+	{ label: "Wave", value: "wave" },
+	{ label: "NVDA", value: "nvda" },
+	{ label: "Web Developer Toolbar", value: "web_developer_toolbar" },
+	{ label: "HeadingsMap", value: "headings_map" },
+	{ label: "JAWS", value: "jaws" },
+	{ label: "Assistant RGAA", value: "assistant_rgaa" },
+	{ label: "Tanaguru", value: "tanaguru" },
+]
+
+export const testEnvironmentOptions = [
+	{ label: "NVDA (Firefox)", value: "nvda_firefox" },
+	{ label: "JAWS (Firefox)", value: "jaws_firefox" },
+	{ label: "VoiceOver (Safari)", value: "voiceover_safari" },
+	{ label: "ZoomText (Windows ou Mac OSX)", value: "zoomtext_windows_mac" },
+	{ label: "Dragon Naturally Speaking (Windows ou Mac OSX)", value: "dragon_naturally_speaking_windows_mac" },
+]
+
 export const Audits: CollectionConfig = {
 	slug: "audits",
-	admin: {
-		defaultColumns: ["id", "date", "rate", "declaration"],
-	},
 	labels: {
 		singular: {
 			fr: "Audit",
@@ -27,19 +41,9 @@ export const Audits: CollectionConfig = {
 	},
 	fields: [
 		{
-			name: "declaration",
-			type: "relationship",
-			relationTo: "declarations",
-			required: true,
-			admin: {
-				position: "sidebar",
-			},
-		},
-		{
 			name: "date",
 			type: "date",
-			label: { fr: "Date de l'audit" },
-			required: true,
+			label: { fr: "Date de realisation de l'audit" },
 			admin: {
 				position: "sidebar",
 				date: {
@@ -52,38 +56,108 @@ export const Audits: CollectionConfig = {
 			type: "select",
 			label: { fr: "Version RGAA" },
 			options: [...rgaaVersionOptions],
-			required: true,
+			index: true,
 		},
 		{
-			name: "conductedBy",
+			name: "realisedBy",
 			type: "text",
-			label: { fr: "Réalisé par" },
-			required: true,
-		},
-		{
-			type: "row",
-			fields: [
-				{
-					name: "compliant_criterion",
-					type: "number",
-					label: { fr: "Critères conformes" },
-					required: true,
-					min: 0,
-				},
-				{
-					name: "non_compliant_criterion",
-					type: "number",
-					label: { fr: "Critères non conformes" },
-					required: true,
-					min: 0,
-				},
-			],
+			label: { fr: "Entite ou personne ayant realise l'audit" },
 		},
 		{
 			name: "rate",
 			type: "number",
 			label: { fr: "Taux de conformité" },
-			required: true,
+		},
+		{
+			name: "compliantElements",
+			type: "array",
+			label: { fr: "Échantillon contrôlé" },
+			fields: [
+				{
+					name: "name",
+					required: true,
+					type: "text",
+					label: { fr: "Nom de la page" },
+				},
+				{
+					name: "url",
+					type: "text",
+					label: { fr: "URL de la page" },
+				},
+			],
+		},
+		{
+			name: "nonCompliantElements",
+			type: "text",
+			label: { fr: "Éléments non conformes" },
+		},
+		{
+			name: "disproportionnedCharge",
+			type: "array",
+			label: { fr: "Éléments avec dérogation pour charge disproportionnée" },
+			fields: [
+				{
+					name: "name",
+					type: "text",
+					label: { fr: "Nom de l’élément" },
+					required: true,
+				},
+				{
+					name: "reason",
+					type: "text",
+					label: { fr: "Raison de la dérogation" },
+					required: true,
+				},
+				{
+					name: "duration",
+					type: "text",
+					label: { fr: "Durée de la dérogation (facultatif)" },
+					required: true,
+				},
+				{
+					name: "alternative",
+					type: "text",
+					label: { fr: "Alternative accessible proposée" },
+					required: true,
+				},
+			],
+		},
+		{
+			name: "exemption",
+			type: "text",
+			label: { fr: "Éléments non soumis à l’obligation d’accessibilité" },
+		},
+		{
+			name: "auditReport",
+			type: "text",
+			label: { fr: "Rapport d'audit" },
+		},
+		{
+			name: "auditGrid",
+			type: "text",
+			label: { fr: "Grille d'audit" },
+		},
+		{
+			name: "toolsUsed",
+			type: "select",
+			hasMany: true,
+			label: { fr: "Outils utilisés" },
+			options: [...toolOptions],
+			index: true,
+		},
+		{
+			name: "testEnvironments",
+			type: "select",
+			hasMany: true,
+			label: { fr: "Environnements de test" },
+			options: [...testEnvironmentOptions],
+			index: true,
+		},
+		{
+			name: "declaration",
+			type: "relationship",
+			relationTo: "declarations",
+			label: { fr: "déclaration associée" },
 		},
 	],
 };

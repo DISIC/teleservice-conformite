@@ -1,22 +1,24 @@
 import { Input } from "@codegouvfr/react-dsfr/Input";
+
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 interface NumberFieldProps extends DefaultFieldProps {
 	min?: number;
 	max?: number;
 }
 
-export function NumberField({ label }: NumberFieldProps) {
+export function NumberField({ label, readOnly = false }: NumberFieldProps) {
 	const field = useFieldContext<number>();
 
-	return (
+	return !readOnly ? (
 		<Input
 			label={label}
 			nativeInputProps={{
 				type: "number",
 				inputMode: "numeric",
 				pattern: "[0-9]*",
-				min: 1,
+				min: 0,
 				name: field.name,
 				value: field.state.value,
 				onChange: (e) => field.setValue(e.target.valueAsNumber),
@@ -26,5 +28,7 @@ export function NumberField({ label }: NumberFieldProps) {
 				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
 			}
 		/>
+	) : (
+		<ReadOnlyField label={label} value={`${field.state.value}`} />
 	);
 }

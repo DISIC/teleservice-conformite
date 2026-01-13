@@ -1,18 +1,23 @@
 import type { CollectionConfig } from "payload";
 
 export const appKindOptions = [
-	{
-		label: "Site web",
-		value: "website",
-	},
-	{
-		label: "Application mobile",
-		value: "mobile_app",
-	},
-	{
-		label: "Autre",
-		value: "other",
-	},
+  {
+    label: "Site web",
+    value: "website",
+		description: "Site internet, intranet, extranet, application métier, ...",
+  },
+  {
+    label: "Application mobile iOs",
+    value: "mobile_app_ios",
+  },
+  {
+    label: "Application mobile Android",
+    value: "mobile_app_android",
+  },
+  {
+    label: "Autre",
+    value: "other",
+  },
 ] as const;
 
 export const Declarations: CollectionConfig = {
@@ -20,6 +25,41 @@ export const Declarations: CollectionConfig = {
 	versions: true,
 	admin: {
 		useAsTitle: "name",
+	},
+	hooks: {
+		beforeDelete: [
+			async ({ req, id }) => {
+				const payload = req.payload;
+				const declarationId = id;
+
+				await payload.delete({
+					collection: "audits",
+					where: {
+						declaration: {
+							equals: declarationId,
+						},
+					},
+				});
+
+				await payload.delete({
+					collection: "action-plans",
+					where: {
+						declaration: {
+							equals: declarationId,
+						},
+					},
+				});
+
+				await payload.delete({
+					collection: "contacts",
+					where: {
+						declaration: {
+							equals: declarationId,
+						},
+					},
+				});
+			},
+		],
 	},
 	labels: {
 		singular: {
@@ -33,56 +73,29 @@ export const Declarations: CollectionConfig = {
 		{
 			name: "name",
 			type: "text",
-			label: { fr: "Nom" },
-			required: true,
-		},
-		{
-			name: "app_kind",
-			type: "select",
-			label: { fr: "Type d'application" },
-			required: true,
-			options: [...appKindOptions],
-		},
-		{
-			name: "url",
-			type: "text",
-			label: { fr: "URL" },
-			admin: {
-				condition: (_, siblingData) => siblingData?.app_kind === "website",
-			},
+			label: { fr: "Nom de la déclaration" },
 		},
 		{
 			name: "status",
 			type: "select",
 			label: { fr: "Statut" },
+			defaultValue: "unpublished",
 			options: [
 				{
-					label: "En attente",
-					value: "pending",
+					label: "Publié",
+					value: "published",
 				},
 
 				{
-					label: "Terminé",
-					value: "completed",
+					label: "Non publié",
+					value: "unpublished",
 				},
 			],
-			required: true,
-		},
-		{
-			name: "verified",
-			type: "checkbox",
-			label: { fr: "Vérifié" },
-			defaultValue: false,
-			admin: {
-				readOnly: true,
-				position: "sidebar",
-			},
 		},
 		{
 			name: "published_at",
 			type: "date",
 			label: { fr: "Date de publication" },
-			required: true,
 			admin: {
 				position: "sidebar",
 				date: {
@@ -98,33 +111,52 @@ export const Declarations: CollectionConfig = {
 			admin: {
 				position: "sidebar",
 			},
-			required: true,
 		},
 		{
-			name: "domain",
+			name: "entity",
 			type: "relationship",
-			relationTo: "domains",
-			label: { fr: "Domaine" },
-			admin: {
-				position: "sidebar",
-			},
-			required: true,
+			relationTo: "entities",
+			label: { fr: "Administration" },
 		},
 		{
-			name: "access_right",
+			name: "app_kind",
+			type: "text",
+			label: { fr: "Type de produit numérique" },
+		},
+		{
+			name: "url",
+			type: "text",
+			label: { fr: "URL du service numérique" },
+		},
+		{
+			name: "technologies",
+			type: "array",
+			label: { fr: "Technologies utilisées" },
+			fields: [
+				{
+					name: "technology_name",
+					type: "text",
+					label: { fr: "Nom de la technologie" },
+				},
+			],
+		},
+		{
+			name: "audit",
 			type: "relationship",
-			relationTo: "access-rights",
-			label: { fr: "Droit d'accès" },
-			admin: {
-				position: "sidebar",
-			},
+			relationTo: "audits",
+			label: { fr: "Audit associé" },
 		},
 		{
-			name: "audits",
-			type: "join",
-			collection: "audits",
-			on: "declaration",
-			label: { fr: "Audits" },
+			name: "actionPlan",
+			type: "relationship",
+			relationTo: "action-plans",
+			label: { fr: "Plan d'actions" },
+		},
+		{
+			name: "contact",
+			type: "relationship",
+			relationTo: "contacts",
+			label: { fr: "Contact associé" },
 		},
 	],
 };
