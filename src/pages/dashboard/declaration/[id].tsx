@@ -46,6 +46,12 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 		},
 	);
 
+	const declarationNotComplete =
+		!declaration.audit ||
+		!declaration.contact ||
+		!declaration.entity ||
+		!declaration.actionPlan;
+
 	const onDelete = async () => {
 		deleteModal.open();
 	};
@@ -85,10 +91,19 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						</Badge>
 					</div>
 					<div className={classes.buttonsContainer}>
-						<Button priority="tertiary" iconId="fr-icon-eye-fill">
+						<Button
+							priority="tertiary"
+							iconId="fr-icon-eye-fill"
+							onClick={() => router.push(`${declaration.id}/overview`)}
+							disabled={declarationNotComplete}
+						>
 							Voir la declaration
 						</Button>
-						<Button priority="tertiary" iconId="fr-icon-eye-fill">
+						<Button
+							priority="tertiary"
+							iconId="fr-icon-eye-fill"
+							disabled={declarationNotComplete}
+						>
 							Copier le lien
 						</Button>
 						<Button
