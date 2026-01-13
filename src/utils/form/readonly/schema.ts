@@ -12,9 +12,7 @@ export const declarationGeneral = z.object({
       .min(1, { message: "Le nom de l'organisation est requis" }),
     kind: z.enum(appKindOptions.map((option) => option.value)),
     name: z.string().min(1, { message: "Le nom de l'application est requis" }),
-    url: z.url({ error: "L'URL n'est pas valide" }).min(1, {
-      message: "L'URL est requise",
-    }),
+    url: z.union([z.url({ error: "L'URL n'est pas valide" }), z.literal("")]),
     domain: z
       .string()
       .meta({ kind: "select" })
