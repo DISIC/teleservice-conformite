@@ -139,7 +139,7 @@ interface Params extends ParsedUrlQuery {
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const payload = await getPayload({ config });
 	const authSession = await auth.api.getSession({
-		headers: context.req.headers,
+		headers: new Headers(context.req.headers as HeadersInit),
 	});
 
 	if (!authSession) {

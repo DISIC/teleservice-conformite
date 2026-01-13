@@ -57,7 +57,7 @@ export const createTRPCContext = async (_opts: CreateNextContextOptions) => {
 	});
 
 	// Retrieve Better Auth session from incoming request headers
-	const session = await auth.api.getSession({ headers: _opts.req.headers });
+	const session = await auth.api.getSession({ headers: new Headers(_opts.req.headers as HeadersInit) });
 
 	return {
 		payload,
