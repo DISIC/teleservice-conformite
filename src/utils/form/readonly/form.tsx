@@ -132,8 +132,9 @@ export const DeclarationSchema = withForm({
 				</form.AppField>
 				<form.AppField name="schema.currentSchemaFile">
 					{(field) => (
-						<field.UploadField
+						<field.TextField
 							label="Fichier du schéma annuel"
+							kind="url"
 							readOnly={readOnly}
 						/>
 					)}

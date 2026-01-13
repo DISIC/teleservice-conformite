@@ -82,7 +82,7 @@ export const declarationSchema = z.object({
     annualSchemaDone: z.boolean(),
     currentYearSchemaDone: z.boolean(),
     currentSchemaUrl: z.url().optional(),
-    currentSchemaFile: z.file().optional(),
+    currentSchemaFile: z.url().optional(),
   }),
 });
 
@@ -92,8 +92,8 @@ export const declarationSchemaDefaultValues: ZSchema = {
   schema: {
     annualSchemaDone: false,
     currentYearSchemaDone: false,
-    currentSchemaUrl: undefined,
-    currentSchemaFile: undefined,
+    currentSchemaUrl: "",
+    currentSchemaFile: "",
   },
 };
 

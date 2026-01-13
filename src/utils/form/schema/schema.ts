@@ -10,7 +10,7 @@ export const schema = z.object({
   schemaDone: z.boolean(),
   currentYearSchemaDone: z.boolean(),
   annualSchemaLink: z.url().optional(),
-  annualSchemaFile: z.file().optional(),
+  annualSchemaFile: z.url().optional(),
 });
 
 export type ZSchema = z.infer<typeof schema>;

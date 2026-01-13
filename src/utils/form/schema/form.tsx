@@ -48,9 +48,9 @@ export const CurrentYearSchemaLinksForm = withForm({
 								</form.AppField>
 								<form.AppField name="annualSchemaFile">
 									{(field) => (
-										<field.UploadField
+										<field.TextField
 											label="Fichier du schéma annuel"
-											description="Taille maximale : xx Mo. Formats supportés : jpg, png, pdf. Plusieurs fichiers possibles."
+											kind="url"
 										/>
 									)}
 								</form.AppField>
