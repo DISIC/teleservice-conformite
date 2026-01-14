@@ -92,21 +92,30 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 					</div>
 					<div className={classes.buttonsContainer}>
 						<Button
-							priority="tertiary"
-							iconId="fr-icon-eye-fill"
+							iconId="fr-icon-upload-line"
 							onClick={() => router.push(`${declaration.id}/overview`)}
 							disabled={declarationNotComplete}
 						>
-							Voir la declaration
+							Publier
 						</Button>
-
-						<Button
-							priority="tertiary"
-							iconId="fr-icon-eye-fill"
-							disabled={declarationNotComplete}
-						>
-							Copier le lien
-						</Button>
+						{declaration?.status === "published" && (
+							<>
+								<Button
+									priority="tertiary"
+									iconId="fr-icon-eye-fill"
+									disabled={declarationNotComplete}
+								>
+									Voir la declaration
+								</Button>
+								<Button
+									priority="tertiary"
+									iconId="fr-icon-eye-fill"
+									disabled={declarationNotComplete}
+								>
+									Copier le lien
+								</Button>
+							</>
+						)}
 						<Button
 							iconId="fr-icon-delete-fill"
 							priority="tertiary"
