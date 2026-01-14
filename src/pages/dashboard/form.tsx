@@ -69,7 +69,9 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		...declarationMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (value.section === "initialDeclaration") {
-				formApi.setFieldValue("section", "general");
+				!value.initialDeclaration.isNewDeclaration
+					? formApi.setFieldValue("section", "general")
+					: null;
 			} else {
 				await addDeclaration(value.general);
 			}
