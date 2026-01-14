@@ -20,7 +20,7 @@ interface MembresProps {
 }
 
 export default function Membres({ declaration }: MembresProps) {
-	const [value, setValue] = useState<"reader" | "admin">("reader");
+	const [value, setValue] = useState<"reader" | "admin">("admin");
 	const { classes } = useStyles();
 	const { name, email } = declaration?.created_by || {};
 
@@ -114,6 +114,7 @@ export default function Membres({ declaration }: MembresProps) {
 										value: "reader",
 										checked: value === "reader",
 										onChange: () => setValue("reader"),
+										disabled: true,
 									},
 								},
 								{
