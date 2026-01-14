@@ -79,7 +79,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 				</section>
 				<section id="header" className={classes.headerSection}>
 					<div className={classes.header}>
-						<h1>{`${declaration?.name} - ${declaration?.app_kind}`}</h1>
+						<h1>{declaration?.name}</h1>
 						<Badge
 							noIcon={true}
 							small={true}
@@ -99,6 +99,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						>
 							Voir la declaration
 						</Button>
+
 						<Button
 							priority="tertiary"
 							iconId="fr-icon-eye-fill"

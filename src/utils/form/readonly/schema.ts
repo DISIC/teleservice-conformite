@@ -2,7 +2,6 @@ import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import { appKindOptions } from "~/payload/collections/Declaration";
-import type { disproportionnedCharge } from "../audit/schema";
 
 export const declarationGeneral = z.object({
   general: z.object({

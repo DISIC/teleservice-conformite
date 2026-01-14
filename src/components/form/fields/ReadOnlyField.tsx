@@ -66,5 +66,6 @@ const useStyles = tss.withName(ReadOnlyField.name).create({
 		lineHeight: "1.5rem",
 		fontFamily: "Marianne",
 		color: fr.colors.decisions.text.label.grey.default,
+		whiteSpace: "pre-wrap",
 	},
 });
