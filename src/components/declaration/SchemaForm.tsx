@@ -1,30 +1,17 @@
 import { useRouter } from "next/router";
 
 import { fr } from "@codegouvfr/react-dsfr";
-import { useStore } from "@tanstack/react-form";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
-import {
-	SchemaForm as InitialSchemaForm,
-	CurrentYearSchemaLinksForm,
-} from "~/utils/form/schema/form";
+import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
 import { schemaFormOptions } from "~/utils/form/schema/schema";
 import { api } from "~/utils/api";
-
-type Steps<T> = {
-	slug: T;
-	title: string;
-};
 
 export default function SchemaForm({
 	declarationId,
 }: { declarationId: number }) {
 	const { classes } = useStyles();
 	const router = useRouter();
-
-	const sections = ["schema", "currentYearSchemaLinks"] as const;
-
-	type Section = (typeof sections)[number];
 
 	const { mutateAsync: createSchema } = api.schema.create.useMutation({
 		onSuccess: async () => {
@@ -35,39 +22,24 @@ export default function SchemaForm({
 		},
 	});
 
-	const goToPreviousSection = (currentSection: Section): Section | null => {
-		const currentIndex = sections.indexOf(currentSection);
-		if (currentIndex > 0) {
-			return sections[currentIndex - 1] ?? null;
-		}
-		return null;
-	};
-
-	const goToNextSection = (currentSection: Section): Section | null => {
-		const currentIndex = sections.indexOf(currentSection);
-		if (currentIndex < sections.length - 1) {
-			return sections[currentIndex + 1] ?? null;
-		}
-		return null;
-	};
-
-	const onClickCancel = () => {
-		if (section === "schema") {
-			router.push(`/dashboard/declaration/${declarationId}`);
-		} else {
-			const previousSection = goToPreviousSection(section);
-			if (previousSection) {
-				form.setFieldValue("section", previousSection);
-			}
-		}
-	};
+	const onClickCancel = () =>
+		router.push(`/dashboard/declaration/${declarationId}`);
 
 	const addSchema = async ({
-		annualSchemaLink,
+		currentYearSchemaUrl,
+		previousYearsSchemaUrl,
 		declarationId,
-	}: { annualSchemaLink: string; declarationId: number }) => {
+	}: {
+		currentYearSchemaUrl: string;
+		previousYearsSchemaUrl: string;
+		declarationId: number;
+	}) => {
 		try {
-			createSchema({ annualSchemaLink, declarationId });
+			createSchema({
+				currentYearSchemaUrl,
+				previousYearsSchemaUrl,
+				declarationId,
+			});
 		} catch (error) {
 			console.error("Error adding schema:", error);
 		}
@@ -76,23 +48,17 @@ export default function SchemaForm({
 	const form = useAppForm({
 		...schemaFormOptions,
 		onSubmit: async ({ value, formApi }) => {
-			if (value.section === "currentYearSchemaLinks") {
-				await addSchema({
-					annualSchemaLink: value?.annualSchemaLink ?? "",
-					declarationId,
-				});
-			} else {
-				const nextSection = goToNextSection(value.section as Section);
-				if (nextSection) formApi.setFieldValue("section", nextSection);
-			}
+			await addSchema({
+				currentYearSchemaUrl: value.currentYearSchemaUrl,
+				previousYearsSchemaUrl: value.previousYearsSchemaUrl,
+				declarationId,
+			});
 		},
 	});
 
-	const section = useStore(form.store, (state) => state.values.section);
-
 	return (
 		<div className={classes.main}>
-			<h2>Plans d'actions</h2>
+			<h2>Schéma et plans d'actions</h2>
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
@@ -101,10 +67,7 @@ export default function SchemaForm({
 			>
 				<div className={classes.formWrapper}>
 					<p>Tous les champs sont obligatoires sauf précision contraire</p>
-					{section === "schema" && <InitialSchemaForm form={form} />}
-					{section === "currentYearSchemaLinks" && (
-						<CurrentYearSchemaLinksForm form={form} />
-					)}
+					<DeclarationSchemaForm form={form} />
 				</div>
 				<form.AppForm>
 					<div className={classes.actionButtonsContainer}>
@@ -133,7 +96,6 @@ const useStyles = tss.withName(SchemaForm.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
-		// backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},

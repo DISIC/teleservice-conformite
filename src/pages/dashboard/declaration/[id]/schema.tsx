@@ -4,39 +4,86 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { useRouter } from "next/router";
 
-import type { Declaration } from "~/payload/payload-types";
+import type { DeclarationWithPopulated } from "~/utils/payload-helper";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
-import { schemaFormOptions } from "~/utils/form/schema/schema";
+import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import SchemaForm from "~/components/declaration/SchemaForm";
 import { getDeclarationById } from "~/utils/payload-helper";
 import { DeclarationSchema } from "~/utils/form/readonly/form";
+import { api } from "~/utils/api";
 
 export default function SchemaPage({
 	declaration,
-}: { declaration: Declaration }) {
+}: { declaration: DeclarationWithPopulated }) {
+	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
+	const { id, currentYearSchemaUrl, previousYearsSchemaUrl } =
+		declaration?.actionPlan || {};
+
+	const { mutateAsync: updateSchema } = api.schema.update.useMutation({
+		onSuccess: async () => {
+			router.reload();
+		},
+		onError: async (error) => {
+			console.error(
+				`Error updating contact for declaration with id ${declaration?.id}:`,
+				error,
+			);
+		},
+	});
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
 	};
 
-	// schemaFormOptions.defaultValues = {
-	// annualSchemaDone: true,
-	// currentYearSchemaDone: true,
-	// currentSchemaUrl: "https://www.example.com/schema.pdf",
-	// currentSchemaFile: new File(["Schema content"], "schema.pdf", {
-	// 	type: "application/pdf",
-	// }),
-	// };
+	readOnlyFormOptions.defaultValues.schema = {
+		hasDoneCurrentYearSchema: !!currentYearSchemaUrl,
+		hasDonePreviousYearsSchema: !!previousYearsSchemaUrl,
+		currentYearSchemaUrl: currentYearSchemaUrl || "",
+		previousYearsSchemaUrl: previousYearsSchemaUrl || "",
+	};
+
+	const updateDeclarationSchema = async ({
+		currentYearSchemaUrl,
+		previousYearsSchemaUrl,
+	}: {
+		currentYearSchemaUrl: string;
+		previousYearsSchemaUrl: string;
+	}) => {
+		try {
+			updateSchema({
+				schemaId: id ?? -1,
+				currentYearSchemaUrl,
+				previousYearsSchemaUrl,
+			});
+		} catch (error) {
+			console.error("Error updating schema:", error);
+		}
+	};
 
 	const form = useAppForm({
-		...schemaFormOptions,
+		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
-			alert(JSON.stringify(value, null, 2));
+			const {
+				hasDoneCurrentYearSchema,
+				currentYearSchemaUrl = "",
+				hasDonePreviousYearsSchema,
+				previousYearsSchemaUrl = "",
+			} = value.schema;
+
+			updateDeclarationSchema({
+				currentYearSchemaUrl: hasDoneCurrentYearSchema
+					? currentYearSchemaUrl
+					: "",
+				previousYearsSchemaUrl: hasDonePreviousYearsSchema
+					? previousYearsSchemaUrl
+					: "",
+			});
 		},
 	});
 
@@ -48,7 +95,7 @@ export default function SchemaPage({
 		<section id="schema" className={classes.main}>
 			<div>
 				<div>
-					<h1>Plans d'actions</h1>
+					<h1>Schéma et plans d'actions</h1>
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire

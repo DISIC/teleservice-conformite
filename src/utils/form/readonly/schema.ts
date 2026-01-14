@@ -77,22 +77,23 @@ export const declarationAuditDefaultValues: ZDeclarationAudit = {
 };
 
 export const declarationSchema = z.object({
-  schema: z.object({
-    annualSchemaDone: z.boolean(),
-    currentYearSchemaDone: z.boolean(),
-    currentSchemaUrl: z.url().optional(),
-    currentSchemaFile: z.url().optional(),
-  }),
+  schema: z
+    .object({
+      hasDoneCurrentYearSchema: z.boolean(),
+      currentYearSchemaUrl: z.union([z.url(), z.literal("")]),
+      hasDonePreviousYearsSchema: z.boolean(),
+      previousYearsSchemaUrl: z.union([z.url(), z.literal("")]),
+    }),
 });
 
 export type ZSchema = z.infer<typeof declarationSchema>;
 
 export const declarationSchemaDefaultValues: ZSchema = {
   schema: {
-    annualSchemaDone: false,
-    currentYearSchemaDone: false,
-    currentSchemaUrl: "",
-    currentSchemaFile: "",
+    hasDoneCurrentYearSchema: false,
+    currentYearSchemaUrl: "",
+    hasDonePreviousYearsSchema: false,
+    previousYearsSchemaUrl: "",
   },
 };
 

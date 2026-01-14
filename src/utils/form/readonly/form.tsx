@@ -15,6 +15,7 @@ import { kindOptions } from "~/payload/collections/Entity";
 import { withForm } from "../context";
 import { readOnlyFormOptions } from "./schema";
 import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
+import { RadioField } from "~/components/form/fields/RadioField";
 
 const envKindOptions = [
 	{ label: "Mobile", value: "mobile" },
@@ -97,46 +98,63 @@ export const DeclarationSchema = withForm({
 	render: function Render({ form, readOnly }) {
 		return (
 			<>
-				<form.AppField name="schema.annualSchemaDone">
+				<form.AppField name="schema.hasDoneCurrentYearSchema">
 					{(field) => (
-						<field.RadioField
-							label="Réalisation d’un schéma pluriannuel entre 2023 et 2025"
-							readOnly={readOnly}
-							options={[
-								{ label: "Oui", value: true },
-								{ label: "Non", value: false },
-							]}
-						/>
+						<>
+							<field.RadioField
+								label="Avez-vous réalisé un schéma annuel pour l’année en cours ?"
+								description="Le schéma annuel, ou plan d’action, détaille les actions prévues sur l’année pour améliorer l’accessibilité de vos services numériques."
+								options={[
+									{ label: "Oui", value: true },
+									{ label: "Non", value: false },
+								]}
+								readOnly={readOnly}
+							/>
+							{field.state.value && (
+								<form.AppField name="schema.currentYearSchemaUrl">
+									{(field) => (
+										<field.TextField
+											label="Lien URL du schéma annuel à jour"
+											description={
+												<>
+													Si vous êtes en cours de création de ce schéma,
+													laissez le champ vide et revenez modifier votre
+													déclaration une fois le schéma terminé. <br /> Format
+													attendu : https://www.example.fr
+												</>
+											}
+											readOnly={readOnly}
+										/>
+									)}
+								</form.AppField>
+							)}
+						</>
 					)}
 				</form.AppField>
-				<form.AppField name="schema.currentYearSchemaDone">
+				<form.AppField name="schema.hasDonePreviousYearsSchema">
 					{(field) => (
-						<field.RadioField
-							label="Réalisation d’un schéma annuel - année en cours"
-							readOnly={readOnly}
-							options={[
-								{ label: "Oui", value: true },
-								{ label: "Non", value: false },
-							]}
-						/>
-					)}
-				</form.AppField>
-				<form.AppField name="schema.currentSchemaUrl">
-					{(field) => (
-						<field.TextField
-							kind="url"
-							label="Lien du schéma annuel"
-							readOnly={readOnly}
-						/>
-					)}
-				</form.AppField>
-				<form.AppField name="schema.currentSchemaFile">
-					{(field) => (
-						<field.TextField
-							label="Fichier du schéma annuel"
-							kind="url"
-							readOnly={readOnly}
-						/>
+						<>
+							<field.RadioField
+								label="Avez-vous réalisé un schéma annuel pour les années précédentes ?"
+								description="Le bilan des actions liste les actions réalisées pendant les années précédentes pour améliorer l’accessibilité de vos services numériques."
+								options={[
+									{ label: "Oui", value: true },
+									{ label: "Non", value: false },
+								]}
+								readOnly={readOnly}
+							/>
+							{field.state.value && (
+								<form.AppField name="schema.previousYearsSchemaUrl">
+									{(field) => (
+										<field.TextField
+											label="Lien URL du bilan des actions"
+											description="Format attendu : https://www.example.fr"
+											readOnly={readOnly}
+										/>
+									)}
+								</form.AppField>
+							)}
+						</>
 					)}
 				</form.AppField>
 			</>

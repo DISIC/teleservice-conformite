@@ -8,9 +8,14 @@ export const ActionPlans: CollectionConfig = {
   },
   fields: [
     {
-      name: "annualSchemaLink",
+      name: "currentYearSchemaUrl",
       type: "text",
       label: { fr: "Lien du schéma annuel" },
+    },
+    {
+      name: "previousYearsSchemaUrl",
+      type: "text",
+      label: { fr: "Lien du bilan des actions" },
     },
     {
       name: "declaration",

@@ -8,12 +8,13 @@ export const schemaRouter = createTRPCRouter({
   create: userProtectedProcedure
     .input(
       z.object({
-        annualSchemaLink: z.string().optional(),
+        currentYearSchemaUrl: z.union([z.url(), z.literal("")]),
+        previousYearsSchemaUrl: z.union([z.url(), z.literal("")]),
         declarationId: z.number(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { annualSchemaLink, declarationId } = input;
+      const { currentYearSchemaUrl, previousYearsSchemaUrl, declarationId } = input;
 
       if (!ctx.session?.user?.id) {
         throw new TRPCError({
@@ -25,7 +26,8 @@ export const schemaRouter = createTRPCRouter({
       const schema = await ctx.payload.create({
         collection: "action-plans",
         data: {
-          annualSchemaLink,
+          currentYearSchemaUrl,
+          previousYearsSchemaUrl,
           declaration: declarationId,
         },
       });
@@ -33,5 +35,34 @@ export const schemaRouter = createTRPCRouter({
       await linkToDeclaration(ctx.payload, declarationId, schema.id, "actionPlan");
 
       return { data: schema.id };
+    }),
+  update: userProtectedProcedure
+    .input(
+      z.object({
+        currentYearSchemaUrl: z.union([z.url(), z.literal("")]),
+        previousYearsSchemaUrl: z.union([z.url(), z.literal("")]),
+        schemaId: z.number(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { currentYearSchemaUrl, previousYearsSchemaUrl, schemaId  } = input;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to update a schema",
+        });
+      }
+
+      const updatedSchema = await ctx.payload.update({
+        collection: "action-plans",
+        id: schemaId,
+        data: {
+          currentYearSchemaUrl,
+          previousYearsSchemaUrl,
+        },
+      });
+
+      return { data: updatedSchema };
     }),
 });
