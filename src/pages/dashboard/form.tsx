@@ -122,7 +122,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 const useStyles = tss.withName(FormPage.name).create({
 	main: {
-		marginTop: fr.spacing("10v"),
+		marginBlock: fr.spacing("6w"),
 	},
 	formWrapper: {
 		display: "flex",

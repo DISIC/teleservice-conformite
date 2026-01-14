@@ -14,6 +14,7 @@ import {
 } from "~/utils/form/audit/form";
 import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
 import { api } from "~/utils/api";
+import type { DeclarationWithPopulated } from "~/utils/payload-helper";
 
 type Steps<T> = {
 	slug: T;
@@ -21,18 +22,23 @@ type Steps<T> = {
 };
 
 export default function AuditMultiStepForm({
-	declarationId,
-}: { declarationId: number }) {
+	declaration,
+}: { declaration: DeclarationWithPopulated }) {
 	const { classes } = useStyles();
 	const router = useRouter();
 
 	const { mutateAsync: createAudit } = api.audit.create.useMutation({
 		onSuccess: async () => {
-			router.push(`/dashboard/declaration/${declarationId}`);
+			if (declaration?.contact && declaration.actionPlan) {
+				router.push(`/dashboard/declaration/${declaration.id}/overview`);
+				return;
+			}
+
+			router.push(`/dashboard/declaration/${declaration?.id}`);
 		},
 		onError: (error) => {
 			console.error(
-				`Error adding audit for declarationId ${declarationId}:`,
+				`Error adding audit for declarationId ${declaration?.id}:`,
 				error,
 			);
 		},
@@ -66,7 +72,7 @@ export default function AuditMultiStepForm({
 
 	const onClickCancel = () => {
 		if (section === "auditDate") {
-			router.push(`/dashboard/declaration/${declarationId}`);
+			router.push(`/dashboard/declaration/${declaration?.id}`);
 			return;
 		}
 
@@ -95,7 +101,7 @@ export default function AuditMultiStepForm({
 				...auditData,
 			};
 
-			await createAudit({ ...audit, declarationId });
+			await createAudit({ ...audit, declarationId: declaration.id });
 		} catch (error) {
 			console.error("Error adding audit:", error);
 		}
@@ -105,7 +111,7 @@ export default function AuditMultiStepForm({
 		...auditMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (value.section === "files") {
-				await addAudit(value, declarationId);
+				await addAudit(value, declaration.id);
 			} else {
 				const nextSection = goToNextSection(value.section as Section);
 				if (nextSection) formApi.setFieldValue("section", nextSection);
@@ -170,7 +176,7 @@ export default function AuditMultiStepForm({
 
 const useStyles = tss.withName(AuditMultiStepForm.name).create({
 	main: {
-		marginTop: fr.spacing("6v"),
+		marginBlock: fr.spacing("6w"),
 	},
 	formWrapper: {
 		display: "flex",

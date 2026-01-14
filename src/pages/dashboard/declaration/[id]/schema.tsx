@@ -15,6 +15,7 @@ import SchemaForm from "~/components/declaration/SchemaForm";
 import { getDeclarationById } from "~/utils/payload-helper";
 import { DeclarationSchema } from "~/utils/form/readonly/form";
 import { api } from "~/utils/api";
+import { ReadOnlyDeclarationSchema } from "~/components/declaration/ReadOnlyDeclaration";
 
 export default function SchemaPage({
 	declaration,
@@ -88,7 +89,7 @@ export default function SchemaPage({
 	});
 
 	if (!declaration?.actionPlan) {
-		return <SchemaForm declarationId={declaration?.id} />;
+		return <SchemaForm declaration={declaration} />;
 	}
 
 	return (
@@ -112,11 +113,15 @@ export default function SchemaPage({
 					}}
 				>
 					<div className={classes.formWrapper}>
-						<DeclarationSchema form={form} readOnly={!editMode} />
-						{editMode && (
-							<form.AppForm>
-								<form.SubscribeButton label={"Valider"} />
-							</form.AppForm>
+						{editMode ? (
+							<>
+								<DeclarationSchema form={form} />
+								<form.AppForm>
+									<form.SubscribeButton label={"Valider"} />
+								</form.AppForm>
+							</>
+						) : (
+							<ReadOnlyDeclarationSchema declaration={declaration ?? null} />
 						)}
 					</div>
 				</form>

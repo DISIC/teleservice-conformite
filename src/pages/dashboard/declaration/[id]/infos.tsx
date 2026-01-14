@@ -14,6 +14,7 @@ import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
 import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
 
 export default function GeneralInformationsPage({
 	declaration,
@@ -101,11 +102,15 @@ export default function GeneralInformationsPage({
 					}}
 				>
 					<div className={classes.formWrapper}>
-						<DeclarationGeneralForm form={form} readOnly={!editMode} />
-						{editMode && (
-							<form.AppForm>
-								<form.SubscribeButton label={"Valider"} />
-							</form.AppForm>
+						{editMode ? (
+							<>
+								<DeclarationGeneralForm form={form} />
+								<form.AppForm>
+									<form.SubscribeButton label={"Valider"} />
+								</form.AppForm>
+							</>
+						) : (
+							<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
 						)}
 					</div>
 				</form>

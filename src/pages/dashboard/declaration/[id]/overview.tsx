@@ -70,7 +70,7 @@ export default function DeclarationOverviewPage({
 				<h4>Dérogations pour charge disproportionnée</h4>
 				<ul>{declaration?.audit?.disproportionnedCharge}</ul>
 				<h4>Contenus non soumis à l’obligation d’accessibilité</h4>
-				<p>{declaration?.audit?.exemption}</p>
+				<p>{declaration?.audit?.optionalElements}</p>
 				<h3>Établissement de cette déclaration d’accessibilité</h3>
 				<p>
 					Cette déclaration a été établie le{" "}

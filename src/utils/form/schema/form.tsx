@@ -23,6 +23,7 @@ export const SchemaForm = withForm({
 								<form.AppField name="currentYearSchemaUrl">
 									{(field) => (
 										<field.TextField
+											kind="url"
 											label="Lien URL du schéma annuel à jour"
 											description={
 												<>
@@ -65,6 +66,7 @@ export const SchemaForm = withForm({
 								<form.AppField name="previousYearsSchemaUrl">
 									{(field) => (
 										<field.TextField
+											kind="url"
 											label="Lien URL du bilan des actions"
 											description="Format attendu : https://www.example.fr"
 										/>

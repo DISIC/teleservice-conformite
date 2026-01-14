@@ -13,9 +13,9 @@ import { DeclarationAuditForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import AuditMultiStepForm from "~/components/declaration/AuditMultiStepForm";
 import { api } from "~/utils/api";
-import type { ZAuditFormSchema } from "~/utils/form/audit/schema";
 import { getDeclarationById } from "~/utils/payload-helper";
 import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
 
 export default function AuditPage({
 	declaration,
@@ -46,6 +46,8 @@ export default function AuditPage({
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
+
+		if (editMode) setIsAchieved(!!declaration?.audit);
 	};
 
 	if (audit) {
@@ -65,7 +67,7 @@ export default function AuditPage({
 				testEnvironments: audit?.testEnvironments ?? [],
 				nonCompliantElements: audit?.nonCompliantElements ?? "",
 				disproportionnedCharge: audit?.disproportionnedCharge ?? "",
-				optionalElements: audit?.exemption ?? "",
+				optionalElements: audit?.optionalElements ?? "",
 			},
 		};
 	}
@@ -105,7 +107,7 @@ export default function AuditPage({
 	});
 
 	if (!declaration?.audit) {
-		return <AuditMultiStepForm declarationId={declaration?.id} />;
+		return <AuditMultiStepForm declaration={declaration ?? null} />;
 	}
 
 	return (
@@ -128,20 +130,19 @@ export default function AuditPage({
 				}}
 			>
 				<div className={classes.formWrapper}>
-					<DeclarationAuditForm
-						form={form}
-						readOnly={!editMode}
-						isAchieved={isAchieved}
-						onChangeIsAchieved={(value) => setIsAchieved(value)}
-					/>
-					{editMode && (
-						<form.AppForm>
-							<form.SubscribeButton
-								label="Valider les informations"
-								iconId="fr-icon-arrow-right-line"
-								iconPosition="right"
+					{editMode ? (
+						<>
+							<DeclarationAuditForm
+								form={form}
+								isAchieved={isAchieved}
+								onChangeIsAchieved={(value) => setIsAchieved(value)}
 							/>
-						</form.AppForm>
+							<form.AppForm>
+								<form.SubscribeButton label={"Valider"} />
+							</form.AppForm>
+						</>
+					) : (
+						<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
 					)}
 				</div>
 			</form>
@@ -154,12 +155,13 @@ const useStyles = tss.withName(AuditPage.name).create({
 		marginTop: fr.spacing("10v"),
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("6w"),
+		gap: fr.spacing("2w"),
 	},
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
+		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
 	headerAction: {

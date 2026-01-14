@@ -35,15 +35,13 @@ const envMobileOsOptions = [
 
 export const DeclarationGeneralForm = withForm({
 	...readOnlyFormOptions,
-	props: { readOnly: false },
-	render: function Render({ form, readOnly }) {
+	render: function Render({ form }) {
 		return (
 			<>
 				<form.AppField name="general.organisation">
 					{(field) => (
 						<field.TextField
 							label="Organisation"
-							readOnly={readOnly}
 							placeholder="Direction Générale des Finances (DGFIP)"
 							inputReadOnly
 						/>
@@ -54,7 +52,6 @@ export const DeclarationGeneralForm = withForm({
 						<field.RadioField
 							label="Type de produit numérique"
 							options={[...appKindOptions]}
-							readOnly={readOnly}
 						/>
 					)}
 				</form.AppField>
@@ -62,7 +59,6 @@ export const DeclarationGeneralForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Nom du service numérique"
-							readOnly={readOnly}
 							description="Exemples : Demande de logement social, Service public.fr, Outil de gestion des congés"
 						/>
 					)}
@@ -71,7 +67,7 @@ export const DeclarationGeneralForm = withForm({
 					{(kind) =>
 						kind === "website" ? (
 							<form.AppField name="general.url">
-								{(field) => <field.TextField label="URL" readOnly={readOnly} />}
+								{(field) => <field.TextField label="URL" kind="url" />}
 							</form.AppField>
 						) : null
 					}
@@ -82,7 +78,6 @@ export const DeclarationGeneralForm = withForm({
 							label="Secteur d'activité de l'organisation"
 							placeholder="Sélectionnez un secteur"
 							defaultStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
-							readOnly={readOnly}
 							options={[...kindOptions]}
 						/>
 					)}
@@ -94,8 +89,7 @@ export const DeclarationGeneralForm = withForm({
 
 export const DeclarationSchema = withForm({
 	...readOnlyFormOptions,
-	props: { readOnly: false },
-	render: function Render({ form, readOnly }) {
+	render: function Render({ form }) {
 		return (
 			<>
 				<form.AppField name="schema.hasDoneCurrentYearSchema">
@@ -108,12 +102,12 @@ export const DeclarationSchema = withForm({
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
-								readOnly={readOnly}
 							/>
 							{field.state.value && (
 								<form.AppField name="schema.currentYearSchemaUrl">
 									{(field) => (
 										<field.TextField
+											kind="url"
 											label="Lien URL du schéma annuel à jour"
 											description={
 												<>
@@ -123,7 +117,6 @@ export const DeclarationSchema = withForm({
 													attendu : https://www.example.fr
 												</>
 											}
-											readOnly={readOnly}
 										/>
 									)}
 								</form.AppField>
@@ -141,15 +134,14 @@ export const DeclarationSchema = withForm({
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
-								readOnly={readOnly}
 							/>
 							{field.state.value && (
 								<form.AppField name="schema.previousYearsSchemaUrl">
 									{(field) => (
 										<field.TextField
+											kind="url"
 											label="Lien URL du bilan des actions"
 											description="Format attendu : https://www.example.fr"
-											readOnly={readOnly}
 										/>
 									)}
 								</form.AppField>
@@ -166,13 +158,11 @@ export const DeclarationAuditForm = withForm({
 	...readOnlyFormOptions,
 	props: {
 		isAchieved: false,
-		readOnly: false,
-		onChangeIsAchieved: (value: boolean) => {},
+		onChangeIsAchieved: (_value: boolean) => {},
 	},
 	render: function Render({
 		form,
 		isAchieved: initialIsAchieved,
-		readOnly,
 		onChangeIsAchieved,
 	}) {
 		const [isAchieved, setIsAchieved] = useState(initialIsAchieved);
@@ -185,25 +175,19 @@ export const DeclarationAuditForm = withForm({
 
 		return (
 			<>
-				{!readOnly ? (
-					<Checkbox
-						options={[
-							{
-								label: "L'audit d'accessibilité a-t-il été réalisé ?",
-								nativeInputProps: {
-									checked: isAchieved,
-									onChange,
-								},
+				<Checkbox
+					options={[
+						{
+							label: "L'audit d'accessibilité a-t-il été réalisé ?",
+							nativeInputProps: {
+								checked: isAchieved,
+								onChange,
 							},
-						]}
-						className={fr.cx("fr-mb-3w")}
-						style={{ userSelect: "none" }}
-					/>
-				) : (
-					<p style={{ margin: 0 }}>
-						<strong>Audit réalisé:</strong> {isAchieved ? "Oui" : "Non"}
-					</p>
-				)}
+						},
+					]}
+					className={fr.cx("fr-mb-3w")}
+					style={{ userSelect: "none" }}
+				/>
 				{isAchieved && (
 					<>
 						<form.AppField name="audit.date">
@@ -212,7 +196,6 @@ export const DeclarationAuditForm = withForm({
 									label="Date de réalisation"
 									kind="date"
 									max={new Date().toISOString().split("T")[0]}
-									readOnly={readOnly}
 								/>
 							)}
 						</form.AppField>
@@ -221,7 +204,6 @@ export const DeclarationAuditForm = withForm({
 								<field.TextField
 									kind="text"
 									label="Entité ou personne ayant réalisé l'audit"
-									readOnly={readOnly}
 								/>
 							)}
 						</form.AppField>
@@ -230,21 +212,12 @@ export const DeclarationAuditForm = withForm({
 								<field.RadioField
 									label="Référentiel RGAA utilisé"
 									options={[...rgaaVersionOptions]}
-									readOnly={readOnly}
 								/>
 							)}
 						</form.AppField>
 						<div>
 							<form.AppField name="audit.rate">
-								{(field) =>
-									readOnly ? (
-										<p style={{ margin: 0 }}>
-											<strong>Résultats:</strong> {field.state.value}%
-										</p>
-									) : (
-										<field.NumberField label="Résultats" />
-									)
-								}
+								{(field) => <field.NumberField label="Résultats" />}
 							</form.AppField>
 						</div>
 						<form.AppField name="audit.technologies">
@@ -263,7 +236,6 @@ export const DeclarationAuditForm = withForm({
 									<field.CheckboxGroupField
 										label="Outils utilisés pour évaluer l’accessibilité"
 										options={[...options, { label: "Autre", value: "other" }]}
-										readOnly={readOnly}
 									/>
 								);
 							}}
@@ -273,7 +245,6 @@ export const DeclarationAuditForm = withForm({
 								<field.CheckboxGroupField
 									label="Environnement de tests"
 									options={[...testEnvironmentOptions]}
-									readOnly={readOnly}
 								/>
 							)}
 						</form.AppField>
@@ -281,18 +252,13 @@ export const DeclarationAuditForm = withForm({
 							{(field) => (
 								<field.TextField
 									label="Éléments ayant fait l’objet de vérification"
-									readOnly={readOnly}
 									textArea
 								/>
 							)}
 						</form.AppField>
 						<form.AppField name="audit.nonCompliantElements">
 							{(field) => (
-								<field.TextField
-									label="Éléments non conforme"
-									textArea
-									readOnly={readOnly}
-								/>
+								<field.TextField label="Éléments non conforme" textArea />
 							)}
 						</form.AppField>
 						<form.AppField name="audit.disproportionnedCharge">
@@ -300,7 +266,6 @@ export const DeclarationAuditForm = withForm({
 								<field.TextField
 									label="Dérogation pour charge disproportionnée"
 									textArea
-									readOnly={readOnly}
 								/>
 							)}
 						</form.AppField>
@@ -309,14 +274,11 @@ export const DeclarationAuditForm = withForm({
 								<field.TextField
 									label="Contenus non soumis à la déclaration"
 									textArea
-									readOnly={readOnly}
 								/>
 							)}
 						</form.AppField>
 						<form.AppField name="audit.report">
-							{(field) => (
-								<field.TextField label="Grille d’audit" readOnly={readOnly} />
-							)}
+							{(field) => <field.TextField label="Grille d’audit" />}
 						</form.AppField>
 					</>
 				)}
@@ -327,40 +289,29 @@ export const DeclarationAuditForm = withForm({
 
 export const DeclarationContactForm = withForm({
 	...readOnlyFormOptions,
-	props: { readOnly: false },
-	render: function Render({ form, readOnly }) {
+	render: function Render({ form }) {
 		return (
 			<>
 				<form.AppField name="contact.contactOptions">
 					{(field) => (
 						<>
-							{!readOnly && (
-								<field.CheckboxGroupField
-									label="Manière de contacter la personne responsable de l’accessibilité"
-									options={[
-										{ label: "Formulaire en ligne", value: "url" },
-										{ label: "Point de contact", value: "email" },
-									]}
-								/>
-							)}
+							<field.CheckboxGroupField
+								label="Manière de contacter la personne responsable de l’accessibilité"
+								options={[
+									{ label: "Formulaire en ligne", value: "url" },
+									{ label: "Point de contact", value: "email" },
+								]}
+							/>
 							{field.state.value.includes("url") && (
 								<form.AppField name="contact.contactName">
 									{(field) => (
-										<field.TextField
-											label="Lien URL du formulaire"
-											readOnly={readOnly}
-										/>
+										<field.TextField label="Lien URL du formulaire" />
 									)}
 								</form.AppField>
 							)}
 							{field.state.value.includes("email") && (
 								<form.AppField name="contact.contactEmail">
-									{(field) => (
-										<field.TextField
-											label="Email de contact"
-											readOnly={readOnly}
-										/>
-									)}
+									{(field) => <field.TextField label="Email de contact" />}
 								</form.AppField>
 							)}
 						</>

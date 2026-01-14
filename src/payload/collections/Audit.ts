@@ -84,7 +84,7 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Éléments avec dérogation pour charge disproportionnée" },
 		},
 		{
-			name: "exemption",
+			name: "optionalElements",
 			type: "textarea",
 			label: { fr: "Éléments non soumis à l’obligation d’accessibilité" },
 		},

@@ -6,16 +6,22 @@ import { useAppForm } from "~/utils/form/context";
 import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
 import { schemaFormOptions } from "~/utils/form/schema/schema";
 import { api } from "~/utils/api";
+import type { DeclarationWithPopulated } from "~/utils/payload-helper";
 
 export default function SchemaForm({
-	declarationId,
-}: { declarationId: number }) {
+	declaration,
+}: { declaration: DeclarationWithPopulated }) {
 	const { classes } = useStyles();
 	const router = useRouter();
 
 	const { mutateAsync: createSchema } = api.schema.create.useMutation({
 		onSuccess: async () => {
-			router.push(`/dashboard/declaration/${declarationId}`);
+			if (declaration?.audit && declaration.actionPlan) {
+				router.push(`/dashboard/declaration/${declaration.id}/overview`);
+				return;
+			}
+
+			router.push(`/dashboard/declaration/${declaration.id}`);
 		},
 		onError: (error) => {
 			console.error("Error adding schema:", error);
@@ -23,7 +29,7 @@ export default function SchemaForm({
 	});
 
 	const onClickCancel = () =>
-		router.push(`/dashboard/declaration/${declarationId}`);
+		router.push(`/dashboard/declaration/${declaration.id}`);
 
 	const addSchema = async ({
 		currentYearSchemaUrl,
@@ -51,7 +57,7 @@ export default function SchemaForm({
 			await addSchema({
 				currentYearSchemaUrl: value.currentYearSchemaUrl,
 				previousYearsSchemaUrl: value.previousYearsSchemaUrl,
-				declarationId,
+				declarationId: declaration.id,
 			});
 		},
 	});
@@ -90,7 +96,7 @@ export default function SchemaForm({
 
 const useStyles = tss.withName(SchemaForm.name).create({
 	main: {
-		marginTop: fr.spacing("6v"),
+		marginBlock: fr.spacing("6w"),
 	},
 	formWrapper: {
 		display: "flex",

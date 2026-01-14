@@ -48,7 +48,10 @@ export const AuditDateForm = withForm({
 				</form.AppField>
 				<form.AppField name="rate">
 					{(field) => (
-						<field.NumberField label="Pourcentage de critères du RGAA respectés" />
+						<field.NumberField
+							label="Pourcentage de critères du RGAA respectés"
+							description="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
+						/>
 					)}
 				</form.AppField>
 			</>
@@ -127,7 +130,7 @@ export const NonCompliantElementsForm = withForm({
 				<form.AppField name="nonCompliantElements">
 					{(field) => (
 						<field.TextField
-							label="Éléments non conformes"
+							label="Éléments non conformes (facultatif)"
 							description={
 								<>
 									Exemples : Vidéo sans transcription, navigation au clavier
@@ -151,7 +154,7 @@ export const NonCompliantElementsForm = withForm({
 				<form.AppField name="optionalElements">
 					{(field) => (
 						<field.TextField
-							label="Éléments non soumis à l’obligation d’accessibilité"
+							label="Éléments non soumis à l’obligation d’accessibilité (facultatif)"
 							description={
 								<>
 									<NextLink
@@ -182,7 +185,7 @@ export const NonCompliantElementsForm = withForm({
 				<form.AppField name="disproportionnedCharge">
 					{(field) => (
 						<field.TextField
-							label="Éléments avec dérogation pour charge disproportionnée"
+							label="Éléments avec dérogation pour charge disproportionnée (facultatif)"
 							description={
 								<>
 									<NextLink

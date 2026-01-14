@@ -16,6 +16,7 @@ import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
 import { contact } from "~/utils/form/contact/schema";
 import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
 
 export default function ContactPage({
 	declaration,
@@ -105,7 +106,7 @@ export default function ContactPage({
 	});
 
 	if (!declaration?.contact) {
-		return <ContactForm declarationId={declaration?.id ?? -1} />;
+		return <ContactForm declaration={declaration} />;
 	}
 
 	return (
@@ -129,11 +130,15 @@ export default function ContactPage({
 					}}
 				>
 					<div className={classes.formWrapper}>
-						<DeclarationContactForm form={form} readOnly={!editMode} />
-						{editMode && (
-							<form.AppForm>
-								<form.SubscribeButton label={"Valider"} />
-							</form.AppForm>
+						{editMode ? (
+							<>
+								<DeclarationContactForm form={form} />
+								<form.AppForm>
+									<form.SubscribeButton label={"Valider"} />
+								</form.AppForm>
+							</>
+						) : (
+							<ReadOnlyDeclarationContact declaration={declaration ?? null} />
 						)}
 					</div>
 				</form>
@@ -168,10 +173,6 @@ const useStyles = tss.withName(ContactPage.name).create({
 	description: {
 		fontSize: "1rem",
 		color: "grey",
-	},
-	title: {
-		fontSize: "1rem",
-		color: fr.colors.decisions.text.mention.grey.default,
 	},
 });
 
