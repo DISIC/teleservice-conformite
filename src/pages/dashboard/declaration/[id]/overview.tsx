@@ -6,6 +6,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useRouter } from "next/router";
+import { appKindOptions } from "~/payload/collections/Declaration";
 
 import {
 	getDeclarationById,
@@ -17,6 +18,11 @@ export default function DeclarationOverviewPage({
 }: { declaration: DeclarationWithPopulated }) {
 	const { classes } = useStyles();
 	const router = useRouter();
+
+	const hasNonCompliantElements = Boolean(
+		declaration.audit?.nonCompliantElements ||
+			declaration.audit?.disproportionnedCharge,
+	);
 
 	return (
 		<section id="declaration-overview" className={classes.main}>
@@ -35,28 +41,32 @@ export default function DeclarationOverviewPage({
 				</p>
 				<ul>
 					<li>
-						Schéma pluriannuel de mise en accessibilité 2023-2025 :
-						{declaration?.url} ;
+						Lien URL du schéma annuel à jour :{" "}
+						{declaration?.actionPlan?.currentYearSchemaUrl} ;{" "}
 					</li>
 					<li>
-						Actions réalisées en 2022-2023 :{" "}
-						{declaration?.actionPlan?.annualSchemaLink} ;{" "}
-					</li>
-					<li>
-						Plan d’actions 2023-2025 :{" "}
-						{declaration?.actionPlan?.annualSchemaLink}
+						Lien URL du bilan des actions :{" "}
+						{declaration?.actionPlan?.previousYearsSchemaUrl} ;
 					</li>
 				</ul>
 				<p>
-					Cette déclaration d’accessibilité s’applique au site web{" "}
+					Cette déclaration d’accessibilité s’applique au{" "}
+					{
+						appKindOptions.find(
+							(option) => option.value === declaration?.app_kind,
+						)?.label
+					}{" "}
 					{declaration?.url}
 				</p>
 				<h4>État de conformité</h4>
 				<p>
-					{declaration?.entity?.name} {declaration.url} est partiellement
-					conforme avec le référentiel général d’amélioration de l’accessibilité
-					(RGAA), version {declaration?.audit?.rgaa_version} en raison des
-					non-conformités et des dérogations énumérées ci-dessous.
+					{declaration?.entity?.name} {declaration.url} est{" "}
+					<strong>partiellement conforme</strong> avec le référentiel général
+					d’amélioration de l’accessibilité (RGAA), version{" "}
+					{declaration?.audit?.rgaa_version}{" "}
+					{hasNonCompliantElements &&
+						"en raison des non-conformités et des dérogations énumérées ci-dessous"}
+					.
 				</p>
 				<h4>Résultats des tests</h4>
 				<p>
@@ -66,11 +76,17 @@ export default function DeclarationOverviewPage({
 				</p>
 				<h3>Contenus non accessibles</h3>
 				<h4>Non-conformités</h4>
-				<p>{declaration?.audit?.nonCompliantElements}</p>
+				<p style={{ whiteSpace: "pre-wrap" }}>
+					{declaration?.audit?.nonCompliantElements}
+				</p>
 				<h4>Dérogations pour charge disproportionnée</h4>
-				<ul>{declaration?.audit?.disproportionnedCharge}</ul>
+				<p style={{ whiteSpace: "pre-wrap" }}>
+					{declaration?.audit?.disproportionnedCharge}
+				</p>
 				<h4>Contenus non soumis à l’obligation d’accessibilité</h4>
-				<p>{declaration?.audit?.optionalElements}</p>
+				<p style={{ whiteSpace: "pre-wrap" }}>
+					{declaration?.audit?.optionalElements}
+				</p>
 				<h3>Établissement de cette déclaration d’accessibilité</h3>
 				<p>
 					Cette déclaration a été établie le{" "}
@@ -82,7 +98,7 @@ export default function DeclarationOverviewPage({
 				<p>
 					Les vérifications de restitution de contenus ont été réalisées sur la
 					base de la combinaison fournie par la base de référence du RGAA, avec
-					les versions suivantes : Firefox et NVDA Safari et VoiceOver
+					les versions suivantes :
 				</p>
 				<ul>
 					{declaration.audit?.testEnvironments?.map((env) => (
@@ -98,7 +114,9 @@ export default function DeclarationOverviewPage({
 				<h3>
 					Pages du site ayant fait l’objet de la vérification de conformité
 				</h3>
-				{declaration.audit?.compliantElements}
+				<p style={{ whiteSpace: "pre-wrap" }}>
+					{declaration.audit?.compliantElements}
+				</p>
 				<h4>Retour d’information et contact</h4>
 				<p>
 					Si vous n’arrivez pas à accéder à un contenu ou à un service, vous
@@ -107,13 +125,17 @@ export default function DeclarationOverviewPage({
 					autre forme.
 				</p>
 				<ul>
-					<li>
-						Envoyer un message sur le formulaire : {declaration?.contact?.url}
-					</li>
-					<li>
-						Contacter le responsable de l’accessibilité :{" "}
-						{declaration?.contact?.email}
-					</li>
+					{declaration?.contact?.url && (
+						<li>
+							Envoyer un message sur le formulaire : {declaration?.contact?.url}
+						</li>
+					)}
+					{declaration?.contact?.email && (
+						<li>
+							Contacter le responsable de l’accessibilité :{" "}
+							{declaration?.contact?.email}
+						</li>
+					)}
 				</ul>
 				<h4>Voies de recours</h4>
 				<p>
