@@ -7,7 +7,7 @@ export const ReadOnlyDeclarationGeneral = ({
 	return (
 		<>
 			<ReadOnlyField
-				label="Administration"
+				label="Organisation"
 				value={declaration?.entity?.name ?? ""}
 			/>
 			<ReadOnlyField
@@ -20,7 +20,7 @@ export const ReadOnlyDeclarationGeneral = ({
 			/>
 			<ReadOnlyField label="URL" value={declaration?.url ?? ""} />
 			<ReadOnlyField
-				label="Secteur d’activité de l’entité"
+				label="Secteur d’activité de l’organisation"
 				value={declaration?.entity?.kind ?? ""}
 			/>
 		</>

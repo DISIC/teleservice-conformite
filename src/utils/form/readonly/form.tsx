@@ -39,13 +39,7 @@ export const DeclarationGeneralForm = withForm({
 		return (
 			<>
 				<form.AppField name="general.organisation">
-					{(field) => (
-						<field.TextField
-							label="Organisation"
-							placeholder="Direction Générale des Finances (DGFIP)"
-							inputReadOnly
-						/>
-					)}
+					{(field) => <field.TextField label="Organisation" inputReadOnly />}
 				</form.AppField>
 				<form.AppField name="general.kind">
 					{(field) => (
