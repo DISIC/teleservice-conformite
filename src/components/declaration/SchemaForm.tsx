@@ -17,7 +17,7 @@ export default function SchemaForm({
 	const { mutateAsync: createSchema } = api.schema.create.useMutation({
 		onSuccess: async () => {
 			if (declaration?.audit && declaration.contact) {
-				router.push(`/dashboard/declaration/${declaration.id}/overview`);
+				router.push(`/dashboard/declaration/${declaration.id}/preview`);
 				return;
 			}
 

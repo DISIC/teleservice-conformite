@@ -13,7 +13,7 @@ import {
 	type DeclarationWithPopulated,
 } from "~/utils/payload-helper";
 
-export default function DeclarationOverviewPage({
+export default function DeclarationPreviewPage({
 	declaration,
 }: { declaration: DeclarationWithPopulated }) {
 	const { classes } = useStyles();
@@ -25,7 +25,7 @@ export default function DeclarationOverviewPage({
 	);
 
 	return (
-		<section id="declaration-overview" className={classes.main}>
+		<section id="declaration-preview" className={classes.main}>
 			<h1>Votre déclaration est prête à être publiée</h1>
 			<p>Voici un aperçu de votre déclaration</p>
 			<div className={classes.declarationPreview}>
@@ -185,7 +185,7 @@ export default function DeclarationOverviewPage({
 	);
 }
 
-const useStyles = tss.withName(DeclarationOverviewPage.name).create({
+const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 	main: {
 		marginTop: fr.spacing("10v"),
 		display: "flex",

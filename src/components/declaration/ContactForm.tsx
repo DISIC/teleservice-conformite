@@ -17,7 +17,7 @@ export default function ContactForm({
 	const { mutateAsync: createContact } = api.contact.create.useMutation({
 		onSuccess: async () => {
 			if (declaration?.audit && declaration.actionPlan) {
-				router.push(`/dashboard/declaration/${declaration.id}/overview`);
+				router.push(`/dashboard/declaration/${declaration.id}/preview`);
 				return;
 			}
 

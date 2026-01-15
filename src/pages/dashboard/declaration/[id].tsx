@@ -93,7 +93,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 					<div className={classes.buttonsContainer}>
 						<Button
 							iconId="fr-icon-upload-line"
-							onClick={() => router.push(`${declaration.id}/overview`)}
+							onClick={() => router.push(`${declaration.id}/preview`)}
 							disabled={declarationNotComplete}
 						>
 							Publier

@@ -30,7 +30,7 @@ export default function AuditMultiStepForm({
 	const { mutateAsync: createAudit } = api.audit.create.useMutation({
 		onSuccess: async () => {
 			if (declaration?.contact && declaration.actionPlan) {
-				router.push(`/dashboard/declaration/${declaration.id}/overview`);
+				router.push(`/dashboard/declaration/${declaration.id}/preview`);
 				return;
 			}
 
