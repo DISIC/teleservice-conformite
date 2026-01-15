@@ -1,10 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { tss } from "tss-react";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-
+import Information from "@codegouvfr/react-dsfr/picto/Information";
 import { useState } from "react";
-import { tss } from "tss-react";
+
 import {
 	rgaaVersionOptions,
 	toolOptions,
@@ -14,8 +15,7 @@ import { appKindOptions } from "~/payload/collections/Declaration";
 import { kindOptions } from "~/payload/collections/Entity";
 import { withForm } from "../context";
 import { readOnlyFormOptions } from "./schema";
-import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
-import { RadioField } from "~/components/form/fields/RadioField";
+import PopupMessage from "~/components/declaration/PopupMessage";
 
 const envKindOptions = [
 	{ label: "Mobile", value: "mobile" },
@@ -103,7 +103,7 @@ export const DeclarationSchema = withForm({
 									{ label: "Non", value: false },
 								]}
 							/>
-							{field.state.value && (
+							{field.state.value ? (
 								<form.AppField name="schema.currentYearSchemaUrl">
 									{(field) => (
 										<field.TextField
@@ -120,6 +120,20 @@ export const DeclarationSchema = withForm({
 										/>
 									)}
 								</form.AppField>
+							) : (
+								<PopupMessage
+									image={<Information fontSize="6rem" />}
+									message={
+										<>
+											La mise en place d’un plan d’action est obligatoire.
+											<br />
+											<br />
+											L’objectif est d’engager une démarche d’amélioration
+											continue de l’accessibilité, en définissant des actions
+											réalisables à moyen terme
+										</>
+									}
+								/>
 							)}
 						</>
 					)}
@@ -215,11 +229,9 @@ export const DeclarationAuditForm = withForm({
 								/>
 							)}
 						</form.AppField>
-						<div>
-							<form.AppField name="audit.rate">
-								{(field) => <field.NumberField label="Résultats" />}
-							</form.AppField>
-						</div>
+						<form.AppField name="audit.rate">
+							{(field) => <field.NumberField label="Résultats" />}
+						</form.AppField>
 						<form.AppField name="audit.technologies">
 							{(field) => {
 								const options = new Set([

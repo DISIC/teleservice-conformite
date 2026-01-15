@@ -41,9 +41,12 @@ export const SchemaForm = withForm({
 									image={<Information fontSize="6rem" />}
 									message={
 										<>
-											Nous vous rappelons que la réalisation d’un schéma annuel
-											est obligatoire.
-											<br /> Pour réaliser un schéma annuel, .....
+											La mise en place d’un plan d’action est obligatoire.
+											<br />
+											<br />
+											L’objectif est d’engager une démarche d’amélioration
+											continue de l’accessibilité, en définissant des actions
+											réalisables à moyen terme
 										</>
 									}
 								/>
