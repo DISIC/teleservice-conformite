@@ -290,7 +290,7 @@ export const DeclarationAuditForm = withForm({
 							)}
 						</form.AppField>
 						<form.AppField name="audit.report">
-							{(field) => <field.TextField label="Grille d’audit" />}
+							{(field) => <field.TextField label="Rapport d’audit" />}
 						</form.AppField>
 					</>
 				)}
