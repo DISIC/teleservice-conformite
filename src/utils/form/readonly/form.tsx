@@ -1,7 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
-import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import Information from "@codegouvfr/react-dsfr/picto/Information";
 import { useState } from "react";
@@ -16,22 +13,6 @@ import { kindOptions } from "~/payload/collections/Entity";
 import { withForm } from "../context";
 import { readOnlyFormOptions } from "./schema";
 import PopupMessage from "~/components/declaration/PopupMessage";
-
-const envKindOptions = [
-	{ label: "Mobile", value: "mobile" },
-	{ label: "Ordinateur", value: "ordinateur" },
-];
-
-const envDesktopOsOptions = [
-	{ label: "Windows", value: "windows" },
-	{ label: "macOS", value: "macos" },
-	{ label: "Linux", value: "linux" },
-];
-
-const envMobileOsOptions = [
-	{ label: "iOS", value: "ios" },
-	{ label: "Android", value: "android" },
-];
 
 export const DeclarationGeneralForm = withForm({
 	...readOnlyFormOptions,
@@ -225,21 +206,22 @@ export const DeclarationAuditForm = withForm({
 						</form.AppField>
 						<form.AppField name="audit.technologies">
 							{(field) => {
-								const options = new Set([
-									...toolOptions,
-									...field.state.value
-										.filter((v) => !toolOptions.find((opt) => opt.value === v))
-										.map((v: string) => ({
-											label: v,
-											value: v,
-										})),
-								]);
-
 								return (
-									<field.CheckboxGroupField
-										label="Outils utilisés pour évaluer l’accessibilité"
-										options={[...options, { label: "Autre", value: "other" }]}
-									/>
+									<div>
+										<field.CheckboxGroupField
+											label="Outils utilisés pour évaluer l’accessibilité"
+											options={[...toolOptions]}
+										/>
+										<field.TagGroupField
+											label=""
+											initialTags={field.state.value.filter(
+												(tag) =>
+													![...toolOptions]
+														.map((option) => option.value as string)
+														.includes(tag),
+											)}
+										/>
+									</div>
 								);
 							}}
 						</form.AppField>

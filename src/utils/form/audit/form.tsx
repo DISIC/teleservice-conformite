@@ -66,10 +66,21 @@ export const ToolsForm = withForm({
 			<>
 				<form.AppField name="technologies">
 					{(field) => (
-						<field.CheckboxGroupField
-							label="Outils utilisés pour évaluer l’accessibilité"
-							options={[...toolOptions, { label: "Autre", value: "other" }]}
-						/>
+						<div>
+							<field.CheckboxGroupField
+								label="Outils utilisés pour évaluer l’accessibilité"
+								options={[...toolOptions]}
+							/>
+							<field.TagGroupField
+								label=""
+								initialTags={field.state.value.filter(
+									(tag) =>
+										![...toolOptions]
+											.map((option) => option.value as string)
+											.includes(tag),
+								)}
+							/>
+						</div>
 					)}
 				</form.AppField>
 				<form.AppField name="testEnvironments">

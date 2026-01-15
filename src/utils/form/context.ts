@@ -9,6 +9,7 @@ import { RadioField } from "~/components/form/fields/RadioField";
 import { SelectField } from "~/components/form/fields/SelectField";
 import { TextField } from "~/components/form/fields/TextField";
 import { UploadField } from "~/components/form/fields/UploadField";
+import { TagGroupField } from "~/components/form/fields/TagGroupField";
 
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
 	createFormHookContexts();
@@ -22,6 +23,7 @@ export const { useAppForm, withForm } = createFormHook({
 		CheckboxGroupField,
 		NumberField,
 		RadioField,
+		TagGroupField,
 	},
 	formComponents: {
 		SubscribeButton,
