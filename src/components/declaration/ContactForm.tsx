@@ -6,11 +6,11 @@ import { useAppForm } from "~/utils/form/context";
 import { ContactTypeForm } from "~/utils/form/contact/form";
 import { contactFormOptions } from "~/utils/form/contact/schema";
 import { api } from "~/utils/api";
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 
 export default function ContactForm({
 	declaration,
-}: { declaration: DeclarationWithPopulated }) {
+}: { declaration: PopulatedDeclaration }) {
 	const { classes } = useStyles();
 	const router = useRouter();
 

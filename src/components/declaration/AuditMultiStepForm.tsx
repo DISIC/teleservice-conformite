@@ -14,7 +14,7 @@ import {
 } from "~/utils/form/audit/form";
 import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
 import { api } from "~/utils/api";
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 
 type Steps<T> = {
 	slug: T;
@@ -23,7 +23,7 @@ type Steps<T> = {
 
 export default function AuditMultiStepForm({
 	declaration,
-}: { declaration: DeclarationWithPopulated }) {
+}: { declaration: PopulatedDeclaration }) {
 	const { classes } = useStyles();
 	const router = useRouter();
 

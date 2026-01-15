@@ -9,10 +9,10 @@ import Search from "@codegouvfr/react-dsfr/picto/Search";
 import Community from "@codegouvfr/react-dsfr/picto/Community";
 import { useRouter } from "next/router";
 
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 
 interface DemarchesProps {
-	declaration: DeclarationWithPopulated;
+	declaration: PopulatedDeclaration;
 }
 
 export default function Demarches({ declaration }: DemarchesProps) {

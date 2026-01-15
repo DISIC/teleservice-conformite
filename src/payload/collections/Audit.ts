@@ -50,6 +50,7 @@ export const Audits: CollectionConfig = {
 					pickerAppearance: "dayOnly",
 				},
 			},
+			required: true,
 		},
 		{
 			name: "rgaa_version",
@@ -57,21 +58,25 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Version RGAA" },
 			options: [...rgaaVersionOptions],
 			index: true,
+			required: true,
 		},
 		{
 			name: "realisedBy",
 			type: "text",
 			label: { fr: "Entite ou personne ayant realise l'audit" },
+			required: true,
 		},
 		{
 			name: "rate",
 			type: "number",
 			label: { fr: "Taux de conformité" },
+			required: true,
 		},
 		{
 			name: "compliantElements",
 			type: "textarea",
 			label: { fr: "Échantillon contrôlé" },
+			required: true,
 		},
 		{
 			name: "nonCompliantElements",
@@ -105,6 +110,7 @@ export const Audits: CollectionConfig = {
 					required: true,
 				},
 			],
+			required: true,
 		},
 		{
 			name: "testEnvironments",
@@ -113,12 +119,17 @@ export const Audits: CollectionConfig = {
 			index: true,
 			options : [...testEnvironmentOptions],
 			hasMany: true,
+			required: true,
 		},
 		{
 			name: "declaration",
 			type: "relationship",
 			relationTo: "declarations",
 			label: { fr: "déclaration associée" },
+			required: true,
+			admin: {
+				position: "sidebar",
+			},
 		},
 	],
 };

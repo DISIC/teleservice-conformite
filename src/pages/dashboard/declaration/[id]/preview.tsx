@@ -7,21 +7,50 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useRouter } from "next/router";
 import { appKindOptions } from "~/payload/collections/Declaration";
+import type {
+	Entity,
+	Audit,
+	Contact,
+	ActionPlan,
+	User,
+} from "~/payload/payload-types";
 
 import {
 	getDeclarationById,
-	type DeclarationWithPopulated,
+	type PopulatedDeclaration,
 } from "~/utils/payload-helper";
+
+type RequiredPopulatedDeclaration = Omit<
+	PopulatedDeclaration,
+	"audit" | "contact" | "entity" | "actionPlan" | "created_by"
+> & {
+	audit: Audit;
+	contact: Contact;
+	entity: Entity;
+	actionPlan: ActionPlan;
+	created_by: User;
+};
 
 export default function DeclarationPreviewPage({
 	declaration,
-}: { declaration: DeclarationWithPopulated }) {
+}: { declaration: RequiredPopulatedDeclaration }) {
 	const { classes } = useStyles();
 	const router = useRouter();
 
+	const getConformityStatus = (rate: number): string => {
+		if (rate < 50) {
+			return "non conforme";
+		}
+		if (rate >= 50 && rate <= 99) {
+			return "partiellement conforme";
+		}
+
+		return "conforme";
+	};
+
 	const hasNonCompliantElements = Boolean(
-		declaration.audit?.nonCompliantElements ||
-			declaration.audit?.disproportionnedCharge,
+		declaration.audit.nonCompliantElements ||
+			declaration.audit.disproportionnedCharge,
 	);
 
 	return (
@@ -30,62 +59,62 @@ export default function DeclarationPreviewPage({
 			<p>Voici un aperçu de votre déclaration</p>
 			<div className={classes.declarationPreview}>
 				<p>
-					{declaration?.entity?.name} s’engage à rendre ses sites internet,
+					{declaration.entity.name} s’engage à rendre ses sites internet,
 					intranet, extranet et ses progiciels accessibles (et ses applications
 					mobiles et mobilier urbain numérique) conformément à l’article 47 de
 					la loi n°2005-102 du 11 février 2005.
 				</p>
 				<p>
-					À cette fin, {declaration?.entity?.name} met en œuvre la stratégie et
+					À cette fin, {declaration.entity.name} met en œuvre la stratégie et
 					les actions suivantes:
 				</p>
 				<ul>
 					<li>
 						Lien URL du schéma annuel à jour :{" "}
-						{declaration?.actionPlan?.currentYearSchemaUrl} ;{" "}
+						{declaration.actionPlan.currentYearSchemaUrl} ;{" "}
 					</li>
 					<li>
 						Lien URL du bilan des actions :{" "}
-						{declaration?.actionPlan?.previousYearsSchemaUrl} ;
+						{declaration.actionPlan.previousYearsSchemaUrl} ;
 					</li>
 				</ul>
 				<p>
 					Cette déclaration d’accessibilité s’applique au{" "}
 					{
 						appKindOptions.find(
-							(option) => option.value === declaration?.app_kind,
+							(option) => option.value === declaration.app_kind,
 						)?.label
 					}{" "}
-					{declaration?.url}
+					{declaration.url}
 				</p>
 				<h4>État de conformité</h4>
 				<p>
-					{declaration?.entity?.name} {declaration.url} est{" "}
-					<strong>partiellement conforme</strong> avec le référentiel général
-					d’amélioration de l’accessibilité (RGAA), version{" "}
-					{declaration?.audit?.rgaa_version}{" "}
+					{declaration.entity.name} {declaration.url} est{" "}
+					{getConformityStatus(declaration.audit.rate)} avec le référentiel
+					général d’amélioration de l’accessibilité (RGAA), version{" "}
+					{declaration.audit.rgaa_version}{" "}
 					{hasNonCompliantElements &&
 						"en raison des non-conformités et des dérogations énumérées ci-dessous"}
 					.
 				</p>
 				<h4>Résultats des tests</h4>
 				<p>
-					L’audit de conformité réalisé par {declaration?.audit?.realisedBy}{" "}
-					révèle que {declaration?.audit?.rate}% des critères du RGAA version{" "}
-					{declaration?.audit?.rgaa_version} sont respectés
+					L’audit de conformité réalisé par {declaration.audit.realisedBy}{" "}
+					révèle que {declaration.audit.rate}% des critères du RGAA version{" "}
+					{declaration.audit.rgaa_version} sont respectés
 				</p>
 				<h3>Contenus non accessibles</h3>
 				<h4>Non-conformités</h4>
 				<p style={{ whiteSpace: "pre-wrap" }}>
-					{declaration?.audit?.nonCompliantElements}
+					{declaration.audit.nonCompliantElements}
 				</p>
 				<h4>Dérogations pour charge disproportionnée</h4>
 				<p style={{ whiteSpace: "pre-wrap" }}>
-					{declaration?.audit?.disproportionnedCharge}
+					{declaration.audit.disproportionnedCharge}
 				</p>
 				<h4>Contenus non soumis à l’obligation d’accessibilité</h4>
 				<p style={{ whiteSpace: "pre-wrap" }}>
-					{declaration?.audit?.optionalElements}
+					{declaration.audit.optionalElements}
 				</p>
 				<h3>Établissement de cette déclaration d’accessibilité</h3>
 				<p>
@@ -101,13 +130,13 @@ export default function DeclarationPreviewPage({
 					les versions suivantes :
 				</p>
 				<ul>
-					{declaration.audit?.testEnvironments?.map((env) => (
+					{(declaration.audit.testEnvironments ?? []).map((env) => (
 						<li key={env}>{env}</li>
 					))}
 				</ul>
 				<h3>Outils pour évaluer l’accessibilité</h3>
 				<ul>
-					{declaration.audit?.toolsUsed?.map((tech) => (
+					{(declaration.audit.toolsUsed ?? []).map((tech) => (
 						<li key={tech.name}>{tech.name}</li>
 					))}
 				</ul>
@@ -115,7 +144,7 @@ export default function DeclarationPreviewPage({
 					Pages du site ayant fait l’objet de la vérification de conformité
 				</h3>
 				<p style={{ whiteSpace: "pre-wrap" }}>
-					{declaration.audit?.compliantElements}
+					{declaration.audit.compliantElements}
 				</p>
 				<h4>Retour d’information et contact</h4>
 				<p>
@@ -125,15 +154,15 @@ export default function DeclarationPreviewPage({
 					autre forme.
 				</p>
 				<ul>
-					{declaration?.contact?.url && (
+					{declaration.contact.url && (
 						<li>
-							Envoyer un message sur le formulaire : {declaration?.contact?.url}
+							Envoyer un message sur le formulaire : {declaration.contact.url}
 						</li>
 					)}
-					{declaration?.contact?.email && (
+					{declaration.contact.email && (
 						<li>
 							Contacter le responsable de l’accessibilité :{" "}
-							{declaration?.contact?.email}
+							{declaration.contact.email}
 						</li>
 					)}
 				</ul>
@@ -223,7 +252,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const declaration = await getDeclarationById(payload, Number.parseInt(id));
 
-	const { audit, contact, entity, actionPlan } = declaration || {};
+	const { audit, contact, entity, actionPlan, created_by } = declaration || {};
 
 	if (!declaration) {
 		return {
@@ -232,7 +261,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		};
 	}
 
-	if (!audit || !contact || !entity || !actionPlan) {
+	if (!audit || !contact || !entity || !actionPlan || !created_by) {
 		return {
 			props: {},
 			redirect: { destination: `/dashboard/declaration/${declaration.id}` },
@@ -241,7 +270,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	return {
 		props: {
-			declaration: declaration,
+			declaration,
 		},
 	};
 };

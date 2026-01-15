@@ -15,12 +15,12 @@ import ContactForm from "~/components/declaration/ContactForm";
 import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
 import { contact } from "~/utils/form/contact/schema";
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
 
 export default function ContactPage({
 	declaration,
-}: { declaration: DeclarationWithPopulated }) {
+}: { declaration: PopulatedDeclaration }) {
 	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);

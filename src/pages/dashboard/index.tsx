@@ -11,13 +11,11 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { auth } from "~/utils/auth";
 
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
 
 interface DeclarationsPageProps {
-	declarations: Array<
-		DeclarationWithPopulated & { updatedAtFormatted: string }
-	>;
+	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
 	firstDeclaration?: boolean;
 }
 

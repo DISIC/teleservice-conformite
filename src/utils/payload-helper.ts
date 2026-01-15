@@ -2,7 +2,7 @@ import { type Payload, getPayload } from "payload";
 import payloadConfig from "~/payload/payload.config";
 import type { Audit, Contact, ActionPlan, Declaration, Entity, User } from "~/payload/payload-types";
 
-export type DeclarationWithPopulated = Omit<
+export type PopulatedDeclaration = Omit<
 	Declaration,
 	"audit" | "contact" | "entity" | "actionPlan" | "created_by"
 > & {

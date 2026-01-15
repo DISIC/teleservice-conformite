@@ -18,7 +18,7 @@ import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
 import {
 	getDeclarationById,
-	type DeclarationWithPopulated,
+	type PopulatedDeclaration,
 } from "~/utils/payload-helper";
 
 const deleteModal = createModal({
@@ -27,7 +27,7 @@ const deleteModal = createModal({
 });
 
 interface DeclarationPageProps {
-	declaration: DeclarationWithPopulated;
+	declaration: PopulatedDeclaration;
 }
 
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {

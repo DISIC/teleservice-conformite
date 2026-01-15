@@ -13,12 +13,12 @@ import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
 
 export default function GeneralInformationsPage({
 	declaration,
-}: { declaration?: DeclarationWithPopulated }) {
+}: { declaration?: PopulatedDeclaration }) {
 	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);

@@ -11,11 +11,13 @@ export const ActionPlans: CollectionConfig = {
       name: "currentYearSchemaUrl",
       type: "text",
       label: { fr: "Lien du schéma annuel" },
+      required: true,
     },
     {
       name: "previousYearsSchemaUrl",
       type: "text",
       label: { fr: "Lien du bilan des actions" },
+      required: true,
     },
     {
       name: "declaration",

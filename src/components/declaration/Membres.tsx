@@ -8,7 +8,7 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 
 const inviteMembersModal = createModal({
 	id: "inviteMembersModal",
@@ -16,7 +16,7 @@ const inviteMembersModal = createModal({
 });
 
 interface MembresProps {
-	declaration: DeclarationWithPopulated;
+	declaration: PopulatedDeclaration;
 }
 
 export default function Membres({ declaration }: MembresProps) {

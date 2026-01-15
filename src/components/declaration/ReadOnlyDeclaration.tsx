@@ -1,9 +1,9 @@
 import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 
 export const ReadOnlyDeclarationGeneral = ({
 	declaration,
-}: { declaration: DeclarationWithPopulated | null }) => {
+}: { declaration: PopulatedDeclaration | null }) => {
 	return (
 		<>
 			<ReadOnlyField
@@ -29,7 +29,7 @@ export const ReadOnlyDeclarationGeneral = ({
 
 export const ReadOnlyDeclarationSchema = ({
 	declaration,
-}: { declaration: DeclarationWithPopulated | null }) => {
+}: { declaration: PopulatedDeclaration | null }) => {
 	const currentYearSchemaUrl =
 		declaration?.actionPlan?.currentYearSchemaUrl ?? "";
 	const previousYearsSchemaUrl =
@@ -64,7 +64,7 @@ export const ReadOnlyDeclarationSchema = ({
 
 export const ReadOnlyDeclarationAudit = ({
 	declaration,
-}: { declaration: DeclarationWithPopulated | null }) => {
+}: { declaration: PopulatedDeclaration | null }) => {
 	const audit = declaration?.audit;
 
 	if (!audit) {
@@ -128,7 +128,7 @@ export const ReadOnlyDeclarationAudit = ({
 
 export const ReadOnlyDeclarationContact = ({
 	declaration,
-}: { declaration: DeclarationWithPopulated | null }) => {
+}: { declaration: PopulatedDeclaration | null }) => {
 	const email = declaration?.contact?.email ?? "";
 	const url = declaration?.contact?.url ?? "";
 	const contactOptions = [];
