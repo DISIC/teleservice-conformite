@@ -70,7 +70,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 
 	return (
 		<>
-			<section id="declaration-page">
+			<section id="declaration-page" className={classes.declarationPage}>
 				<section id="breadcrumbs">
 					<Breadcrumb
 						segments={[{ label: "Accueil", linkProps: { href: "/dashboard" } }]}
@@ -132,6 +132,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						{ tabId: "members", label: "Membres" },
 					]}
 					onTabChange={setSelectedTabId}
+					className={classes.tabs}
 				>
 					{<TabContent selectedTabId={selectedTabId} />}
 				</Tabs>
@@ -181,6 +182,9 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 }
 
 const useStyles = tss.withName(DeclarationPage.name).create({
+	declarationPage: {
+		margin: fr.spacing("10v"),
+	},
 	headerSection: {
 		display: "flex",
 		flexDirection: "column",
@@ -212,6 +216,23 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		backgroundColor:
 			fr.colors.decisions.background.actionHigh.redMarianne.default,
 		color: fr.colors.decisions.text.inverted.info.default,
+	},
+	tabs: {
+		"& > ul > li > button": {
+			border: "none !important",
+			backgroundColor: "inherit !important",
+			backgroundImage: "none !important",
+
+			"&[aria-selected='true']": {
+				borderBottom: `3px solid ${fr.colors.decisions.border.actionHigh.blueFrance.default} !important`,
+				borderTop: "none !important",
+			},
+		},
+
+		"& > div": {
+			border: "none !important",
+			boxShadow: "none !important",
+		},
 	},
 });
 
