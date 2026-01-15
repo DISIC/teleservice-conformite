@@ -50,6 +50,7 @@ export const ReadOnlyDeclarationSchema = ({
 			<ReadOnlyField
 				label="Réalisation d’un schéma annuel - années précédentes"
 				value={previousYearsSchemaUrl ? "Oui" : "Non"}
+				addSectionBorder
 			/>
 			{previousYearsSchemaUrl && (
 				<ReadOnlyField
@@ -65,6 +66,7 @@ export const ReadOnlyDeclarationAudit = ({
 	declaration,
 }: { declaration: DeclarationWithPopulated | null }) => {
 	const audit = declaration?.audit;
+
 	if (!audit) {
 		return <ReadOnlyField label="Audit réalisé" value="Non" />;
 	}
@@ -75,6 +77,7 @@ export const ReadOnlyDeclarationAudit = ({
 			<ReadOnlyField
 				label="Entité ou personne ayant réalisé l’audit"
 				value={audit.realisedBy ?? ""}
+				addSectionBorder
 			/>
 			<ReadOnlyField
 				label="Référentiel RGAA utilisé"
@@ -96,11 +99,13 @@ export const ReadOnlyDeclarationAudit = ({
 				label="Éléments ayant fait l’objet de vérification"
 				value={audit.compliantElements || ""}
 				textArea
+				addSectionBorder
 			/>
 			<ReadOnlyField
 				label="Éléments non conformes"
 				value={audit.nonCompliantElements || "Non"}
 				textArea
+				addSectionBorder
 			/>
 			<ReadOnlyField
 				label="Éléments avec dérogation pour charge disproportionnée : "
@@ -113,6 +118,7 @@ export const ReadOnlyDeclarationAudit = ({
 				textArea
 			/>
 			<ReadOnlyField
+				addSectionBorder
 				label="Rapport d'audit"
 				value={audit.auditReport || "Non"}
 			/>

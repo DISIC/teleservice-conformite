@@ -129,7 +129,6 @@ const useStyles = tss.withName(GeneralInformationsPage.name).create({
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("3w"),
 		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
