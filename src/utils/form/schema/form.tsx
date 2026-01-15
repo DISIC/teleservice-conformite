@@ -12,8 +12,8 @@ export const SchemaForm = withForm({
 					{(field) => (
 						<>
 							<field.RadioField
-								label="Avez-vous réalisé un schéma annuel pour l’année en cours ?"
-								description="Le schéma annuel, ou plan d’action, détaille les actions prévues sur l’année pour améliorer l’accessibilité de vos services numériques."
+								label="Avez-vous réalisé un plan d’action pour l’année en cours ?"
+								description="Le plan d’action, ou schéma annuel, détaille les actions prévues sur l’année pour améliorer l’accessibilité de vos services numériques."
 								options={[
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
@@ -41,12 +41,9 @@ export const SchemaForm = withForm({
 									image={<Information fontSize="6rem" />}
 									message={
 										<>
-											La mise en place d’un plan d’action est obligatoire.
-											<br />
-											<br />
-											L’objectif est d’engager une démarche d’amélioration
-											continue de l’accessibilité, en définissant des actions
-											réalisables à moyen terme
+											L’objectif d’un plan d’action est de créer une démarche
+											d’amélioration continue de l’accessibilité. Sa création
+											est obligatoire.
 										</>
 									}
 								/>
@@ -58,7 +55,7 @@ export const SchemaForm = withForm({
 					{(field) => (
 						<>
 							<field.RadioField
-								label="Avez-vous réalisé un schéma annuel pour les années précédentes ?"
+								label="Avez-vous réalisé un bilan des actions des années précédentes ?"
 								description="Le bilan des actions liste les actions réalisées pendant les années précédentes pour améliorer l’accessibilité de vos services numériques."
 								options={[
 									{ label: "Oui", value: true },
