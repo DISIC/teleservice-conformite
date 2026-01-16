@@ -53,7 +53,7 @@ export function TagGroupField({
 				</Button>
 			</div>
 			{tags.length > 0 && (
-				<div>
+				<div className={classes.tagsContainer}>
 					{tags.map((tag) => (
 						<Tag
 							key={tag}
@@ -80,6 +80,7 @@ const useStyles = tss.withName({ TagGroupField }).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("4v"),
+		marginBottom: fr.spacing("4w"),
 	},
 	inputWrapper: {
 		display: "flex",
@@ -90,5 +91,10 @@ const useStyles = tss.withName({ TagGroupField }).create({
 		"& > div": {
 			marginBottom: "0 !important",
 		},
+	},
+	tagsContainer: {
+		display: "flex",
+		flexWrap: "wrap",
+		gap: fr.spacing("2v"),
 	},
 });
