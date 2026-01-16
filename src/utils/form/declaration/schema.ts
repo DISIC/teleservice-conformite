@@ -87,6 +87,7 @@ export const initialDeclaration = z.object({
 		isNewDeclaration: z.boolean(),
 		publishedDate: z.iso.date().optional(),
 		araUrl: z.union([z.url().optional(), z.literal("")]),
+		declarationUrl: z.union([z.url().optional(), z.literal("")]),
 	}),
 });
 
@@ -97,6 +98,7 @@ export const initialDeclarationDefaultValues: ZInitialDeclaration = {
 		isNewDeclaration: false,
 		publishedDate: undefined,
 		araUrl: "",
+		declarationUrl: "",
 	},
 };
 

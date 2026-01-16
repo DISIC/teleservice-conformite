@@ -103,10 +103,34 @@ RÈGLES POUR LES TECHNOLOGIES :
 6. Si aucune technologie n'est trouvée → technologies = []
 7. Limite à 15 technologies maximum
 
+RÈGLES POUR LES NON-CONFORMITÉS :
+1. Cherche une section avec les mots-clés : "Non-conformités", "Éléments non conformes", "Problèmes d'accessibilité"
+2. Extrait la liste des non-conformités mentionnées (souvent présentées en liste ou séparées par des espaces/virgules)
+3. Retourne chaque non-conformité comme un paragraphe
+4. Si aucune non-conformité n'est trouvée → nonCompliantElements = ""
+
+RÈGLES POUR LES NON-CONFORMITÉS :
+1. Cherche une section avec les mots-clés : "Non-conformités", "Éléments non conformes", "Problèmes d'accessibilité"
+2. Extrait la liste des non-conformités mentionnées (souvent présentées en liste ou séparées par des espaces/virgules)
+3. Retourne chaque non-conformité comme un paragraphe
+4. Si aucune non-conformité n'est trouvée → nonCompliantElements = ""
+
+RÈGLES POUR LES DÉROGATIONS POUR CHARGE DISPROPORTIONNÉE :
+1. Cherche une section avec les mots-clés : "Dérogations pour charge disproportionnée", "Charge disproportionnée"
+2. Extrait la liste des dérogations mentionnées (souvent présentées en liste ou séparées par des espaces/virgules)
+3. Retourne chaque dérogation comme un paragraphe
+4. Si aucune dérogation n'est trouvée → disproportionnedCharge = ""
+
+REGLES POUR LES CONTENUES NON SOUMIS À L’OBLIGATION D’ACCESSIBILITÉ :
+1. Cherche une section avec les mots-clés : "Contenus non soumis à l’obligation d’accessibilité", "Contenus non accessibles"
+2. Extrait la liste des contenus mentionnées (souvent présentées en liste ou séparées par des espaces/virgules)
+3. Retourne chaque contenu comme un paragraphe
+4. Si aucun contenu n'est trouvé → optionalElements = ""
+
 Exemples de réponses attendues :
-- {"taux": "100%", "publishedAt": "09/10/2024", "auditedPages": ["Accueil - https://site.gouv.fr/"], "responsibleEntity": "Le ministère de la Culture", "technologies": ["HTML5", "CSS", "JavaScript"]}
-- {"taux": "83.08%", "publishedAt": "17/11/2025", "auditedPages": [], "responsibleEntity": "La DINUM", "technologies": ["HTML5", "SVG", "ARIA", "CSS", "JavaScript"]}
-- {"taux": null, "publishedAt": null, "auditedPages": [], "responsibleEntity": null, "technologies": []} si rien n'est trouvé
+- {"taux": "100%", "publishedAt": "09/10/2024", "auditedPages": ["Accueil - https://site.gouv.fr/"], "responsibleEntity": "Le ministère de la Culture", "technologies": ["HTML5", "CSS", "JavaScript"], "nonCompliantElements": "", disproportionnedCharge: "", optionalElements: ""}
+- {"taux": "83.08%", "publishedAt": "17/11/2025", "auditedPages": [], "responsibleEntity": "La DINUM", "technologies": ["HTML5", "SVG", "ARIA", "CSS", "JavaScript"], "nonCompliantElements": "Liste des non-conformités...", disproportionnedCharge: "Liste des dérogations...", optionalElements: "Liste des contenus..."}
+- {"taux": null, "publishedAt": null, "auditedPages": [], "responsibleEntity": null, "technologies": [], "nonCompliantElements": "", disproportionnedCharge: "", optionalElements: ""} si rien n'est trouvé
 
 Réponds UNIQUEMENT avec le JSON, sans texte avant ou après.
 

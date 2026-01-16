@@ -142,6 +142,14 @@ export const InitialDeclarationForm = withForm({
 										/>
 									)}
 								</form.AppField>
+								<form.AppField name="initialDeclaration.declarationUrl">
+									{(field) => (
+										<field.TextField
+											label="Lien URL de la déclaration (facultatif)"
+											description="Format attendu : https://www.example.fr."
+										/>
+									)}
+								</form.AppField>
 							</>
 						) : null
 					}

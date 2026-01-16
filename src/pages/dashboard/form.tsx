@@ -33,6 +33,43 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		},
 	);
 
+	const { mutateAsync: analyzeUrl } = api.albert.analyzeUrl.useMutation({
+		onSuccess: async (result) => {
+			// {"taux": "100%", "publishedAt": "09/10/2024", "auditedPages": ["Accueil - https://site.gouv.fr/"], "responsibleEntity": "Le ministère de la Culture", "technologies": ["HTML5", "CSS", "JavaScript"]}
+
+			// retrieve: (for general infos)
+			// - name: declaration name
+			// - kind
+			// - url (optional)
+			// - domain (optional)
+
+			// retrieve: (for audit)
+			// - taux
+			// - realised by
+			// - date of audit
+			// - rga version
+			// - compliant elements
+			// - non compliant elements
+			// - disproportionned charge
+			// - optional elements
+			// - technologies
+			// - toolsUsed
+
+			// retrieve: (for schema)
+			// - current year schema url
+			// - previous year schema url
+
+			// retrieve: (for contact)
+			// - contact email
+			// - contact url
+
+			const declarationInfos = result.data;
+		},
+		onError: (error) => {
+			console.error("Error analyzing URL:", error);
+		},
+	});
+
 	declarationMultiStepFormOptions.defaultValues.section = "initialDeclaration";
 
 	const onClickCancel = () => {
@@ -69,9 +106,13 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		...declarationMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (value.section === "initialDeclaration") {
-				!value.initialDeclaration.isNewDeclaration
-					? formApi.setFieldValue("section", "general")
-					: null;
+				if (value.initialDeclaration.declarationUrl) {
+					await analyzeUrl({
+						url: value.initialDeclaration.declarationUrl,
+					});
+				}
+
+				formApi.setFieldValue("section", "general");
 			} else {
 				await addDeclaration(value.general);
 			}
