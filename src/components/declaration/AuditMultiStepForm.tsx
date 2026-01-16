@@ -10,12 +10,11 @@ import {
 	ToolsForm,
 	CompliantElementsForm,
 	NonCompliantElementsForm,
-	DisproportionnedChargeForm,
-	OptionElementsForm,
 	FilesForm,
 } from "~/utils/form/audit/form";
 import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
 import { api } from "~/utils/api";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 
 type Steps<T> = {
 	slug: T;
@@ -23,18 +22,23 @@ type Steps<T> = {
 };
 
 export default function AuditMultiStepForm({
-	declarationId,
-}: { declarationId: number }) {
+	declaration,
+}: { declaration: PopulatedDeclaration }) {
 	const { classes } = useStyles();
 	const router = useRouter();
 
 	const { mutateAsync: createAudit } = api.audit.create.useMutation({
 		onSuccess: async () => {
-			router.push(`/declaration/${declarationId}`);
+			if (declaration?.contact && declaration.actionPlan) {
+				router.push(`/dashboard/declaration/${declaration.id}/preview`);
+				return;
+			}
+
+			router.push(`/dashboard/declaration/${declaration?.id}`);
 		},
 		onError: (error) => {
 			console.error(
-				`Error adding audit for declarationId ${declarationId}:`,
+				`Error adding audit for declarationId ${declaration?.id}:`,
 				error,
 			);
 		},
@@ -45,8 +49,6 @@ export default function AuditMultiStepForm({
 		"tools",
 		"compliantElements",
 		"nonCompliantElements",
-		"disproportionnedCharge",
-		"optionalElements",
 		"files",
 	] as const;
 
@@ -70,7 +72,7 @@ export default function AuditMultiStepForm({
 
 	const onClickCancel = () => {
 		if (section === "auditDate") {
-			router.push(`/declaration/${declarationId}`);
+			router.push(`/dashboard/declaration/${declaration?.id}`);
 			return;
 		}
 
@@ -80,22 +82,12 @@ export default function AuditMultiStepForm({
 		}
 
 		if (section === "nonCompliantElements") {
-			form.setFieldValue("hasNonCompliantElements", false);
 			form.setFieldValue("nonCompliantElements", "");
-		}
-
-		if (section === "disproportionnedCharge") {
-			form.setFieldValue("hasDisproportionnedCharge", false);
-			form.setFieldValue("disproportionnedCharge", []);
-		}
-
-		if (section === "optionalElements") {
-			form.setFieldValue("hasOptionalElements", false);
+			form.setFieldValue("disproportionnedCharge", "");
 			form.setFieldValue("optionalElements", "");
 		}
 
 		if (section === "files") {
-			form.setFieldValue("grid", "");
 			form.setFieldValue("report", "");
 		}
 
@@ -109,7 +101,7 @@ export default function AuditMultiStepForm({
 				...auditData,
 			};
 
-			await createAudit({ ...audit, declarationId });
+			await createAudit({ ...audit, declarationId: declaration.id });
 		} catch (error) {
 			console.error("Error adding audit:", error);
 		}
@@ -119,7 +111,7 @@ export default function AuditMultiStepForm({
 		...auditMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (value.section === "files") {
-				await addAudit(value, declarationId);
+				await addAudit(value, declaration.id);
 			} else {
 				const nextSection = goToNextSection(value.section as Section);
 				if (nextSection) formApi.setFieldValue("section", nextSection);
@@ -137,11 +129,6 @@ export default function AuditMultiStepForm({
 		{ slug: "tools", title: "Outils de test" },
 		{ slug: "compliantElements", title: "Échantillon contrôlé" },
 		{ slug: "nonCompliantElements", title: "Éléments non conformes" },
-		{ slug: "disproportionnedCharge", title: "Charge disproportionnée" },
-		{
-			slug: "optionalElements",
-			title: "Éléments non soumis à l’obligation d’accessibilité",
-		},
 		{ slug: "files", title: "Fichiers" },
 	];
 
@@ -164,12 +151,6 @@ export default function AuditMultiStepForm({
 						)}
 						{section === "nonCompliantElements" && (
 							<NonCompliantElementsForm form={form} />
-						)}
-						{section === "disproportionnedCharge" && (
-							<DisproportionnedChargeForm form={form} />
-						)}
-						{section === "optionalElements" && (
-							<OptionElementsForm form={form} />
 						)}
 						{section === "files" && <FilesForm form={form} />}
 					</div>
@@ -195,14 +176,12 @@ export default function AuditMultiStepForm({
 
 const useStyles = tss.withName(AuditMultiStepForm.name).create({
 	main: {
-		marginTop: fr.spacing("6v"),
+		marginBlock: fr.spacing("6w"),
 	},
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
-		// backgroundColor: fr.colors.decisions.background.default.grey.hover,
-		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
 	actionButtonsContainer: {

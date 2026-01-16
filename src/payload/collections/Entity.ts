@@ -51,11 +51,13 @@ export const Entities: CollectionConfig = {
       name: "name",
       type: "text",
       label: { fr: "Nom de l'administration" },
+      required: true,
     },
     {
       name: "siret",
       type: "number",
       label: { fr: "SIRET" },
+      required: true,
     },
     {
       name: "kind",

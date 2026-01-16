@@ -5,16 +5,29 @@ import type { DefaultFieldProps } from "~/utils/form/context";
 
 interface ReadOnlyFieldProps extends DefaultFieldProps {
 	value: string | string[];
+	textArea?: boolean;
+	addSectionBorder?: boolean;
 }
 
 export function ReadOnlyField(props: ReadOnlyFieldProps) {
-	const { label, placeholder = "Non", className, value } = props;
-	const { classes } = useStyles();
+	const {
+		label,
+		placeholder = "Non",
+		className,
+		value,
+		textArea = false,
+		addSectionBorder = false,
+	} = props;
 	const valueIsArray = Array.isArray(value);
-	console.log("label:", label, "value:", value);
+
+	const { classes } = useStyles({
+		valueIsArray,
+		textArea,
+		addSectionBorder,
+	});
 
 	return (
-		<div className={valueIsArray ? classes.flexWrapper : classes.inlineWrapper}>
+		<div className={classes.fieldContainer}>
 			<p className={classes.label}>{label} :</p>
 			{valueIsArray ? (
 				<ul className={classes.list}>
@@ -31,30 +44,46 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 	);
 }
 
-const useStyles = tss.withName(ReadOnlyField.name).create({
-	p: {
-		margin: 0,
-	},
-	inlineWrapper: {
-		display: "inline-flex",
-	},
-	flexWrapper: {
-		display: "flex",
-		flexDirection: "column",
-	},
-	label: {
-		fontWeight: 700,
-		fontSize: "1rem",
-		lineHeight: "1.5rem",
-		fontFamily: "Marianne",
-		color: fr.colors.decisions.text.label.grey.default,
-	},
-	list: {},
-	value: {
-		fontWeight: 400,
-		fontSize: "1rem",
-		lineHeight: "1.5rem",
-		fontFamily: "Marianne",
-		color: fr.colors.decisions.text.label.grey.default,
-	},
-});
+const useStyles = tss
+	.withName(ReadOnlyField.name)
+	.withParams<{
+		valueIsArray: boolean;
+		textArea: boolean;
+		addSectionBorder: boolean;
+	}>()
+	.create(({ valueIsArray, textArea, addSectionBorder }) => ({
+		fieldContainer: {
+			paddingBlock: fr.spacing("3w"),
+			borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+			"& p": {
+				margin: 0,
+			},
+			...(addSectionBorder && {
+				borderTop: `10px solid ${fr.colors.decisions.border.default.grey.default}`,
+			}),
+			...(valueIsArray || textArea
+				? {
+						display: "flex",
+						flexDirection: "column",
+					}
+				: {
+						display: "inline-flex",
+					}),
+		},
+		label: {
+			fontWeight: 700,
+			fontSize: "1rem",
+			lineHeight: "1.5rem",
+			fontFamily: "Marianne",
+			color: fr.colors.decisions.text.label.grey.default,
+		},
+		list: {},
+		value: {
+			fontWeight: 400,
+			fontSize: "1rem",
+			lineHeight: "1.5rem",
+			fontFamily: "Marianne",
+			color: fr.colors.decisions.text.label.grey.default,
+			whiteSpace: "pre-wrap",
+		},
+	}));

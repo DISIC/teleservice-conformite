@@ -7,14 +7,16 @@ import Document from "@codegouvfr/react-dsfr/picto/Document";
 import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import Search from "@codegouvfr/react-dsfr/picto/Search";
 import Community from "@codegouvfr/react-dsfr/picto/Community";
+import { useRouter } from "next/router";
 
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 
 interface DemarchesProps {
-	declaration: DeclarationWithPopulated;
+	declaration: PopulatedDeclaration;
 }
 
 export default function Demarches({ declaration }: DemarchesProps) {
+	const router = useRouter();
 	const { classes } = useStyles();
 	const { rate } = declaration?.audit || {};
 
@@ -25,37 +27,37 @@ export default function Demarches({ declaration }: DemarchesProps) {
 
 	return (
 		<section id="demarches-tab" className={classes.main}>
-			<div className={classes.summaryCardsContainer}>
-				{typeof rate === "number" && (
+			{declaration.status === "published" && (
+				<div className={classes.summaryCardsContainer}>
 					<div className={classes.summaryRateCard}>
 						<p className={classes.cardLabel}>Taux de conformité</p>
 						<p className={classes.cardValue}>{`${rate}%`}</p>
 					</div>
-				)}
-				<div className={classes.summaryUpdateDateCard}>
-					<p className={classes.cardLabel}>Dernière mise à jour</p>
-					<p className={classes.cardValue}>
-						{declaration?.updatedAt
-							? new Date(declaration.updatedAt).toLocaleString()
-							: "N/A"}
-					</p>
-					{wasUpdated && (
-						<Button
-							iconId="fr-icon-edit-box-fill"
-							priority="primary"
-							style={{ width: "100%" }}
-						>
-							Mettre à jour
-						</Button>
-					)}
+					<div className={classes.summaryUpdateDateCard}>
+						<p className={classes.cardLabel}>Dernière mise à jour</p>
+						<p className={classes.cardValue}>
+							{declaration?.updatedAt
+								? new Date(declaration.updatedAt).toLocaleDateString("fr-FR")
+								: "N/A"}
+						</p>
+						{wasUpdated && (
+							<Button
+								iconId="fr-icon-edit-box-fill"
+								priority="primary"
+								style={{ width: "100%" }}
+							>
+								Mettre à jour
+							</Button>
+						)}
+					</div>
 				</div>
-			</div>
+			)}
 			<div className={classes.tilesContainer}>
 				<Tile
 					desc="Informations à propos du service et l’administration à laquelle il est lié"
 					title="Informations générales"
 					linkProps={{
-						href: `/declaration/${declaration?.id}/infos`,
+						href: `/dashboard/declaration/${declaration?.id}/infos`,
 					}}
 					enlargeLinkOrButton={true}
 					orientation="vertical"
@@ -63,19 +65,32 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					className={classes.tile}
 				/>
 				<Tile
-					title="Schéma et plans d'actions"
-					desc="État des lieux et actions prévues pour améliorer l'accessibilité"
+					title="Contact"
+					desc="Moyen de contact pour pouvoir accéder aux éventuels contenus inaccessibles"
 					linkProps={{
-						href: `/declaration/${declaration?.id}/schema`,
+						href: `/dashboard/declaration/${declaration?.id}/contact`,
 					}}
-					enlargeLinkOrButton={true}
+					enlargeLinkOrButton={!!declaration?.contact}
 					orientation="vertical"
-					pictogram={<Conclusion fontSize="2rem" />}
+					pictogram={<Community fontSize="2rem" />}
 					start={
-						declaration?.actionPlan ? null : (
+						declaration?.contact ? null : (
 							<Badge noIcon severity="new">
 								A Remplir
 							</Badge>
+						)
+					}
+					detail={
+						declaration?.contact ? null : (
+							<Button
+								onClick={() =>
+									router.push(
+										`/dashboard/declaration/${declaration?.id}/contact`,
+									)
+								}
+							>
+								Renseigner les informations
+							</Button>
 						)
 					}
 					className={classes.tile}
@@ -84,9 +99,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					title="Résultat de l’audit"
 					desc="Taux de conformité et détails de l'audit"
 					linkProps={{
-						href: `/declaration/${declaration?.id}/audit`,
+						href: `/dashboard/declaration/${declaration?.id}/audit`,
 					}}
-					enlargeLinkOrButton={true}
+					enlargeLinkOrButton={!!declaration?.audit}
 					orientation="vertical"
 					pictogram={<Search fontSize="2rem" />}
 					start={
@@ -96,22 +111,46 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							</Badge>
 						)
 					}
+					detail={
+						declaration?.audit ? null : (
+							<Button
+								onClick={() =>
+									router.push(`/dashboard/declaration/${declaration?.id}/audit`)
+								}
+							>
+								Renseigner les informations
+							</Button>
+						)
+					}
 					className={classes.tile}
 				/>
 				<Tile
-					title="Contact"
-					desc="Moyen de contact pour pouvoir accéder aux éventuels contenus inaccessibles"
+					title="Schéma et plans d'actions"
+					desc="État des lieux et actions prévues pour améliorer l'accessibilité"
 					linkProps={{
-						href: `/declaration/${declaration?.id}/contact`,
+						href: `/dashboard/declaration/${declaration?.id}/schema`,
 					}}
-					enlargeLinkOrButton={true}
+					enlargeLinkOrButton={!!declaration?.actionPlan}
 					orientation="vertical"
-					pictogram={<Community fontSize="2rem" />}
+					pictogram={<Conclusion fontSize="2rem" />}
 					start={
-						declaration?.contact ? null : (
+						declaration?.actionPlan ? null : (
 							<Badge noIcon severity="new">
 								A Remplir
 							</Badge>
+						)
+					}
+					detail={
+						declaration?.actionPlan ? null : (
+							<Button
+								onClick={() =>
+									router.push(
+										`/dashboard/declaration/${declaration?.id}/schema`,
+									)
+								}
+							>
+								Renseigner les informations
+							</Button>
 						)
 					}
 					className={classes.tile}
@@ -172,8 +211,14 @@ const useStyles = tss.withName(Demarches.name).create({
 		gap: fr.spacing("4v"),
 	},
 	tile: {
-		"& a::after": {
-			display: "none",
+		"& a": {
+			backgroundImage: "none !important",
+			"&::after": {
+				display: "none",
+			},
+		},
+		"& h3": {
+			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 		},
 	},
 });

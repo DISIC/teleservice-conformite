@@ -8,7 +8,7 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 
 const inviteMembersModal = createModal({
 	id: "inviteMembersModal",
@@ -16,11 +16,11 @@ const inviteMembersModal = createModal({
 });
 
 interface MembresProps {
-	declaration: DeclarationWithPopulated;
+	declaration: PopulatedDeclaration;
 }
 
 export default function Membres({ declaration }: MembresProps) {
-	const [value, setValue] = useState<"reader" | "admin">("reader");
+	const [value, setValue] = useState<"reader" | "admin">("admin");
 	const { classes } = useStyles();
 	const { name, email } = declaration?.created_by || {};
 
@@ -114,6 +114,7 @@ export default function Membres({ declaration }: MembresProps) {
 										value: "reader",
 										checked: value === "reader",
 										onChange: () => setValue("reader"),
+										disabled: true,
 									},
 								},
 								{

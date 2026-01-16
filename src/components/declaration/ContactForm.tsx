@@ -6,16 +6,22 @@ import { useAppForm } from "~/utils/form/context";
 import { ContactTypeForm } from "~/utils/form/contact/form";
 import { contactFormOptions } from "~/utils/form/contact/schema";
 import { api } from "~/utils/api";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
 
 export default function ContactForm({
-	declarationId,
-}: { declarationId: number }) {
+	declaration,
+}: { declaration: PopulatedDeclaration }) {
 	const { classes } = useStyles();
 	const router = useRouter();
 
 	const { mutateAsync: createContact } = api.contact.create.useMutation({
 		onSuccess: async () => {
-			router.push(`/declaration/${declarationId}`);
+			if (declaration?.audit && declaration.actionPlan) {
+				router.push(`/dashboard/declaration/${declaration.id}/preview`);
+				return;
+			}
+
+			router.push(`/dashboard/declaration/${declaration.id}`);
 		},
 		onError: (error) => {
 			console.error("Error adding contact:", error);
@@ -40,7 +46,7 @@ export default function ContactForm({
 			await addContact({
 				email: value?.emailContact ?? "",
 				url: value?.contactLink ?? "",
-				declarationId,
+				declarationId: declaration.id,
 			});
 		},
 	});
@@ -62,7 +68,9 @@ export default function ContactForm({
 					<div className={classes.actionButtonsContainer}>
 						<form.CancelButton
 							label="Retour"
-							onClick={() => router.push(`/declaration/${declarationId}`)}
+							onClick={() =>
+								router.push(`/dashboard/declaration/${declaration.id}`)
+							}
 							priority="tertiary"
 						/>
 						<form.SubscribeButton
@@ -79,14 +87,13 @@ export default function ContactForm({
 
 const useStyles = tss.withName(ContactForm.name).create({
 	main: {
-		marginTop: fr.spacing("6v"),
+		marginBlock: fr.spacing("6w"),
 	},
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
 		// backgroundColor: fr.colors.decisions.background.default.grey.hover,
-		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
 	actionButtonsContainer: {

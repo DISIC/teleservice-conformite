@@ -19,7 +19,7 @@ export const toolOptions = [
 	{ label: "JAWS", value: "jaws" },
 	{ label: "Assistant RGAA", value: "assistant_rgaa" },
 	{ label: "Tanaguru", value: "tanaguru" },
-]
+] as const;
 
 export const testEnvironmentOptions = [
 	{ label: "NVDA (Firefox)", value: "nvda_firefox" },
@@ -27,7 +27,7 @@ export const testEnvironmentOptions = [
 	{ label: "VoiceOver (Safari)", value: "voiceover_safari" },
 	{ label: "ZoomText (Windows ou Mac OSX)", value: "zoomtext_windows_mac" },
 	{ label: "Dragon Naturally Speaking (Windows ou Mac OSX)", value: "dragon_naturally_speaking_windows_mac" },
-]
+] as const;
 
 export const Audits: CollectionConfig = {
 	slug: "audits",
@@ -50,6 +50,7 @@ export const Audits: CollectionConfig = {
 					pickerAppearance: "dayOnly",
 				},
 			},
+			required: true,
 		},
 		{
 			name: "rgaa_version",
@@ -57,74 +58,39 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Version RGAA" },
 			options: [...rgaaVersionOptions],
 			index: true,
+			required: true,
 		},
 		{
 			name: "realisedBy",
 			type: "text",
 			label: { fr: "Entite ou personne ayant realise l'audit" },
+			required: true,
 		},
 		{
 			name: "rate",
 			type: "number",
 			label: { fr: "Taux de conformité" },
+			required: true,
 		},
 		{
 			name: "compliantElements",
-			type: "array",
+			type: "textarea",
 			label: { fr: "Échantillon contrôlé" },
-			fields: [
-				{
-					name: "name",
-					required: true,
-					type: "text",
-					label: { fr: "Nom de la page" },
-				},
-				{
-					name: "url",
-					type: "text",
-					label: { fr: "URL de la page" },
-				},
-			],
+			required: true,
 		},
 		{
 			name: "nonCompliantElements",
-			type: "text",
+			type: "textarea",
 			label: { fr: "Éléments non conformes" },
 		},
 		{
 			name: "disproportionnedCharge",
-			type: "array",
+			type: "textarea",
 			label: { fr: "Éléments avec dérogation pour charge disproportionnée" },
-			fields: [
-				{
-					name: "name",
-					type: "text",
-					label: { fr: "Nom de l’élément" },
-					required: true,
-				},
-				{
-					name: "reason",
-					type: "text",
-					label: { fr: "Raison de la dérogation" },
-					required: true,
-				},
-				{
-					name: "duration",
-					type: "text",
-					label: { fr: "Durée de la dérogation (facultatif)" },
-					required: true,
-				},
-				{
-					name: "alternative",
-					type: "text",
-					label: { fr: "Alternative accessible proposée" },
-					required: true,
-				},
-			],
 		},
 		{
-			name: "exemption",
-			type: "text",
+			name: "optionalElements",
+			type: "textarea",
 			label: { fr: "Éléments non soumis à l’obligation d’accessibilité" },
 		},
 		{
@@ -133,31 +99,37 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Rapport d'audit" },
 		},
 		{
-			name: "auditGrid",
-			type: "text",
-			label: { fr: "Grille d'audit" },
-		},
-		{
 			name: "toolsUsed",
-			type: "select",
-			hasMany: true,
+			type: "array",
 			label: { fr: "Outils utilisés" },
-			options: [...toolOptions],
-			index: true,
+			fields: [
+				{
+					name: "name",
+					type: "text",
+					label: { fr: "Nom de l’outil" },
+					required: true,
+				},
+			],
+			required: true,
 		},
 		{
 			name: "testEnvironments",
 			type: "select",
-			hasMany: true,
 			label: { fr: "Environnements de test" },
-			options: [...testEnvironmentOptions],
 			index: true,
+			options : [...testEnvironmentOptions],
+			hasMany: true,
+			required: true,
 		},
 		{
 			name: "declaration",
 			type: "relationship",
 			relationTo: "declarations",
 			label: { fr: "déclaration associée" },
+			required: true,
+			admin: {
+				position: "sidebar",
+			},
 		},
 	],
 };

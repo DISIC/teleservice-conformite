@@ -11,6 +11,7 @@ interface RadioFieldProps extends DefaultFieldProps {
 		description?: string;
 	}>;
 	onChange?: (value: string | boolean) => void;
+	value?: string | boolean;
 }
 
 export function RadioField({

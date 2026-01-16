@@ -1,5 +1,4 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
-import type { JSX } from "react";
 
 import { SubscribeButton, CancelButton } from "~/components/form/ActionButtons";
 
@@ -10,6 +9,7 @@ import { RadioField } from "~/components/form/fields/RadioField";
 import { SelectField } from "~/components/form/fields/SelectField";
 import { TextField } from "~/components/form/fields/TextField";
 import { UploadField } from "~/components/form/fields/UploadField";
+import { TagGroupField } from "~/components/form/fields/TagGroupField";
 
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
 	createFormHookContexts();
@@ -23,6 +23,7 @@ export const { useAppForm, withForm } = createFormHook({
 		CheckboxGroupField,
 		NumberField,
 		RadioField,
+		TagGroupField,
 	},
 	formComponents: {
 		SubscribeButton,
@@ -37,6 +38,6 @@ export type DefaultFieldProps = {
 	className?: string;
 	disabled?: boolean;
 	readOnly?: boolean;
-	description?: string | JSX.Element;
+	description?: string | React.ReactNode;
 	placeholder?: string;
 };
