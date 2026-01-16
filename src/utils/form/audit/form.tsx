@@ -1,5 +1,7 @@
 import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
+import NextLink from "next/link";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
 import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import {
@@ -8,6 +10,8 @@ import {
 } from "~/payload/collections/Audit";
 import { withForm } from "../context";
 import { auditMultiStepFormOptions } from "./schema";
+import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
+import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
 
 export const AuditDateForm = withForm({
 	...auditMultiStepFormOptions,
@@ -44,7 +48,10 @@ export const AuditDateForm = withForm({
 				</form.AppField>
 				<form.AppField name="rate">
 					{(field) => (
-						<field.NumberField label="Pourcentage de critères du RGAA respectés" />
+						<field.NumberField
+							label="Pourcentage de critères du RGAA respectés"
+							description="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
+						/>
 					)}
 				</form.AppField>
 			</>
@@ -59,10 +66,21 @@ export const ToolsForm = withForm({
 			<>
 				<form.AppField name="technologies">
 					{(field) => (
-						<field.CheckboxGroupField
-							label="Outils utilisés pour évaluer l’accessibilité"
-							options={[...toolOptions, { label: "Autre", value: "other" }]}
-						/>
+						<div>
+							<field.CheckboxGroupField
+								label="Outils utilisés pour évaluer l’accessibilité"
+								options={[...toolOptions]}
+							/>
+							<field.TagGroupField
+								label=""
+								initialTags={field.state.value.filter(
+									(tag) =>
+										![...toolOptions]
+											.map((option) => option.value as string)
+											.includes(tag),
+								)}
+							/>
+						</div>
 					)}
 				</form.AppField>
 				<form.AppField name="testEnvironments">
@@ -82,277 +100,135 @@ export const CompliantElementsForm = withForm({
 	...auditMultiStepFormOptions,
 	render: function Render({ form }) {
 		return (
-			<form.AppField name="compliantElements" mode="array">
+			<form.AppField name="compliantElements">
 				{(field) => (
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							gap: fr.spacing("8v"),
-						}}
-					>
-						<h2>
-							Éléments ayant fait l’objet de la vérification de conformité
-						</h2>
-						{field.state.value.map((item, index) => (
-							<div
-								key={index}
-								style={{
-									display: "grid",
-									gridTemplateColumns: "1fr auto",
-									gap: fr.spacing("8v"),
-									borderBottom:
-										field.state.value.length === 1 ? "" : "1px solid grey",
-									paddingBottom: fr.spacing("8v"),
-									width: "100%",
-								}}
-							>
-								<div>
-									<form.AppField name={`compliantElements[${index}].name`}>
-										{(subField) => (
-											<subField.TextField
-												label="Nom de l’élément"
-												description="Exemples : Nom de page comme “Accueil” ou “Service>Immatriculation>Renouveler”"
-											/>
-										)}
-									</form.AppField>
-									<form.AppField name={`compliantElements[${index}].url`}>
-										{(subField) => (
-											<subField.TextField
-												label="URL (facultative)"
-												description="Il est nécessaire de renseigner l’URL pour un site web. Elle reste facultative pour un intranet, extranet ou si elle ne peut pas être communiquée pour des raisons de sécurité. Format attendu : https://www.nomdelapage/accueil"
-											/>
-										)}
-									</form.AppField>
-								</div>
-								<Button
-									type="button"
-									priority="secondary"
-									iconId="fr-icon-delete-bin-line"
-									onClick={() => field.removeValue(index)}
-									title="Supprimer l'élément"
-								/>
-							</div>
-						))}
-						<Button
-							type="button"
-							onClick={() => field.pushValue({ name: "", url: "" })}
-						>
-							Ajouter un élément
-						</Button>
-					</div>
+					<field.TextField
+						label="Éléments ayant fait l’objet de la vérification de conformité"
+						description={
+							<>
+								Renseignez le nom de chaque élément. Pour un site web,
+								renseignez également l’URL.
+								<br /> L’URL reste facultative pour un intranet, extranet ou si
+								elle ne peut pas être communiquée pour des raisons de sécurité.
+								<br />
+								Exemple : 'Accueil - https://www.nomdelapage/accueil'
+							</>
+						}
+						kind="text"
+						textArea
+					/>
 				)}
 			</form.AppField>
 		);
 	},
+});
+
+const exemptionListmodal = createModal({
+	id: "exemption-list-modal",
+	isOpenedByDefault: false,
+});
+
+const disproportionnedChargeModal = createModal({
+	id: "disproportionned-charge-modal",
+	isOpenedByDefault: false,
 });
 
 export const NonCompliantElementsForm = withForm({
 	...auditMultiStepFormOptions,
 	render: function Render({ form }) {
 		return (
-			<form.AppField name="hasNonCompliantElements">
-				{(field) => (
-					<>
-						<field.RadioField
-							label="Votre audit a-t-il identifié des éléments non conformes ?"
-							options={[
-								{ label: "Oui", value: true },
-								{ label: "Non", value: false },
-							]}
-							onChange={(value) => {
-								field.handleChange(value);
-
-								if (value === false) {
-									form.setFieldValue("nonCompliantElements", "");
-								}
-							}}
+			<>
+				<form.AppField name="nonCompliantElements">
+					{(field) => (
+						<field.TextField
+							label="Éléments non conformes (facultatif)"
+							description={
+								<>
+									Exemples : Vidéo sans transcription, navigation au clavier
+									impossible, ...
+									<br />
+									Précisez les points non conformes et leur volume en utilisant
+									les mentions “quelques / la plupart des / aucun(e)”. Vous
+									pouvez trouver ces informations dans votre déclaration
+									existante ou votre audit.
+									<br />
+									Exemples :
+									<br />- Aucune image n’a de texte équivalent
+									<br />- Quelques vidéos n’ont pas de sous-titres
+								</>
+							}
+							kind="text"
+							textArea
 						/>
-						{field.state.value === true && (
-							<form.AppField name="nonCompliantElements">
-								{(field) => (
-									<field.TextField
-										label="Éléments non conforme"
-										description={
-											<>
-												Précisez les points non conformes et leur volume en
-												utilisant les mentions “quelques / la plupart des /
-												aucun(e)”.
-												<br />
-												Vous pouvez trouver ces informations dans votre
-												déclaration existante ou votre audit.
-												<br />
-												Exemples :
-												<br />- Aucune image n’a de texte équivalent
-												<br />- Quelques vidéos n’ont pas de sous-titres
-											</>
-										}
-										kind="text"
-										textArea
-									/>
-								)}
-							</form.AppField>
-						)}
-					</>
-				)}
-			</form.AppField>
-		);
-	},
-});
-
-export const DisproportionnedChargeForm = withForm({
-	...auditMultiStepFormOptions,
-	render: function Render({ form }) {
-		return (
-			<form.AppField name="hasDisproportionnedCharge">
-				{(field) => (
-					<>
-						<field.RadioField
-							label="Avez-vous une dérogation pour charge disproportionnée ?"
-							description="Certains contenus peuvent bénéficier d’une dérogation si la charge de travail ou le coût est disproportionné. Cette dérogation est soumise à des conditions strictes : Qu’est-ce qu’une charge disproportionnée ?"
-							options={[
-								{ label: "Oui", value: true },
-								{ label: "Non", value: false },
-							]}
-							onChange={(value) => {
-								field.handleChange(value);
-
-								if (value === false) {
-									form.setFieldValue("disproportionnedCharge", []);
-								}
-							}}
+					)}
+				</form.AppField>
+				<form.AppField name="optionalElements">
+					{(field) => (
+						<field.TextField
+							label="Éléments non soumis à l’obligation d’accessibilité (facultatif)"
+							description={
+								<>
+									<NextLink
+										style={{
+											color: fr.colors.decisions.text.active.blueFrance.default,
+										}}
+										onClick={(e) => {
+											e.preventDefault();
+											exemptionListmodal.open();
+										}}
+										href="#"
+									>
+										Liste des contenus non soumis à l’obligation d’accessibilité
+									</NextLink>
+									<exemptionListmodal.Component title="">
+										<ExemptionListModalContent />
+									</exemptionListmodal.Component>
+									<br />
+									Format attendu : Listez les éléments exemptés les uns à la
+									suite des autres
+								</>
+							}
+							kind="text"
+							textArea
 						/>
-						{field.state.value && (
-							<form.AppField name="disproportionnedCharge" mode="array">
-								{(field) => (
-									<>
-										<h2>
-											Éléments avec dérogation pour charge disproportionnée
-										</h2>
-										{field.state.value.map((item, index) => (
-											<div
-												key={index}
-												style={{
-													display: "grid",
-													gridTemplateColumns: "1fr auto",
-													gap: fr.spacing("8v"),
-													borderBottom:
-														field.state.value.length === 1
-															? ""
-															: "1px solid grey",
-													paddingBottom: fr.spacing("8v"),
-													width: "100%",
-												}}
-											>
-												<div>
-													<form.AppField
-														name={`disproportionnedCharge[${index}].name`}
-													>
-														{(subField) => (
-															<subField.TextField
-																label="Nom de l’élément"
-																description="Exemple : “Carte IGN de la région”"
-															/>
-														)}
-													</form.AppField>
-													<form.AppField
-														name={`disproportionnedCharge[${index}].reason`}
-													>
-														{(subField) => (
-															<subField.TextField label="Raison de la dérogation" />
-														)}
-													</form.AppField>
-													<form.AppField
-														name={`disproportionnedCharge[${index}].duration`}
-													>
-														{(subField) => (
-															<subField.TextField
-																label="Durée de la dérogation (facultatif)"
-																description="Si la durée est illimitée, renseignez “illimitée”"
-															/>
-														)}
-													</form.AppField>
-													<form.AppField
-														name={`disproportionnedCharge[${index}].alternative`}
-													>
-														{(subField) => (
-															<subField.TextField
-																label="Alternative accessible proposée"
-																description="Exemple : “Application mobile avec lecture du relief”"
-															/>
-														)}
-													</form.AppField>
-												</div>
-												<Button
-													type="button"
-													priority="secondary"
-													iconId="fr-icon-delete-bin-line"
-													onClick={() => field.removeValue(index)}
-													title="Supprimer l'élément"
-												/>
-											</div>
-										))}
-										<Button
-											type="button"
-											onClick={() =>
-												field.pushValue({
-													name: "",
-													reason: "",
-													duration: "",
-													alternative: "",
-												})
-											}
-										>
-											Ajouter un élément
-										</Button>
-									</>
-								)}
-							</form.AppField>
-						)}
-					</>
-				)}
-			</form.AppField>
-		);
-	},
-});
-
-export const OptionElementsForm = withForm({
-	...auditMultiStepFormOptions,
-	render: function Render({ form }) {
-		return (
-			<form.AppField name="hasOptionalElements">
-				{(field) => (
-					<>
-						<field.RadioField
-							label="Avez-vous des contenus non soumis à l’obligation d’accessibilité ?"
-							description="Certaines catégories de contenus ne sont pas soumises à l’obligation d’accessibilité :"
-							options={[
-								{ label: "Oui", value: true },
-								{ label: "Non", value: false },
-							]}
-							onChange={(value) => {
-								field.handleChange(value);
-
-								if (value === false) {
-									form.setFieldValue("optionalElements", "");
-								}
-							}}
+					)}
+				</form.AppField>
+				<form.AppField name="disproportionnedCharge">
+					{(field) => (
+						<field.TextField
+							label="Éléments avec dérogation pour charge disproportionnée (facultatif)"
+							description={
+								<>
+									<NextLink
+										style={{
+											color: fr.colors.decisions.text.active.blueFrance.default,
+										}}
+										onClick={(e) => {
+											e.preventDefault();
+											disproportionnedChargeModal.open();
+										}}
+										href="#"
+									>
+										Qu’est-ce qu’une charge disproportionnée ?
+									</NextLink>
+									<disproportionnedChargeModal.Component title="">
+										<DisproportionnedChargeContent />
+									</disproportionnedChargeModal.Component>
+									<br />
+									Renseigner, pour chaque élément, son nom, la raison de la
+									dérogation et l’alternative accessible proposée.
+									<br />
+									Exemple : “- Carte IGN de la région, trop complexe et couteux
+									à rendre accessible. Alternative : Application mobile avec
+									lecture du relief”
+								</>
+							}
+							kind="text"
+							textArea
 						/>
-						{field.state.value && (
-							<form.AppField name="optionalElements">
-								{(field) => (
-									<field.TextField
-										label="Éléments exemptés"
-										description="Format attendu : Listez les éléments exemptés les uns à la suite des autres BESOIN d’URL ? D’autres infos ?"
-										kind="text"
-										textArea
-									/>
-								)}
-							</form.AppField>
-						)}
-					</>
-				)}
-			</form.AppField>
+					)}
+				</form.AppField>
+			</>
 		);
 	},
 });
@@ -362,9 +238,6 @@ export const FilesForm = withForm({
 	render: function Render({ form }) {
 		return (
 			<>
-				<form.AppField name="grid">
-					{(field) => <field.TextField label="Grille d’audit" />}
-				</form.AppField>
 				<form.AppField name="report">
 					{(field) => <field.TextField label="Rapport d’audit (facultatif)" />}
 				</form.AppField>

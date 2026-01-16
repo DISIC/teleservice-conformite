@@ -1,29 +1,23 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
-const sections = [
-  "schema",
-  "currentYearSchemaLinks",
-] as const;
-
 export const schema = z.object({
-  schemaDone: z.boolean(),
-  currentYearSchemaDone: z.boolean(),
-  annualSchemaLink: z.url().optional(),
-  annualSchemaFile: z.file().optional(),
+  hasDoneCurrentYearSchema: z.boolean(),
+  currentYearSchemaUrl: z.union([z.url(), z.literal("")]),
+  hasDonePreviousYearsSchema: z.boolean(),
+  previousYearsSchemaUrl: z.union([z.url(), z.literal("")]),
 });
 
 export type ZSchema = z.infer<typeof schema>;
 
 export const schemaDefaultValues: ZSchema = {
-  schemaDone: false,
-  currentYearSchemaDone: false,
-  annualSchemaLink: undefined,
-  annualSchemaFile: undefined,
+  hasDoneCurrentYearSchema: false,
+  currentYearSchemaUrl: "",
+  hasDonePreviousYearsSchema: false,
+  previousYearsSchemaUrl: "",
 };
 
 export const schemaFormSchema = z.object({
-  section: z.enum(sections),
   ...schema.shape,
 });
 
@@ -32,7 +26,6 @@ export type ZSchemaFormSchema = z.infer<
 >;
 
 const defaultValues: ZSchemaFormSchema = {
-  section: "schema",
   ...schemaDefaultValues,
 };
 
