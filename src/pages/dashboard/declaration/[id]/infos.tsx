@@ -5,33 +5,33 @@ import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
+import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
-import { DeclarationContactForm } from "~/utils/form/readonly/form";
+import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
-import ContactForm from "~/components/declaration/ContactForm";
 import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
-import { contact } from "~/utils/form/contact/schema";
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
 
-export default function ContactPage({
+export default function GeneralInformationsPage({
 	declaration,
-}: { declaration: DeclarationWithPopulated }) {
+}: { declaration?: PopulatedDeclaration }) {
 	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
-	const { id, email, url } = declaration?.contact || {};
+	const { name, kind } = declaration?.entity || {};
 
-	const { mutateAsync: updateContact } = api.contact.update.useMutation({
-		onSuccess: async () => {
+	const { mutateAsync: update } = api.declaration.update.useMutation({
+		onSuccess: async (result) => {
 			router.reload();
 		},
 		onError: async (error) => {
 			console.error(
-				`Error updating contact for declaration with id ${declaration?.id}:`,
+				`Error updating declaration with id ${declaration?.id}:`,
 				error,
 			);
 		},
@@ -41,40 +41,35 @@ export default function ContactPage({
 		setEditMode((prev) => !prev);
 	};
 
-	const contactOptions = [email, url].reduce(
-		(acc: ("email" | "url")[], option) => {
-			if (!option) return acc;
-
-			if (option === email) acc.push("email");
-			if (option === url) acc.push("url");
-
-			return acc;
-		},
-		[],
-	);
-
-	if (declaration?.contact) {
-		readOnlyFormOptions.defaultValues = {
-			...readOnlyFormOptions.defaultValues,
-			section: "contact",
-			contact: {
-				contactOptions,
-				contactEmail: email ?? "",
-				contactName: url ?? "",
-			},
+	if (declaration) {
+		readOnlyFormOptions.defaultValues.general = {
+			organisation: name ?? "",
+			kind: declaration?.app_kind as (typeof readOnlyFormOptions)["defaultValues"]["general"]["kind"],
+			name: declaration?.name ?? "",
+			url: declaration?.url ?? "",
+			domain: kind ?? "",
 		};
 	}
 
-	const updateDeclarationContact = async (
-		id: number,
-		email: string,
-		url: string,
+	const updateDeclaration = async (
+		generalValues: typeof readOnlyFormOptions.defaultValues.general,
+		declarationId: number,
 	) => {
 		try {
-			await updateContact({ id, email, url });
+			await update({
+				general: {
+					domain: generalValues.domain,
+					name: generalValues.name,
+					url: generalValues.url,
+					kind: generalValues.kind,
+					organisation: generalValues.organisation,
+					declarationId,
+					entityId: declaration?.entity?.id ?? -1,
+				},
+			});
 		} catch (error) {
 			console.error(
-				`Error updating contact for declaration with id ${declaration?.id}:`,
+				`Error updating declaration with id ${declarationId}:`,
 				error,
 			);
 		}
@@ -83,36 +78,25 @@ export default function ContactPage({
 	const form = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
-			const data = value.contact.contactOptions.reduce(
-				(acc: { email?: string; url?: string }, option) => {
-					if (option === "email") {
-						acc.email = value.contact.contactEmail ?? "";
-					}
-					if (option === "url") {
-						acc.url = value.contact.contactName ?? "";
-					}
-					return acc;
-				},
-				{},
-			);
-
-			await updateDeclarationContact(
-				id ?? -1,
-				data.email ?? "",
-				data.url ?? "",
-			);
+			await updateDeclaration(value.general, declaration?.id ?? -1);
 		},
 	});
 
-	if (!declaration?.contact) {
-		return <ContactForm declarationId={declaration?.id ?? -1} />;
-	}
-
 	return (
-		<section id="contact" className={classes.main}>
-			<div className={classes.container}>
+		<section id="general-informations" className={classes.main}>
+			<div>
+				<Breadcrumb
+					segments={[
+						{ label: "Accueil", linkProps: { href: "/dashboard" } },
+						{
+							label: declaration?.name ?? "",
+							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
+						},
+					]}
+					currentPageLabel="Informations générales"
+				/>
 				<div>
-					<h1>Contact</h1>
+					<h1>{declaration?.name ?? ""} - Informations générales</h1>
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire
@@ -129,11 +113,15 @@ export default function ContactPage({
 					}}
 				>
 					<div className={classes.formWrapper}>
-						<DeclarationContactForm form={form} readOnly={!editMode} />
-						{editMode && (
-							<form.AppForm>
-								<form.SubscribeButton label={"Valider"} />
-							</form.AppForm>
+						{editMode ? (
+							<>
+								<DeclarationGeneralForm form={form} />
+								<form.AppForm>
+									<form.SubscribeButton label={"Valider"} />
+								</form.AppForm>
+							</>
+						) : (
+							<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
 						)}
 					</div>
 				</form>
@@ -142,7 +130,7 @@ export default function ContactPage({
 	);
 }
 
-const useStyles = tss.withName(ContactPage.name).create({
+const useStyles = tss.withName(GeneralInformationsPage.name).create({
 	main: {
 		marginTop: fr.spacing("10v"),
 		display: "flex",
@@ -152,13 +140,7 @@ const useStyles = tss.withName(ContactPage.name).create({
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("3w"),
-		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
-	},
-	container: {
-		display: "flex",
-		flexDirection: "column",
 	},
 	headerAction: {
 		display: "flex",
@@ -185,7 +167,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 
@@ -196,7 +178,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!declaration) {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 

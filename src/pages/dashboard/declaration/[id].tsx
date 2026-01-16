@@ -14,10 +14,12 @@ import { tss } from "tss-react";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 
 import { api } from "~/utils/api";
-import type { Declaration } from "~/payload/payload-types";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
-import { getDeclarationById } from "~/utils/payload-helper";
+import {
+	getDeclarationById,
+	type PopulatedDeclaration,
+} from "~/utils/payload-helper";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -25,7 +27,7 @@ const deleteModal = createModal({
 });
 
 interface DeclarationPageProps {
-	declaration: Declaration;
+	declaration: PopulatedDeclaration;
 }
 
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {
@@ -36,13 +38,19 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
 			onSuccess: async (result) => {
-				router.push("/declarations");
+				router.push("/dashboard");
 			},
 			onError: (error) => {
 				console.error("Error adding declaration:", error);
 			},
 		},
 	);
+
+	const declarationNotComplete =
+		!declaration.audit ||
+		!declaration.contact ||
+		!declaration.entity ||
+		!declaration.actionPlan;
 
 	const onDelete = async () => {
 		deleteModal.open();
@@ -62,18 +70,16 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 
 	return (
 		<>
-			<section id="declaration-page">
+			<section id="declaration-page" className={classes.declarationPage}>
 				<section id="breadcrumbs">
 					<Breadcrumb
-						segments={[
-							{ label: "Accueil", linkProps: { href: "/declarations" } },
-						]}
+						segments={[{ label: "Accueil", linkProps: { href: "/dashboard" } }]}
 						currentPageLabel={declaration?.name}
 					/>
 				</section>
 				<section id="header" className={classes.headerSection}>
 					<div className={classes.header}>
-						<h1>{`${declaration?.name} - ${declaration?.app_kind}`}</h1>
+						<h1>{declaration?.name}</h1>
 						<Badge
 							noIcon={true}
 							small={true}
@@ -85,12 +91,31 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						</Badge>
 					</div>
 					<div className={classes.buttonsContainer}>
-						<Button priority="tertiary" iconId="fr-icon-eye-fill">
-							Voir la declaration
+						<Button
+							iconId="fr-icon-upload-line"
+							onClick={() => router.push(`${declaration.id}/preview`)}
+							disabled={declarationNotComplete}
+						>
+							Publier
 						</Button>
-						<Button priority="tertiary" iconId="fr-icon-eye-fill">
-							Copier le lien
-						</Button>
+						{declaration?.status === "published" && (
+							<>
+								<Button
+									priority="tertiary"
+									iconId="fr-icon-eye-fill"
+									disabled={declarationNotComplete}
+								>
+									Voir la declaration
+								</Button>
+								<Button
+									priority="tertiary"
+									iconId="fr-icon-eye-fill"
+									disabled={declarationNotComplete}
+								>
+									Copier le lien
+								</Button>
+							</>
+						)}
 						<Button
 							iconId="fr-icon-delete-fill"
 							priority="tertiary"
@@ -107,6 +132,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						{ tabId: "members", label: "Membres" },
 					]}
 					onTabChange={setSelectedTabId}
+					className={classes.tabs}
 				>
 					{<TabContent selectedTabId={selectedTabId} />}
 				</Tabs>
@@ -156,6 +182,9 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 }
 
 const useStyles = tss.withName(DeclarationPage.name).create({
+	declarationPage: {
+		marginBlock: fr.spacing("10v"),
+	},
 	headerSection: {
 		display: "flex",
 		flexDirection: "column",
@@ -188,6 +217,23 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			fr.colors.decisions.background.actionHigh.redMarianne.default,
 		color: fr.colors.decisions.text.inverted.info.default,
 	},
+	tabs: {
+		"& > ul > li > button": {
+			border: "none !important",
+			backgroundColor: "inherit !important",
+			backgroundImage: "none !important",
+
+			"&[aria-selected='true']": {
+				borderBottom: `3px solid ${fr.colors.decisions.border.actionHigh.blueFrance.default} !important`,
+				borderTop: "none !important",
+			},
+		},
+
+		"& > div": {
+			border: "none !important",
+			boxShadow: "none !important",
+		},
+	},
 });
 
 interface Params extends ParsedUrlQuery {
@@ -200,7 +246,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 
@@ -211,7 +257,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!declaration) {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 
