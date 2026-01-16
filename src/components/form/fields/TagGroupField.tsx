@@ -56,6 +56,7 @@ export function TagGroupField({
 				<div className={classes.tagsContainer}>
 					{tags.map((tag) => (
 						<Tag
+							iconId="fr-icon-close-line"
 							key={tag}
 							nativeButtonProps={{
 								type: "button",
