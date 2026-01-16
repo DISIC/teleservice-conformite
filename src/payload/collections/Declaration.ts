@@ -23,6 +23,7 @@ export const appKindOptions = [
 export const Declarations: CollectionConfig = {
 	slug: "declarations",
 	versions: true,
+	trash: true,
 	admin: {
 		useAsTitle: "name",
 	},
@@ -111,34 +112,26 @@ export const Declarations: CollectionConfig = {
 			admin: {
 				position: "sidebar",
 			},
+			required: true,
 		},
 		{
 			name: "entity",
 			type: "relationship",
 			relationTo: "entities",
 			label: { fr: "Administration" },
+			required: true,
 		},
 		{
 			name: "app_kind",
-			type: "text",
+			type: "select",
 			label: { fr: "Type de produit numérique" },
+			options: [...appKindOptions],
+			required: true,
 		},
 		{
 			name: "url",
 			type: "text",
 			label: { fr: "URL du service numérique" },
-		},
-		{
-			name: "technologies",
-			type: "array",
-			label: { fr: "Technologies utilisées" },
-			fields: [
-				{
-					name: "technology_name",
-					type: "text",
-					label: { fr: "Nom de la technologie" },
-				},
-			],
 		},
 		{
 			name: "audit",

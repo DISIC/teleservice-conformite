@@ -1,9 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
-import { toolOptions, testEnvironmentOptions } from "~/payload/collections/Audit";
-import { auditFormSchema } from "~/utils/form/audit/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { testEnvironmentOptions } from "~/payload/collections/Audit";
+import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { linkToDeclaration } from "../utils/payload-helper";
 
 const auditSchema = z.object({
@@ -11,39 +10,49 @@ const auditSchema = z.object({
   realisedBy: z.string(),
   rgaa_version: z.enum(["rgaa_4", "rgaa_5"]),
   rate: z.number().min(0).max(100),
-  compliantElements: z.array(z.object({ name: z.string(), url: z.string() })).optional(),
+  compliantElements: z.string().optional(),
   technologies: z.array(
     z.string()
   ).min(1),
   testEnvironments: z.array(
-    z.enum(testEnvironmentOptions.map((test) => test.value) as [string, ...string[]])
+    z.string()
   ).min(1),
   nonCompliantElements: z.string().optional(),
-  disproportionnedCharge: z.array(z.object({
-    name: z.string(),
-    reason: z.string(),
-    duration: z.string(),
-    alternative: z.string(),
-  })),
+  disproportionnedCharge: z.string().optional(),
   optionalElements: z.string().optional(),
   grid: z.string().optional(),
   report: z.string().optional(),
 });
 
 export const auditRouter = createTRPCRouter({
-  create: publicProcedure
+  create: userProtectedProcedure
     .input(
       auditSchema.extend({ declarationId: z.number() }),
     )
     .mutation(async ({ input, ctx }) => {
       const { declarationId, technologies, testEnvironments, ...rest } = input;
 
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
+
       const audit = await ctx.payload.create({
         collection: "audits",
         data: {
           ...rest,
-          toolsUsed: technologies,
-          testEnvironments: testEnvironments,
+          toolsUsed: technologies.map((tech) => ({ name: tech })),
+          testEnvironments: testEnvironments.reduce((acc: (typeof testEnvironmentOptions[number]["value"])[], env) => {
+            const value = testEnvironmentOptions.find((test) => test.value === env)?.value;
+
+            if (value) {
+              acc.push(value);
+            }
+
+            return acc;
+          }, []),
           declaration: declarationId,
         },
       });
@@ -52,10 +61,17 @@ export const auditRouter = createTRPCRouter({
 
       return { data: audit.id };
     }),
-  delete: publicProcedure
+  delete: userProtectedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input, ctx }) => {
       const { id } = input;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
 
       await ctx.payload.delete({
         collection: "audits",
@@ -64,20 +80,37 @@ export const auditRouter = createTRPCRouter({
 
       return { data: true };
     }),
-  update: publicProcedure
+  update: userProtectedProcedure
     .input(
       z.object({
-        audit: auditSchema.extend({ declarationId: z.number(), id: z.number() }),
+        audit: auditSchema.extend({ id: z.number() }),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const { id, ...rest } = input.audit;
+
+      if (!ctx.session?.user?.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User must be logged in to create a declaration",
+        });
+      }
 
       const updatedAudit = await ctx.payload.update({
         collection: "audits",
         id,
         data: {
           ...rest,
+          testEnvironments: rest.testEnvironments.reduce((acc: (typeof testEnvironmentOptions[number]["value"])[], env) => {
+            const value = testEnvironmentOptions.find((test) => test.value === env)?.value;
+
+            if (value) {
+              acc.push(value);
+            }
+
+            return acc;
+          }, []),
+          toolsUsed: rest.technologies.map((tech) => ({ name: tech })),
         },
       });
 
