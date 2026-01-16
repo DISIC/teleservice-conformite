@@ -82,7 +82,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 										Site web - {declaration.url}
 									</p>
 								</div>
-								{rate && (
+								{typeof rate === "number" && (
 									<div>
 										<p className={classes.auditRateValue}>{rate}%</p>
 										<p className={classes.auditRateLabel}>taux conformité</p>
