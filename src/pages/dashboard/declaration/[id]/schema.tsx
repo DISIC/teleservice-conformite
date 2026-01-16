@@ -5,6 +5,7 @@ import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
+import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 
 import type { PopulatedDeclaration } from "~/utils/payload-helper";
 import { fr } from "@codegouvfr/react-dsfr";
@@ -95,8 +96,18 @@ export default function SchemaPage({
 	return (
 		<section id="schema" className={classes.main}>
 			<div>
+				<Breadcrumb
+					segments={[
+						{ label: "Accueil", linkProps: { href: "/dashboard" } },
+						{
+							label: declaration?.name ?? "",
+							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
+						},
+					]}
+					currentPageLabel="Informations générales"
+				/>
 				<div>
-					<h1>Schéma et plans d'actions</h1>
+					<h1>{declaration?.name ?? ""} - Schéma et plans d'actions</h1>
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire
@@ -140,7 +151,6 @@ const useStyles = tss.withName(SchemaPage.name).create({
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
-		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
 	headerAction: {

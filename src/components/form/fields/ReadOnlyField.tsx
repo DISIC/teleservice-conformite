@@ -53,7 +53,7 @@ const useStyles = tss
 	}>()
 	.create(({ valueIsArray, textArea, addSectionBorder }) => ({
 		fieldContainer: {
-			padding: fr.spacing("3w"),
+			paddingBlock: fr.spacing("3w"),
 			borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
 			"& p": {
 				margin: 0,

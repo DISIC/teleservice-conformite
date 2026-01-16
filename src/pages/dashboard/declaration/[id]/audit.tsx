@@ -7,6 +7,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
+import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationAuditForm } from "~/utils/form/readonly/form";
@@ -112,15 +113,27 @@ export default function AuditPage({
 
 	return (
 		<section id="audit" className={classes.main}>
-			<div>
-				<h1>Résultat de l’audit</h1>
-				<div className={classes.headerAction}>
-					<h3 className={classes.description}>
-						Verifiez les informations et modifiez-les si necessaire
-					</h3>
-					<Button priority="secondary" onClick={onEditInfos}>
-						{!editMode ? "Modifier" : "Annuler"}
-					</Button>
+			<div className={classes.container}>
+				<Breadcrumb
+					segments={[
+						{ label: "Accueil", linkProps: { href: "/dashboard" } },
+						{
+							label: declaration?.name ?? "",
+							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
+						},
+					]}
+					currentPageLabel="Résultat de l’audit"
+				/>
+				<div>
+					<h1>{declaration?.name ?? ""} - Résultat de l’audit</h1>
+					<div className={classes.headerAction}>
+						<h3 className={classes.description}>
+							Verifiez les informations et modifiez-les si necessaire
+						</h3>
+						<Button priority="secondary" onClick={onEditInfos}>
+							{!editMode ? "Modifier" : "Annuler"}
+						</Button>
+					</div>
 				</div>
 			</div>
 			<form
@@ -157,10 +170,13 @@ const useStyles = tss.withName(AuditPage.name).create({
 		flexDirection: "column",
 		gap: fr.spacing("2w"),
 	},
+	container: {
+		display: "flex",
+		flexDirection: "column",
+	},
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
-		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
 	headerAction: {

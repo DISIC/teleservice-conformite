@@ -102,7 +102,6 @@ const useStyles = tss.withName(SchemaForm.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
-		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
 	actionButtonsContainer: {

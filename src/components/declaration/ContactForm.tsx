@@ -94,7 +94,6 @@ const useStyles = tss.withName(ContactForm.name).create({
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
 		// backgroundColor: fr.colors.decisions.background.default.grey.hover,
-		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
 	actionButtonsContainer: {

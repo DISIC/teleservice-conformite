@@ -5,9 +5,10 @@ import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
-
+import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
+
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationContactForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
@@ -112,8 +113,18 @@ export default function ContactPage({
 	return (
 		<section id="contact" className={classes.main}>
 			<div className={classes.container}>
+				<Breadcrumb
+					segments={[
+						{ label: "Accueil", linkProps: { href: "/dashboard" } },
+						{
+							label: declaration?.name ?? "",
+							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
+						},
+					]}
+					currentPageLabel="Contact"
+				/>
 				<div>
-					<h1>Contact</h1>
+					<h1>{declaration?.name ?? ""} - Contact</h1>
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire
@@ -157,7 +168,6 @@ const useStyles = tss.withName(ContactPage.name).create({
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
-		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
 	container: {
