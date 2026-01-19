@@ -91,13 +91,6 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						</Badge>
 					</div>
 					<div className={classes.buttonsContainer}>
-						<Button
-							iconId="fr-icon-upload-line"
-							onClick={() => router.push(`${declaration.id}/preview`)}
-							disabled={declarationNotComplete}
-						>
-							Publier
-						</Button>
 						{declaration?.status === "published" && (
 							<>
 								<Button

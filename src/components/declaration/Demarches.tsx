@@ -7,9 +7,11 @@ import Document from "@codegouvfr/react-dsfr/picto/Document";
 import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import Search from "@codegouvfr/react-dsfr/picto/Search";
 import Community from "@codegouvfr/react-dsfr/picto/Community";
+import Information from "@codegouvfr/react-dsfr/picto/Information";
 import { useRouter } from "next/router";
 
 import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import PopupMessage from "./PopupMessage";
 
 interface DemarchesProps {
 	declaration: PopulatedDeclaration;
@@ -25,8 +27,30 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		declaration?.published_at &&
 		declaration?.updatedAt > declaration?.published_at;
 
+	const declarationComplete =
+		declaration.audit ||
+		declaration.contact ||
+		declaration.entity ||
+		declaration.actionPlan;
+
 	return (
 		<section id="demarches-tab" className={classes.main}>
+			{declarationComplete && (
+				<PopupMessage
+					image={<Information fontSize="6rem" />}
+					message={
+						<strong>Votre déclaration est prête à être mise à jour !</strong>
+					}
+					actionButtons={[
+						{
+							label: "Prévisualiser et publier",
+							priority: "primary",
+							iconId: "fr-icon-upload-line",
+							onClick: () => router.push(`${declaration.id}/preview`),
+						},
+					]}
+				/>
+			)}
 			{declaration.status === "published" && (
 				<div className={classes.summaryCardsContainer}>
 					<div className={classes.summaryRateCard}>
