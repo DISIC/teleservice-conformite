@@ -58,6 +58,7 @@ export default function DeclarationPreviewPage({
 			<h1>Votre déclaration est prête à être publiée</h1>
 			<p>Voici un aperçu de votre déclaration</p>
 			<div className={classes.declarationPreview}>
+				<h2>{declaration.name}</h2>
 				<p>
 					{declaration.entity.name} s’engage à rendre ses sites internet,
 					intranet, extranet et ses progiciels accessibles (et ses applications
