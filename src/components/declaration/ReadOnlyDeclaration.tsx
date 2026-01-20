@@ -108,7 +108,7 @@ export const ReadOnlyDeclarationAudit = ({
 				addSectionBorder
 			/>
 			<ReadOnlyField
-				label="Éléments avec dérogation pour charge disproportionnée : "
+				label="Éléments avec dérogation pour charge disproportionnée"
 				value={audit.disproportionnedCharge || "Non"}
 				textArea
 			/>

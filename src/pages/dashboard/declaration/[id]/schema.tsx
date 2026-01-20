@@ -104,7 +104,7 @@ export default function SchemaPage({
 							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
 						},
 					]}
-					currentPageLabel="Informations générales"
+					currentPageLabel="Schéma et plans d'actions"
 				/>
 				<div>
 					<h1>{declaration?.name ?? ""} - Schéma et plans d'actions</h1>
