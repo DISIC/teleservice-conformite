@@ -25,10 +25,10 @@ export const schemaRouter = createTRPCRouter({
       if (!isOwner) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to delete a schema",
+          message: "Must be owner of the declaration to create a schema",
         });
       }
-
+      
       const schema = await ctx.payload.create({
         collection: "action-plans",
         data: {
@@ -63,7 +63,7 @@ export const schemaRouter = createTRPCRouter({
       if (!isOwner) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to delete a schema",
+          message: "Must be owner of the declaration to update a schema",
         });
       }
 
