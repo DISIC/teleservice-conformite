@@ -1,4 +1,4 @@
-import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { createTRPCRouter } from "~/server/api/trpc";
 import { declarationRouter } from "./routers/declaration";
 import { auditRouter } from "./routers/audit";
 import { contactRouter } from "./routers/contact";
@@ -26,4 +26,4 @@ export type AppRouter = typeof appRouter;
  * const res = await trpc.post.all();
  *       ^? Post[]
  */
-export const createCaller = createCallerFactory(appRouter);
+// export const createCaller = createCallerFactory(appRouter);
