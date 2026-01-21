@@ -19,6 +19,7 @@ import {
 	getDeclarationById,
 	type PopulatedDeclaration,
 } from "~/utils/payload-helper";
+import { getConformityStatus } from "~/utils/declaration-helper";
 
 type RequiredPopulatedDeclaration = Omit<
 	PopulatedDeclaration,
@@ -36,17 +37,6 @@ export default function DeclarationPreviewPage({
 }: { declaration: RequiredPopulatedDeclaration }) {
 	const { classes } = useStyles();
 	const router = useRouter();
-
-	const getConformityStatus = (rate: number): string => {
-		if (rate < 50) {
-			return "non conforme";
-		}
-		if (rate >= 50 && rate <= 99) {
-			return "partiellement conforme";
-		}
-
-		return "conforme";
-	};
 
 	const hasNonCompliantElements = Boolean(
 		declaration.audit.nonCompliantElements ||
