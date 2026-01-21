@@ -1,5 +1,10 @@
 import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
 import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import {
+	rgaaVersionOptions,
+	testEnvironmentOptions,
+	toolOptions,
+} from "~/payload/collections/Audit";
 
 export const ReadOnlyDeclarationGeneral = ({
 	declaration,
@@ -18,7 +23,7 @@ export const ReadOnlyDeclarationGeneral = ({
 				label="Nom de la déclaration"
 				value={declaration?.name ?? ""}
 			/>
-			<ReadOnlyField label="URL" value={declaration?.url ?? ""} />
+			<ReadOnlyField label="URL" value={declaration?.url ?? ""} link />
 			<ReadOnlyField
 				label="Secteur d’activité de l’organisation"
 				value={declaration?.entity?.kind ?? ""}
@@ -45,6 +50,7 @@ export const ReadOnlyDeclarationSchema = ({
 				<ReadOnlyField
 					label="Lien du schéma annuel"
 					value={currentYearSchemaUrl}
+					link
 				/>
 			)}
 			<ReadOnlyField
@@ -56,6 +62,7 @@ export const ReadOnlyDeclarationSchema = ({
 				<ReadOnlyField
 					label="Lien du bilan des actions"
 					value={previousYearsSchemaUrl}
+					link
 				/>
 			)}
 		</>
@@ -71,6 +78,22 @@ export const ReadOnlyDeclarationAudit = ({
 		return <ReadOnlyField label="Audit réalisé" value="Non" />;
 	}
 
+	const auditUsedTools =
+		audit.toolsUsed?.map((tech) => {
+			const existingTool = toolOptions.find((tool) => tool.value === tech.name);
+
+			return existingTool ? existingTool.label : tech.name;
+		}) ?? [];
+
+	const auditTestEnvironments =
+		testEnvironmentOptions
+			.filter((env) => audit.testEnvironments?.includes(env.value))
+			.map((env) => env.label) ?? [];
+
+	const auditRgaaVersion = rgaaVersionOptions.find(
+		(version) => version.value === audit.rgaa_version,
+	)?.label;
+
 	return (
 		<>
 			<ReadOnlyField label="Audit réalisé" value="Oui" />
@@ -81,7 +104,7 @@ export const ReadOnlyDeclarationAudit = ({
 			/>
 			<ReadOnlyField
 				label="Référentiel RGAA utilisé"
-				value={audit.rgaa_version || ""}
+				value={auditRgaaVersion ?? ""}
 			/>
 			<ReadOnlyField
 				label="Résultats"
@@ -89,38 +112,39 @@ export const ReadOnlyDeclarationAudit = ({
 			/>
 			<ReadOnlyField
 				label="Outils utilisés pour évaluer l’accessibilité"
-				value={audit.toolsUsed?.map((tech) => tech.name) || []}
+				value={auditUsedTools}
 			/>
 			<ReadOnlyField
 				label="Environnements de tests"
-				value={audit.testEnvironments || []}
+				value={auditTestEnvironments}
 			/>
 			<ReadOnlyField
 				label="Éléments ayant fait l’objet de vérification"
-				value={audit.compliantElements || ""}
+				value={audit.compliantElements ?? ""}
 				textArea
 				addSectionBorder
 			/>
 			<ReadOnlyField
 				label="Éléments non conformes"
-				value={audit.nonCompliantElements || "Non"}
+				value={audit.nonCompliantElements ?? ""}
 				textArea
 				addSectionBorder
 			/>
 			<ReadOnlyField
 				label="Éléments avec dérogation pour charge disproportionnée"
-				value={audit.disproportionnedCharge || "Non"}
+				value={audit.disproportionnedCharge ?? ""}
 				textArea
 			/>
 			<ReadOnlyField
 				label="Éléments optionnels"
-				value={audit.optionalElements || "Non"}
+				value={audit.optionalElements ?? ""}
 				textArea
 			/>
 			<ReadOnlyField
 				addSectionBorder
 				label="Rapport d'audit"
-				value={audit.auditReport || "Non"}
+				value={audit.auditReport ?? ""}
+				link
 			/>
 		</>
 	);
@@ -142,7 +166,7 @@ export const ReadOnlyDeclarationContact = ({
 				label="Moyen de contact"
 				value={contactOptions.join(", ")}
 			/>
-			{url && <ReadOnlyField label="Lien URL du formulaire" value={url} />}
+			{url && <ReadOnlyField label="Lien URL du formulaire" value={url} link />}
 			{email && <ReadOnlyField label="E-mail" value={email} />}
 		</>
 	);

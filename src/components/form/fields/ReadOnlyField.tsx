@@ -7,6 +7,7 @@ interface ReadOnlyFieldProps extends DefaultFieldProps {
 	value: string | string[];
 	textArea?: boolean;
 	addSectionBorder?: boolean;
+	link?: boolean;
 }
 
 export function ReadOnlyField(props: ReadOnlyFieldProps) {
@@ -17,6 +18,7 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 		value,
 		textArea = false,
 		addSectionBorder = false,
+		link = false,
 	} = props;
 	const valueIsArray = Array.isArray(value);
 
@@ -38,7 +40,9 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 					))}
 				</ul>
 			) : (
-				<p className={classes.value}> {value || placeholder}</p>
+				<p className={classes.value}>
+					{link && value ? <a href={value}>{value}</a> : value || placeholder}
+				</p>
 			)}
 		</div>
 	);
@@ -85,5 +89,9 @@ const useStyles = tss
 			fontFamily: "Marianne",
 			color: fr.colors.decisions.text.label.grey.default,
 			whiteSpace: "pre-wrap",
+
+			"& a": {
+				color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+			},
 		},
 	}));
