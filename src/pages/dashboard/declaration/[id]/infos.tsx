@@ -86,8 +86,10 @@ export default function GeneralInformationsPage({
 		<section id="general-informations" className={classes.main}>
 			<div>
 				<Breadcrumb
+					homeLinkProps={{
+						href: "/dashboard",
+					}}
 					segments={[
-						{ label: "Accueil", linkProps: { href: "/dashboard" } },
 						{
 							label: declaration?.name ?? "",
 							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
