@@ -11,7 +11,7 @@ export const declarationGeneral = z.object({
 			.min(1, { message: "Le nom de l'organisation est requis" }),
 		kind: z.enum(appKindOptions.map((option) => option.value)),
 		name: z.string().min(1, { message: "Le nom de l'application est requis" }),
-		url: z.union([z.url({ error: "L'URL n'est pas valide" }), z.literal("")]),
+		url: z.string().optional(),
 		domain: z
 			.string()
 			.meta({ kind: "select" })
@@ -26,7 +26,7 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 		organisation: "",
 		kind: "website",
 		name: "",
-		url: "",
+		url: undefined,
 		domain: "",
 	},
 };
@@ -48,7 +48,7 @@ export const declarationAudit = z.object({
 			.min(0, { message: "Le taux doit être entre 0 et 100" })
 			.max(100, { message: "Le taux doit être entre 0 et 100" }),
 		pages: z
-			.array(z.object({ label: z.string(), url: z.url() }))
+			.array(z.object({ label: z.string(), url: z.string() }))
 			.min(1, { message: "Au moins une page doit être renseignée" }),
 		technologies: z.array(z.string()).min(1, {
 			message: "Au moins une technologie doit être sélectionnée",
@@ -86,7 +86,7 @@ export const initialDeclaration = z.object({
 	initialDeclaration: z.object({
 		isNewDeclaration: z.boolean(),
 		publishedDate: z.iso.date().optional(),
-		araUrl: z.union([z.url().optional(), z.literal("")]),
+		araUrl: z.string().optional(),
 	}),
 });
 

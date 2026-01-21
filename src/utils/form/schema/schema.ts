@@ -3,18 +3,18 @@ import z from "zod";
 
 export const schema = z.object({
   hasDoneCurrentYearSchema: z.boolean(),
-  currentYearSchemaUrl: z.union([z.url(), z.literal("")]),
+  currentYearSchemaUrl: z.string().optional(),
   hasDonePreviousYearsSchema: z.boolean(),
-  previousYearsSchemaUrl: z.union([z.url(), z.literal("")]),
+  previousYearsSchemaUrl: z.string().optional(),
 });
 
 export type ZSchema = z.infer<typeof schema>;
 
 export const schemaDefaultValues: ZSchema = {
   hasDoneCurrentYearSchema: false,
-  currentYearSchemaUrl: "",
+  currentYearSchemaUrl: undefined,
   hasDonePreviousYearsSchema: false,
-  previousYearsSchemaUrl: "",
+  previousYearsSchemaUrl: undefined,
 };
 
 export const schemaFormSchema = z.object({

@@ -33,7 +33,7 @@ export const tools = z.object({
   testEnvironments: z
     .array(
       z.enum(
-        testEnvironmentOptions.map((test) => test.value) as [string, ...string[]]
+        testEnvironmentOptions.map((test) => test.value)
       )
     )
     .min(1, {
@@ -89,13 +89,13 @@ export const optionalElementsDefaultValues: ZOptionalElements = {
 };
 
 export const files = z.object({
-  report: z.union([z.url(), z.literal("")]),
+  report: z.string().optional(),
 });
 
 export type ZFiles = z.infer<typeof files>;
 
 export const filesDefaultValues: ZFiles = {
-  report: "",
+  report: undefined,
 };
 
 const sections = [

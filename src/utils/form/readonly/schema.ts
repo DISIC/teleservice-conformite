@@ -11,7 +11,7 @@ export const declarationGeneral = z.object({
       .min(1, { message: "Le nom de l'organisation est requis" }),
     kind: z.enum(appKindOptions.map((option) => option.value)),
     name: z.string().min(1, { message: "Le nom de l'application est requis" }),
-    url: z.union([z.url({ error: "L'URL n'est pas valide" }), z.literal("")]),
+    url: z.string().optional(),
     domain: z
       .string()
       .meta({ kind: "select" })
@@ -26,7 +26,7 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
     organisation: "",
     kind: "website",
     name: "",
-    url: "",
+    url: undefined,
     domain: "",
   },
 };
@@ -34,7 +34,7 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 export const declarationAudit = z.object({
   audit: z.object({
     date: z.iso.date().min(1, { message: "La date est requise" }),
-    report: z.union([z.url(), z.literal("")]),
+    report: z.string().optional(),
     realisedBy: z.string().min(1, {
       message: "L'organisation ayant réalisé l'audit est requise",
     }),
@@ -63,7 +63,7 @@ export type ZDeclarationAudit = z.infer<typeof declarationAudit>;
 export const declarationAuditDefaultValues: ZDeclarationAudit = {
   audit: {
     date: "",
-    report: "",
+    report: undefined,
     realisedBy: "",
     rgaa_version: "rgaa_4",
     rate: 0,
@@ -80,9 +80,9 @@ export const declarationSchema = z.object({
   schema: z
     .object({
       hasDoneCurrentYearSchema: z.boolean(),
-      currentYearSchemaUrl: z.union([z.url(), z.literal("")]),
+      currentYearSchemaUrl: z.string().optional(),
       hasDonePreviousYearsSchema: z.boolean(),
-      previousYearsSchemaUrl: z.union([z.url(), z.literal("")]),
+      previousYearsSchemaUrl: z.string().optional(),
     }),
 });
 
@@ -91,9 +91,9 @@ export type ZSchema = z.infer<typeof declarationSchema>;
 export const declarationSchemaDefaultValues: ZSchema = {
   schema: {
     hasDoneCurrentYearSchema: false,
-    currentYearSchemaUrl: "",
+    currentYearSchemaUrl: undefined,
     hasDonePreviousYearsSchema: false,
-    previousYearsSchemaUrl: "",
+    previousYearsSchemaUrl: undefined,
   },
 };
 
@@ -157,11 +157,6 @@ export const readOnlyFormOptions = formOptions({
         );
       }
 
-      if (value.section === "contact") {
-                return formApi.parseValuesWithSchema(
-          declarationContact as typeof declarationMultiStepFormSchema,
-        );
-      }
     },
   },
 });
