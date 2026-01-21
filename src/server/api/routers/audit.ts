@@ -1,7 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
-import { testEnvironmentOptions } from "~/payload/collections/Audit";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { linkToDeclaration, isDeclarationOwner } from "../utils/payload-helper";
 import { auditFormSchema } from "~/utils/form/audit/schema";
@@ -12,7 +11,7 @@ export const auditRouter = createTRPCRouter({
       auditFormSchema.omit({ section: true }).extend({ declarationId: z.number() }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { declarationId, technologies, testEnvironments, ...rest } = input;
+      const { declarationId, technologies, ...rest } = input;
 
       const isOwner = await isDeclarationOwner({
         payload: ctx.payload,
