@@ -196,17 +196,17 @@ export default function DeclarationPreviewPage({
 				</Button>
 				<Button
 					priority="secondary"
-					onClick={() =>
-						router.push(`/dashboard/declaration/${declaration.id}`)
-					}
+					linkProps={{
+						href: `/dashboard/declaration/${declaration.id}`,
+					}}
 				>
 					Continuer sans publier
 				</Button>
 				<Button
 					priority="primary"
-					onClick={() =>
-						router.push(`/dashboard/declaration/${declaration.id}/publish`)
-					}
+					linkProps={{
+						href: `/dashboard/declaration/${declaration.id}/publish`,
+					}}
 				>
 					Publier la déclaration
 				</Button>

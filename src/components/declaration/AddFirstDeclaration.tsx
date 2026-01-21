@@ -133,7 +133,9 @@ export default function AddFirstDeclaration() {
 			<div className={classes.buttonContainer}>
 				<Button
 					priority="primary"
-					onClick={() => router.push("/dashboard/form")}
+					linkProps={{
+						href: "/dashboard/form",
+					}}
 				>
 					Créer la déclaration
 				</Button>

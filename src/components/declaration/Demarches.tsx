@@ -21,6 +21,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const router = useRouter();
 	const { classes } = useStyles();
 	const { rate } = declaration?.audit || {};
+	const linkToDeclarationPage = `/dashboard/declaration/${declaration.id}`;
 
 	const wasUpdated =
 		declaration?.updatedAt &&
@@ -32,6 +33,16 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		declaration.contact ||
 		declaration.entity ||
 		declaration.actionPlan;
+
+	const RedirectButton = ({ href }: { href: string }) => (
+		<Button
+			linkProps={{
+				href,
+			}}
+		>
+			Renseigner les informations
+		</Button>
+	);
 
 	return (
 		<section id="demarches-tab" className={classes.main}>
@@ -81,7 +92,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					desc="Informations à propos du service et l’administration à laquelle il est lié"
 					title="Informations générales"
 					linkProps={{
-						href: `/dashboard/declaration/${declaration?.id}/infos`,
+						href: `${linkToDeclarationPage}/infos`,
 					}}
 					enlargeLinkOrButton={true}
 					orientation="vertical"
@@ -92,7 +103,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					title="Contact"
 					desc="Moyen de contact pour pouvoir accéder aux éventuels contenus inaccessibles"
 					linkProps={{
-						href: `/dashboard/declaration/${declaration?.id}/contact`,
+						href: `${linkToDeclarationPage}/contact`,
 					}}
 					enlargeLinkOrButton={!!declaration?.contact}
 					orientation="vertical"
@@ -106,15 +117,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					}
 					detail={
 						declaration?.contact ? null : (
-							<Button
-								onClick={() =>
-									router.push(
-										`/dashboard/declaration/${declaration?.id}/contact`,
-									)
-								}
-							>
-								Renseigner les informations
-							</Button>
+							<RedirectButton href={`${linkToDeclarationPage}/contact`} />
 						)
 					}
 					className={classes.tile}
@@ -123,7 +126,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					title="Résultat de l’audit"
 					desc="Taux de conformité et détails de l'audit"
 					linkProps={{
-						href: `/dashboard/declaration/${declaration?.id}/audit`,
+						href: `${linkToDeclarationPage}/audit`,
 					}}
 					enlargeLinkOrButton={!!declaration?.audit}
 					orientation="vertical"
@@ -137,13 +140,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					}
 					detail={
 						declaration?.audit ? null : (
-							<Button
-								onClick={() =>
-									router.push(`/dashboard/declaration/${declaration?.id}/audit`)
-								}
-							>
-								Renseigner les informations
-							</Button>
+							<RedirectButton href={`${linkToDeclarationPage}/audit`} />
 						)
 					}
 					className={classes.tile}
@@ -152,7 +149,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					title="Schéma et plans d'actions"
 					desc="État des lieux et actions prévues pour améliorer l'accessibilité"
 					linkProps={{
-						href: `/dashboard/declaration/${declaration?.id}/schema`,
+						href: `${linkToDeclarationPage}/schema`,
 					}}
 					enlargeLinkOrButton={!!declaration?.actionPlan}
 					orientation="vertical"
@@ -166,15 +163,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					}
 					detail={
 						declaration?.actionPlan ? null : (
-							<Button
-								onClick={() =>
-									router.push(
-										`/dashboard/declaration/${declaration?.id}/schema`,
-									)
-								}
-							>
-								Renseigner les informations
-							</Button>
+							<RedirectButton href={`${linkToDeclarationPage}/schema`} />
 						)
 					}
 					className={classes.tile}

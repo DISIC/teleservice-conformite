@@ -37,7 +37,9 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 				<Button
 					iconId="fr-icon-add-line"
 					priority="tertiary"
-					onClick={() => router.push("/dashboard/form")}
+					linkProps={{
+						href: "/dashboard/form",
+					}}
 				>
 					Ajouter une declaration
 				</Button>
@@ -121,7 +123,9 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 						légales
 					</p>
 					<Button
-						onClick={() => router.push("/dashboard/form")}
+						linkProps={{
+							href: "/dashboard/form",
+						}}
 						priority="primary"
 					>
 						Créer une déclaration
