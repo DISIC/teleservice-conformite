@@ -98,14 +98,12 @@ const isAuthedAsUser = t.middleware(async ({ next, ctx }) => {
 		});
 	}
 
-	const user = await ctx.payload.find({
+	const user = await ctx.payload.findByID({
 		collection: "users",
-		where: {
-			id: { equals: userId },
-		},
+			id: userId,
 	});
 
-	if (!user.docs.length) {
+	if (!user) {
 		throw new TRPCError({
 			code: "UNAUTHORIZED",
 			message: "User not found",
@@ -119,12 +117,6 @@ const isAuthedAsUser = t.middleware(async ({ next, ctx }) => {
 	});
 });
 
-/**
- * Create a server-side caller.
- *
- * @see https://trpc.io/docs/server/server-side-calls
- */
-export const createCallerFactory = t.createCallerFactory;
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)

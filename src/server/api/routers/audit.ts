@@ -3,56 +3,36 @@ import z from "zod";
 
 import { testEnvironmentOptions } from "~/payload/collections/Audit";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { linkToDeclaration } from "../utils/payload-helper";
-
-const auditSchema = z.object({
-  date: z.iso.date(),
-  realisedBy: z.string(),
-  rgaa_version: z.enum(["rgaa_4", "rgaa_5"]),
-  rate: z.number().min(0).max(100),
-  compliantElements: z.string().optional(),
-  technologies: z.array(
-    z.string()
-  ).min(1),
-  testEnvironments: z.array(
-    z.string()
-  ).min(1),
-  nonCompliantElements: z.string().optional(),
-  disproportionnedCharge: z.string().optional(),
-  optionalElements: z.string().optional(),
-  grid: z.string().optional(),
-  report: z.string().optional(),
-});
+import { linkToDeclaration, isDeclarationOwner } from "../utils/payload-helper";
+import { auditFormSchema } from "~/utils/form/audit/schema";
 
 export const auditRouter = createTRPCRouter({
   create: userProtectedProcedure
     .input(
-      auditSchema.extend({ declarationId: z.number() }),
+      auditFormSchema.omit({ section: true }).extend({ declarationId: z.number() }),
     )
     .mutation(async ({ input, ctx }) => {
       const { declarationId, technologies, testEnvironments, ...rest } = input;
 
-      if (!ctx.session?.user?.id) {
+      const isOwner = await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+      
+      if (!isOwner) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "User must be logged in to create a declaration",
+          message: "Must be owner of the declaration to create an audit",
         });
       }
 
       const audit = await ctx.payload.create({
         collection: "audits",
+        draft: true,
         data: {
           ...rest,
           toolsUsed: technologies.map((tech) => ({ name: tech })),
-          testEnvironments: testEnvironments.reduce((acc: (typeof testEnvironmentOptions[number]["value"])[], env) => {
-            const value = testEnvironmentOptions.find((test) => test.value === env)?.value;
-
-            if (value) {
-              acc.push(value);
-            }
-
-            return acc;
-          }, []),
           declaration: declarationId,
         },
       });
@@ -62,14 +42,20 @@ export const auditRouter = createTRPCRouter({
       return { data: audit.id };
     }),
   delete: userProtectedProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.number(), declarationId: z.number() }))
     .mutation(async ({ input, ctx }) => {
-      const { id } = input;
+      const { id, declarationId } = input;
 
-      if (!ctx.session?.user?.id) {
+      const isOwner = await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+      
+      if (!isOwner) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "User must be logged in to create a declaration",
+          message: "Must be owner of the declaration to delete an audit",
         });
       }
 
@@ -83,16 +69,22 @@ export const auditRouter = createTRPCRouter({
   update: userProtectedProcedure
     .input(
       z.object({
-        audit: auditSchema.extend({ id: z.number() }),
+        audit: auditFormSchema.omit({ section: true }).extend({ id: z.number(), declarationId: z.number() }),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { id, ...rest } = input.audit;
+      const { id, declarationId, ...rest } = input.audit;
 
-      if (!ctx.session?.user?.id) {
+      const isOwner = await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+      
+      if (!isOwner) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "User must be logged in to create a declaration",
+          message: "Must be owner of the declaration to update an audit",
         });
       }
 
@@ -101,15 +93,6 @@ export const auditRouter = createTRPCRouter({
         id,
         data: {
           ...rest,
-          testEnvironments: rest.testEnvironments.reduce((acc: (typeof testEnvironmentOptions[number]["value"])[], env) => {
-            const value = testEnvironmentOptions.find((test) => test.value === env)?.value;
-
-            if (value) {
-              acc.push(value);
-            }
-
-            return acc;
-          }, []),
           toolsUsed: rest.technologies.map((tech) => ({ name: tech })),
         },
       });

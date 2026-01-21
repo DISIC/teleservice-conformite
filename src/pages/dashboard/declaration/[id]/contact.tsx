@@ -73,7 +73,7 @@ export default function ContactPage({
 		url: string,
 	) => {
 		try {
-			await updateContact({ id, email, url });
+			await updateContact({ id, email, url, declarationId: declaration.id });
 		} catch (error) {
 			console.error(
 				`Error updating contact for declaration with id ${declaration?.id}:`,
@@ -114,8 +114,8 @@ export default function ContactPage({
 		<section id="contact" className={classes.main}>
 			<div className={classes.container}>
 				<Breadcrumb
+					homeLinkProps={{ href: "/dashboard" }}
 					segments={[
-						{ label: "Accueil", linkProps: { href: "/dashboard" } },
 						{
 							label: declaration?.name ?? "",
 							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
@@ -145,7 +145,7 @@ export default function ContactPage({
 							<>
 								<DeclarationContactForm form={form} />
 								<form.AppForm>
-									<form.SubscribeButton label={"Valider"} />
+									<form.SubscribeButton label="Valider" />
 								</form.AppForm>
 							</>
 						) : (

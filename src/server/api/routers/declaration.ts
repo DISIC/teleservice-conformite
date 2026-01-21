@@ -6,11 +6,13 @@ import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { kindOptions } from "~/payload/collections/Entity";
 import { getDeclarationById } from "~/utils/payload-helper";
+import { isDeclarationOwner } from "../utils/payload-helper";
 
 const createOrUpdateEntity = async (payload: Payload, entityId: number | undefined, organisation: string, domain: string) => {
 	if (!entityId) {
 		const entity = await payload.create({
 			collection: "entities",
+			draft: true,
 			data: {
 				name: organisation,
 				kind: kindOptions.find((field) => field.label === domain)?.value ?? "none",
@@ -38,14 +40,14 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { organisation, kind, url, domain, name, entityId } = input.general;
 
-      if (!ctx.session?.user?.id) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "User must be logged in to create a declaration",
-        });
-      }
-
 			const newEntityId = await createOrUpdateEntity(ctx.payload, entityId ?? undefined, organisation, domain);
+			
+			if (!ctx.session?.user?.id) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "User must be logged in to create a declaration",
+				});
+			}
 			
 			const declaration = await ctx.payload.create({
 				collection: "declarations",
@@ -65,19 +67,16 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id } = input;
 
-      if (!ctx.session?.user?.id) {
+      const isOwner = await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId: id,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+      
+      if (!isOwner) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "User must be logged in to create a declaration",
-        });
-      }
-
-      const declaration = await getDeclarationById(ctx.payload, id);
-
-      if (declaration?.created_by?.id !== Number(ctx.session.user.id)) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "User cannot delete this declaration",
+          message: "Must be owner of the declaration to delete it",
         });
       }
 
@@ -99,19 +98,16 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { organisation, kind, url, domain, name, declarationId, entityId } = input.general;
 
-      if (!ctx.session?.user?.id) {
+      const isOwner = await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+      
+      if (!isOwner) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "User must be logged in to create a declaration",
-        });
-      }
-
-      const declaration = await getDeclarationById(ctx.payload, declarationId);
-
-      if (declaration?.created_by?.id !== Number(ctx.session.user.id)) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "User cannot delete this declaration",
+          message: "Must be owner of the declaration to update it",
         });
       }
 

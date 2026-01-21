@@ -43,7 +43,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 	const addDeclaration = async (generalData: {
 		name: string;
-		url: string;
+		url?: string | undefined;
 		organisation: string;
 		kind: (typeof appKindOptions)[number]["value"];
 		domain: string;
@@ -51,6 +51,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		try {
 			const general = {
 				...generalData,
+				url: generalData.url ?? "",
 				entityId: entity?.id,
 			};
 

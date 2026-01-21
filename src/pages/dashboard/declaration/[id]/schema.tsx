@@ -62,6 +62,7 @@ export default function SchemaPage({
 				schemaId: id ?? -1,
 				currentYearSchemaUrl,
 				previousYearsSchemaUrl,
+				declarationId: declaration.id,
 			});
 		} catch (error) {
 			console.error("Error updating schema:", error);
@@ -97,8 +98,8 @@ export default function SchemaPage({
 		<section id="schema" className={classes.main}>
 			<div>
 				<Breadcrumb
+					homeLinkProps={{ href: "/dashboard" }}
 					segments={[
-						{ label: "Accueil", linkProps: { href: "/dashboard" } },
 						{
 							label: declaration?.name ?? "",
 							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },

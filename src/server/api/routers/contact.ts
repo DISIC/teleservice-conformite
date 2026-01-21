@@ -2,7 +2,7 @@ import z from "zod";
 import { TRPCError } from "@trpc/server";
 
 import { createTRPCRouter, publicProcedure, userProtectedProcedure } from "../trpc";
-import { linkToDeclaration } from "../utils/payload-helper";
+import { linkToDeclaration, isDeclarationOwner } from "../utils/payload-helper";
 
 export const contactRouter = createTRPCRouter({
   create: userProtectedProcedure
@@ -16,10 +16,16 @@ export const contactRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { email, url, declarationId } = input;
 
-      if (!ctx.session?.user?.id) {
+      const isOwner = await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+      
+      if (!isOwner) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "User must be logged in to create a declaration",
+          message: "Must be owner of the declaration to create a contact",
         });
       }
 
@@ -42,15 +48,29 @@ export const contactRouter = createTRPCRouter({
         id: z.number(),
         email: z.string().optional(),
         url: z.string().optional(),
+        declarationId: z.number(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { id, email, url } = input;
+      const { id, email, url, declarationId } = input;
 
       if (!ctx.session?.user?.id) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "User must be logged in to create a declaration",
+        });
+      }
+
+      const isOwner = await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+      
+      if (!isOwner) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Must be owner of the declaration to update a contact",
         });
       }
 

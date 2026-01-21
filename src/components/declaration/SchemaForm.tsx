@@ -55,8 +55,8 @@ export default function SchemaForm({
 		...schemaFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			await addSchema({
-				currentYearSchemaUrl: value.currentYearSchemaUrl,
-				previousYearsSchemaUrl: value.previousYearsSchemaUrl,
+				currentYearSchemaUrl: value.currentYearSchemaUrl ?? "",
+				previousYearsSchemaUrl: value.previousYearsSchemaUrl ?? "",
 				declarationId: declaration.id,
 			});
 		},

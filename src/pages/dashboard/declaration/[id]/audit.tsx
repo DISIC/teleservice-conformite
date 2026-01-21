@@ -75,7 +75,7 @@ export default function AuditPage({
 
 	const deleteDeclarationAudit = async (auditId: number) => {
 		try {
-			await deleteAudit({ id: auditId });
+			await deleteAudit({ id: auditId, declarationId: declaration.id });
 		} catch (error) {
 			console.error(`Error deleting audit with id ${auditId}:`, error);
 		}
@@ -86,6 +86,7 @@ export default function AuditPage({
 			await updateAudit({
 				audit: {
 					id: auditId,
+					declarationId: declaration.id,
 					...auditData,
 				},
 			});
@@ -115,8 +116,10 @@ export default function AuditPage({
 		<section id="audit" className={classes.main}>
 			<div className={classes.container}>
 				<Breadcrumb
+					homeLinkProps={{
+						href: "/dashboard",
+					}}
 					segments={[
-						{ label: "Accueil", linkProps: { href: "/dashboard" } },
 						{
 							label: declaration?.name ?? "",
 							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },

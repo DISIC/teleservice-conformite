@@ -2,32 +2,38 @@ import z from "zod";
 import { TRPCError } from "@trpc/server";
 
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { linkToDeclaration } from "../utils/payload-helper";
+import { isDeclarationOwner, linkToDeclaration } from "../utils/payload-helper";
 
 export const schemaRouter = createTRPCRouter({
   create: userProtectedProcedure
     .input(
       z.object({
-        currentYearSchemaUrl: z.union([z.url(), z.literal("")]),
-        previousYearsSchemaUrl: z.union([z.url(), z.literal("")]),
+        currentYearSchemaUrl: z.string().optional(),
+        previousYearsSchemaUrl: z.string().optional(),
         declarationId: z.number(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const { currentYearSchemaUrl, previousYearsSchemaUrl, declarationId } = input;
 
-      if (!ctx.session?.user?.id) {
+      const isOwner = await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+      
+      if (!isOwner) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "User must be logged in to create a declaration",
+          message: "Must be owner of the declaration to delete a schema",
         });
       }
 
       const schema = await ctx.payload.create({
         collection: "action-plans",
         data: {
-          currentYearSchemaUrl,
-          previousYearsSchemaUrl,
+          currentYearSchemaUrl: currentYearSchemaUrl ?? "",
+          previousYearsSchemaUrl: previousYearsSchemaUrl ?? "",
           declaration: declarationId,
         },
       });
@@ -39,18 +45,25 @@ export const schemaRouter = createTRPCRouter({
   update: userProtectedProcedure
     .input(
       z.object({
-        currentYearSchemaUrl: z.union([z.url(), z.literal("")]),
-        previousYearsSchemaUrl: z.union([z.url(), z.literal("")]),
+        currentYearSchemaUrl: z.string().optional(),
+        previousYearsSchemaUrl: z.string().optional(),
         schemaId: z.number(),
+        declarationId: z.number(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { currentYearSchemaUrl, previousYearsSchemaUrl, schemaId  } = input;
+      const { currentYearSchemaUrl, previousYearsSchemaUrl, schemaId, declarationId  } = input;
 
-      if (!ctx.session?.user?.id) {
+      const isOwner = await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+      
+      if (!isOwner) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "User must be logged in to update a schema",
+          message: "Must be owner of the declaration to delete a schema",
         });
       }
 
@@ -58,8 +71,8 @@ export const schemaRouter = createTRPCRouter({
         collection: "action-plans",
         id: schemaId,
         data: {
-          currentYearSchemaUrl,
-          previousYearsSchemaUrl,
+          currentYearSchemaUrl: currentYearSchemaUrl ?? "",
+          previousYearsSchemaUrl: previousYearsSchemaUrl ?? "",
         },
       });
 
