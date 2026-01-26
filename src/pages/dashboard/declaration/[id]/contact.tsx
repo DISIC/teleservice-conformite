@@ -5,9 +5,10 @@ import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
-
+import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
+
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationContactForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
@@ -15,11 +16,12 @@ import ContactForm from "~/components/declaration/ContactForm";
 import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
 import { contact } from "~/utils/form/contact/schema";
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
 
 export default function ContactPage({
 	declaration,
-}: { declaration: DeclarationWithPopulated }) {
+}: { declaration: PopulatedDeclaration }) {
 	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
@@ -71,7 +73,7 @@ export default function ContactPage({
 		url: string,
 	) => {
 		try {
-			await updateContact({ id, email, url });
+			await updateContact({ id, email, url, declarationId: declaration.id });
 		} catch (error) {
 			console.error(
 				`Error updating contact for declaration with id ${declaration?.id}:`,
@@ -105,14 +107,24 @@ export default function ContactPage({
 	});
 
 	if (!declaration?.contact) {
-		return <ContactForm declarationId={declaration?.id ?? -1} />;
+		return <ContactForm declaration={declaration} />;
 	}
 
 	return (
 		<section id="contact" className={classes.main}>
 			<div className={classes.container}>
+				<Breadcrumb
+					homeLinkProps={{ href: "/dashboard" }}
+					segments={[
+						{
+							label: declaration?.name ?? "",
+							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
+						},
+					]}
+					currentPageLabel="Contact"
+				/>
 				<div>
-					<h1>Contact</h1>
+					<h1>{declaration?.name ?? ""} - Contact</h1>
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire
@@ -129,11 +141,15 @@ export default function ContactPage({
 					}}
 				>
 					<div className={classes.formWrapper}>
-						<DeclarationContactForm form={form} readOnly={!editMode} />
-						{editMode && (
-							<form.AppForm>
-								<form.SubscribeButton label={"Valider"} />
-							</form.AppForm>
+						{editMode ? (
+							<>
+								<DeclarationContactForm form={form} />
+								<form.AppForm>
+									<form.SubscribeButton label="Valider" />
+								</form.AppForm>
+							</>
+						) : (
+							<ReadOnlyDeclarationContact declaration={declaration ?? null} />
 						)}
 					</div>
 				</form>
@@ -152,8 +168,6 @@ const useStyles = tss.withName(ContactPage.name).create({
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("3w"),
-		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
 	container: {
@@ -169,10 +183,6 @@ const useStyles = tss.withName(ContactPage.name).create({
 		fontSize: "1rem",
 		color: "grey",
 	},
-	title: {
-		fontSize: "1rem",
-		color: fr.colors.decisions.text.mention.grey.default,
-	},
 });
 
 interface Params extends ParsedUrlQuery {
@@ -185,7 +195,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 
@@ -196,7 +206,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!declaration) {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 

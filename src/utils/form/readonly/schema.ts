@@ -2,7 +2,6 @@ import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import { appKindOptions } from "~/payload/collections/Declaration";
-import type { disproportionnedCharge } from "../audit/schema";
 
 export const declarationGeneral = z.object({
   general: z.object({
@@ -12,9 +11,7 @@ export const declarationGeneral = z.object({
       .min(1, { message: "Le nom de l'organisation est requis" }),
     kind: z.enum(appKindOptions.map((option) => option.value)),
     name: z.string().min(1, { message: "Le nom de l'application est requis" }),
-    url: z.url({ error: "L'URL n'est pas valide" }).min(1, {
-      message: "L'URL est requise",
-    }),
+    url: z.string().optional(),
     domain: z
       .string()
       .meta({ kind: "select" })
@@ -29,7 +26,7 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
     organisation: "",
     kind: "website",
     name: "",
-    url: "",
+    url: undefined,
     domain: "",
   },
 };
@@ -37,8 +34,7 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 export const declarationAudit = z.object({
   audit: z.object({
     date: z.iso.date().min(1, { message: "La date est requise" }),
-    report: z.union([z.url(), z.literal("")]),
-    grid: z.union([z.url(), z.literal("")]),
+    report: z.string().optional(),
     realisedBy: z.string().min(1, {
       message: "L'organisation ayant réalisé l'audit est requise",
     }),
@@ -47,7 +43,7 @@ export const declarationAudit = z.object({
       .number()
       .min(0, { message: "Le taux doit être entre 0 et 100" })
       .max(100, { message: "Le taux doit être entre 0 et 100" }),
-    compliantElements: z.array(z.object({ name: z.string(), url: z.union([z.url(), z.literal("")]) })).optional(),
+    compliantElements: z.string().optional(),
     technologies: z.array(z.string()).min(1, {
       message: "Au moins une technologie doit être sélectionnée",
     }),
@@ -56,7 +52,7 @@ export const declarationAudit = z.object({
       .min(1, {
         message: "Au moins un environnement de test doit être sélectionné",
       }),
-    disproportionnedCharge: z.array(z.object({ name: z.string(), reason: z.string(), duration: z.string(), alternative: z.string() })),
+    disproportionnedCharge: z.string().optional(),
     nonCompliantElements: z.string().optional(),
     optionalElements: z.string().optional(),
   }),
@@ -67,8 +63,7 @@ export type ZDeclarationAudit = z.infer<typeof declarationAudit>;
 export const declarationAuditDefaultValues: ZDeclarationAudit = {
   audit: {
     date: "",
-    report: "",
-    grid: "",
+    report: undefined,
     realisedBy: "",
     rgaa_version: "rgaa_4",
     rate: 0,
@@ -76,28 +71,29 @@ export const declarationAuditDefaultValues: ZDeclarationAudit = {
     testEnvironments: [],
     nonCompliantElements: "",
     optionalElements: "",
-    disproportionnedCharge: [],
-    compliantElements: [],
+    disproportionnedCharge: "",
+    compliantElements: "",
   },
 };
 
 export const declarationSchema = z.object({
-  schema: z.object({
-    annualSchemaDone: z.boolean(),
-    currentYearSchemaDone: z.boolean(),
-    currentSchemaUrl: z.url().optional(),
-    currentSchemaFile: z.file().optional(),
-  }),
+  schema: z
+    .object({
+      hasDoneCurrentYearSchema: z.boolean(),
+      currentYearSchemaUrl: z.string().optional(),
+      hasDonePreviousYearsSchema: z.boolean(),
+      previousYearsSchemaUrl: z.string().optional(),
+    }),
 });
 
 export type ZSchema = z.infer<typeof declarationSchema>;
 
 export const declarationSchemaDefaultValues: ZSchema = {
   schema: {
-    annualSchemaDone: false,
-    currentYearSchemaDone: false,
-    currentSchemaUrl: undefined,
-    currentSchemaFile: undefined,
+    hasDoneCurrentYearSchema: false,
+    currentYearSchemaUrl: undefined,
+    hasDonePreviousYearsSchema: false,
+    previousYearsSchemaUrl: undefined,
   },
 };
 
@@ -161,11 +157,6 @@ export const readOnlyFormOptions = formOptions({
         );
       }
 
-      if (value.section === "contact") {
-                return formApi.parseValuesWithSchema(
-          declarationContact as typeof declarationMultiStepFormSchema,
-        );
-      }
     },
   },
 });

@@ -15,6 +15,9 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import getPayloadClient from "../../payload/payloadClient";
+import { auth } from "~/utils/auth";
+
+export type BetterAuthSession = Awaited<ReturnType<typeof auth.api.getSession>>;
 
 /**
  * 1. CONTEXT
@@ -36,15 +39,10 @@ type CreateContextOptions = Record<string, never>;
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = async (_opts: CreateContextOptions) => {
-	const payload = await getPayloadClient({
-		seed: false,
-	});
-
-	return {
-		payload,
-		req: _opts.req,
-	};
+type CustomTRPCContext = {
+	payload: Payload;
+	session: BetterAuthSession;
+	req?: NextApiRequest;
 };
 
 /**
@@ -54,7 +52,18 @@ const createInnerTRPCContext = async (_opts: CreateContextOptions) => {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = async (_opts: CreateNextContextOptions) => {
-	return await createInnerTRPCContext({});
+	const payload = await getPayloadClient({
+		seed: false,
+	});
+
+	// Retrieve Better Auth session from incoming request headers
+	const session = await auth.api.getSession({ headers: new Headers(_opts.req.headers as HeadersInit) });
+
+	return {
+		payload,
+		session,
+		req: _opts.req,
+	};
 };
 
 /**
@@ -79,12 +88,35 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 	},
 });
 
-/**
- * Create a server-side caller.
- *
- * @see https://trpc.io/docs/server/server-side-calls
- */
-export const createCallerFactory = t.createCallerFactory;
+const isAuthedAsUser = t.middleware(async ({ next, ctx }) => {
+	const userId = Number(ctx.session?.user?.id);
+
+	if (!userId) {
+		throw new TRPCError({
+			code: "UNAUTHORIZED",
+			message: "Missing or invalid session",
+		});
+	}
+
+	const user = await ctx.payload.findByID({
+		collection: "users",
+			id: userId,
+	});
+
+	if (!user) {
+		throw new TRPCError({
+			code: "UNAUTHORIZED",
+			message: "User not found",
+		});
+	}
+
+	return next({
+		ctx: {
+			session: ctx.session,
+		},
+	});
+});
+
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
@@ -108,3 +140,5 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+export const userProtectedProcedure = t.procedure.use(isAuthedAsUser);

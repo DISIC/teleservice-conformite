@@ -3,7 +3,7 @@ import z from "zod";
 
 export const contact = z.object({
   contactType: z.array(z.string()).min(1, { message: "Au moins un type de contact doit être sélectionné" }),
-  contactLink: z.url().optional(),
+  contactLink: z.string().optional(),
   emailContact: z.email(),
 });
 

@@ -110,7 +110,7 @@ function App({ Component, pageProps }: AppProps) {
 						href: "/",
 						title: "Accueil Téléservice Conformité",
 					}}
-					navigation={navigationItems}
+					// navigation={navigationItems}
 					quickAccessItems={quickAccessItems}
 					serviceTitle="Téléservice Conformité"
 				/>

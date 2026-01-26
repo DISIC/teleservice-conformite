@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { tss } from "tss-react";
 import { Select } from "@codegouvfr/react-dsfr/SelectNext";
 
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
@@ -10,6 +11,7 @@ interface SelectFieldProps extends DefaultFieldProps {
 		value: string;
 	}>;
 	defaultStateMessage?: string;
+	infoStateMessage?: string | React.ReactNode;
 }
 
 export function SelectField({
@@ -19,26 +21,33 @@ export function SelectField({
 	className,
 	readOnly = false,
 	defaultStateMessage = "",
+	infoStateMessage,
 }: SelectFieldProps) {
+	const { classes } = useStyles();
 	const field = useFieldContext<string>();
 
 	return !readOnly ? (
-		<Select
-			label={label}
-			nativeSelectProps={{
-				name: field.name,
-				value: field.state.value,
-				onChange: (e) => field.setValue(e.target.value),
-			}}
-			options={options}
-			disabled={disabled}
-			state={field.state.meta.errors.length > 0 ? "error" : "default"}
-			stateRelatedMessage={
-				field.state.meta.errors.map((error) => error.message).join(",") ??
-				defaultStateMessage
-			}
-			className={className}
-		/>
+		<>
+			<Select
+				label={label}
+				nativeSelectProps={{
+					name: field.name,
+					value: field.state.value,
+					onChange: (e) => field.setValue(e.target.value),
+				}}
+				options={options}
+				disabled={disabled}
+				state={field.state.meta.errors.length > 0 ? "error" : "default"}
+				stateRelatedMessage={
+					field.state.meta.errors.map((error) => error.message).join(",") ??
+					defaultStateMessage
+				}
+				className={className}
+			/>
+			{infoStateMessage && (
+				<p className={classes.infoStateMessage}>{infoStateMessage}</p>
+			)}
+		</>
 	) : (
 		<ReadOnlyField
 			label={label}
@@ -49,3 +58,12 @@ export function SelectField({
 		/>
 	);
 }
+
+const useStyles = tss.withName(SelectField.name).create({
+	infoStateMessage: {
+		color: fr.colors.decisions.text.default.info.default,
+		fontWeight: 400,
+		fontSize: "0.75rem",
+		lineHeight: "1.25rem",
+	},
+});

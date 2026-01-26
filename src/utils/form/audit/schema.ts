@@ -33,7 +33,7 @@ export const tools = z.object({
   testEnvironments: z
     .array(
       z.enum(
-        testEnvironmentOptions.map((test) => test.value) as [string, ...string[]]
+        testEnvironmentOptions.map((test) => test.value)
       )
     )
     .min(1, {
@@ -49,101 +49,53 @@ export const toolsDefaultValues: ZTools = {
 };
 
 export const compliantElements = z.object({
-  compliantElements: z.array(z.object({ name: z.string(), url: z.string() })),
+  compliantElements: z.string().optional(),
 });
 
 export type ZCompliantElements = z.infer<typeof compliantElements>;
 
 export const compliantElementsDefaultValues: ZCompliantElements = {
-  compliantElements: [],
+  compliantElements: "",
 };
 
-export const nonCompliantElements = z.discriminatedUnion(
-  "hasNonCompliantElements",
-  [
-    z.object({
-      hasNonCompliantElements: z.literal(false),
-      nonCompliantElements: z.string().optional(),
-    }),
-    z.object({
-      hasNonCompliantElements: z.literal(true),
-      nonCompliantElements: z.string().trim().min(1, {
-        message: "Ajoutez un élément non conforme",
-      }),
-    }),
-  ]
-);
+export const nonCompliantElements = z.object({
+  nonCompliantElements: z.string().optional(),
+});
 
 export type ZNonCompliantElements = z.infer<typeof nonCompliantElements>;
 
 export const nonCompliantElementsDefaultValues: ZNonCompliantElements = {
-  hasNonCompliantElements: false,
   nonCompliantElements: "",
 };
 
-export const disproportionnedCharge = z.discriminatedUnion(
-  "hasDisproportionnedCharge",
-  [
-    z.object({
-      hasDisproportionnedCharge: z.literal(false),
-      disproportionnedCharge: z.array(
-      z.object({
-        name: z.string(),
-        reason: z.string(),
-        duration: z.string(),
-        alternative: z.string(),
-      })
-    ).optional(),
-    }),
-    z.object({
-      hasDisproportionnedCharge: z.literal(true),
-      disproportionnedCharge: z.string().trim().min(1, {
-        message: "Ajoutez au moins une dérogation pour charge disproportionnée",
-      }),
-    }),
-  ]
-);
+export const disproportionnedCharge = z.object({
+  disproportionnedCharge: z.string().optional(),
+});
 
 export type ZDisproportionnedCharge = z.infer<typeof disproportionnedCharge>;
 
 export const disproportionnedChargeDefaultValues: ZDisproportionnedCharge = {
-  hasDisproportionnedCharge: false,
-  disproportionnedCharge: [],
+  disproportionnedCharge: "",
 };
 
-export const optionalElements = z.discriminatedUnion(
-  "hasOptionalElements",
-  [
-    z.object({
-      hasOptionalElements: z.literal(false),
-      optionalElements: z.string().optional(),
-    }),
-    z.object({
-      hasOptionalElements: z.literal(true),
-      optionalElements: z.string().trim().min(1, {
-        message: "Ajoutez une exemption",
-      }),
-    }),
-  ]
-);
+export const optionalElements = z.object({
+  optionalElements: z.string().optional(),
+});
 
 export type ZOptionalElements = z.infer<typeof optionalElements>;
 
 export const optionalElementsDefaultValues: ZOptionalElements = {
-  hasOptionalElements: false,
   optionalElements: "",
 };
 
 export const files = z.object({
-  grid: z.union([z.url(), z.literal("")]),
-  report: z.union([z.url(), z.literal("")]),
+  report: z.string().optional(),
 });
 
 export type ZFiles = z.infer<typeof files>;
 
 export const filesDefaultValues: ZFiles = {
-  grid: "",
-  report: "",
+  report: undefined,
 };
 
 const sections = [
@@ -163,8 +115,11 @@ export const auditFormSchema = z.object({
   ...auditDate.shape,
   ...tools.shape,
   ...compliantElements.shape,
+  ...nonCompliantElements.shape,
+  ...disproportionnedCharge.shape,
+  ...optionalElements.shape,
   ...files.shape,
-}).and(nonCompliantElements).and(disproportionnedCharge).and(optionalElements);
+});
 
 export type ZAuditFormSchema = z.infer<
   typeof auditFormSchema

@@ -7,22 +7,20 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
-import type { z } from "zod";
+import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationAuditForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import AuditMultiStepForm from "~/components/declaration/AuditMultiStepForm";
 import { api } from "~/utils/api";
-import type { auditFormSchema } from "~/utils/form/audit/schema";
 import { getDeclarationById } from "~/utils/payload-helper";
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
-
-type AuditFormSchema = z.infer<typeof auditFormSchema>;
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
 
 export default function AuditPage({
 	declaration,
-}: { declaration: DeclarationWithPopulated }) {
+}: { declaration: PopulatedDeclaration }) {
 	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
@@ -40,7 +38,7 @@ export default function AuditPage({
 
 	const { mutateAsync: deleteAudit } = api.audit.delete.useMutation({
 		onSuccess: async () => {
-			router.push(`/declaration/${declaration?.id}`);
+			router.push(`/dashboard/declaration/${declaration?.id}`);
 		},
 		onError: async (error) => {
 			console.error(`Error deleting audit with id ${audit?.id}`, error);
@@ -49,6 +47,8 @@ export default function AuditPage({
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
+
+		if (editMode) setIsAchieved(!!declaration?.audit);
 	};
 
 	if (audit) {
@@ -59,54 +59,35 @@ export default function AuditPage({
 				date: audit?.date
 					? new Date(audit.date).toISOString().slice(0, 10)
 					: "",
-				grid: audit?.auditGrid ?? "",
 				report: audit?.auditReport ?? "",
 				realisedBy: audit?.realisedBy ?? "",
 				rgaa_version: audit?.rgaa_version ?? "rgaa_4",
 				rate: audit?.rate ?? 0,
-				compliantElements:
-					audit?.compliantElements?.map((element) => ({
-						name: element.name,
-						url: element.url ?? "",
-					})) ?? [],
-				technologies: audit?.toolsUsed ?? [],
+				compliantElements: audit?.compliantElements ?? "",
+				technologies: audit?.toolsUsed?.map((tech) => tech.name) ?? [],
 				testEnvironments: audit?.testEnvironments ?? [],
 				nonCompliantElements: audit?.nonCompliantElements ?? "",
-				disproportionnedCharge:
-					audit?.disproportionnedCharge
-						?.map((element) => ({
-							name: element.name,
-							reason: element.reason,
-							duration: element.duration,
-							alternative: element.alternative,
-						}))
-						.filter((element) => !!element.name) ?? [],
-				optionalElements: audit?.exemption ?? "",
+				disproportionnedCharge: audit?.disproportionnedCharge ?? "",
+				optionalElements: audit?.optionalElements ?? "",
 			},
 		};
 	}
 
 	const deleteDeclarationAudit = async (auditId: number) => {
 		try {
-			await deleteAudit({ id: auditId });
+			await deleteAudit({ id: auditId, declarationId: declaration.id });
 		} catch (error) {
 			console.error(`Error deleting audit with id ${auditId}:`, error);
 		}
 	};
 
-	const updateDeclarationAudit = async (
-		auditId: number,
-		auditData: AuditFormSchema,
-	) => {
+	const updateDeclarationAudit = async (auditId: number, auditData: any) => {
 		try {
 			await updateAudit({
 				audit: {
 					id: auditId,
+					declarationId: declaration.id,
 					...auditData,
-					compliantElements: auditData.compliantElements ?? [
-						{ name: "", url: "" },
-					],
-					disproportionnedCharge: auditData.disproportionnedCharge ?? [],
 				},
 			});
 		} catch (error) {
@@ -116,11 +97,7 @@ export default function AuditPage({
 
 	const form = useAppForm({
 		...readOnlyFormOptions,
-		// defaultValues: {
-
-		// },
 		onSubmit: async ({ value, formApi }) => {
-			console.log(value);
 			if (!isAchieved && declaration?.audit) {
 				await deleteDeclarationAudit(audit?.id ?? -1);
 
@@ -132,20 +109,34 @@ export default function AuditPage({
 	});
 
 	if (!declaration?.audit) {
-		return <AuditMultiStepForm declarationId={declaration?.id} />;
+		return <AuditMultiStepForm declaration={declaration ?? null} />;
 	}
 
 	return (
 		<section id="audit" className={classes.main}>
-			<div>
-				<h1>Résultat de l’audit</h1>
-				<div className={classes.headerAction}>
-					<h3 className={classes.description}>
-						Verifiez les informations et modifiez-les si necessaire
-					</h3>
-					<Button priority="secondary" onClick={onEditInfos}>
-						{!editMode ? "Modifier" : "Annuler"}
-					</Button>
+			<div className={classes.container}>
+				<Breadcrumb
+					homeLinkProps={{
+						href: "/dashboard",
+					}}
+					segments={[
+						{
+							label: declaration?.name ?? "",
+							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
+						},
+					]}
+					currentPageLabel="Résultat de l’audit"
+				/>
+				<div>
+					<h1>{declaration?.name ?? ""} - Résultat de l’audit</h1>
+					<div className={classes.headerAction}>
+						<h3 className={classes.description}>
+							Verifiez les informations et modifiez-les si necessaire
+						</h3>
+						<Button priority="secondary" onClick={onEditInfos}>
+							{!editMode ? "Modifier" : "Annuler"}
+						</Button>
+					</div>
 				</div>
 			</div>
 			<form
@@ -155,20 +146,19 @@ export default function AuditPage({
 				}}
 			>
 				<div className={classes.formWrapper}>
-					<DeclarationAuditForm
-						form={form}
-						readOnly={!editMode}
-						isAchieved={isAchieved}
-						onChangeIsAchieved={(value) => setIsAchieved(value)}
-					/>
-					{editMode && (
-						<form.AppForm>
-							<form.SubscribeButton
-								label="Valider les informations"
-								iconId="fr-icon-arrow-right-line"
-								iconPosition="right"
+					{editMode ? (
+						<>
+							<DeclarationAuditForm
+								form={form}
+								isAchieved={isAchieved}
+								onChangeIsAchieved={(value) => setIsAchieved(value)}
 							/>
-						</form.AppForm>
+							<form.AppForm>
+								<form.SubscribeButton label={"Valider"} />
+							</form.AppForm>
+						</>
+					) : (
+						<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
 					)}
 				</div>
 			</form>
@@ -181,12 +171,15 @@ const useStyles = tss.withName(AuditPage.name).create({
 		marginTop: fr.spacing("10v"),
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("6w"),
+		gap: fr.spacing("2w"),
+	},
+	container: {
+		display: "flex",
+		flexDirection: "column",
 	},
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("3w"),
 		marginBottom: fr.spacing("6w"),
 	},
 	headerAction: {
@@ -210,7 +203,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 
@@ -221,7 +214,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!declaration) {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 

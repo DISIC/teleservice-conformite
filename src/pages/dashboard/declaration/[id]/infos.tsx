@@ -5,6 +5,7 @@ import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
+import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
@@ -13,11 +14,12 @@ import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
-import type { DeclarationWithPopulated } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
 
 export default function GeneralInformationsPage({
 	declaration,
-}: { declaration?: DeclarationWithPopulated }) {
+}: { declaration?: PopulatedDeclaration }) {
 	const router = useRouter();
 	const { classes } = useStyles();
 	const [editMode, setEditMode] = useState(false);
@@ -83,8 +85,20 @@ export default function GeneralInformationsPage({
 	return (
 		<section id="general-informations" className={classes.main}>
 			<div>
+				<Breadcrumb
+					homeLinkProps={{
+						href: "/dashboard",
+					}}
+					segments={[
+						{
+							label: declaration?.name ?? "",
+							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
+						},
+					]}
+					currentPageLabel="Informations générales"
+				/>
 				<div>
-					<h1>Informations générales</h1>
+					<h1>{declaration?.name ?? ""} - Informations générales</h1>
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire
@@ -101,11 +115,15 @@ export default function GeneralInformationsPage({
 					}}
 				>
 					<div className={classes.formWrapper}>
-						<DeclarationGeneralForm form={form} readOnly={!editMode} />
-						{editMode && (
-							<form.AppForm>
-								<form.SubscribeButton label={"Valider"} />
-							</form.AppForm>
+						{editMode ? (
+							<>
+								<DeclarationGeneralForm form={form} />
+								<form.AppForm>
+									<form.SubscribeButton label={"Valider"} />
+								</form.AppForm>
+							</>
+						) : (
+							<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
 						)}
 					</div>
 				</form>
@@ -124,8 +142,6 @@ const useStyles = tss.withName(GeneralInformationsPage.name).create({
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("3w"),
-		padding: fr.spacing("4w"),
 		marginBottom: fr.spacing("6w"),
 	},
 	headerAction: {
@@ -153,7 +169,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!id || typeof id !== "string") {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 
@@ -164,7 +180,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (!declaration) {
 		return {
 			props: {},
-			redirect: { destination: "/declarations" },
+			redirect: { destination: "/dashboard" },
 		};
 	}
 

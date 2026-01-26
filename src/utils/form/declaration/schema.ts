@@ -11,16 +11,11 @@ export const declarationGeneral = z.object({
 			.min(1, { message: "Le nom de l'organisation est requis" }),
 		kind: z.enum(appKindOptions.map((option) => option.value)),
 		name: z.string().min(1, { message: "Le nom de l'application est requis" }),
-		url: z.url({ error: "L'URL n'est pas valide" }).min(1, {
-			message: "L'URL est requise",
-		}),
+		url: z.string().optional(),
 		domain: z
 			.string()
 			.meta({ kind: "select" })
 			.min(1, { message: "Le domaine est requis" }),
-		// hasMultiYearSchema: z.boolean(),
-		// linkMultiYearSchema: z.url().optional(),
-		// uploadMultiYearSchema: z.file().optional(),
 	}),
 });
 
@@ -31,11 +26,8 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 		organisation: "",
 		kind: "website",
 		name: "",
-		url: "",
+		url: undefined,
 		domain: "",
-		// hasMultiYearSchema: false,
-		// linkMultiYearSchema: undefined,
-		// uploadMultiYearSchema: undefined,
 	},
 };
 
@@ -56,7 +48,7 @@ export const declarationAudit = z.object({
 			.min(0, { message: "Le taux doit être entre 0 et 100" })
 			.max(100, { message: "Le taux doit être entre 0 et 100" }),
 		pages: z
-			.array(z.object({ label: z.string(), url: z.url() }))
+			.array(z.object({ label: z.string(), url: z.string() }))
 			.min(1, { message: "Au moins une page doit être renseignée" }),
 		technologies: z.array(z.string()).min(1, {
 			message: "Au moins une technologie doit être sélectionnée",
@@ -94,8 +86,7 @@ export const initialDeclaration = z.object({
 	initialDeclaration: z.object({
 		isNewDeclaration: z.boolean(),
 		publishedDate: z.iso.date().optional(),
-		usedAra: z.boolean(),
-		araUrl: z.url().optional(),
+		araUrl: z.string().optional(),
 	}),
 });
 
@@ -105,44 +96,7 @@ export const initialDeclarationDefaultValues: ZInitialDeclaration = {
 	initialDeclaration: {
 		isNewDeclaration: false,
 		publishedDate: undefined,
-		usedAra: false,
-		araUrl: undefined,
-	},
-};
-
-export const existingAudit = z.object({
-	existingAudit: z.object({
-		auditDone: z.boolean(),
-		auditGrid: z.string().optional(),
-	}),
-});
-
-export type ZExistingAudit = z.infer<typeof existingAudit>;
-
-export const existingAuditDefaultValues: ZExistingAudit = {
-	existingAudit: {
-		auditDone: false,
-		auditGrid: "",
-	},
-};
-
-export const schema = z.object({
-	schema: z.object({
-		annualSchemaDone: z.boolean(),
-		currentYearSchemaDone: z.boolean(),
-		currentSchemaUrl: z.url().optional(),
-		currentSchemaFile: z.file().optional(),
-	}),
-});
-
-export type ZSchema = z.infer<typeof schema>;
-
-export const schemaDefaultValues: ZSchema = {
-	schema: {
-		annualSchemaDone: false,
-		currentYearSchemaDone: false,
-		currentSchemaUrl: undefined,
-		currentSchemaFile: undefined,
+		araUrl: "",
 	},
 };
 
@@ -153,13 +107,10 @@ export const declarationContact = z.object({
 });
 
 export const declarationMultiStepFormSchema = z.object({
-	section: z.enum(["general", "audit", "schema", "initialDeclaration", "existingAudit"]),
+	section: z.enum(["general", "audit", "schema", "initialDeclaration"]),
 	...declarationGeneral.shape,
 	...declarationAudit.shape,
-	...schema.shape,
-	// ...declarationContact.shape,
 	...initialDeclaration.shape,
-	...existingAudit.shape,
 });
 
 export type ZDeclarationMultiStepFormSchema = z.infer<
@@ -170,9 +121,7 @@ const defaultValues: ZDeclarationMultiStepFormSchema = {
 	section: "general",
 	...declarationGeneralDefaultValues,
 	...declarationAuditDefaultValues,
-	...schemaDefaultValues,
 	...initialDeclarationDefaultValues,
-	...existingAuditDefaultValues,
 };
 
 export const declarationMultiStepFormOptions = formOptions({
@@ -191,21 +140,9 @@ export const declarationMultiStepFormOptions = formOptions({
 				);
 			}
 
-			if (value.section === "schema") {
-				return formApi.parseValuesWithSchema(
-					schema as typeof declarationMultiStepFormSchema,
-				);
-			}
-
 			if (value.section === "initialDeclaration") {
 				return formApi.parseValuesWithSchema(
 					initialDeclaration as typeof declarationMultiStepFormSchema,
-				);
-			}
-
-			if (value.section === "existingAudit") {
-				return formApi.parseValuesWithSchema(
-					existingAudit as typeof declarationMultiStepFormSchema,
 				);
 			}
 		},

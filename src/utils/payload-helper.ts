@@ -2,9 +2,9 @@ import { type Payload, getPayload } from "payload";
 import payloadConfig from "~/payload/payload.config";
 import type { Audit, Contact, ActionPlan, Declaration, Entity, User } from "~/payload/payload-types";
 
-export type DeclarationWithPopulated = Omit<
+export type PopulatedDeclaration = Omit<
 	Declaration,
-	"audit" | "contact" | "actionPlan" | "created_by" | "entity"
+	"audit" | "contact" | "entity" | "actionPlan" | "created_by"
 > & {
 	audit: Audit | null;
 	contact: Contact | null;
@@ -112,11 +112,7 @@ export async function getDeclarationById(
 			actionPlan: sanitizedActionPlan,
 			created_by: sanitizedUser,
 			entity: sanitizedEntity,
-			updatedAtFormatted: new Intl.DateTimeFormat("fr-FR", {
-				dateStyle: "short",
-				timeStyle: "short",
-				timeZone: "Europe/Paris",
-			}).format(new Date(result.updatedAt)),
+			updatedAtFormatted: new Date(result.updatedAt).toLocaleDateString("fr-FR"),
 		};
 
 		return declaration;
