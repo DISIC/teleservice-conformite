@@ -11,10 +11,11 @@ export const contactRouter = createTRPCRouter({
         email: z.string().optional(),
         url: z.string().optional(),
         declarationId: z.number(),
+        status: z.enum(["default", "unverified"]).optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { email, url, declarationId } = input;
+      const { email, url, declarationId, status } = input;
 
       const isOwner = await isDeclarationOwner({
         payload: ctx.payload,
@@ -35,6 +36,7 @@ export const contactRouter = createTRPCRouter({
           email,
           url,
           declaration: declarationId,
+          status: status || "default",
         },
       });
 
@@ -80,9 +82,56 @@ export const contactRouter = createTRPCRouter({
         data: {
           email,
           url,
+          status: "default",
         },
       });
 
       return { data: contact };
+    }),
+  updateStatus: userProtectedProcedure
+    .input(
+      z.object({
+        declarationId: z.number(),
+        id: z.number(),
+        status: z.enum(["default", "unverified"]),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { declarationId, id, status } = input;
+
+            const isOwner = await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+      
+      if (!isOwner) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Must be owner of the declaration to update contact status",
+        });
+      }
+      
+      const contactRecord = await ctx.payload.findByID({
+        collection: "contacts",
+        id,
+      });
+
+      if (!contactRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Contact with id ${id} not found`,
+        });
+      }
+
+      const updatedContact = await ctx.payload.update({
+        collection: "contacts",
+        id,
+        data: {
+          status,
+        },
+      });
+
+      return { data: updatedContact };
     }),
 });
