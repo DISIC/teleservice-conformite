@@ -131,13 +131,20 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 					</div>
 					<div className={classes.buttonsContainer}>
 						{declaration?.status === "published" && (
-							<Button
-								priority="tertiary"
-								iconId="fr-icon-eye-fill"
-								disabled={declarationNotComplete}
-							>
-								Voir la declaration
-							</Button>
+							<>
+								<Button
+									priority="tertiary"
+									iconId="fr-icon-eye-fill"
+									linkProps={{
+										href: `/declaration/${declaration.id}/publish`,
+									}}
+								>
+									Voir la declaration
+								</Button>
+								<Button priority="tertiary" iconId="fr-icon-eye-fill">
+									Copier le lien
+								</Button>
+							</>
 						)}
 						<Button
 							priority="tertiary"
