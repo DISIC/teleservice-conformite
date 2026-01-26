@@ -157,5 +157,11 @@ export const Declarations: CollectionConfig = {
 			relationTo: "contacts",
 			label: { fr: "Contact associé" },
 		},
+		{
+			name: "publishedContent",
+			type: "text",
+			label: { fr: "Contenu publié" },
+			required: false,
+		}
 	],
 };
