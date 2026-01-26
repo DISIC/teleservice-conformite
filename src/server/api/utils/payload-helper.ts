@@ -137,3 +137,24 @@ export async function isDeclarationOwner({ payload, userId, declarationId }: { p
 
 	return (createdBy?.id === userId);
 }
+
+export const getDefaultDeclarationName = async (payload: Payload, activeUserId: number | null): Promise<string> => {
+	const prefix = "declaration_sans_titre";
+
+	if (activeUserId === null) return `${prefix}_1`;
+
+	const declarations = await payload.find({
+		collection: "declarations",
+		depth: 0,
+		where: {
+			name: {
+				contains: prefix,
+			},
+			"created_by.id": {
+				equals: activeUserId,
+			},
+		}
+	});
+
+	return `${prefix}_${declarations.totalDocs + 1}`;
+};
