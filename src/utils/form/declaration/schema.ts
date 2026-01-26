@@ -84,9 +84,10 @@ export const declarationAuditDefaultValues: ZDeclarationAudit = {
 
 export const initialDeclaration = z.object({
 	initialDeclaration: z.object({
-		isNewDeclaration: z.boolean(),
+		newDeclaration: z.string().optional(),
 		publishedDate: z.iso.date().optional(),
 		araUrl: z.string().optional(),
+		declarationUrl: z.string().optional(),
 	}),
 });
 
@@ -94,9 +95,10 @@ export type ZInitialDeclaration = z.infer<typeof initialDeclaration>;
 
 export const initialDeclarationDefaultValues: ZInitialDeclaration = {
 	initialDeclaration: {
-		isNewDeclaration: false,
+		newDeclaration: "",
 		publishedDate: undefined,
-		araUrl: "",
+		araUrl: undefined,
+		declarationUrl: undefined,
 	},
 };
 

@@ -1,4 +1,7 @@
-import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
+import Internet from "@codegouvfr/react-dsfr/picto/Internet";
+import Accessibility from "@codegouvfr/react-dsfr/picto/Accessibility";
+import System from "@codegouvfr/react-dsfr/picto/System";
+import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
 
 import { appKindOptions } from "~/payload/collections/Declaration";
 import { kindOptions } from "~/payload/collections/Entity";
@@ -89,62 +92,74 @@ export const InitialDeclarationForm = withForm({
 	...declarationMultiStepFormOptions,
 	render: function Render({ form }) {
 		return (
-			<div>
-				<form.AppField name="initialDeclaration.isNewDeclaration">
+			<div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+				<form.AppField name="initialDeclaration.newDeclaration">
 					{(field) => (
-						<field.RadioField
-							label="Avez-vous déjà publié une déclaration d’accessibilité sur votre service ?"
-							description="Une déclaration d’accessibilité est une page publique qui informe les usagers du niveau de conformité de votre service, liste les contenus non accessibles et indique comment demander une alternative ou signaler un problème."
+						<field.SelectCardField
+							label="Quelle est votre situation pour ce service ?"
 							options={[
-								{ label: "Oui", value: true },
-								{ label: "Non", value: false },
+								{
+									id: "viaUrl",
+									label:
+										"J'ai une déclaration en ligne, sans avoir utilisé Ara",
+									description:
+										"La nouvelle déclaration pourra être pré-remplie grâce à une IA souveraine; des erreurs peuvent survenir",
+									image: <Internet fontSize="3rem" />,
+								},
+								{
+									id: "viaAra",
+									label:
+										"J'ai généré une déclaration d'accessibilité avec l’outil Ara",
+									description:
+										"La nouvelle déclaration pourra être pré-remplie automatiquement",
+									image: <System fontSize="3rem" />,
+								},
+								{
+									id: "new",
+									label: "Je n’ai pas de déclaration d’accessibilité",
+									description:
+										"La nouvelle déclaration sera à créer manuellement",
+									image: <DocumentSearch fontSize="3rem" />,
+								},
 							]}
 						/>
 					)}
 				</form.AppField>
 				<form.Subscribe
-					selector={(store) =>
-						store.values.initialDeclaration?.isNewDeclaration
-					}
+					selector={(store) => store.values.initialDeclaration?.newDeclaration}
 				>
-					{(isNew) =>
-						isNew ? (
-							<>
-								<form.AppField name="initialDeclaration.publishedDate">
+					{(newDeclaration) => (
+						<>
+							{newDeclaration === "viaUrl" && (
+								<form.AppField name="initialDeclaration.declarationUrl">
 									{(field) => (
 										<field.TextField
-											label="À quelle date ?"
-											description="Format attendu : JJ/MM/AAAA"
-											kind="date"
-											max={new Date().toISOString().split("T")[0]}
+											label="Lien URL de la déclaration en ligne "
+											kind="url"
+											description="Format attendu : https://www.example.fr"
 										/>
 									)}
 								</form.AppField>
-								<PopupMessage
-									message={
-										<>
-											<strong>
-												Votre auditeur a utilisé Ara pour faire l’audit de cette
-												déclaration ?
-											</strong>
-											<br /> Importez automatiquement l’intégralité des
-											informations de votre déclaration en une seule fois en
-											renseignant le lien Ara associé !
-										</>
-									}
-									image={<Innovation fontSize="6rem" />}
-								/>
+							)}
+							{newDeclaration === "viaAra" && (
 								<form.AppField name="initialDeclaration.araUrl">
 									{(field) => (
 										<field.TextField
-											label="Lien URL de la déclaration Ara (facultatif)"
-											description="Format attendu : https://www.example.fr."
+											label="URL de l’audit Ara"
+											kind="url"
+											description="Format attendu : https://ara.numerique.gouv.fr/declaration/xxxxxxx"
 										/>
 									)}
 								</form.AppField>
-							</>
-						) : null
-					}
+							)}
+							{newDeclaration === "" && (
+								<PopupMessage
+									image={<Accessibility fontSize="6rem" />}
+									message="Ara est un outil destiné aux auditeurs qui permet de réaliser un rapport d’audit complet et de générer automatiquement une déclaration d’accessibilité. "
+								/>
+							)}
+						</>
+					)}
 				</form.Subscribe>
 			</div>
 		);
