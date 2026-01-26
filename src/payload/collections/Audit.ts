@@ -75,7 +75,7 @@ export const Audits: CollectionConfig = {
 		{
 			name: "compliantElements",
 			type: "textarea",
-			label: { fr: "Échantillon contrôlé" },
+			label: { fr: "Éléments ayant fait l’objet de vérification" },
 			required: true,
 		},
 		{
@@ -99,7 +99,7 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Rapport d'audit" },
 		},
 		{
-			name: "toolsUsed",
+			name: "usedTools",
 			type: "array",
 			label: { fr: "Outils utilisés" },
 			fields: [
@@ -110,7 +110,6 @@ export const Audits: CollectionConfig = {
 					required: true,
 				},
 			],
-			required: true,
 		},
 		{
 			name: "testEnvironments",
@@ -119,7 +118,20 @@ export const Audits: CollectionConfig = {
 			index: true,
 			options : [...testEnvironmentOptions],
 			hasMany: true,
-			required: true,
+		},
+		{
+			name: "technologies",
+			type: "array",
+			fields: [
+				{
+					name: "name",
+					type: "text",
+					label: { fr: "Nom de la technologie" },
+					required: true,
+				},
+			],
+			label: { fr: "Technologies utilisées" },
+			required: false,
 		},
 		{
 			name: "declaration",
@@ -131,5 +143,16 @@ export const Audits: CollectionConfig = {
 				position: "sidebar",
 			},
 		},
+		{
+			name: "status",
+			type: "select",
+			label: { fr: "Statut" },
+			defaultValue: "default",
+			options: [
+				{ label: "default", value: "default" },
+				{ label: "Non vérifié", value: "unverified" },
+			],
+			required: false,
+		}
 	],
 };

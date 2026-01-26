@@ -10,6 +10,7 @@ import { SelectField } from "~/components/form/fields/SelectField";
 import { TextField } from "~/components/form/fields/TextField";
 import { UploadField } from "~/components/form/fields/UploadField";
 import { TagGroupField } from "~/components/form/fields/TagGroupField";
+import { SelectCardField } from "~/components/form/fields/SelectCardField";
 
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
 	createFormHookContexts();
@@ -24,6 +25,7 @@ export const { useAppForm, withForm } = createFormHook({
 		NumberField,
 		RadioField,
 		TagGroupField,
+		SelectCardField,
 	},
 	formComponents: {
 		SubscribeButton,

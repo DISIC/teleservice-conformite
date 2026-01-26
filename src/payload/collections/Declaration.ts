@@ -20,6 +20,22 @@ export const appKindOptions = [
   },
 ] as const;
 
+export const declarationStatusOptions = [
+	{
+		label: "Publié",
+		value: "published",
+	},
+
+	{
+		label: "Brouillon",
+		value: "unpublished",
+	},
+	{
+		label: "Non vérifié",
+		value: "unverified",
+	}
+] as const;
+
 export const Declarations: CollectionConfig = {
 	slug: "declarations",
 	versions: true,
@@ -81,17 +97,7 @@ export const Declarations: CollectionConfig = {
 			type: "select",
 			label: { fr: "Statut" },
 			defaultValue: "unpublished",
-			options: [
-				{
-					label: "Publié",
-					value: "published",
-				},
-
-				{
-					label: "Non publié",
-					value: "unpublished",
-				},
-			],
+			options: [...declarationStatusOptions],
 		},
 		{
 			name: "published_at",

@@ -37,6 +37,17 @@ export const Contacts: CollectionConfig = {
       type: "relationship",
       relationTo: "declarations",
       required: true,
-    }
+    },
+    {
+			name: "status",
+			type: "select",
+			label: { fr: "Statut" },
+			defaultValue: "default",
+			options: [
+				{ label: "default", value: "default" },
+				{ label: "Non vérifié", value: "unverified" },
+			],
+			required: false,
+		},
   ],
 };

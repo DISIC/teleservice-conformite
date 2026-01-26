@@ -64,7 +64,7 @@ export const ToolsForm = withForm({
 	render: function Render({ form }) {
 		return (
 			<>
-				<form.AppField name="technologies">
+				<form.AppField name="usedTools">
 					{(field) => (
 						<div>
 							<field.CheckboxGroupField
