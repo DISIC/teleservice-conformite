@@ -439,4 +439,38 @@ export const declarationRouter = createTRPCRouter({
 				});
 			}
 		}),
+	updatePublishedContent: userProtectedProcedure
+		.input(
+			z.object({
+				id: z.number(),
+				content: z.string(),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const { id, content } = input;
+
+			const isOwner = await isDeclarationOwner({
+				payload: ctx.payload,
+				declarationId: id,
+				userId: Number(ctx.session?.user?.id) ?? null,
+			});
+			
+			if (!isOwner) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "Must be owner of the declaration to update its published content",
+				});
+			}
+
+			const updatedDeclaration = await ctx.payload.update({
+				collection: "declarations",
+				id,
+				data: {
+					status: "published",
+					publishedContent: content,
+				},
+			});
+
+			return { data: updatedDeclaration };
+		}),
 });
