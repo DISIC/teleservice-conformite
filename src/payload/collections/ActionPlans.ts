@@ -11,13 +11,13 @@ export const ActionPlans: CollectionConfig = {
       name: "currentYearSchemaUrl",
       type: "text",
       label: { fr: "Lien du schéma annuel" },
-      required: true,
+      required: false,
     },
     {
       name: "previousYearsSchemaUrl",
       type: "text",
       label: { fr: "Lien du bilan des actions" },
-      required: true,
+      required: false,
     },
     {
       name: "declaration",
@@ -25,6 +25,17 @@ export const ActionPlans: CollectionConfig = {
       relationTo: "declarations",
       label: { fr: "Déclaration associée" },
       required: true,
-    }
+    },
+    {
+			name: "status",
+			type: "select",
+			label: { fr: "Statut" },
+			defaultValue: "default",
+			options: [
+				{ label: "default", value: "default" },
+				{ label: "Non vérifié", value: "unverified" },
+			],
+			required: false,
+		},
   ],
 };
