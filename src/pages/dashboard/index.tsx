@@ -151,9 +151,9 @@ const useStyles = tss
 			display: declarationLength ? "flex" : "none",
 		},
 		declarationCard: {
-			display: "flex",
-			justifyContent: "space-between",
-			alignItems: "center",
+			display: "grid",
+			gridTemplateColumns: "2fr auto auto",
+			gap: fr.spacing("6v"),
 			border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
 			padding: fr.spacing("4v"),
 		},
