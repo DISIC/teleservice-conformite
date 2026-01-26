@@ -44,8 +44,9 @@ export const declarationAudit = z.object({
       .min(0, { message: "Le taux doit être entre 0 et 100" })
       .max(100, { message: "Le taux doit être entre 0 et 100" }),
     compliantElements: z.string().optional(),
-    technologies: z.array(z.string()).min(1, {
-      message: "Au moins une technologie doit être sélectionnée",
+    technologies: z.array(z.string()).optional(),
+    usedTools: z.array(z.string()).min(1, {
+      message: "Au moins un outil doit être sélectionnée",
     }),
     testEnvironments: z
       .array(z.string())
@@ -67,6 +68,7 @@ export const declarationAuditDefaultValues: ZDeclarationAudit = {
     realisedBy: "",
     rgaa_version: "rgaa_4",
     rate: 0,
+    usedTools: [],
     technologies: [],
     testEnvironments: [],
     nonCompliantElements: "",

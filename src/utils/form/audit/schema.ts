@@ -24,7 +24,7 @@ export const auditDateDefaultValues: ZAuditDate = {
 };
 
 export const tools = z.object({
-  technologies: z.array(
+  usedTools: z.array(
       z.string()
     )
     .min(1, {
@@ -44,7 +44,7 @@ export const tools = z.object({
 export type ZTools = z.infer<typeof tools>;
 
 export const toolsDefaultValues: ZTools = {
-  technologies: [],
+  usedTools: [],
   testEnvironments: [],
 };
 
