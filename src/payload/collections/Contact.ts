@@ -11,6 +11,21 @@ export const Contacts: CollectionConfig = {
     singular: { fr: "Contact" },
     plural: { fr: "Contacts" },
   },
+  	hooks: {
+		afterChange: [
+			async (args) => {
+				const { req } = args;
+
+				await req.payload.update({
+					collection: "declarations",
+					id: args.data.declaration,
+					data: {
+						status: "unpublished",
+					},
+				});
+			},
+		],
+	},
   fields: [
     {
       name: "email",

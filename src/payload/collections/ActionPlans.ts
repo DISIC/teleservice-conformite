@@ -8,6 +8,21 @@ export const ActionPlans: CollectionConfig = {
     singular: { fr: "Plan d'action" },
     plural: { fr: "Plans d'actions" },
   },
+  	hooks: {
+		afterChange: [
+			async (args) => {
+				const { req } = args;
+
+				await req.payload.update({
+					collection: "declarations",
+					id: args.data.declaration,
+					data: {
+						status: "unpublished",
+					},
+				});
+			},
+		],
+	},
   fields: [
     {
       name: "currentYearSchemaUrl",
