@@ -122,6 +122,10 @@ export const InitialDeclarationForm = withForm({
 									image: <DocumentSearch fontSize="3rem" />,
 								},
 							]}
+							onChange={() => {
+								form.resetField("initialDeclaration.declarationUrl");
+								form.resetField("initialDeclaration.araUrl");
+							}}
 						/>
 					)}
 				</form.AppField>

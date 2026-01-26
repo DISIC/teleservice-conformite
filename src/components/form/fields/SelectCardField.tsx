@@ -11,10 +11,11 @@ interface SelectCardFieldProps {
 		label: string;
 		description?: string;
 	}[];
+	onChange: () => void;
 }
 
 export function SelectCardField(props: SelectCardFieldProps) {
-	const { options = [], label } = props;
+	const { options = [], label, onChange } = props;
 	const field = useFieldContext<string>();
 	const { classes, cx } = useStyles();
 
@@ -29,7 +30,10 @@ export function SelectCardField(props: SelectCardFieldProps) {
 						classes.optionCard,
 						id === field.state.value && classes.selectedOptionCard,
 					)}
-					onMouseDown={() => field.setValue(id)}
+					onMouseDown={() => {
+						onChange();
+						field.setValue(id);
+					}}
 				>
 					{image}
 					<span>
