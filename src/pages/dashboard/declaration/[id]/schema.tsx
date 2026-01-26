@@ -4,8 +4,8 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useRouter } from "next/router";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
+import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
 
 import type { PopulatedDeclaration } from "~/utils/payload-helper";
 import { fr } from "@codegouvfr/react-dsfr";
@@ -17,19 +17,47 @@ import { getDeclarationById } from "~/utils/payload-helper";
 import { DeclarationSchema } from "~/utils/form/readonly/form";
 import { api } from "~/utils/api";
 import { ReadOnlyDeclarationSchema } from "~/components/declaration/ReadOnlyDeclaration";
+import PopupMessage from "~/components/declaration/PopupMessage";
 
 export default function SchemaPage({
-	declaration,
+	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
-	const router = useRouter();
 	const { classes } = useStyles();
+	const [declaration, setDeclaration] =
+		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const { id, currentYearSchemaUrl, previousYearsSchemaUrl } =
 		declaration?.actionPlan || {};
 
 	const { mutateAsync: updateSchema } = api.schema.update.useMutation({
-		onSuccess: async () => {
-			router.reload();
+		onSuccess: async (result) => {
+			setDeclaration((prev) => ({
+				...prev,
+				actionPlan: {
+					...prev.actionPlan,
+					...result.data,
+				},
+			}));
+			setEditMode(false);
+		},
+		onError: async (error) => {
+			console.error(
+				`Error updating contact for declaration with id ${declaration?.id}:`,
+				error,
+			);
+		},
+	});
+
+	const { mutateAsync: updateStatus } = api.schema.updateStatus.useMutation({
+		onSuccess: async (result) => {
+			setDeclaration((prev) => ({
+				...prev,
+				actionPlan: {
+					...prev.actionPlan,
+					...result.data,
+				},
+			}));
+			setEditMode(false);
 		},
 		onError: async (error) => {
 			console.error(
@@ -66,6 +94,18 @@ export default function SchemaPage({
 			});
 		} catch (error) {
 			console.error("Error updating schema:", error);
+		}
+	};
+
+	const updateSchemaStatus = async () => {
+		try {
+			await updateStatus({
+				declarationId: declaration.id,
+				id: declaration?.actionPlan?.id ?? -1,
+				status: "default",
+			});
+		} catch (error) {
+			return;
 		}
 	};
 
@@ -109,6 +149,20 @@ export default function SchemaPage({
 				/>
 				<div>
 					<h1>{declaration?.name ?? ""} - Schéma et plans d'actions</h1>
+					{declaration?.actionPlan.status === "unverified" && (
+						<PopupMessage
+							image={<Innovation fontSize="6rem" />}
+							message={
+								<>
+									Cette déclaration a été pré-remplie automatiquement à l’aide
+									d’une IA souveraine.
+									<br />
+									Nous vous invitons à vérifier l’ensemble des informations
+									renseignées avant de publier.
+								</>
+							}
+						/>
+					)}
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire
@@ -134,6 +188,13 @@ export default function SchemaPage({
 							</>
 						) : (
 							<ReadOnlyDeclarationSchema declaration={declaration ?? null} />
+						)}
+						{declaration.actionPlan.status === "unverified" && (
+							<div className={classes.validateButton}>
+								<Button onClick={updateSchemaStatus}>
+									Valider les informations
+								</Button>
+							</div>
 						)}
 					</div>
 				</form>
@@ -166,6 +227,11 @@ const useStyles = tss.withName(SchemaPage.name).create({
 	title: {
 		fontSize: "1rem",
 		color: fr.colors.decisions.text.mention.grey.default,
+	},
+	validateButton: {
+		marginTop: fr.spacing("4w"),
+		display: "flex",
+		justifyContent: "flex-end",
 	},
 });
 

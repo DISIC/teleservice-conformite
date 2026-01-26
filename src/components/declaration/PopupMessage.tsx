@@ -58,7 +58,9 @@ const useStyles = tss.withName(PopupMessage.name).create({
 	},
 	messageWrapper: {
 		display: "flex",
-		alignItems: "center",
+		alignItems: "flex-start",
+		flexDirection: "column",
+		justifyContent: "center",
 	},
 	buttonsContainer: {
 		display: "flex",
