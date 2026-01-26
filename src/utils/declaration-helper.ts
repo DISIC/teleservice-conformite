@@ -18,7 +18,7 @@ export const getConformityStatus = (rate: number): string => {
 export const extractToolsFromUrl = (tools: string[]): string[] => {
 	const toolLabels = toolOptions.map((option) => option.label);
 
-	return tools.reduce((acc: string[], option) => {
+	return [...new Set(tools.reduce((acc: string[], option) => {
 		const matchedTool = toolLabels.find((label) =>
 			option.toLowerCase().includes(label.toLowerCase()),
 		);
@@ -34,7 +34,7 @@ export const extractToolsFromUrl = (tools: string[]): string[] => {
 		}
 
 		return acc;
-	}, []);
+	}, []))];
 };
 
 type EnvValue = (typeof testEnvironmentOptions)[number]["value"];
@@ -86,5 +86,5 @@ export function extractTestEnvironmentsFromUrl(lines: string[]): EnvValue[] {
 		}
 	}
 
-	return Array.from(found);
+	return [...new Set(Array.from(found))];
 }
