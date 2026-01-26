@@ -26,6 +26,7 @@ import {
 	extractTestEnvironmentsFromUrl,
 } from "~/utils/declaration-helper";
 import { showNotification } from "~/utils/notification-event";
+import DeclarationLoader from "~/components/declaration/DeclarationLoader";
 
 export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { classes } = useStyles();
@@ -42,33 +43,6 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		},
 	);
 
-	const { mutateAsync: createContact } = api.contact.create.useMutation({
-		onSuccess: async (result) => {
-			return result.data;
-		},
-		onError: (error) => {
-			console.error("Error adding declaration:", error);
-		},
-	});
-
-	const { mutateAsync: createAudit } = api.audit.create.useMutation({
-		onSuccess: async (result) => {
-			return result.data;
-		},
-		onError: (error) => {
-			console.error("Error adding declaration:", error);
-		},
-	});
-
-	const { mutateAsync: createSchema } = api.schema.create.useMutation({
-		onSuccess: async (result) => {
-			return result.data;
-		},
-		onError: (error) => {
-			console.error("Error adding declaration:", error);
-		},
-	});
-
 	const { mutateAsync: analyzeUrl, isPending: isAnalyzingUrl } =
 		api.albert.analyzeUrl.useMutation({
 			onSuccess: async (result) => {
@@ -84,9 +58,23 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					return;
 				}
 
-				const id = await createDeclarationFromUrl(declarationInfos);
+				const id = await createDeclarationFromUrl({
+					...declarationInfos,
+					testEnvironments: extractTestEnvironmentsFromUrl(
+						declarationInfos?.testEnvironments ?? [],
+					),
+					usedTools: extractToolsFromUrl(declarationInfos?.usedTools ?? []),
+					rgaaVersion: declarationInfos.rgaaVersion
+						? (declarationInfos.rgaaVersion as (typeof rgaaVersionOptions)[number]["value"])
+						: "rgaa_4",
+					entity: {
+						id: entity?.id ?? null,
+						name: entity?.name ?? "",
+						kind: entity?.kind ?? "none",
+					},
+				});
 
-				router.push(`/dashboard/declaration/${id}`);
+				router.push(`/dashboard/declaration/${id.data}`);
 			},
 			onError: (error) => {
 				showNotification({
@@ -102,8 +90,6 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { mutateAsync: getInfoFromAra, isPending: isGettingInfoFromAra } =
 		api.declaration.getInfoFromAra.useMutation({
 			onSuccess: async (result) => {
-				console.log("result", result);
-
 				const declarationInfos = {
 					service: {
 						name: result.data.procedureName,
@@ -130,12 +116,23 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						url: result.data.contactFormUrl,
 					},
 					schema: {
-						currentYearSchemaUrl: result.data.context.schemaUrl,
+						currentYearSchemaUrl: result.data.context.schemaUrl ?? "",
 					},
 					technologies: result.data.context.technologies,
 				};
 
-				const id = await createDeclarationFromUrl(declarationInfos);
+				const id = await createDeclarationFromUrl({
+					...declarationInfos,
+					testEnvironments: extractTestEnvironmentsFromUrl(
+						declarationInfos?.testEnvironments ?? [],
+					),
+					usedTools: extractToolsFromUrl(declarationInfos?.usedTools ?? []),
+					entity: {
+						id: entity?.id ?? null,
+						name: entity?.name ?? "",
+						kind: entity?.kind ?? "none",
+					},
+				});
 
 				if (!declarationInfos) {
 					showNotification({
@@ -147,82 +144,20 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					return;
 				}
 
-				router.push(`/dashboard/declaration/${id}`);
+				router.push(`/dashboard/declaration/${id.data}`);
 			},
 			onError: (error) => console.error("error", error),
 		});
 
-	const createDeclarationFromUrl = async (declarationInfos: AlbertResponse) => {
-		const {
-			service,
-			taux,
-			publishedAt,
-			rgaaVersion,
-			auditRealizedBy,
-			responsibleEntity,
-			compliantElements,
-			testEnvironments,
-			usedTools,
-			nonCompliantElements,
-			disproportionnedCharge,
-			optionalElements,
-			contact,
-			schema,
-			technologies,
-		} = declarationInfos;
-
-		const result = await createDeclaration({
-			general: {
-				name: service?.name ? `Déclaration de ${service.name}` : "",
-				url: service.url ?? "",
-				kind: "other",
-				organisation: entity?.name || "",
-				entityId: entity?.id,
-				domain: entity?.kind ?? "none",
-				status: "unverified",
+	const { mutateAsync: createDeclarationFromUrl } =
+		api.declaration.createFromUrl.useMutation({
+			onSuccess: async (result) => {
+				return result.data;
+			},
+			onError: (error) => {
+				console.error("Error adding declaration from URL:", error);
 			},
 		});
-
-		await createContact({
-			declarationId: Number(result.data),
-			email: contact.email || "",
-			url: contact.url || "",
-			status: "unverified",
-		});
-
-		const auditUsedTools = extractToolsFromUrl(usedTools);
-		const auditEnvironments = extractTestEnvironmentsFromUrl(testEnvironments);
-
-		await createAudit({
-			declarationId: Number(result.data),
-			realisedBy: auditRealizedBy || "",
-			rgaa_version: (rgaaVersion ??
-				"rgaa_4") as (typeof rgaaVersionOptions)[number]["value"],
-			rate: Number(taux?.replace("%", "")) || 0,
-			testEnvironments: auditEnvironments,
-			usedTools: auditUsedTools,
-			technologies,
-			compliantElements:
-				compliantElements.map((element) => `- ${element}`).join("\n") || "",
-			nonCompliantElements: nonCompliantElements || "",
-			disproportionnedCharge: disproportionnedCharge || "",
-			optionalElements: optionalElements || "",
-			date:
-				publishedAt && !Number.isNaN(Date.parse(publishedAt))
-					? new Date(publishedAt).toISOString().slice(0, 10)
-					: new Date().toISOString().slice(0, 10),
-			status: "unverified",
-		});
-
-		await createSchema({
-			declarationId: Number(result.data),
-			currentYearSchemaUrl: schema.currentYearSchemaUrl ?? "",
-			previousYearsSchemaUrl: "",
-			status: "unverified",
-		});
-
-		return result.data;
-	};
 
 	declarationMultiStepFormOptions.defaultValues.section = "initialDeclaration";
 
@@ -255,11 +190,19 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	};
 
 	const getDeclarationInfoFromAra = async (url: string) => {
+		const araId = url.slice(url.lastIndexOf("/") + 1);
+
 		try {
-			await getInfoFromAra({
-				id: url.slice(url.lastIndexOf("/") + 1),
-			});
+			await getInfoFromAra({ id: araId });
 		} catch (error) {
+			return;
+		}
+	};
+
+	const analyzeDeclarationUrl = async (url: string) => {
+		try {
+			await analyzeUrl({ url });
+		} catch (err) {
 			return;
 		}
 	};
@@ -276,13 +219,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				value.section === "initialDeclaration" &&
 				value.initialDeclaration.declarationUrl
 			) {
-				try {
-					await analyzeUrl({
-						url: value.initialDeclaration.declarationUrl,
-					});
-				} catch (err) {
-					return;
-				}
+				await analyzeDeclarationUrl(value.initialDeclaration.declarationUrl);
 				return;
 			}
 
@@ -347,34 +284,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 			</form>
 		</div>
 	) : (
-		<div
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				alignItems: "center",
-				justifyContent: "center",
-				gap: "1rem",
-				marginBlock: fr.spacing("20v"),
-				marginInline: fr.spacing("10v"),
-			}}
-		>
-			<System fontSize="6rem" />
-			<h1
-				style={{
-					color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-					fontSize: "1.5rem",
-					fontWeight: 700,
-					lineHeight: "2rem",
-					textAlign: "center",
-				}}
-			>
-				Création de votre déclaration
-			</h1>
-			<p style={{ fontSize: "1.25rem", textAlign: "center" }}>
-				Merci de vérifier les informations récupérées et de les modifier si
-				nécessaire
-			</p>
-		</div>
+		<DeclarationLoader />
 	);
 }
 
