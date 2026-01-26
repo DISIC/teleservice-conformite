@@ -79,7 +79,7 @@ export const ReadOnlyDeclarationAudit = ({
 	}
 
 	const auditUsedTools =
-		audit?.toolsUsed?.map((tech: { name: string }) => {
+		audit.usedTools?.map((tech: { name: string }) => {
 			const existingTool = toolOptions.find((tool) => tool.value === tech.name);
 
 			return existingTool ? existingTool.label : tech.name;
@@ -110,6 +110,12 @@ export const ReadOnlyDeclarationAudit = ({
 				label="Résultats"
 				value={audit.rate !== undefined ? `${audit.rate}%` : ""}
 			/>
+			{audit?.technologies?.length ? (
+				<ReadOnlyField
+					label="Technologies"
+					value={audit.technologies?.map((tech) => tech.name) ?? []}
+				/>
+			) : null}
 			<ReadOnlyField
 				label="Outils utilisés pour évaluer l’accessibilité"
 				value={auditUsedTools}

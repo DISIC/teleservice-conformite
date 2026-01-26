@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
+import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
 
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationAuditForm } from "~/utils/form/readonly/form";
@@ -17,19 +18,26 @@ import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
 import type { PopulatedDeclaration } from "~/utils/payload-helper";
 import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
+import PopupMessage from "~/components/declaration/PopupMessage";
 
 export default function AuditPage({
-	declaration,
+	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
 	const router = useRouter();
 	const { classes } = useStyles();
+	const [declaration, setDeclaration] =
+		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const [isAchieved, setIsAchieved] = useState(!!declaration?.audit);
 	const audit = declaration?.audit;
 
 	const { mutateAsync: updateAudit } = api.audit.update.useMutation({
-		onSuccess: async () => {
-			router.reload();
+		onSuccess: async (result) => {
+			setDeclaration((prev) => ({
+				...prev,
+				audit: result.data,
+			}));
+			setEditMode(false);
 		},
 		onError: async (error) => {
 			console.error(`Error updating audit with id ${audit?.id}`, error);
@@ -42,6 +50,24 @@ export default function AuditPage({
 		},
 		onError: async (error) => {
 			console.error(`Error deleting audit with id ${audit?.id}`, error);
+		},
+	});
+
+	const { mutateAsync: updateStatus } = api.audit.updateStatus.useMutation({
+		onSuccess: async (result) => {
+			setDeclaration((prev) => ({
+				...prev,
+				audit: {
+					...prev.audit,
+					...result.data,
+				},
+			}));
+		},
+		onError: async (error) => {
+			console.error(
+				`Error updating declaration status with id ${declaration?.id}:`,
+				error,
+			);
 		},
 	});
 
@@ -64,7 +90,8 @@ export default function AuditPage({
 				rgaa_version: audit?.rgaa_version ?? "rgaa_4",
 				rate: audit?.rate ?? 0,
 				compliantElements: audit?.compliantElements ?? "",
-				technologies: audit?.toolsUsed?.map((tech) => tech.name) ?? [],
+				technologies: audit?.technologies?.map((tech) => tech.name) ?? [],
+				usedTools: audit?.usedTools?.map((tech) => tech.name) ?? [],
 				testEnvironments: audit?.testEnvironments ?? [],
 				nonCompliantElements: audit?.nonCompliantElements ?? "",
 				disproportionnedCharge: audit?.disproportionnedCharge ?? "",
@@ -92,6 +119,18 @@ export default function AuditPage({
 			});
 		} catch (error) {
 			console.error(`Error deleting audit with id ${auditId}:`, error);
+		}
+	};
+
+	const updateAuditStatus = async () => {
+		try {
+			await updateStatus({
+				declarationId: declaration.id,
+				id: declaration?.audit?.id ?? -1,
+				status: "default",
+			});
+		} catch (error) {
+			return;
 		}
 	};
 
@@ -129,6 +168,20 @@ export default function AuditPage({
 				/>
 				<div>
 					<h1>{declaration?.name ?? ""} - Résultat de l’audit</h1>
+					{declaration?.audit.status === "unverified" && (
+						<PopupMessage
+							image={<Innovation fontSize="6rem" />}
+							message={
+								<>
+									Cette déclaration a été pré-remplie automatiquement à l’aide
+									d’une IA souveraine.
+									<br />
+									Nous vous invitons à vérifier l’ensemble des informations
+									renseignées avant de publier.
+								</>
+							}
+						/>
+					)}
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire
@@ -160,6 +213,13 @@ export default function AuditPage({
 					) : (
 						<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
 					)}
+					{declaration.audit.status === "unverified" && (
+						<div className={classes.validateButton}>
+							<Button onClick={updateAuditStatus}>
+								Valider les informations
+							</Button>
+						</div>
+					)}
 				</div>
 			</form>
 		</section>
@@ -190,6 +250,11 @@ const useStyles = tss.withName(AuditPage.name).create({
 	description: {
 		fontSize: "1rem",
 		color: "grey",
+	},
+	validateButton: {
+		marginTop: fr.spacing("4w"),
+		display: "flex",
+		justifyContent: "flex-end",
 	},
 });
 

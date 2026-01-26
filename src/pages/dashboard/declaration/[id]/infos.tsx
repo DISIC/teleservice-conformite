@@ -6,6 +6,7 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
+import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
@@ -16,18 +17,25 @@ import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
 import type { PopulatedDeclaration } from "~/utils/payload-helper";
 import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
+import PopupMessage from "~/components/declaration/PopupMessage";
 
 export default function GeneralInformationsPage({
-	declaration,
-}: { declaration?: PopulatedDeclaration }) {
+	declaration: initialDeclaration,
+}: { declaration: PopulatedDeclaration }) {
 	const router = useRouter();
 	const { classes } = useStyles();
+	const [declaration, setDeclaration] =
+		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const { name, kind } = declaration?.entity || {};
 
 	const { mutateAsync: update } = api.declaration.update.useMutation({
 		onSuccess: async (result) => {
-			router.reload();
+			setDeclaration((prev) => ({
+				...prev,
+				...result.data,
+			}));
+			setEditMode(false);
 		},
 		onError: async (error) => {
 			console.error(
@@ -36,6 +44,22 @@ export default function GeneralInformationsPage({
 			);
 		},
 	});
+
+	const { mutateAsync: updateStatus } =
+		api.declaration.updateStatus.useMutation({
+			onSuccess: async (result) => {
+				setDeclaration((prev) => ({
+					...prev,
+					status: result.data.status,
+				}));
+			},
+			onError: async (error) => {
+				console.error(
+					`Error updating declaration status with id ${declaration?.id}:`,
+					error,
+				);
+			},
+		});
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
@@ -75,6 +99,17 @@ export default function GeneralInformationsPage({
 		}
 	};
 
+	const updateDeclarationStatus = async () => {
+		try {
+			await updateStatus({
+				status: "unpublished",
+				id: declaration?.id ?? -1,
+			});
+		} catch (error) {
+			return;
+		}
+	};
+
 	const form = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
@@ -99,6 +134,20 @@ export default function GeneralInformationsPage({
 				/>
 				<div>
 					<h1>{declaration?.name ?? ""} - Informations générales</h1>
+					{declaration.status === "unverified" && (
+						<PopupMessage
+							image={<Innovation fontSize="6rem" />}
+							message={
+								<>
+									Cette déclaration a été pré-remplie automatiquement à l’aide
+									d’une IA souveraine.
+									<br />
+									Nous vous invitons à vérifier l’ensemble des informations
+									renseignées avant de publier.
+								</>
+							}
+						/>
+					)}
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire
@@ -124,6 +173,13 @@ export default function GeneralInformationsPage({
 							</>
 						) : (
 							<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
+						)}
+						{declaration.status === "unverified" && (
+							<div className={classes.validateButton}>
+								<Button onClick={updateDeclarationStatus}>
+									Valider les informations
+								</Button>
+							</div>
 						)}
 					</div>
 				</form>
@@ -156,6 +212,11 @@ const useStyles = tss.withName(GeneralInformationsPage.name).create({
 	title: {
 		fontSize: "1rem",
 		color: fr.colors.decisions.text.mention.grey.default,
+	},
+	validateButton: {
+		marginTop: fr.spacing("4w"),
+		display: "flex",
+		justifyContent: "flex-end",
 	},
 });
 

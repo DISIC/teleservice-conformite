@@ -127,7 +127,7 @@ export default function DeclarationPreviewPage({
 				</ul>
 				<h3>Outils pour évaluer l’accessibilité</h3>
 				<ul>
-					{(declaration.audit.toolsUsed ?? []).map((tech) => (
+					{(declaration.audit.usedTools ?? []).map((tech) => (
 						<li key={tech.name}>{tech.name}</li>
 					))}
 				</ul>

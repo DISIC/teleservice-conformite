@@ -77,7 +77,7 @@ export default function AuditMultiStepForm({
 		}
 
 		if (section === "tools") {
-			form.setFieldValue("technologies", []);
+			form.setFieldValue("usedTools", []);
 			form.setFieldValue("testEnvironments", []);
 		}
 
