@@ -15,6 +15,8 @@ export async function middleware(request: NextRequest) {
     headers: request.headers,
   });
 
+  if (pathname.endsWith("/publish")) return NextResponse.next();
+  
   if (authSession) {
     if (!pathname.startsWith("/dashboard")) {
       return NextResponse.redirect(new URL("/dashboard", request.url));

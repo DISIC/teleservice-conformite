@@ -204,15 +204,13 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 								<Button
 									priority="tertiary"
 									iconId="fr-icon-eye-fill"
-									disabled={declarationNotComplete}
+									linkProps={{
+										href: `/declaration/${declaration.id}/publish`,
+									}}
 								>
 									Voir la declaration
 								</Button>
-								<Button
-									priority="tertiary"
-									iconId="fr-icon-eye-fill"
-									disabled={declarationNotComplete}
-								>
+								<Button priority="tertiary" iconId="fr-icon-eye-fill">
 									Copier le lien
 								</Button>
 							</>
