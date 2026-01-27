@@ -6,7 +6,6 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
-import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
@@ -17,7 +16,7 @@ import { api } from "~/utils/api";
 import { getDeclarationById } from "~/utils/payload-helper";
 import type { PopulatedDeclaration } from "~/utils/payload-helper";
 import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
-import PopupMessage from "~/components/declaration/PopupMessage";
+import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 
 export default function GeneralInformationsPage({
 	declaration: initialDeclaration,
@@ -135,18 +134,7 @@ export default function GeneralInformationsPage({
 				<div>
 					<h1>{declaration?.name ?? ""} - Informations générales</h1>
 					{declaration.status === "unverified" && (
-						<PopupMessage
-							image={<Innovation fontSize="6rem" />}
-							message={
-								<>
-									Cette déclaration a été pré-remplie automatiquement à l’aide
-									d’une IA souveraine.
-									<br />
-									Nous vous invitons à vérifier l’ensemble des informations
-									renseignées avant de publier.
-								</>
-							}
-						/>
+						<VerifyGeneratedInfoPopUpMessage />
 					)}
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>

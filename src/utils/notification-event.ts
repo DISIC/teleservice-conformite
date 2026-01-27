@@ -1,20 +1,20 @@
-export type NotificationSeverity = "info" | "warning" | "alert";
+export type AlertSeverity = "info" | "warning" | "error" | "success";
 
-export type NotificationEvent = {
+export type AlertEvent = {
 	title: string;
 	description: string;
-	severity: NotificationSeverity;
+	severity: AlertSeverity;
 	iconDisplayed?: boolean;
 	isClosable?: boolean;
 	link?: { linkProps: { href: string }; text: string };
 	durationMs?: number;
 };
 
-type Listener = (event: NotificationEvent) => void;
+type Listener = (event: AlertEvent) => void;
 
 const listeners = new Set<Listener>();
 
-export const notificationEvents = {
+export const alertEvents = {
 	on(listener: Listener) {
 		listeners.add(listener);
 		return () => listeners.delete(listener);
@@ -22,20 +22,20 @@ export const notificationEvents = {
 	off(listener: Listener) {
 		listeners.delete(listener);
 	},
-	emit(event: NotificationEvent) {
+	emit(event: AlertEvent) {
 		for (const l of Array.from(listeners)) l(event);
 	},
 };
 
-export function showNotification(event: NotificationEvent) {
-	notificationEvents.emit(event);
+export function showAlert(event: AlertEvent) {
+	alertEvents.emit(event);
 }
 
-export function onNotification(listener: Listener) {
-	return notificationEvents.on(listener);
+export function onAlert(listener: Listener) {
+	return alertEvents.on(listener);
 }
 
-export function offNotification(listener: Listener) {
-	notificationEvents.off(listener);
+export function offAlert(listener: Listener) {
+	alertEvents.off(listener);
 }
 

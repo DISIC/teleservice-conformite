@@ -25,7 +25,7 @@ import {
 	extractToolsFromUrl,
 	extractTestEnvironmentsFromUrl,
 } from "~/utils/declaration-helper";
-import { showNotification } from "~/utils/notification-event";
+import { showAlert } from "~/utils/notification-event";
 import DeclarationLoader from "~/components/declaration/DeclarationLoader";
 
 export default function FormPage({ entity }: { entity: Entity | null }) {
@@ -49,10 +49,10 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				const declarationInfos = result.data;
 
 				if (!declarationInfos) {
-					showNotification({
+					showAlert({
 						title: "Erreur lors de l'analyse de l'URL",
 						description: "Echec de la récupération des informations.",
-						severity: "alert",
+						severity: "error",
 					});
 
 					return;
@@ -77,10 +77,10 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				router.push(`/dashboard/declaration/${id.data}`);
 			},
 			onError: (error) => {
-				showNotification({
+				showAlert({
 					title: "Erreur lors de l'analyse de l'URL",
 					description: error.message,
-					severity: "alert",
+					severity: "error",
 				});
 
 				console.error("Error analyzing URL:", error);
@@ -135,10 +135,10 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				});
 
 				if (!declarationInfos) {
-					showNotification({
+					showAlert({
 						title: "Erreur lors de l'analyse de l'URL",
 						description: "Echec de la récupération des informations.",
-						severity: "alert",
+						severity: "error",
 					});
 
 					return;

@@ -1,10 +1,11 @@
-"use client";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Notice } from "@codegouvfr/react-dsfr/Notice";
+import { useEffect, useRef, useState } from "react";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { tss } from "tss-react";
+import { fr } from "@codegouvfr/react-dsfr";
 
 import {
 	onNotification,
-	showNotification,
+	showAlert,
 	type NotificationEvent,
 } from "~/utils/notification-event";
 
@@ -17,7 +18,7 @@ function genId() {
 	return Math.random().toString(36).slice(2);
 }
 
-export function useNotifications() {
+export function useAlert() {
 	const [items, setItems] = useState<Item[]>([]);
 	const timers = useRef<Map<string, number>>(new Map());
 
@@ -53,37 +54,19 @@ export function useNotifications() {
 	return { items, remove } as const;
 }
 
-export function NotificationHost() {
-	const { items, remove } = useNotifications();
+export function AlertHost() {
+	const { items, remove } = useAlert();
 
-	const containerStyle = useMemo(
-		() => ({
-			position: "fixed" as const,
-			top: 16,
-			right: 16,
-			zIndex: 10000,
-			display: "flex",
-			flexDirection: "column" as const,
-			gap: 12,
-			maxWidth: "100%",
-			width: "100vw",
-			pointerEvents: "none" as const,
-		}),
-		[],
-	);
-
-	const itemStyle = useMemo(() => ({ pointerEvents: "auto" as const }), []);
+	const { classes } = useStyles();
 
 	return (
-		<div style={containerStyle} aria-live="polite" aria-atomic>
+		<div className={classes.container} aria-live="polite" aria-atomic>
 			{items.map(({ id, ...n }) => (
-				<div key={id} style={itemStyle}>
-					<Notice
+				<div key={id} className={classes.item}>
+					<Alert
+						severity={n.severity}
 						title={n.title}
 						description={n.description}
-						severity={n.severity}
-						iconDisplayed={n.iconDisplayed}
-						link={n.link}
 						{...(n.isClosable === false
 							? { isClosable: false as const }
 							: { isClosable: true as const, onClose: () => remove(id) })}
@@ -94,7 +77,24 @@ export function NotificationHost() {
 	);
 }
 
-// Convenience re-export so consumers can import from one place if desired
-NotificationHost.show = showNotification;
+const useStyles = tss.withName(AlertHost.name).create({
+	container: {
+		position: "fixed" as const,
+		top: 16,
+		right: 16,
+		zIndex: 10000,
+		display: "flex",
+		flexDirection: "column" as const,
+		gap: 12,
+		maxWidth: "100%",
+		width: "100vw",
+		pointerEvents: "none" as const,
+	},
+	item: {
+		pointerEvents: "auto" as const,
+	},
+});
 
-export default NotificationHost;
+AlertHost.show = showAlert;
+
+export default AlertHost;

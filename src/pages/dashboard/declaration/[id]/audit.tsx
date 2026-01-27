@@ -19,6 +19,7 @@ import { getDeclarationById } from "~/utils/payload-helper";
 import type { PopulatedDeclaration } from "~/utils/payload-helper";
 import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
 import PopupMessage from "~/components/declaration/PopupMessage";
+import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 
 export default function AuditPage({
 	declaration: initialDeclaration,
@@ -169,18 +170,7 @@ export default function AuditPage({
 				<div>
 					<h1>{declaration?.name ?? ""} - Résultat de l’audit</h1>
 					{declaration?.audit.status === "unverified" && (
-						<PopupMessage
-							image={<Innovation fontSize="6rem" />}
-							message={
-								<>
-									Cette déclaration a été pré-remplie automatiquement à l’aide
-									d’une IA souveraine.
-									<br />
-									Nous vous invitons à vérifier l’ensemble des informations
-									renseignées avant de publier.
-								</>
-							}
-						/>
+						<VerifyGeneratedInfoPopUpMessage />
 					)}
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>

@@ -20,6 +20,7 @@ import {
 	getDeclarationById,
 	type PopulatedDeclaration,
 } from "~/utils/payload-helper";
+import Editable from "~/components/editable/Editable";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -35,17 +36,11 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
 	const [editableName, setEditableName] = useState<boolean>(false);
 	const [newName, setNewName] = useState<string>(declaration?.name ?? "");
-	const [value, setValue] = useState<string>(declaration?.name ?? "");
-	const nameInputRef = useRef<HTMLInputElement>(null);
-	const measureRef = useRef<HTMLSpanElement>(null);
-	const [inputWidthPx, setInputWidthPx] = useState<number | null>(null);
 	const { classes } = useStyles();
 
 	const { mutateAsync: updateDeclarationName } =
 		api.declaration.updateName.useMutation({
-			onSuccess: async (result) => {
-				setNewName(result.data.name ?? "");
-			},
+			onSuccess: async (result) => setNewName(result.data.name ?? ""),
 			onError: async (error) => {
 				console.error("Error updating declaration name:", error);
 			},
@@ -84,15 +79,15 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 		return null;
 	};
 
-	const onEditTitle = async () => {
+	const onEditTitle = async (newValue: string) => {
 		setEditableName(false);
 
-		if (!value || value === newName) return;
+		if (!newValue || newValue === newName) return;
 
 		try {
 			await updateDeclarationName({
 				id: declaration.id,
-				name: value,
+				name: newValue,
 			});
 		} catch (error) {
 			console.error("Error updating declaration title:", error);
@@ -103,33 +98,6 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 		e.preventDefault();
 		setEditableName(true);
 	};
-
-	useEffect(() => {
-		if (!editableName) return;
-		const el = nameInputRef.current;
-		if (!el) return;
-
-		el.focus({ preventScroll: true });
-		const pos = el.value.length;
-
-		try {
-			el.setSelectionRange(pos, pos);
-		} catch (error) {
-			console.error(
-				"Error setting cursor position in editable name input",
-				error,
-			);
-		}
-	}, [editableName]);
-
-	// Measure width based on newName and set input width accordingly
-	useEffect(() => {
-		if (!editableName) return;
-		const m = measureRef.current;
-		if (!m) return;
-		const width = m.offsetWidth + 2; // small extra for caret
-		setInputWidthPx(width > 0 ? width : null);
-	}, [newName, editableName]);
 
 	return (
 		<>
@@ -151,42 +119,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 								cursor: editableName ? "text" : "auto",
 							}}
 						>
-							{editableName ? (
-								<>
-									<span
-										ref={measureRef}
-										className={classes.editableNameInput}
-										style={{
-											position: "absolute",
-											visibility: "hidden",
-											whiteSpace: "pre",
-										}}
-									>
-										{newName || " "}
-									</span>
-									<input
-										ref={nameInputRef}
-										type="text"
-										value={value}
-										className={classes.editableNameInput}
-										style={{
-											width: inputWidthPx ? `${inputWidthPx}px` : "auto",
-										}}
-										onBlur={onEditTitle}
-										onKeyUp={(e) => {
-											if (e.key === "Enter") onEditTitle();
-
-											if (e.key === "Escape") {
-												setEditableName(false);
-												setValue(newName);
-											}
-										}}
-										onChange={(e) => setValue(e.target.value)}
-									/>
-								</>
-							) : (
-								<h1>{newName}</h1>
-							)}
+							<Editable title={newName} onEditTitle={onEditTitle} />
 						</div>
 						<Badge
 							noIcon={true}

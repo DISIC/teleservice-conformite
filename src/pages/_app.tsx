@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 import { api } from "~/utils/api";
 import { authClient } from "~/utils/auth-client";
-import { NotificationHost } from "~/components/notification/NotificationHost";
+import { AlertHost } from "~/components/alert/AlertHost";
 
 // Only in TypeScript projects
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
@@ -116,7 +116,7 @@ function App({ Component, pageProps }: AppProps) {
 					serviceTitle="Téléservice Conformité"
 				/>
 				<main className={fr.cx("fr-container")} style={{ flex: 1 }}>
-					<NotificationHost />
+					<AlertHost />
 					<Component {...pageProps} />
 				</main>
 				<Footer
