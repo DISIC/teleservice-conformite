@@ -208,7 +208,7 @@ export const DeclarationAuditForm = withForm({
 							{(field) =>
 								field?.state?.value?.length ? (
 									<field.TagGroupField
-										label=""
+										label="Technologies utilisées pour la réalisation du site"
 										initialTags={field.state.value}
 									/>
 								) : null
