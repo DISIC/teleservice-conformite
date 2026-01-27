@@ -29,19 +29,44 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		declaration?.updatedAt > declaration?.published_at;
 
 	const declarationComplete =
-		declaration.audit ||
-		declaration.contact ||
-		declaration.entity ||
-		declaration.actionPlan;
+		declaration.audit &&
+		declaration.contact &&
+		declaration.entity &&
+		declaration.actionPlan &&
+		declaration.status === "unpublished" &&
+		declaration.audit.status === "default" &&
+		declaration.contact.status === "default" &&
+		declaration.actionPlan.status === "default";
 
-	const RedirectButton = ({ href }: { href: string }) => (
+	const RedirectButton = ({
+		href,
+		label = "Renseigner les informations",
+	}: { href: string; label?: string }) => (
 		<Button
 			linkProps={{
 				href,
 			}}
 		>
-			Renseigner les informations
+			{label}
 		</Button>
+	);
+
+	const StartBadges = ({
+		showToCompleteBadge,
+		showVerifyBadge,
+	}: { showToCompleteBadge: boolean; showVerifyBadge: boolean }) => (
+		<>
+			{showToCompleteBadge ? (
+				<Badge noIcon severity="new">
+					A Remplir
+				</Badge>
+			) : null}
+			{showVerifyBadge ? (
+				<Badge noIcon severity="warning">
+					À vérifier
+				</Badge>
+			) : null}
+		</>
 	);
 
 	return (
@@ -94,10 +119,24 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `${linkToDeclarationPage}/infos`,
 					}}
+					start={
+						<StartBadges
+							showToCompleteBadge={false}
+							showVerifyBadge={declaration.status === "unverified"}
+						/>
+					}
 					enlargeLinkOrButton={true}
 					orientation="vertical"
 					pictogram={<Document fontSize="2rem" />}
 					className={classes.tile}
+					detail={
+						declaration?.status === "unverified" && (
+							<RedirectButton
+								label="Vérifier les informations"
+								href={`${linkToDeclarationPage}/infos`}
+							/>
+						)
+					}
 				/>
 				<Tile
 					title="Contact"
@@ -109,16 +148,23 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					orientation="vertical"
 					pictogram={<Community fontSize="2rem" />}
 					start={
-						declaration?.contact ? null : (
-							<Badge noIcon severity="new">
-								A Remplir
-							</Badge>
-						)
+						<StartBadges
+							showToCompleteBadge={!declaration?.contact}
+							showVerifyBadge={declaration?.contact?.status === "unverified"}
+						/>
 					}
 					detail={
-						declaration?.contact ? null : (
-							<RedirectButton href={`${linkToDeclarationPage}/contact`} />
-						)
+						<>
+							{!declaration?.contact && (
+								<RedirectButton href={`${linkToDeclarationPage}/contact`} />
+							)}
+							{declaration?.contact?.status === "unverified" && (
+								<RedirectButton
+									label="Vérifier les informations"
+									href={`${linkToDeclarationPage}/contact`}
+								/>
+							)}
+						</>
 					}
 					className={classes.tile}
 				/>
@@ -132,16 +178,23 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					orientation="vertical"
 					pictogram={<Search fontSize="2rem" />}
 					start={
-						declaration?.audit ? null : (
-							<Badge noIcon severity="new">
-								A Remplir
-							</Badge>
-						)
+						<StartBadges
+							showToCompleteBadge={!declaration?.audit}
+							showVerifyBadge={declaration?.audit?.status === "unverified"}
+						/>
 					}
 					detail={
-						declaration?.audit ? null : (
-							<RedirectButton href={`${linkToDeclarationPage}/audit`} />
-						)
+						<>
+							{!declaration?.audit && (
+								<RedirectButton href={`${linkToDeclarationPage}/audit`} />
+							)}
+							{declaration?.audit?.status === "unverified" && (
+								<RedirectButton
+									label="Vérifier les informations"
+									href={`${linkToDeclarationPage}/audit`}
+								/>
+							)}
+						</>
 					}
 					className={classes.tile}
 				/>
@@ -155,16 +208,23 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					orientation="vertical"
 					pictogram={<Conclusion fontSize="2rem" />}
 					start={
-						declaration?.actionPlan ? null : (
-							<Badge noIcon severity="new">
-								A Remplir
-							</Badge>
-						)
+						<StartBadges
+							showToCompleteBadge={!declaration?.actionPlan}
+							showVerifyBadge={declaration?.actionPlan?.status === "unverified"}
+						/>
 					}
 					detail={
-						declaration?.actionPlan ? null : (
-							<RedirectButton href={`${linkToDeclarationPage}/schema`} />
-						)
+						<>
+							{!declaration?.actionPlan && (
+								<RedirectButton href={`${linkToDeclarationPage}/schema`} />
+							)}
+							{declaration?.actionPlan?.status === "unverified" && (
+								<RedirectButton
+									label="Vérifier les informations"
+									href={`${linkToDeclarationPage}/schema`}
+								/>
+							)}
+						</>
 					}
 					className={classes.tile}
 				/>

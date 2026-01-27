@@ -20,6 +20,21 @@ export const Contacts: CollectionConfig = {
     singular: { fr: "Contact" },
     plural: { fr: "Contacts" },
   },
+  	hooks: {
+		afterChange: [
+			async (args) => {
+				const { req } = args;
+
+				await req.payload.update({
+					collection: "declarations",
+					id: args.data.declaration,
+					data: {
+						status: "unpublished",
+					},
+				});
+			},
+		],
+	},
   fields: [
     {
       name: "email",
@@ -37,6 +52,17 @@ export const Contacts: CollectionConfig = {
       type: "relationship",
       relationTo: "declarations",
       required: true,
-    }
+    },
+    {
+			name: "status",
+			type: "select",
+			label: { fr: "Statut" },
+			defaultValue: "default",
+			options: [
+				{ label: "default", value: "default" },
+				{ label: "Non vérifié", value: "unverified" },
+			],
+			required: false,
+		},
   ],
 };

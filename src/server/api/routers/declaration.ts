@@ -5,17 +5,38 @@ import type { Payload } from "payload";
 import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { kindOptions } from "~/payload/collections/Entity";
-import { getDeclarationById } from "~/utils/payload-helper";
-import { isDeclarationOwner } from "../utils/payload-helper";
+import { type rgaaVersionOptions, testEnvironmentOptions } from "~/payload/collections/Audit";
+import {
+	isDeclarationOwner,
+	getDefaultDeclarationName,
+	fetchOrReturnRealValue,
+} from "../utils/payload-helper";
+import {
+	appKindOptions,
+	declarationStatusOptions,
+} from "~/payload/collections/Declaration";
 
-const createOrUpdateEntity = async (payload: Payload, entityId: number | undefined, organisation: string, domain: string) => {
+type DeclarationStatus = (typeof declarationStatusOptions)[number]["value"];
+
+const statusValues = declarationStatusOptions.map((o) => o.value) as [
+	DeclarationStatus,
+	...DeclarationStatus[],
+];
+
+const createOrUpdateEntity = async (
+	payload: Payload,
+	entityId: number | undefined,
+	organisation: string,
+	domain: string,
+) => {
 	if (!entityId) {
 		const entity = await payload.create({
 			collection: "entities",
 			draft: true,
 			data: {
 				name: organisation,
-				kind: kindOptions.find((field) => field.label === domain)?.value ?? "none",
+				kind:
+					kindOptions.find((field) => field.label === domain)?.value ?? "none",
 			},
 		});
 
@@ -27,7 +48,8 @@ const createOrUpdateEntity = async (payload: Payload, entityId: number | undefin
 		id: entityId,
 		data: {
 			name: organisation,
-			kind: kindOptions.find((field) => field.label === domain)?.value ?? "none",
+			kind:
+				kindOptions.find((field) => field.label === domain)?.value ?? "none",
 		},
 	});
 
@@ -35,28 +57,69 @@ const createOrUpdateEntity = async (payload: Payload, entityId: number | undefin
 };
 
 export const declarationRouter = createTRPCRouter({
-	create: userProtectedProcedure
-		.input(declarationGeneral.extend({ general: declarationGeneral.shape.general.extend({ entityId: z.number().optional() }) }))
-		.mutation(async ({ input, ctx }) => {
-			const { organisation, kind, url, domain, name, entityId } = input.general;
+	getInfoFromAra: userProtectedProcedure
+		.input(z.object({ id: z.string() }))
+		.mutation(async ({ input }) => {
+			const { id } = input;
 
-			const newEntityId = await createOrUpdateEntity(ctx.payload, entityId ?? undefined, organisation, domain);
-			
+			const araResponse = await fetch(
+				`https://ara.numerique.gouv.fr/api/reports/${id}`,
+			);
+
+			if (!araResponse.ok) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Failed to fetch ARA info: ${araResponse.statusText}`,
+				});
+			}
+
+			const araJson = await araResponse.json();
+
+			return { data: araJson };
+		}),
+	create: userProtectedProcedure
+		.input(
+			declarationGeneral.extend({
+				general: declarationGeneral.shape.general.omit({ name: true }).extend({
+					name: z.string().optional(),
+					entityId: z.number().optional(),
+					status: z.enum(statusValues).optional(),
+				}),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const { organisation, kind, url, domain, name, entityId, status } =
+				input.general;
+
+			const declarationName =
+				name ??
+				(await getDefaultDeclarationName(
+					ctx.payload,
+					Number(ctx.session?.user?.id) ?? null,
+				));
+			const newEntityId = await createOrUpdateEntity(
+				ctx.payload,
+				entityId ?? undefined,
+				organisation,
+				domain,
+			);
+
 			if (!ctx.session?.user?.id) {
 				throw new TRPCError({
 					code: "UNAUTHORIZED",
 					message: "User must be logged in to create a declaration",
 				});
 			}
-			
+
 			const declaration = await ctx.payload.create({
 				collection: "declarations",
 				data: {
-					name,
+					name: declarationName,
 					app_kind: kind,
 					url,
 					entity: newEntityId,
 					created_by: Number(ctx.session.user.id),
+					status: status ?? "unpublished",
 				},
 			});
 
@@ -67,18 +130,18 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id } = input;
 
-      const isOwner = await isDeclarationOwner({
-        payload: ctx.payload,
-        declarationId: id,
-        userId: Number(ctx.session?.user?.id) ?? null,
-      });
-      
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to delete it",
-        });
-      }
+			const isOwner = await isDeclarationOwner({
+				payload: ctx.payload,
+				declarationId: id,
+				userId: Number(ctx.session?.user?.id) ?? null,
+			});
+
+			if (!isOwner) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "Must be owner of the declaration to delete it",
+				});
+			}
 
 			await ctx.payload.update({
 				collection: "declarations",
@@ -92,44 +155,361 @@ export const declarationRouter = createTRPCRouter({
 	update: userProtectedProcedure
 		.input(
 			z.object({
-				general: declarationGeneral.shape.general.extend({ declarationId: z.number(), entityId: z.number() }),
+				general: declarationGeneral.shape.general.extend({
+					declarationId: z.number(),
+					entityId: z.number(),
+				}),
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const { organisation, kind, url, domain, name, declarationId, entityId } = input.general;
+			const { organisation, kind, url, domain, name, declarationId, entityId } =
+				input.general;
 
-      const isOwner = await isDeclarationOwner({
-        payload: ctx.payload,
-        declarationId,
-        userId: Number(ctx.session?.user?.id) ?? null,
-      });
-      
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to update it",
-        });
-      }
-
-      const updatedDeclaration = await ctx.payload.update({
-				collection: "declarations",
-				id: declarationId,
-				data: {
-					name,
-					app_kind: kind,
-					url,
-				},
+			const isOwner = await isDeclarationOwner({
+				payload: ctx.payload,
+				declarationId,
+				userId: Number(ctx.session?.user?.id) ?? null,
 			});
+
+			if (!isOwner) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "Must be owner of the declaration to update it",
+				});
+			}
 
 			await ctx.payload.update({
 				collection: "entities",
 				id: entityId,
 				data: {
 					name: organisation,
-					kind: kindOptions.find((field) => field.label === domain)?.value ?? "none",
+					kind:
+						kindOptions.find((field) => field.label === domain)?.value ??
+						"none",
 				},
 			});
 
-			return { data: updatedDeclaration.id };
+			const result = await ctx.payload.update({
+				collection: "declarations",
+				id: declarationId,
+				data: {
+					name,
+					app_kind: kind,
+					url,
+					status: "unpublished",
+				},
+			});
+
+			const { audit, contact, actionPlan, created_by, entity } = result;
+
+			const sanitizedAudit = await fetchOrReturnRealValue(
+				audit ?? null,
+				"audits",
+			);
+
+			const sanitizedContact = await fetchOrReturnRealValue(
+				contact ?? null,
+				"contacts",
+			);
+
+			const sanitizedActionPlan = await fetchOrReturnRealValue(
+				actionPlan ?? null,
+				"action-plans",
+			);
+
+			const sanitizedEntity = await fetchOrReturnRealValue(
+				entity ?? null,
+				"entities",
+			);
+
+			const sanitizedUser = await fetchOrReturnRealValue(
+				created_by ?? null,
+				"users",
+			);
+
+			const updatedDeclaration = {
+				...result,
+				audit: sanitizedAudit,
+				contact: sanitizedContact,
+				actionPlan: sanitizedActionPlan,
+				created_by: sanitizedUser,
+				entity: sanitizedEntity,
+			};
+
+			return { data: updatedDeclaration };
+		}),
+	updateName: userProtectedProcedure
+		.input(
+			z.object({
+				id: z.number(),
+				name: z.string(),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const { id, name } = input;
+
+			const isOwner = await isDeclarationOwner({
+				payload: ctx.payload,
+				declarationId: id,
+				userId: Number(ctx.session?.user?.id) ?? null,
+			});
+
+			if (!isOwner) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "Must be owner of the declaration to update its name",
+				});
+			}
+
+			const updatedDeclaration = await ctx.payload.update({
+				collection: "declarations",
+				id,
+				data: {
+					name,
+				},
+			});
+
+			return { data: updatedDeclaration };
+		}),
+	updateStatus: userProtectedProcedure
+		.input(
+			z.object({
+				id: z.number(),
+				status: z.enum(statusValues),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const { id, status } = input;
+
+			const isOwner = await isDeclarationOwner({
+				payload: ctx.payload,
+				declarationId: id,
+				userId: Number(ctx.session?.user?.id) ?? null,
+			});
+
+			if (!isOwner) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "Must be owner of the declaration to update its status",
+				});
+			}
+
+			const updatedDeclaration = await ctx.payload.update({
+				collection: "declarations",
+				id,
+				data: {
+					status,
+				},
+			});
+
+			return { data: updatedDeclaration };
+		}),
+	createFromUrl: userProtectedProcedure
+		.input(
+			z.object({
+				service: z.object({
+					name: z.string().nullable(),
+					type: z.string().nullable(),
+					url: z.string().nullable(),
+				}),
+				taux: z.string().nullable(),
+				rgaaVersion: z.string().nullable(),
+				auditRealizedBy: z.string().nullable(),
+				publishedAt: z.string().nullable(),
+				responsibleEntity: z.string().nullable(),
+				compliantElements: z.array(z.string()),
+				technologies: z.array(z.string()),
+				testEnvironments: z.array(z.enum(testEnvironmentOptions.map(env => env.value))),
+				usedTools: z.array(z.string()),
+				nonCompliantElements: z.string().nullable(),
+				disproportionnedCharge: z.string().nullable(),
+				optionalElements: z.string().nullable(),
+				contact: z.object({
+					email: z.string().nullable(),
+					url: z.string().nullable(),
+				}),
+				schema: z.object({
+					currentYearSchemaUrl: z.string().nullable(),
+				}),
+				entity: z.object({
+					id: z.number().nullable(),
+					name: z.string().nullable(),
+					kind: z.string().nullable(),
+				}),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const {
+				service,
+				taux,
+				rgaaVersion,
+				auditRealizedBy,
+				publishedAt,
+				responsibleEntity,
+				compliantElements,
+				technologies,
+				testEnvironments,
+				usedTools,
+				nonCompliantElements,
+				disproportionnedCharge,
+				optionalElements,
+				contact,
+				schema,
+				entity,
+			} = input;
+
+			const transactionID = await ctx.payload.db.beginTransaction();
+
+			if (!transactionID) {
+				throw new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message: "Failed to start database transaction",
+				});
+			}
+
+			if (!ctx.session?.user?.id) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "User must be logged in to create a declaration",
+				});
+			}
+
+			try {
+				const declarationName = await getDefaultDeclarationName(
+					ctx.payload,
+					Number(ctx.session.user.id),
+				);
+
+				const newEntityId = await createOrUpdateEntity(
+					ctx.payload,
+					entity?.id ?? undefined,
+					entity?.name ?? "",
+					entity?.kind ?? "none",
+				);
+
+				const declaration = await ctx.payload.create({
+					collection: "declarations",
+					data: {
+						name: service?.name ? `Déclaration de ${service.name}` : declarationName,
+						url: service.url ?? "",
+						app_kind:
+							appKindOptions.find(option => option.value === service.type)?.value ??
+							"other",
+						status: "unverified",
+						entity: newEntityId,
+						created_by: Number(ctx.session.user.id),
+					},
+					req: { transactionID },
+					draft: true,
+				});
+
+				const declarationId = Number(declaration?.id);
+
+				const relatedAudit = await ctx.payload.create({
+					collection: "audits",
+					data: {
+						declaration: declarationId,
+						realisedBy: auditRealizedBy || "",
+						rgaa_version: (rgaaVersion ??
+							"rgaa_4") as (typeof rgaaVersionOptions)[number]["value"],
+						rate: Number(taux?.replace("%", "")) || 0,
+						testEnvironments,
+						usedTools: usedTools.map((tool) => ({ name: tool })),
+						technologies: technologies.map((tech) => ({ name: tech })),
+						compliantElements:
+							compliantElements.map((element) => `- ${element}`).join("\n") ||
+							"",
+						nonCompliantElements: nonCompliantElements || "",
+						disproportionnedCharge: disproportionnedCharge || "",
+						optionalElements: optionalElements || "",
+						date:
+							publishedAt && !Number.isNaN(Date.parse(publishedAt))
+								? new Date(publishedAt).toISOString().slice(0, 10)
+								: new Date().toISOString().slice(0, 10),
+						status: "unverified",
+					},
+					req: { transactionID },
+				});
+
+
+				const relatedContact = await ctx.payload.create({
+					collection: "contacts",
+					data: {
+						declaration: declarationId,
+						email: contact.email || "",
+						url: contact.url || "",
+						status: "unverified",
+					},
+					req: { transactionID },
+				});
+
+
+				const relatedSchema = await ctx.payload.create({
+					collection: "action-plans",
+					data: {
+						declaration: declarationId,
+						currentYearSchemaUrl: schema?.currentYearSchemaUrl ?? "",
+						previousYearsSchemaUrl: "",
+						status: "unverified",
+					},
+					req: { transactionID },
+				});
+
+				await ctx.payload.update({
+					collection: "declarations",
+					id: declarationId,
+					data: {
+						audit: relatedAudit.id,
+						contact: relatedContact.id,
+						actionPlan: relatedSchema.id,
+					},
+					req: { transactionID },
+				});
+
+				await ctx.payload.db.commitTransaction(transactionID);
+
+				return { data: declarationId };
+			} catch (error) {
+				await ctx.payload.db.rollbackTransaction(transactionID);
+
+				throw new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message: "Failed to create declaration from URL",
+				});
+			}
+		}),
+	updatePublishedContent: userProtectedProcedure
+		.input(
+			z.object({
+				id: z.number(),
+				content: z.string(),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const { id, content } = input;
+
+			const isOwner = await isDeclarationOwner({
+				payload: ctx.payload,
+				declarationId: id,
+				userId: Number(ctx.session?.user?.id) ?? null,
+			});
+			
+			if (!isOwner) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "Must be owner of the declaration to update its published content",
+				});
+			}
+
+			const updatedDeclaration = await ctx.payload.update({
+				collection: "declarations",
+				id,
+				data: {
+					status: "published",
+					publishedContent: content,
+				},
+			});
+
+			return { data: updatedDeclaration };
 		}),
 });
