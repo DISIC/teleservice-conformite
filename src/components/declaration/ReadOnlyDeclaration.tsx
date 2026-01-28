@@ -5,6 +5,7 @@ import {
 	testEnvironmentOptions,
 	toolOptions,
 } from "~/payload/collections/Audit";
+import { appKindOptions } from "~/payload/collections/Declaration";
 
 export const ReadOnlyDeclarationGeneral = ({
 	declaration,
@@ -17,7 +18,10 @@ export const ReadOnlyDeclarationGeneral = ({
 			/>
 			<ReadOnlyField
 				label="Type de produit numérique"
-				value={declaration?.app_kind ?? ""}
+				value={
+					appKindOptions.find((kind) => kind.value === declaration?.app_kind)
+						?.label ?? ""
+				}
 			/>
 			<ReadOnlyField
 				label="Nom de la déclaration"
