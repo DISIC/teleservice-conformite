@@ -6,16 +6,18 @@ import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
 
 import { getDeclarationById } from "~/utils/payload-helper";
-import DeclarationMarkdownToJsx from "~/components/declaration/DeclarationMarkdownToJsx";
+import PublishedDeclarationTemplate, {
+	type PublishedDeclaration,
+} from "~/components/declaration/PublishedDeclarationTemplate";
 
 export default function PublishPage({
 	publishedContent,
-}: { publishedContent: string }) {
+}: { publishedContent: PublishedDeclaration }) {
 	const { classes } = useStyles();
 
 	return (
 		<div className={classes.container}>
-			<DeclarationMarkdownToJsx content={publishedContent} />
+			<PublishedDeclarationTemplate declaration={publishedContent} />
 		</div>
 	);
 }
@@ -54,7 +56,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	return {
 		props: {
-			publishedContent: declaration.publishedContent,
+			publishedContent: JSON.parse(
+				declaration.publishedContent,
+			) as PublishedDeclaration,
 		},
 	};
 };

@@ -23,6 +23,10 @@ import { getConformityStatus } from "~/utils/declaration-helper";
 import { rgaaVersionOptions } from "~/payload/selectOptions";
 import DeclarationMarkdownToJsx from "~/components/declaration/DeclarationMarkdownToJsx";
 import { api } from "~/utils/api";
+import PublishedDeclarationTemplate, {
+	extractDeclarationContentToPublish,
+	type PublishedDeclaration,
+} from "~/components/declaration/PublishedDeclarationTemplate";
 
 type RequiredPopulatedDeclaration = Omit<
 	PopulatedDeclaration,
@@ -41,66 +45,8 @@ export default function DeclarationPreviewPage({
 	const { classes } = useStyles();
 	const router = useRouter();
 
-	const previewMd = `# ${declaration.name}
-${declaration.entity.name} s’engage à rendre ses sites internet, intranet, extranet et ses progiciels accessibles (et ses applications mobiles et mobilier urbain numérique) conformément à  l’article 47 de la loi n°2005-102 du 11 février 2005.
-À cette fin, ${declaration.entity.name} met en œuvre la stratégie et les actions suivantes :
-
-- Lien URL du schéma annuel à jour : ${declaration.actionPlan.currentYearSchemaUrl ?? ""};
-
-- Lien URL du bilan des actions : ${declaration.actionPlan.previousYearsSchemaUrl ?? ""};
-
-Cette déclaration d’accessibilité s’applique au ${appKindOptions.find((option) => option.value === declaration.app_kind)?.label ?? ""} ${declaration.url}
-
-### État de conformité
-${declaration.entity.name} ${declaration.url} est ${getConformityStatus(declaration.audit.rate)} avec le référentiel général d’amélioration de l’accessibilité  (RGAA), version ${rgaaVersionOptions.find((version) => version.value === declaration.audit.rgaa_version)?.label} en raison des non-conformités et des dérogations  énumérées ci-dessous.
-
-### Résultats des tests
-L’audit de conformité réalisé par ${declaration.audit.realisedBy} révèle que ${declaration.audit.rate}% des critères de la version ${rgaaVersionOptions.find((version) => version.value === declaration.audit.rgaa_version)?.label} sont respectés 
-
-## Contenus non accessibles
-### Non-conformités
-${declaration.audit.nonCompliantElements}
-
-### Dérogations pour charge disproportionnée
-${declaration.audit.disproportionnedCharge}
-
-### Contenus non soumis à l’obligation d’accessibilité
-${declaration.audit.optionalElements}
-
-## Établissement de cette déclaration d’accessibilité
-Cette déclaration a été établie le ${new Date(declaration.createdAt).toLocaleDateString("fr-FR")}. Elle a été mise à jour le ${new Date(declaration.updatedAt).toLocaleDateString("fr-FR")}.
-
-### Technologies utilisées pour la réalisation du site
-${declaration?.audit?.technologies?.map((tech) => `- ${tech.name}`).join("\n")}
-
-### Environnement de test
-Les vérifications de restitution de contenus ont été réalisées sur la base de la combinaison fournie par la base de référence du RGAA, avec  les versions suivantes :
-${(declaration.audit.testEnvironments ?? []).map((env) => `- ${env}`).join("\n")}
-
-### Outils pour évaluer l’accessibilité
-${(declaration.audit.usedTools ?? []).map((tech) => `- ${tech.name}`).join("\n")}
-
-### Pages du site ayant fait l’objet de la vérification de conformité
-${declaration.audit.compliantElements}
-
-## Retour d’information et contact
-Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de Impôts particulier pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.
-${declaration.contact.url ? `- Envoyer un message sur le formulaire : ${declaration.contact.url}` : ""}
-
-${declaration.contact.email ? `- Contacter le responsable de l’accessibilité : ${declaration.contact.email}` : ""}
-
-## Voies de recours
-Si vous constatez un défaut d’accessibilité vous empêchant d’accéder à un contenu ou une fonctionnalité du site, que vous nous le signalez et  que vous ne parvenez pas à obtenir une réponse de notre part, vous êtes  en droit de faire parvenir vos doléances ou une demande de saisine au  Défenseur des droits.
-Plusieurs moyens sont à votre disposition :
-- Écrire un message au Défenseur des droits
-- Contacter le délégué du Défenseur des droits dans votre région
-- Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre) :
-
-  Défenseur des droits
-  
-  Libre réponse 71120
-  
-  75342 Paris CEDEX 07`;
+	const publishedDeclarationContent: PublishedDeclaration =
+		extractDeclarationContentToPublish(declaration);
 
 	const { mutateAsync: publishDeclaration } =
 		api.declaration.updatePublishedContent.useMutation({
@@ -116,7 +62,7 @@ Plusieurs moyens sont à votre disposition :
 		try {
 			publishDeclaration({
 				id: declaration.id,
-				content: previewMd,
+				content: JSON.stringify(publishedDeclarationContent),
 			});
 		} catch (error) {
 			return;
@@ -128,7 +74,9 @@ Plusieurs moyens sont à votre disposition :
 			<h1>Votre déclaration est prête à être publiée</h1>
 			<p>Voici un aperçu de votre déclaration</p>
 			<div className={classes.declarationPreview}>
-				<DeclarationMarkdownToJsx content={previewMd} mode="preview" />
+				<PublishedDeclarationTemplate
+					declaration={publishedDeclarationContent}
+				/>
 			</div>
 			<div className={classes.buttonsContainer}>
 				<Button priority="tertiary" onClick={() => router.back()}>
