@@ -9,8 +9,8 @@ export const contactRouter = createTRPCRouter({
   create: userProtectedProcedure
     .input(
       z.object({
-        email: z.string().optional(),
-        url: z.string().optional(),
+        email: z.string().optional().default(""),
+        url: z.string().optional().default(""),
         declarationId: z.number(),
         status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
       })
@@ -67,8 +67,8 @@ export const contactRouter = createTRPCRouter({
         collection: "contacts",
         id,
         data: {
-          email,
-          url,
+          email: email ?? "",
+          url: url ?? "",
           status: "default",
         },
       });

@@ -8,20 +8,39 @@ export const ActionPlans: CollectionConfig = {
     singular: { fr: "Plan d'action" },
     plural: { fr: "Plans d'actions" },
   },
-  	hooks: {
-		afterChange: [
-			async (args) => {
-				const { req } = args;
+  hooks: {
+    beforeChange: [
+      async (args) => {
+        const { req, originalDoc, data, operation } = args;
 
-				await req.payload.update({
-					collection: "declarations",
-					id: args.data.declaration,
-					data: {
-						status: "unpublished",
-					},
-				});
-			},
-		],
+        if (operation !== "update") return;
+
+        const declaration = await req.payload.findByID({
+          id: data.declaration ?? originalDoc?.declaration,
+          collection: "declarations",
+        });
+
+        const { 
+          actionPlan: {
+            currentYearSchemaUrl,
+            previousYearsSchemaUrl,
+          },
+        } = JSON.parse(declaration?.publishedContent ?? "{}");
+
+        console.log(currentYearSchemaUrl, previousYearsSchemaUrl);
+        console.log(data.currentYearSchemaUrl, data.previousYearsSchemaUrl);
+
+        const status = (currentYearSchemaUrl === data.currentYearSchemaUrl && previousYearsSchemaUrl === data.previousYearsSchemaUrl) ? "published" : "unpublished";
+
+        await req.payload.update({
+          collection: "declarations",
+          id: data.declaration ?? originalDoc?.declaration,
+          data: {
+            status,
+          },
+        });
+      },
+    ],
 	},
   fields: [
     {

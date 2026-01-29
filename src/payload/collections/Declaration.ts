@@ -115,7 +115,7 @@ export const Declarations: CollectionConfig = {
 			name: "actionPlan",
 			type: "relationship",
 			relationTo: "action-plans",
-			label: { fr: "Plan d'actions" },
+			label: { fr: "Plan d'actions associé" },
 		},
 		{
 			name: "contact",

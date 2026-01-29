@@ -11,20 +11,36 @@ export const Contacts: CollectionConfig = {
     singular: { fr: "Contact" },
     plural: { fr: "Contacts" },
   },
-  	hooks: {
-		afterChange: [
-			async (args) => {
-				const { req } = args;
+  hooks: {
+    beforeChange: [
+      async (args) => {
+        const { req, originalDoc, data, operation } = args;
 
-				await req.payload.update({
-					collection: "declarations",
-					id: args.data.declaration,
-					data: {
-						status: "unpublished",
-					},
-				});
-			},
-		],
+        if (operation !== "update") return;
+
+        const declaration = await req.payload.findByID({
+          id: data.declaration ?? originalDoc?.declaration,
+          collection: "declarations",
+        });
+
+        const { 
+          contact: {
+			      url,
+			      email,
+		      },
+        } = JSON.parse(declaration?.publishedContent ?? "{}");
+
+        const status = (email === data?.email && url === data?.url) ? "published" : "unpublished";
+
+        await req.payload.update({
+          collection: "declarations",
+          id: data.declaration ?? originalDoc?.declaration,
+          data: {
+            status,
+          },
+        });
+      },
+    ],
 	},
   fields: [
     {
