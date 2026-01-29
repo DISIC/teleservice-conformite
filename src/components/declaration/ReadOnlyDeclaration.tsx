@@ -79,7 +79,7 @@ export const ReadOnlyDeclarationAudit = ({
 	}
 
 	const auditUsedTools =
-		audit.toolsUsed?.map((tech) => {
+		audit?.toolsUsed?.map((tech: { name: string }) => {
 			const existingTool = toolOptions.find((tool) => tool.value === tech.name);
 
 			return existingTool ? existingTool.label : tech.name;

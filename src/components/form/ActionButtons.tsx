@@ -1,7 +1,10 @@
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { tss } from "tss-react";
 import { useFormContext } from "~/utils/form/context";
-import type { DsfrIconClassName } from "@codegouvfr/react-dsfr/icons";
+import type {
+	FrIconClassName,
+	RiIconClassName,
+} from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 
 export function SubscribeButton({
 	label,
@@ -9,7 +12,7 @@ export function SubscribeButton({
 	iconPosition,
 }: {
 	label: string;
-	iconId?: DsfrIconClassName;
+	iconId?: FrIconClassName | RiIconClassName;
 	iconPosition?: "left" | "right";
 }) {
 	const { classes } = useStyles();
@@ -25,16 +28,27 @@ export function SubscribeButton({
 			<form.Subscribe
 				selector={(state) => [state.isSubmitting, state.canSubmit]}
 			>
-				{([isSubmitting, canSubmit]) => (
-					<Button
-						className={classes.button}
-						disabled={isSubmitting || !canSubmit}
-						type="submit"
-						{...iconProps}
-					>
-						{label}
-					</Button>
-				)}
+				{([isSubmitting, canSubmit]) =>
+					iconId && iconPosition ? (
+						<Button
+							className={classes.button}
+							disabled={isSubmitting || !canSubmit}
+							type="submit"
+							iconId={iconId}
+							iconPosition={iconPosition}
+						>
+							{label}
+						</Button>
+					) : (
+						<Button
+							className={classes.button}
+							disabled={isSubmitting || !canSubmit}
+							type="submit"
+						>
+							{label}
+						</Button>
+					)
+				}
 			</form.Subscribe>
 		</div>
 	);
@@ -50,7 +64,7 @@ export function CancelButton({
 	label?: string;
 	onClick?: () => void;
 	priority?: "secondary" | "tertiary";
-	iconId?: DsfrIconClassName;
+	iconId?: FrIconClassName | RiIconClassName;
 	iconPosition?: "left" | "right";
 }) {
 	const { classes } = useStyles();
@@ -71,16 +85,27 @@ export function CancelButton({
 
 	return (
 		<div className={classes.buttonWrapper}>
-			<Button
-				className={classes.button}
-				type="button"
-				priority={priority}
-				onClick={handleClick}
-				{...(iconId ? { iconId } : {})}
-				{...(iconPosition ? { iconPosition } : {})}
-			>
-				{label}
-			</Button>
+			{iconId && iconPosition ? (
+				<Button
+					className={classes.button}
+					type="button"
+					priority={priority}
+					onClick={handleClick}
+					iconId={iconId}
+					iconPosition={iconPosition}
+				>
+					{label}
+				</Button>
+			) : (
+				<Button
+					className={classes.button}
+					type="button"
+					priority={priority}
+					onClick={handleClick}
+				>
+					{label}
+				</Button>
+			)}
 		</div>
 	);
 }
