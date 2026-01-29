@@ -178,6 +178,33 @@ export const declarationRouter = createTRPCRouter({
 				});
 			}
 
+			const declaration = await ctx.payload.findByID({
+				collection: "declarations",
+				id: declarationId,
+				depth: 3,
+			});
+
+			const publishedContent = JSON.parse(declaration?.publishedContent ?? "{}");
+
+			const publishedInfos = {
+				name: publishedContent.name,
+				entityName: publishedContent.entityName,
+				appKindLabel: publishedContent.appKindLabel,
+				url: publishedContent.url,
+			}
+
+			const newData = {
+				name,
+				entityName: organisation,
+				appKindLabel: appKindOptions.find((field) => field.value === kind)?.label ?? "none",
+				url,
+			};
+
+			console.log("publishedInfos:", publishedInfos);
+			console.log("NEW DATA:", newData);
+			
+			const status = JSON.stringify(newData) === JSON.stringify(publishedInfos) ? "published" : "unpublished";
+			
 			await ctx.payload.update({
 				collection: "entities",
 				id: entityId,
@@ -196,44 +223,23 @@ export const declarationRouter = createTRPCRouter({
 					name,
 					app_kind: kind,
 					url,
-					status: "unpublished",
+					status
 				},
 			});
 
-			const { audit, contact, actionPlan, created_by, entity } = result;
-
-			const sanitizedAudit = await fetchOrReturnRealValue(
-				audit ?? null,
-				"audits",
-			);
-
-			const sanitizedContact = await fetchOrReturnRealValue(
-				contact ?? null,
-				"contacts",
-			);
-
-			const sanitizedActionPlan = await fetchOrReturnRealValue(
-				actionPlan ?? null,
-				"action-plans",
-			);
-
-			const sanitizedEntity = await fetchOrReturnRealValue(
-				entity ?? null,
-				"entities",
-			);
-
-			const sanitizedUser = await fetchOrReturnRealValue(
-				created_by ?? null,
-				"users",
-			);
+			const populatedActionPlan = await fetchOrReturnRealValue(declaration?.actionPlan ?? null, "action-plans");
+			const populatedAudit = await fetchOrReturnRealValue(declaration?.audit ?? null, "audits");
+			const populatedContact = await fetchOrReturnRealValue(declaration?.contact ?? null, "contacts");
+			const populatedEntity = await fetchOrReturnRealValue(declaration?.entity ?? null, "entities");
+			const populatedCreatedBy = await fetchOrReturnRealValue(declaration?.created_by ?? null, "users");
 
 			const updatedDeclaration = {
 				...result,
-				audit: sanitizedAudit,
-				contact: sanitizedContact,
-				actionPlan: sanitizedActionPlan,
-				created_by: sanitizedUser,
-				entity: sanitizedEntity,
+				actionPlan: populatedActionPlan,
+				audit: populatedAudit,
+				contact: populatedContact,
+				entity: populatedEntity,
+				created_by: populatedCreatedBy,
 			};
 
 			return { data: updatedDeclaration };

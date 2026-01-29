@@ -4,7 +4,7 @@ import z from "zod";
 export const contact = z.object({
   contactType: z.array(z.string()).min(1, { message: "Au moins un type de contact doit être sélectionné" }),
   contactLink: z.string().optional(),
-  emailContact: z.email(),
+  emailContact: z.email().optional(),
 });
 
 export type ZContact = z.infer<typeof contact>;
@@ -12,7 +12,7 @@ export type ZContact = z.infer<typeof contact>;
 export const contactDefaultValues: ZContact = {
   contactType: [""],
   contactLink: undefined,
-  emailContact: "",
+  emailContact: undefined,
 };
 
 export const contactFormOptions = formOptions({
