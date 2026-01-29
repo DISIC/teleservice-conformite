@@ -3,13 +3,9 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
 
-import {
-	onNotification,
-	showAlert,
-	type NotificationEvent,
-} from "~/utils/notification-event";
+import { onAlert, showAlert, type AlertEvent } from "~/utils/alert-event";
 
-type Item = NotificationEvent & { id: string; expiresAt?: number };
+type Item = AlertEvent & { id: string; expiresAt?: number };
 
 function genId() {
 	if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -23,7 +19,7 @@ export function useAlert() {
 	const timers = useRef<Map<string, number>>(new Map());
 
 	useEffect(() => {
-		const unsubscribe = onNotification((evt) => {
+		const unsubscribe = onAlert((evt) => {
 			const id = genId();
 			const duration = evt.durationMs ?? 5000;
 			const expiresAt = duration > 0 ? Date.now() + duration : undefined;

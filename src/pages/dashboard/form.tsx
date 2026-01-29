@@ -25,7 +25,7 @@ import {
 	extractToolsFromUrl,
 	extractTestEnvironmentsFromUrl,
 } from "~/utils/declaration-helper";
-import { showAlert } from "~/utils/notification-event";
+import { showAlert } from "~/utils/alert-event";
 import DeclarationLoader from "~/components/declaration/DeclarationLoader";
 
 export default function FormPage({ entity }: { entity: Entity | null }) {
