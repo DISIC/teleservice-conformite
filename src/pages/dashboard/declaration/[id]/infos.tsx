@@ -164,7 +164,7 @@ export default function GeneralInformationsPage({
 						) : (
 							<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
 						)}
-						{declaration.status === "unverified" && (
+						{declaration.status === "unverified" && !editMode && (
 							<div className={classes.validateButton}>
 								<Button onClick={updateDeclarationStatus}>
 									Valider les informations

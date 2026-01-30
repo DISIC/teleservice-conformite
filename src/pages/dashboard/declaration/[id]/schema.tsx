@@ -179,7 +179,7 @@ export default function SchemaPage({
 						) : (
 							<ReadOnlyDeclarationSchema declaration={declaration ?? null} />
 						)}
-						{declaration.actionPlan.status === "unverified" && (
+						{declaration.actionPlan.status === "unverified" && !editMode && (
 							<div className={classes.validateButton}>
 								<Button onClick={updateSchemaStatus}>
 									Valider les informations

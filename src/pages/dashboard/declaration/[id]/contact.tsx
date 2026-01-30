@@ -190,7 +190,7 @@ export default function ContactPage({
 						) : (
 							<ReadOnlyDeclarationContact declaration={declaration ?? null} />
 						)}
-						{declaration.contact.status === "unverified" && (
+						{declaration.contact.status === "unverified" && !editMode && (
 							<div className={classes.validateButton}>
 								<Button onClick={updateContactStatus}>
 									Valider les informations

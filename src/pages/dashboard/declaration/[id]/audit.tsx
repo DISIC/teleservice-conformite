@@ -205,7 +205,7 @@ export default function AuditPage({
 					) : (
 						<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
 					)}
-					{declaration.audit.status === "unverified" && (
+					{declaration.audit.status === "unverified" && !editMode && (
 						<div className={classes.validateButton}>
 							<Button onClick={updateAuditStatus}>
 								Valider les informations
