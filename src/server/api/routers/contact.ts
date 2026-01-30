@@ -42,14 +42,14 @@ export const contactRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.number(),
-        email: z.string().optional(),
-        url: z.string().optional(),
+        email: z.string().optional().default(""),
+        url: z.string().optional().default(""),
         declarationId: z.number(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const { id, email, url, declarationId } = input;
-
+      
       if (!ctx.session?.user?.id) {
         throw new TRPCError({
           code: "UNAUTHORIZED",

@@ -16,17 +16,17 @@ export const Contacts: CollectionConfig = {
       async (args) => {
         const { req, originalDoc, data, operation } = args;
 
-        if (operation !== "update") return;
+        if (operation !== "update" || (data?.status === "default" && originalDoc?.status === "unverified")) return;
 
         const declaration = await req.payload.findByID({
-          id: data.declaration ?? originalDoc?.declaration,
+          id: data?.declaration ?? originalDoc?.declaration,
           collection: "declarations",
         });
 
         const { 
           contact: {
-			      url,
-			      email,
+			      url = "",
+			      email = "", 
 		      },
         } = JSON.parse(declaration?.publishedContent ?? "{}");
 

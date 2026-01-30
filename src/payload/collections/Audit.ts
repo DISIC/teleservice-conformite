@@ -17,7 +17,7 @@ export const Audits: CollectionConfig = {
       async (args) => {
         const { req, originalDoc, data, operation } = args;
 
-        if (operation !== "update") return;
+        if (operation !== "update" || (data?.status === "default" && originalDoc?.status === "unverified")) return;
 
 				const declaration = await req.payload.findByID({
 					collection: "declarations",
