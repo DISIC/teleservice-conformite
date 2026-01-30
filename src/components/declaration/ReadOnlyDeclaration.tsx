@@ -1,10 +1,10 @@
 import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
 	toolOptions,
-} from "~/payload/collections/Audit";
+} from "~/payload/selectOptions";
 
 export const ReadOnlyDeclarationGeneral = ({
 	declaration,

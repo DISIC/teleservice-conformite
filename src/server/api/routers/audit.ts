@@ -4,7 +4,7 @@ import z from "zod";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { linkToDeclaration, isDeclarationOwner } from "../utils/payload-helper";
 import { auditFormSchema } from "~/utils/form/audit/schema";
-import { testEnvironmentOptions } from "~/payload/collections/Audit";
+import { testEnvironmentOptions } from "~/payload/selectOptions";
 
 const optionalAuditFormSchema = auditFormSchema
   .partial()
@@ -17,7 +17,7 @@ const optionalAuditFormSchema = auditFormSchema
     status: z.enum(["default", "unverified"]).optional().default("default"),
     technologies: z.array(z.string()).optional().default([]),
     usedTools: z.array(z.string()).optional().default([]),
-    testEnvironments: z.array(z.enum(testEnvironmentOptions.map(option => option.value))).optional().default([]),
+    testEnvironments: z.array(z.enum(testEnvironmentOptions.map((option: { value: string, label: string }) => option.value))).optional().default([]),
   });
 
 export const auditRouter = createTRPCRouter({
@@ -28,25 +28,25 @@ export const auditRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { declarationId, usedTools = [], testEnvironments = [], technologies = [], ...rest } = input;
 
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
       
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to create an audit",
-        });
-      }
-
       const audit = await ctx.payload.create({
         collection: "audits",
         draft: true,
         data: {
           ...rest,
-          testEnvironments,
+          testEnvironments: testEnvironments.reduce((acc: (typeof testEnvironmentOptions[number]["value"])[], env: string) => {
+            const existingOption = testEnvironmentOptions.find(option => option.value === env);
+            if (existingOption) {
+              acc.push(existingOption.value);
+            }
+            
+            return acc;
+          }, []),
           usedTools: usedTools.map((tech) => ({ name: tech })),
           technologies: technologies.map((tech) => ({ name: tech })),
           declaration: declarationId,
@@ -62,19 +62,12 @@ export const auditRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { id, declarationId } = input;
 
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
       
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to delete an audit",
-        });
-      }
-
       await ctx.payload.delete({
         collection: "audits",
         id,
@@ -91,19 +84,12 @@ export const auditRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { id, declarationId, technologies = [], ...rest } = input.audit;
 
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
       
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to update an audit",
-        });
-      }
-
       const updatedAudit = await ctx.payload.update({
         collection: "audits",
         id,
@@ -128,19 +114,12 @@ export const auditRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { declarationId, id, status } = input;
 
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
       
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to update audit status",
-        });
-      }
-
       const audit = await ctx.payload.findByID({
         collection: "audits",
         id,

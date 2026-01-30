@@ -15,8 +15,10 @@ import { DeclarationAuditForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import AuditMultiStepForm from "~/components/declaration/AuditMultiStepForm";
 import { api } from "~/utils/api";
-import { getDeclarationById } from "~/utils/payload-helper";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import {
+	getDeclarationById,
+	type PopulatedDeclaration,
+} from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
 import PopupMessage from "~/components/declaration/PopupMessage";
 import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";

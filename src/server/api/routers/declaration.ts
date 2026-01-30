@@ -4,24 +4,14 @@ import type { Payload } from "payload";
 
 import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { kindOptions } from "~/payload/collections/Entity";
-import { type rgaaVersionOptions, testEnvironmentOptions } from "~/payload/collections/Audit";
+import { type rgaaVersionOptions, testEnvironmentOptions, kindOptions, 	appKindOptions, declarationStatusOptions, } from "~/payload/selectOptions";
 import {
 	isDeclarationOwner,
 	getDefaultDeclarationName,
-	fetchOrReturnRealValue,
-} from "../utils/payload-helper";
-import {
-	appKindOptions,
-	declarationStatusOptions,
-} from "~/payload/collections/Declaration";
+	getPopulatedDeclaration,
+} from "~/server/api/utils/payload-helper";
 
-type DeclarationStatus = (typeof declarationStatusOptions)[number]["value"];
-
-const statusValues = declarationStatusOptions.map((o) => o.value) as [
-	DeclarationStatus,
-	...DeclarationStatus[],
-];
+const statusValues = declarationStatusOptions.map((option) => option.value);
 
 const createOrUpdateEntity = async (
 	payload: Payload,
@@ -75,7 +65,38 @@ export const declarationRouter = createTRPCRouter({
 
 			const araJson = await araResponse.json();
 
-			return { data: araJson };
+			const declarationInfos = {
+				service: {
+					name: araJson.procedureName,
+					type: null,
+					url: araJson.procedureUrl,
+				},
+				taux: `${araJson.accessibilityRate}%`,
+				publishedAt: araJson.publishDate,
+				rgaaVersion: null,
+				auditRealizedBy: araJson.context.auditorOrganisation,
+				responsibleEntity: araJson.procedureInitiator,
+				compliantElements: araJson.pageDistributions.map(
+					(page: any) => `${page?.name} (${page?.url})`,
+				),
+				testEnvironments: araJson.context.environments.map(
+					(env: any) => env?.assistiveTechnology,
+				),
+				usedTools: araJson.context.tools,
+				nonCompliantElements: araJson.notCompliantContent,
+				disproportionnedCharge: araJson.derogatedContent,
+				optionalElements: araJson.notInScopeContent,
+				contact: {
+					email: araJson.contactEmail,
+					url: araJson.contactFormUrl,
+				},
+				schema: {
+					currentYearSchemaUrl: araJson.context.schemaUrl ?? "",
+				},
+				technologies: araJson.context.technologies,
+			};
+
+			return { data: declarationInfos };
 		}),
 	create: userProtectedProcedure
 		.input(
@@ -130,18 +151,11 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id } = input;
 
-			const isOwner = await isDeclarationOwner({
+			await isDeclarationOwner({
 				payload: ctx.payload,
 				declarationId: id,
 				userId: Number(ctx.session?.user?.id) ?? null,
 			});
-
-			if (!isOwner) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "Must be owner of the declaration to delete it",
-				});
-			}
 
 			await ctx.payload.update({
 				collection: "declarations",
@@ -165,18 +179,11 @@ export const declarationRouter = createTRPCRouter({
 			const { organisation, kind, url, domain, name, declarationId, entityId } =
 				input.general;
 
-			const isOwner = await isDeclarationOwner({
+			isDeclarationOwner({
 				payload: ctx.payload,
 				declarationId,
 				userId: Number(ctx.session?.user?.id) ?? null,
 			});
-
-			if (!isOwner) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "Must be owner of the declaration to update it",
-				});
-			}
 
 			await ctx.payload.update({
 				collection: "entities",
@@ -200,41 +207,7 @@ export const declarationRouter = createTRPCRouter({
 				},
 			});
 
-			const { audit, contact, actionPlan, created_by, entity } = result;
-
-			const sanitizedAudit = await fetchOrReturnRealValue(
-				audit ?? null,
-				"audits",
-			);
-
-			const sanitizedContact = await fetchOrReturnRealValue(
-				contact ?? null,
-				"contacts",
-			);
-
-			const sanitizedActionPlan = await fetchOrReturnRealValue(
-				actionPlan ?? null,
-				"action-plans",
-			);
-
-			const sanitizedEntity = await fetchOrReturnRealValue(
-				entity ?? null,
-				"entities",
-			);
-
-			const sanitizedUser = await fetchOrReturnRealValue(
-				created_by ?? null,
-				"users",
-			);
-
-			const updatedDeclaration = {
-				...result,
-				audit: sanitizedAudit,
-				contact: sanitizedContact,
-				actionPlan: sanitizedActionPlan,
-				created_by: sanitizedUser,
-				entity: sanitizedEntity,
-			};
+			const updatedDeclaration = await getPopulatedDeclaration(result);
 
 			return { data: updatedDeclaration };
 		}),
@@ -248,18 +221,11 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, name } = input;
 
-			const isOwner = await isDeclarationOwner({
+		  await isDeclarationOwner({
 				payload: ctx.payload,
 				declarationId: id,
 				userId: Number(ctx.session?.user?.id) ?? null,
 			});
-
-			if (!isOwner) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "Must be owner of the declaration to update its name",
-				});
-			}
 
 			const updatedDeclaration = await ctx.payload.update({
 				collection: "declarations",
@@ -281,18 +247,11 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, status } = input;
 
-			const isOwner = await isDeclarationOwner({
+			await isDeclarationOwner({
 				payload: ctx.payload,
 				declarationId: id,
 				userId: Number(ctx.session?.user?.id) ?? null,
 			});
-
-			if (!isOwner) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "Must be owner of the declaration to update its status",
-				});
-			}
 
 			const updatedDeclaration = await ctx.payload.update({
 				collection: "declarations",

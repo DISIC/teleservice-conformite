@@ -10,7 +10,7 @@ import Community from "@codegouvfr/react-dsfr/picto/Community";
 import Information from "@codegouvfr/react-dsfr/picto/Information";
 import { useRouter } from "next/router";
 
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import PopupMessage from "./PopupMessage";
 
 interface DemarchesProps {
@@ -29,14 +29,10 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		declaration?.updatedAt > declaration?.published_at;
 
 	const declarationComplete =
-		declaration.audit &&
-		declaration.contact &&
-		declaration.entity &&
-		declaration.actionPlan &&
 		declaration.status === "unpublished" &&
-		declaration.audit.status === "default" &&
-		declaration.contact.status === "default" &&
-		declaration.actionPlan.status === "default";
+		declaration?.audit?.status === "default" &&
+		declaration?.contact?.status === "default" &&
+		declaration?.actionPlan?.status === "default";
 
 	const RedirectButton = ({
 		href,

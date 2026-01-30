@@ -7,20 +7,20 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import config from "@payload-config";
-import System from "@codegouvfr/react-dsfr/picto/System";
 
 import { useAppForm } from "~/utils/form/context";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
 import {
 	DeclarationGeneralForm,
-	InitialDeclarationForm,
+	ContextForm,
 } from "~/utils/form/declaration/form";
 import { api } from "~/utils/api";
 import { auth } from "~/utils/auth";
 import type { Entity } from "~/payload/payload-types";
-import type { appKindOptions } from "~/payload/collections/Declaration";
-import type { AlbertResponse } from "~/server/api/routers/albert";
-import type { rgaaVersionOptions } from "~/payload/collections/Audit";
+import type {
+	rgaaVersionOptions,
+	appKindOptions,
+} from "~/payload/selectOptions";
 import {
 	extractToolsFromUrl,
 	extractTestEnvironmentsFromUrl,
@@ -90,43 +90,12 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { mutateAsync: getInfoFromAra, isPending: isGettingInfoFromAra } =
 		api.declaration.getInfoFromAra.useMutation({
 			onSuccess: async (result) => {
-				const declarationInfos = {
-					service: {
-						name: result.data.procedureName,
-						type: null,
-						url: result.data.procedureUrl,
-					},
-					taux: `${result.data.accessibilityRate}%`,
-					publishedAt: result.data.publishDate,
-					rgaaVersion: null,
-					auditRealizedBy: result.data.context.auditorOrganisation,
-					responsibleEntity: result.data.procedureInitiator,
-					compliantElements: result.data.pageDistributions.map(
-						(page: any) => `${page?.name} (${page?.url})`,
-					),
-					testEnvironments: result.data.context.environments.map(
-						(env: any) => env?.assistiveTechnology,
-					),
-					usedTools: result.data.context.tools,
-					nonCompliantElements: result.data.notCompliantContent,
-					disproportionnedCharge: result.data.derogatedContent,
-					optionalElements: result.data.notInScopeContent,
-					contact: {
-						email: result.data.contactEmail,
-						url: result.data.contactFormUrl,
-					},
-					schema: {
-						currentYearSchemaUrl: result.data.context.schemaUrl ?? "",
-					},
-					technologies: result.data.context.technologies,
-				};
-
 				const id = await createDeclarationFromUrl({
-					...declarationInfos,
+					...result.data,
 					testEnvironments: extractTestEnvironmentsFromUrl(
-						declarationInfos?.testEnvironments ?? [],
+						result.data?.testEnvironments ?? [],
 					),
-					usedTools: extractToolsFromUrl(declarationInfos?.usedTools ?? []),
+					usedTools: extractToolsFromUrl(result.data?.usedTools ?? []),
 					entity: {
 						id: entity?.id ?? null,
 						name: entity?.name ?? "",
@@ -134,7 +103,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					},
 				});
 
-				if (!declarationInfos) {
+				if (!result.data) {
 					showAlert({
 						title: "Erreur lors de l'analyse de l'URL",
 						description: "Echec de la récupération des informations.",
@@ -260,9 +229,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				}}
 			>
 				<div className={classes.formWrapper}>
-					{section === "initialDeclaration" && (
-						<InitialDeclarationForm form={form} />
-					)}
+					{section === "initialDeclaration" && <ContextForm form={form} />}
 					{section === "general" && (
 						<DeclarationGeneralForm form={form} readOnly={false} />
 					)}

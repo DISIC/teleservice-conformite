@@ -13,8 +13,10 @@ import { useAppForm } from "~/utils/form/context";
 import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { api } from "~/utils/api";
-import { getDeclarationById } from "~/utils/payload-helper";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import {
+	getDeclarationById,
+	type PopulatedDeclaration,
+} from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
 import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 

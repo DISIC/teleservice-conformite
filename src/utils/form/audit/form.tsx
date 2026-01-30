@@ -1,13 +1,12 @@
-import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
 import NextLink from "next/link";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
-import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import {
+	rgaaVersionOptions,
 	testEnvironmentOptions,
 	toolOptions,
-} from "~/payload/collections/Audit";
+} from "~/payload/selectOptions";
 import { withForm } from "../context";
 import { auditMultiStepFormOptions } from "./schema";
 import ExemptionListModalContent from "~/components/modal/ExemptionListContent";

@@ -13,8 +13,10 @@ import { DeclarationContactForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import ContactForm from "~/components/declaration/ContactForm";
 import { api } from "~/utils/api";
-import { getDeclarationById } from "~/utils/payload-helper";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import {
+	getDeclarationById,
+	type PopulatedDeclaration,
+} from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
 import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 

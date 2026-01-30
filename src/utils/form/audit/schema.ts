@@ -1,7 +1,7 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
-import { rgaaVersionOptions, toolOptions, testEnvironmentOptions } from "~/payload/collections/Audit";
+import { rgaaVersionOptions, testEnvironmentOptions } from "~/payload/selectOptions";
 
 export const auditDate = z.object({
   date: z.iso.date().min(1, { message: "La date est requise" }),

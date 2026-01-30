@@ -17,18 +17,11 @@ export const schemaRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { currentYearSchemaUrl, previousYearsSchemaUrl, declarationId, status } = input;
       
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
-      
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to create a schema",
-        });
-      }
       
       const schema = await ctx.payload.create({
         collection: "action-plans",
@@ -56,18 +49,11 @@ export const schemaRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { currentYearSchemaUrl, previousYearsSchemaUrl, schemaId, declarationId  } = input;
 
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
-      
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to update a schema",
-        });
-      }
 
       const updatedSchema = await ctx.payload.update({
         collection: "action-plans",
@@ -92,18 +78,11 @@ export const schemaRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { declarationId, id, status } = input;
 
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
-      
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to update a schema",
-        });
-      }
 
       const schemaRecord = await ctx.payload.findByID({
         collection: "action-plans",

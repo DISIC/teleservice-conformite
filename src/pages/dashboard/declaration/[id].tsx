@@ -19,7 +19,7 @@ import Membres from "~/components/declaration/Membres";
 import {
 	getDeclarationById,
 	type PopulatedDeclaration,
-} from "~/utils/payload-helper";
+} from "~/server/api/utils/payload-helper";
 import Editable from "~/components/editable/Editable";
 
 const deleteModal = createModal({
@@ -35,12 +35,14 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const router = useRouter();
 	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
 	const [editableName, setEditableName] = useState<boolean>(false);
-	const [newName, setNewName] = useState<string>(declaration?.name ?? "");
+	const [declarationName, setDeclarationName] = useState<string>(
+		declaration?.name ?? "",
+	);
 	const { classes } = useStyles();
 
 	const { mutateAsync: updateDeclarationName } =
 		api.declaration.updateName.useMutation({
-			onSuccess: async (result) => setNewName(result.data.name ?? ""),
+			onSuccess: async (result) => setDeclarationName(result.data.name ?? ""),
 			onError: async (error) => {
 				console.error("Error updating declaration name:", error);
 			},
@@ -82,7 +84,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const onEditTitle = async (newValue: string) => {
 		setEditableName(false);
 
-		if (!newValue || newValue === newName) return;
+		if (!newValue || newValue === declarationName) return;
 
 		try {
 			await updateDeclarationName({
@@ -108,7 +110,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							href: "/dashboard",
 						}}
 						segments={[]}
-						currentPageLabel={newName}
+						currentPageLabel={declarationName}
 					/>
 				</section>
 				<section id="header" className={classes.headerSection}>
@@ -119,7 +121,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 								cursor: editableName ? "text" : "auto",
 							}}
 						>
-							<Editable title={newName} onEditTitle={onEditTitle} />
+							<Editable title={declarationName} onEditTitle={onEditTitle} />
 						</div>
 						<Badge
 							noIcon={true}

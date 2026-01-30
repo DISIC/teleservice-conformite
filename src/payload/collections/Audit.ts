@@ -1,33 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-export const rgaaVersionOptions = [
-	{
-		label: "RGAA 4",
-		value: "rgaa_4",
-	},
-	{
-		label: "RGAA 5",
-		value: "rgaa_5",
-	},
-] as const;
-
-export const toolOptions = [
-	{ label: "Wave", value: "wave" },
-	{ label: "NVDA", value: "nvda" },
-	{ label: "Web Developer Toolbar", value: "web_developer_toolbar" },
-	{ label: "HeadingsMap", value: "headings_map" },
-	{ label: "JAWS", value: "jaws" },
-	{ label: "Assistant RGAA", value: "assistant_rgaa" },
-	{ label: "Tanaguru", value: "tanaguru" },
-] as const;
-
-export const testEnvironmentOptions = [
-	{ label: "NVDA (Firefox)", value: "nvda_firefox" },
-	{ label: "JAWS (Firefox)", value: "jaws_firefox" },
-	{ label: "VoiceOver (Safari)", value: "voiceover_safari" },
-	{ label: "ZoomText (Windows ou Mac OSX)", value: "zoomtext_windows_mac" },
-	{ label: "Dragon Naturally Speaking (Windows ou Mac OSX)", value: "dragon_naturally_speaking_windows_mac" },
-] as const;
+import { statusOptions, rgaaVersionOptions, testEnvironmentOptions } from "../selectOptions";
 
 export const Audits: CollectionConfig = {
 	slug: "audits",
@@ -148,10 +121,7 @@ export const Audits: CollectionConfig = {
 			type: "select",
 			label: { fr: "Statut" },
 			defaultValue: "default",
-			options: [
-				{ label: "default", value: "default" },
-				{ label: "Non vérifié", value: "unverified" },
-			],
+			options: [...statusOptions],
 			required: false,
 		}
 	],

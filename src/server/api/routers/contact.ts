@@ -17,19 +17,12 @@ export const contactRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { email, url, declarationId, status } = input;
 
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
       
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to create a contact",
-        });
-      }
-
       const contact = await ctx.payload.create({
         collection: "contacts",
         data: {
@@ -63,19 +56,12 @@ export const contactRouter = createTRPCRouter({
         });
       }
 
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
       
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to update a contact",
-        });
-      }
-
       const contact = await ctx.payload.update({
         collection: "contacts",
         id,
@@ -99,18 +85,11 @@ export const contactRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { declarationId, id, status } = input;
 
-            const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
-      
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to update contact status",
-        });
-      }
       
       const contactRecord = await ctx.payload.findByID({
         collection: "contacts",

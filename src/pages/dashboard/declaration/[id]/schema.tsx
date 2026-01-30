@@ -6,13 +6,15 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import {
+	type PopulatedDeclaration,
+	getDeclarationById,
+} from "~/server/api/utils/payload-helper";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import SchemaForm from "~/components/declaration/SchemaForm";
-import { getDeclarationById } from "~/utils/payload-helper";
 import { DeclarationSchema } from "~/utils/form/readonly/form";
 import { api } from "~/utils/api";
 import { ReadOnlyDeclarationSchema } from "~/components/declaration/ReadOnlyDeclaration";

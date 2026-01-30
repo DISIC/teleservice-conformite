@@ -2,9 +2,10 @@ import Internet from "@codegouvfr/react-dsfr/picto/Internet";
 import Accessibility from "@codegouvfr/react-dsfr/picto/Accessibility";
 import System from "@codegouvfr/react-dsfr/picto/System";
 import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
+import { tss } from "tss-react";
+import { fr } from "@codegouvfr/react-dsfr";
 
-import { appKindOptions } from "~/payload/collections/Declaration";
-import { kindOptions } from "~/payload/collections/Entity";
+import { appKindOptions, kindOptions } from "~/payload/selectOptions";
 import { withForm } from "../context";
 import { declarationMultiStepFormOptions } from "./schema";
 import PopupMessage from "~/components/declaration/PopupMessage";
@@ -88,11 +89,13 @@ export const DeclarationGeneralForm = withForm({
 	},
 });
 
-export const InitialDeclarationForm = withForm({
+export const ContextForm = withForm({
 	...declarationMultiStepFormOptions,
 	render: function Render({ form }) {
+		const { classes } = useStyles();
+
 		return (
-			<div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+			<div className={classes.contextFormContainer}>
 				<form.AppField name="initialDeclaration.newDeclaration">
 					{(field) => (
 						<field.SelectCardField
@@ -167,5 +170,13 @@ export const InitialDeclarationForm = withForm({
 				</form.Subscribe>
 			</div>
 		);
+	},
+});
+
+const useStyles = tss.withName(ContextForm.name).create({
+	contextFormContainer: {
+		display: "flex",
+		flexDirection: "column",
+		gap: "2rem",
 	},
 });
