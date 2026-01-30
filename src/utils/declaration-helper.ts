@@ -1,8 +1,4 @@
-import {
-	type testEnvironmentOptions,
-	toolOptions,
-} from "~/payload/collections/Audit";
-import { appKindOptions } from "~/payload/collections/Declaration";
+import { type testEnvironmentOptions, toolOptions } from "~/payload/selectOptions";
 
 export const getConformityStatus = (rate: number): string => {
 	if (rate < 50) {
