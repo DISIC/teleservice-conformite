@@ -195,7 +195,7 @@ export default function DeclarationPreviewPage({
 				<Button
 					priority="primary"
 					linkProps={{
-						href: `/dashboard/declaration/${declaration.id}/publish`,
+						href: `/dashboard/declaration/${declaration.id}`,
 					}}
 				>
 					Publier la déclaration
