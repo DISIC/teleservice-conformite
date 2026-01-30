@@ -123,8 +123,8 @@ export default function ContactPage({
 
 			await updateDeclarationContact(
 				id ?? -1,
-				data.email ?? "",
-				data.url ?? "",
+				data?.email ?? "",
+				data?.url ?? "",
 			);
 		},
 	});
@@ -200,7 +200,7 @@ export default function ContactPage({
 						) : (
 							<ReadOnlyDeclarationContact declaration={declaration ?? null} />
 						)}
-						{declaration.contact.status === "unverified" && (
+						{declaration.contact.status === "unverified" && !editMode && (
 							<div className={classes.validateButton}>
 								<Button onClick={updateContactStatus}>
 									Valider les informations

@@ -11,7 +11,7 @@ export const ActionPlans: CollectionConfig = {
       async (args) => {
         const { req, originalDoc, data, operation } = args;
 
-        if (operation !== "update") return;
+        if (operation !== "update" || (data?.status === "default" && originalDoc?.status === "unverified")) return;
 
         const declaration = await req.payload.findByID({
           id: data.declaration ?? originalDoc?.declaration,
