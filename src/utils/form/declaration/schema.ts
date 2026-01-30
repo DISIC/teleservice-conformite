@@ -1,7 +1,6 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
-import { rgaaVersionOptions } from "~/payload/collections/Audit";
-import { appKindOptions } from "~/payload/collections/Declaration";
+import { appKindOptions, rgaaVersionOptions } from "~/payload/selectOptions";
 
 export const declarationGeneral = z.object({
 	general: z.object({
@@ -84,9 +83,10 @@ export const declarationAuditDefaultValues: ZDeclarationAudit = {
 
 export const initialDeclaration = z.object({
 	initialDeclaration: z.object({
-		isNewDeclaration: z.boolean(),
+		newDeclaration: z.string().optional(),
 		publishedDate: z.iso.date().optional(),
 		araUrl: z.string().optional(),
+		declarationUrl: z.string().optional(),
 	}),
 });
 
@@ -94,9 +94,10 @@ export type ZInitialDeclaration = z.infer<typeof initialDeclaration>;
 
 export const initialDeclarationDefaultValues: ZInitialDeclaration = {
 	initialDeclaration: {
-		isNewDeclaration: false,
+		newDeclaration: "",
 		publishedDate: undefined,
-		araUrl: "",
+		araUrl: undefined,
+		declarationUrl: undefined,
 	},
 };
 

@@ -1,4 +1,4 @@
-import type { kindOptions } from "~/payload/collections/Entity";
+import type { kindOptions } from "~/payload/selectOptions";
 
 export async function getEntityInfosFromSiret(siret: number): Promise<{
   name: string;

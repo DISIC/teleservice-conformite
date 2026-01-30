@@ -7,9 +7,9 @@ import {
 	rgaaVersionOptions,
 	toolOptions,
 	testEnvironmentOptions,
-} from "~/payload/collections/Audit";
-import { appKindOptions } from "~/payload/collections/Declaration";
-import { kindOptions } from "~/payload/collections/Entity";
+	kindOptions,
+	appKindOptions,
+} from "~/payload/selectOptions";
 import { withForm } from "../context";
 import { readOnlyFormOptions } from "./schema";
 import PopupMessage from "~/components/declaration/PopupMessage";
@@ -205,6 +205,16 @@ export const DeclarationAuditForm = withForm({
 							{(field) => <field.NumberField label="Résultats" />}
 						</form.AppField>
 						<form.AppField name="audit.technologies">
+							{(field) =>
+								field?.state?.value?.length ? (
+									<field.TagGroupField
+										label=""
+										initialTags={field.state.value}
+									/>
+								) : null
+							}
+						</form.AppField>
+						<form.AppField name="audit.usedTools">
 							{(field) => {
 								return (
 									<div>

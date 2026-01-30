@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
 import { useStore } from "@tanstack/react-form";
@@ -11,12 +12,21 @@ import { useAppForm } from "~/utils/form/context";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
 import {
 	DeclarationGeneralForm,
-	InitialDeclarationForm,
+	ContextForm,
 } from "~/utils/form/declaration/form";
 import { api } from "~/utils/api";
 import { auth } from "~/utils/auth";
 import type { Entity } from "~/payload/payload-types";
-import type { appKindOptions } from "~/payload/collections/Declaration";
+import type {
+	rgaaVersionOptions,
+	appKindOptions,
+} from "~/payload/selectOptions";
+import {
+	extractToolsFromUrl,
+	extractTestEnvironmentsFromUrl,
+} from "~/utils/declaration-helper";
+import { showAlert } from "~/utils/alert-event";
+import DeclarationLoader from "~/components/declaration/DeclarationLoader";
 
 export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { classes } = useStyles();
@@ -25,13 +35,98 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { mutateAsync: createDeclaration } = api.declaration.create.useMutation(
 		{
 			onSuccess: async (result) => {
-				router.push(`/dashboard/declaration/${result.data}`);
+				return result.data;
 			},
 			onError: (error) => {
 				console.error("Error adding declaration:", error);
 			},
 		},
 	);
+
+	const { mutateAsync: analyzeUrl, isPending: isAnalyzingUrl } =
+		api.albert.analyzeUrl.useMutation({
+			onSuccess: async (result) => {
+				const declarationInfos = result.data;
+
+				if (!declarationInfos) {
+					showAlert({
+						title: "Erreur lors de l'analyse de l'URL",
+						description: "Echec de la récupération des informations.",
+						severity: "error",
+					});
+
+					return;
+				}
+
+				const id = await createDeclarationFromUrl({
+					...declarationInfos,
+					testEnvironments: extractTestEnvironmentsFromUrl(
+						declarationInfos?.testEnvironments ?? [],
+					),
+					usedTools: extractToolsFromUrl(declarationInfos?.usedTools ?? []),
+					rgaaVersion: declarationInfos.rgaaVersion
+						? (declarationInfos.rgaaVersion as (typeof rgaaVersionOptions)[number]["value"])
+						: "rgaa_4",
+					entity: {
+						id: entity?.id ?? null,
+						name: entity?.name ?? "",
+						kind: entity?.kind ?? "none",
+					},
+				});
+
+				router.push(`/dashboard/declaration/${id.data}`);
+			},
+			onError: (error) => {
+				showAlert({
+					title: "Erreur lors de l'analyse de l'URL",
+					description: error.message,
+					severity: "error",
+				});
+
+				console.error("Error analyzing URL:", error);
+			},
+		});
+
+	const { mutateAsync: getInfoFromAra, isPending: isGettingInfoFromAra } =
+		api.declaration.getInfoFromAra.useMutation({
+			onSuccess: async (result) => {
+				const id = await createDeclarationFromUrl({
+					...result.data,
+					testEnvironments: extractTestEnvironmentsFromUrl(
+						result.data?.testEnvironments ?? [],
+					),
+					usedTools: extractToolsFromUrl(result.data?.usedTools ?? []),
+					entity: {
+						id: entity?.id ?? null,
+						name: entity?.name ?? "",
+						kind: entity?.kind ?? "none",
+					},
+				});
+
+				if (!result.data) {
+					showAlert({
+						title: "Erreur lors de l'analyse de l'URL",
+						description: "Echec de la récupération des informations.",
+						severity: "error",
+					});
+
+					return;
+				}
+
+				router.push(`/dashboard/declaration/${id.data}`);
+			},
+			onError: (error) => console.error("error", error),
+		});
+
+	const { mutateAsync: createDeclarationFromUrl } =
+		api.declaration.createFromUrl.useMutation({
+			onSuccess: async (result) => {
+				return result.data;
+			},
+			onError: (error) => {
+				console.error("Error adding declaration from URL:", error);
+			},
+		});
 
 	declarationMultiStepFormOptions.defaultValues.section = "initialDeclaration";
 
@@ -42,8 +137,8 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	};
 
 	const addDeclaration = async (generalData: {
-		name: string;
-		url?: string | undefined;
+		name?: string;
+		url?: string;
 		organisation: string;
 		kind: (typeof appKindOptions)[number]["value"];
 		domain: string;
@@ -55,9 +150,29 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				entityId: entity?.id,
 			};
 
-			await createDeclaration({ general });
+			const result = await createDeclaration({ general });
+
+			router.push(`/dashboard/declaration/${result.data}`);
 		} catch (error) {
 			console.error("Error adding declaration:", error);
+		}
+	};
+
+	const getDeclarationInfoFromAra = async (url: string) => {
+		const araId = url.slice(url.lastIndexOf("/") + 1);
+
+		try {
+			await getInfoFromAra({ id: araId });
+		} catch (error) {
+			return;
+		}
+	};
+
+	const analyzeDeclarationUrl = async (url: string) => {
+		try {
+			await analyzeUrl({ url });
+		} catch (err) {
+			return;
 		}
 	};
 
@@ -69,19 +184,38 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const form = useAppForm({
 		...declarationMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
-			if (value.section === "initialDeclaration") {
-				!value.initialDeclaration.isNewDeclaration
-					? formApi.setFieldValue("section", "general")
-					: null;
-			} else {
-				await addDeclaration(value.general);
+			if (
+				value.section === "initialDeclaration" &&
+				value.initialDeclaration.declarationUrl
+			) {
+				await analyzeDeclarationUrl(value.initialDeclaration.declarationUrl);
+				return;
 			}
+
+			if (
+				value.section === "initialDeclaration" &&
+				value.initialDeclaration.araUrl
+			) {
+				getDeclarationInfoFromAra(value.initialDeclaration.araUrl);
+				return;
+			}
+
+			if (
+				value.section === "initialDeclaration" &&
+				!value.initialDeclaration.declarationUrl &&
+				!value.initialDeclaration.araUrl
+			) {
+				formApi.setFieldValue("section", "general");
+				return;
+			}
+
+			await addDeclaration(value.general);
 		},
 	});
 
 	const section = useStore(form.store, (state) => state.values.section);
 
-	return (
+	return !isAnalyzingUrl && !isGettingInfoFromAra ? (
 		<div className={classes.main}>
 			<h2>
 				{section === "initialDeclaration"
@@ -95,9 +229,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				}}
 			>
 				<div className={classes.formWrapper}>
-					{section === "initialDeclaration" && (
-						<InitialDeclarationForm form={form} />
-					)}
+					{section === "initialDeclaration" && <ContextForm form={form} />}
 					{section === "general" && (
 						<DeclarationGeneralForm form={form} readOnly={false} />
 					)}
@@ -118,6 +250,8 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				</div>
 			</form>
 		</div>
+	) : (
+		<DeclarationLoader />
 	);
 }
 

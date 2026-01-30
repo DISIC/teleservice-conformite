@@ -4,7 +4,6 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useRouter } from "next/router";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
@@ -14,26 +13,51 @@ import { DeclarationContactForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import ContactForm from "~/components/declaration/ContactForm";
 import { api } from "~/utils/api";
-import { getDeclarationById } from "~/utils/payload-helper";
-import { contact } from "~/utils/form/contact/schema";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import {
+	getDeclarationById,
+	type PopulatedDeclaration,
+} from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
+import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 
 export default function ContactPage({
-	declaration,
+	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
-	const router = useRouter();
 	const { classes } = useStyles();
+	const [declaration, setDeclaration] =
+		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const { id, email, url } = declaration?.contact || {};
 
 	const { mutateAsync: updateContact } = api.contact.update.useMutation({
-		onSuccess: async () => {
-			router.reload();
+		onSuccess: async (result) => {
+			setDeclaration((prev) => ({
+				...prev,
+				contact: result.data,
+			}));
+			setEditMode(false);
 		},
 		onError: async (error) => {
 			console.error(
 				`Error updating contact for declaration with id ${declaration?.id}:`,
+				error,
+			);
+		},
+	});
+
+	const { mutateAsync: updateStatus } = api.contact.updateStatus.useMutation({
+		onSuccess: async (result) => {
+			setDeclaration((prev) => ({
+				...prev,
+				contact: {
+					...prev.contact,
+					...result.data,
+				},
+			}));
+		},
+		onError: async (error) => {
+			console.error(
+				`Error updating contact status for declaration with id ${declaration?.id}:`,
 				error,
 			);
 		},
@@ -106,6 +130,18 @@ export default function ContactPage({
 		},
 	});
 
+	const updateContactStatus = async () => {
+		try {
+			await updateStatus({
+				declarationId: declaration.id,
+				id: declaration?.contact?.id ?? -1,
+				status: "default",
+			});
+		} catch (error) {
+			return;
+		}
+	};
+
 	if (!declaration?.contact) {
 		return <ContactForm declaration={declaration} />;
 	}
@@ -125,6 +161,9 @@ export default function ContactPage({
 				/>
 				<div>
 					<h1>{declaration?.name ?? ""} - Contact</h1>
+					{declaration?.contact.status === "unverified" && (
+						<VerifyGeneratedInfoPopUpMessage />
+					)}
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire
@@ -150,6 +189,13 @@ export default function ContactPage({
 							</>
 						) : (
 							<ReadOnlyDeclarationContact declaration={declaration ?? null} />
+						)}
+						{declaration.contact.status === "unverified" && !editMode && (
+							<div className={classes.validateButton}>
+								<Button onClick={updateContactStatus}>
+									Valider les informations
+								</Button>
+							</div>
 						)}
 					</div>
 				</form>
@@ -182,6 +228,11 @@ const useStyles = tss.withName(ContactPage.name).create({
 	description: {
 		fontSize: "1rem",
 		color: "grey",
+	},
+	validateButton: {
+		marginTop: fr.spacing("4w"),
+		display: "flex",
+		justifyContent: "flex-end",
 	},
 });
 

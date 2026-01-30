@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
@@ -19,7 +19,8 @@ import Membres from "~/components/declaration/Membres";
 import {
 	getDeclarationById,
 	type PopulatedDeclaration,
-} from "~/utils/payload-helper";
+} from "~/server/api/utils/payload-helper";
+import Editable from "~/components/editable/Editable";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -33,7 +34,19 @@ interface DeclarationPageProps {
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const router = useRouter();
 	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
+	const [editableName, setEditableName] = useState<boolean>(false);
+	const [declarationName, setDeclarationName] = useState<string>(
+		declaration?.name ?? "",
+	);
 	const { classes } = useStyles();
+
+	const { mutateAsync: updateDeclarationName } =
+		api.declaration.updateName.useMutation({
+			onSuccess: async (result) => setDeclarationName(result.data.name ?? ""),
+			onError: async (error) => {
+				console.error("Error updating declaration name:", error);
+			},
+		});
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
@@ -41,7 +54,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 				router.push("/dashboard");
 			},
 			onError: (error) => {
-				console.error("Error adding declaration:", error);
+				console.error("Error deleting declaration:", error);
 			},
 		},
 	);
@@ -68,6 +81,26 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 		return null;
 	};
 
+	const onEditTitle = async (newValue: string) => {
+		setEditableName(false);
+
+		if (!newValue || newValue === declarationName) return;
+
+		try {
+			await updateDeclarationName({
+				id: declaration.id,
+				name: newValue,
+			});
+		} catch (error) {
+			console.error("Error updating declaration title:", error);
+		}
+	};
+
+	const onMouseDown: React.MouseEventHandler<HTMLDivElement> = (e) => {
+		e.preventDefault();
+		setEditableName(true);
+	};
+
 	return (
 		<>
 			<section id="declaration-page" className={classes.declarationPage}>
@@ -77,12 +110,19 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							href: "/dashboard",
 						}}
 						segments={[]}
-						currentPageLabel={declaration?.name}
+						currentPageLabel={declarationName}
 					/>
 				</section>
 				<section id="header" className={classes.headerSection}>
 					<div className={classes.header}>
-						<h1>{declaration?.name}</h1>
+						<div
+							onMouseDown={onMouseDown}
+							style={{
+								cursor: editableName ? "text" : "auto",
+							}}
+						>
+							<Editable title={declarationName} onEditTitle={onEditTitle} />
+						</div>
 						<Badge
 							noIcon={true}
 							small={true}
@@ -229,6 +269,12 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			border: "none !important",
 			boxShadow: "none !important",
 		},
+	},
+	editableNameInput: {
+		outline: "none",
+		border: "none",
+		fontSize: "2.5rem",
+		fontWeight: fr.typography[5].style.fontWeight,
 	},
 });
 

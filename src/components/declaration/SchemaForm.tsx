@@ -6,7 +6,7 @@ import { useAppForm } from "~/utils/form/context";
 import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
 import { schemaFormOptions } from "~/utils/form/schema/schema";
 import { api } from "~/utils/api";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 export default function SchemaForm({
 	declaration,

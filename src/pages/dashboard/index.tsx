@@ -11,7 +11,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { auth } from "~/utils/auth";
 
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
 
 interface DeclarationsPageProps {

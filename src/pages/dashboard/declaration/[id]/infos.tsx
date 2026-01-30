@@ -13,21 +13,30 @@ import { useAppForm } from "~/utils/form/context";
 import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { api } from "~/utils/api";
-import { getDeclarationById } from "~/utils/payload-helper";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import {
+	getDeclarationById,
+	type PopulatedDeclaration,
+} from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
+import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 
 export default function GeneralInformationsPage({
-	declaration,
-}: { declaration?: PopulatedDeclaration }) {
+	declaration: initialDeclaration,
+}: { declaration: PopulatedDeclaration }) {
 	const router = useRouter();
 	const { classes } = useStyles();
+	const [declaration, setDeclaration] =
+		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const { name, kind } = declaration?.entity || {};
 
 	const { mutateAsync: update } = api.declaration.update.useMutation({
 		onSuccess: async (result) => {
-			router.reload();
+			setDeclaration((prev) => ({
+				...prev,
+				...result.data,
+			}));
+			setEditMode(false);
 		},
 		onError: async (error) => {
 			console.error(
@@ -36,6 +45,22 @@ export default function GeneralInformationsPage({
 			);
 		},
 	});
+
+	const { mutateAsync: updateStatus } =
+		api.declaration.updateStatus.useMutation({
+			onSuccess: async (result) => {
+				setDeclaration((prev) => ({
+					...prev,
+					status: result.data.status,
+				}));
+			},
+			onError: async (error) => {
+				console.error(
+					`Error updating declaration status with id ${declaration?.id}:`,
+					error,
+				);
+			},
+		});
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
@@ -75,6 +100,17 @@ export default function GeneralInformationsPage({
 		}
 	};
 
+	const updateDeclarationStatus = async () => {
+		try {
+			await updateStatus({
+				status: "unpublished",
+				id: declaration?.id ?? -1,
+			});
+		} catch (error) {
+			return;
+		}
+	};
+
 	const form = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
@@ -99,6 +135,9 @@ export default function GeneralInformationsPage({
 				/>
 				<div>
 					<h1>{declaration?.name ?? ""} - Informations générales</h1>
+					{declaration.status === "unverified" && (
+						<VerifyGeneratedInfoPopUpMessage />
+					)}
 					<div className={classes.headerAction}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire
@@ -124,6 +163,13 @@ export default function GeneralInformationsPage({
 							</>
 						) : (
 							<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
+						)}
+						{declaration.status === "unverified" && !editMode && (
+							<div className={classes.validateButton}>
+								<Button onClick={updateDeclarationStatus}>
+									Valider les informations
+								</Button>
+							</div>
 						)}
 					</div>
 				</form>
@@ -156,6 +202,11 @@ const useStyles = tss.withName(GeneralInformationsPage.name).create({
 	title: {
 		fontSize: "1rem",
 		color: fr.colors.decisions.text.mention.grey.default,
+	},
+	validateButton: {
+		marginTop: fr.spacing("4w"),
+		display: "flex",
+		justifyContent: "flex-end",
 	},
 });
 

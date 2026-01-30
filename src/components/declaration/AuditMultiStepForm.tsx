@@ -14,7 +14,7 @@ import {
 } from "~/utils/form/audit/form";
 import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
 import { api } from "~/utils/api";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 type Steps<T> = {
 	slug: T;
@@ -77,7 +77,7 @@ export default function AuditMultiStepForm({
 		}
 
 		if (section === "tools") {
-			form.setFieldValue("technologies", []);
+			form.setFieldValue("usedTools", []);
 			form.setFieldValue("testEnvironments", []);
 		}
 

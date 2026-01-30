@@ -1,5 +1,4 @@
 import type { CollectionConfig } from "payload";
-import type { Entity } from "../payload-types";
 
 export const Users: CollectionConfig = {
   slug: "users",

@@ -6,7 +6,7 @@ import { useAppForm } from "~/utils/form/context";
 import { ContactTypeForm } from "~/utils/form/contact/form";
 import { contactFormOptions } from "~/utils/form/contact/schema";
 import { api } from "~/utils/api";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 export default function ContactForm({
 	declaration,

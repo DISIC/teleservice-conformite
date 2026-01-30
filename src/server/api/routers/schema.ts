@@ -11,23 +11,17 @@ export const schemaRouter = createTRPCRouter({
         currentYearSchemaUrl: z.string().optional(),
         previousYearsSchemaUrl: z.string().optional(),
         declarationId: z.number(),
+        status: z.enum(["default", "unverified"]).optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { currentYearSchemaUrl, previousYearsSchemaUrl, declarationId } = input;
-
-      const isOwner = await isDeclarationOwner({
+      const { currentYearSchemaUrl, previousYearsSchemaUrl, declarationId, status } = input;
+      
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
-      
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to create a schema",
-        });
-      }
       
       const schema = await ctx.payload.create({
         collection: "action-plans",
@@ -35,6 +29,7 @@ export const schemaRouter = createTRPCRouter({
           currentYearSchemaUrl: currentYearSchemaUrl ?? "",
           previousYearsSchemaUrl: previousYearsSchemaUrl ?? "",
           declaration: declarationId,
+          status: status || "default",
         },
       });
 
@@ -54,18 +49,11 @@ export const schemaRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { currentYearSchemaUrl, previousYearsSchemaUrl, schemaId, declarationId  } = input;
 
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
-      
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to update a schema",
-        });
-      }
 
       const updatedSchema = await ctx.payload.update({
         collection: "action-plans",
@@ -73,6 +61,46 @@ export const schemaRouter = createTRPCRouter({
         data: {
           currentYearSchemaUrl: currentYearSchemaUrl ?? "",
           previousYearsSchemaUrl: previousYearsSchemaUrl ?? "",
+          status: "default",
+        },
+      });
+
+      return { data: updatedSchema };
+    }),
+  updateStatus: userProtectedProcedure
+    .input(
+      z.object({
+        declarationId: z.number(),
+        id: z.number(),
+        status: z.enum(["default", "unverified"]),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { declarationId, id, status } = input;
+
+      await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+
+      const schemaRecord = await ctx.payload.findByID({
+        collection: "action-plans",
+        id,
+      });
+
+      if (!schemaRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Schema with id ${id} not found`,
+        });
+      }
+
+      const updatedSchema = await ctx.payload.update({
+        collection: "action-plans",
+        id,
+        data: {
+          status,
         },
       });
 

@@ -1,7 +1,7 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
-import { rgaaVersionOptions, toolOptions, testEnvironmentOptions } from "~/payload/collections/Audit";
+import { rgaaVersionOptions, testEnvironmentOptions } from "~/payload/selectOptions";
 
 export const auditDate = z.object({
   date: z.iso.date().min(1, { message: "La date est requise" }),
@@ -24,7 +24,7 @@ export const auditDateDefaultValues: ZAuditDate = {
 };
 
 export const tools = z.object({
-  technologies: z.array(
+  usedTools: z.array(
       z.string()
     )
     .min(1, {
@@ -44,7 +44,7 @@ export const tools = z.object({
 export type ZTools = z.infer<typeof tools>;
 
 export const toolsDefaultValues: ZTools = {
-  technologies: [],
+  usedTools: [],
   testEnvironments: [],
 };
 
