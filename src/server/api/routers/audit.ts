@@ -17,7 +17,7 @@ const optionalAuditFormSchema = auditFormSchema
     status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
     technologies: z.array(z.string()).optional().default([]),
     usedTools: z.array(z.string()).optional().default([]),
-    testEnvironments: z.array(z.enum(testEnvironmentOptions.map((option: { value: string, label: string }) => option.value))).optional().default([]),
+    testEnvironments: z.array(z.string()).optional().default([]),
   });
 
 export const auditRouter = createTRPCRouter({
@@ -39,14 +39,7 @@ export const auditRouter = createTRPCRouter({
         draft: true,
         data: {
           ...rest,
-          testEnvironments: testEnvironments.reduce((acc: (typeof testEnvironmentOptions[number]["value"])[], env: string) => {
-            const existingOption = testEnvironmentOptions.find(option => option.value === env);
-            if (existingOption) {
-              acc.push(existingOption.value);
-            }
-            
-            return acc;
-          }, []),
+          testEnvironments: testEnvironments.map((tech) => ({ name: tech })),
           usedTools: usedTools.map((tech) => ({ name: tech })),
           technologies: technologies.map((tech) => ({ name: tech })),
           declaration: declarationId,
@@ -96,6 +89,7 @@ export const auditRouter = createTRPCRouter({
         data: {
           ...rest,
           usedTools: rest.usedTools.map((tech) => ({ name: tech })),
+          testEnvironments: rest.testEnvironments.map((tech) => ({ name: tech })),
           technologies: technologies.map((tech) => ({ name: tech })),
           status: "default",
         },

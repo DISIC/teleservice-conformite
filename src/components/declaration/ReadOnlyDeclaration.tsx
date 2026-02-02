@@ -86,9 +86,13 @@ export const ReadOnlyDeclarationAudit = ({
 		}) ?? [];
 
 	const auditTestEnvironments =
-		testEnvironmentOptions
-			.filter((env) => audit.testEnvironments?.includes(env.value))
-			.map((env) => env.label) ?? [];
+		audit.testEnvironments?.map((tech: { name: string }) => {
+			const existingTool = testEnvironmentOptions.find(
+				(tool) => tool.value === tech.name,
+			);
+
+			return existingTool ? existingTool.label : tech.name;
+		}) ?? [];
 
 	const auditRgaaVersion = rgaaVersionOptions.find(
 		(version) => version.value === audit.rgaa_version,

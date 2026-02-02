@@ -26,7 +26,7 @@ export const importedDeclarationDataSchema = z.object({
 	responsibleEntity: z.string().nullable(),
 	compliantElements: z.array(z.string()),
 	technologies: z.array(z.string()),
-	testEnvironments: z.array(z.enum(testEnvironmentOptions.map(env => env.value))),
+	testEnvironments: z.array(z.string()),
 	usedTools: z.array(z.string()),
 	nonCompliantElements: z.string().nullable(),
 	disproportionnedCharge: z.string().nullable(),
@@ -212,7 +212,7 @@ export const declarationRouter = createTRPCRouter({
 			const { organisation, kind, url, domain, name, declarationId, entityId } =
 				input.general;
 
-			isDeclarationOwner({
+			await isDeclarationOwner({
 				payload: ctx.payload,
 				declarationId,
 				userId: Number(ctx.session?.user?.id) ?? null,
@@ -374,7 +374,7 @@ export const declarationRouter = createTRPCRouter({
 						rgaa_version: (rgaaVersion ??
 							"rgaa_4") as (typeof rgaaVersionOptions)[number]["value"],
 						rate: Number(taux?.replace("%", "")) || 0,
-						testEnvironments,
+						testEnvironments: testEnvironments.map((tech) => ({ name: tech })),
 						usedTools: usedTools.map((tool) => ({ name: tool })),
 						technologies: technologies.map((tech) => ({ name: tech })),
 						compliantElements:

@@ -86,11 +86,16 @@ export const Audits: CollectionConfig = {
 		},
 		{
 			name: "testEnvironments",
-			type: "select",
+			type: "array",
 			label: { fr: "Environnements de test" },
-			index: true,
-			options : [...testEnvironmentOptions],
-			hasMany: true,
+			fields: [
+				{
+					name: "name",
+					type: "text",
+					label: { fr: "Nom de l’environnement de test" },
+					required: true,
+				}
+		],
 		},
 		{
 			name: "technologies",

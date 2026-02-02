@@ -122,7 +122,7 @@ export default function DeclarationPreviewPage({
 				</p>
 				<ul>
 					{(declaration.audit.testEnvironments ?? []).map((env) => (
-						<li key={env}>{env}</li>
+						<li key={env.id}>{env.name}</li>
 					))}
 				</ul>
 				<h3>Outils pour évaluer l’accessibilité</h3>

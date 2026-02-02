@@ -237,10 +237,21 @@ export const DeclarationAuditForm = withForm({
 						</form.AppField>
 						<form.AppField name="audit.testEnvironments">
 							{(field) => (
-								<field.CheckboxGroupField
-									label="Environnement de tests"
-									options={[...testEnvironmentOptions]}
-								/>
+								<div>
+									<field.CheckboxGroupField
+										label="Environnement de tests"
+										options={[...testEnvironmentOptions]}
+									/>
+									<field.TagGroupField
+										label=""
+										initialTags={field.state.value.filter(
+											(tag) =>
+												![...testEnvironmentOptions]
+													.map((option) => option.value as string)
+													.includes(tag),
+										)}
+									/>
+								</div>
 							)}
 						</form.AppField>
 						<form.AppField name="audit.compliantElements">

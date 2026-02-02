@@ -32,9 +32,7 @@ export const tools = z.object({
     }),
   testEnvironments: z
     .array(
-      z.enum(
-        testEnvironmentOptions.map((test) => test.value)
-      )
+      z.string()
     )
     .min(1, {
       message: "Au moins un environnement de test doit être sélectionné",

@@ -190,7 +190,8 @@ export default function AuditPage({
 				compliantElements: audit?.compliantElements ?? "",
 				technologies: audit?.technologies?.map((tech) => tech.name) ?? [],
 				usedTools: audit?.usedTools?.map((tech) => tech.name) ?? [],
-				testEnvironments: audit?.testEnvironments ?? [],
+				testEnvironments:
+					audit?.testEnvironments?.map((tech) => tech.name) ?? [],
 				nonCompliantElements: audit?.nonCompliantElements ?? "",
 				disproportionnedCharge: audit?.disproportionnedCharge ?? "",
 				optionalElements: audit?.optionalElements ?? "",
