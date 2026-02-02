@@ -254,7 +254,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					detail={
 						<>
 							{declaration?.actionPlan &&
-								declaration?.actionPlan?.status === "fromAI" && (
+								declaration?.actionPlan?.status === "default" && (
 									<Button
 										iconId="fr-icon-arrow-right-line"
 										onClick={function noRefCheck() {}}
