@@ -5,6 +5,7 @@ import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
+import { useRouter } from "next/router";
 
 import {
 	type PopulatedDeclaration,
@@ -24,11 +25,13 @@ export default function SchemaPage({
 	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
 	const { classes } = useStyles();
+	const router = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const { id, currentYearSchemaUrl, previousYearsSchemaUrl } =
 		declaration?.actionPlan || {};
+	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
 
 	const { mutateAsync: updateSchema } = api.schema.update.useMutation({
 		onSuccess: async (result) => {
@@ -40,6 +43,7 @@ export default function SchemaPage({
 				},
 			}));
 			setEditMode(false);
+			router.push(declarationPagePath);
 		},
 		onError: async (error) => {
 			console.error(
@@ -143,7 +147,7 @@ export default function SchemaPage({
 					segments={[
 						{
 							label: declaration?.name ?? "",
-							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
+							linkProps: { href: declarationPagePath },
 						},
 					]}
 					currentPageLabel="Schéma et plans d'actions"

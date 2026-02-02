@@ -33,6 +33,7 @@ export default function AuditPage({
 	const [editMode, setEditMode] = useState(false);
 	const [isAchieved, setIsAchieved] = useState(!!declaration?.audit);
 	const audit = declaration?.audit;
+	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
 
 	const { mutateAsync: updateAudit } = api.audit.update.useMutation({
 		onSuccess: async (result) => {
@@ -49,7 +50,7 @@ export default function AuditPage({
 
 	const { mutateAsync: deleteAudit } = api.audit.delete.useMutation({
 		onSuccess: async () => {
-			router.push(`/dashboard/declaration/${declaration?.id}`);
+			router.push(declarationPagePath);
 		},
 		onError: async (error) => {
 			console.error(`Error deleting audit with id ${audit?.id}`, error);
@@ -65,6 +66,8 @@ export default function AuditPage({
 					...result.data,
 				},
 			}));
+
+			router.push(declarationPagePath);
 		},
 		onError: async (error) => {
 			console.error(
@@ -164,7 +167,7 @@ export default function AuditPage({
 					segments={[
 						{
 							label: declaration?.name ?? "",
-							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
+							linkProps: { href: declarationPagePath },
 						},
 					]}
 					currentPageLabel="Résultat de l’audit"

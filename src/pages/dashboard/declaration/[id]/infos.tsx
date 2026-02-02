@@ -29,6 +29,7 @@ export default function GeneralInformationsPage({
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const { name, kind } = declaration?.entity || {};
+	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
 
 	const { mutateAsync: update } = api.declaration.update.useMutation({
 		onSuccess: async (result) => {
@@ -53,6 +54,8 @@ export default function GeneralInformationsPage({
 					...prev,
 					status: result.data.status,
 				}));
+
+				router.push(declarationPagePath);
 			},
 			onError: async (error) => {
 				console.error(
@@ -128,7 +131,7 @@ export default function GeneralInformationsPage({
 					segments={[
 						{
 							label: declaration?.name ?? "",
-							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
+							linkProps: { href: declarationPagePath },
 						},
 					]}
 					currentPageLabel="Informations générales"

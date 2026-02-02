@@ -7,6 +7,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
+import { useRouter } from "next/router";
 
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationContactForm } from "~/utils/form/readonly/form";
@@ -19,15 +20,18 @@ import {
 } from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
 import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
+import { Router } from "next/router";
 
 export default function ContactPage({
 	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
 	const { classes } = useStyles();
+	const router = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const { id, email, url } = declaration?.contact || {};
+	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
 
 	const { mutateAsync: updateContact } = api.contact.update.useMutation({
 		onSuccess: async (result) => {
@@ -54,6 +58,8 @@ export default function ContactPage({
 					...result.data,
 				},
 			}));
+
+			router.push(declarationPagePath);
 		},
 		onError: async (error) => {
 			console.error(
@@ -154,7 +160,7 @@ export default function ContactPage({
 					segments={[
 						{
 							label: declaration?.name ?? "",
-							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
+							linkProps: { href: declarationPagePath },
 						},
 					]}
 					currentPageLabel="Contact"
