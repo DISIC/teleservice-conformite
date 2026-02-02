@@ -7,6 +7,7 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import config from "@payload-config";
+import type { z } from "zod";
 
 import { useAppForm } from "~/utils/form/context";
 import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
@@ -17,8 +18,8 @@ import {
 import { api } from "~/utils/api";
 import { auth } from "~/utils/auth";
 import type { Entity } from "~/payload/payload-types";
-import type {
-	rgaaVersionOptions,
+import {
+	type rgaaVersionOptions,
 	appKindOptions,
 } from "~/payload/selectOptions";
 import {
@@ -27,10 +28,17 @@ import {
 } from "~/utils/declaration-helper";
 import { showAlert } from "~/utils/alert-event";
 import DeclarationLoader from "~/components/declaration/DeclarationLoader";
+import type { importedDeclarationDataSchema } from "~/server/api/routers/declaration";
+
+export type ImportedDeclarationData = z.infer<
+	typeof importedDeclarationDataSchema
+>;
 
 export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { classes } = useStyles();
 	const router = useRouter();
+	const [importedDeclarationData, setImportedDeclarationData] =
+		useState<ImportedDeclarationData | null>(null);
 
 	const { mutateAsync: createDeclaration } = api.declaration.create.useMutation(
 		{
@@ -58,7 +66,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					return;
 				}
 
-				const id = await createDeclarationFromUrl({
+				setImportedDeclarationData({
 					...declarationInfos,
 					testEnvironments: extractTestEnvironmentsFromUrl(
 						declarationInfos?.testEnvironments ?? [],
@@ -75,7 +83,11 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					status: "fromAI",
 				});
 
-				router.push(`/dashboard/declaration/${id.data}`);
+				return {
+					serviceName: declarationInfos.service.name,
+					serviceType: declarationInfos.service.type,
+					serviceUrl: declarationInfos.service.url,
+				};
 			},
 			onError: (error) => {
 				showAlert({
@@ -91,7 +103,17 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { mutateAsync: getInfoFromAra, isPending: isGettingInfoFromAra } =
 		api.declaration.getInfoFromAra.useMutation({
 			onSuccess: async (result) => {
-				const id = await createDeclarationFromUrl({
+				if (!result.data) {
+					showAlert({
+						title: "Erreur lors de l'analyse de l'URL",
+						description: "Echec de la récupération des informations.",
+						severity: "error",
+					});
+
+					return;
+				}
+
+				setImportedDeclarationData({
 					...result.data,
 					testEnvironments: extractTestEnvironmentsFromUrl(
 						result.data?.testEnvironments ?? [],
@@ -105,17 +127,11 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					status: "fromAra",
 				});
 
-				if (!result.data) {
-					showAlert({
-						title: "Erreur lors de l'analyse de l'URL",
-						description: "Echec de la récupération des informations.",
-						severity: "error",
-					});
-
-					return;
-				}
-
-				router.push(`/dashboard/declaration/${id.data}`);
+				return {
+					serviceName: result.data.service.name,
+					serviceType: result.data.service.type,
+					serviceUrl: result.data.service.url,
+				};
 			},
 			onError: (error) => console.error("error", error),
 		});
@@ -123,7 +139,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { mutateAsync: createDeclarationFromUrl } =
 		api.declaration.createFromUrl.useMutation({
 			onSuccess: async (result) => {
-				return result.data;
+				router.push(`/dashboard/declaration/${result.data}`);
 			},
 			onError: (error) => {
 				console.error("Error adding declaration from URL:", error);
@@ -160,21 +176,49 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		}
 	};
 
-	const getDeclarationInfoFromAra = async (url: string) => {
+	const getDeclarationInfoFromAra = async (
+		url: string,
+	): Promise<{
+		serviceName: string;
+		serviceType: string;
+		serviceUrl: string;
+	}> => {
 		const araId = url.slice(url.lastIndexOf("/") + 1);
 
 		try {
-			await getInfoFromAra({ id: araId });
+			const result = await getInfoFromAra({ id: araId });
+
+			return {
+				serviceName: result?.data?.service?.name ?? "",
+				serviceType: result?.data?.service?.url
+					? "website"
+					: (result?.data?.service?.type ?? "other"),
+				serviceUrl: result?.data?.service?.url ?? "",
+			};
 		} catch (error) {
-			return;
+			return { serviceName: "", serviceType: "other", serviceUrl: "" };
 		}
 	};
 
-	const analyzeDeclarationUrl = async (url: string) => {
+	const analyzeDeclarationUrl = async (
+		url: string,
+	): Promise<{
+		serviceName: string;
+		serviceType: string;
+		serviceUrl: string;
+	}> => {
 		try {
-			await analyzeUrl({ url });
+			const result = await analyzeUrl({ url });
+
+			return {
+				serviceName: result?.data?.service?.name ?? "",
+				serviceType: result?.data?.service?.url
+					? "website"
+					: (result?.data?.service?.type ?? "other"),
+				serviceUrl: result?.data?.service?.url ?? "",
+			};
 		} catch (err) {
-			return;
+			return { serviceName: "", serviceType: "other", serviceUrl: "" };
 		}
 	};
 
@@ -190,7 +234,18 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				value.section === "initialDeclaration" &&
 				value.initialDeclaration.declarationUrl
 			) {
-				await analyzeDeclarationUrl(value.initialDeclaration.declarationUrl);
+				const { serviceName, serviceType, serviceUrl } =
+					await analyzeDeclarationUrl(value.initialDeclaration.declarationUrl);
+
+				formApi.setFieldValue("section", "general");
+				formApi.setFieldValue(
+					"general.kind",
+					appKindOptions.find((option) => option.value === serviceType)
+						?.value ?? "other",
+				);
+				formApi.setFieldValue("general.name", serviceName);
+				formApi.setFieldValue("general.url", serviceUrl);
+
 				return;
 			}
 
@@ -198,7 +253,18 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				value.section === "initialDeclaration" &&
 				value.initialDeclaration.araUrl
 			) {
-				getDeclarationInfoFromAra(value.initialDeclaration.araUrl);
+				const { serviceName, serviceType, serviceUrl } =
+					await getDeclarationInfoFromAra(value.initialDeclaration.araUrl);
+
+				formApi.setFieldValue("section", "general");
+				formApi.setFieldValue(
+					"general.kind",
+					appKindOptions.find((option) => option.value === serviceType)
+						?.value ?? "other",
+				);
+				formApi.setFieldValue("general.name", serviceName);
+				formApi.setFieldValue("general.url", serviceUrl);
+
 				return;
 			}
 
@@ -208,6 +274,18 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				!value.initialDeclaration.araUrl
 			) {
 				formApi.setFieldValue("section", "general");
+				return;
+			}
+
+			if (importedDeclarationData) {
+				try {
+					await createDeclarationFromUrl({
+						...importedDeclarationData,
+					});
+				} catch (error) {
+					console.error("Error adding declaration:", error);
+				}
+
 				return;
 			}
 

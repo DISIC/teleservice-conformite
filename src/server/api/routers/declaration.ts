@@ -13,6 +13,39 @@ import {
 
 const statusValues = declarationStatusOptions.map((option) => option.value);
 
+export const importedDeclarationDataSchema = z.object({
+	service: z.object({
+		name: z.string().nullable(),
+		type: z.string().nullable(),
+		url: z.string().nullable(),
+	}),
+	taux: z.string().nullable(),
+	rgaaVersion: z.string().nullable(),
+	auditRealizedBy: z.string().nullable(),
+	publishedAt: z.string().nullable(),
+	responsibleEntity: z.string().nullable(),
+	compliantElements: z.array(z.string()),
+	technologies: z.array(z.string()),
+	testEnvironments: z.array(z.enum(testEnvironmentOptions.map(env => env.value))),
+	usedTools: z.array(z.string()),
+	nonCompliantElements: z.string().nullable(),
+	disproportionnedCharge: z.string().nullable(),
+	optionalElements: z.string().nullable(),
+	contact: z.object({
+		email: z.string().nullable(),
+		url: z.string().nullable(),
+	}),
+	schema: z.object({
+		currentYearSchemaUrl: z.string().nullable(),
+	}),
+	entity: z.object({
+		id: z.number().nullable(),
+		name: z.string().nullable(),
+		kind: z.string().nullable(),
+	}),
+	status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
+});
+
 const createOrUpdateEntity = async (
 	payload: Payload,
 	entityId: number | undefined,
@@ -264,40 +297,7 @@ export const declarationRouter = createTRPCRouter({
 			return { data: updatedDeclaration };
 		}),
 	createFromUrl: userProtectedProcedure
-		.input(
-			z.object({
-				service: z.object({
-					name: z.string().nullable(),
-					type: z.string().nullable(),
-					url: z.string().nullable(),
-				}),
-				taux: z.string().nullable(),
-				rgaaVersion: z.string().nullable(),
-				auditRealizedBy: z.string().nullable(),
-				publishedAt: z.string().nullable(),
-				responsibleEntity: z.string().nullable(),
-				compliantElements: z.array(z.string()),
-				technologies: z.array(z.string()),
-				testEnvironments: z.array(z.enum(testEnvironmentOptions.map(env => env.value))),
-				usedTools: z.array(z.string()),
-				nonCompliantElements: z.string().nullable(),
-				disproportionnedCharge: z.string().nullable(),
-				optionalElements: z.string().nullable(),
-				contact: z.object({
-					email: z.string().nullable(),
-					url: z.string().nullable(),
-				}),
-				schema: z.object({
-					currentYearSchemaUrl: z.string().nullable(),
-				}),
-				entity: z.object({
-					id: z.number().nullable(),
-					name: z.string().nullable(),
-					kind: z.string().nullable(),
-				}),
-				status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
-			}),
-		)
+		.input(importedDeclarationDataSchema)
 		.mutation(async ({ input, ctx }) => {
 			const {
 				service,
@@ -356,7 +356,7 @@ export const declarationRouter = createTRPCRouter({
 						app_kind:
 							appKindOptions.find(option => option.value === service.type)?.value ??
 							"other",
-						status: "unverified",
+						status: "unpublished",
 						entity: newEntityId,
 						created_by: Number(ctx.session.user.id),
 					},

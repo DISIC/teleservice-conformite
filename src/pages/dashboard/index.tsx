@@ -101,8 +101,8 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 								<div
 									style={
 										typeof rate === "number"
-											? { display: "block" }
-											: { display: "none" }
+											? { visibility: "visible" }
+											: { visibility: "hidden" }
 									}
 								>
 									<p className={classes.auditRateValue}>{rate}%</p>
