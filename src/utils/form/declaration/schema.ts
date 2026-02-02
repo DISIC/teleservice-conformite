@@ -30,57 +30,6 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 	},
 };
 
-export const declarationAudit = z.object({
-	audit: z.object({
-		url: z
-			.url({ error: "L'URL n'est pas valide" })
-			.min(1, { message: "L'URL est requise" }),
-		date: z.iso.date().min(1, { message: "La date est requise" }),
-		report: z.file().optional(),
-		matrix: z.file().optional(),
-		realisedBy: z.string().min(1, {
-			message: "L'organisation ayant réalisé l'audit est requise",
-		}),
-		rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
-		rate: z
-			.number()
-			.min(0, { message: "Le taux doit être entre 0 et 100" })
-			.max(100, { message: "Le taux doit être entre 0 et 100" }),
-		pages: z
-			.array(z.object({ label: z.string(), url: z.string() }))
-			.min(1, { message: "Au moins une page doit être renseignée" }),
-		technologies: z.array(z.string()).min(1, {
-			message: "Au moins une technologie doit être sélectionnée",
-		}),
-		testEnvironments: z
-			.array(z.object({ kind: z.string(), os: z.string() }))
-			.min(1, {
-				message: "Au moins un environnement de test doit être sélectionné",
-			}),
-		tools: z.array(z.string()).min(1, {
-			message: "Au moins un outil doit être sélectionné",
-		}),
-	}),
-});
-
-export type ZDeclarationAudit = z.infer<typeof declarationAudit>;
-
-export const declarationAuditDefaultValues: ZDeclarationAudit = {
-	audit: {
-		url: "",
-		date: "",
-		report: undefined,
-		matrix: undefined,
-		realisedBy: "",
-		rgaa_version: "rgaa_4",
-		rate: 0,
-		pages: [{ label: "", url: "" }],
-		technologies: [""],
-		testEnvironments: [{ kind: "", os: "" }],
-		tools: [""],
-	},
-};
-
 export const initialDeclaration = z.object({
 	initialDeclaration: z.object({
 		newDeclaration: z.string().optional(),
@@ -101,16 +50,9 @@ export const initialDeclarationDefaultValues: ZInitialDeclaration = {
 	},
 };
 
-export const declarationContact = z.object({
-	contactName: z.string(),
-	contactEmail: z.email(),
-	contactPhone: z.string().optional(),
-});
-
 export const declarationMultiStepFormSchema = z.object({
-	section: z.enum(["general", "audit", "schema", "initialDeclaration"]),
+	section: z.enum(["general", "initialDeclaration"]),
 	...declarationGeneral.shape,
-	...declarationAudit.shape,
 	...initialDeclaration.shape,
 });
 
@@ -121,7 +63,6 @@ export type ZDeclarationMultiStepFormSchema = z.infer<
 const defaultValues: ZDeclarationMultiStepFormSchema = {
 	section: "general",
 	...declarationGeneralDefaultValues,
-	...declarationAuditDefaultValues,
 	...initialDeclarationDefaultValues,
 };
 
@@ -132,12 +73,6 @@ export const declarationMultiStepFormOptions = formOptions({
 			if (value.section === "general") {
 				return formApi.parseValuesWithSchema(
 					declarationGeneral as typeof declarationMultiStepFormSchema,
-				);
-			}
-
-			if (value.section === "audit") {
-				return formApi.parseValuesWithSchema(
-					declarationAudit as typeof declarationMultiStepFormSchema,
 				);
 			}
 
