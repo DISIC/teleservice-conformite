@@ -115,23 +115,18 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 				</section>
 				<section id="header" className={classes.headerSection}>
 					<div className={classes.header}>
-						<div
-							onMouseDown={onMouseDown}
-							style={{
-								cursor: editableName ? "text" : "auto",
-							}}
-						>
-							<Editable title={declarationName} onEditTitle={onEditTitle} />
-						</div>
-						<Badge
-							noIcon={true}
-							small={true}
-							severity={
-								declaration?.status === "published" ? "success" : undefined
-							}
-						>
-							{declaration?.status === "published" ? "Publiée" : "Brouillon"}
-						</Badge>
+						<h1>
+							{declarationName}{" "}
+							<Badge
+								noIcon={true}
+								small={true}
+								severity={
+									declaration?.status === "published" ? "success" : undefined
+								}
+							>
+								{declaration?.status === "published" ? "Publiée" : "Brouillon"}
+							</Badge>
+						</h1>
 					</div>
 					<div className={classes.buttonsContainer}>
 						{declaration?.status === "published" && (
@@ -268,6 +263,11 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		"& > div": {
 			border: "none !important",
 			boxShadow: "none !important",
+			marginBlock: fr.spacing("6v"),
+		},
+
+		"&::before": {
+			display: "none",
 		},
 	},
 	editableNameInput: {
