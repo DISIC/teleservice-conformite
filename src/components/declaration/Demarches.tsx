@@ -50,20 +50,26 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const StartBadges = ({
 		showToCompleteBadge,
 		showVerifyBadge,
-	}: { showToCompleteBadge: boolean; showVerifyBadge: boolean }) => (
-		<>
-			{showToCompleteBadge ? (
-				<Badge noIcon severity="new">
-					A Remplir
+	}: { showToCompleteBadge: boolean; showVerifyBadge: boolean }) => {
+		const badges = [
+			{
+				show: showToCompleteBadge,
+				label: "A Remplir",
+			},
+			{
+				show: showVerifyBadge,
+				label: "À vérifier",
+			},
+		];
+
+		return badges
+			.filter((badge) => badge.show)
+			.map(({ label }) => (
+				<Badge key={label} noIcon severity="new">
+					{label}
 				</Badge>
-			) : null}
-			{showVerifyBadge ? (
-				<Badge noIcon severity="warning">
-					À vérifier
-				</Badge>
-			) : null}
-		</>
-	);
+			));
+	};
 
 	return (
 		<section id="demarches-tab" className={classes.main}>
