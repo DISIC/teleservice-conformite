@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
-import { albertPromptTemplate } from "~/utils/albert-helper";
+import readAlbertPrompt from "~/utils/albert-prompt/albert-helper";
 
 export interface AlbertResponse {
   service: { name: string | null, type: string | null; url: string | null; };
@@ -73,6 +73,8 @@ async function extractAccessibilityRateWithAlbert(
   }
 
   const relevantContent = `${footerContent}\n\n${mainContent.substring(0, 15000)}`;
+
+  const albertPromptTemplate = readAlbertPrompt();
 
   const prompt = `${albertPromptTemplate}
   HTML :

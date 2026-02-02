@@ -1,4 +1,3 @@
-export const albertPromptTemplate = `
 Analyse le contenu HTML et extrait le service (url et type), le taux d'accessibilité numérique, la date de publication, la liste des pages auditées, l'entité responsable, la version RGAA, les environnements de test, les outils utilises, les environnements de test, les outils utilisés, les contenus non conformes, les dérogations pour charge disproportionnée, les contenus non soumis à l’obligation d’accessibilité ET les informations de contact.
 
 RÈGLES POUR LE SERVICE :
@@ -199,4 +198,4 @@ Exemples de réponses attendues :
     "schema": { "currentYearSchemaUrl": null }
   } si rien n'est trouvé
 
-Réponds UNIQUEMENT avec le JSON, sans texte avant ou après.`;
+Réponds UNIQUEMENT avec le JSON, sans texte avant ou après.
