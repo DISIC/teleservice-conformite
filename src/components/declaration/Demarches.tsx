@@ -127,15 +127,22 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							showVerifyBadge={declaration.status === "unverified"}
 						/>
 					}
-					enlargeLinkOrButton={true}
+					enlargeLinkOrButton={false}
 					orientation="vertical"
 					pictogram={<Document fontSize="2rem" />}
 					className={classes.tile}
 					detail={
-						declaration?.status === "unverified" && (
+						declaration?.status === "unverified" ? (
 							<RedirectButton
 								label="Vérifier les informations"
 								href={`${linkToDeclarationPage}/infos`}
+							/>
+						) : (
+							<Button
+								iconId="fr-icon-arrow-right-line"
+								onClick={function noRefCheck() {}}
+								priority="tertiary no outline"
+								title="Label button"
 							/>
 						)
 					}
@@ -146,7 +153,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `${linkToDeclarationPage}/contact`,
 					}}
-					enlargeLinkOrButton={!!declaration?.contact}
+					enlargeLinkOrButton={false}
 					orientation="vertical"
 					pictogram={<Community fontSize="2rem" />}
 					start={
@@ -157,6 +164,15 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					}
 					detail={
 						<>
+							{declaration?.contact &&
+								declaration?.contact?.status !== "unverified" && (
+									<Button
+										iconId="fr-icon-arrow-right-line"
+										onClick={function noRefCheck() {}}
+										priority="tertiary no outline"
+										title="Label button"
+									/>
+								)}
 							{!declaration?.contact && (
 								<RedirectButton href={`${linkToDeclarationPage}/contact`} />
 							)}
@@ -176,7 +192,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `${linkToDeclarationPage}/audit`,
 					}}
-					enlargeLinkOrButton={!!declaration?.audit}
+					enlargeLinkOrButton={false}
 					orientation="vertical"
 					pictogram={<Search fontSize="2rem" />}
 					start={
@@ -187,6 +203,15 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					}
 					detail={
 						<>
+							{declaration?.audit &&
+								declaration?.audit?.status !== "unverified" && (
+									<Button
+										iconId="fr-icon-arrow-right-line"
+										onClick={function noRefCheck() {}}
+										priority="tertiary no outline"
+										title="Label button"
+									/>
+								)}
 							{!declaration?.audit && (
 								<RedirectButton href={`${linkToDeclarationPage}/audit`} />
 							)}
@@ -206,7 +231,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `${linkToDeclarationPage}/schema`,
 					}}
-					enlargeLinkOrButton={!!declaration?.actionPlan}
+					enlargeLinkOrButton={false}
 					orientation="vertical"
 					pictogram={<Conclusion fontSize="2rem" />}
 					start={
@@ -217,6 +242,15 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					}
 					detail={
 						<>
+							{declaration?.actionPlan &&
+								declaration?.actionPlan?.status !== "unverified" && (
+									<Button
+										iconId="fr-icon-arrow-right-line"
+										onClick={function noRefCheck() {}}
+										priority="tertiary no outline"
+										title="Label button"
+									/>
+								)}
 							{!declaration?.actionPlan && (
 								<RedirectButton href={`${linkToDeclarationPage}/schema`} />
 							)}
@@ -294,6 +328,10 @@ const useStyles = tss.withName(Demarches.name).create({
 		},
 		"& h3": {
 			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+
+			"&::before": {
+				backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.active.blueFrance.default}, ${fr.colors.decisions.border.active.blueFrance.default})`,
+			},
 		},
 	},
 });
