@@ -177,56 +177,58 @@ export default function AuditPage({
 					{declaration?.audit.status === "unverified" && (
 						<VerifyGeneratedInfoPopUpMessage />
 					)}
-					<div className={classes.headerAction}>
-						<h3 className={classes.description}>
-							Verifiez les informations et modifiez-les si necessaire
-						</h3>
-						<Button priority="secondary" onClick={onEditInfos}>
-							{!editMode ? "Modifier" : "Annuler"}
-						</Button>
-					</div>
 				</div>
 			</div>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-					form.handleSubmit();
-				}}
-			>
-				<div className={classes.formWrapper}>
-					{editMode ? (
-						<>
-							<DeclarationAuditForm
-								form={form}
-								isAchieved={isAchieved}
-								onChangeIsAchieved={(value) => setIsAchieved(value)}
-							/>
-							<form.AppForm>
-								<form.SubscribeButton label={"Valider"} />
-							</form.AppForm>
-						</>
-					) : (
-						<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
-					)}
-					{declaration.audit.status === "unverified" && !editMode && (
-						<div className={classes.validateButton}>
-							<Button onClick={updateAuditStatus}>
-								Valider les informations
-							</Button>
-						</div>
-					)}
+			<div className={classes.body}>
+				<div className={classes.editButtonWrapper}>
+					<h3 className={classes.description}>
+						Verifiez les informations et modifiez-les si necessaire
+					</h3>
+					<Button priority="secondary" onClick={onEditInfos}>
+						{!editMode ? "Modifier" : "Annuler"}
+					</Button>
 				</div>
-			</form>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						form.handleSubmit();
+					}}
+				>
+					<div className={classes.formWrapper}>
+						{editMode ? (
+							<>
+								<DeclarationAuditForm
+									form={form}
+									isAchieved={isAchieved}
+									onChangeIsAchieved={(value) => setIsAchieved(value)}
+								/>
+								<form.AppForm>
+									<form.SubscribeButton label={"Valider"} />
+								</form.AppForm>
+							</>
+						) : (
+							<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
+						)}
+						{declaration.audit.status === "unverified" && !editMode && (
+							<div className={classes.validateButton}>
+								<Button onClick={updateAuditStatus}>
+									Valider les informations
+								</Button>
+							</div>
+						)}
+					</div>
+				</form>
+			</div>
 		</section>
 	);
 }
 
 const useStyles = tss.withName(AuditPage.name).create({
 	main: {
-		marginTop: fr.spacing("10v"),
+		marginBlock: fr.spacing("10v"),
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("2w"),
+		gap: fr.spacing("2v"),
 	},
 	container: {
 		display: "flex",
@@ -237,7 +239,7 @@ const useStyles = tss.withName(AuditPage.name).create({
 		flexDirection: "column",
 		marginBottom: fr.spacing("6w"),
 	},
-	headerAction: {
+	editButtonWrapper: {
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-between",
@@ -250,6 +252,10 @@ const useStyles = tss.withName(AuditPage.name).create({
 		marginTop: fr.spacing("4w"),
 		display: "flex",
 		justifyContent: "flex-end",
+	},
+	body: {
+		backgroundColor: fr.colors.decisions.background.raised.grey.default,
+		padding: fr.spacing("10v"),
 	},
 });
 

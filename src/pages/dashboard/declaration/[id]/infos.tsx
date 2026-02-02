@@ -123,32 +123,32 @@ export default function GeneralInformationsPage({
 
 	return (
 		<section id="general-informations" className={classes.main}>
+			<Breadcrumb
+				homeLinkProps={{
+					href: "/dashboard",
+				}}
+				segments={[
+					{
+						label: declaration?.name ?? "",
+						linkProps: { href: declarationPagePath },
+					},
+				]}
+				currentPageLabel="Informations générales"
+			/>
 			<div>
-				<Breadcrumb
-					homeLinkProps={{
-						href: "/dashboard",
-					}}
-					segments={[
-						{
-							label: declaration?.name ?? "",
-							linkProps: { href: declarationPagePath },
-						},
-					]}
-					currentPageLabel="Informations générales"
-				/>
-				<div>
-					<h1>{declaration?.name ?? ""} - Informations générales</h1>
-					{declaration.status === "unverified" && (
-						<VerifyGeneratedInfoPopUpMessage />
-					)}
-					<div className={classes.headerAction}>
-						<h3 className={classes.description}>
-							Verifiez les informations et modifiez-les si necessaire
-						</h3>
-						<Button priority="secondary" onClick={onEditInfos}>
-							{!editMode ? "Modifier" : "Annuler"}
-						</Button>
-					</div>
+				<h1>{declaration?.name ?? ""} - Informations générales</h1>
+				{declaration.status === "unverified" && (
+					<VerifyGeneratedInfoPopUpMessage />
+				)}
+			</div>
+			<div className={classes.body}>
+				<div className={classes.editButtonWrapper}>
+					<h3 className={classes.description}>
+						Verifiez les informations et modifiez-les si necessaire
+					</h3>
+					<Button priority="secondary" onClick={onEditInfos}>
+						{!editMode ? "Modifier" : "Annuler"}
+					</Button>
 				</div>
 				<form
 					onSubmit={(e) => {
@@ -183,17 +183,17 @@ export default function GeneralInformationsPage({
 
 const useStyles = tss.withName(GeneralInformationsPage.name).create({
 	main: {
-		marginTop: fr.spacing("10v"),
+		marginBlock: fr.spacing("10v"),
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("6w"),
+		gap: fr.spacing("2v"),
 	},
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
 		marginBottom: fr.spacing("6w"),
 	},
-	headerAction: {
+	editButtonWrapper: {
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-between",
@@ -202,14 +202,14 @@ const useStyles = tss.withName(GeneralInformationsPage.name).create({
 		fontSize: "1rem",
 		color: "grey",
 	},
-	title: {
-		fontSize: "1rem",
-		color: fr.colors.decisions.text.mention.grey.default,
-	},
 	validateButton: {
 		marginTop: fr.spacing("4w"),
 		display: "flex",
 		justifyContent: "flex-end",
+	},
+	body: {
+		backgroundColor: fr.colors.decisions.background.raised.grey.default,
+		padding: fr.spacing("10v"),
 	},
 });
 

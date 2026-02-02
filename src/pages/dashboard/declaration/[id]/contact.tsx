@@ -170,7 +170,9 @@ export default function ContactPage({
 					{declaration?.contact.status === "unverified" && (
 						<VerifyGeneratedInfoPopUpMessage />
 					)}
-					<div className={classes.headerAction}>
+				</div>
+				<div className={classes.body}>
+					<div className={classes.editButtonWrapper}>
 						<h3 className={classes.description}>
 							Verifiez les informations et modifiez-les si necessaire
 						</h3>
@@ -178,33 +180,33 @@ export default function ContactPage({
 							{!editMode ? "Modifier" : "Annuler"}
 						</Button>
 					</div>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							form.handleSubmit();
+						}}
+					>
+						<div className={classes.formWrapper}>
+							{editMode ? (
+								<>
+									<DeclarationContactForm form={form} />
+									<form.AppForm>
+										<form.SubscribeButton label="Valider" />
+									</form.AppForm>
+								</>
+							) : (
+								<ReadOnlyDeclarationContact declaration={declaration ?? null} />
+							)}
+							{declaration.contact.status === "unverified" && !editMode && (
+								<div className={classes.validateButton}>
+									<Button onClick={updateContactStatus}>
+										Valider les informations
+									</Button>
+								</div>
+							)}
+						</div>
+					</form>
 				</div>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-				>
-					<div className={classes.formWrapper}>
-						{editMode ? (
-							<>
-								<DeclarationContactForm form={form} />
-								<form.AppForm>
-									<form.SubscribeButton label="Valider" />
-								</form.AppForm>
-							</>
-						) : (
-							<ReadOnlyDeclarationContact declaration={declaration ?? null} />
-						)}
-						{declaration.contact.status === "unverified" && !editMode && (
-							<div className={classes.validateButton}>
-								<Button onClick={updateContactStatus}>
-									Valider les informations
-								</Button>
-							</div>
-						)}
-					</div>
-				</form>
 			</div>
 		</section>
 	);
@@ -212,10 +214,10 @@ export default function ContactPage({
 
 const useStyles = tss.withName(ContactPage.name).create({
 	main: {
-		marginTop: fr.spacing("10v"),
+		marginBlock: fr.spacing("10v"),
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("6w"),
+		gap: fr.spacing("2v"),
 	},
 	formWrapper: {
 		display: "flex",
@@ -226,7 +228,7 @@ const useStyles = tss.withName(ContactPage.name).create({
 		display: "flex",
 		flexDirection: "column",
 	},
-	headerAction: {
+	editButtonWrapper: {
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-between",
@@ -239,6 +241,10 @@ const useStyles = tss.withName(ContactPage.name).create({
 		marginTop: fr.spacing("4w"),
 		display: "flex",
 		justifyContent: "flex-end",
+	},
+	body: {
+		backgroundColor: fr.colors.decisions.background.raised.grey.default,
+		padding: fr.spacing("10v"),
 	},
 });
 
