@@ -244,13 +244,15 @@ export default function SchemaPage({
 							<form.SubscribeButton label={"Valider"} />
 						</form.AppForm>
 					)}
-					{declaration?.actionPlan?.status !== "default" && !editMode && (
-						<div className={classes.validateButton}>
-							<Button onClick={updateSchemaStatus}>
-								Valider les informations
-							</Button>
-						</div>
-					)}
+					{(declaration?.actionPlan?.status === "fromAI" ||
+						declaration?.actionPlan?.status === "fromAra") &&
+						!editMode && (
+							<div className={classes.validateButton}>
+								<Button onClick={updateSchemaStatus}>
+									Valider les informations
+								</Button>
+							</div>
+						)}
 					{!declaration?.actionPlan && (
 						<form.AppForm>
 							<div className={classes.actionButtonsContainer}>
