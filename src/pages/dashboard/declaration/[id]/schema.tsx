@@ -15,16 +15,17 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
-import SchemaForm from "~/components/declaration/SchemaForm";
 import { DeclarationSchema } from "~/utils/form/readonly/form";
-import { api } from "~/utils/api";
 import { ReadOnlyDeclarationSchema } from "~/components/declaration/ReadOnlyDeclaration";
 import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
+import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
+import { schemaFormOptions } from "~/utils/form/schema/schema";
+import { api } from "~/utils/api";
 
 export default function SchemaPage({
 	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const router = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
@@ -32,6 +33,40 @@ export default function SchemaPage({
 	const { id, currentYearSchemaUrl, previousYearsSchemaUrl } =
 		declaration?.actionPlan || {};
 	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
+
+	const { mutateAsync: createSchema } = api.schema.create.useMutation({
+		onSuccess: async () => {
+			if (declaration?.audit && declaration.contact) {
+				router.push(`/dashboard/declaration/${declaration.id}/preview`);
+				return;
+			}
+
+			router.push(`/dashboard/declaration/${declaration.id}`);
+		},
+		onError: (error) => {
+			console.error("Error adding schema:", error);
+		},
+	});
+
+	const addSchema = async ({
+		currentYearSchemaUrl,
+		previousYearsSchemaUrl,
+		declarationId,
+	}: {
+		currentYearSchemaUrl: string;
+		previousYearsSchemaUrl: string;
+		declarationId: number;
+	}) => {
+		try {
+			createSchema({
+				currentYearSchemaUrl,
+				previousYearsSchemaUrl,
+				declarationId,
+			});
+		} catch (error) {
+			console.error("Error adding schema:", error);
+		}
+	};
 
 	const { mutateAsync: updateSchema } = api.schema.update.useMutation({
 		onSuccess: async (result) => {
@@ -114,7 +149,7 @@ export default function SchemaPage({
 		}
 	};
 
-	const form = useAppForm({
+	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			const {
@@ -135,9 +170,16 @@ export default function SchemaPage({
 		},
 	});
 
-	if (!declaration?.actionPlan) {
-		return <SchemaForm declaration={declaration} />;
-	}
+	const form = useAppForm({
+		...schemaFormOptions,
+		onSubmit: async ({ value, formApi }) => {
+			await addSchema({
+				currentYearSchemaUrl: value.currentYearSchemaUrl ?? "",
+				previousYearsSchemaUrl: value.previousYearsSchemaUrl ?? "",
+				declarationId: declaration.id,
+			});
+		},
+	});
 
 	return (
 		<section id="schema" className={classes.main}>
@@ -154,47 +196,79 @@ export default function SchemaPage({
 				/>
 				<div>
 					<h1>{declaration?.name ?? ""} - Schéma et plans d'actions</h1>
-					{declaration?.actionPlan.status === "unverified" && (
+					{declaration?.actionPlan?.status === "unverified" && (
 						<VerifyGeneratedInfoPopUpMessage />
 					)}
 				</div>
-				<div className={classes.body}>
-					<div className={classes.editButtonWrapper}>
-						<h3 className={classes.description}>
-							Verifiez les informations et modifiez-les si necessaire
-						</h3>
+				<div className={cx(classes.editButtonWrapper, classes.whiteBackground)}>
+					<h3 className={classes.description}>
+						Verifiez les informations et modifiez-les si necessaire
+					</h3>
+					{declaration?.actionPlan && (
 						<Button priority="secondary" onClick={onEditInfos}>
 							{!editMode ? "Modifier" : "Annuler"}
 						</Button>
-					</div>
-
-					<form
-						onSubmit={(e) => {
-							e.preventDefault();
-							form.handleSubmit();
-						}}
-					>
-						<div className={classes.formWrapper}>
-							{editMode ? (
-								<>
-									<DeclarationSchema form={form} />
-									<form.AppForm>
-										<form.SubscribeButton label={"Valider"} />
-									</form.AppForm>
-								</>
-							) : (
-								<ReadOnlyDeclarationSchema declaration={declaration ?? null} />
-							)}
-							{declaration.actionPlan.status === "unverified" && !editMode && (
-								<div className={classes.validateButton}>
-									<Button onClick={updateSchemaStatus}>
-										Valider les informations
-									</Button>
-								</div>
-							)}
-						</div>
-					</form>
+					)}
 				</div>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+
+						if (!declaration?.actionPlan) {
+							form.handleSubmit();
+						} else {
+							readOnlyForm.handleSubmit();
+						}
+					}}
+				>
+					<div className={cx(classes.formWrapper, classes.whiteBackground)}>
+						{!declaration?.actionPlan ? (
+							<DeclarationSchemaForm form={form} />
+						) : (
+							<>
+								{editMode ? (
+									<>
+										<DeclarationSchema form={readOnlyForm} />
+									</>
+								) : (
+									<ReadOnlyDeclarationSchema
+										declaration={declaration ?? null}
+									/>
+								)}
+							</>
+						)}
+					</div>
+					{editMode && (
+						<form.AppForm>
+							<form.SubscribeButton label={"Valider"} />
+						</form.AppForm>
+					)}
+					{declaration?.actionPlan?.status === "unverified" && !editMode && (
+						<div className={classes.validateButton}>
+							<Button onClick={updateSchemaStatus}>
+								Valider les informations
+							</Button>
+						</div>
+					)}
+					{!declaration?.actionPlan && (
+						<form.AppForm>
+							<div className={classes.actionButtonsContainer}>
+								<form.CancelButton
+									label="Retour"
+									onClick={() =>
+										router.push(`/dashboard/declaration/${declaration.id}`)
+									}
+									priority="tertiary"
+								/>
+								<form.SubscribeButton
+									label="Continuer"
+									iconId="fr-icon-arrow-right-line"
+									iconPosition="right"
+								/>
+							</div>
+						</form.AppForm>
+					)}
+				</form>
 			</div>
 		</section>
 	);
@@ -210,12 +284,14 @@ const useStyles = tss.withName(SchemaPage.name).create({
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
-		marginBottom: fr.spacing("6w"),
+		paddingBottom: fr.spacing("10v"),
+		paddingInline: fr.spacing("10v"),
 	},
 	editButtonWrapper: {
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-between",
+		padding: fr.spacing("10v"),
 	},
 	description: {
 		fontSize: "1rem",
@@ -230,9 +306,12 @@ const useStyles = tss.withName(SchemaPage.name).create({
 		display: "flex",
 		justifyContent: "flex-end",
 	},
-	body: {
+	whiteBackground: {
 		backgroundColor: fr.colors.decisions.background.raised.grey.default,
-		padding: fr.spacing("10v"),
+	},
+	actionButtonsContainer: {
+		display: "flex",
+		justifyContent: "space-between",
 	},
 });
 

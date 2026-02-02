@@ -12,7 +12,6 @@ import { useRouter } from "next/router";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationContactForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
-import ContactForm from "~/components/declaration/ContactForm";
 import { api } from "~/utils/api";
 import {
 	getDeclarationById,
@@ -20,12 +19,13 @@ import {
 } from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
 import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
-import { Router } from "next/router";
+import { contactFormOptions } from "~/utils/form/contact/schema";
+import { ContactTypeForm } from "~/utils/form/contact/form";
 
 export default function ContactPage({
 	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const router = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
@@ -112,7 +112,44 @@ export default function ContactPage({
 		}
 	};
 
+	const { mutateAsync: createContact } = api.contact.create.useMutation({
+		onSuccess: async () => {
+			if (declaration?.audit && declaration.actionPlan) {
+				router.push(`/dashboard/declaration/${declaration.id}/preview`);
+				return;
+			}
+
+			router.push(`/dashboard/declaration/${declaration.id}`);
+		},
+		onError: (error) => {
+			console.error("Error adding contact:", error);
+		},
+	});
+
+	const addContact = async ({
+		email,
+		url,
+		declarationId,
+	}: { email: string; url: string; declarationId: number }) => {
+		try {
+			await createContact({ email, url, declarationId });
+		} catch (error) {
+			console.error("Error adding contact:", error);
+		}
+	};
+
 	const form = useAppForm({
+		...contactFormOptions,
+		onSubmit: async ({ value, formApi }) => {
+			await addContact({
+				email: value?.emailContact ?? "",
+				url: value?.contactLink ?? "",
+				declarationId: declaration.id,
+			});
+		},
+	});
+
+	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			const data = value.contact.contactOptions.reduce(
@@ -148,10 +185,6 @@ export default function ContactPage({
 		}
 	};
 
-	if (!declaration?.contact) {
-		return <ContactForm declaration={declaration} />;
-	}
-
 	return (
 		<section id="contact" className={classes.main}>
 			<div className={classes.container}>
@@ -167,46 +200,79 @@ export default function ContactPage({
 				/>
 				<div>
 					<h1>{declaration?.name ?? ""} - Contact</h1>
-					{declaration?.contact.status === "unverified" && (
+					{declaration?.contact?.status === "unverified" && (
 						<VerifyGeneratedInfoPopUpMessage />
 					)}
 				</div>
-				<div className={classes.body}>
-					<div className={classes.editButtonWrapper}>
-						<h3 className={classes.description}>
-							Verifiez les informations et modifiez-les si necessaire
-						</h3>
+				<div className={cx(classes.editButtonWrapper, classes.whiteBackground)}>
+					<h3 className={classes.description}>
+						Verifiez les informations et modifiez-les si necessaire
+					</h3>
+					{declaration?.contact && (
 						<Button priority="secondary" onClick={onEditInfos}>
 							{!editMode ? "Modifier" : "Annuler"}
 						</Button>
-					</div>
-					<form
-						onSubmit={(e) => {
-							e.preventDefault();
-							form.handleSubmit();
-						}}
-					>
-						<div className={classes.formWrapper}>
-							{editMode ? (
-								<>
-									<DeclarationContactForm form={form} />
-									<form.AppForm>
-										<form.SubscribeButton label="Valider" />
-									</form.AppForm>
-								</>
-							) : (
-								<ReadOnlyDeclarationContact declaration={declaration ?? null} />
-							)}
-							{declaration.contact.status === "unverified" && !editMode && (
-								<div className={classes.validateButton}>
-									<Button onClick={updateContactStatus}>
-										Valider les informations
-									</Button>
-								</div>
-							)}
-						</div>
-					</form>
+					)}
 				</div>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+
+						if (!declaration?.contact) {
+							form.handleSubmit();
+						} else {
+							readOnlyForm.handleSubmit();
+						}
+					}}
+				>
+					<div className={cx(classes.formWrapper, classes.whiteBackground)}>
+						{!declaration?.contact ? (
+							<ContactTypeForm form={form} />
+						) : (
+							<>
+								{editMode ? (
+									<>
+										<DeclarationContactForm form={readOnlyForm} />
+									</>
+								) : (
+									<ReadOnlyDeclarationContact
+										declaration={declaration ?? null}
+									/>
+								)}
+							</>
+						)}
+					</div>
+					{editMode && (
+						<readOnlyForm.AppForm>
+							<readOnlyForm.SubscribeButton label="Valider" />
+						</readOnlyForm.AppForm>
+					)}
+					{!declaration?.contact && (
+						<form.AppForm>
+							<div className={classes.actionButtonsContainer}>
+								<form.CancelButton
+									label="Retour"
+									onClick={() =>
+										router.push(`/dashboard/declaration/${declaration.id}`)
+									}
+									priority="tertiary"
+								/>
+								<form.SubscribeButton
+									label="Continuer"
+									iconId="fr-icon-arrow-right-line"
+									iconPosition="right"
+								/>
+							</div>
+						</form.AppForm>
+					)}
+					{declaration?.contact?.status === "unverified" && !editMode && (
+						<div className={classes.validateButton}>
+							<Button onClick={updateContactStatus}>
+								Valider les informations
+							</Button>
+						</div>
+					)}
+				</form>
 			</div>
 		</section>
 	);
@@ -222,7 +288,8 @@ const useStyles = tss.withName(ContactPage.name).create({
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
-		marginBottom: fr.spacing("6w"),
+		paddingBottom: fr.spacing("10v"),
+		paddingInline: fr.spacing("10v"),
 	},
 	container: {
 		display: "flex",
@@ -232,6 +299,7 @@ const useStyles = tss.withName(ContactPage.name).create({
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-between",
+		padding: fr.spacing("10v"),
 	},
 	description: {
 		fontSize: "1rem",
@@ -242,9 +310,12 @@ const useStyles = tss.withName(ContactPage.name).create({
 		display: "flex",
 		justifyContent: "flex-end",
 	},
-	body: {
+	whiteBackground: {
 		backgroundColor: fr.colors.decisions.background.raised.grey.default,
-		padding: fr.spacing("10v"),
+	},
+	actionButtonsContainer: {
+		display: "flex",
+		justifyContent: "space-between",
 	},
 });
 

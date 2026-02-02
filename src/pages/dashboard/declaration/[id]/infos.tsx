@@ -197,6 +197,7 @@ const useStyles = tss.withName(GeneralInformationsPage.name).create({
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-between",
+		paddingBottom: fr.spacing("10v"),
 	},
 	description: {
 		fontSize: "1rem",
