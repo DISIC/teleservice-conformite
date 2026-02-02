@@ -5,7 +5,7 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
 
-import { getDeclarationById } from "~/utils/payload-helper";
+import { getDeclarationById } from "~/server/api/utils/payload-helper";
 import PublishedDeclarationTemplate, {
 	type PublishedDeclaration,
 } from "~/components/declaration/PublishedDeclarationTemplate";

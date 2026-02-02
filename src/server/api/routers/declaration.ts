@@ -236,7 +236,7 @@ export const declarationRouter = createTRPCRouter({
 					name,
 					app_kind: kind,
 					url,
-					status
+					status: "unpublished",
 				},
 			});
 

@@ -6,7 +6,6 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useRouter } from "next/router";
-import { appKindOptions } from "~/payload/selectOptions";
 import type {
 	Entity,
 	Audit,
@@ -19,9 +18,6 @@ import {
 	getDeclarationById,
 	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
-import { getConformityStatus } from "~/utils/declaration-helper";
-import { rgaaVersionOptions } from "~/payload/selectOptions";
-import DeclarationMarkdownToJsx from "~/components/declaration/DeclarationMarkdownToJsx";
 import { api } from "~/utils/api";
 import PublishedDeclarationTemplate, {
 	extractDeclarationContentToPublish,
@@ -90,12 +86,7 @@ export default function DeclarationPreviewPage({
 				>
 					Continuer sans publier
 				</Button>
-				<Button
-					priority="primary"
-					linkProps={{
-						href: `/dashboard/declaration/${declaration.id}`,
-					}}
-				>
+				<Button priority="primary" onClick={onPublish}>
 					Publier la déclaration
 				</Button>
 			</div>

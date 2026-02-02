@@ -1,12 +1,12 @@
 import DeclarationMarkdownToJsx from "~/components/declaration/DeclarationMarkdownToJsx";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { getConformityStatus } from "~/utils/declaration-helper";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
 	toolOptions,
-} from "~/payload/collections/Audit";
-import { appKindOptions } from "~/payload/collections/Declaration";
+	appKindOptions,
+} from "~/payload/selectOptions";
 
 export const extractDeclarationContentToPublish = (
 	declaration: PopulatedDeclaration,
