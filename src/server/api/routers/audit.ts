@@ -4,7 +4,7 @@ import z from "zod";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { linkToDeclaration, isDeclarationOwner } from "../utils/payload-helper";
 import { auditFormSchema } from "~/utils/form/audit/schema";
-import { testEnvironmentOptions } from "~/payload/selectOptions";
+import { testEnvironmentOptions, sourceOptions } from "~/payload/selectOptions";
 
 const optionalAuditFormSchema = auditFormSchema
   .partial()
@@ -14,7 +14,7 @@ const optionalAuditFormSchema = auditFormSchema
   })
   .extend({
     declarationId: z.number(),
-    status: z.enum(["default", "unverified"]).optional().default("default"),
+    status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
     technologies: z.array(z.string()).optional().default([]),
     usedTools: z.array(z.string()).optional().default([]),
     testEnvironments: z.array(z.enum(testEnvironmentOptions.map((option: { value: string, label: string }) => option.value))).optional().default([]),
@@ -108,7 +108,7 @@ export const auditRouter = createTRPCRouter({
       z.object({
         declarationId: z.number(),
         id: z.number(),
-        status: z.enum(["default", "unverified"]),
+        status: z.enum(sourceOptions.map(option => option.value)),
       }),
     )
     .mutation(async ({ input, ctx }) => {

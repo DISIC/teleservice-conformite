@@ -200,7 +200,7 @@ export default function ContactPage({
 				/>
 				<div>
 					<h1>{declaration?.name ?? ""} - Contact</h1>
-					{declaration?.contact?.status === "unverified" && (
+					{declaration?.contact?.status === "fromAI" && (
 						<VerifyGeneratedInfoPopUpMessage />
 					)}
 				</div>
@@ -265,13 +265,15 @@ export default function ContactPage({
 							</div>
 						</form.AppForm>
 					)}
-					{declaration?.contact?.status === "unverified" && !editMode && (
-						<div className={classes.validateButton}>
-							<Button onClick={updateContactStatus}>
-								Valider les informations
-							</Button>
-						</div>
-					)}
+					{(declaration?.contact?.status === "fromAI" ||
+						declaration?.contact?.status === "fromAra") &&
+						!editMode && (
+							<div className={classes.validateButton}>
+								<Button onClick={updateContactStatus}>
+									Valider les informations
+								</Button>
+							</div>
+						)}
 				</form>
 			</div>
 		</section>

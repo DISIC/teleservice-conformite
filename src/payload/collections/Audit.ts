@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { statusOptions, rgaaVersionOptions, testEnvironmentOptions } from "../selectOptions";
+import { sourceOptions, rgaaVersionOptions, testEnvironmentOptions } from "../selectOptions";
 
 export const Audits: CollectionConfig = {
 	slug: "audits",
@@ -121,7 +121,7 @@ export const Audits: CollectionConfig = {
 			type: "select",
 			label: { fr: "Statut" },
 			defaultValue: "default",
-			options: [...statusOptions],
+			options: [...sourceOptions],
 			required: false,
 		}
 	],

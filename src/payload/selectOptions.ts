@@ -1,6 +1,7 @@
-export const statusOptions = [
-  { label: "default", value: "default" },
-  { label: "Non vérifié", value: "unverified" },
+export const sourceOptions = [
+  { label: "manuel/défaut", value: "default" },
+  { label: "IA", value: "fromAI" },
+  { label: "Ara", value: "fromAra" },
 ] as const;
 
 export const rgaaVersionOptions = [

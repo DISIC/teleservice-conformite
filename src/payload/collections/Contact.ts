@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { contactMeanOptions, statusOptions } from "../selectOptions";
+import { sourceOptions } from "../selectOptions";
 
 export const Contacts: CollectionConfig = {
   slug: "contacts",
@@ -34,7 +34,7 @@ export const Contacts: CollectionConfig = {
 			type: "select",
 			label: { fr: "Statut" },
 			defaultValue: "default",
-			options: [...statusOptions],
+			options: [...sourceOptions],
 			required: false,
 		},
   ],

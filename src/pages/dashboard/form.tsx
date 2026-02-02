@@ -72,6 +72,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						name: entity?.name ?? "",
 						kind: entity?.kind ?? "none",
 					},
+					status: "fromAI",
 				});
 
 				router.push(`/dashboard/declaration/${id.data}`);
@@ -101,6 +102,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						name: entity?.name ?? "",
 						kind: entity?.kind ?? "none",
 					},
+					status: "fromAra",
 				});
 
 				if (!result.data) {

@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 
+import { sourceOptions } from "../selectOptions";
+
 export const ActionPlans: CollectionConfig = {
   slug: "action-plans",
   labels: {
@@ -31,10 +33,7 @@ export const ActionPlans: CollectionConfig = {
 			type: "select",
 			label: { fr: "Statut" },
 			defaultValue: "default",
-			options: [
-				{ label: "default", value: "default" },
-				{ label: "Non vérifié", value: "unverified" },
-			],
+			options: [...sourceOptions],
 			required: false,
 		},
   ],

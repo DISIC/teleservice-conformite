@@ -4,7 +4,7 @@ import type { Payload } from "payload";
 
 import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { type rgaaVersionOptions, testEnvironmentOptions, kindOptions, 	appKindOptions, declarationStatusOptions, } from "~/payload/selectOptions";
+import { type rgaaVersionOptions, testEnvironmentOptions, kindOptions, 	appKindOptions, declarationStatusOptions, sourceOptions } from "~/payload/selectOptions";
 import {
 	isDeclarationOwner,
 	getDefaultDeclarationName,
@@ -295,6 +295,7 @@ export const declarationRouter = createTRPCRouter({
 					name: z.string().nullable(),
 					kind: z.string().nullable(),
 				}),
+				status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
@@ -315,6 +316,7 @@ export const declarationRouter = createTRPCRouter({
 				contact,
 				schema,
 				entity,
+				status = "default" as typeof sourceOptions[number]["value"],
 			} = input;
 
 			const transactionID = await ctx.payload.db.beginTransaction();
@@ -385,7 +387,7 @@ export const declarationRouter = createTRPCRouter({
 							publishedAt && !Number.isNaN(Date.parse(publishedAt))
 								? new Date(publishedAt).toISOString().slice(0, 10)
 								: new Date().toISOString().slice(0, 10),
-						status: "unverified",
+						status,
 					},
 					req: { transactionID },
 				});
@@ -397,7 +399,7 @@ export const declarationRouter = createTRPCRouter({
 						declaration: declarationId,
 						email: contact.email || "",
 						url: contact.url || "",
-						status: "unverified",
+						status,
 					},
 					req: { transactionID },
 				});
@@ -409,7 +411,7 @@ export const declarationRouter = createTRPCRouter({
 						declaration: declarationId,
 						currentYearSchemaUrl: schema?.currentYearSchemaUrl ?? "",
 						previousYearsSchemaUrl: "",
-						status: "unverified",
+						status,
 					},
 					req: { transactionID },
 				});

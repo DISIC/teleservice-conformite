@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 
 import { createTRPCRouter, publicProcedure, userProtectedProcedure } from "../trpc";
 import { linkToDeclaration, isDeclarationOwner } from "../utils/payload-helper";
+import { sourceOptions } from "~/payload/selectOptions";
 
 export const contactRouter = createTRPCRouter({
   create: userProtectedProcedure
@@ -11,7 +12,7 @@ export const contactRouter = createTRPCRouter({
         email: z.string().optional(),
         url: z.string().optional(),
         declarationId: z.number(),
-        status: z.enum(["default", "unverified"]).optional(),
+        status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -29,7 +30,7 @@ export const contactRouter = createTRPCRouter({
           email,
           url,
           declaration: declarationId,
-          status: status || "default",
+          status,
         },
       });
 
@@ -79,7 +80,7 @@ export const contactRouter = createTRPCRouter({
       z.object({
         declarationId: z.number(),
         id: z.number(),
-        status: z.enum(["default", "unverified"]),
+        status: z.enum(sourceOptions.map(option => option.value)),
       })
     )
     .mutation(async ({ input, ctx }) => {

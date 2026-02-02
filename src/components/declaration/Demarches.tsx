@@ -159,13 +159,16 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					start={
 						<StartBadges
 							showToCompleteBadge={!declaration?.contact}
-							showVerifyBadge={declaration?.contact?.status === "unverified"}
+							showVerifyBadge={
+								declaration?.contact?.status === "fromAI" ||
+								declaration?.contact?.status === "fromAra"
+							}
 						/>
 					}
 					detail={
 						<>
 							{declaration?.contact &&
-								declaration?.contact?.status !== "unverified" && (
+								declaration?.contact?.status === "default" && (
 									<Button
 										iconId="fr-icon-arrow-right-line"
 										onClick={function noRefCheck() {}}
@@ -176,7 +179,8 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							{!declaration?.contact && (
 								<RedirectButton href={`${linkToDeclarationPage}/contact`} />
 							)}
-							{declaration?.contact?.status === "unverified" && (
+							{(declaration?.contact?.status === "fromAI" ||
+								declaration?.contact?.status === "fromAra") && (
 								<RedirectButton
 									label="Vérifier les informations"
 									href={`${linkToDeclarationPage}/contact`}
@@ -198,13 +202,16 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					start={
 						<StartBadges
 							showToCompleteBadge={!declaration?.audit}
-							showVerifyBadge={declaration?.audit?.status === "unverified"}
+							showVerifyBadge={
+								declaration?.audit?.status === "fromAI" ||
+								declaration?.audit?.status === "fromAra"
+							}
 						/>
 					}
 					detail={
 						<>
 							{declaration?.audit &&
-								declaration?.audit?.status !== "unverified" && (
+								declaration?.audit?.status === "default" && (
 									<Button
 										iconId="fr-icon-arrow-right-line"
 										onClick={function noRefCheck() {}}
@@ -215,7 +222,8 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							{!declaration?.audit && (
 								<RedirectButton href={`${linkToDeclarationPage}/audit`} />
 							)}
-							{declaration?.audit?.status === "unverified" && (
+							{(declaration?.audit?.status === "fromAI" ||
+								declaration?.audit?.status === "fromAra") && (
 								<RedirectButton
 									label="Vérifier les informations"
 									href={`${linkToDeclarationPage}/audit`}
@@ -237,13 +245,16 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					start={
 						<StartBadges
 							showToCompleteBadge={!declaration?.actionPlan}
-							showVerifyBadge={declaration?.actionPlan?.status === "unverified"}
+							showVerifyBadge={
+								declaration?.actionPlan?.status === "fromAI" ||
+								declaration?.actionPlan?.status === "fromAra"
+							}
 						/>
 					}
 					detail={
 						<>
 							{declaration?.actionPlan &&
-								declaration?.actionPlan?.status !== "unverified" && (
+								declaration?.actionPlan?.status === "fromAI" && (
 									<Button
 										iconId="fr-icon-arrow-right-line"
 										onClick={function noRefCheck() {}}
@@ -254,7 +265,8 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							{!declaration?.actionPlan && (
 								<RedirectButton href={`${linkToDeclarationPage}/schema`} />
 							)}
-							{declaration?.actionPlan?.status === "unverified" && (
+							{(declaration?.actionPlan?.status === "fromAI" ||
+								declaration?.actionPlan?.status === "fromAra") && (
 								<RedirectButton
 									label="Vérifier les informations"
 									href={`${linkToDeclarationPage}/schema`}

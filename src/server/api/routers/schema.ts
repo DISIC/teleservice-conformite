@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { isDeclarationOwner, linkToDeclaration } from "../utils/payload-helper";
+import { sourceOptions } from "~/payload/selectOptions";
 
 export const schemaRouter = createTRPCRouter({
   create: userProtectedProcedure
@@ -11,7 +12,7 @@ export const schemaRouter = createTRPCRouter({
         currentYearSchemaUrl: z.string().optional(),
         previousYearsSchemaUrl: z.string().optional(),
         declarationId: z.number(),
-        status: z.enum(["default", "unverified"]).optional(),
+        status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -72,7 +73,7 @@ export const schemaRouter = createTRPCRouter({
       z.object({
         declarationId: z.number(),
         id: z.number(),
-        status: z.enum(["default", "unverified"]),
+        status: z.enum(sourceOptions.map(option => option.value)),
       })
     )
     .mutation(async ({ input, ctx }) => {

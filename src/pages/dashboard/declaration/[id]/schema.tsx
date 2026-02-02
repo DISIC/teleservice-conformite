@@ -196,7 +196,8 @@ export default function SchemaPage({
 				/>
 				<div>
 					<h1>{declaration?.name ?? ""} - Schéma et plans d'actions</h1>
-					{declaration?.actionPlan?.status === "unverified" && (
+					{(declaration?.actionPlan?.status === "fromAI" ||
+						declaration?.actionPlan?.status === "fromAra") && (
 						<VerifyGeneratedInfoPopUpMessage />
 					)}
 				</div>
@@ -243,7 +244,7 @@ export default function SchemaPage({
 							<form.SubscribeButton label={"Valider"} />
 						</form.AppForm>
 					)}
-					{declaration?.actionPlan?.status === "unverified" && !editMode && (
+					{declaration?.actionPlan?.status !== "default" && !editMode && (
 						<div className={classes.validateButton}>
 							<Button onClick={updateSchemaStatus}>
 								Valider les informations

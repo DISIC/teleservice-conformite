@@ -287,7 +287,7 @@ export default function AuditPage({
 				/>
 				<div>
 					<h1>{declaration?.name ?? ""} - Résultat de l’audit</h1>
-					{declaration?.audit?.status === "unverified" && (
+					{declaration?.audit?.status === "fromAI" && (
 						<VerifyGeneratedInfoPopUpMessage />
 					)}
 				</div>
@@ -370,13 +370,15 @@ export default function AuditPage({
 								<readOnlyForm.SubscribeButton label={"Valider"} />
 							</readOnlyForm.AppForm>
 						)}
-						{declaration?.audit?.status === "unverified" && !editMode && (
-							<div className={classes.validateButton}>
-								<Button onClick={updateAuditStatus}>
-									Valider les informations
-								</Button>
-							</div>
-						)}
+						{(declaration?.audit?.status === "fromAI" ||
+							declaration?.audit?.status === "fromAra") &&
+							!editMode && (
+								<div className={classes.validateButton}>
+									<Button onClick={updateAuditStatus}>
+										Valider les informations
+									</Button>
+								</div>
+							)}
 					</form>
 				</>
 			)}
