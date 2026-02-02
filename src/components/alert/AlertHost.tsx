@@ -63,9 +63,8 @@ export function AlertHost() {
 						severity={n.severity}
 						title={n.title}
 						description={n.description}
-						{...(n.isClosable === false
-							? { isClosable: false as const }
-							: { isClosable: true as const, onClose: () => remove(id) })}
+						closable={true}
+						onClose={() => remove(id)}
 					/>
 				</div>
 			))}
@@ -77,14 +76,15 @@ const useStyles = tss.withName(AlertHost.name).create({
 	container: {
 		position: "fixed" as const,
 		top: 16,
-		right: 16,
+		right: 10,
 		zIndex: 10000,
 		display: "flex",
 		flexDirection: "column" as const,
 		gap: 12,
 		maxWidth: "100%",
-		width: "100vw",
+		width: "50vw",
 		pointerEvents: "none" as const,
+		backgroundColor: fr.colors.decisions.background.default.grey.default,
 	},
 	item: {
 		pointerEvents: "auto" as const,
