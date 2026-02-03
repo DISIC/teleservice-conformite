@@ -91,6 +91,7 @@ const useStyles = tss.withName({ TagGroupField }).create({
 		gap: fr.spacing("2v"),
 		"& > div": {
 			marginBottom: "0 !important",
+			width: "100%",
 		},
 	},
 	tagsContainer: {
