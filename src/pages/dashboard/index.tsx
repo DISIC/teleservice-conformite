@@ -14,6 +14,7 @@ import { auth } from "~/utils/auth";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
 import { copyToClipboard } from "~/utils/declaration-helper";
+import { showAlert } from "~/utils/alert-event";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -97,6 +98,13 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 									onClick={() =>
 										copyToClipboard(
 											`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+											() =>
+												showAlert({
+													title: "Lien copié dans le presse-papier",
+													description: "Le lien a été copié avec succès.",
+													severity: "success",
+													isClosable: true,
+												}),
 										)
 									}
 								>

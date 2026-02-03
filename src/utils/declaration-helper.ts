@@ -1,5 +1,4 @@
 import { type testEnvironmentOptions, toolOptions } from "~/payload/selectOptions";
-import { showAlert } from "./alert-event";
 
 export const getConformityStatus = (rate: number): string => {
 	if (rate < 50) {
@@ -86,17 +85,10 @@ export function extractTestEnvironmentsFromUrl(lines: string[]): EnvValue[] {
 	return [...new Set(Array.from(found))];
 }
 
-export const copyToClipboard = (textToCopy: string) => {
+export const copyToClipboard = (textToCopy: string, fn: () => void) => {
 	navigator.clipboard
 		.writeText(textToCopy)
-		.then(() => {
-			showAlert({
-				title: "Lien copié dans le presse-papier",
-				description: "Le lien a été copié avec succès.",
-				severity: "success",
-				isClosable: true,
-			});
-		})
+		.then(fn)
 		.catch((err) => {
 			console.error("Failed to copy:", err);
 		});

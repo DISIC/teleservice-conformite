@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 import { api } from "~/utils/api";
 import Demarches from "~/components/declaration/Demarches";
@@ -34,19 +35,16 @@ interface DeclarationPageProps {
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const router = useRouter();
 	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
-	const [editableName, setEditableName] = useState<boolean>(false);
+	const [showAlert, setShowAlert] = useState<boolean>(false);
+	const [alertDetails, setAlertDetails] = useState<{
+		title?: string;
+		description?: string;
+		severity: "info" | "success" | "warning" | "error";
+	}>({ title: "", description: "", severity: "info" });
 	const [declarationName, setDeclarationName] = useState<string>(
 		declaration?.name ?? "",
 	);
 	const { classes } = useStyles();
-
-	const { mutateAsync: updateDeclarationName } =
-		api.declaration.updateName.useMutation({
-			onSuccess: async (result) => setDeclarationName(result.data.name ?? ""),
-			onError: async (error) => {
-				console.error("Error updating declaration name:", error);
-			},
-		});
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
@@ -81,25 +79,28 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 		return null;
 	};
 
-	const onEditTitle = async (newValue: string) => {
-		setEditableName(false);
-
-		if (!newValue || newValue === declarationName) return;
-
-		try {
-			await updateDeclarationName({
-				id: declaration.id,
-				name: newValue,
-			});
-		} catch (error) {
-			console.error("Error updating declaration title:", error);
-		}
+	const showDeclarationAlert = ({
+		title,
+		description,
+		severity,
+	}: {
+		title?: string;
+		description?: string;
+		severity: "info" | "success" | "warning" | "error";
+	}) => {
+		setAlertDetails({ title, description, severity });
+		setShowAlert(true);
 	};
 
-	const onMouseDown: React.MouseEventHandler<HTMLDivElement> = (e) => {
-		e.preventDefault();
-		setEditableName(true);
-	};
+	useEffect(() => {
+		if (!showAlert) return;
+
+		const timer = setTimeout(() => {
+			setShowAlert(false);
+		}, 5000);
+
+		return () => clearTimeout(timer);
+	}, [showAlert]);
 
 	return (
 		<>
@@ -145,6 +146,11 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							onClick={() =>
 								copyToClipboard(
 									`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+									() =>
+										showDeclarationAlert({
+											description: "Lien copié dans le presse-papier",
+											severity: "success",
+										}),
 								)
 							}
 						>
@@ -158,6 +164,19 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							Supprimer
 						</Button>
 					</div>
+					{showAlert && (
+						<div className={classes.alertWrapper}>
+							<Alert
+								small={true}
+								severity={alertDetails.severity}
+								title={alertDetails?.title ?? ""}
+								description={alertDetails?.description ?? ""}
+								closable
+								isClosed={!showAlert}
+								onClose={() => setShowAlert(false)}
+							/>
+						</div>
+					)}
 				</section>
 				<Tabs
 					selectedTabId={selectedTabId}
@@ -224,6 +243,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		flexDirection: "column",
 		alignItems: "start",
 		justifyContent: "flex-start",
+		marginBottom: fr.spacing("12v"),
 	},
 	header: {
 		display: "flex",
@@ -236,7 +256,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		display: "flex",
 		flexDirection: "row",
 		gap: fr.spacing("4v"),
-		marginBottom: fr.spacing("12v"),
 	},
 	emptyStateContainer: {
 		display: "flex",
@@ -278,6 +297,15 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		border: "none",
 		fontSize: "2.5rem",
 		fontWeight: fr.typography[5].style.fontWeight,
+	},
+	alertWrapper: {
+		width: "100%",
+		display: "flex",
+		marginTop: fr.spacing("8v"),
+
+		"& div": {
+			width: "100%",
+		},
 	},
 });
 
