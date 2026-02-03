@@ -48,7 +48,11 @@ export default function DeclarationForm({
 					Vérifiez les informations et modifiez-les si nécessaire
 				</h3>
 				{isEditable && onToggleEdit && (
-					<Button priority="secondary" onClick={onToggleEdit}>
+					<Button
+						priority="secondary"
+						onClick={onToggleEdit}
+						{...(!editMode && { iconId: "fr-icon-edit-line" })}
+					>
 						{!editMode ? "Modifier" : "Annuler"}
 					</Button>
 				)}
@@ -113,6 +117,7 @@ const useStyles = tss.withName(DeclarationForm.name).create({
 	description: {
 		fontSize: "1rem",
 		color: "grey",
+		margin: 0,
 	},
 	validateButton: {
 		marginTop: fr.spacing("4w"),
