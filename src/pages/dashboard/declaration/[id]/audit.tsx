@@ -3,12 +3,11 @@ import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
-import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { useStore } from "@tanstack/react-form";
+import React from "react";
 
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationAuditForm } from "~/utils/form/readonly/form";
@@ -19,7 +18,6 @@ import {
 	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
-import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
 import { MultiStep } from "~/components/MultiStep";
 import {
@@ -29,6 +27,7 @@ import {
 	NonCompliantElementsForm,
 	FilesForm,
 } from "~/utils/form/audit/form";
+import DeclarationForm from "~/components/declaration/DeclarationForm";
 
 type Steps<T> = {
 	slug: T;
@@ -272,154 +271,103 @@ export default function AuditPage({
 	});
 
 	return (
-		<section id="audit" className={classes.main}>
-			<div className={classes.container}>
-				<Breadcrumb
-					homeLinkProps={{
-						href: "/dashboard",
-					}}
-					segments={[
-						{
-							label: declaration?.name ?? "",
-							linkProps: { href: declarationPagePath },
-						},
-					]}
-					currentPageLabel="Résultat de l’audit"
-				/>
-				<div>
-					<h1>{declaration?.name ?? ""} - Résultat de l’audit</h1>
-					{declaration?.audit?.status === "fromAI" && (
-						<VerifyGeneratedInfoPopUpMessage />
-					)}
-				</div>
-			</div>
+		<DeclarationForm
+			declaration={declaration}
+			title="Résultat de l’audit"
+			breadcrumbLabel={declaration?.name ?? ""}
+			isEditable={!!declaration?.audit}
+			editMode={editMode}
+			onToggleEdit={onEditInfos}
+			showValidateButton={
+				(declaration?.audit?.status === "fromAI" ||
+					declaration?.audit?.status === "fromAra") &&
+				!editMode
+			}
+			onValidate={updateAuditStatus}
+			LayoutComponent={({ children }) =>
+				declaration?.audit ? (
+					children
+				) : (
+					<MultiStep steps={steps} currentStep={section}>
+						{children}
+					</MultiStep>
+				)
+			}
+			showLayoutComponent={!declaration?.audit}
+		>
 			{!declaration?.audit ? (
-				<MultiStep steps={steps} currentStep={section}>
-					<div
-						className={cx(classes.editButtonWrapper, classes.whiteBackground)}
-					>
-						<h3 className={classes.description}>
-							Verifiez les informations et modifiez-les si necessaire
-						</h3>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						form.handleSubmit();
+					}}
+				>
+					<div className={classes.whiteBackground}>
+						{section === "auditDate" && <AuditDateForm form={form} />}
+						{section === "tools" && <ToolsForm form={form} />}
+						{section === "compliantElements" && (
+							<CompliantElementsForm form={form} />
+						)}
+						{section === "nonCompliantElements" && (
+							<NonCompliantElementsForm form={form} />
+						)}
+						{section === "files" && <FilesForm form={form} />}
 					</div>
-					<form
-						onSubmit={(e) => {
-							e.preventDefault();
-							form.handleSubmit();
-						}}
-					>
-						<div className={cx(classes.formWrapper, classes.whiteBackground)}>
-							{section === "auditDate" && <AuditDateForm form={form} />}
-							{section === "tools" && <ToolsForm form={form} />}
-							{section === "compliantElements" && (
-								<CompliantElementsForm form={form} />
-							)}
-							{section === "nonCompliantElements" && (
-								<NonCompliantElementsForm form={form} />
-							)}
-							{section === "files" && <FilesForm form={form} />}
+					<form.AppForm>
+						<div className={classes.actionButtonsContainer}>
+							<form.CancelButton
+								label="Retour"
+								onClick={onClickCancel}
+								priority="tertiary"
+							/>
+							<form.SubscribeButton
+								label="Continuer"
+								iconId="fr-icon-arrow-right-line"
+								iconPosition="right"
+							/>
 						</div>
-						<form.AppForm>
-							<div className={classes.actionButtonsContainer}>
-								<form.CancelButton
-									label="Retour"
-									onClick={onClickCancel}
-									priority="tertiary"
-								/>
-								<form.SubscribeButton
-									label="Continuer"
-									iconId="fr-icon-arrow-right-line"
-									iconPosition="right"
-								/>
-							</div>
-						</form.AppForm>
-					</form>
-				</MultiStep>
+					</form.AppForm>
+				</form>
 			) : (
 				<>
-					<div
-						className={cx(classes.editButtonWrapper, classes.whiteBackground)}
-					>
-						<h3 className={classes.description}>
-							Verifiez les informations et modifiez-les si necessaire
-						</h3>
-						{declaration?.audit && (
-							<Button priority="secondary" onClick={onEditInfos}>
-								{!editMode ? "Modifier" : "Annuler"}
-							</Button>
-						)}
-					</div>
-					<form
-						onSubmit={(e) => {
-							e.preventDefault();
-							readOnlyForm.handleSubmit();
-						}}
-					>
-						<div className={cx(classes.formWrapper, classes.whiteBackground)}>
-							{editMode ? (
+					{editMode ? (
+						<form
+							onSubmit={(e) => {
+								e.preventDefault();
+								readOnlyForm.handleSubmit();
+							}}
+						>
+							<div className={classes.whiteBackground}>
 								<DeclarationAuditForm
 									form={readOnlyForm}
 									isAchieved={isAchieved}
 									onChangeIsAchieved={(value) => setIsAchieved(value)}
 								/>
-							) : (
-								<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
-							)}
-						</div>
-						{editMode && (
+							</div>
 							<readOnlyForm.AppForm>
 								<readOnlyForm.SubscribeButton label={"Valider"} />
 							</readOnlyForm.AppForm>
-						)}
-						{(declaration?.audit?.status === "fromAI" ||
-							declaration?.audit?.status === "fromAra") &&
-							!editMode && (
-								<div className={classes.validateButton}>
-									<Button onClick={updateAuditStatus}>
-										Valider les informations
-									</Button>
-								</div>
-							)}
-					</form>
+						</form>
+					) : (
+						<div className={classes.whiteBackground}>
+							<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
+						</div>
+					)}
 				</>
 			)}
-		</section>
+		</DeclarationForm>
 	);
 }
 
 const useStyles = tss.withName(AuditPage.name).create({
-	main: {
-		marginBlock: fr.spacing("10v"),
-		display: "flex",
-		flexDirection: "column",
-	},
-	container: {
-		display: "flex",
-		flexDirection: "column",
-	},
-	formWrapper: {
-		display: "flex",
-		flexDirection: "column",
-		paddingBottom: fr.spacing("10v"),
-		paddingInline: fr.spacing("10v"),
-	},
-	editButtonWrapper: {
-		display: "flex",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		padding: fr.spacing("10v"),
-	},
-	description: {
-		fontSize: "1rem",
-		color: "grey",
-	},
-	validateButton: {
-		marginTop: fr.spacing("4w"),
-		display: "flex",
-		justifyContent: "flex-end",
-	},
 	whiteBackground: {
 		backgroundColor: fr.colors.decisions.background.raised.grey.default,
+		paddingInline: fr.spacing("10v"),
+		paddingBottom: fr.spacing("10v"),
+		marginBottom: fr.spacing("6v"),
+		width: "100%",
+		display: "flex",
+		flexDirection: "column",
 	},
 	actionButtonsContainer: {
 		display: "flex",

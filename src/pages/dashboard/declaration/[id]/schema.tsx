@@ -3,8 +3,6 @@ import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { useRouter } from "next/router";
 
 import {
@@ -17,10 +15,10 @@ import { useAppForm } from "~/utils/form/context";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { DeclarationSchema } from "~/utils/form/readonly/form";
 import { ReadOnlyDeclarationSchema } from "~/components/declaration/ReadOnlyDeclaration";
-import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
 import { schemaFormOptions } from "~/utils/form/schema/schema";
 import { api } from "~/utils/api";
+import DeclarationForm from "~/components/declaration/DeclarationForm";
 
 export default function SchemaPage({
 	declaration: initialDeclaration,
@@ -182,135 +180,82 @@ export default function SchemaPage({
 	});
 
 	return (
-		<section id="schema" className={classes.main}>
-			<div>
-				<Breadcrumb
-					homeLinkProps={{ href: "/dashboard" }}
-					segments={[
-						{
-							label: declaration?.name ?? "",
-							linkProps: { href: declarationPagePath },
-						},
-					]}
-					currentPageLabel="Schéma et plans d'actions"
-				/>
-				<div>
-					<h1>{declaration?.name ?? ""} - Schéma et plans d'actions</h1>
-					{(declaration?.actionPlan?.status === "fromAI" ||
-						declaration?.actionPlan?.status === "fromAra") && (
-						<VerifyGeneratedInfoPopUpMessage />
-					)}
-				</div>
-				<div className={cx(classes.editButtonWrapper, classes.whiteBackground)}>
-					<h3 className={classes.description}>
-						Verifiez les informations et modifiez-les si necessaire
-					</h3>
-					{declaration?.actionPlan && (
-						<Button priority="secondary" onClick={onEditInfos}>
-							{!editMode ? "Modifier" : "Annuler"}
-						</Button>
-					)}
-				</div>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
+		<DeclarationForm
+			declaration={declaration}
+			title="Schéma et plans d'actions"
+			breadcrumbLabel={declaration?.name ?? ""}
+			showValidateButton={
+				(declaration?.actionPlan?.status === "fromAI" ||
+					declaration?.actionPlan?.status === "fromAra") &&
+				!editMode
+			}
+			onValidate={updateSchemaStatus}
+			isEditable={!!declaration?.actionPlan}
+			onToggleEdit={onEditInfos}
+			editMode={editMode}
+			showLayoutComponent={false}
+		>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
 
-						if (!declaration?.actionPlan) {
-							form.handleSubmit();
-						} else {
-							readOnlyForm.handleSubmit();
-						}
-					}}
-				>
-					<div className={cx(classes.formWrapper, classes.whiteBackground)}>
-						{!declaration?.actionPlan ? (
-							<DeclarationSchemaForm form={form} />
-						) : (
-							<>
-								{editMode ? (
-									<>
-										<DeclarationSchema form={readOnlyForm} />
-									</>
-								) : (
-									<ReadOnlyDeclarationSchema
-										declaration={declaration ?? null}
-									/>
-								)}
-							</>
-						)}
-					</div>
-					{editMode && (
-						<form.AppForm>
-							<form.SubscribeButton label={"Valider"} />
-						</form.AppForm>
+					if (!declaration?.actionPlan) {
+						form.handleSubmit();
+					} else {
+						readOnlyForm.handleSubmit();
+					}
+				}}
+			>
+				<div className={classes.whiteBackground}>
+					{!declaration?.actionPlan ? (
+						<DeclarationSchemaForm form={form} />
+					) : (
+						<>
+							{editMode ? (
+								<DeclarationSchema form={readOnlyForm} />
+							) : (
+								<ReadOnlyDeclarationSchema declaration={declaration ?? null} />
+							)}
+						</>
 					)}
-					{(declaration?.actionPlan?.status === "fromAI" ||
-						declaration?.actionPlan?.status === "fromAra") &&
-						!editMode && (
-							<div className={classes.validateButton}>
-								<Button onClick={updateSchemaStatus}>
-									Valider les informations
-								</Button>
-							</div>
-						)}
-					{!declaration?.actionPlan && (
-						<form.AppForm>
-							<div className={classes.actionButtonsContainer}>
-								<form.CancelButton
-									label="Retour"
-									onClick={() =>
-										router.push(`/dashboard/declaration/${declaration.id}`)
-									}
-									priority="tertiary"
-								/>
-								<form.SubscribeButton
-									label="Continuer"
-									iconId="fr-icon-arrow-right-line"
-									iconPosition="right"
-								/>
-							</div>
-						</form.AppForm>
-					)}
-				</form>
-			</div>
-		</section>
+				</div>
+				{editMode && (
+					<form.AppForm>
+						<form.SubscribeButton label={"Valider"} />
+					</form.AppForm>
+				)}
+				{!declaration?.actionPlan && (
+					<form.AppForm>
+						<div className={classes.actionButtonsContainer}>
+							<form.CancelButton
+								label="Retour"
+								onClick={() =>
+									router.push(`/dashboard/declaration/${declaration.id}`)
+								}
+								priority="tertiary"
+							/>
+							<form.SubscribeButton
+								label="Continuer"
+								iconId="fr-icon-arrow-right-line"
+								iconPosition="right"
+							/>
+						</div>
+					</form.AppForm>
+				)}
+			</form>
+		</DeclarationForm>
 	);
 }
 
 const useStyles = tss.withName(SchemaPage.name).create({
-	main: {
-		marginBlock: fr.spacing("10v"),
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("2v"),
-	},
-	formWrapper: {
-		display: "flex",
-		flexDirection: "column",
-		paddingBottom: fr.spacing("10v"),
-		paddingInline: fr.spacing("10v"),
-	},
-	editButtonWrapper: {
-		display: "flex",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		padding: fr.spacing("10v"),
-	},
-	description: {
-		fontSize: "1rem",
-		color: "grey",
-	},
-	title: {
-		fontSize: "1rem",
-		color: fr.colors.decisions.text.mention.grey.default,
-	},
-	validateButton: {
-		marginTop: fr.spacing("4w"),
-		display: "flex",
-		justifyContent: "flex-end",
-	},
 	whiteBackground: {
 		backgroundColor: fr.colors.decisions.background.raised.grey.default,
+		paddingInline: fr.spacing("10v"),
+		paddingBottom: fr.spacing("10v"),
+		marginBottom: fr.spacing("6v"),
+		width: "100%",
+		display: "flex",
+		flexDirection: "column",
 	},
 	actionButtonsContainer: {
 		display: "flex",

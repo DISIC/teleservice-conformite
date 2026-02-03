@@ -21,6 +21,7 @@ import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDec
 import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 import { contactFormOptions } from "~/utils/form/contact/schema";
 import { ContactTypeForm } from "~/utils/form/contact/form";
+import DeclarationForm from "~/components/declaration/DeclarationForm";
 
 export default function ContactPage({
 	declaration: initialDeclaration,
@@ -186,68 +187,126 @@ export default function ContactPage({
 	};
 
 	return (
-		<section id="contact" className={classes.main}>
-			<div className={classes.container}>
-				<Breadcrumb
-					homeLinkProps={{ href: "/dashboard" }}
-					segments={[
-						{
-							label: declaration?.name ?? "",
-							linkProps: { href: declarationPagePath },
-						},
-					]}
-					currentPageLabel="Contact"
-				/>
-				<div>
-					<h1>{declaration?.name ?? ""} - Contact</h1>
-					{declaration?.contact?.status === "fromAI" && (
-						<VerifyGeneratedInfoPopUpMessage />
-					)}
-				</div>
-				<div className={cx(classes.editButtonWrapper, classes.whiteBackground)}>
-					<h3 className={classes.description}>
-						Verifiez les informations et modifiez-les si necessaire
-					</h3>
-					{declaration?.contact && (
-						<Button priority="secondary" onClick={onEditInfos}>
-							{!editMode ? "Modifier" : "Annuler"}
-						</Button>
-					)}
-				</div>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
+		// <section id="contact" className={classes.main}>
+		// 	<div className={classes.container}>
+		// 		<Breadcrumb
+		// 			homeLinkProps={{ href: "/dashboard" }}
+		// 			segments={[
+		// 				{
+		// 					label: declaration?.name ?? "",
+		// 					linkProps: { href: declarationPagePath },
+		// 				},
+		// 			]}
+		// 			currentPageLabel="Contact"
+		// 		/>
+		// 		<div>
+		// 			<h1>{declaration?.name ?? ""} - Contact</h1>
+		// 			{declaration?.contact?.status === "fromAI" && (
+		// 				<VerifyGeneratedInfoPopUpMessage />
+		// 			)}
+		// 		</div>
+		// 		<div className={cx(classes.editButtonWrapper, classes.whiteBackground)}>
+		// 			<h3 className={classes.description}>
+		// 				Verifiez les informations et modifiez-les si necessaire
+		// 			</h3>
+		// 			{declaration?.contact && (
+		// 				<Button priority="secondary" onClick={onEditInfos}>
+		// 					{!editMode ? "Modifier" : "Annuler"}
+		// 				</Button>
+		// 			)}
+		// 		</div>
+		// 		<form
+		// 			onSubmit={(e) => {
+		// 				e.preventDefault();
 
-						if (!declaration?.contact) {
-							form.handleSubmit();
-						} else {
-							readOnlyForm.handleSubmit();
-						}
-					}}
-				>
-					<div className={cx(classes.formWrapper, classes.whiteBackground)}>
-						{!declaration?.contact ? (
+		// 				if (!declaration?.contact) {
+		// 					form.handleSubmit();
+		// 				} else {
+		// 					readOnlyForm.handleSubmit();
+		// 				}
+		// 			}}
+		// 		>
+		// 			<div className={cx(classes.formWrapper, classes.whiteBackground)}>
+		// 				{!declaration?.contact ? (
+		// 					<ContactTypeForm form={form} />
+		// 				) : (
+		// 					<>
+		// 						{editMode ? (
+		// 							<>
+		// 								<DeclarationContactForm form={readOnlyForm} />
+		// 							</>
+		// 						) : (
+		// 							<ReadOnlyDeclarationContact
+		// 								declaration={declaration ?? null}
+		// 							/>
+		// 						)}
+		// 					</>
+		// 				)}
+		// 			</div>
+		// 			{editMode && (
+		// 				<readOnlyForm.AppForm>
+		// 					<readOnlyForm.SubscribeButton label="Valider" />
+		// 				</readOnlyForm.AppForm>
+		// 			)}
+		// 			{!declaration?.contact && (
+		// 				<form.AppForm>
+		// 					<div className={classes.actionButtonsContainer}>
+		// 						<form.CancelButton
+		// 							label="Retour"
+		// 							onClick={() =>
+		// 								router.push(`/dashboard/declaration/${declaration.id}`)
+		// 							}
+		// 							priority="tertiary"
+		// 						/>
+		// 						<form.SubscribeButton
+		// 							label="Continuer"
+		// 							iconId="fr-icon-arrow-right-line"
+		// 							iconPosition="right"
+		// 						/>
+		// 					</div>
+		// 				</form.AppForm>
+		// 			)}
+		// 			{(declaration?.contact?.status === "fromAI" ||
+		// 				declaration?.contact?.status === "fromAra") &&
+		// 				!editMode && (
+		// 					<div className={classes.validateButton}>
+		// 						<Button onClick={updateContactStatus}>
+		// 							Valider les informations
+		// 						</Button>
+		// 					</div>
+		// 				)}
+		// 		</form>
+		// 	</div>
+		// </section>
+		<DeclarationForm
+			declaration={declaration}
+			title="Contact"
+			breadcrumbLabel={declaration?.name ?? ""}
+			showValidateButton={
+				declaration?.contact?.status === "fromAI" ||
+				declaration?.contact?.status === "fromAra"
+			}
+			onValidate={updateContactStatus}
+			isEditable={!!declaration?.contact}
+			editMode={editMode}
+			onToggleEdit={onEditInfos}
+		>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+
+					if (!declaration?.contact) {
+						form.handleSubmit();
+					} else {
+						readOnlyForm.handleSubmit();
+					}
+				}}
+			>
+				{!declaration?.contact ? (
+					<>
+						<div className={classes.whiteBackground}>
 							<ContactTypeForm form={form} />
-						) : (
-							<>
-								{editMode ? (
-									<>
-										<DeclarationContactForm form={readOnlyForm} />
-									</>
-								) : (
-									<ReadOnlyDeclarationContact
-										declaration={declaration ?? null}
-									/>
-								)}
-							</>
-						)}
-					</div>
-					{editMode && (
-						<readOnlyForm.AppForm>
-							<readOnlyForm.SubscribeButton label="Valider" />
-						</readOnlyForm.AppForm>
-					)}
-					{!declaration?.contact && (
+						</div>
 						<form.AppForm>
 							<div className={classes.actionButtonsContainer}>
 								<form.CancelButton
@@ -264,56 +323,37 @@ export default function ContactPage({
 								/>
 							</div>
 						</form.AppForm>
-					)}
-					{(declaration?.contact?.status === "fromAI" ||
-						declaration?.contact?.status === "fromAra") &&
-						!editMode && (
-							<div className={classes.validateButton}>
-								<Button onClick={updateContactStatus}>
-									Valider les informations
-								</Button>
+					</>
+				) : (
+					<>
+						{editMode ? (
+							<div className={classes.whiteBackground}>
+								<DeclarationContactForm form={readOnlyForm} />
+								<readOnlyForm.AppForm>
+									<readOnlyForm.SubscribeButton label="Valider" />
+								</readOnlyForm.AppForm>
+							</div>
+						) : (
+							<div className={classes.whiteBackground}>
+								<ReadOnlyDeclarationContact declaration={declaration ?? null} />
 							</div>
 						)}
-				</form>
-			</div>
-		</section>
+					</>
+				)}
+			</form>
+		</DeclarationForm>
 	);
 }
 
 const useStyles = tss.withName(ContactPage.name).create({
-	main: {
-		marginBlock: fr.spacing("10v"),
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("2v"),
-	},
-	formWrapper: {
-		display: "flex",
-		flexDirection: "column",
-		paddingBottom: fr.spacing("10v"),
-		paddingInline: fr.spacing("10v"),
-	},
-	container: {
-		display: "flex",
-		flexDirection: "column",
-	},
-	editButtonWrapper: {
-		display: "flex",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		padding: fr.spacing("10v"),
-	},
-	description: {
-		fontSize: "1rem",
-		color: "grey",
-	},
-	validateButton: {
-		marginTop: fr.spacing("4w"),
-		display: "flex",
-		justifyContent: "flex-end",
-	},
 	whiteBackground: {
 		backgroundColor: fr.colors.decisions.background.raised.grey.default,
+		paddingInline: fr.spacing("10v"),
+		paddingBottom: fr.spacing("10v"),
+		marginBottom: fr.spacing("6v"),
+		width: "100%",
+		display: "flex",
+		flexDirection: "column",
 	},
 	actionButtonsContainer: {
 		display: "flex",

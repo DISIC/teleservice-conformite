@@ -3,9 +3,7 @@ import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
-import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
@@ -18,7 +16,7 @@ import {
 	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
-import VerifyGeneratedInfoPopUpMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
+import DeclarationForm from "~/components/declaration/DeclarationForm";
 
 export default function GeneralInformationsPage({
 	declaration: initialDeclaration,
@@ -122,95 +120,55 @@ export default function GeneralInformationsPage({
 	});
 
 	return (
-		<section id="general-informations" className={classes.main}>
-			<Breadcrumb
-				homeLinkProps={{
-					href: "/dashboard",
+		<DeclarationForm
+			declaration={declaration}
+			title="Informations générales"
+			breadcrumbLabel={declaration?.name ?? ""}
+			showValidateButton={declaration.status === "unverified" && !editMode}
+			onValidate={updateDeclarationStatus}
+			isEditable={true}
+			onToggleEdit={onEditInfos}
+			editMode={editMode}
+			showLayoutComponent={false}
+		>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					form.handleSubmit();
 				}}
-				segments={[
-					{
-						label: declaration?.name ?? "",
-						linkProps: { href: declarationPagePath },
-					},
-				]}
-				currentPageLabel="Informations générales"
-			/>
-			<div>
-				<h1>{declaration?.name ?? ""} - Informations générales</h1>
-				{declaration.status === "unverified" && (
-					<VerifyGeneratedInfoPopUpMessage />
-				)}
-			</div>
-			<div className={classes.body}>
-				<div className={classes.editButtonWrapper}>
-					<h3 className={classes.description}>
-						Verifiez les informations et modifiez-les si necessaire
-					</h3>
-					<Button priority="secondary" onClick={onEditInfos}>
-						{!editMode ? "Modifier" : "Annuler"}
-					</Button>
-				</div>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-				>
-					<div className={classes.formWrapper}>
-						{editMode ? (
-							<>
-								<DeclarationGeneralForm form={form} />
-								<form.AppForm>
-									<form.SubscribeButton label={"Valider"} />
-								</form.AppForm>
-							</>
-						) : (
-							<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
-						)}
-						{declaration.status === "unverified" && !editMode && (
-							<div className={classes.validateButton}>
-								<Button onClick={updateDeclarationStatus}>
-									Valider les informations
-								</Button>
-							</div>
-						)}
+			>
+				{editMode ? (
+					<>
+						<div className={classes.whiteBackground}>
+							<DeclarationGeneralForm form={form} />
+						</div>
+						<form.AppForm>
+							<form.SubscribeButton label={"Valider"} />
+						</form.AppForm>
+					</>
+				) : (
+					<div className={classes.whiteBackground}>
+						<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
 					</div>
-				</form>
-			</div>
-		</section>
+				)}
+			</form>
+		</DeclarationForm>
 	);
 }
 
 const useStyles = tss.withName(GeneralInformationsPage.name).create({
-	main: {
-		marginBlock: fr.spacing("10v"),
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("2v"),
-	},
-	formWrapper: {
-		display: "flex",
-		flexDirection: "column",
-		marginBottom: fr.spacing("6w"),
-	},
-	editButtonWrapper: {
-		display: "flex",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		paddingBottom: fr.spacing("10v"),
-	},
-	description: {
-		fontSize: "1rem",
-		color: "grey",
-	},
-	validateButton: {
-		marginTop: fr.spacing("4w"),
-		display: "flex",
-		justifyContent: "flex-end",
-	},
-	body: {
+	whiteBackground: {
 		backgroundColor: fr.colors.decisions.background.raised.grey.default,
-		padding: fr.spacing("10v"),
+		paddingInline: fr.spacing("10v"),
+		paddingBottom: fr.spacing("10v"),
+		marginBottom: fr.spacing("6v"),
+		width: "100%",
+		display: "flex",
+		flexDirection: "column",
+	},
+	actionButtonsContainer: {
+		display: "flex",
+		justifyContent: "space-between",
 	},
 });
 
