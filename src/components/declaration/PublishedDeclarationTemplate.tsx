@@ -36,10 +36,10 @@ export const extractDeclarationContentToPublish = (
 			compliantElements: declaration?.audit?.compliantElements ?? "",
 			technologies: declaration?.audit?.technologies ?? [],
 			testEnvironments:
-				(declaration?.audit?.testEnvironments ?? [])?.map(
-					(env) =>
-						testEnvironmentOptions.find((option) => option.value === env)
-							?.label ?? "",
+				(declaration?.audit?.usedTools ?? [])?.map(
+					(tool) =>
+						testEnvironmentOptions.find((option) => option.value === tool.name)
+							?.label ?? tool.name,
 				) ?? [],
 			usedTools:
 				(declaration?.audit?.usedTools ?? [])?.map(
