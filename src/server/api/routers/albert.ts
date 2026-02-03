@@ -2,12 +2,32 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
-interface AlbertResponse {
+import readAlbertPrompt from "~/utils/albert-prompt/albert-helper";
+
+export interface AlbertResponse {
+  service: { name: string | null, type: string | null; url: string | null; };
   taux: string | null;
   publishedAt: string | null;
+  rgaaVersion?: string | null;
+  auditRealizedBy: string | null;
   responsibleEntity: string | null;
-  auditedPages: string[];
+  compliantElements: string[];
   technologies: string[];
+  testEnvironments: string[];
+  usedTools: string[];
+  nonCompliantElements: string | null;
+  disproportionnedCharge: string | null;
+  optionalElements: string | null;
+  contact: { email: string | null; url: string | null };
+  schema: { currentYearSchemaUrl: string | null; },
+}
+
+function getRgaaVersion(rawVersion: string | null | undefined): string {
+  if (!rawVersion) return "rgaa_4";
+
+  const exactVersion = Math.floor(Number(rawVersion));
+
+  return exactVersion ? `rgaa_${exactVersion}` : "rgaa_4";
 }
 
 async function downloadHtmlWithPlaywright(url: string): Promise<string> {
@@ -54,64 +74,11 @@ async function extractAccessibilityRateWithAlbert(
 
   const relevantContent = `${footerContent}\n\n${mainContent.substring(0, 15000)}`;
 
-  const prompt = `Analyse le contenu HTML et extrait le taux d'accessibilité numérique, la date de publication, la liste des pages auditées, l'entité responsable ET les technologies utilisées.
+  const albertPromptTemplate = readAlbertPrompt();
 
-RÈGLES POUR LE TAUX :
-1. Si tu trouves "Accessibilité : totalement conforme" → taux = "100%"
-2. Si tu trouves un pourcentage explicite (exemple: "83,08 % des critères" ou "83.08%") → utilise le pourcentage exact
-3. Si tu trouves "non conforme" → taux = "0%"
-4. Si rien n'est trouvé → taux = null
-
-RÈGLES POUR LA DATE DE PUBLICATION :
-1. Cherche des phrases comme "Établie le [date]", "Cette déclaration a été établie le [date]", "Publiée le [date]"
-2. La date peut être au format "JJ/MM/AAAA" (ex: 17/11/2025) ou "JJ mois AAAA" (ex: 9 octobre 2024)
-3. Convertis TOUJOURS la date au format "DD/MM/YYYY" (ex: 09/10/2024)
-4. Si aucune date n'est trouvée → publishedAt = null
-
-RÈGLES POUR LES PAGES AUDITÉES :
-1. Cherche une section avec les mots-clés : "Échantillon", "Pages auditées", "Pages testées", "Liste des pages"
-2. Extrait la liste des pages/URLs qui ont été auditées (souvent dans une liste <ul> ou <ol>)
-3. Pour chaque page, utilise le format :
-   - Si une URL est associée : "Nom de la page - https://url.complete"
-   - Si pas d'URL : juste "Nom de la page"
-4. Exemples de format attendu :
-   - "Accueil - https://monservice.gouv.fr/"
-   - "Page contact - https://monservice.gouv.fr/contact"
-   - "Mentions légales" (si pas d'URL)
-5. Si aucune liste de pages n'est trouvée → auditedPages = []
-6. Limite à 20 pages maximum
-
-RÈGLES POUR L'ENTITÉ RESPONSABLE :
-1. Cherche le pattern "[Entité] s'engage à rendre son/ses/leur [service/site/sites]"
-2. Extrait le nom complet de l'entité AVANT "s'engage"
-3. Garde les articles (Le, La, L', Les) dans le nom
-4. Exemples:
-   - "Le ministère de la Culture s'engage..." → "Le ministère de la Culture"
-   - "La DINUM s'engage..." → "La DINUM"
-   - "L'Agence Nationale de la Cohésion des Territoires s'engage..." → "L'Agence Nationale de la Cohésion des Territoires"
-5. Si non trouvé → responsibleEntity = null
-
-RÈGLES POUR LES TECHNOLOGIES :
-1. Cherche une section avec les mots-clés : "Technologies utilisées", "Technologies", "Technologie utilisée", "Technologies employées", "Technologies mises en œuvre"
-2. Extrait la liste des technologies mentionnées (souvent présentées en liste ou séparées par des espaces/virgules)
-3. Technologies courantes à rechercher : HTML5, HTML, CSS, JavaScript, SVG, PHP, React, Vue.js, Angular, Bootstrap, jQuery, etc.
-4. Exemples de formats trouvés :
-   - "Technologies utilisées pour la réalisation du site HTML5 SVG CSS JavaScript"
-   - "Technologies : HTML5, CSS3, JavaScript"
-   - Liste à puces avec chaque technologie
-5. Retourne chaque technologie comme un élément séparé dans le tableau
-6. Si aucune technologie n'est trouvée → technologies = []
-7. Limite à 15 technologies maximum
-
-Exemples de réponses attendues :
-- {"taux": "100%", "publishedAt": "09/10/2024", "auditedPages": ["Accueil - https://site.gouv.fr/"], "responsibleEntity": "Le ministère de la Culture", "technologies": ["HTML5", "CSS", "JavaScript"]}
-- {"taux": "83.08%", "publishedAt": "17/11/2025", "auditedPages": [], "responsibleEntity": "La DINUM", "technologies": ["HTML5", "SVG", "ARIA", "CSS", "JavaScript"]}
-- {"taux": null, "publishedAt": null, "auditedPages": [], "responsibleEntity": null, "technologies": []} si rien n'est trouvé
-
-Réponds UNIQUEMENT avec le JSON, sans texte avant ou après.
-
-HTML :
-${relevantContent}`;
+  const prompt = `${albertPromptTemplate}
+  HTML :
+  ${relevantContent}`;
 
   const payload = {
     model: "albert-small",
@@ -122,7 +89,7 @@ ${relevantContent}`;
       },
     ],
     temperature: 0.1,
-    max_tokens: 500,
+    // max_tokens: 500,
   };
 
   const response = await fetch(`${apiUrl}/v1/chat/completions`, {
@@ -141,20 +108,13 @@ ${relevantContent}`;
   return await response.json();
 }
 
-function parseAlbertResponse(response: any): AlbertResponse {
+function parseAlbertResponse(response: any): AlbertResponse | null {
   if (!response) {
-    return {
-      taux: null,
-      publishedAt: null,
-      responsibleEntity: null,
-      auditedPages: [],
-      technologies: [],
-    };
+    return null;
   }
 
   try {
     const content = response.choices[0].message.content;
-
     const jsonMatch = content.match(
       /\{[^{}]*(?:\{[^{}]*\}|"[^"]*"|\[[^\]]*\]|[^{}])*\}/
     );
@@ -168,25 +128,39 @@ function parseAlbertResponse(response: any): AlbertResponse {
     }
 
     return {
+      service: {
+        name: result.service?.name ?? result.service?.url ?? null,
+        type: result.service?.type || null,
+        url: result.service?.url || null,
+      },
       taux: result.taux || null,
+      rgaaVersion: getRgaaVersion(result.rgaaVersion) || null,
+      auditRealizedBy: result.auditRealizedBy || null,
       publishedAt: result.publishedAt || null,
       responsibleEntity: result.responsibleEntity || null,
-      auditedPages: Array.isArray(result.auditedPages)
+      compliantElements: Array.isArray(result.auditedPages)
         ? result.auditedPages
         : [],
       technologies: Array.isArray(result.technologies)
         ? result.technologies
         : [],
+      testEnvironments: Array.isArray(result.testEnvironments)
+        ? result.testEnvironments
+        : [],
+      usedTools: Array.isArray(result.usedTools) ? result.usedTools : [],
+      nonCompliantElements: result.nonCompliantElements || null,
+      disproportionnedCharge:
+        result.disproportionnedCharge || null,
+      optionalElements: result.optionalElements || null,
+      contact: {
+        email: result.contact?.email || null,
+        url: result.contact?.url || null,
+      },
+      schema: { currentYearSchemaUrl: result.schema?.currentYearSchemaUrl || null },
     };
   } catch (error) {
     console.error("Error parsing Albert response:", error);
-    return {
-      taux: null,
-      publishedAt: null,
-      responsibleEntity: null,
-      auditedPages: [],
-      technologies: [],
-    };
+    return null;
   }
 }
 

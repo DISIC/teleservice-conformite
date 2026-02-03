@@ -6,7 +6,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useRouter } from "next/router";
-import { appKindOptions } from "~/payload/collections/Declaration";
+import { appKindOptions } from "~/payload/selectOptions";
 import type {
 	Entity,
 	Audit,
@@ -18,7 +18,7 @@ import type {
 import {
 	getDeclarationById,
 	type PopulatedDeclaration,
-} from "~/utils/payload-helper";
+} from "~/server/api/utils/payload-helper";
 import { getConformityStatus } from "~/utils/declaration-helper";
 
 type RequiredPopulatedDeclaration = Omit<
@@ -122,12 +122,12 @@ export default function DeclarationPreviewPage({
 				</p>
 				<ul>
 					{(declaration.audit.testEnvironments ?? []).map((env) => (
-						<li key={env}>{env}</li>
+						<li key={env.id}>{env.name}</li>
 					))}
 				</ul>
 				<h3>Outils pour évaluer l’accessibilité</h3>
 				<ul>
-					{(declaration.audit.toolsUsed ?? []).map((tech) => (
+					{(declaration.audit.usedTools ?? []).map((tech) => (
 						<li key={tech.name}>{tech.name}</li>
 					))}
 				</ul>
@@ -195,7 +195,7 @@ export default function DeclarationPreviewPage({
 				<Button
 					priority="primary"
 					linkProps={{
-						href: `/dashboard/declaration/${declaration.id}/publish`,
+						href: `/dashboard/declaration/${declaration.id}`,
 					}}
 				>
 					Publier la déclaration

@@ -3,9 +3,7 @@ import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
-import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
@@ -13,21 +11,31 @@ import { useAppForm } from "~/utils/form/context";
 import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { api } from "~/utils/api";
-import { getDeclarationById } from "~/utils/payload-helper";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import {
+	getDeclarationById,
+	type PopulatedDeclaration,
+} from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
+import DeclarationForm from "~/components/declaration/DeclarationForm";
 
 export default function GeneralInformationsPage({
-	declaration,
-}: { declaration?: PopulatedDeclaration }) {
+	declaration: initialDeclaration,
+}: { declaration: PopulatedDeclaration }) {
 	const router = useRouter();
 	const { classes } = useStyles();
+	const [declaration, setDeclaration] =
+		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const { name, kind } = declaration?.entity || {};
+	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
 
 	const { mutateAsync: update } = api.declaration.update.useMutation({
 		onSuccess: async (result) => {
-			router.reload();
+			setDeclaration((prev) => ({
+				...prev,
+				...result.data,
+			}));
+			setEditMode(false);
 		},
 		onError: async (error) => {
 			console.error(
@@ -36,6 +44,24 @@ export default function GeneralInformationsPage({
 			);
 		},
 	});
+
+	const { mutateAsync: updateStatus } =
+		api.declaration.updateStatus.useMutation({
+			onSuccess: async (result) => {
+				setDeclaration((prev) => ({
+					...prev,
+					status: result.data.status,
+				}));
+
+				router.push(declarationPagePath);
+			},
+			onError: async (error) => {
+				console.error(
+					`Error updating declaration status with id ${declaration?.id}:`,
+					error,
+				);
+			},
+		});
 
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
@@ -75,6 +101,17 @@ export default function GeneralInformationsPage({
 		}
 	};
 
+	const updateDeclarationStatus = async () => {
+		try {
+			await updateStatus({
+				status: "unpublished",
+				id: declaration?.id ?? -1,
+			});
+		} catch (error) {
+			return;
+		}
+	};
+
 	const form = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
@@ -83,79 +120,55 @@ export default function GeneralInformationsPage({
 	});
 
 	return (
-		<section id="general-informations" className={classes.main}>
-			<div>
-				<Breadcrumb
-					homeLinkProps={{
-						href: "/dashboard",
-					}}
-					segments={[
-						{
-							label: declaration?.name ?? "",
-							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
-						},
-					]}
-					currentPageLabel="Informations générales"
-				/>
-				<div>
-					<h1>{declaration?.name ?? ""} - Informations générales</h1>
-					<div className={classes.headerAction}>
-						<h3 className={classes.description}>
-							Verifiez les informations et modifiez-les si necessaire
-						</h3>
-						<Button priority="secondary" onClick={onEditInfos}>
-							{!editMode ? "Modifier" : "Annuler"}
-						</Button>
+		<DeclarationForm
+			declaration={declaration}
+			title="Informations générales"
+			breadcrumbLabel={declaration?.name ?? ""}
+			showValidateButton={declaration.status === "unverified" && !editMode}
+			onValidate={updateDeclarationStatus}
+			isEditable={true}
+			onToggleEdit={onEditInfos}
+			editMode={editMode}
+			showLayoutComponent={false}
+		>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					form.handleSubmit();
+				}}
+			>
+				{editMode ? (
+					<>
+						<div className={classes.whiteBackground}>
+							<DeclarationGeneralForm form={form} />
+						</div>
+						<form.AppForm>
+							<form.SubscribeButton label={"Valider"} />
+						</form.AppForm>
+					</>
+				) : (
+					<div className={classes.whiteBackground}>
+						<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
 					</div>
-				</div>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-				>
-					<div className={classes.formWrapper}>
-						{editMode ? (
-							<>
-								<DeclarationGeneralForm form={form} />
-								<form.AppForm>
-									<form.SubscribeButton label={"Valider"} />
-								</form.AppForm>
-							</>
-						) : (
-							<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
-						)}
-					</div>
-				</form>
-			</div>
-		</section>
+				)}
+			</form>
+		</DeclarationForm>
 	);
 }
 
 const useStyles = tss.withName(GeneralInformationsPage.name).create({
-	main: {
-		marginTop: fr.spacing("10v"),
+	whiteBackground: {
+		backgroundColor: fr.colors.decisions.background.raised.grey.default,
+		paddingInline: fr.spacing("10v"),
+		paddingBottom: fr.spacing("10v"),
+		marginBottom: fr.spacing("6v"),
+		width: "100%",
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("6w"),
 	},
-	formWrapper: {
+	actionButtonsContainer: {
 		display: "flex",
-		flexDirection: "column",
-		marginBottom: fr.spacing("6w"),
-	},
-	headerAction: {
-		display: "flex",
-		flexDirection: "row",
 		justifyContent: "space-between",
-	},
-	description: {
-		fontSize: "1rem",
-		color: "grey",
-	},
-	title: {
-		fontSize: "1rem",
-		color: fr.colors.decisions.text.mention.grey.default,
 	},
 });
 

@@ -1,7 +1,7 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
-import { rgaaVersionOptions, toolOptions, testEnvironmentOptions } from "~/payload/collections/Audit";
+import { rgaaVersionOptions, testEnvironmentOptions } from "~/payload/selectOptions";
 
 export const auditDate = z.object({
   date: z.iso.date().min(1, { message: "La date est requise" }),
@@ -24,7 +24,7 @@ export const auditDateDefaultValues: ZAuditDate = {
 };
 
 export const tools = z.object({
-  technologies: z.array(
+  usedTools: z.array(
       z.string()
     )
     .min(1, {
@@ -32,9 +32,7 @@ export const tools = z.object({
     }),
   testEnvironments: z
     .array(
-      z.enum(
-        testEnvironmentOptions.map((test) => test.value)
-      )
+      z.string()
     )
     .min(1, {
       message: "Au moins un environnement de test doit être sélectionné",
@@ -44,12 +42,12 @@ export const tools = z.object({
 export type ZTools = z.infer<typeof tools>;
 
 export const toolsDefaultValues: ZTools = {
-  technologies: [],
+  usedTools: [],
   testEnvironments: [],
 };
 
 export const compliantElements = z.object({
-  compliantElements: z.string().optional(),
+  compliantElements: z.string().min(1, { message: "Les éléments conformes sont requis" }),
 });
 
 export type ZCompliantElements = z.infer<typeof compliantElements>;
@@ -89,7 +87,7 @@ export const optionalElementsDefaultValues: ZOptionalElements = {
 };
 
 export const files = z.object({
-  report: z.string().optional(),
+  report: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
 });
 
 export type ZFiles = z.infer<typeof files>;

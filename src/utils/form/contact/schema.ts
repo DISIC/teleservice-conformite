@@ -2,15 +2,15 @@ import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
 export const contact = z.object({
-  contactType: z.array(z.string()).min(1, { message: "Au moins un type de contact doit être sélectionné" }),
-  contactLink: z.string().optional(),
-  emailContact: z.email(),
+  contactType: z.array(z.string()).optional(),
+  contactLink: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
+  emailContact: z.email("Email invalide").or(z.literal("")),
 });
 
 export type ZContact = z.infer<typeof contact>;
 
 export const contactDefaultValues: ZContact = {
-  contactType: [""],
+  contactType: [],
   contactLink: undefined,
   emailContact: "",
 };

@@ -1,24 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-export const appKindOptions = [
-  {
-    label: "Site web",
-    value: "website",
-		description: "Site internet, intranet, extranet, application métier, ...",
-  },
-  {
-    label: "Application mobile iOs",
-    value: "mobile_app_ios",
-  },
-  {
-    label: "Application mobile Android",
-    value: "mobile_app_android",
-  },
-  {
-    label: "Autre",
-    value: "other",
-  },
-] as const;
+import { declarationStatusOptions, appKindOptions } from "../selectOptions";
 
 export const Declarations: CollectionConfig = {
 	slug: "declarations",
@@ -81,17 +63,7 @@ export const Declarations: CollectionConfig = {
 			type: "select",
 			label: { fr: "Statut" },
 			defaultValue: "unpublished",
-			options: [
-				{
-					label: "Publié",
-					value: "published",
-				},
-
-				{
-					label: "Non publié",
-					value: "unpublished",
-				},
-			],
+			options: [...declarationStatusOptions],
 		},
 		{
 			name: "published_at",

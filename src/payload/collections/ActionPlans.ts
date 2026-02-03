@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 
+import { sourceOptions } from "../selectOptions";
+
 export const ActionPlans: CollectionConfig = {
   slug: "action-plans",
   labels: {
@@ -11,13 +13,13 @@ export const ActionPlans: CollectionConfig = {
       name: "currentYearSchemaUrl",
       type: "text",
       label: { fr: "Lien du schéma annuel" },
-      required: true,
+      required: false,
     },
     {
       name: "previousYearsSchemaUrl",
       type: "text",
       label: { fr: "Lien du bilan des actions" },
-      required: true,
+      required: false,
     },
     {
       name: "declaration",
@@ -25,6 +27,14 @@ export const ActionPlans: CollectionConfig = {
       relationTo: "declarations",
       label: { fr: "Déclaration associée" },
       required: true,
-    }
+    },
+    {
+			name: "status",
+			type: "select",
+			label: { fr: "Statut" },
+			defaultValue: "default",
+			options: [...sourceOptions],
+			required: false,
+		},
   ],
 };

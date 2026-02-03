@@ -3,33 +3,99 @@ import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/router";
-import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import {
+	type PopulatedDeclaration,
+	getDeclarationById,
+} from "~/server/api/utils/payload-helper";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
-import SchemaForm from "~/components/declaration/SchemaForm";
-import { getDeclarationById } from "~/utils/payload-helper";
 import { DeclarationSchema } from "~/utils/form/readonly/form";
-import { api } from "~/utils/api";
 import { ReadOnlyDeclarationSchema } from "~/components/declaration/ReadOnlyDeclaration";
+import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
+import { schemaFormOptions } from "~/utils/form/schema/schema";
+import { api } from "~/utils/api";
+import DeclarationForm from "~/components/declaration/DeclarationForm";
 
 export default function SchemaPage({
-	declaration,
+	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
+	const { classes, cx } = useStyles();
 	const router = useRouter();
-	const { classes } = useStyles();
+	const [declaration, setDeclaration] =
+		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const { id, currentYearSchemaUrl, previousYearsSchemaUrl } =
 		declaration?.actionPlan || {};
+	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
+
+	const { mutateAsync: createSchema } = api.schema.create.useMutation({
+		onSuccess: async () => {
+			if (declaration?.audit && declaration.contact) {
+				router.push(`/dashboard/declaration/${declaration.id}/preview`);
+				return;
+			}
+
+			router.push(`/dashboard/declaration/${declaration.id}`);
+		},
+		onError: (error) => {
+			console.error("Error adding schema:", error);
+		},
+	});
+
+	const addSchema = async ({
+		currentYearSchemaUrl,
+		previousYearsSchemaUrl,
+		declarationId,
+	}: {
+		currentYearSchemaUrl: string;
+		previousYearsSchemaUrl: string;
+		declarationId: number;
+	}) => {
+		try {
+			createSchema({
+				currentYearSchemaUrl,
+				previousYearsSchemaUrl,
+				declarationId,
+			});
+		} catch (error) {
+			console.error("Error adding schema:", error);
+		}
+	};
 
 	const { mutateAsync: updateSchema } = api.schema.update.useMutation({
-		onSuccess: async () => {
-			router.reload();
+		onSuccess: async (result) => {
+			setDeclaration((prev) => ({
+				...prev,
+				actionPlan: {
+					...prev.actionPlan,
+					...result.data,
+				},
+			}));
+			setEditMode(false);
+			router.push(declarationPagePath);
+		},
+		onError: async (error) => {
+			console.error(
+				`Error updating contact for declaration with id ${declaration?.id}:`,
+				error,
+			);
+		},
+	});
+
+	const { mutateAsync: updateStatus } = api.schema.updateStatus.useMutation({
+		onSuccess: async (result) => {
+			setDeclaration((prev) => ({
+				...prev,
+				actionPlan: {
+					...prev.actionPlan,
+					...result.data,
+				},
+			}));
+			setEditMode(false);
 		},
 		onError: async (error) => {
 			console.error(
@@ -69,7 +135,19 @@ export default function SchemaPage({
 		}
 	};
 
-	const form = useAppForm({
+	const updateSchemaStatus = async () => {
+		try {
+			await updateStatus({
+				declarationId: declaration.id,
+				id: declaration?.actionPlan?.id ?? -1,
+				status: "default",
+			});
+		} catch (error) {
+			return;
+		}
+	};
+
+	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			const {
@@ -90,82 +168,98 @@ export default function SchemaPage({
 		},
 	});
 
-	if (!declaration?.actionPlan) {
-		return <SchemaForm declaration={declaration} />;
-	}
+	const form = useAppForm({
+		...schemaFormOptions,
+		onSubmit: async ({ value, formApi }) => {
+			await addSchema({
+				currentYearSchemaUrl: value.currentYearSchemaUrl ?? "",
+				previousYearsSchemaUrl: value.previousYearsSchemaUrl ?? "",
+				declarationId: declaration.id,
+			});
+		},
+	});
 
 	return (
-		<section id="schema" className={classes.main}>
-			<div>
-				<Breadcrumb
-					homeLinkProps={{ href: "/dashboard" }}
-					segments={[
-						{
-							label: declaration?.name ?? "",
-							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
-						},
-					]}
-					currentPageLabel="Schéma et plans d'actions"
-				/>
-				<div>
-					<h1>{declaration?.name ?? ""} - Schéma et plans d'actions</h1>
-					<div className={classes.headerAction}>
-						<h3 className={classes.description}>
-							Verifiez les informations et modifiez-les si necessaire
-						</h3>
-						<Button priority="secondary" onClick={onEditInfos}>
-							{!editMode ? "Modifier" : "Annuler"}
-						</Button>
-					</div>
-				</div>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
+		<DeclarationForm
+			declaration={declaration}
+			title="Schéma et plans d'actions"
+			breadcrumbLabel={declaration?.name ?? ""}
+			showValidateButton={
+				(declaration?.actionPlan?.status === "fromAI" ||
+					declaration?.actionPlan?.status === "fromAra") &&
+				!editMode
+			}
+			onValidate={updateSchemaStatus}
+			isEditable={!!declaration?.actionPlan}
+			onToggleEdit={onEditInfos}
+			editMode={editMode}
+			showLayoutComponent={false}
+		>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+
+					if (!declaration?.actionPlan) {
 						form.handleSubmit();
-					}}
-				>
-					<div className={classes.formWrapper}>
-						{editMode ? (
-							<>
-								<DeclarationSchema form={form} />
-								<form.AppForm>
-									<form.SubscribeButton label={"Valider"} />
-								</form.AppForm>
-							</>
-						) : (
-							<ReadOnlyDeclarationSchema declaration={declaration ?? null} />
-						)}
-					</div>
-				</form>
-			</div>
-		</section>
+					} else {
+						readOnlyForm.handleSubmit();
+					}
+				}}
+			>
+				<div className={classes.whiteBackground}>
+					{!declaration?.actionPlan ? (
+						<DeclarationSchemaForm form={form} />
+					) : (
+						<>
+							{editMode ? (
+								<DeclarationSchema form={readOnlyForm} />
+							) : (
+								<ReadOnlyDeclarationSchema declaration={declaration ?? null} />
+							)}
+						</>
+					)}
+				</div>
+				{editMode && (
+					<form.AppForm>
+						<form.SubscribeButton label={"Valider"} />
+					</form.AppForm>
+				)}
+				{!declaration?.actionPlan && (
+					<form.AppForm>
+						<div className={classes.actionButtonsContainer}>
+							<form.CancelButton
+								label="Retour"
+								onClick={() =>
+									router.push(`/dashboard/declaration/${declaration.id}`)
+								}
+								priority="tertiary"
+							/>
+							<form.SubscribeButton
+								label="Continuer"
+								iconId="fr-icon-arrow-right-line"
+								iconPosition="right"
+							/>
+						</div>
+					</form.AppForm>
+				)}
+			</form>
+		</DeclarationForm>
 	);
 }
 
 const useStyles = tss.withName(SchemaPage.name).create({
-	main: {
-		marginTop: fr.spacing("10v"),
+	whiteBackground: {
+		backgroundColor: fr.colors.decisions.background.raised.grey.default,
+		paddingInline: fr.spacing("10v"),
+		paddingBottom: fr.spacing("10v"),
+		marginBottom: fr.spacing("6v"),
+		width: "100%",
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("6w"),
 	},
-	formWrapper: {
+	actionButtonsContainer: {
 		display: "flex",
-		flexDirection: "column",
-		marginBottom: fr.spacing("6w"),
-	},
-	headerAction: {
-		display: "flex",
-		flexDirection: "row",
 		justifyContent: "space-between",
-	},
-	description: {
-		fontSize: "1rem",
-		color: "grey",
-	},
-	title: {
-		fontSize: "1rem",
-		color: fr.colors.decisions.text.mention.grey.default,
 	},
 });
 

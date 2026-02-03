@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 import { api } from "~/utils/api";
 import Demarches from "~/components/declaration/Demarches";
@@ -19,7 +20,8 @@ import Membres from "~/components/declaration/Membres";
 import {
 	getDeclarationById,
 	type PopulatedDeclaration,
-} from "~/utils/payload-helper";
+} from "~/server/api/utils/payload-helper";
+import { copyToClipboard } from "~/utils/declaration-helper";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -33,6 +35,15 @@ interface DeclarationPageProps {
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const router = useRouter();
 	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
+	const [showAlert, setShowAlert] = useState<boolean>(false);
+	const [alertDetails, setAlertDetails] = useState<{
+		title?: string;
+		description?: string;
+		severity: "info" | "success" | "warning" | "error";
+	}>({ title: "", description: "", severity: "info" });
+	const [declarationName, setDeclarationName] = useState<string>(
+		declaration?.name ?? "",
+	);
 	const { classes } = useStyles();
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
@@ -41,7 +52,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 				router.push("/dashboard");
 			},
 			onError: (error) => {
-				console.error("Error adding declaration:", error);
+				console.error("Error deleting declaration:", error);
 			},
 		},
 	);
@@ -68,6 +79,29 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 		return null;
 	};
 
+	const showDeclarationAlert = ({
+		title,
+		description,
+		severity,
+	}: {
+		title?: string;
+		description?: string;
+		severity: "info" | "success" | "warning" | "error";
+	}) => {
+		setAlertDetails({ title, description, severity });
+		setShowAlert(true);
+	};
+
+	useEffect(() => {
+		if (!showAlert) return;
+
+		const timer = setTimeout(() => {
+			setShowAlert(false);
+		}, 5000);
+
+		return () => clearTimeout(timer);
+	}, [showAlert]);
+
 	return (
 		<>
 			<section id="declaration-page" className={classes.declarationPage}>
@@ -77,41 +111,51 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							href: "/dashboard",
 						}}
 						segments={[]}
-						currentPageLabel={declaration?.name}
+						currentPageLabel={declarationName}
 					/>
 				</section>
 				<section id="header" className={classes.headerSection}>
 					<div className={classes.header}>
-						<h1>{declaration?.name}</h1>
-						<Badge
-							noIcon={true}
-							small={true}
-							severity={
-								declaration?.status === "published" ? "success" : undefined
-							}
-						>
-							{declaration?.status === "published" ? "Publiée" : "Brouillon"}
-						</Badge>
+						<h1>
+							{declarationName}{" "}
+							<Badge
+								noIcon={true}
+								small={true}
+								severity={
+									declaration?.status === "published" ? "success" : undefined
+								}
+							>
+								{declaration?.status === "published" ? "Publiée" : "Brouillon"}
+							</Badge>
+						</h1>
 					</div>
 					<div className={classes.buttonsContainer}>
 						{declaration?.status === "published" && (
-							<>
-								<Button
-									priority="tertiary"
-									iconId="fr-icon-eye-fill"
-									disabled={declarationNotComplete}
-								>
-									Voir la declaration
-								</Button>
-								<Button
-									priority="tertiary"
-									iconId="fr-icon-eye-fill"
-									disabled={declarationNotComplete}
-								>
-									Copier le lien
-								</Button>
-							</>
+							<Button
+								priority="tertiary"
+								iconId="fr-icon-eye-fill"
+								disabled={declarationNotComplete}
+							>
+								Voir la declaration
+							</Button>
 						)}
+						<Button
+							priority="tertiary"
+							iconId="fr-icon-eye-fill"
+							disabled={declarationNotComplete}
+							onClick={() =>
+								copyToClipboard(
+									`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+									() =>
+										showDeclarationAlert({
+											description: "Lien copié dans le presse-papier",
+											severity: "success",
+										}),
+								)
+							}
+						>
+							Copier le lien
+						</Button>
 						<Button
 							iconId="fr-icon-delete-fill"
 							priority="tertiary"
@@ -120,6 +164,19 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							Supprimer
 						</Button>
 					</div>
+					{showAlert && (
+						<div className={classes.alertWrapper}>
+							<Alert
+								small={true}
+								severity={alertDetails.severity}
+								title={alertDetails?.title ?? ""}
+								description={alertDetails?.description ?? ""}
+								closable
+								isClosed={!showAlert}
+								onClose={() => setShowAlert(false)}
+							/>
+						</div>
+					)}
 				</section>
 				<Tabs
 					selectedTabId={selectedTabId}
@@ -186,6 +243,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		flexDirection: "column",
 		alignItems: "start",
 		justifyContent: "flex-start",
+		marginBottom: fr.spacing("12v"),
 	},
 	header: {
 		display: "flex",
@@ -198,7 +256,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		display: "flex",
 		flexDirection: "row",
 		gap: fr.spacing("4v"),
-		marginBottom: fr.spacing("12v"),
 	},
 	emptyStateContainer: {
 		display: "flex",
@@ -228,6 +285,26 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		"& > div": {
 			border: "none !important",
 			boxShadow: "none !important",
+			marginBlock: fr.spacing("6v"),
+		},
+
+		"&::before": {
+			display: "none",
+		},
+	},
+	editableNameInput: {
+		outline: "none",
+		border: "none",
+		fontSize: "2.5rem",
+		fontWeight: fr.typography[5].style.fontWeight,
+	},
+	alertWrapper: {
+		width: "100%",
+		display: "flex",
+		marginTop: fr.spacing("8v"),
+
+		"& div": {
+			width: "100%",
 		},
 	},
 });

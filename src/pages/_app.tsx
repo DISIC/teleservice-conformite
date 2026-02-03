@@ -10,8 +10,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
+import { tss } from "tss-react";
+
 import { api } from "~/utils/api";
 import { authClient } from "~/utils/auth-client";
+import { AlertHost } from "~/components/alert/AlertHost";
 
 // Only in TypeScript projects
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
@@ -50,7 +53,11 @@ const userNavigationItems: MainNavigationProps.Item[] = [
 
 function App({ Component, pageProps }: AppProps) {
 	const router = useRouter();
-
+	const { classes, cx } = useStyles({
+		formBackgroundColor: ["infos", "audit", "schema", "contact"].includes(
+			router.pathname.split("/").pop() || "",
+		),
+	});
 	const { data: authSession, isPending: isPendingAuth } =
 		authClient.useSession();
 	const isAuthenticated = !!authSession;
@@ -91,13 +98,7 @@ function App({ Component, pageProps }: AppProps) {
 			<Head>
 				<title>Téléservice Conformité</title>
 			</Head>
-			<div
-				style={{
-					minHeight: "100vh",
-					display: "flex",
-					flexDirection: "column",
-				}}
-			>
+			<div className={classes.mainContainer}>
 				<Header
 					brandTop={
 						<>
@@ -114,7 +115,11 @@ function App({ Component, pageProps }: AppProps) {
 					quickAccessItems={quickAccessItems}
 					serviceTitle="Téléservice Conformité"
 				/>
-				<main className={fr.cx("fr-container")} style={{ flex: 1 }}>
+				<main
+					className={cx(fr.cx("fr-container"), classes.main)}
+					style={{ flex: 1 }}
+				>
+					<AlertHost />
 					<Component {...pageProps} />
 				</main>
 				<Footer
@@ -125,5 +130,22 @@ function App({ Component, pageProps }: AppProps) {
 		</>
 	);
 }
+
+const useStyles = tss
+	.withName(App.name)
+	.withParams<{
+		formBackgroundColor: boolean;
+	}>()
+	.create(({ formBackgroundColor }) => ({
+		mainContainer: {
+			minHeight: "100vh",
+			display: "flex",
+			flexDirection: "column",
+			backgroundColor: formBackgroundColor
+				? fr.colors.decisions.background.alt.blueFrance.default
+				: "inherit",
+		},
+		main: {},
+	}));
 
 export default withDsfr(api.withTRPC(withAppEmotionCache(App)));

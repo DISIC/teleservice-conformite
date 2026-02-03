@@ -1,15 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-export const contactMeanOptions = [
-  {
-    label: "Formulaire en ligne",
-    value: "form_url",
-  },
-  {
-    label: "Point de contact",
-    value: "email",
-  },
-] as const;
+import { sourceOptions } from "../selectOptions";
 
 export const Contacts: CollectionConfig = {
   slug: "contacts",
@@ -37,6 +28,14 @@ export const Contacts: CollectionConfig = {
       type: "relationship",
       relationTo: "declarations",
       required: true,
-    }
+    },
+    {
+			name: "status",
+			type: "select",
+			label: { fr: "Statut" },
+			defaultValue: "default",
+			options: [...sourceOptions],
+			required: false,
+		},
   ],
 };

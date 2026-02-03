@@ -1,33 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-export const rgaaVersionOptions = [
-	{
-		label: "RGAA 4",
-		value: "rgaa_4",
-	},
-	{
-		label: "RGAA 5",
-		value: "rgaa_5",
-	},
-] as const;
-
-export const toolOptions = [
-	{ label: "Wave", value: "wave" },
-	{ label: "NVDA", value: "nvda" },
-	{ label: "Web Developer Toolbar", value: "web_developer_toolbar" },
-	{ label: "HeadingsMap", value: "headings_map" },
-	{ label: "JAWS", value: "jaws" },
-	{ label: "Assistant RGAA", value: "assistant_rgaa" },
-	{ label: "Tanaguru", value: "tanaguru" },
-] as const;
-
-export const testEnvironmentOptions = [
-	{ label: "NVDA (Firefox)", value: "nvda_firefox" },
-	{ label: "JAWS (Firefox)", value: "jaws_firefox" },
-	{ label: "VoiceOver (Safari)", value: "voiceover_safari" },
-	{ label: "ZoomText (Windows ou Mac OSX)", value: "zoomtext_windows_mac" },
-	{ label: "Dragon Naturally Speaking (Windows ou Mac OSX)", value: "dragon_naturally_speaking_windows_mac" },
-] as const;
+import { sourceOptions, rgaaVersionOptions } from "../selectOptions";
 
 export const Audits: CollectionConfig = {
 	slug: "audits",
@@ -75,7 +48,7 @@ export const Audits: CollectionConfig = {
 		{
 			name: "compliantElements",
 			type: "textarea",
-			label: { fr: "Échantillon contrôlé" },
+			label: { fr: "Éléments ayant fait l’objet de vérification" },
 			required: true,
 		},
 		{
@@ -99,7 +72,7 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Rapport d'audit" },
 		},
 		{
-			name: "toolsUsed",
+			name: "usedTools",
 			type: "array",
 			label: { fr: "Outils utilisés" },
 			fields: [
@@ -110,16 +83,33 @@ export const Audits: CollectionConfig = {
 					required: true,
 				},
 			],
-			required: true,
 		},
 		{
 			name: "testEnvironments",
-			type: "select",
+			type: "array",
 			label: { fr: "Environnements de test" },
-			index: true,
-			options : [...testEnvironmentOptions],
-			hasMany: true,
-			required: true,
+			fields: [
+				{
+					name: "name",
+					type: "text",
+					label: { fr: "Nom de l’environnement de test" },
+					required: true,
+				}
+		],
+		},
+		{
+			name: "technologies",
+			type: "array",
+			fields: [
+				{
+					name: "name",
+					type: "text",
+					label: { fr: "Nom de la technologie" },
+					required: true,
+				},
+			],
+			label: { fr: "Technologies utilisées" },
+			required: false,
 		},
 		{
 			name: "declaration",
@@ -131,5 +121,13 @@ export const Audits: CollectionConfig = {
 				position: "sidebar",
 			},
 		},
+		{
+			name: "status",
+			type: "select",
+			label: { fr: "Statut" },
+			defaultValue: "default",
+			options: [...sourceOptions],
+			required: false,
+		}
 	],
 };

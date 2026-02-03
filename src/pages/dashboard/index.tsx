@@ -9,10 +9,12 @@ import { useRouter } from "next/router";
 import NextLink from "next/link";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
-import { auth } from "~/utils/auth";
 
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import { auth } from "~/utils/auth";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
+import { copyToClipboard } from "~/utils/declaration-helper";
+import { showAlert } from "~/utils/alert-event";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -53,15 +55,10 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 						return (
 							<div key={declaration.id} className={classes.declarationCard}>
 								<div>
-									<div className={classes.declarationTitleWrapper}>
-										<h6 className={classes.declarationTitle}>
-											<NextLink
-												href={`/dashboard/declaration/${declaration.id}`}
-											>
-												{declaration.name}
-											</NextLink>
-										</h6>
-
+									<h6 className={classes.declarationTitle}>
+										<NextLink href={`/dashboard/declaration/${declaration.id}`}>
+											{declaration.name}
+										</NextLink>
 										<Badge
 											noIcon={true}
 											small={true}
@@ -75,7 +72,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 												? "Publié"
 												: "Brouillon"}
 										</Badge>
-									</div>
+									</h6>
 									<p className={classes.details}>
 										Dernière modification le {declaration.updatedAtFormatted}
 									</p>
@@ -84,30 +81,35 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 										Site web - {declaration.url}
 									</p>
 								</div>
-								{typeof rate === "number" && (
-									<div>
-										<p className={classes.auditRateValue}>{rate}%</p>
-										<p className={classes.auditRateLabel}>taux conformité</p>
-									</div>
-								)}
-								<div className={classes.buttonsContainer}>
-									{declaration.status === "published" && (
-										<Button
-											iconId="fr-icon-edit-line"
-											priority="primary"
-											style={{ width: "100%" }}
-										>
-											Mettre à jour
-										</Button>
-									)}
-									<Button
-										iconId="fr-icon-share-line"
-										priority="tertiary"
-										style={{ width: "100%" }}
-									>
-										Copier le lien
-									</Button>
+								<div
+									style={
+										declaration.status === "published" && rate !== undefined
+											? { visibility: "visible" }
+											: { visibility: "hidden" }
+									}
+								>
+									<p className={classes.auditRateValue}>{rate}%</p>
+									<p className={classes.auditRateLabel}>taux conformité</p>
 								</div>
+								<Button
+									iconId="fr-icon-share-line"
+									priority="tertiary"
+									style={{ width: "100%" }}
+									onClick={() =>
+										copyToClipboard(
+											`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+											() =>
+												showAlert({
+													title: "Lien copié dans le presse-papier",
+													description: "Le lien a été copié avec succès.",
+													severity: "success",
+													isClosable: true,
+												}),
+										)
+									}
+								>
+									Copier le lien
+								</Button>
 							</div>
 						);
 					})}
@@ -151,20 +153,19 @@ const useStyles = tss
 			display: declarationLength ? "flex" : "none",
 		},
 		declarationCard: {
-			display: "flex",
-			justifyContent: "space-between",
+			display: "grid",
+			gridTemplateColumns: "2fr 1fr auto",
 			alignItems: "center",
 			border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
 			padding: fr.spacing("4v"),
 		},
-		declarationTitleWrapper: {
-			display: "flex",
-			alignItems: "flex-start",
-			gap: "10px",
-		},
 		declarationTitle: {
 			marginBottom: fr.spacing("4v"),
 			color: fr.colors.decisions.background.actionHigh.blueFrance.default,
+
+			"& a": {
+				marginRight: fr.spacing("1v"),
+			},
 		},
 		details: {
 			fontWeight: 400,
@@ -185,11 +186,6 @@ const useStyles = tss
 			fontWeight: 400,
 			color: fr.colors.decisions.text.label.grey.default,
 			fontSize: fr.typography[1].style.fontSize,
-		},
-		buttonsContainer: {
-			display: "flex",
-			flexDirection: "column",
-			gap: fr.spacing("4v"),
 		},
 		emptyStateContainer: {
 			display: "flex",

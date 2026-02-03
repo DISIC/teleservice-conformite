@@ -10,7 +10,7 @@ import Community from "@codegouvfr/react-dsfr/picto/Community";
 import Information from "@codegouvfr/react-dsfr/picto/Information";
 import { useRouter } from "next/router";
 
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import PopupMessage from "./PopupMessage";
 
 interface DemarchesProps {
@@ -29,20 +29,47 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		declaration?.updatedAt > declaration?.published_at;
 
 	const declarationComplete =
-		declaration.audit ||
-		declaration.contact ||
-		declaration.entity ||
-		declaration.actionPlan;
+		declaration.status === "unpublished" &&
+		declaration?.audit?.status === "default" &&
+		declaration?.contact?.status === "default" &&
+		declaration?.actionPlan?.status === "default";
 
-	const RedirectButton = ({ href }: { href: string }) => (
+	const RedirectButton = ({
+		href,
+		label = "Renseigner les informations",
+	}: { href: string; label?: string }) => (
 		<Button
 			linkProps={{
 				href,
 			}}
 		>
-			Renseigner les informations
+			{label}
 		</Button>
 	);
+
+	const StartBadges = ({
+		showToCompleteBadge,
+		showVerifyBadge,
+	}: { showToCompleteBadge: boolean; showVerifyBadge: boolean }) => {
+		const badges = [
+			{
+				show: showToCompleteBadge,
+				label: "A Remplir",
+			},
+			{
+				show: showVerifyBadge,
+				label: "À vérifier",
+			},
+		];
+
+		return badges
+			.filter((badge) => badge.show)
+			.map(({ label }) => (
+				<Badge key={label} noIcon severity="new">
+					{label}
+				</Badge>
+			));
+	};
 
 	return (
 		<section id="demarches-tab" className={classes.main}>
@@ -94,10 +121,33 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `${linkToDeclarationPage}/infos`,
 					}}
-					enlargeLinkOrButton={true}
+					start={
+						<StartBadges
+							showToCompleteBadge={false}
+							showVerifyBadge={declaration.status === "unverified"}
+						/>
+					}
+					enlargeLinkOrButton={false}
 					orientation="vertical"
 					pictogram={<Document fontSize="2rem" />}
 					className={classes.tile}
+					detail={
+						declaration?.status === "unverified" ? (
+							<RedirectButton
+								label="Vérifier les informations"
+								href={`${linkToDeclarationPage}/infos`}
+							/>
+						) : (
+							<Button
+								iconId="fr-icon-arrow-right-line"
+								priority="tertiary no outline"
+								title="Label button"
+								linkProps={{
+									href: `${linkToDeclarationPage}/infos`,
+								}}
+							/>
+						)
+					}
 				/>
 				<Tile
 					title="Contact"
@@ -105,20 +155,42 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `${linkToDeclarationPage}/contact`,
 					}}
-					enlargeLinkOrButton={!!declaration?.contact}
+					enlargeLinkOrButton={false}
 					orientation="vertical"
 					pictogram={<Community fontSize="2rem" />}
 					start={
-						declaration?.contact ? null : (
-							<Badge noIcon severity="new">
-								A Remplir
-							</Badge>
-						)
+						<StartBadges
+							showToCompleteBadge={!declaration?.contact}
+							showVerifyBadge={
+								declaration?.contact?.status === "fromAI" ||
+								declaration?.contact?.status === "fromAra"
+							}
+						/>
 					}
 					detail={
-						declaration?.contact ? null : (
-							<RedirectButton href={`${linkToDeclarationPage}/contact`} />
-						)
+						<>
+							{declaration?.contact &&
+								declaration?.contact?.status === "default" && (
+									<Button
+										iconId="fr-icon-arrow-right-line"
+										priority="tertiary no outline"
+										title="Label button"
+										linkProps={{
+											href: `${linkToDeclarationPage}/contact`,
+										}}
+									/>
+								)}
+							{!declaration?.contact && (
+								<RedirectButton href={`${linkToDeclarationPage}/contact`} />
+							)}
+							{(declaration?.contact?.status === "fromAI" ||
+								declaration?.contact?.status === "fromAra") && (
+								<RedirectButton
+									label="Vérifier les informations"
+									href={`${linkToDeclarationPage}/contact`}
+								/>
+							)}
+						</>
 					}
 					className={classes.tile}
 				/>
@@ -128,20 +200,42 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `${linkToDeclarationPage}/audit`,
 					}}
-					enlargeLinkOrButton={!!declaration?.audit}
+					enlargeLinkOrButton={false}
 					orientation="vertical"
 					pictogram={<Search fontSize="2rem" />}
 					start={
-						declaration?.audit ? null : (
-							<Badge noIcon severity="new">
-								A Remplir
-							</Badge>
-						)
+						<StartBadges
+							showToCompleteBadge={!declaration?.audit}
+							showVerifyBadge={
+								declaration?.audit?.status === "fromAI" ||
+								declaration?.audit?.status === "fromAra"
+							}
+						/>
 					}
 					detail={
-						declaration?.audit ? null : (
-							<RedirectButton href={`${linkToDeclarationPage}/audit`} />
-						)
+						<>
+							{declaration?.audit &&
+								declaration?.audit?.status === "default" && (
+									<Button
+										iconId="fr-icon-arrow-right-line"
+										priority="tertiary no outline"
+										title="Label button"
+										linkProps={{
+											href: `${linkToDeclarationPage}/audit`,
+										}}
+									/>
+								)}
+							{!declaration?.audit && (
+								<RedirectButton href={`${linkToDeclarationPage}/audit`} />
+							)}
+							{(declaration?.audit?.status === "fromAI" ||
+								declaration?.audit?.status === "fromAra") && (
+								<RedirectButton
+									label="Vérifier les informations"
+									href={`${linkToDeclarationPage}/audit`}
+								/>
+							)}
+						</>
 					}
 					className={classes.tile}
 				/>
@@ -151,20 +245,42 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `${linkToDeclarationPage}/schema`,
 					}}
-					enlargeLinkOrButton={!!declaration?.actionPlan}
+					enlargeLinkOrButton={false}
 					orientation="vertical"
 					pictogram={<Conclusion fontSize="2rem" />}
 					start={
-						declaration?.actionPlan ? null : (
-							<Badge noIcon severity="new">
-								A Remplir
-							</Badge>
-						)
+						<StartBadges
+							showToCompleteBadge={!declaration?.actionPlan}
+							showVerifyBadge={
+								declaration?.actionPlan?.status === "fromAI" ||
+								declaration?.actionPlan?.status === "fromAra"
+							}
+						/>
 					}
 					detail={
-						declaration?.actionPlan ? null : (
-							<RedirectButton href={`${linkToDeclarationPage}/schema`} />
-						)
+						<>
+							{declaration?.actionPlan &&
+								declaration?.actionPlan?.status === "default" && (
+									<Button
+										iconId="fr-icon-arrow-right-line"
+										priority="tertiary no outline"
+										title="Label button"
+										linkProps={{
+											href: `${linkToDeclarationPage}/schema`,
+										}}
+									/>
+								)}
+							{!declaration?.actionPlan && (
+								<RedirectButton href={`${linkToDeclarationPage}/schema`} />
+							)}
+							{(declaration?.actionPlan?.status === "fromAI" ||
+								declaration?.actionPlan?.status === "fromAra") && (
+								<RedirectButton
+									label="Vérifier les informations"
+									href={`${linkToDeclarationPage}/schema`}
+								/>
+							)}
+						</>
 					}
 					className={classes.tile}
 				/>
@@ -232,6 +348,10 @@ const useStyles = tss.withName(Demarches.name).create({
 		},
 		"& h3": {
 			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+
+			"&::before": {
+				backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.active.blueFrance.default}, ${fr.colors.decisions.border.active.blueFrance.default})`,
+			},
 		},
 	},
 });

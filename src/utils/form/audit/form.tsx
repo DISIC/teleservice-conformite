@@ -1,13 +1,12 @@
-import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
 import NextLink from "next/link";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
-import { rgaaVersionOptions } from "~/payload/collections/Audit";
 import {
+	rgaaVersionOptions,
 	testEnvironmentOptions,
 	toolOptions,
-} from "~/payload/collections/Audit";
+} from "~/payload/selectOptions";
 import { withForm } from "../context";
 import { auditMultiStepFormOptions } from "./schema";
 import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
@@ -64,7 +63,7 @@ export const ToolsForm = withForm({
 	render: function Render({ form }) {
 		return (
 			<>
-				<form.AppField name="technologies">
+				<form.AppField name="usedTools">
 					{(field) => (
 						<div>
 							<field.CheckboxGroupField
@@ -85,10 +84,21 @@ export const ToolsForm = withForm({
 				</form.AppField>
 				<form.AppField name="testEnvironments">
 					{(field) => (
-						<field.CheckboxGroupField
-							label="Environnement de tests"
-							options={[...testEnvironmentOptions]}
-						/>
+						<div>
+							<field.CheckboxGroupField
+								label="Environnement de tests"
+								options={[...testEnvironmentOptions]}
+							/>
+							<field.TagGroupField
+								label=""
+								initialTags={field.state.value.filter(
+									(tag) =>
+										![...testEnvironmentOptions]
+											.map((option) => option.value as string)
+											.includes(tag),
+								)}
+							/>
+						</div>
 					)}
 				</form.AppField>
 			</>

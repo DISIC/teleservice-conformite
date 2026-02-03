@@ -7,9 +7,9 @@ import {
 	rgaaVersionOptions,
 	toolOptions,
 	testEnvironmentOptions,
-} from "~/payload/collections/Audit";
-import { appKindOptions } from "~/payload/collections/Declaration";
-import { kindOptions } from "~/payload/collections/Entity";
+	kindOptions,
+	appKindOptions,
+} from "~/payload/selectOptions";
 import { withForm } from "../context";
 import { readOnlyFormOptions } from "./schema";
 import PopupMessage from "~/components/declaration/PopupMessage";
@@ -205,6 +205,16 @@ export const DeclarationAuditForm = withForm({
 							{(field) => <field.NumberField label="Résultats" />}
 						</form.AppField>
 						<form.AppField name="audit.technologies">
+							{(field) =>
+								field?.state?.value?.length ? (
+									<field.TagGroupField
+										label=""
+										initialTags={field.state.value}
+									/>
+								) : null
+							}
+						</form.AppField>
+						<form.AppField name="audit.usedTools">
 							{(field) => {
 								return (
 									<div>
@@ -227,10 +237,21 @@ export const DeclarationAuditForm = withForm({
 						</form.AppField>
 						<form.AppField name="audit.testEnvironments">
 							{(field) => (
-								<field.CheckboxGroupField
-									label="Environnement de tests"
-									options={[...testEnvironmentOptions]}
-								/>
+								<div>
+									<field.CheckboxGroupField
+										label="Environnement de tests"
+										options={[...testEnvironmentOptions]}
+									/>
+									<field.TagGroupField
+										label=""
+										initialTags={field.state.value.filter(
+											(tag) =>
+												![...testEnvironmentOptions]
+													.map((option) => option.value as string)
+													.includes(tag),
+										)}
+									/>
+								</div>
 							)}
 						</form.AppField>
 						<form.AppField name="audit.compliantElements">
@@ -287,16 +308,21 @@ export const DeclarationContactForm = withForm({
 									{ label: "Point de contact", value: "email" },
 								]}
 							/>
-							{field.state.value.includes("url") && (
+							{field.state.value?.includes("url") && (
 								<form.AppField name="contact.contactName">
 									{(field) => (
-										<field.TextField label="Lien URL du formulaire" />
+										<field.TextField
+											label="Lien URL du formulaire"
+											kind="url"
+										/>
 									)}
 								</form.AppField>
 							)}
-							{field.state.value.includes("email") && (
+							{field.state.value?.includes("email") && (
 								<form.AppField name="contact.contactEmail">
-									{(field) => <field.TextField label="Email de contact" />}
+									{(field) => (
+										<field.TextField label="Email de contact" kind="email" />
+									)}
 								</form.AppField>
 							)}
 						</>

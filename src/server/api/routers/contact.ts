@@ -1,8 +1,9 @@
 import z from "zod";
 import { TRPCError } from "@trpc/server";
 
-import { createTRPCRouter, publicProcedure, userProtectedProcedure } from "../trpc";
+import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { linkToDeclaration, isDeclarationOwner } from "../utils/payload-helper";
+import { sourceOptions } from "~/payload/selectOptions";
 
 export const contactRouter = createTRPCRouter({
   create: userProtectedProcedure
@@ -11,30 +12,25 @@ export const contactRouter = createTRPCRouter({
         email: z.string().optional(),
         url: z.string().optional(),
         declarationId: z.number(),
+        status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { email, url, declarationId } = input;
+      const { email, url, declarationId, status } = input;
 
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
       
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to create a contact",
-        });
-      }
-
       const contact = await ctx.payload.create({
         collection: "contacts",
         data: {
           email,
           url,
           declaration: declarationId,
+          status,
         },
       });
 
@@ -61,28 +57,61 @@ export const contactRouter = createTRPCRouter({
         });
       }
 
-      const isOwner = await isDeclarationOwner({
+      await isDeclarationOwner({
         payload: ctx.payload,
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
       
-      if (!isOwner) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Must be owner of the declaration to update a contact",
-        });
-      }
-
       const contact = await ctx.payload.update({
         collection: "contacts",
         id,
         data: {
           email,
           url,
+          status: "default",
         },
       });
 
       return { data: contact };
+    }),
+  updateStatus: userProtectedProcedure
+    .input(
+      z.object({
+        declarationId: z.number(),
+        id: z.number(),
+        status: z.enum(sourceOptions.map(option => option.value)),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { declarationId, id, status } = input;
+
+      await isDeclarationOwner({
+        payload: ctx.payload,
+        declarationId,
+        userId: Number(ctx.session?.user?.id) ?? null,
+      });
+      
+      const contactRecord = await ctx.payload.findByID({
+        collection: "contacts",
+        id,
+      });
+
+      if (!contactRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Contact with id ${id} not found`,
+        });
+      }
+
+      const updatedContact = await ctx.payload.update({
+        collection: "contacts",
+        id,
+        data: {
+          status,
+        },
+      });
+
+      return { data: updatedContact };
     }),
 });

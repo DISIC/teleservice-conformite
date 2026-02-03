@@ -3,37 +3,65 @@ import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useRouter } from "next/router";
-import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
+import { useRouter } from "next/router";
 
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationContactForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
-import ContactForm from "~/components/declaration/ContactForm";
 import { api } from "~/utils/api";
-import { getDeclarationById } from "~/utils/payload-helper";
-import { contact } from "~/utils/form/contact/schema";
-import type { PopulatedDeclaration } from "~/utils/payload-helper";
+import {
+	getDeclarationById,
+	type PopulatedDeclaration,
+} from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
+import { contactFormOptions } from "~/utils/form/contact/schema";
+import { ContactTypeForm } from "~/utils/form/contact/form";
+import DeclarationForm from "~/components/declaration/DeclarationForm";
 
 export default function ContactPage({
-	declaration,
+	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
+	const { classes, cx } = useStyles();
 	const router = useRouter();
-	const { classes } = useStyles();
+	const [declaration, setDeclaration] =
+		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const { id, email, url } = declaration?.contact || {};
+	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
 
 	const { mutateAsync: updateContact } = api.contact.update.useMutation({
-		onSuccess: async () => {
-			router.reload();
+		onSuccess: async (result) => {
+			setDeclaration((prev) => ({
+				...prev,
+				contact: result.data,
+			}));
+			setEditMode(false);
 		},
 		onError: async (error) => {
 			console.error(
 				`Error updating contact for declaration with id ${declaration?.id}:`,
+				error,
+			);
+		},
+	});
+
+	const { mutateAsync: updateStatus } = api.contact.updateStatus.useMutation({
+		onSuccess: async (result) => {
+			setDeclaration((prev) => ({
+				...prev,
+				contact: {
+					...prev.contact,
+					...result.data,
+				},
+			}));
+
+			router.push(declarationPagePath);
+		},
+		onError: async (error) => {
+			console.error(
+				`Error updating contact status for declaration with id ${declaration?.id}:`,
 				error,
 			);
 		},
@@ -82,10 +110,47 @@ export default function ContactPage({
 		}
 	};
 
+	const { mutateAsync: createContact } = api.contact.create.useMutation({
+		onSuccess: async () => {
+			if (declaration?.audit && declaration.actionPlan) {
+				router.push(`/dashboard/declaration/${declaration.id}/preview`);
+				return;
+			}
+
+			router.push(`/dashboard/declaration/${declaration.id}`);
+		},
+		onError: (error) => {
+			console.error("Error adding contact:", error);
+		},
+	});
+
+	const addContact = async ({
+		email,
+		url,
+		declarationId,
+	}: { email: string; url: string; declarationId: number }) => {
+		try {
+			await createContact({ email, url, declarationId });
+		} catch (error) {
+			console.error("Error adding contact:", error);
+		}
+	};
+
 	const form = useAppForm({
+		...contactFormOptions,
+		onSubmit: async ({ value, formApi }) => {
+			await addContact({
+				email: value?.emailContact ?? "",
+				url: value?.contactLink ?? "",
+				declarationId: declaration.id,
+			});
+		},
+	});
+
+	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
-			const data = value.contact.contactOptions.reduce(
+			const data = value.contact.contactOptions?.reduce(
 				(acc: { email?: string; url?: string }, option) => {
 					if (option === "email") {
 						acc.email = value.contact.contactEmail ?? "";
@@ -100,88 +165,105 @@ export default function ContactPage({
 
 			await updateDeclarationContact(
 				id ?? -1,
-				data.email ?? "",
-				data.url ?? "",
+				data?.email ?? "",
+				data?.url ?? "",
 			);
 		},
 	});
 
-	if (!declaration?.contact) {
-		return <ContactForm declaration={declaration} />;
-	}
+	const updateContactStatus = async () => {
+		try {
+			await updateStatus({
+				declarationId: declaration.id,
+				id: declaration?.contact?.id ?? -1,
+				status: "default",
+			});
+		} catch (error) {
+			return;
+		}
+	};
 
 	return (
-		<section id="contact" className={classes.main}>
-			<div className={classes.container}>
-				<Breadcrumb
-					homeLinkProps={{ href: "/dashboard" }}
-					segments={[
-						{
-							label: declaration?.name ?? "",
-							linkProps: { href: `/dashboard/declaration/${declaration?.id}` },
-						},
-					]}
-					currentPageLabel="Contact"
-				/>
-				<div>
-					<h1>{declaration?.name ?? ""} - Contact</h1>
-					<div className={classes.headerAction}>
-						<h3 className={classes.description}>
-							Verifiez les informations et modifiez-les si necessaire
-						</h3>
-						<Button priority="secondary" onClick={onEditInfos}>
-							{!editMode ? "Modifier" : "Annuler"}
-						</Button>
-					</div>
-				</div>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
+		<DeclarationForm
+			declaration={declaration}
+			title="Contact"
+			breadcrumbLabel={declaration?.name ?? ""}
+			showValidateButton={
+				declaration?.contact?.status === "fromAI" ||
+				declaration?.contact?.status === "fromAra"
+			}
+			onValidate={updateContactStatus}
+			isEditable={!!declaration?.contact}
+			editMode={editMode}
+			onToggleEdit={onEditInfos}
+		>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+
+					if (!declaration?.contact) {
 						form.handleSubmit();
-					}}
-				>
-					<div className={classes.formWrapper}>
+					} else {
+						readOnlyForm.handleSubmit();
+					}
+				}}
+			>
+				{!declaration?.contact ? (
+					<>
+						<div className={classes.whiteBackground}>
+							<ContactTypeForm form={form} />
+						</div>
+						<form.AppForm>
+							<div className={classes.actionButtonsContainer}>
+								<form.CancelButton
+									label="Retour"
+									onClick={() =>
+										router.push(`/dashboard/declaration/${declaration.id}`)
+									}
+									priority="tertiary"
+								/>
+								<form.SubscribeButton
+									label="Continuer"
+									iconId="fr-icon-arrow-right-line"
+									iconPosition="right"
+								/>
+							</div>
+						</form.AppForm>
+					</>
+				) : (
+					<>
 						{editMode ? (
-							<>
-								<DeclarationContactForm form={form} />
-								<form.AppForm>
-									<form.SubscribeButton label="Valider" />
-								</form.AppForm>
-							</>
+							<div className={classes.whiteBackground}>
+								<DeclarationContactForm form={readOnlyForm} />
+								<readOnlyForm.AppForm>
+									<readOnlyForm.SubscribeButton label="Valider" />
+								</readOnlyForm.AppForm>
+							</div>
 						) : (
-							<ReadOnlyDeclarationContact declaration={declaration ?? null} />
+							<div className={classes.whiteBackground}>
+								<ReadOnlyDeclarationContact declaration={declaration ?? null} />
+							</div>
 						)}
-					</div>
-				</form>
-			</div>
-		</section>
+					</>
+				)}
+			</form>
+		</DeclarationForm>
 	);
 }
 
 const useStyles = tss.withName(ContactPage.name).create({
-	main: {
-		marginTop: fr.spacing("10v"),
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("6w"),
-	},
-	formWrapper: {
-		display: "flex",
-		flexDirection: "column",
-		marginBottom: fr.spacing("6w"),
-	},
-	container: {
+	whiteBackground: {
+		backgroundColor: fr.colors.decisions.background.raised.grey.default,
+		paddingInline: fr.spacing("10v"),
+		paddingBottom: fr.spacing("10v"),
+		marginBottom: fr.spacing("6v"),
+		width: "100%",
 		display: "flex",
 		flexDirection: "column",
 	},
-	headerAction: {
+	actionButtonsContainer: {
 		display: "flex",
-		flexDirection: "row",
 		justifyContent: "space-between",
-	},
-	description: {
-		fontSize: "1rem",
-		color: "grey",
 	},
 });
 
