@@ -39,7 +39,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 			.then(() => {
 				showAlert({
 					title: "Lien copié dans le presse-papier",
-					description: "Le lien a été copié avec succès.",
 					severity: "success",
 					isClosable: true,
 				});
@@ -100,7 +99,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 								</div>
 								<div
 									style={
-										typeof rate === "number"
+										declaration.status === "published" && rate !== undefined
 											? { visibility: "visible" }
 											: { visibility: "hidden" }
 									}
