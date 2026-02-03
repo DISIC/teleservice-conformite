@@ -13,7 +13,7 @@ import { tss } from "tss-react";
 import { auth } from "~/utils/auth";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
-import { showAlert } from "~/utils/alert-event";
+import { copyToClipboard } from "~/utils/declaration-helper";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -30,23 +30,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	if (firstDeclaration) {
 		return <AddFirstDeclaration />;
 	}
-
-	const onCopyLink = (declarationId: number) => {
-		const textToCopy = `${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declarationId}`;
-
-		navigator.clipboard
-			.writeText(textToCopy)
-			.then(() => {
-				showAlert({
-					title: "Lien copié dans le presse-papier",
-					severity: "success",
-					isClosable: true,
-				});
-			})
-			.catch((err) => {
-				console.error("Failed to copy:", err);
-			});
-	};
 
 	return (
 		<section id="declarations-page" className={classes.main}>
@@ -111,7 +94,11 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 									iconId="fr-icon-share-line"
 									priority="tertiary"
 									style={{ width: "100%" }}
-									onClick={() => onCopyLink(declaration.id)}
+									onClick={() =>
+										copyToClipboard(
+											`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+										)
+									}
 								>
 									Copier le lien
 								</Button>

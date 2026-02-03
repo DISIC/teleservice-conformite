@@ -20,6 +20,7 @@ import {
 	getDeclarationById,
 	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
+import { copyToClipboard } from "~/utils/declaration-helper";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -141,6 +142,11 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							priority="tertiary"
 							iconId="fr-icon-eye-fill"
 							disabled={declarationNotComplete}
+							onClick={() =>
+								copyToClipboard(
+									`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+								)
+							}
 						>
 							Copier le lien
 						</Button>
