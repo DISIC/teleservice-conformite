@@ -3,9 +3,9 @@ import z from "zod";
 
 export const schema = z.object({
   hasDoneCurrentYearSchema: z.boolean(),
-  currentYearSchemaUrl: z.string().optional(),
+  currentYearSchemaUrl: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
   hasDonePreviousYearsSchema: z.boolean(),
-  previousYearsSchemaUrl: z.string().optional(),
+  previousYearsSchemaUrl: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
 });
 
 export type ZSchema = z.infer<typeof schema>;

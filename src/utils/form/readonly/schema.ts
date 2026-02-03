@@ -11,7 +11,7 @@ export const declarationGeneral = z.object({
       .min(1, { message: "Le nom de l'organisation est requis" }),
     kind: z.enum(appKindOptions.map((option) => option.value)),
     name: z.string().min(1, { message: "Le nom de l'application est requis" }),
-    url: z.string().optional(),
+    url: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
     domain: z
       .string()
       .meta({ kind: "select" })
@@ -34,7 +34,7 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 export const declarationAudit = z.object({
   audit: z.object({
     date: z.iso.date().min(1, { message: "La date est requise" }),
-    report: z.string().optional(),
+    report: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
     realisedBy: z.string().min(1, {
       message: "L'organisation ayant réalisé l'audit est requise",
     }),
@@ -43,7 +43,7 @@ export const declarationAudit = z.object({
       .number()
       .min(0, { message: "Le taux doit être entre 0 et 100" })
       .max(100, { message: "Le taux doit être entre 0 et 100" }),
-    compliantElements: z.string().optional(),
+    compliantElements: z.string().min(1, { message: "Les éléments conformes sont requis" }),
     technologies: z.array(z.string()).optional(),
     usedTools: z.array(z.string()).min(1, {
       message: "Au moins un outil doit être sélectionnée",
@@ -82,9 +82,9 @@ export const declarationSchema = z.object({
   schema: z
     .object({
       hasDoneCurrentYearSchema: z.boolean(),
-      currentYearSchemaUrl: z.string().optional(),
+      currentYearSchemaUrl: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
       hasDonePreviousYearsSchema: z.boolean(),
-      previousYearsSchemaUrl: z.string().optional(),
+      previousYearsSchemaUrl: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
     }),
 });
 
@@ -101,9 +101,9 @@ export const declarationSchemaDefaultValues: ZSchema = {
 
 export const declarationContact = z.object({
   contact: z.object({
-    contactOptions: z.array(z.enum(["email", "url"])),
-    contactName: z.string(),
-    contactEmail: z.string(),
+    contactOptions: z.array(z.enum(["email", "url"])).optional(),
+    contactName: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
+    contactEmail: z.email("Email invalide").or(z.literal("")),
   }),
 });
 
@@ -112,7 +112,7 @@ export type ZDeclarationContact = z.infer<typeof declarationContact>;
 export const declarationContactDefaultValues: ZDeclarationContact = {
   contact: {
     contactOptions: [],
-    contactName: "",
+    contactName: undefined,
     contactEmail: "",
   },
 };

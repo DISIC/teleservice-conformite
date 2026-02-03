@@ -47,7 +47,7 @@ export const toolsDefaultValues: ZTools = {
 };
 
 export const compliantElements = z.object({
-  compliantElements: z.string().optional(),
+  compliantElements: z.string().min(1, { message: "Les éléments conformes sont requis" }),
 });
 
 export type ZCompliantElements = z.infer<typeof compliantElements>;
@@ -87,7 +87,7 @@ export const optionalElementsDefaultValues: ZOptionalElements = {
 };
 
 export const files = z.object({
-  report: z.string().optional(),
+  report: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
 });
 
 export type ZFiles = z.infer<typeof files>;

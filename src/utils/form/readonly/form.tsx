@@ -308,16 +308,21 @@ export const DeclarationContactForm = withForm({
 									{ label: "Point de contact", value: "email" },
 								]}
 							/>
-							{field.state.value.includes("url") && (
+							{field.state.value?.includes("url") && (
 								<form.AppField name="contact.contactName">
 									{(field) => (
-										<field.TextField label="Lien URL du formulaire" />
+										<field.TextField
+											label="Lien URL du formulaire"
+											kind="url"
+										/>
 									)}
 								</form.AppField>
 							)}
-							{field.state.value.includes("email") && (
+							{field.state.value?.includes("email") && (
 								<form.AppField name="contact.contactEmail">
-									{(field) => <field.TextField label="Email de contact" />}
+									{(field) => (
+										<field.TextField label="Email de contact" kind="email" />
+									)}
 								</form.AppField>
 							)}
 						</>
