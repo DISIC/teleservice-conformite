@@ -189,8 +189,9 @@ export default function ContactPage({
 			title="Contact"
 			breadcrumbLabel={declaration?.name ?? ""}
 			showValidateButton={
-				declaration?.contact?.status === "fromAI" ||
-				declaration?.contact?.status === "fromAra"
+				!editMode &&
+				(declaration?.contact?.status === "fromAI" ||
+					declaration?.contact?.status === "fromAra")
 			}
 			onValidate={updateContactStatus}
 			isEditable={!!declaration?.contact}
@@ -233,12 +234,14 @@ export default function ContactPage({
 				) : (
 					<>
 						{editMode ? (
-							<div className={classes.whiteBackground}>
-								<DeclarationContactForm form={readOnlyForm} />
+							<>
+								<div className={classes.whiteBackground}>
+									<DeclarationContactForm form={readOnlyForm} />
+								</div>
 								<readOnlyForm.AppForm>
 									<readOnlyForm.SubscribeButton label="Valider" />
 								</readOnlyForm.AppForm>
-							</div>
+							</>
 						) : (
 							<div className={classes.whiteBackground}>
 								<ReadOnlyDeclarationContact declaration={declaration ?? null} />
