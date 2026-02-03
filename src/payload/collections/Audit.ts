@@ -17,12 +17,14 @@ export const Audits: CollectionConfig = {
       async (args) => {
         const { req, originalDoc, data, operation } = args;
 
-        if (operation !== "update" || (data?.status === "default" && originalDoc?.status === "unverified")) return;
+        if (operation !== "update") return;
 
 				const declaration = await req.payload.findByID({
 					collection: "declarations",
 					id: data.declaration ?? originalDoc?.declaration,
 				});
+
+				if (!declaration?.publishedContent) return;
 
         const {
 					audit

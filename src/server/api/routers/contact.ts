@@ -92,18 +92,6 @@ export const contactRouter = createTRPCRouter({
         userId: Number(ctx.session?.user?.id) ?? null,
       });
       
-      const contactRecord = await ctx.payload.findByID({
-        collection: "contacts",
-        id,
-      });
-
-      if (!contactRecord) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: `Contact with id ${id} not found`,
-        });
-      }
-
       const updatedContact = await ctx.payload.update({
         collection: "contacts",
         id,

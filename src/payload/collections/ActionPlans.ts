@@ -13,12 +13,14 @@ export const ActionPlans: CollectionConfig = {
       async (args) => {
         const { req, originalDoc, data, operation } = args;
 
-        if (operation !== "update" || (data?.status === "default" && originalDoc?.status === "unverified")) return;
+        if (operation !== "update") return;
 
         const declaration = await req.payload.findByID({
           id: data.declaration ?? originalDoc?.declaration,
           collection: "declarations",
         });
+
+        if (!declaration?.publishedContent) return;
 
         const { 
           actionPlan: {
