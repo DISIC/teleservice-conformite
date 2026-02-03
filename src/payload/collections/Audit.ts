@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { sourceOptions, rgaaVersionOptions, testEnvironmentOptions } from "../selectOptions";
+import { sourceOptions, rgaaVersionOptions } from "../selectOptions";
 
 export const Audits: CollectionConfig = {
 	slug: "audits",

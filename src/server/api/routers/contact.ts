@@ -1,7 +1,7 @@
 import z from "zod";
 import { TRPCError } from "@trpc/server";
 
-import { createTRPCRouter, publicProcedure, userProtectedProcedure } from "../trpc";
+import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { linkToDeclaration, isDeclarationOwner } from "../utils/payload-helper";
 import { sourceOptions } from "~/payload/selectOptions";
 

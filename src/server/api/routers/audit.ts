@@ -4,7 +4,7 @@ import z from "zod";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { linkToDeclaration, isDeclarationOwner } from "../utils/payload-helper";
 import { auditFormSchema } from "~/utils/form/audit/schema";
-import { testEnvironmentOptions, sourceOptions } from "~/payload/selectOptions";
+import { sourceOptions } from "~/payload/selectOptions";
 
 const optionalAuditFormSchema = auditFormSchema
   .partial()

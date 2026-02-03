@@ -4,7 +4,7 @@ import type { Payload } from "payload";
 
 import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { type rgaaVersionOptions, testEnvironmentOptions, kindOptions, 	appKindOptions, declarationStatusOptions, sourceOptions } from "~/payload/selectOptions";
+import { type rgaaVersionOptions, kindOptions, 	appKindOptions, declarationStatusOptions, sourceOptions } from "~/payload/selectOptions";
 import {
 	isDeclarationOwner,
 	getDefaultDeclarationName,

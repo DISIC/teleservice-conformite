@@ -20,7 +20,6 @@ import {
 	getDeclarationById,
 	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
-import Editable from "~/components/editable/Editable";
 
 const deleteModal = createModal({
 	id: "delete-modal",
