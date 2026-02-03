@@ -468,6 +468,7 @@ export const declarationRouter = createTRPCRouter({
 				data: {
 					status: "published",
 					publishedContent: content,
+					published_at: new Date().toISOString(),
 				},
 			});
 

@@ -98,19 +98,10 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					<div className={cx(classes.card, classes.summaryUpdateDateCard)}>
 						<p className={classes.cardLabel}>Dernière mise à jour</p>
 						<p className={classes.cardValue}>
-							{declaration?.updatedAt
-								? new Date(declaration.updatedAt).toLocaleDateString("fr-FR")
+							{declaration?.published_at
+								? new Date(declaration.published_at).toLocaleDateString("fr-FR")
 								: "N/A"}
 						</p>
-						{wasUpdated && (
-							<Button
-								iconId="fr-icon-edit-box-fill"
-								priority="primary"
-								style={{ width: "100%" }}
-							>
-								Mettre à jour
-							</Button>
-						)}
 					</div>
 				</div>
 			)}
