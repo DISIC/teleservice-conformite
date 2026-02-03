@@ -2,7 +2,7 @@ export type AlertSeverity = "info" | "warning" | "error" | "success";
 
 export type AlertEvent = {
 	title: string;
-	description: string;
+	description?: string;
 	severity: AlertSeverity;
 	iconDisplayed?: boolean;
 	isClosable?: boolean;
