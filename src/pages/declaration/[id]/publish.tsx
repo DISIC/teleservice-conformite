@@ -12,8 +12,16 @@ import PublishedDeclarationTemplate, {
 
 export default function PublishPage({
 	publishedContent,
-}: { publishedContent: PublishedDeclaration }) {
+}: { publishedContent: PublishedDeclaration | null }) {
 	const { classes } = useStyles();
+
+	if (!publishedContent) {
+		return (
+			<div className={classes.container}>
+				<p>Cette déclaration n'a pas encore été trouvée.</p>
+			</div>
+		);
+	}
 
 	return (
 		<div className={classes.container}>
@@ -47,10 +55,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const declaration = await getDeclarationById(payload, Number.parseInt(id));
 
-	if (!declaration?.publishedContent) {
+	if (!declaration || !declaration.publishedContent) {
 		return {
-			props: {},
-			redirect: { destination: "/" },
+			props: {
+				publishedContent: null,
+			},
 		};
 	}
 
