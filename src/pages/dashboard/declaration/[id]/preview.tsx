@@ -47,7 +47,7 @@ export default function DeclarationPreviewPage({
 	const { mutateAsync: publishDeclaration } =
 		api.declaration.updatePublishedContent.useMutation({
 			onSuccess: () => {
-				router.push(`/declaration/${declaration.id}/publish`);
+				router.push(`/dashboard/declaration/${declaration.id}?published=true`);
 			},
 			onError: (error) => {
 				console.error("Error publishing declaration:", error);
@@ -142,6 +142,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	}
 
 	if (!audit || !contact || !entity || !actionPlan || !created_by) {
+		return {
+			props: {},
+			redirect: { destination: `/dashboard/declaration/${declaration.id}` },
+		};
+	}
+
+	if (declaration?.publishedContent && declaration.status === "published") {
 		return {
 			props: {},
 			redirect: { destination: `/dashboard/declaration/${declaration.id}` },

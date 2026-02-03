@@ -34,6 +34,7 @@ interface DeclarationPageProps {
 
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const router = useRouter();
+	const { published } = router.query;
 	const hasPublishedDeclaration = !!declaration?.publishedContent;
 	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
 	const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -96,6 +97,19 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 
 		return () => clearTimeout(timer);
 	}, [showAlert]);
+
+	useEffect(() => {
+		if (published === "true") {
+			showDeclarationAlert({
+				description: "Votre déclaration est en ligne",
+				severity: "success",
+			});
+
+			router.replace(`/dashboard/declaration/${declaration.id}`, undefined, {
+				shallow: true,
+			});
+		}
+	}, [published]);
 
 	return (
 		<>
