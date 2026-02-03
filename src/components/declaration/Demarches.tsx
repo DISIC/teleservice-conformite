@@ -140,9 +140,11 @@ export default function Demarches({ declaration }: DemarchesProps) {
 						) : (
 							<Button
 								iconId="fr-icon-arrow-right-line"
-								onClick={function noRefCheck() {}}
 								priority="tertiary no outline"
 								title="Label button"
+								linkProps={{
+									href: `${linkToDeclarationPage}/infos`,
+								}}
 							/>
 						)
 					}
@@ -171,9 +173,11 @@ export default function Demarches({ declaration }: DemarchesProps) {
 								declaration?.contact?.status === "default" && (
 									<Button
 										iconId="fr-icon-arrow-right-line"
-										onClick={function noRefCheck() {}}
 										priority="tertiary no outline"
 										title="Label button"
+										linkProps={{
+											href: `${linkToDeclarationPage}/contact`,
+										}}
 									/>
 								)}
 							{!declaration?.contact && (
@@ -214,9 +218,11 @@ export default function Demarches({ declaration }: DemarchesProps) {
 								declaration?.audit?.status === "default" && (
 									<Button
 										iconId="fr-icon-arrow-right-line"
-										onClick={function noRefCheck() {}}
 										priority="tertiary no outline"
 										title="Label button"
+										linkProps={{
+											href: `${linkToDeclarationPage}/audit`,
+										}}
 									/>
 								)}
 							{!declaration?.audit && (
@@ -257,9 +263,11 @@ export default function Demarches({ declaration }: DemarchesProps) {
 								declaration?.actionPlan?.status === "default" && (
 									<Button
 										iconId="fr-icon-arrow-right-line"
-										onClick={function noRefCheck() {}}
 										priority="tertiary no outline"
 										title="Label button"
+										linkProps={{
+											href: `${linkToDeclarationPage}/schema`,
+										}}
 									/>
 								)}
 							{!declaration?.actionPlan && (
