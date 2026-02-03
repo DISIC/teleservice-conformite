@@ -13,9 +13,15 @@ import { tss } from "tss-react";
 import { auth } from "~/utils/auth";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
-import { copyToClipboard } from "~/utils/declaration-helper";
+import {
+	copyToClipboard,
+	isDeclarationExpired,
+} from "~/utils/declaration-helper";
 import { showAlert } from "~/utils/alert-event";
-import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
+import {
+	StatusBadge,
+	ValidityBadge,
+} from "~/components/declaration/DeclarationStatusBadge";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -70,6 +76,10 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 												declaration?.status !== "published" &&
 												!declaration?.publishedContent
 											}
+										/>
+										<ValidityBadge
+											isExpired={isDeclarationExpired(declaration.published_at)}
+											expiryDate={null}
 										/>
 									</h6>
 									<p className={classes.details}>
@@ -162,8 +172,8 @@ const useStyles = tss
 			marginBottom: fr.spacing("4v"),
 			color: fr.colors.decisions.background.actionHigh.blueFrance.default,
 
-			"& a": {
-				marginRight: fr.spacing("1v"),
+			"& p": {
+				marginInline: fr.spacing("1v"),
 			},
 		},
 		details: {

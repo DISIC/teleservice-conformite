@@ -20,8 +20,14 @@ import {
 	getDeclarationById,
 	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
-import { copyToClipboard } from "~/utils/declaration-helper";
-import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
+import {
+	copyToClipboard,
+	isDeclarationExpired,
+} from "~/utils/declaration-helper";
+import {
+	StatusBadge,
+	ValidityBadge,
+} from "~/components/declaration/DeclarationStatusBadge";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -137,6 +143,10 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 									declaration?.status !== "published" &&
 									!hasPublishedDeclaration
 								}
+							/>
+							<ValidityBadge
+								isExpired={isDeclarationExpired(declaration.published_at)}
+								expiryDate={null}
 							/>
 						</h1>
 					</div>
@@ -263,6 +273,10 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		alignItems: "center",
 		justifyContent: "flex-start",
 		gap: fr.spacing("3v"),
+
+		"& p": {
+			marginInline: fr.spacing("1v"),
+		},
 	},
 	buttonsContainer: {
 		display: "flex",

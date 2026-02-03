@@ -93,3 +93,17 @@ export const copyToClipboard = (textToCopy: string, fn: () => void) => {
 			console.error("Failed to copy:", err);
 		});
 };
+
+export const isDeclarationExpired = (
+  publishedAt: Date | string | null | undefined
+): boolean => {
+  if (!publishedAt) return false;
+
+  const publishedDate = new Date(publishedAt);
+
+  const now = new Date();
+  const threeYearsLater = new Date(publishedDate);
+  threeYearsLater.setFullYear(threeYearsLater.getFullYear() + 3);
+
+  return now >= threeYearsLater;
+}
