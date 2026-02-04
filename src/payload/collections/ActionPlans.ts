@@ -29,9 +29,6 @@ export const ActionPlans: CollectionConfig = {
           },
         } = JSON.parse(declaration?.publishedContent ?? "{}");
 
-        console.log(currentYearSchemaUrl, previousYearsSchemaUrl);
-        console.log(data.currentYearSchemaUrl, data.previousYearsSchemaUrl);
-
         const status = (currentYearSchemaUrl === data.currentYearSchemaUrl && previousYearsSchemaUrl === data.previousYearsSchemaUrl) ? "published" : "unpublished";
 
         await req.payload.update({

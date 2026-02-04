@@ -43,9 +43,6 @@ export const Audits: CollectionConfig = {
 					usedTools: (data.usedTools ?? []).map((tool: { id: number; name: string; }) => toolOptions.find(option => option.value === tool.name)?.label ?? ""),
 				};
 
-				console.log("AUDIT:", audit);
-				console.log("NEW CONTENT:", newContent);
-
 				const status = (JSON.stringify(audit) === JSON.stringify(newContent)) ? "published" : "unpublished"; 
 
         await req.payload.update({
