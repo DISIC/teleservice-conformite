@@ -19,7 +19,7 @@ interface DemarchesProps {
 
 export default function Demarches({ declaration }: DemarchesProps) {
 	const router = useRouter();
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const { rate } = declaration?.audit || {};
 	const linkToDeclarationPage = `/dashboard/declaration/${declaration.id}`;
 
@@ -91,26 +91,17 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			)}
 			{declaration.status === "published" && (
 				<div className={classes.summaryCardsContainer}>
-					<div className={classes.summaryRateCard}>
+					<div className={cx(classes.card, classes.summaryRateCard)}>
 						<p className={classes.cardLabel}>Taux de conformité</p>
 						<p className={classes.cardValue}>{`${rate}%`}</p>
 					</div>
-					<div className={classes.summaryUpdateDateCard}>
+					<div className={cx(classes.card, classes.summaryUpdateDateCard)}>
 						<p className={classes.cardLabel}>Dernière mise à jour</p>
 						<p className={classes.cardValue}>
-							{declaration?.updatedAt
-								? new Date(declaration.updatedAt).toLocaleDateString("fr-FR")
+							{declaration?.published_at
+								? new Date(declaration.published_at).toLocaleDateString("fr-FR")
 								: "N/A"}
 						</p>
-						{wasUpdated && (
-							<Button
-								iconId="fr-icon-edit-box-fill"
-								priority="primary"
-								style={{ width: "100%" }}
-							>
-								Mettre à jour
-							</Button>
-						)}
 					</div>
 				</div>
 			)}
@@ -300,24 +291,19 @@ const useStyles = tss.withName(Demarches.name).create({
 		gridTemplateColumns: "1fr 1fr",
 		gap: fr.spacing("4v"),
 	},
-	summaryRateCard: {
+	card: {
 		display: "flex",
 		flexDirection: "row",
 		gap: fr.spacing("3v"),
-		backgroundColor: fr.colors.decisions.background.alt.blueFrance.hover,
+		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
 		paddingInline: fr.spacing("7v"),
 		paddingBlock: fr.spacing("10v"),
 		borderRadius: "0.375rem",
+	},
+	summaryRateCard: {
 		justifyContent: "space-between",
 	},
 	summaryUpdateDateCard: {
-		display: "flex",
-		flexDirection: "row",
-		gap: fr.spacing("3v"),
-		backgroundColor: fr.colors.decisions.background.alt.blueFrance.hover,
-		paddingInline: fr.spacing("7v"),
-		paddingBlock: fr.spacing("10v"),
-		borderRadius: "0.375rem",
 		justifyContent: "flex-start",
 	},
 	cardLabel: {

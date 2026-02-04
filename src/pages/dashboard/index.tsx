@@ -15,6 +15,7 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
 import { copyToClipboard } from "~/utils/declaration-helper";
 import { showAlert } from "~/utils/alert-event";
+import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -59,19 +60,17 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 										<NextLink href={`/dashboard/declaration/${declaration.id}`}>
 											{declaration.name}
 										</NextLink>
-										<Badge
-											noIcon={true}
-											small={true}
-											severity={
-												declaration?.status === "published"
-													? "success"
-													: undefined
+										<StatusBadge
+											isPublished={declaration?.status === "published"}
+											isModified={
+												declaration?.status === "unpublished" &&
+												!!declaration?.publishedContent
 											}
-										>
-											{declaration?.status === "published"
-												? "Publié"
-												: "Brouillon"}
-										</Badge>
+											isDraft={
+												declaration?.status !== "published" &&
+												!declaration?.publishedContent
+											}
+										/>
 									</h6>
 									<p className={classes.details}>
 										Dernière modification le {declaration.updatedAtFormatted}

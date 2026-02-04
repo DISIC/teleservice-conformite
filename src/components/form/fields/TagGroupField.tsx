@@ -63,7 +63,7 @@ export function TagGroupField({
 								onClick: () => {
 									const newTags = tags.filter((t) => t !== tag);
 									setTags(newTags);
-									field.setValue(newTags);
+									field.setValue([...field.state.value, ...newTags]);
 								},
 							}}
 						>
@@ -88,6 +88,7 @@ const useStyles = tss.withName({ TagGroupField }).create({
 		flexDirection: "row",
 		width: "100%",
 		height: "100%",
+		alignItems: "flex-end",
 		gap: fr.spacing("2v"),
 		"& > div": {
 			marginBottom: "0 !important",

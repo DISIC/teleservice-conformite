@@ -5,7 +5,6 @@ import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useRouter } from "next/router";
@@ -22,6 +21,7 @@ import {
 	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { copyToClipboard } from "~/utils/declaration-helper";
+import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -34,6 +34,8 @@ interface DeclarationPageProps {
 
 export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const router = useRouter();
+	const { published } = router.query;
+	const hasPublishedDeclaration = !!declaration?.publishedContent;
 	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertDetails, setAlertDetails] = useState<{
@@ -56,12 +58,6 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 			},
 		},
 	);
-
-	const declarationNotComplete =
-		!declaration.audit ||
-		!declaration.contact ||
-		!declaration.entity ||
-		!declaration.actionPlan;
 
 	const onDelete = async () => {
 		deleteModal.open();
@@ -102,6 +98,19 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 		return () => clearTimeout(timer);
 	}, [showAlert]);
 
+	useEffect(() => {
+		if (published === "true") {
+			showDeclarationAlert({
+				description: "Votre déclaration est en ligne",
+				severity: "success",
+			});
+
+			router.replace(`/dashboard/declaration/${declaration.id}`, undefined, {
+				shallow: true,
+			});
+		}
+	}, [published]);
+
 	return (
 		<>
 			<section id="declaration-page" className={classes.declarationPage}>
@@ -118,23 +127,27 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 					<div className={classes.header}>
 						<h1>
 							{declarationName}{" "}
-							<Badge
-								noIcon={true}
-								small={true}
-								severity={
-									declaration?.status === "published" ? "success" : undefined
+							<StatusBadge
+								isPublished={declaration?.status === "published"}
+								isModified={
+									declaration?.status === "unpublished" &&
+									hasPublishedDeclaration
 								}
-							>
-								{declaration?.status === "published" ? "Publiée" : "Brouillon"}
-							</Badge>
+								isDraft={
+									declaration?.status !== "published" &&
+									!hasPublishedDeclaration
+								}
+							/>
 						</h1>
 					</div>
 					<div className={classes.buttonsContainer}>
-						{declaration?.status === "published" && (
+						{hasPublishedDeclaration && (
 							<Button
 								priority="tertiary"
 								iconId="fr-icon-eye-fill"
-								disabled={declarationNotComplete}
+								linkProps={{
+									href: `/declaration/${declaration.id}/publish`,
+								}}
 							>
 								Voir la declaration
 							</Button>
@@ -142,7 +155,6 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						<Button
 							priority="tertiary"
 							iconId="fr-icon-eye-fill"
-							disabled={declarationNotComplete}
 							onClick={() =>
 								copyToClipboard(
 									`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,

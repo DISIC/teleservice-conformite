@@ -85,18 +85,6 @@ export const schemaRouter = createTRPCRouter({
         userId: Number(ctx.session?.user?.id) ?? null,
       });
 
-      const schemaRecord = await ctx.payload.findByID({
-        collection: "action-plans",
-        id,
-      });
-
-      if (!schemaRecord) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: `Schema with id ${id} not found`,
-        });
-      }
-
       const updatedSchema = await ctx.payload.update({
         collection: "action-plans",
         id,
