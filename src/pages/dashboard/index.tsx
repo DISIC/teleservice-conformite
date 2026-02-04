@@ -16,6 +16,7 @@ import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
 import { copyToClipboard } from "~/utils/declaration-helper";
 import { showAlert } from "~/utils/alert-event";
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
+import { appKindOptions } from "~/payload/selectOptions";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -77,7 +78,12 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 									</p>
 									<p className={classes.details}>{name}</p>
 									<p className={classes.details}>
-										Site web - {declaration.url}
+										{appKindOptions.find(
+											(option) => option.value === declaration.app_kind,
+										)?.label ?? declaration.app_kind}
+										{declaration.url && declaration.app_kind === "website"
+											? ` - ${declaration.url}`
+											: ""}
 									</p>
 								</div>
 								<div
