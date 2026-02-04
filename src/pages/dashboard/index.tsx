@@ -1,20 +1,20 @@
+import { useEffect, useState } from "react";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 import { auth } from "~/utils/auth";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
 import { copyToClipboard } from "~/utils/declaration-helper";
-import { showAlert } from "~/utils/alert-event";
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import { appKindOptions } from "~/payload/selectOptions";
 
@@ -29,14 +29,56 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { classes } = useStyles({
 		declarationLength: declarations.length || 0,
 	});
+	const [showAlert, setShowAlert] = useState<boolean>(false);
+	const [alertDetails, setAlertDetails] = useState<{
+		title?: string;
+		description?: string;
+		severity: "info" | "success" | "warning" | "error";
+	}>({ title: "", description: "", severity: "info" });
 
 	if (firstDeclaration) {
 		return <AddFirstDeclaration />;
 	}
 
+	const showDeclarationAlert = ({
+		title,
+		description,
+		severity,
+	}: {
+		title?: string;
+		description?: string;
+		severity: "info" | "success" | "warning" | "error";
+	}) => {
+		setAlertDetails({ title, description, severity });
+		setShowAlert(true);
+	};
+
+	useEffect(() => {
+		if (!showAlert) return;
+
+		const timer = setTimeout(() => {
+			setShowAlert(false);
+		}, 5000);
+
+		return () => clearTimeout(timer);
+	}, [showAlert]);
+
 	return (
 		<section id="declarations-page" className={classes.main}>
 			<h1>Vos déclarations d'accessibilité</h1>
+			{showAlert && (
+				<div className={classes.alertWrapper}>
+					<Alert
+						small={true}
+						severity={alertDetails.severity}
+						title={alertDetails?.title ?? ""}
+						description={alertDetails?.description ?? ""}
+						closable
+						isClosed={!showAlert}
+						onClose={() => setShowAlert(false)}
+					/>
+				</div>
+			)}
 			<div className={classes.buttonWrapper}>
 				<Button
 					iconId="fr-icon-add-line"
@@ -104,11 +146,9 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 										copyToClipboard(
 											`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
 											() =>
-												showAlert({
-													title: "Lien copié dans le presse-papier",
-													description: "Le lien a été copié avec succès.",
+												showDeclarationAlert({
+													description: "Lien copié dans le presse-papier",
 													severity: "success",
-													isClosable: true,
 												}),
 										)
 									}
@@ -212,6 +252,15 @@ const useStyles = tss
 			fontSize: "1.25rem",
 			lineHeight: "2rem",
 			color: fr.colors.decisions.text.mention.grey.default,
+		},
+		alertWrapper: {
+			width: "100%",
+			display: "flex",
+			marginTop: fr.spacing("8v"),
+
+			"& div": {
+				width: "100%",
+			},
 		},
 	}));
 
