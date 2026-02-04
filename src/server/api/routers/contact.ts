@@ -9,8 +9,8 @@ export const contactRouter = createTRPCRouter({
   create: userProtectedProcedure
     .input(
       z.object({
-        email: z.string().optional(),
-        url: z.string().optional(),
+        email: z.string().optional().default(""),
+        url: z.string().optional().default(""),
         declarationId: z.number(),
         status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
       })
@@ -42,14 +42,14 @@ export const contactRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.number(),
-        email: z.string().optional(),
-        url: z.string().optional(),
+        email: z.string().optional().default(""),
+        url: z.string().optional().default(""),
         declarationId: z.number(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const { id, email, url, declarationId } = input;
-
+      
       if (!ctx.session?.user?.id) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
@@ -67,8 +67,8 @@ export const contactRouter = createTRPCRouter({
         collection: "contacts",
         id,
         data: {
-          email,
-          url,
+          email: email ?? "",
+          url: url ?? "",
           status: "default",
         },
       });
@@ -92,18 +92,6 @@ export const contactRouter = createTRPCRouter({
         userId: Number(ctx.session?.user?.id) ?? null,
       });
       
-      const contactRecord = await ctx.payload.findByID({
-        collection: "contacts",
-        id,
-      });
-
-      if (!contactRecord) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: `Contact with id ${id} not found`,
-        });
-      }
-
       const updatedContact = await ctx.payload.update({
         collection: "contacts",
         id,

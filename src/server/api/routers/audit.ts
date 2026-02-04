@@ -114,18 +114,6 @@ export const auditRouter = createTRPCRouter({
         userId: Number(ctx.session?.user?.id) ?? null,
       });
       
-      const audit = await ctx.payload.findByID({
-        collection: "audits",
-        id,
-      });
-
-      if (!audit) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: `Audit with id ${id} not found`,
-        });
-      }
-
       const updatedAudit = await ctx.payload.update({
         collection: "audits",
         id,
