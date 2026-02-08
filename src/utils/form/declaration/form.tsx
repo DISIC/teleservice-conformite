@@ -31,6 +31,9 @@ export const DeclarationGeneralForm = withForm({
 							label="Type de service"
 							options={[...appKindOptions]}
 							readOnly={readOnly}
+							onChange={() => {
+								form.setFieldValue("general.url", "");
+							}}
 						/>
 					)}
 				</form.AppField>
@@ -99,6 +102,7 @@ export const ContextForm = withForm({
 				<form.AppField name="initialDeclaration.newDeclaration">
 					{(field) => (
 						<field.SelectCardField
+							name="initialDeclaration.newDeclaration"
 							label="Quelle est votre situation pour ce service ?"
 							options={[
 								{

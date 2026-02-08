@@ -27,6 +27,9 @@ export const DeclarationGeneralForm = withForm({
 						<field.RadioField
 							label="Type de produit numérique"
 							options={[...appKindOptions]}
+							onChange={() => {
+								form.setFieldValue("general.url", "");
+							}}
 						/>
 					)}
 				</form.AppField>

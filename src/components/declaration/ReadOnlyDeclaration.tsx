@@ -27,7 +27,9 @@ export const ReadOnlyDeclarationGeneral = ({
 				label="Nom de la déclaration"
 				value={declaration?.name ?? ""}
 			/>
-			<ReadOnlyField label="URL" value={declaration?.url ?? ""} link />
+			{declaration?.app_kind === "website" && (
+				<ReadOnlyField label="URL" value={declaration?.url ?? ""} link />
+			)}
 			<ReadOnlyField
 				label="Secteur d’activité de l’organisation"
 				value={declaration?.entity?.kind ?? ""}
