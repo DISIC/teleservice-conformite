@@ -249,6 +249,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 const useStyles = tss.withName(DeclarationPage.name).create({
 	declarationPage: {
 		marginBlock: fr.spacing("10v"),
+		marginInline: "16rem",
 	},
 	headerSection: {
 		display: "flex",

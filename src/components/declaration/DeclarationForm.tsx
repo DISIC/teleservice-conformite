@@ -99,6 +99,7 @@ export default function DeclarationForm({
 const useStyles = tss.withName(DeclarationForm.name).create({
 	main: {
 		marginBlock: fr.spacing("10v"),
+		marginInline: "23.75rem",
 		display: "flex",
 		flexDirection: "column",
 	},

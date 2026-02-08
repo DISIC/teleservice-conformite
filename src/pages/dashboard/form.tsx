@@ -309,10 +309,15 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				}}
 			>
 				<div className={classes.formWrapper}>
-					{section === "initialDeclaration" && <ContextForm form={form} />}
-					{section === "general" && (
-						<DeclarationGeneralForm form={form} readOnly={false} />
-					)}
+					<div className={classes.whiteBackground}>
+						<h3 className={classes.description}>
+							Vérifiez les informations et modifiez-les si nécessaire
+						</h3>
+						{section === "initialDeclaration" && <ContextForm form={form} />}
+						{section === "general" && (
+							<DeclarationGeneralForm form={form} readOnly={false} />
+						)}
+					</div>
 					<form.AppForm>
 						<div className={classes.actionButtonsContainer}>
 							<form.CancelButton
@@ -338,6 +343,12 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 const useStyles = tss.withName(FormPage.name).create({
 	main: {
 		marginBlock: fr.spacing("6w"),
+		marginInline: "23.75rem",
+	},
+	whiteBackground: {
+		backgroundColor: fr.colors.decisions.background.raised.grey.default,
+		padding: fr.spacing("10v"),
+		marginBottom: fr.spacing("6v"),
 	},
 	formWrapper: {
 		display: "flex",
@@ -348,6 +359,12 @@ const useStyles = tss.withName(FormPage.name).create({
 	actionButtonsContainer: {
 		display: "flex",
 		justifyContent: "space-between",
+	},
+	description: {
+		fontSize: "1rem",
+		color: "grey",
+		margin: 0,
+		marginBottom: fr.spacing("10v"),
 	},
 });
 
