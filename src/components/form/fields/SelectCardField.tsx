@@ -1,9 +1,11 @@
+import { useRef } from "react";
 import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
 
 import { useFieldContext } from "~/utils/form/context";
 
 interface SelectCardFieldProps {
+	name: string;
 	label: string;
 	options: {
 		id: string;
@@ -15,25 +17,21 @@ interface SelectCardFieldProps {
 }
 
 export function SelectCardField(props: SelectCardFieldProps) {
-	const { options = [], label, onChange } = props;
+	const { name, options = [], label, onChange } = props;
 	const field = useFieldContext<string>();
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
+	const inputRef = useRef<(HTMLInputElement | null)[]>([]);
 
 	return (
 		<div className={classes.fieldWrapper}>
-			<span>{label}</span>
+			<label htmlFor={name}>{label}</label>
 			{options.map(({ id, image, label, description }, index) => (
-				<div
+				<button
+					type="button"
 					id={id}
 					key={index}
-					className={cx(
-						classes.optionCard,
-						id === field.state.value && classes.selectedOptionCard,
-					)}
-					onMouseDown={() => {
-						onChange();
-						field.setValue(id);
-					}}
+					className={classes.optionCard}
+					onClick={() => inputRef.current[index]?.click()}
 				>
 					{image}
 					<span>
@@ -42,7 +40,20 @@ export function SelectCardField(props: SelectCardFieldProps) {
 							<p className={classes.description}>{description}</p>
 						)}
 					</span>
-				</div>
+					<input
+						ref={(element) => {
+							inputRef.current[index] = element;
+						}}
+						key={index}
+						type="radio"
+						name={name}
+						id={id}
+						onChange={() => {
+							onChange();
+							field.setValue(id);
+						}}
+					/>
+				</button>
 			))}
 		</div>
 	);
@@ -62,8 +73,17 @@ const useStyles = tss.withName(SelectCardField.name).create({
 		alignItems: "center",
 		gap: fr.spacing("2w"),
 
+		"& input[type='radio']": {
+			display: "none",
+		},
+
+		"&:has(input[type='radio']:checked)": {
+			backgroundColor: fr.colors.decisions.background.raised.grey.active,
+		},
+
 		"& p": {
 			margin: 0,
+			textAlign: "left",
 		},
 
 		"& span": {
@@ -83,8 +103,5 @@ const useStyles = tss.withName(SelectCardField.name).create({
 		fontSize: "0.875rem",
 		lineHeight: "1.25rem",
 		fontWeight: 400,
-	},
-	selectedOptionCard: {
-		backgroundColor: fr.colors.decisions.background.raised.grey.active,
 	},
 });
