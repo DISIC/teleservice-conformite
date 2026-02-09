@@ -1,27 +1,26 @@
-import { useState, useEffect } from "react";
-import config from "@payload-config";
-import type { GetServerSideProps } from "next";
-import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
+import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { useRouter } from "next/router";
-import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
+import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
-
-import { api } from "~/utils/api";
+import config from "@payload-config";
+import type { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
+import { getPayload } from "payload";
+import { useEffect, useState } from "react";
+import { tss } from "tss-react";
+import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
 import {
-	getDeclarationById,
 	type PopulatedDeclaration,
+	getDeclarationById,
 } from "~/server/api/utils/payload-helper";
+import { api } from "~/utils/api";
 import { copyToClipboard } from "~/utils/declaration-helper";
-import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -121,6 +120,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						}}
 						segments={[]}
 						currentPageLabel={declarationName}
+						className={fr.cx("fr-mb-3w")}
 					/>
 				</section>
 				<section id="header" className={classes.headerSection}>
@@ -193,13 +193,13 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 				<Tabs
 					selectedTabId={selectedTabId}
 					tabs={[
-						{ tabId: "demarches", label: "Démarches" },
+						{ tabId: "demarches", label: "Démarche" },
 						{ tabId: "members", label: "Membres" },
 					]}
 					onTabChange={setSelectedTabId}
 					className={classes.tabs}
 				>
-					{<TabContent selectedTabId={selectedTabId} />}
+					<TabContent selectedTabId={selectedTabId} />
 				</Tabs>
 			</section>
 			<deleteModal.Component
@@ -256,7 +256,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		flexDirection: "column",
 		alignItems: "start",
 		justifyContent: "flex-start",
-		marginBottom: fr.spacing("12v"),
+		marginBottom: fr.spacing("4w"),
 	},
 	header: {
 		display: "flex",
@@ -298,6 +298,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		},
 
 		"& > div": {
+			padding: `${fr.spacing("6w")} ${fr.spacing("1v")}`,
 			border: "none !important",
 			boxShadow: "none !important",
 			marginBlock: fr.spacing("6v"),
