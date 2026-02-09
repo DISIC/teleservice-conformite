@@ -285,25 +285,32 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 	},
 	tabs: {
 		boxShadow: "none",
-
+		"& > ul": {
+			padding: 0,
+			margin: 0,
+			boxShadow: `0 -1px 0 0 ${fr.colors.decisions.border.default.grey.default} inset`,
+			gap: fr.spacing("4w"),
+		},
 		"& > ul > li > button": {
 			border: "none !important",
 			backgroundColor: "inherit !important",
 			backgroundImage: "none !important",
+			paddingLeft: 0,
+			paddingRight: 0,
+			margin: 0,
+			borderBottom: "3px solid transparent !important",
 
 			"&[aria-selected='true']": {
-				borderBottom: `3px solid ${fr.colors.decisions.border.actionHigh.blueFrance.default} !important`,
+				borderColor: `${fr.colors.decisions.border.actionHigh.blueFrance.default} !important`,
 				borderTop: "none !important",
 			},
 		},
-
 		"& > div": {
 			padding: `${fr.spacing("6w")} ${fr.spacing("1v")}`,
 			border: "none !important",
 			boxShadow: "none !important",
 			marginBlock: fr.spacing("6v"),
 		},
-
 		"&::before": {
 			display: "none",
 		},
