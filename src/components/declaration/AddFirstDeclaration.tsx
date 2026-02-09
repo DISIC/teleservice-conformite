@@ -97,14 +97,14 @@ export default function AddFirstDeclaration() {
 						<div>
 							<Conclusion fontSize="3rem" />
 							<p>
-								Durée de complétion estimée :
+								Durée de complétion estimée :{" "}
 								<strong>Entre 6 et 15 minutes</strong>
 							</p>
 						</div>
 					</div>
 					<div className={classes.documentsSection}>
 						<Document fontSize="5rem" />
-						<p>
+						<p className={classes.documentsSectionTitle}>
 							<strong>Documents à préparer</strong>
 						</p>
 						<ul>
@@ -146,12 +146,17 @@ export default function AddFirstDeclaration() {
 }
 
 const useStyles = tss.withName(AddFirstDeclaration.name).create({
-	main: {},
+	main: {
+		marginBottom: fr.spacing("20v"),
+	},
 	header: {
 		display: "flex",
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
+		marginInline: "calc(50% - 50vw)",
+		width: "100vw",
+		maxWidth: "100vw",
 		paddingInline: fr.spacing("8w"),
 		paddingBlock: fr.spacing("5w"),
 		backgroundColor: fr.colors.decisions.artwork.background.blueFrance.default,
@@ -213,6 +218,9 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 			},
 		},
 	},
+	documentsSectionTitle: {
+		fontSize: "1.1rem",
+	},
 	buttonContainer: {
 		display: "flex",
 		justifyContent: "center",
@@ -224,6 +232,7 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 			flexDirection: "row",
 			alignItems: "center",
 			justifyContent: "center",
+			gap: fr.spacing("25v"),
 
 			"&[data-iconPosition='left']": {
 				flexDirection: "row-reverse",

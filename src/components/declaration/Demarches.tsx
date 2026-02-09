@@ -43,6 +43,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			linkProps={{
 				href,
 			}}
+			className={classes.redirectButton}
 		>
 			{label}
 		</Button>
@@ -120,7 +121,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							showVerifyBadge={declaration.status === "unverified"}
 						/>
 					}
-					enlargeLinkOrButton={false}
+					enlargeLinkOrButton={true}
 					orientation="vertical"
 					pictogram={<Document fontSize="small" />}
 					className={classes.tile}
@@ -149,9 +150,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `${linkToDeclarationPage}/contact`,
 					}}
-					enlargeLinkOrButton={false}
+					enlargeLinkOrButton={true}
 					orientation="vertical"
-					pictogram={<Community fontSize="2rem" />}
+					pictogram={<Community />}
 					start={
 						<StartBadges
 							showToCompleteBadge={!declaration?.contact}
@@ -195,9 +196,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `${linkToDeclarationPage}/audit`,
 					}}
-					enlargeLinkOrButton={false}
+					enlargeLinkOrButton={true}
 					orientation="vertical"
-					pictogram={<Search fontSize="2rem" />}
+					pictogram={<Search />}
 					start={
 						<StartBadges
 							showToCompleteBadge={!declaration?.audit}
@@ -241,7 +242,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					linkProps={{
 						href: `${linkToDeclarationPage}/schema`,
 					}}
-					enlargeLinkOrButton={false}
+					enlargeLinkOrButton={true}
 					orientation="vertical"
 					pictogram={<Conclusion fontSize="1rem" />}
 					start={
@@ -342,12 +343,40 @@ const useStyles = tss.withName(Demarches.name).create({
 				display: "none",
 			},
 		},
+
+		"& .fr-tile__detail > a": {
+			position: "relative",
+		},
+		"& .fr-tile__detail > a::before": {
+			left: 0,
+			right: 0,
+			top: 0,
+			bottom: 0,
+		},
 		"& h3": {
 			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 			"&::before": {
 				backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.active.blueFrance.default}, ${fr.colors.decisions.border.active.blueFrance.default})`,
 			},
 		},
+
+		"& .fr-tile__pictogram": {
+			width: fr.spacing("10v"),
+			height: fr.spacing("10v"),
+		},
+
+		"& .fr-tile__title": {
+			fontSize: "1rem",
+			fontWeight: 700,
+		},
+
+		"& .fr-tile__desc": {
+			fontSize: "0.875rem",
+			fontWeight: 400,
+		},
+	},
+	redirectButton: {
+		fontSize: "0.875rem",
 	},
 	tileTitle: { fontSize: "16px" },
 	tileDesc: { fontSize: "14px" },

@@ -249,6 +249,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 const useStyles = tss.withName(DeclarationPage.name).create({
 	declarationPage: {
 		marginBlock: fr.spacing("10v"),
+		marginInline: "16rem",
 	},
 	headerSection: {
 		display: "flex",
@@ -283,6 +284,8 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		color: fr.colors.decisions.text.inverted.info.default,
 	},
 	tabs: {
+		boxShadow: "none",
+
 		"& > ul > li > button": {
 			border: "none !important",
 			backgroundColor: "inherit !important",

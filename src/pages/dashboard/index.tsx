@@ -17,6 +17,7 @@ import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
 import { copyToClipboard } from "~/utils/declaration-helper";
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import { appKindOptions } from "~/payload/selectOptions";
+import EmptyState from "~/components/declaration/EmptyState";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -79,105 +80,93 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 					/>
 				</div>
 			)}
-			<div className={classes.buttonWrapper}>
-				<Button
-					iconId="fr-icon-add-line"
-					priority="tertiary"
-					linkProps={{
-						href: "/dashboard/form",
-					}}
-				>
-					Ajouter une declaration
-				</Button>
-			</div>
-			{declarations.length ? (
-				<div>
-					{declarations.map((declaration) => {
-						const { name } = declaration.entity || {};
-						const { rate } = declaration.audit || {};
 
-						return (
-							<div key={declaration.id} className={classes.declarationCard}>
-								<div>
-									<h6 className={classes.declarationTitle}>
-										<NextLink href={`/dashboard/declaration/${declaration.id}`}>
-											{declaration.name}
-										</NextLink>
-										<StatusBadge
-											isPublished={declaration?.status === "published"}
-											isModified={
-												declaration?.status === "unpublished" &&
-												!!declaration?.publishedContent
-											}
-											isDraft={
-												declaration?.status !== "published" &&
-												!declaration?.publishedContent
-											}
-										/>
-									</h6>
-									<p className={classes.details}>
-										Dernière modification le {declaration.updatedAtFormatted}
-									</p>
-									<p className={classes.details}>{name}</p>
-									<p className={classes.details}>
-										{appKindOptions.find(
-											(option) => option.value === declaration.app_kind,
-										)?.label ?? declaration.app_kind}
-										{declaration.url && declaration.app_kind === "website"
-											? ` - ${declaration.url}`
-											: ""}
-									</p>
+			{declarations.length ? (
+				<>
+					<div className={classes.buttonWrapper}>
+						<Button
+							iconId="fr-icon-add-line"
+							priority="tertiary"
+							linkProps={{
+								href: "/dashboard/form",
+							}}
+						>
+							Ajouter une declaration
+						</Button>
+					</div>
+					<div>
+						{declarations.map((declaration) => {
+							const { name } = declaration.entity || {};
+							const { rate } = declaration.audit || {};
+
+							return (
+								<div key={declaration.id} className={classes.declarationCard}>
+									<div>
+										<h6 className={classes.declarationTitle}>
+											<NextLink
+												href={`/dashboard/declaration/${declaration.id}`}
+											>
+												{declaration.name}
+											</NextLink>
+											<StatusBadge
+												isPublished={declaration?.status === "published"}
+												isModified={
+													declaration?.status === "unpublished" &&
+													!!declaration?.publishedContent
+												}
+												isDraft={
+													declaration?.status !== "published" &&
+													!declaration?.publishedContent
+												}
+											/>
+										</h6>
+										<p className={classes.details}>
+											Dernière modification le {declaration.updatedAtFormatted}
+										</p>
+										<p className={classes.details}>{name}</p>
+										<p className={classes.details}>
+											{appKindOptions.find(
+												(option) => option.value === declaration.app_kind,
+											)?.label ?? declaration.app_kind}
+											{declaration.url && declaration.app_kind === "website"
+												? ` - ${declaration.url}`
+												: ""}
+										</p>
+									</div>
+									<div
+										style={
+											declaration.status === "published" && rate !== undefined
+												? { visibility: "visible" }
+												: { visibility: "hidden" }
+										}
+									>
+										<p className={classes.auditRateValue}>{rate}%</p>
+										<p className={classes.auditRateLabel}>taux conformité</p>
+									</div>
+									<Button
+										iconId="fr-icon-share-line"
+										priority="tertiary"
+										style={{ width: "100%" }}
+										onClick={() =>
+											copyToClipboard(
+												`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+												() =>
+													showDeclarationAlert({
+														description: "Lien copié dans le presse-papier",
+														severity: "success",
+													}),
+											)
+										}
+									>
+										Copier le lien
+									</Button>
 								</div>
-								<div
-									style={
-										declaration.status === "published" && rate !== undefined
-											? { visibility: "visible" }
-											: { visibility: "hidden" }
-									}
-								>
-									<p className={classes.auditRateValue}>{rate}%</p>
-									<p className={classes.auditRateLabel}>taux conformité</p>
-								</div>
-								<Button
-									iconId="fr-icon-share-line"
-									priority="tertiary"
-									style={{ width: "100%" }}
-									onClick={() =>
-										copyToClipboard(
-											`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
-											() =>
-												showDeclarationAlert({
-													description: "Lien copié dans le presse-papier",
-													severity: "success",
-												}),
-										)
-									}
-								>
-									Copier le lien
-								</Button>
-							</div>
-						);
-					})}
-				</div>
+							);
+						})}
+					</div>
+				</>
 			) : (
-				<div className={classes.emptyStateContainer}>
-					<Conclusion fontSize="120px" />
-					<h2 className={classes.emptyStateTitle}>
-						Créez votre déclaration d’accessibilité
-					</h2>
-					<p className={classes.emptyStateDescription}>
-						Publiez une déclaration conforme pour répondre aux obligations
-						légales
-					</p>
-					<Button
-						linkProps={{
-							href: "/dashboard/form",
-						}}
-						priority="primary"
-					>
-						Créer une déclaration
-					</Button>
-				</div>
+				<EmptyState />
 			)}
 		</section>
 	);
@@ -191,7 +180,8 @@ const useStyles = tss
 			display: "flex",
 			flexDirection: "column",
 			gap: fr.spacing("8v"),
-			padding: fr.spacing("10v"),
+			marginBlock: fr.spacing("10v"),
+			marginInline: "16rem",
 		},
 		buttonWrapper: {
 			justifyContent: "flex-end",

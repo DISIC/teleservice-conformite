@@ -54,7 +54,7 @@ const userNavigationItems: MainNavigationProps.Item[] = [
 function App({ Component, pageProps }: AppProps) {
 	const router = useRouter();
 	const { classes, cx } = useStyles({
-		formBackgroundColor: ["infos", "audit", "schema", "contact"].includes(
+		isFormPage: ["infos", "audit", "schema", "contact", "form"].includes(
 			router.pathname.split("/").pop() || "",
 		),
 	});
@@ -114,17 +114,16 @@ function App({ Component, pageProps }: AppProps) {
 					// navigation={navigationItems}
 					quickAccessItems={quickAccessItems}
 					serviceTitle="Téléservice Conformité"
+					className={classes.header}
 				/>
-				<main
-					className={cx(fr.cx("fr-container"), classes.main)}
-					style={{ flex: 1 }}
-				>
+				<main className={classes.main} style={{ flex: 1 }}>
 					<AlertHost />
 					<Component {...pageProps} />
 				</main>
 				<Footer
 					accessibility="non compliant"
 					bottomItems={[headerFooterDisplayItem]}
+					className={classes.footer}
 				/>
 			</div>
 		</>
@@ -134,18 +133,42 @@ function App({ Component, pageProps }: AppProps) {
 const useStyles = tss
 	.withName(App.name)
 	.withParams<{
-		formBackgroundColor: boolean;
+		isFormPage: boolean;
 	}>()
-	.create(({ formBackgroundColor }) => ({
+	.create(({ isFormPage }) => ({
+		header: {
+			"& > #header-menu-modal-fr-header": {
+				display: "none",
+			},
+			"& > div": {
+				marginInline: "16rem",
+				"& > div": {
+					paddingInline: 0,
+					marginInline: 0,
+					maxWidth: "none",
+					width: "100%",
+				},
+			},
+		},
+		footer: {
+			"& > div": {
+				marginInline: 0,
+				width: "100%",
+				maxWidth: "none",
+				boxSizing: "border-box",
+				paddingInline: "16rem",
+			},
+		},
 		mainContainer: {
 			minHeight: "100vh",
 			display: "flex",
 			flexDirection: "column",
-			backgroundColor: formBackgroundColor
+		},
+		main: {
+			backgroundColor: isFormPage
 				? fr.colors.decisions.background.alt.blueFrance.default
 				: "inherit",
 		},
-		main: {},
 	}));
 
 export default withDsfr(api.withTRPC(withAppEmotionCache(App)));

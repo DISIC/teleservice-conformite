@@ -4,6 +4,7 @@ import System from "@codegouvfr/react-dsfr/picto/System";
 import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
 import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
+import { useRef, useEffect, useState } from "react";
 
 import { appKindOptions, kindOptions } from "~/payload/selectOptions";
 import { withForm } from "../context";
@@ -31,6 +32,9 @@ export const DeclarationGeneralForm = withForm({
 							label="Type de service"
 							options={[...appKindOptions]}
 							readOnly={readOnly}
+							onChange={() => {
+								form.setFieldValue("general.url", "");
+							}}
 						/>
 					)}
 				</form.AppField>
@@ -93,12 +97,24 @@ export const ContextForm = withForm({
 	...declarationMultiStepFormOptions,
 	render: function Render({ form }) {
 		const { classes } = useStyles();
+		const [newDeclaration, setNewDeclaration] = useState("");
+
+		const textFieldContainerRef = useRef<HTMLDivElement | null>(null);
+		useEffect(() => {
+			if (
+				textFieldContainerRef.current &&
+				["viaUrl", "viaAra"].includes(newDeclaration)
+			) {
+				textFieldContainerRef.current.scrollIntoView({ behavior: "smooth" });
+			}
+		}, [newDeclaration]);
 
 		return (
 			<div className={classes.contextFormContainer}>
 				<form.AppField name="initialDeclaration.newDeclaration">
 					{(field) => (
 						<field.SelectCardField
+							name="initialDeclaration.newDeclaration"
 							label="Quelle est votre situation pour ce service ?"
 							options={[
 								{
@@ -125,9 +141,11 @@ export const ContextForm = withForm({
 									image: <DocumentSearch fontSize="3rem" />,
 								},
 							]}
-							onChange={() => {
+							onChange={(value) => {
 								form.resetField("initialDeclaration.declarationUrl");
 								form.resetField("initialDeclaration.araUrl");
+
+								setNewDeclaration(value);
 							}}
 						/>
 					)}
@@ -136,7 +154,7 @@ export const ContextForm = withForm({
 					selector={(store) => store.values.initialDeclaration?.newDeclaration}
 				>
 					{(newDeclaration) => (
-						<>
+						<div ref={textFieldContainerRef}>
 							{newDeclaration === "viaUrl" && (
 								<form.AppField name="initialDeclaration.declarationUrl">
 									{(field) => (
@@ -165,7 +183,7 @@ export const ContextForm = withForm({
 									message="Ara est un outil destiné aux auditeurs qui permet de réaliser un rapport d’audit complet et de générer automatiquement une déclaration d’accessibilité. "
 								/>
 							)}
-						</>
+						</div>
 					)}
 				</form.Subscribe>
 			</div>

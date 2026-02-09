@@ -45,7 +45,9 @@ export default function DeclarationForm({
 		<div className={cx(classes.formWrapper)}>
 			<div className={classes.editButtonWrapper}>
 				<h3 className={classes.description}>
-					Vérifiez les informations et modifiez-les si nécessaire
+					{isEditable
+						? "Vérifiez les informations et modifiez-les si nécessaire"
+						: "Tous les champs sont obligatoires sauf précision contraire"}
 				</h3>
 				{isEditable && onToggleEdit && (
 					<Button
@@ -99,6 +101,7 @@ export default function DeclarationForm({
 const useStyles = tss.withName(DeclarationForm.name).create({
 	main: {
 		marginBlock: fr.spacing("10v"),
+		marginInline: "23.75rem",
 		display: "flex",
 		flexDirection: "column",
 	},
