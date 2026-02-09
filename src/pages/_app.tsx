@@ -123,6 +123,7 @@ function App({ Component, pageProps }: AppProps) {
 				<Footer
 					accessibility="non compliant"
 					bottomItems={[headerFooterDisplayItem]}
+					className={classes.footer}
 				/>
 			</div>
 		</>
@@ -147,6 +148,15 @@ const useStyles = tss
 					maxWidth: "none",
 					width: "100%",
 				},
+			},
+		},
+		footer: {
+			"& > div": {
+				marginInline: 0,
+				width: "100%",
+				maxWidth: "none",
+				boxSizing: "border-box",
+				paddingInline: "16rem",
 			},
 		},
 		mainContainer: {
