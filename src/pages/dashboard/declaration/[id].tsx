@@ -306,7 +306,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			},
 		},
 		"& > div": {
-			padding: `${fr.spacing("6w")} ${fr.spacing("1v")}`,
+			padding: `${fr.spacing("6w")} 0`,
 			border: "none !important",
 			boxShadow: "none !important",
 			marginBlock: fr.spacing("6v"),
