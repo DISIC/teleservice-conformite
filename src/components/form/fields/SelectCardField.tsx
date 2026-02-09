@@ -13,7 +13,7 @@ interface SelectCardFieldProps {
 		label: string;
 		description?: string;
 	}[];
-	onChange: () => void;
+	onChange: (value: string) => void;
 }
 
 export function SelectCardField(props: SelectCardFieldProps) {
@@ -49,7 +49,7 @@ export function SelectCardField(props: SelectCardFieldProps) {
 						name={name}
 						id={id}
 						onChange={() => {
-							onChange();
+							onChange(id);
 							field.setValue(id);
 						}}
 					/>
@@ -72,6 +72,10 @@ const useStyles = tss.withName(SelectCardField.name).create({
 		padding: fr.spacing("4w"),
 		alignItems: "center",
 		gap: fr.spacing("2w"),
+
+		"&:hover": {
+			backgroundColor: fr.colors.decisions.background.default.grey.hover,
+		},
 
 		"& input[type='radio']": {
 			display: "none",
