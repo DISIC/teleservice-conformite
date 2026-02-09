@@ -47,15 +47,17 @@ const ToolAdvantages = () => {
 	return (
 		<div className={classes.advantagesContainer}>
 			<h3>Profitez des avantages de l’outil</h3>
-			{list.map(({ title, description, Icon, iconPosition }) => (
-				<div key={title} data-iconPosition={iconPosition}>
-					<div>
-						<h4>{title}</h4>
-						<p>{description}</p>
+			<div className={classes.advantagesList}>
+				{list.map(({ title, description, Icon, iconPosition }) => (
+					<div key={title} data-iconPosition={iconPosition}>
+						<div>
+							<h4>{title}</h4>
+							<p>{description}</p>
+						</div>
+						<Icon fontSize="10rem" />
 					</div>
-					<Icon fontSize="10rem" />
-				</div>
-			))}
+				))}
+			</div>
 		</div>
 	);
 };
@@ -155,14 +157,14 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 		alignItems: "center",
 		justifyContent: "space-between",
 		marginInline: "calc(50% - 50vw)",
+		paddingInline: "16rem",
 		width: "100vw",
 		maxWidth: "100vw",
-		paddingInline: fr.spacing("8w"),
 		paddingBlock: fr.spacing("5w"),
 		backgroundColor: fr.colors.decisions.artwork.background.blueFrance.default,
 	},
 	body: {
-		paddingInline: fr.spacing("8w"),
+		paddingInline: "16rem",
 
 		"& > p": {
 			marginBlock: fr.spacing("8w"),
@@ -227,6 +229,15 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 		marginBlock: fr.spacing("4w"),
 	},
 	advantagesContainer: {
+		display: "flex",
+		flexDirection: "column",
+		"& h3": {
+			textAlign: "center",
+			marginTop: fr.spacing("25v"),
+			marginBottom: 0,
+		},
+	},
+	advantagesList: {
 		"& > div": {
 			display: "flex",
 			flexDirection: "row",
@@ -243,7 +254,10 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 
 			"& > div": {
 				width: "25rem",
-				"& > p, > h4": { margin: 0 },
+				"& > p": { margin: 0 },
+				"& > h4": {
+					color: fr.colors.decisions.text.title.blueFrance.default,
+				},
 			},
 		},
 		marginTop: fr.spacing("20v"),
