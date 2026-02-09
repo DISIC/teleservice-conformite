@@ -284,6 +284,8 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		color: fr.colors.decisions.text.inverted.info.default,
 	},
 	tabs: {
+		boxShadow: "none",
+
 		"& > ul > li > button": {
 			border: "none !important",
 			backgroundColor: "inherit !important",
