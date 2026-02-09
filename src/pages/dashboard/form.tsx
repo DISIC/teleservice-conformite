@@ -311,7 +311,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				<div className={classes.formWrapper}>
 					<div className={classes.whiteBackground}>
 						<h3 className={classes.description}>
-							Vérifiez les informations et modifiez-les si nécessaire
+							Tous les champs sont obligatoires sauf précision contraire
 						</h3>
 						{section === "initialDeclaration" && <ContextForm form={form} />}
 						{section === "general" && (
