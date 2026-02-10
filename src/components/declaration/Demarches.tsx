@@ -79,7 +79,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				<PopupMessage
 					image={<Information fontSize="6rem" />}
 					message={
-						<strong>Votre déclaration est prête à être mise à jour !</strong>
+						<strong>Votre déclaration est prête à être publiée !</strong>
 					}
 					actionButtons={[
 						{
