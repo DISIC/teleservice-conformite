@@ -106,6 +106,13 @@ export const ContextForm = withForm({
 				["viaUrl", "viaAra"].includes(newDeclaration)
 			) {
 				textFieldContainerRef.current.scrollIntoView({ behavior: "smooth" });
+
+				setTimeout(() => {
+					const el = textFieldContainerRef.current?.querySelector(
+						"input, textarea",
+					) as HTMLInputElement | HTMLTextAreaElement | null;
+					el?.focus();
+				}, 200);
 			}
 		}, [newDeclaration]);
 

@@ -83,6 +83,10 @@ const useStyles = tss.withName(SelectCardField.name).create({
 
 		"&:has(input[type='radio']:checked)": {
 			backgroundColor: fr.colors.decisions.background.raised.grey.active,
+
+			"& > span > h2": {
+				color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+			},
 		},
 
 		"& p": {
