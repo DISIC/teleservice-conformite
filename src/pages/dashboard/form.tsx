@@ -151,9 +151,10 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	declarationMultiStepFormOptions.defaultValues.section = "initialDeclaration";
 
 	const onClickCancel = () => {
-		if (section === "general")
+		if (section === "general") {
+			scrollTo(0, 0);
 			form.setFieldValue("section", "initialDeclaration");
-		else router.back();
+		} else router.back();
 	};
 
 	const addDeclaration = async (generalData: {
@@ -232,6 +233,8 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const form = useAppForm({
 		...declarationMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
+			scrollTo(0, 0);
+
 			if (
 				value.section === "initialDeclaration" &&
 				value.initialDeclaration.declarationUrl

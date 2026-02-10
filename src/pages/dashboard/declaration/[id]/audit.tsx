@@ -83,18 +83,21 @@ export default function AuditPage({
 
 	const goToPreviousSection = (currentSection: Section): Section | null => {
 		const currentIndex = sections.indexOf(currentSection);
-		if (currentIndex > 0) {
-			return sections[currentIndex - 1] ?? null;
-		}
-		return null;
+		if (currentIndex < 0) return null;
+
+		scrollTo(0, 0);
+
+		return sections[currentIndex - 1] ?? null;
 	};
 
 	const goToNextSection = (currentSection: Section): Section | null => {
 		const currentIndex = sections.indexOf(currentSection);
-		if (currentIndex < sections.length - 1) {
-			return sections[currentIndex + 1] ?? null;
-		}
-		return null;
+
+		if (currentIndex >= sections.length - 1) return null;
+
+		scrollTo(0, 0);
+
+		return sections[currentIndex + 1] ?? null;
 	};
 
 	const addAudit = async (auditData: any, declarationId: number) => {
