@@ -122,7 +122,6 @@ function App({ Component, pageProps }: AppProps) {
 				<Footer
 					accessibility="non compliant"
 					bottomItems={[headerFooterDisplayItem]}
-					className={classes.footer}
 				/>
 			</div>
 		</>
@@ -135,15 +134,6 @@ const useStyles = tss
 		isFormPage: boolean;
 	}>()
 	.create(({ isFormPage }) => ({
-		footer: {
-			"& > div": {
-				marginInline: 0,
-				width: "100%",
-				maxWidth: "none",
-				boxSizing: "border-box",
-				paddingInline: "16rem",
-			},
-		},
 		mainContainer: {
 			minHeight: "100vh",
 			display: "flex",
