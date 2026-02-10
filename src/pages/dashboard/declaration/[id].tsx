@@ -45,7 +45,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const [declarationName, setDeclarationName] = useState<string>(
 		declaration?.name ?? "",
 	);
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
@@ -112,17 +112,15 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 
 	return (
 		<>
-			<section id="declaration-page" className={classes.declarationPage}>
-				<section id="breadcrumbs">
-					<Breadcrumb
-						homeLinkProps={{
-							href: "/dashboard",
-						}}
-						segments={[]}
-						currentPageLabel={declarationName}
-						className={fr.cx("fr-mb-3w")}
-					/>
-				</section>
+			<section id="declaration-page" className={fr.cx("fr-container")}>
+				<Breadcrumb
+					homeLinkProps={{
+						href: "/dashboard",
+					}}
+					segments={[]}
+					currentPageLabel={declarationName}
+					className={fr.cx("fr-mb-3w")}
+				/>
 				<section id="header" className={classes.headerSection}>
 					<div className={classes.header}>
 						<h1>
@@ -247,16 +245,12 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 }
 
 const useStyles = tss.withName(DeclarationPage.name).create({
-	declarationPage: {
-		marginBlock: fr.spacing("10v"),
-		marginInline: "16rem",
-	},
 	headerSection: {
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "start",
 		justifyContent: "flex-start",
-		marginBottom: fr.spacing("4w"),
+		marginBottom: fr.spacing("16v"),
 	},
 	header: {
 		display: "flex",
@@ -289,7 +283,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			padding: 0,
 			margin: 0,
 			boxShadow: `0 -1px 0 0 ${fr.colors.decisions.border.default.grey.default} inset`,
-			gap: fr.spacing("4w"),
+			gap: fr.spacing("16v"),
 		},
 		"& > ul > li > button": {
 			border: "none !important",
@@ -306,7 +300,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			},
 		},
 		"& > div": {
-			padding: `${fr.spacing("6w")} 0`,
+			padding: `${fr.spacing("16v")} 0`,
 			border: "none !important",
 			boxShadow: "none !important",
 			marginBlock: fr.spacing("6v"),

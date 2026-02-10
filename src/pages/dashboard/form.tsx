@@ -29,6 +29,7 @@ import {
 import { showAlert } from "~/utils/alert-event";
 import DeclarationLoader from "~/components/declaration/DeclarationLoader";
 import type { importedDeclarationDataSchema } from "~/server/api/routers/declaration";
+import { useStyles as useAppStyles } from "~/pages/_app";
 
 export type ImportedDeclarationData = z.infer<
 	typeof importedDeclarationDataSchema
@@ -36,6 +37,7 @@ export type ImportedDeclarationData = z.infer<
 
 export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { classes } = useStyles();
+	const { classes: appClasses } = useAppStyles();
 	const router = useRouter();
 	const [importedDeclarationData, setImportedDeclarationData] =
 		useState<ImportedDeclarationData | null>(null);
@@ -295,56 +297,58 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 	const section = useStore(form.store, (state) => state.values.section);
 
-	return !isAnalyzingUrl && !isGettingInfoFromAra ? (
-		<div className={classes.main}>
-			<h2>
-				{section === "initialDeclaration"
-					? "Contexte"
-					: "Informations générales"}
-			</h2>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-					form.handleSubmit();
-				}}
-			>
-				<div className={classes.formWrapper}>
-					<div className={classes.whiteBackground}>
-						<h3 className={classes.description}>
-							Tous les champs sont obligatoires sauf précision contraire
-						</h3>
-						{section === "initialDeclaration" && <ContextForm form={form} />}
-						{section === "general" && (
-							<DeclarationGeneralForm form={form} readOnly={false} />
-						)}
-					</div>
-					<form.AppForm>
-						<div className={classes.actionButtonsContainer}>
-							<form.CancelButton
-								label="Retour"
-								onClick={onClickCancel}
-								priority="tertiary"
-							/>
-							<form.SubscribeButton
-								label="Continuer"
-								iconId="fr-icon-arrow-right-line"
-								iconPosition="right"
-							/>
+	return (
+		<section className={fr.cx("fr-container")}>
+			{!isAnalyzingUrl && !isGettingInfoFromAra ? (
+				<div className={appClasses.formContainer}>
+					<h2>
+						{section === "initialDeclaration"
+							? "Contexte"
+							: "Informations générales"}
+					</h2>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							form.handleSubmit();
+						}}
+					>
+						<div className={classes.formWrapper}>
+							<div className={classes.whiteBackground}>
+								<h3 className={classes.description}>
+									Tous les champs sont obligatoires sauf précision contraire
+								</h3>
+								{section === "initialDeclaration" && (
+									<ContextForm form={form} />
+								)}
+								{section === "general" && (
+									<DeclarationGeneralForm form={form} readOnly={false} />
+								)}
+							</div>
+							<form.AppForm>
+								<div className={classes.actionButtonsContainer}>
+									<form.CancelButton
+										label="Retour"
+										onClick={onClickCancel}
+										priority="tertiary"
+									/>
+									<form.SubscribeButton
+										label="Continuer"
+										iconId="fr-icon-arrow-right-line"
+										iconPosition="right"
+									/>
+								</div>
+							</form.AppForm>
 						</div>
-					</form.AppForm>
+					</form>
 				</div>
-			</form>
-		</div>
-	) : (
-		<DeclarationLoader />
+			) : (
+				<DeclarationLoader />
+			)}
+		</section>
 	);
 }
 
 const useStyles = tss.withName(FormPage.name).create({
-	main: {
-		marginBlock: fr.spacing("6w"),
-		marginInline: "23.75rem",
-	},
 	whiteBackground: {
 		backgroundColor: fr.colors.decisions.background.raised.grey.default,
 		padding: fr.spacing("10v"),

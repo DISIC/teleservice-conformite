@@ -51,12 +51,24 @@ const userNavigationItems: MainNavigationProps.Item[] = [
 	{ text: "Test - Déclaration", linkProps: { href: "/dashboard/declaration" } },
 ];
 
+const getBackgroundColor = (pathname: string) => {
+	const page = pathname.split("/").pop() || "";
+
+	if (["infos", "audit", "schema", "contact", "form"].includes(page)) {
+		return fr.colors.decisions.background.alt.blueFrance.default;
+	}
+
+	if (["preview"].includes(page)) {
+		return fr.colors.decisions.background.alt.blueFrance.default;
+	}
+
+	return "inherit";
+};
+
 function App({ Component, pageProps }: AppProps) {
 	const router = useRouter();
 	const { classes, cx } = useStyles({
-		isFormPage: ["infos", "audit", "schema", "contact", "form"].includes(
-			router.pathname.split("/").pop() || "",
-		),
+		backgroundColor: getBackgroundColor(router.pathname),
 	});
 	const { data: authSession, isPending: isPendingAuth } =
 		authClient.useSession();
@@ -128,21 +140,23 @@ function App({ Component, pageProps }: AppProps) {
 	);
 }
 
-const useStyles = tss
+export const useStyles = tss
 	.withName(App.name)
 	.withParams<{
-		isFormPage: boolean;
+		backgroundColor?: string;
 	}>()
-	.create(({ isFormPage }) => ({
+	.create(({ backgroundColor = "inherit" }) => ({
 		mainContainer: {
 			minHeight: "100vh",
 			display: "flex",
 			flexDirection: "column",
 		},
 		main: {
-			backgroundColor: isFormPage
-				? fr.colors.decisions.background.alt.blueFrance.default
-				: "inherit",
+			backgroundColor: backgroundColor,
+		},
+		formContainer: {
+			paddingInline: "16rem",
+			paddingBlock: fr.spacing("12v"),
 		},
 	}));
 

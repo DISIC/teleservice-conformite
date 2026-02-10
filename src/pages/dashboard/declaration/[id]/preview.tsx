@@ -38,7 +38,7 @@ type RequiredPopulatedDeclaration = Omit<
 export default function DeclarationPreviewPage({
 	declaration,
 }: { declaration: RequiredPopulatedDeclaration }) {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const router = useRouter();
 
 	const publishedDeclarationContent: PublishedDeclaration =
@@ -66,29 +66,31 @@ export default function DeclarationPreviewPage({
 	};
 
 	return (
-		<section id="declaration-preview" className={classes.main}>
-			<h1>Votre déclaration est prête à être publiée</h1>
-			<p>Voici un aperçu de votre déclaration</p>
-			<div className={classes.declarationPreview}>
-				<PublishedDeclarationTemplate
-					declaration={publishedDeclarationContent}
-				/>
-			</div>
-			<div className={classes.buttonsContainer}>
-				<Button priority="tertiary" onClick={() => router.back()}>
-					Retour
-				</Button>
-				<Button
-					priority="secondary"
-					linkProps={{
-						href: `/dashboard/declaration/${declaration.id}`,
-					}}
-				>
-					Continuer sans publier
-				</Button>
-				<Button priority="primary" onClick={onPublish}>
-					Publier la déclaration
-				</Button>
+		<section id="declaration-preview" className={fr.cx("fr-container")}>
+			<div className={classes.main}>
+				<h1>Votre déclaration est prête à être publiée</h1>
+				<p>Voici un aperçu de votre déclaration</p>
+				<div className={classes.declarationPreview}>
+					<PublishedDeclarationTemplate
+						declaration={publishedDeclarationContent}
+					/>
+				</div>
+				<div className={classes.buttonsContainer}>
+					<Button priority="tertiary" onClick={() => router.back()}>
+						Retour
+					</Button>
+					<Button
+						priority="secondary"
+						linkProps={{
+							href: `/dashboard/declaration/${declaration.id}`,
+						}}
+					>
+						Continuer sans publier
+					</Button>
+					<Button priority="primary" onClick={onPublish}>
+						Publier la déclaration
+					</Button>
+				</div>
 			</div>
 		</section>
 	);
@@ -96,12 +98,10 @@ export default function DeclarationPreviewPage({
 
 const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 	main: {
-		marginTop: fr.spacing("10v"),
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("4w"),
-		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-		padding: fr.spacing("6w"),
+		paddingBlock: fr.spacing("12v"),
 	},
 	declarationPreview: {
 		backgroundColor: fr.colors.decisions.background.default.grey.default,
