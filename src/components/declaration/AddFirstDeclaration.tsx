@@ -1,14 +1,13 @@
-import MentalDisabilities from "@codegouvfr/react-dsfr/picto/MentalDisabilities";
-import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
-import Document from "@codegouvfr/react-dsfr/picto/Document";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useRouter } from "next/router";
-import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
+import Document from "@codegouvfr/react-dsfr/picto/Document";
 import FlowList from "@codegouvfr/react-dsfr/picto/FlowList";
-import Notification from "@codegouvfr/react-dsfr/picto/Notification";
 import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
+import MentalDisabilities from "@codegouvfr/react-dsfr/picto/MentalDisabilities";
+import Notification from "@codegouvfr/react-dsfr/picto/Notification";
+import { tss } from "tss-react";
 
 const ToolAdvantages = () => {
 	const { classes } = useStyles();
@@ -63,16 +62,19 @@ const ToolAdvantages = () => {
 };
 
 export default function AddFirstDeclaration() {
-	const router = useRouter();
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 
 	return (
 		<section className={classes.main}>
-			<div className={classes.header}>
-				<h1>Téléservice de déclaration d’accessibilité</h1>
-				<MentalDisabilities fontSize="8rem" />
+			<div className={classes.headerWrapper}>
+				<div className={cx(classes.header, fr.cx("fr-container"))}>
+					<h1 className={fr.cx("fr-mb-0")}>
+						Téléservice de déclaration d’accessibilité
+					</h1>
+					<MentalDisabilities fontSize="8rem" />
+				</div>
 			</div>
-			<div className={classes.body}>
+			<div className={cx(classes.body, fr.cx("fr-container"))}>
 				<p>
 					Ce service a été créé pour garantir la conformité et assurer que
 					toutes les déclarations soient produites selon les mêmes standards.
@@ -149,23 +151,19 @@ export default function AddFirstDeclaration() {
 
 const useStyles = tss.withName(AddFirstDeclaration.name).create({
 	main: {
-		marginBottom: fr.spacing("20v"),
+		marginBottom: fr.spacing("22v"),
+	},
+	headerWrapper: {
+		backgroundColor: fr.colors.decisions.artwork.background.blueFrance.default,
 	},
 	header: {
 		display: "flex",
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		marginInline: "calc(50% - 50vw)",
-		paddingInline: "16rem",
-		width: "100vw",
-		maxWidth: "100vw",
 		paddingBlock: fr.spacing("5w"),
-		backgroundColor: fr.colors.decisions.artwork.background.blueFrance.default,
 	},
 	body: {
-		paddingInline: "16rem",
-
 		"& > p": {
 			marginBlock: fr.spacing("8w"),
 			fontWeight: 400,
@@ -180,9 +178,11 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 		},
 	},
 	infoSection: {
-		padding: fr.spacing("4w"),
+		display: "flex",
+		flexDirection: "column",
+		justifyContent: "space-between",
+		padding: fr.spacing("7w"),
 		backgroundColor: fr.colors.decisions.artwork.background.blueFrance.default,
-
 		"& > h2": {
 			fontWeight: 700,
 			fontFamily: "Marianne",
@@ -243,15 +243,13 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 			flexDirection: "row",
 			alignItems: "center",
 			justifyContent: "center",
-			gap: fr.spacing("25v"),
-
+			gap: fr.spacing("6w"),
 			"&[data-iconPosition='left']": {
 				flexDirection: "row-reverse",
 			},
 			"&[data-iconPosition='right']": {
 				flexDirection: "row",
 			},
-
 			"& > div": {
 				width: "25rem",
 				"& > p": { margin: 0 },
@@ -260,11 +258,11 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 				},
 			},
 		},
-		marginTop: fr.spacing("20v"),
+		marginTop: fr.spacing("7w"),
 		justifyContent: "center",
 		alignItems: "center",
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("24v"),
+		gap: fr.spacing("7w"),
 	},
 });

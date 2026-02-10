@@ -9,12 +9,12 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 import { tss } from "tss-react";
+import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 
+import { AlertHost } from "~/components/alert/AlertHost";
 import { api } from "~/utils/api";
 import { authClient } from "~/utils/auth-client";
-import { AlertHost } from "~/components/alert/AlertHost";
 
 // Only in TypeScript projects
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
@@ -114,7 +114,6 @@ function App({ Component, pageProps }: AppProps) {
 					// navigation={navigationItems}
 					quickAccessItems={quickAccessItems}
 					serviceTitle="Téléservice Conformité"
-					className={classes.header}
 				/>
 				<main className={classes.main} style={{ flex: 1 }}>
 					<AlertHost />
@@ -136,20 +135,6 @@ const useStyles = tss
 		isFormPage: boolean;
 	}>()
 	.create(({ isFormPage }) => ({
-		header: {
-			"& > #header-menu-modal-fr-header": {
-				display: "none",
-			},
-			"& > div": {
-				marginInline: "16rem",
-				"& > div": {
-					paddingInline: 0,
-					marginInline: 0,
-					maxWidth: "none",
-					width: "100%",
-				},
-			},
-		},
 		footer: {
 			"& > div": {
 				marginInline: 0,
