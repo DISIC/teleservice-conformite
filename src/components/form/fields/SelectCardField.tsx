@@ -35,7 +35,7 @@ export function SelectCardField(props: SelectCardFieldProps) {
 				>
 					{image}
 					<span>
-						<p className={classes.title}>{label}</p>
+						<h2 className={classes.title}>{label}</h2>
 						{description && (
 							<p className={classes.description}>{description}</p>
 						)}
@@ -105,6 +105,8 @@ const useStyles = tss.withName(SelectCardField.name).create({
 		fontSize: "1rem",
 		lineHeight: "1.5rem",
 		color: fr.colors.decisions.text.title.grey.default,
+		margin: 0,
+		textAlign: "left",
 	},
 	description: {
 		color: fr.colors.decisions.text.default.grey.default,
