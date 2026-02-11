@@ -7,6 +7,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import React from "react";
 
 import { useStyles as useAppStyles } from "~/pages/_app";
+import VerifyGeneratedInfoHelpingMessage from "./VerifyGeneratedInfoPopUpMessage";
 
 type DeclarationFormProps = {
 	declaration: PopulatedDeclaration;
@@ -20,6 +21,7 @@ type DeclarationFormProps = {
 	children: React.ReactNode;
 	LayoutComponent?: React.ComponentType<{ children: React.ReactNode }>;
 	showLayoutComponent?: boolean;
+	isAiGenerated?: boolean;
 };
 
 export default function DeclarationForm({
@@ -34,6 +36,7 @@ export default function DeclarationForm({
 	children,
 	LayoutComponent,
 	showLayoutComponent = false,
+	isAiGenerated = false,
 }: DeclarationFormProps) {
 	const { classes, cx } = useStyles();
 	const { classes: formClasses } = useAppStyles();

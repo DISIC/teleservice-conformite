@@ -1,4 +1,4 @@
-import PopupMessage from "~/components/declaration/PopupMessage";
+import HelpingMessage from "~/components/declaration/HelpingMessage";
 import { withForm } from "../context";
 import { schemaFormOptions } from "./schema";
 import Information from "@codegouvfr/react-dsfr/picto/Information";
@@ -37,7 +37,7 @@ export const SchemaForm = withForm({
 									)}
 								</form.AppField>
 							) : (
-								<PopupMessage
+								<HelpingMessage
 									image={<Information fontSize="6rem" />}
 									message={
 										<>

@@ -6,7 +6,7 @@ import type {
 	RiIconClassName,
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 
-interface PopupMessageProps {
+interface HelpingMessageProps {
 	image: React.ReactNode;
 	message: string | React.ReactNode;
 	actionButtons?: {
@@ -17,15 +17,15 @@ interface PopupMessageProps {
 	}[];
 }
 
-export default function PopupMessage({
+export default function HelpingMessage({
 	image,
 	message,
 	actionButtons,
-}: PopupMessageProps) {
+}: HelpingMessageProps) {
 	const { classes } = useStyles();
 
 	return (
-		<div className={classes.popupMessageContainer}>
+		<div className={classes.helpingMessageContainer}>
 			{image}
 			<p className={classes.messageWrapper}>{message}</p>
 			<div className={classes.buttonsContainer}>
@@ -44,13 +44,13 @@ export default function PopupMessage({
 	);
 }
 
-const useStyles = tss.withName(PopupMessage.name).create({
-	popupMessageContainer: {
+const useStyles = tss.withName(HelpingMessage.name).create({
+	helpingMessageContainer: {
 		display: "grid",
 		gridTemplateColumns: "auto 2fr 1fr",
-		padding: fr.spacing("5w"),
+		padding: fr.spacing("6v"),
 		marginBlock: fr.spacing("2w"),
-		gap: fr.spacing("5w"),
+		gap: fr.spacing("6v"),
 		backgroundColor: fr.colors.decisions.background.contrast.blueFrance.default,
 	},
 	messageWrapper: {
@@ -58,6 +58,7 @@ const useStyles = tss.withName(PopupMessage.name).create({
 		alignItems: "flex-start",
 		flexDirection: "column",
 		justifyContent: "center",
+		margin: 0,
 	},
 	buttonsContainer: {
 		display: "flex",

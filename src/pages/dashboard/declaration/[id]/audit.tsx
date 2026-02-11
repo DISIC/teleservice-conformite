@@ -297,6 +297,7 @@ export default function AuditPage({
 				)
 			}
 			showLayoutComponent={!declaration?.audit}
+			isAiGenerated={declaration?.audit?.status === "fromAI"}
 		>
 			{!declaration?.audit ? (
 				<form

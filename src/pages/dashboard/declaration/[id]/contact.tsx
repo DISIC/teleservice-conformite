@@ -199,6 +199,7 @@ export default function ContactPage({
 			isEditable={!!declaration?.contact}
 			editMode={editMode}
 			onToggleEdit={onEditInfos}
+			isAiGenerated={declaration?.contact?.status === "fromAI"}
 		>
 			<form
 				onSubmit={(e) => {

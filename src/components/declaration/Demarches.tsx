@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import { tss } from "tss-react";
 
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import PopupMessage from "./PopupMessage";
+import HelpingMessage from "./HelpingMessage";
 
 interface DemarchesProps {
 	declaration: PopulatedDeclaration;
@@ -76,7 +76,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	return (
 		<section id="demarches-tab" className={classes.main}>
 			{declarationComplete && (
-				<PopupMessage
+				<HelpingMessage
 					image={<Information fontSize="6rem" />}
 					message={
 						<strong>Votre déclaration est prête à être publiée !</strong>

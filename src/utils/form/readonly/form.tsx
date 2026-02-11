@@ -12,7 +12,7 @@ import {
 } from "~/payload/selectOptions";
 import { withForm } from "../context";
 import { readOnlyFormOptions } from "./schema";
-import PopupMessage from "~/components/declaration/PopupMessage";
+import HelpingMessage from "~/components/declaration/HelpingMessage";
 
 export const DeclarationGeneralForm = withForm({
 	...readOnlyFormOptions,
@@ -99,7 +99,7 @@ export const DeclarationSchema = withForm({
 									)}
 								</form.AppField>
 							) : (
-								<PopupMessage
+								<HelpingMessage
 									image={<Information fontSize="6rem" />}
 									message={
 										<>

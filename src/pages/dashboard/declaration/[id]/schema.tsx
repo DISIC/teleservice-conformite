@@ -196,6 +196,7 @@ export default function SchemaPage({
 			onToggleEdit={onEditInfos}
 			editMode={editMode}
 			showLayoutComponent={false}
+			isAiGenerated={declaration?.actionPlan?.status === "fromAI"}
 		>
 			<form
 				onSubmit={(e) => {

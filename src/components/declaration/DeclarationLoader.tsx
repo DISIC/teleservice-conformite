@@ -24,8 +24,10 @@ const useStyles = tss.withName(DeclarationLoader.name).create({
 		alignItems: "center",
 		justifyContent: "center",
 		gap: "1rem",
-		marginBlock: fr.spacing("20v"),
-		marginInline: fr.spacing("10v"),
+		paddingBlock: fr.spacing("20v"),
+		paddingInline: fr.spacing("10v"),
+		backgroundColor: fr.colors.decisions.background.default.grey.default,
+		width: "100%",
 	},
 	title: {
 		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
