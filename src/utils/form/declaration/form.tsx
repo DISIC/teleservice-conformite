@@ -135,7 +135,7 @@ export const ContextForm = withForm({
 								{
 									id: "viaAra",
 									label:
-										"J'ai généré une déclaration d'accessibilité avec l’outil Ara",
+										"J'ai une déclaration en ligne réalisée avec l’outil Ara",
 									description:
 										"La nouvelle déclaration pourra être pré-remplie automatiquement",
 									image: <System fontSize="3rem" />,
