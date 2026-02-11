@@ -4,7 +4,7 @@ import z from "zod";
 import { rgaaVersionOptions, testEnvironmentOptions } from "~/payload/selectOptions";
 
 export const auditDate = z.object({
-  date: z.iso.date().min(1, { message: "La date est requise" }),
+  date: z.iso.date().optional().or(z.literal("")),
   realisedBy: z.string().min(1, {
     message: "L'organisation ayant réalisé l'audit est requise",
   }),
@@ -17,7 +17,7 @@ export const auditDate = z.object({
 export type ZAuditDate = z.infer<typeof auditDate>;
 
 export const auditDateDefaultValues: ZAuditDate = {
-  date: "",
+  date: undefined,
   realisedBy: "",
   rgaa_version: "rgaa_4",
   rate: 0,
@@ -26,10 +26,7 @@ export const auditDateDefaultValues: ZAuditDate = {
 export const tools = z.object({
   usedTools: z.array(
       z.string()
-    )
-    .min(1, {
-      message: "Au moins une technologie doit être sélectionnée",
-    }),
+    ).optional(),
   testEnvironments: z
     .array(
       z.string()

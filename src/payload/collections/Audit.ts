@@ -62,11 +62,7 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Date de realisation de l'audit" },
 			admin: {
 				position: "sidebar",
-				date: {
-					pickerAppearance: "dayOnly",
-				},
 			},
-			required: true,
 		},
 		{
 			name: "rgaa_version",

@@ -67,12 +67,12 @@ export const ToolsForm = withForm({
 					{(field) => (
 						<div>
 							<field.CheckboxGroupField
-								label="Outils utilisés pour évaluer l’accessibilité"
+								label="Outils utilisés pour évaluer l’accessibilité (facultatif)"
 								options={[...toolOptions]}
 							/>
 							<field.TagGroupField
-								label=""
-								initialTags={field.state.value.filter(
+								label="Ajouter un outil"
+								initialTags={field.state.value?.filter(
 									(tag) =>
 										![...toolOptions]
 											.map((option) => option.value as string)
@@ -90,7 +90,7 @@ export const ToolsForm = withForm({
 								options={[...testEnvironmentOptions]}
 							/>
 							<field.TagGroupField
-								label=""
+								label="Ajouter un environnement"
 								initialTags={field.state.value.filter(
 									(tag) =>
 										![...testEnvironmentOptions]
@@ -249,7 +249,12 @@ export const FilesForm = withForm({
 		return (
 			<>
 				<form.AppField name="report">
-					{(field) => <field.TextField label="Rapport d’audit (facultatif)" />}
+					{(field) => (
+						<field.TextField
+							label="Rapport d’audit (facultatif)"
+							description="Format attendu: https://www.example.fr"
+						/>
+					)}
 				</form.AppField>
 			</>
 		);
