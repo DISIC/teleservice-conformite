@@ -9,12 +9,12 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 import { tss } from "tss-react";
+import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 
+import { AlertHost } from "~/components/alert/AlertHost";
 import { api } from "~/utils/api";
 import { authClient } from "~/utils/auth-client";
-import { AlertHost } from "~/components/alert/AlertHost";
 
 // Only in TypeScript projects
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
@@ -51,12 +51,24 @@ const userNavigationItems: MainNavigationProps.Item[] = [
 	{ text: "Test - Déclaration", linkProps: { href: "/dashboard/declaration" } },
 ];
 
+const getBackgroundColor = (pathname: string) => {
+	const page = pathname.split("/").pop() || "";
+
+	if (["infos", "audit", "schema", "contact", "form"].includes(page)) {
+		return fr.colors.decisions.background.alt.blueFrance.default;
+	}
+
+	if (["preview"].includes(page)) {
+		return fr.colors.decisions.background.alt.blueFrance.default;
+	}
+
+	return "inherit";
+};
+
 function App({ Component, pageProps }: AppProps) {
 	const router = useRouter();
 	const { classes, cx } = useStyles({
-		formBackgroundColor: ["infos", "audit", "schema", "contact"].includes(
-			router.pathname.split("/").pop() || "",
-		),
+		backgroundColor: getBackgroundColor(router.pathname),
 	});
 	const { data: authSession, isPending: isPendingAuth } =
 		authClient.useSession();
@@ -115,10 +127,7 @@ function App({ Component, pageProps }: AppProps) {
 					quickAccessItems={quickAccessItems}
 					serviceTitle="Téléservice Conformité"
 				/>
-				<main
-					className={cx(fr.cx("fr-container"), classes.main)}
-					style={{ flex: 1 }}
-				>
+				<main className={classes.main} style={{ flex: 1 }}>
 					<AlertHost />
 					<Component {...pageProps} />
 				</main>
@@ -131,21 +140,24 @@ function App({ Component, pageProps }: AppProps) {
 	);
 }
 
-const useStyles = tss
+export const useStyles = tss
 	.withName(App.name)
 	.withParams<{
-		formBackgroundColor: boolean;
+		backgroundColor?: string;
 	}>()
-	.create(({ formBackgroundColor }) => ({
+	.create(({ backgroundColor = "inherit" }) => ({
 		mainContainer: {
 			minHeight: "100vh",
 			display: "flex",
 			flexDirection: "column",
-			backgroundColor: formBackgroundColor
-				? fr.colors.decisions.background.alt.blueFrance.default
-				: "inherit",
 		},
-		main: {},
+		main: {
+			backgroundColor: backgroundColor,
+		},
+		formContainer: {
+			paddingInline: "16rem",
+			paddingBlock: fr.spacing("12v"),
+		},
 	}));
 
 export default withDsfr(api.withTRPC(withAppEmotionCache(App)));

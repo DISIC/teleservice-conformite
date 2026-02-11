@@ -1,10 +1,10 @@
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { tss } from "tss-react";
-import { useFormContext } from "~/utils/form/context";
 import type {
 	FrIconClassName,
 	RiIconClassName,
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
+import { tss } from "tss-react";
+import { useFormContext } from "~/utils/form/context";
 
 export function SubscribeButton({
 	label,
@@ -31,7 +31,6 @@ export function SubscribeButton({
 				{([isSubmitting, canSubmit]) =>
 					iconId && iconPosition ? (
 						<Button
-							className={classes.button}
 							disabled={isSubmitting || !canSubmit}
 							type="submit"
 							iconId={iconId}
@@ -40,11 +39,7 @@ export function SubscribeButton({
 							{label}
 						</Button>
 					) : (
-						<Button
-							className={classes.button}
-							disabled={isSubmitting || !canSubmit}
-							type="submit"
-						>
+						<Button disabled={isSubmitting || !canSubmit} type="submit">
 							{label}
 						</Button>
 					)
@@ -87,7 +82,6 @@ export function CancelButton({
 		<div className={classes.buttonWrapper}>
 			{iconId && iconPosition ? (
 				<Button
-					className={classes.button}
 					type="button"
 					priority={priority}
 					onClick={handleClick}
@@ -97,12 +91,7 @@ export function CancelButton({
 					{label}
 				</Button>
 			) : (
-				<Button
-					className={classes.button}
-					type="button"
-					priority={priority}
-					onClick={handleClick}
-				>
+				<Button type="button" priority={priority} onClick={handleClick}>
 					{label}
 				</Button>
 			)}
@@ -114,8 +103,5 @@ const useStyles = tss.withName(SubscribeButton.name).create(() => ({
 	buttonWrapper: {
 		display: "flex",
 		justifyContent: "end",
-	},
-	button: {
-		alignItems: "end",
 	},
 }));

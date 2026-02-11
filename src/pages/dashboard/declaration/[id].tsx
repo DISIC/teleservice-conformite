@@ -1,27 +1,26 @@
-import { useState, useEffect } from "react";
-import config from "@payload-config";
-import type { GetServerSideProps } from "next";
-import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
+import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { useRouter } from "next/router";
-import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
+import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
-
-import { api } from "~/utils/api";
+import config from "@payload-config";
+import type { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
+import { getPayload } from "payload";
+import { useEffect, useState } from "react";
+import { tss } from "tss-react";
+import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
 import {
-	getDeclarationById,
 	type PopulatedDeclaration,
+	getDeclarationById,
 } from "~/server/api/utils/payload-helper";
+import { api } from "~/utils/api";
 import { copyToClipboard } from "~/utils/declaration-helper";
-import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -46,7 +45,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const [declarationName, setDeclarationName] = useState<string>(
 		declaration?.name ?? "",
 	);
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
@@ -113,16 +112,15 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 
 	return (
 		<>
-			<section id="declaration-page" className={classes.declarationPage}>
-				<section id="breadcrumbs">
-					<Breadcrumb
-						homeLinkProps={{
-							href: "/dashboard",
-						}}
-						segments={[]}
-						currentPageLabel={declarationName}
-					/>
-				</section>
+			<section id="declaration-page" className={fr.cx("fr-container")}>
+				<Breadcrumb
+					homeLinkProps={{
+						href: "/dashboard",
+					}}
+					segments={[]}
+					currentPageLabel={declarationName}
+					className={fr.cx("fr-mb-3w")}
+				/>
 				<section id="header" className={classes.headerSection}>
 					<div className={classes.header}>
 						<h1>
@@ -193,13 +191,13 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 				<Tabs
 					selectedTabId={selectedTabId}
 					tabs={[
-						{ tabId: "demarches", label: "Démarches" },
+						{ tabId: "demarches", label: "Démarche" },
 						{ tabId: "members", label: "Membres" },
 					]}
 					onTabChange={setSelectedTabId}
 					className={classes.tabs}
 				>
-					{<TabContent selectedTabId={selectedTabId} />}
+					<TabContent selectedTabId={selectedTabId} />
 				</Tabs>
 			</section>
 			<deleteModal.Component
@@ -247,15 +245,12 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 }
 
 const useStyles = tss.withName(DeclarationPage.name).create({
-	declarationPage: {
-		marginBlock: fr.spacing("10v"),
-	},
 	headerSection: {
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "start",
 		justifyContent: "flex-start",
-		marginBottom: fr.spacing("12v"),
+		marginBottom: fr.spacing("16v"),
 	},
 	header: {
 		display: "flex",
@@ -283,23 +278,33 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		color: fr.colors.decisions.text.inverted.info.default,
 	},
 	tabs: {
+		boxShadow: "none",
+		"& > ul": {
+			padding: 0,
+			margin: 0,
+			boxShadow: `0 -1px 0 0 ${fr.colors.decisions.border.default.grey.default} inset`,
+			gap: fr.spacing("16v"),
+		},
 		"& > ul > li > button": {
 			border: "none !important",
 			backgroundColor: "inherit !important",
 			backgroundImage: "none !important",
+			paddingLeft: 0,
+			paddingRight: 0,
+			margin: 0,
+			borderBottom: "3px solid transparent !important",
 
 			"&[aria-selected='true']": {
-				borderBottom: `3px solid ${fr.colors.decisions.border.actionHigh.blueFrance.default} !important`,
+				borderColor: `${fr.colors.decisions.border.actionHigh.blueFrance.default} !important`,
 				borderTop: "none !important",
 			},
 		},
-
 		"& > div": {
+			padding: `${fr.spacing("16v")} 0`,
 			border: "none !important",
 			boxShadow: "none !important",
 			marginBlock: fr.spacing("6v"),
 		},
-
 		"&::before": {
 			display: "none",
 		},

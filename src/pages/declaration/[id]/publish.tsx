@@ -16,24 +16,24 @@ export default function PublishPage({
 	const { classes } = useStyles();
 
 	if (!publishedContent) {
-		return (
-			<div className={classes.container}>
-				<p>Cette déclaration n'a pas encore été trouvée.</p>
-			</div>
-		);
+		return <></>;
 	}
 
 	return (
-		<div className={classes.container}>
-			<PublishedDeclarationTemplate declaration={publishedContent} />
-		</div>
+		<section
+			id="published-declaration-section"
+			className={fr.cx("fr-container")}
+		>
+			<div className={classes.publishedDeclarationContainer}>
+				<PublishedDeclarationTemplate declaration={publishedContent} />
+			</div>
+		</section>
 	);
 }
 
 const useStyles = tss.withName(PublishPage.name).create({
-	container: {
-		marginBlock: fr.spacing("10v"),
-		marginInline: fr.spacing("16v"),
+	publishedDeclarationContainer: {
+		paddingBlock: fr.spacing("12v"),
 	},
 });
 

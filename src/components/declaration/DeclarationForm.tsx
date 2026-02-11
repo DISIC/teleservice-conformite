@@ -6,6 +6,8 @@ import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import React from "react";
 
+import { useStyles as useAppStyles } from "~/pages/_app";
+
 type DeclarationFormProps = {
 	declaration: PopulatedDeclaration;
 	title: string;
@@ -34,8 +36,8 @@ export default function DeclarationForm({
 	showLayoutComponent = false,
 }: DeclarationFormProps) {
 	const { classes, cx } = useStyles();
+	const { classes: formClasses } = useAppStyles();
 	const router = useRouter();
-
 	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
 
 	const Layout =
@@ -45,7 +47,9 @@ export default function DeclarationForm({
 		<div className={cx(classes.formWrapper)}>
 			<div className={classes.editButtonWrapper}>
 				<h3 className={classes.description}>
-					Vérifiez les informations et modifiez-les si nécessaire
+					{isEditable
+						? "Vérifiez les informations et modifiez-les si nécessaire"
+						: "Tous les champs sont obligatoires sauf précision contraire"}
 				</h3>
 				{isEditable && onToggleEdit && (
 					<Button
@@ -62,43 +66,44 @@ export default function DeclarationForm({
 	);
 
 	return (
-		<section className={classes.main}>
-			<Breadcrumb
-				homeLinkProps={{ href: "/dashboard" }}
-				segments={
-					breadcrumbLabel
-						? [
-								{
-									label: breadcrumbLabel,
-									linkProps: { href: declarationPagePath },
-								},
-							]
-						: []
-				}
-				currentPageLabel={title}
-			/>
-			<div>
-				<h1>
-					{breadcrumbLabel ?? ""} - {title}
-				</h1>
-			</div>
-			{
-				<Layout>
-					<Content />
-				</Layout>
-			}
-			{showValidateButton && onValidate && (
-				<div className={classes.validateButton}>
-					<Button onClick={onValidate}>Valider les informations</Button>
+		<section className={fr.cx("fr-container")}>
+			<div className={cx(classes.main, formClasses.formContainer)}>
+				<Breadcrumb
+					homeLinkProps={{ href: "/dashboard" }}
+					segments={
+						breadcrumbLabel
+							? [
+									{
+										label: breadcrumbLabel,
+										linkProps: { href: declarationPagePath },
+									},
+								]
+							: []
+					}
+					currentPageLabel={title}
+				/>
+				<div>
+					<h1>
+						{breadcrumbLabel ?? ""} - {title}
+					</h1>
 				</div>
-			)}
+				{
+					<Layout>
+						<Content />
+					</Layout>
+				}
+				{showValidateButton && onValidate && (
+					<div className={classes.validateButton}>
+						<Button onClick={onValidate}>Valider les informations</Button>
+					</div>
+				)}
+			</div>
 		</section>
 	);
 }
 
 const useStyles = tss.withName(DeclarationForm.name).create({
 	main: {
-		marginBlock: fr.spacing("10v"),
 		display: "flex",
 		flexDirection: "column",
 	},

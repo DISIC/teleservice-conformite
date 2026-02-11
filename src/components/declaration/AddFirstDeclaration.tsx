@@ -1,14 +1,13 @@
-import MentalDisabilities from "@codegouvfr/react-dsfr/picto/MentalDisabilities";
-import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
-import Document from "@codegouvfr/react-dsfr/picto/Document";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useRouter } from "next/router";
-import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
+import Document from "@codegouvfr/react-dsfr/picto/Document";
 import FlowList from "@codegouvfr/react-dsfr/picto/FlowList";
-import Notification from "@codegouvfr/react-dsfr/picto/Notification";
 import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
+import MentalDisabilities from "@codegouvfr/react-dsfr/picto/MentalDisabilities";
+import Notification from "@codegouvfr/react-dsfr/picto/Notification";
+import { tss } from "tss-react";
 
 const ToolAdvantages = () => {
 	const { classes } = useStyles();
@@ -47,30 +46,35 @@ const ToolAdvantages = () => {
 	return (
 		<div className={classes.advantagesContainer}>
 			<h3>Profitez des avantages de l’outil</h3>
-			{list.map(({ title, description, Icon, iconPosition }) => (
-				<div key={title} data-iconPosition={iconPosition}>
-					<div>
-						<h4>{title}</h4>
-						<p>{description}</p>
+			<div className={classes.advantagesList}>
+				{list.map(({ title, description, Icon, iconPosition }) => (
+					<div key={title} data-iconPosition={iconPosition}>
+						<div>
+							<h4>{title}</h4>
+							<p>{description}</p>
+						</div>
+						<Icon fontSize="10rem" />
 					</div>
-					<Icon fontSize="10rem" />
-				</div>
-			))}
+				))}
+			</div>
 		</div>
 	);
 };
 
 export default function AddFirstDeclaration() {
-	const router = useRouter();
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 
 	return (
 		<section className={classes.main}>
-			<div className={classes.header}>
-				<h1>Téléservice de déclaration d’accessibilité</h1>
-				<MentalDisabilities fontSize="8rem" />
+			<div className={classes.headerWrapper}>
+				<div className={cx(classes.header, fr.cx("fr-container"))}>
+					<h1 className={fr.cx("fr-mb-0")}>
+						Téléservice de déclaration d’accessibilité
+					</h1>
+					<MentalDisabilities fontSize="8rem" />
+				</div>
 			</div>
-			<div className={classes.body}>
+			<div className={cx(classes.body, fr.cx("fr-container"))}>
 				<p>
 					Ce service a été créé pour garantir la conformité et assurer que
 					toutes les déclarations soient produites selon les mêmes standards.
@@ -97,14 +101,14 @@ export default function AddFirstDeclaration() {
 						<div>
 							<Conclusion fontSize="3rem" />
 							<p>
-								Durée de complétion estimée :
+								Durée de complétion estimée :{" "}
 								<strong>Entre 6 et 15 minutes</strong>
 							</p>
 						</div>
 					</div>
 					<div className={classes.documentsSection}>
 						<Document fontSize="5rem" />
-						<p>
+						<p className={classes.documentsSectionTitle}>
 							<strong>Documents à préparer</strong>
 						</p>
 						<ul>
@@ -146,19 +150,20 @@ export default function AddFirstDeclaration() {
 }
 
 const useStyles = tss.withName(AddFirstDeclaration.name).create({
-	main: {},
+	main: {
+		marginBottom: fr.spacing("22v"),
+	},
+	headerWrapper: {
+		backgroundColor: fr.colors.decisions.artwork.background.blueFrance.default,
+	},
 	header: {
 		display: "flex",
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		paddingInline: fr.spacing("8w"),
 		paddingBlock: fr.spacing("5w"),
-		backgroundColor: fr.colors.decisions.artwork.background.blueFrance.default,
 	},
 	body: {
-		paddingInline: fr.spacing("8w"),
-
 		"& > p": {
 			marginBlock: fr.spacing("8w"),
 			fontWeight: 400,
@@ -173,9 +178,11 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 		},
 	},
 	infoSection: {
-		padding: fr.spacing("4w"),
+		display: "flex",
+		flexDirection: "column",
+		justifyContent: "space-between",
+		padding: fr.spacing("7w"),
 		backgroundColor: fr.colors.decisions.artwork.background.blueFrance.default,
-
 		"& > h2": {
 			fontWeight: 700,
 			fontFamily: "Marianne",
@@ -213,35 +220,49 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 			},
 		},
 	},
+	documentsSectionTitle: {
+		fontSize: "1.1rem",
+	},
 	buttonContainer: {
 		display: "flex",
 		justifyContent: "center",
 		marginBlock: fr.spacing("4w"),
 	},
 	advantagesContainer: {
+		display: "flex",
+		flexDirection: "column",
+		"& h3": {
+			textAlign: "center",
+			marginTop: fr.spacing("25v"),
+			marginBottom: 0,
+		},
+	},
+	advantagesList: {
 		"& > div": {
 			display: "flex",
 			flexDirection: "row",
 			alignItems: "center",
 			justifyContent: "center",
-
+			gap: fr.spacing("6w"),
 			"&[data-iconPosition='left']": {
 				flexDirection: "row-reverse",
 			},
 			"&[data-iconPosition='right']": {
 				flexDirection: "row",
 			},
-
 			"& > div": {
 				width: "25rem",
-				"& > p, > h4": { margin: 0 },
+				"& > p": { margin: 0 },
+				"& > h4": {
+					color: fr.colors.decisions.text.title.blueFrance.default,
+				},
 			},
 		},
-		marginTop: fr.spacing("20v"),
+		marginTop: fr.spacing("7w"),
 		justifyContent: "center",
 		alignItems: "center",
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("24v"),
+		gap: fr.spacing("7w"),
 	},
 });

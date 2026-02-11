@@ -1,14 +1,14 @@
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import { Tile } from "@codegouvfr/react-dsfr/Tile";
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
-import Document from "@codegouvfr/react-dsfr/picto/Document";
-import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
-import Search from "@codegouvfr/react-dsfr/picto/Search";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import Community from "@codegouvfr/react-dsfr/picto/Community";
+import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
+import Document from "@codegouvfr/react-dsfr/picto/Document";
 import Information from "@codegouvfr/react-dsfr/picto/Information";
+import Search from "@codegouvfr/react-dsfr/picto/Search";
 import { useRouter } from "next/router";
+import { tss } from "tss-react";
 
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import PopupMessage from "./PopupMessage";
@@ -39,9 +39,11 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		label = "Renseigner les informations",
 	}: { href: string; label?: string }) => (
 		<Button
+			size="small"
 			linkProps={{
 				href,
 			}}
+			className={classes.redirectButton}
 		>
 			{label}
 		</Button>
@@ -65,7 +67,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		return badges
 			.filter((badge) => badge.show)
 			.map(({ label }) => (
-				<Badge key={label} noIcon severity="new">
+				<Badge key={label} noIcon severity="new" small>
 					{label}
 				</Badge>
 			));
@@ -77,7 +79,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				<PopupMessage
 					image={<Information fontSize="6rem" />}
 					message={
-						<strong>Votre déclaration est prête à être mise à jour !</strong>
+						<strong>Votre déclaration est prête à être publiée !</strong>
 					}
 					actionButtons={[
 						{
@@ -107,6 +109,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			)}
 			<div className={classes.tilesContainer}>
 				<Tile
+					classes={{ title: classes.tileTitle, desc: classes.tileDesc }}
 					desc="Informations à propos du service et l’administration à laquelle il est lié"
 					title="Informations générales"
 					linkProps={{
@@ -118,9 +121,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 							showVerifyBadge={declaration.status === "unverified"}
 						/>
 					}
-					enlargeLinkOrButton={false}
+					enlargeLinkOrButton={true}
 					orientation="vertical"
-					pictogram={<Document fontSize="2rem" />}
+					pictogram={<Document fontSize="small" />}
 					className={classes.tile}
 					detail={
 						declaration?.status === "unverified" ? (
@@ -141,14 +144,15 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					}
 				/>
 				<Tile
+					classes={{ title: classes.tileTitle, desc: classes.tileDesc }}
 					title="Contact"
 					desc="Moyen de contact pour pouvoir accéder aux éventuels contenus inaccessibles"
 					linkProps={{
 						href: `${linkToDeclarationPage}/contact`,
 					}}
-					enlargeLinkOrButton={false}
+					enlargeLinkOrButton={true}
 					orientation="vertical"
-					pictogram={<Community fontSize="2rem" />}
+					pictogram={<Community />}
 					start={
 						<StartBadges
 							showToCompleteBadge={!declaration?.contact}
@@ -186,14 +190,15 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					className={classes.tile}
 				/>
 				<Tile
+					classes={{ title: classes.tileTitle, desc: classes.tileDesc }}
 					title="Résultat de l’audit"
 					desc="Taux de conformité et détails de l'audit"
 					linkProps={{
 						href: `${linkToDeclarationPage}/audit`,
 					}}
-					enlargeLinkOrButton={false}
+					enlargeLinkOrButton={true}
 					orientation="vertical"
-					pictogram={<Search fontSize="2rem" />}
+					pictogram={<Search />}
 					start={
 						<StartBadges
 							showToCompleteBadge={!declaration?.audit}
@@ -231,14 +236,15 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					className={classes.tile}
 				/>
 				<Tile
+					classes={{ title: classes.tileTitle, desc: classes.tileDesc }}
 					title="Schéma et plans d'actions"
 					desc="État des lieux et actions prévues pour améliorer l'accessibilité"
 					linkProps={{
 						href: `${linkToDeclarationPage}/schema`,
 					}}
-					enlargeLinkOrButton={false}
+					enlargeLinkOrButton={true}
 					orientation="vertical"
-					pictogram={<Conclusion fontSize="2rem" />}
+					pictogram={<Conclusion fontSize="1rem" />}
 					start={
 						<StartBadges
 							showToCompleteBadge={!declaration?.actionPlan}
@@ -326,18 +332,52 @@ const useStyles = tss.withName(Demarches.name).create({
 		gap: fr.spacing("4v"),
 	},
 	tile: {
+		padding: "1rem 1rem 1.25rem",
+		".fr-tile__pictogram": {
+			width: "3rem",
+			height: "3rem",
+		},
 		"& a": {
 			backgroundImage: "none !important",
 			"&::after": {
 				display: "none",
 			},
 		},
+
+		"& .fr-tile__detail > a": {
+			position: "relative",
+		},
+		"& .fr-tile__detail > a::before": {
+			left: 0,
+			right: 0,
+			top: 0,
+			bottom: 0,
+		},
 		"& h3": {
 			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-
 			"&::before": {
 				backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.active.blueFrance.default}, ${fr.colors.decisions.border.active.blueFrance.default})`,
 			},
 		},
+
+		"& .fr-tile__pictogram": {
+			width: fr.spacing("10v"),
+			height: fr.spacing("10v"),
+		},
+
+		"& .fr-tile__title": {
+			fontSize: "1rem",
+			fontWeight: 700,
+		},
+
+		"& .fr-tile__desc": {
+			fontSize: "0.875rem",
+			fontWeight: 400,
+		},
 	},
+	redirectButton: {
+		fontSize: "0.875rem",
+	},
+	tileTitle: { fontSize: "16px" },
+	tileDesc: { fontSize: "14px" },
 });

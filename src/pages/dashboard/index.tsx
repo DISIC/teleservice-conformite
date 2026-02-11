@@ -17,6 +17,7 @@ import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
 import { copyToClipboard } from "~/utils/declaration-helper";
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import { appKindOptions } from "~/payload/selectOptions";
+import EmptyState from "~/components/declaration/EmptyState";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -26,7 +27,7 @@ interface DeclarationsPageProps {
 export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { declarations, firstDeclaration = false } = props;
 	const router = useRouter();
-	const { classes } = useStyles({
+	const { classes, cx } = useStyles({
 		declarationLength: declarations.length || 0,
 	});
 	const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -64,122 +65,113 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	}, [showAlert]);
 
 	return (
-		<section id="declarations-page" className={classes.main}>
-			<h1>Vos déclarations d'accessibilité</h1>
-			{showAlert && (
-				<div className={classes.alertWrapper}>
-					<Alert
-						small={true}
-						severity={alertDetails.severity}
-						title={alertDetails?.title ?? ""}
-						description={alertDetails?.description ?? ""}
-						closable
-						isClosed={!showAlert}
-						onClose={() => setShowAlert(false)}
-					/>
-				</div>
-			)}
-			<div className={classes.buttonWrapper}>
-				<Button
-					iconId="fr-icon-add-line"
-					priority="tertiary"
-					linkProps={{
-						href: "/dashboard/form",
-					}}
-				>
-					Ajouter une declaration
-				</Button>
-			</div>
-			{declarations.length ? (
-				<div>
-					{declarations.map((declaration) => {
-						const { name } = declaration.entity || {};
-						const { rate } = declaration.audit || {};
+		<div className={fr.cx("fr-container")}>
+			<section id="declarations-page" className={classes.main}>
+				<h1>Vos déclarations d'accessibilité</h1>
+				{showAlert && (
+					<div className={classes.alertWrapper}>
+						<Alert
+							small={true}
+							severity={alertDetails.severity}
+							title={alertDetails?.title ?? ""}
+							description={alertDetails?.description ?? ""}
+							closable
+							isClosed={!showAlert}
+							onClose={() => setShowAlert(false)}
+						/>
+					</div>
+				)}
 
-						return (
-							<div key={declaration.id} className={classes.declarationCard}>
-								<div>
-									<h6 className={classes.declarationTitle}>
-										<NextLink href={`/dashboard/declaration/${declaration.id}`}>
-											{declaration.name}
-										</NextLink>
-										<StatusBadge
-											isPublished={declaration?.status === "published"}
-											isModified={
-												declaration?.status === "unpublished" &&
-												!!declaration?.publishedContent
+				{declarations.length ? (
+					<>
+						<div className={classes.buttonWrapper}>
+							<Button
+								iconId="fr-icon-add-line"
+								priority="tertiary"
+								linkProps={{
+									href: "/dashboard/form",
+								}}
+							>
+								Ajouter une declaration
+							</Button>
+						</div>
+						<div>
+							{declarations.map((declaration) => {
+								const { name } = declaration.entity || {};
+								const { rate } = declaration.audit || {};
+
+								return (
+									<div key={declaration.id} className={classes.declarationCard}>
+										<div>
+											<h6 className={classes.declarationTitle}>
+												<NextLink
+													href={`/dashboard/declaration/${declaration.id}`}
+												>
+													{declaration.name}
+												</NextLink>
+												<StatusBadge
+													isPublished={declaration?.status === "published"}
+													isModified={
+														declaration?.status === "unpublished" &&
+														!!declaration?.publishedContent
+													}
+													isDraft={
+														declaration?.status !== "published" &&
+														!declaration?.publishedContent
+													}
+												/>
+											</h6>
+											<p className={classes.details}>
+												Dernière modification le{" "}
+												{declaration.updatedAtFormatted}
+											</p>
+											<p className={classes.details}>{name}</p>
+											<p className={classes.details}>
+												{appKindOptions.find(
+													(option) => option.value === declaration.app_kind,
+												)?.label ?? declaration.app_kind}
+												{declaration.url && declaration.app_kind === "website"
+													? ` - ${declaration.url}`
+													: ""}
+											</p>
+										</div>
+										<div
+											style={
+												declaration.status === "published" && rate !== undefined
+													? { visibility: "visible" }
+													: { visibility: "hidden" }
 											}
-											isDraft={
-												declaration?.status !== "published" &&
-												!declaration?.publishedContent
+										>
+											<p className={classes.auditRateValue}>{rate}%</p>
+											<p className={classes.auditRateLabel}>taux conformité</p>
+										</div>
+										<Button
+											iconId="fr-icon-share-line"
+											priority="tertiary"
+											style={{ width: "100%" }}
+											onClick={() =>
+												copyToClipboard(
+													`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+													() =>
+														showDeclarationAlert({
+															description: "Lien copié dans le presse-papier",
+															severity: "success",
+														}),
+												)
 											}
-										/>
-									</h6>
-									<p className={classes.details}>
-										Dernière modification le {declaration.updatedAtFormatted}
-									</p>
-									<p className={classes.details}>{name}</p>
-									<p className={classes.details}>
-										{appKindOptions.find(
-											(option) => option.value === declaration.app_kind,
-										)?.label ?? declaration.app_kind}
-										{declaration.url && declaration.app_kind === "website"
-											? ` - ${declaration.url}`
-											: ""}
-									</p>
-								</div>
-								<div
-									style={
-										declaration.status === "published" && rate !== undefined
-											? { visibility: "visible" }
-											: { visibility: "hidden" }
-									}
-								>
-									<p className={classes.auditRateValue}>{rate}%</p>
-									<p className={classes.auditRateLabel}>taux conformité</p>
-								</div>
-								<Button
-									iconId="fr-icon-share-line"
-									priority="tertiary"
-									style={{ width: "100%" }}
-									onClick={() =>
-										copyToClipboard(
-											`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
-											() =>
-												showDeclarationAlert({
-													description: "Lien copié dans le presse-papier",
-													severity: "success",
-												}),
-										)
-									}
-								>
-									Copier le lien
-								</Button>
-							</div>
-						);
-					})}
-				</div>
-			) : (
-				<div className={classes.emptyStateContainer}>
-					<Conclusion fontSize="120px" />
-					<h2 className={classes.emptyStateTitle}>
-						Créez votre déclaration d’accessibilité
-					</h2>
-					<p className={classes.emptyStateDescription}>
-						Publiez une déclaration conforme pour répondre aux obligations
-						légales
-					</p>
-					<Button
-						linkProps={{
-							href: "/dashboard/form",
-						}}
-						priority="primary"
-					>
-						Créer une déclaration
-					</Button>
-				</div>
-			)}
-		</section>
+										>
+											Copier le lien
+										</Button>
+									</div>
+								);
+							})}
+						</div>
+					</>
+				) : (
+					<EmptyState />
+				)}
+			</section>
+		</div>
 	);
 }
 
@@ -191,7 +183,7 @@ const useStyles = tss
 			display: "flex",
 			flexDirection: "column",
 			gap: fr.spacing("8v"),
-			padding: fr.spacing("10v"),
+			paddingBlock: fr.spacing("12v"),
 		},
 		buttonWrapper: {
 			justifyContent: "flex-end",
@@ -214,13 +206,13 @@ const useStyles = tss
 		},
 		details: {
 			fontWeight: 400,
-			fontSize: "14px",
-			lineHeight: "24px",
+			fontSize: "1rem",
+			lineHeight: "1.5rem",
 			margin: 0,
 			color: fr.colors.decisions.border.contrast.grey.default,
 		},
 		auditRateValue: {
-			lineHeight: "36px",
+			lineHeight: "2.25rem",
 			fontWeight: 700,
 			color: fr.colors.decisions.text.label.grey.default,
 			fontSize: fr.typography[3].style.fontSize,
