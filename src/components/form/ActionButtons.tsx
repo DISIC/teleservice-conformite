@@ -4,6 +4,7 @@ import type {
 	RiIconClassName,
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import { tss } from "tss-react";
+import { fr } from "@codegouvfr/react-dsfr";
 import { useFormContext } from "~/utils/form/context";
 
 export function SubscribeButton({
@@ -103,5 +104,11 @@ const useStyles = tss.withName(SubscribeButton.name).create(() => ({
 	buttonWrapper: {
 		display: "flex",
 		justifyContent: "end",
+
+		"& button": {
+			"&::after": {
+				marginBottom: "-3px",
+			},
+		},
 	},
 }));

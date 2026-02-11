@@ -236,7 +236,7 @@ export default function SchemaPage({
 							/>
 							<form.SubscribeButton
 								label="Continuer"
-								iconId="fr-icon-arrow-right-line"
+								iconId="fr-icon-arrow-right-s-line"
 								iconPosition="right"
 							/>
 						</div>
