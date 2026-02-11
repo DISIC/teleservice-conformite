@@ -23,7 +23,7 @@ export function SelectField({
 	defaultStateMessage = "",
 	infoStateMessage,
 }: SelectFieldProps) {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const field = useFieldContext<string>();
 
 	return !readOnly ? (
@@ -45,7 +45,9 @@ export function SelectField({
 				className={className}
 			/>
 			{infoStateMessage && (
-				<p className={classes.infoStateMessage}>{infoStateMessage}</p>
+				<p className={cx(classes.infoStateMessage, fr.cx("fr-text--xs"))}>
+					{infoStateMessage}
+				</p>
 			)}
 		</>
 	) : (
@@ -62,8 +64,5 @@ export function SelectField({
 const useStyles = tss.withName(SelectField.name).create({
 	infoStateMessage: {
 		color: fr.colors.decisions.text.default.info.default,
-		fontWeight: 400,
-		fontSize: "0.75rem",
-		lineHeight: "1.25rem",
 	},
 });

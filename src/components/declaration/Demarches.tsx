@@ -95,11 +95,13 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				<div className={classes.summaryCardsContainer}>
 					<div className={cx(classes.card, classes.summaryRateCard)}>
 						<p className={classes.cardLabel}>Taux de conformité</p>
-						<p className={classes.cardValue}>{`${rate}%`}</p>
+						<p
+							className={cx(classes.cardValue, fr.cx("fr-text--lead"))}
+						>{`${rate}%`}</p>
 					</div>
 					<div className={cx(classes.card, classes.summaryUpdateDateCard)}>
 						<p className={classes.cardLabel}>Dernière mise à jour</p>
-						<p className={classes.cardValue}>
+						<p className={cx(classes.cardValue, fr.cx("fr-text--lead"))}>
 							{declaration?.published_at
 								? new Date(declaration.published_at).toLocaleDateString("fr-FR")
 								: "N/A"}
@@ -314,17 +316,9 @@ const useStyles = tss.withName(Demarches.name).create({
 	},
 	cardLabel: {
 		margin: 0,
-		fontWeight: 400,
-		fontFamily: "Marianne",
-		fontSize: "1rem",
-		lineHeight: "1.5rem",
 	},
 	cardValue: {
 		margin: 0,
-		fontWeight: 500,
-		fontFamily: "Marianne",
-		fontSize: "1.25rem",
-		lineHeight: "1.75rem",
 	},
 	tilesContainer: {
 		display: "grid",
@@ -332,10 +326,10 @@ const useStyles = tss.withName(Demarches.name).create({
 		gap: fr.spacing("4v"),
 	},
 	tile: {
-		padding: "1rem 1rem 1.25rem",
+		padding: `${fr.spacing("4v")} ${fr.spacing("4v")} ${fr.spacing("5v")}`,
 		".fr-tile__pictogram": {
-			width: "3rem",
-			height: "3rem",
+			width: fr.spacing("12v"),
+			height: fr.spacing("12v"),
 		},
 		"& a": {
 			backgroundImage: "none !important",
@@ -366,18 +360,18 @@ const useStyles = tss.withName(Demarches.name).create({
 		},
 
 		"& .fr-tile__title": {
-			fontSize: "1rem",
+			fontSize: fr.typography[6].style.fontSize,
 			fontWeight: 700,
 		},
 
 		"& .fr-tile__desc": {
-			fontSize: "0.875rem",
+			fontSize: fr.typography[18].style.fontSize,
 			fontWeight: 400,
 		},
 	},
 	redirectButton: {
-		fontSize: "0.875rem",
+		fontSize: fr.typography[18].style.fontSize,
 	},
-	tileTitle: { fontSize: "16px" },
-	tileDesc: { fontSize: "14px" },
+	tileTitle: { fontSize: fr.typography[6].style.fontSize },
+	tileDesc: { fontSize: fr.typography[18].style.fontSize },
 });

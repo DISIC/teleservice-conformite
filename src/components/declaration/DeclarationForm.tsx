@@ -46,11 +46,11 @@ export default function DeclarationForm({
 	const Content = () => (
 		<div className={cx(classes.formWrapper)}>
 			<div className={classes.editButtonWrapper}>
-				<h3 className={classes.description}>
+				<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
 					{isEditable
 						? "Vérifiez les informations et modifiez-les si nécessaire"
 						: "Tous les champs sont obligatoires sauf précision contraire"}
-				</h3>
+				</p>
 				{isEditable && onToggleEdit && (
 					<Button
 						priority="secondary"
@@ -120,8 +120,7 @@ const useStyles = tss.withName(DeclarationForm.name).create({
 		marginTop: fr.spacing("6v"),
 	},
 	description: {
-		fontSize: "1rem",
-		color: "grey",
+		color: fr.colors.decisions.text.mention.grey.default,
 		margin: 0,
 	},
 	validateButton: {

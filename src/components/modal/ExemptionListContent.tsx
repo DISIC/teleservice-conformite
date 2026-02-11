@@ -9,9 +9,9 @@ export default function ExemptionListModalContent() {
 		<section className={classes.modal}>
 			<div className={classes.headingContainer}>
 				{/* <Icon iconId="fr-icon-information-line" /> */}
-				<h2 className={classes.heading}>
+				<h3 className={classes.heading}>
 					Liste des contenus non soumis à l’obligation d’accessibilité
-				</h2>
+				</h3>
 			</div>
 			<p>
 				<strong>
@@ -22,34 +22,48 @@ export default function ExemptionListModalContent() {
 			</p>
 			<ul>
 				<li>
-					Les fichiers bureautiques publiés avant le 23 septembre 2018, sauf
-					s’ils sont indispensables pour réaliser une démarche administrative.
+					<p>
+						Les fichiers bureautiques publiés avant le 23 septembre 2018, sauf
+						s’ils sont indispensables pour réaliser une démarche administrative.
+					</p>
 				</li>
 				<li>
-					Les contenus audio et vidéo préenregistrés publiés avant le 23
-					septembre 2020
-				</li>
-				<li>Les contenus audio et vidéo diffusés en direct</li>
-				<li>
-					Les cartes interactives et services de cartographie, à condition que
-					les informations essentielles (par exemple un itinéraire) soient
-					fournies sous une forme accessible
+					<p>
+						Les contenus audio et vidéo préenregistrés publiés avant le 23
+						septembre 2020
+					</p>
 				</li>
 				<li>
-					Les contenus produits par des tiers (non financés, non développés et
-					non contrôlés par l’organisme) Les reproductions de pièces
-					patrimoniales qui ne peuvent pas être rendues accessibles, soit pour
-					préserver l’authenticité de l’œuvre, soit parce qu’il n’existe pas de
-					solution simple et économique pour les transcrire.
+					<p>Les contenus audio et vidéo diffusés en direct</p>
 				</li>
 				<li>
-					Les contenus des intranets et extranets publiés avant le 23 septembre
-					2019, tant qu’ils n’ont pas été entièrement revus.
+					<p>
+						Les cartes interactives et services de cartographie, à condition que
+						les informations essentielles (par exemple un itinéraire) soient
+						fournies sous une forme accessible
+					</p>
 				</li>
 				<li>
-					Les contenus de sites ou d’applications qui ne sont pas nécessaires à
-					une démarche administrative et qui n’ont pas été mis à jour depuis le
-					23 septembre 2019, notamment les archives.
+					<p>
+						Les contenus produits par des tiers (non financés, non développés et
+						non contrôlés par l’organisme) Les reproductions de pièces
+						patrimoniales qui ne peuvent pas être rendues accessibles, soit pour
+						préserver l’authenticité de l’œuvre, soit parce qu’il n’existe pas
+						de solution simple et économique pour les transcrire.
+					</p>
+				</li>
+				<li>
+					<p>
+						Les contenus des intranets et extranets publiés avant le 23
+						septembre 2019, tant qu’ils n’ont pas été entièrement revus.
+					</p>
+				</li>
+				<li>
+					<p>
+						Les contenus de sites ou d’applications qui ne sont pas nécessaires
+						à une démarche administrative et qui n’ont pas été mis à jour depuis
+						le 23 septembre 2019, notamment les archives.
+					</p>
 				</li>
 			</ul>
 			<p>
@@ -73,9 +87,6 @@ const useStyles = tss.withName("ExemptionListModalContent").create({
 	heading: {
 		margin: 0,
 		color: fr.colors.decisions.text.title.blueFrance.default,
-		fontWeight: fr.typography[3].style.fontWeight,
-		fontSize: fr.typography[3].style.fontSize,
-		lineHeight: fr.typography[3].style.lineHeight,
 	},
 	modal: {
 		padding: fr.spacing("4v"),
@@ -84,9 +95,6 @@ const useStyles = tss.withName("ExemptionListModalContent").create({
 		"& > ul": {
 			"& > li": {
 				marginBlock: fr.spacing("5v"),
-				fontSize: "1rem",
-				lineHeight: "1.5rem",
-				fontWeight: 400,
 			},
 		},
 	},

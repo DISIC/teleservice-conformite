@@ -205,24 +205,16 @@ const useStyles = tss
 			},
 		},
 		details: {
-			fontWeight: 400,
-			fontSize: "1rem",
-			lineHeight: "1.5rem",
 			margin: 0,
 			color: fr.colors.decisions.border.contrast.grey.default,
 		},
 		auditRateValue: {
-			lineHeight: "2.25rem",
-			fontWeight: 700,
 			color: fr.colors.decisions.text.label.grey.default,
-			fontSize: fr.typography[3].style.fontSize,
+
 			margin: 0,
 		},
 		auditRateLabel: {
-			lineHeight: "24px",
-			fontWeight: 400,
 			color: fr.colors.decisions.text.label.grey.default,
-			fontSize: fr.typography[1].style.fontSize,
 		},
 		emptyStateContainer: {
 			display: "flex",
@@ -235,15 +227,8 @@ const useStyles = tss
 		emptyStateTitle: {
 			fontFamily: "Marianne",
 			fontWeight: 700,
-			fontSize: "1.25rem",
-			lineHeight: "1.75rem",
-		},
-		emptyStateDescription: {
-			fontFamily: "Marianne",
-			fontWeight: 400,
-			fontSize: "1.25rem",
-			lineHeight: "2rem",
-			color: fr.colors.decisions.text.mention.grey.default,
+			fontSize: fr.typography[22].style.fontSize,
+			lineHeight: fr.typography[20].style.lineHeight,
 		},
 		alertWrapper: {
 			width: "100%",

@@ -34,8 +34,8 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 			{valueIsArray ? (
 				<ul className={classes.list}>
 					{value.map((item, index) => (
-						<li key={index} className={classes.value}>
-							{item}
+						<li key={index}>
+							<p className={classes.value}>{item}</p>
 						</li>
 					))}
 				</ul>
@@ -77,17 +77,10 @@ const useStyles = tss
 		},
 		label: {
 			fontWeight: 700,
-			fontSize: "1rem",
-			lineHeight: "1.5rem",
-			fontFamily: "Marianne",
 			color: fr.colors.decisions.text.label.grey.default,
 		},
 		list: {},
 		value: {
-			fontWeight: 400,
-			fontSize: "1rem",
-			lineHeight: "1.5rem",
-			fontFamily: "Marianne",
 			color: fr.colors.decisions.text.label.grey.default,
 			whiteSpace: "pre-wrap",
 

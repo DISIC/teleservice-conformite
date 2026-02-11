@@ -27,7 +27,7 @@ export default function PopupMessage({
 	return (
 		<div className={classes.popupMessageContainer}>
 			{image}
-			<div className={classes.messageWrapper}>{message}</div>
+			<p className={classes.messageWrapper}>{message}</p>
 			<div className={classes.buttonsContainer}>
 				{actionButtons?.map((button) => (
 					<Button
@@ -52,9 +52,6 @@ const useStyles = tss.withName(PopupMessage.name).create({
 		marginBlock: fr.spacing("2w"),
 		gap: fr.spacing("5w"),
 		backgroundColor: fr.colors.decisions.background.contrast.blueFrance.default,
-		fontSize: "1rem",
-		lineHeight: "1.5rem",
-		fontFamily: "Marianne",
 	},
 	messageWrapper: {
 		display: "flex",

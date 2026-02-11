@@ -9,9 +9,9 @@ export default function DisproportionnedChargeContent() {
 		<section className={classes.modal}>
 			<div className={classes.headingContainer}>
 				{/* <Icon iconId="fr-icon-information-line" /> */}
-				<h2 className={classes.heading}>
+				<h3 className={classes.heading}>
 					Qu’est-ce qu’une charge disproportionnée ?
-				</h2>
+				</h3>
 			</div>
 			<p>
 				Un organisme peut invoquer une dérogation pour charge disproportionnée
@@ -41,17 +41,23 @@ export default function DisproportionnedChargeContent() {
 			<p>Lorsque la dérogation est utilisée :</p>
 			<ul>
 				<li>
-					le contenu ou la fonctionnalité concerné(e) doit être accompagné(e)
-					d’une alternative accessible, sauf si produire cette alternative
-					constitue elle-même une charge disproportionnée ;
+					<p>
+						le contenu ou la fonctionnalité concerné(e) doit être accompagné(e)
+						d’une alternative accessible, sauf si produire cette alternative
+						constitue elle-même une charge disproportionnée ;
+					</p>
 				</li>
 				<li>
-					pour les missions principales d’un service public, une alternative
-					équivalente est obligatoire ;
+					<p>
+						pour les missions principales d’un service public, une alternative
+						équivalente est obligatoire ;
+					</p>
 				</li>
 				<li>
-					la dérogation ne peut pas porter sur l’ensemble d’un service sans
-					justification.
+					<p>
+						la dérogation ne peut pas porter sur l’ensemble d’un service sans
+						justification.
+					</p>
 				</li>
 			</ul>
 			<p>
@@ -59,12 +65,16 @@ export default function DisproportionnedChargeContent() {
 			</p>
 			<ul>
 				<li>
-					sa taille, ses ressources, la nature de ses missions ; les coûts
-					(investissement, fonctionnement, temps requis) ;
+					<p>
+						sa taille, ses ressources, la nature de ses missions ; les coûts
+						(investissement, fonctionnement, temps requis) ;
+					</p>
 				</li>
 				<li>
-					l’avantage pour les usagers handicapés et la fréquence d’usage du
-					service.
+					<p>
+						l’avantage pour les usagers handicapés et la fréquence d’usage du
+						service.
+					</p>
 				</li>
 			</ul>
 			<p>
@@ -91,9 +101,6 @@ const useStyles = tss.withName("DisproportionnedChargeContent").create({
 	heading: {
 		margin: 0,
 		color: fr.colors.decisions.text.title.blueFrance.default,
-		fontWeight: fr.typography[3].style.fontWeight,
-		fontSize: fr.typography[3].style.fontSize,
-		lineHeight: fr.typography[3].style.lineHeight,
 	},
 	modal: {
 		padding: fr.spacing("4v"),
@@ -102,8 +109,6 @@ const useStyles = tss.withName("DisproportionnedChargeContent").create({
 		"& > ul": {
 			"& > li": {
 				marginBlock: fr.spacing("5v"),
-				fontSize: "1rem",
-				lineHeight: "1.5rem",
 				fontWeight: 400,
 			},
 		},

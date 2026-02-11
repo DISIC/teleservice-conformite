@@ -36,7 +36,7 @@ export type ImportedDeclarationData = z.infer<
 >;
 
 export default function FormPage({ entity }: { entity: Entity | null }) {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const { classes: appClasses } = useAppStyles();
 	const router = useRouter();
 	const [importedDeclarationData, setImportedDeclarationData] =
@@ -317,9 +317,9 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					>
 						<div className={classes.formWrapper}>
 							<div className={classes.whiteBackground}>
-								<h3 className={classes.description}>
+								<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
 									Tous les champs sont obligatoires sauf précision contraire
-								</h3>
+								</p>
 								{section === "initialDeclaration" && (
 									<ContextForm form={form} />
 								)}
@@ -368,8 +368,7 @@ const useStyles = tss.withName(FormPage.name).create({
 		justifyContent: "space-between",
 	},
 	description: {
-		fontSize: "1rem",
-		color: "grey",
+		color: fr.colors.decisions.text.mention.grey.default,
 		margin: 0,
 		marginBottom: fr.spacing("10v"),
 	},
