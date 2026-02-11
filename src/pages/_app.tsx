@@ -153,6 +153,8 @@ export const useStyles = tss
 		},
 		main: {
 			backgroundColor: backgroundColor,
+			display: "flex",
+			width: "100%",
 		},
 		formContainer: {
 			paddingInline: "16rem",

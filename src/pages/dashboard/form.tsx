@@ -300,53 +300,49 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 	const section = useStore(form.store, (state) => state.values.section);
 
+	if (isAnalyzingUrl || isGettingInfoFromAra) return <DeclarationLoader />;
+
 	return (
 		<section className={fr.cx("fr-container")}>
-			{!isAnalyzingUrl && !isGettingInfoFromAra ? (
-				<div className={appClasses.formContainer}>
-					<h2>
-						{section === "initialDeclaration"
-							? "Contexte"
-							: "Informations générales"}
-					</h2>
-					<form
-						onSubmit={(e) => {
-							e.preventDefault();
-							form.handleSubmit();
-						}}
-					>
-						<div className={classes.formWrapper}>
-							<div className={classes.whiteBackground}>
-								<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
-									Tous les champs sont obligatoires sauf précision contraire
-								</p>
-								{section === "initialDeclaration" && (
-									<ContextForm form={form} />
-								)}
-								{section === "general" && (
-									<DeclarationGeneralForm form={form} readOnly={false} />
-								)}
-							</div>
-							<form.AppForm>
-								<div className={classes.actionButtonsContainer}>
-									<form.CancelButton
-										label="Retour"
-										onClick={onClickCancel}
-										priority="tertiary"
-									/>
-									<form.SubscribeButton
-										label="Continuer"
-										iconId="fr-icon-arrow-right-line"
-										iconPosition="right"
-									/>
-								</div>
-							</form.AppForm>
+			<div className={appClasses.formContainer}>
+				<h2>
+					{section === "initialDeclaration"
+						? "Contexte"
+						: "Informations générales"}
+				</h2>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						form.handleSubmit();
+					}}
+				>
+					<div className={classes.formWrapper}>
+						<div className={classes.whiteBackground}>
+							<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
+								Tous les champs sont obligatoires sauf précision contraire
+							</p>
+							{section === "initialDeclaration" && <ContextForm form={form} />}
+							{section === "general" && (
+								<DeclarationGeneralForm form={form} readOnly={false} />
+							)}
 						</div>
-					</form>
-				</div>
-			) : (
-				<DeclarationLoader />
-			)}
+						<form.AppForm>
+							<div className={classes.actionButtonsContainer}>
+								<form.CancelButton
+									label="Retour"
+									onClick={onClickCancel}
+									priority="tertiary"
+								/>
+								<form.SubscribeButton
+									label="Continuer"
+									iconId="fr-icon-arrow-right-line"
+									iconPosition="right"
+								/>
+							</div>
+						</form.AppForm>
+					</div>
+				</form>
+			</div>
 		</section>
 	);
 }
