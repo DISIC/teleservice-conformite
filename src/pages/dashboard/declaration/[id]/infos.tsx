@@ -17,12 +17,14 @@ import {
 } from "~/server/api/utils/payload-helper";
 import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
+import { useCommonStyles } from "~/components/style/commonStyles";
 
 export default function GeneralInformationsPage({
 	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
 	const router = useRouter();
 	const { classes } = useStyles();
+	const { classes: commonClasses } = useCommonStyles();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
@@ -139,7 +141,7 @@ export default function GeneralInformationsPage({
 			>
 				{editMode ? (
 					<>
-						<div className={classes.whiteBackground}>
+						<div className={commonClasses.whiteBackground}>
 							<DeclarationGeneralForm form={form} />
 						</div>
 						<form.AppForm>
@@ -147,7 +149,7 @@ export default function GeneralInformationsPage({
 						</form.AppForm>
 					</>
 				) : (
-					<div className={classes.whiteBackground}>
+					<div className={commonClasses.whiteBackground}>
 						<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
 					</div>
 				)}
@@ -157,15 +159,6 @@ export default function GeneralInformationsPage({
 }
 
 const useStyles = tss.withName(GeneralInformationsPage.name).create({
-	whiteBackground: {
-		backgroundColor: fr.colors.decisions.background.raised.grey.default,
-		paddingInline: fr.spacing("10v"),
-		paddingBottom: fr.spacing("10v"),
-		marginBottom: fr.spacing("6v"),
-		width: "100%",
-		display: "flex",
-		flexDirection: "column",
-	},
 	actionButtonsContainer: {
 		display: "flex",
 		justifyContent: "space-between",
