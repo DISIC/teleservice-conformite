@@ -225,19 +225,24 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 						},
 					},
 				]}
+				className={classes.deleteModal}
 			>
 				<div className={classes.emptyStateContainer}>
 					<Binders fontSize="250px" />
-					<p>
-						Cette action est irréversible et entrainera la suppression de la
-						page publique de la déclaration.
-						<br />
-						Nous vous rappelons que chaque site doit fournir une déclaration
-						d'accessibilité accessible aux usagers.
-						<br />
-						Si votre déclaration arrive en fin de validité, vous pouvez la
-						mettre à jour depuis l’onglet “Démarche” de votre déclaration.
-					</p>
+					<div>
+						<p>
+							Cette action est irréversible et entrainera la suppression de la
+							page publique de la déclaration.
+						</p>
+						<p>
+							Nous vous rappelons que chaque site doit fournir une déclaration
+							d'accessibilité accessible aux usagers.
+						</p>
+						<p>
+							Si votre déclaration arrive en fin de validité, vous pouvez la
+							mettre à jour depuis l’onglet “Démarche” de votre déclaration.
+						</p>
+					</div>
 				</div>
 			</deleteModal.Component>
 		</>
@@ -268,7 +273,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		display: "flex",
 		flexDirection: "row",
 		alignItems: "center",
-		gap: fr.spacing("6v"),
+		gap: fr.spacing("8v"),
 		backgroundColor: fr.colors.decisions.background.open.blueFrance.default,
 		padding: fr.spacing("6v"),
 	},
@@ -322,6 +327,12 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 
 		"& div": {
 			width: "100%",
+		},
+	},
+	deleteModal: {
+		"& .fr-modal__footer": {
+			marginTop: fr.spacing("8v"),
+			borderTop: `2px solid ${fr.colors.decisions.border.default.grey.default}`,
 		},
 	},
 });

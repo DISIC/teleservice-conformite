@@ -100,8 +100,13 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 	main: {
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("4w"),
 		paddingBlock: fr.spacing("12v"),
+		"& > h1": {
+			marginBottom: fr.spacing("4v"),
+		},
+		"& > p": {
+			marginBottom: fr.spacing("10v"),
+		},
 	},
 	declarationPreview: {
 		backgroundColor: fr.colors.decisions.background.default.grey.default,
