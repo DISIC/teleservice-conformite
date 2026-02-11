@@ -23,11 +23,6 @@ export function MultiStep({ steps, currentStep, children }: MultiStepProps) {
 				title={step.title}
 				stepCount={steps.length}
 				currentStep={currentStepIndex + 1}
-				nextTitle={
-					currentStepIndex + 1 < steps.length
-						? steps[currentStepIndex + 1]?.title
-						: undefined
-				}
 			/>
 			{children}
 		</div>
