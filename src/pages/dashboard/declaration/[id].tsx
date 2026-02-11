@@ -145,6 +145,8 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 								iconId="fr-icon-eye-fill"
 								linkProps={{
 									href: `/declaration/${declaration.id}/publish`,
+									target: "_blank",
+									rel: "noopener noreferrer",
 								}}
 							>
 								Voir la declaration
@@ -268,6 +270,12 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		display: "flex",
 		flexDirection: "row",
 		gap: fr.spacing("4v"),
+
+		"& > a": {
+			"&::after": {
+				display: "none",
+			},
+		},
 	},
 	emptyStateContainer: {
 		display: "flex",
