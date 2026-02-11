@@ -222,11 +222,11 @@ export const DeclarationAuditForm = withForm({
 								return (
 									<div>
 										<field.CheckboxGroupField
-											label="Outils utilisés pour évaluer l’accessibilité"
+											label="Outils utilisés pour évaluer l’accessibilité (facultatif)"
 											options={[...toolOptions]}
 										/>
 										<field.TagGroupField
-											label=""
+											label="Ajouter un outil"
 											initialTags={field.state.value.filter(
 												(tag) =>
 													![...toolOptions]
@@ -246,7 +246,7 @@ export const DeclarationAuditForm = withForm({
 										options={[...testEnvironmentOptions]}
 									/>
 									<field.TagGroupField
-										label=""
+										label="Ajouter un environnement"
 										initialTags={field.state.value.filter(
 											(tag) =>
 												![...testEnvironmentOptions]
