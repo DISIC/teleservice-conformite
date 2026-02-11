@@ -39,7 +39,7 @@ export default function DeclarationListItem({
 	return (
 		<div key={declaration.id} className={classes.declarationCard}>
 			<div>
-				<h6 className={classes.declarationTitle}>
+				<h2 className={classes.declarationTitle}>
 					<NextLink href={`/dashboard/declaration/${declaration.id}`}>
 						{declaration.name}
 					</NextLink>
@@ -54,7 +54,7 @@ export default function DeclarationListItem({
 							!declaration?.publishedContent
 						}
 					/>
-				</h6>
+				</h2>
 				<p className={cx(classes.details, fr.cx("fr-text--sm"))}>{name}</p>
 				<p className={cx(classes.details, fr.cx("fr-text--sm"))}>
 					{appKindOptions.find(
@@ -110,6 +110,8 @@ const useStyles = tss.withName(DeclarationListItem.name).create({
 	declarationTitle: {
 		marginBottom: fr.spacing("4v"),
 		color: fr.colors.decisions.background.actionHigh.blueFrance.default,
+		fontSize: fr.typography[0].style.fontSize,
+		lineHeight: fr.typography[0].style.lineHeight,
 
 		"& a": {
 			marginRight: fr.spacing("2v"),

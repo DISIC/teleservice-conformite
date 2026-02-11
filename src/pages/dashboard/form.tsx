@@ -305,11 +305,11 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	return (
 		<section className={fr.cx("fr-container")}>
 			<div className={appClasses.formContainer}>
-				<h2>
+				<h1>
 					{section === "initialDeclaration"
 						? "Contexte"
 						: "Informations générales"}
-				</h2>
+				</h1>
 				<form
 					onSubmit={(e) => {
 						e.preventDefault();
@@ -318,9 +318,9 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				>
 					<div className={classes.formWrapper}>
 						<div className={classes.whiteBackground}>
-							<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
+							<h2 className={cx(classes.description, fr.cx("fr-text--sm"))}>
 								Tous les champs sont obligatoires sauf précision contraire
-							</p>
+							</h2>
 							{section === "initialDeclaration" && <ContextForm form={form} />}
 							{section === "general" && (
 								<DeclarationGeneralForm form={form} readOnly={false} />
@@ -367,6 +367,7 @@ const useStyles = tss.withName(FormPage.name).create({
 		color: fr.colors.decisions.text.mention.grey.default,
 		margin: 0,
 		marginBottom: fr.spacing("10v"),
+		fontWeight: 400,
 	},
 });
 

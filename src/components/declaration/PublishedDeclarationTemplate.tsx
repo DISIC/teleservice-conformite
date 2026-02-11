@@ -84,7 +84,8 @@ export type PublishedDeclaration = {
 
 export default function PublishedDeclarationTemplate({
 	declaration,
-}: { declaration: PublishedDeclaration }) {
+	mode = "published",
+}: { declaration: PublishedDeclaration; mode?: "preview" | "published" }) {
 	const previewMd = [
 		`# ${declaration.name}`,
 		`${declaration.entityName} s’engage à rendre ses sites internet, intranet, extranet et ses progiciels accessibles (et ses applications mobiles et mobilier urbain numérique) conformément à  l’article 47 de la loi n°2005-102 du 11 février 2005.`,
@@ -96,7 +97,7 @@ export default function PublishedDeclarationTemplate({
 		"",
 		`Cette déclaration d’accessibilité s’applique au ${declaration.appKindLabel} ${declaration.url}`,
 		"",
-		"### État de conformité",
+		"## État de conformité",
 		`${declaration.entityName} ${declaration.url} est ${getConformityStatus(declaration.audit.rate)} avec le référentiel général d’amélioration de l’accessibilité  (RGAA), version ${declaration.audit.rgaa_version} en raison des non-conformités et des dérogations  énumérées ci-dessous.`,
 		"",
 		"### Résultats des tests",
@@ -120,14 +121,14 @@ export default function PublishedDeclarationTemplate({
 		"### Technologies utilisées pour la réalisation du site",
 		`${declaration?.audit?.technologies?.map((tech) => `- ${tech.name}`).join("\n")}`,
 		"",
-		"### Environnement de test",
+		"#### Environnement de test",
 		"Agents utilisateurs, technologies d’assistance et outils utilisés pour vérifier l’accessibilité",
 		`${(declaration.audit.testEnvironments ?? []).map((env) => `- ${env}`).join("\n")}`,
 		"",
-		"### Outils pour évaluer l’accessibilité",
+		"#### Outils pour évaluer l’accessibilité",
 		`${(declaration.audit.usedTools ?? []).map((tool) => `- ${tool}`).join("\n")}`,
 		"",
-		"### Pages du site ayant fait l’objet de la vérification de conformité",
+		"#### Pages du site ayant fait l’objet de la vérification de conformité",
 		`${declaration.audit.compliantElements}`,
 		"",
 		"## Retour d’information et contact",
@@ -150,5 +151,5 @@ export default function PublishedDeclarationTemplate({
 		"    75342 Paris CEDEX 07",
 	].join("\n");
 
-	return <DeclarationMarkdownToJsx content={previewMd} mode="preview" />;
+	return <DeclarationMarkdownToJsx content={previewMd} mode={mode} />;
 }
