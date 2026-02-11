@@ -104,13 +104,12 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 		"& > h1": {
 			marginBottom: fr.spacing("4v"),
 		},
-		"& > p": {
-			marginBottom: fr.spacing("10v"),
-		},
 	},
 	declarationPreview: {
 		backgroundColor: fr.colors.decisions.background.default.grey.default,
 		padding: fr.spacing("4w"),
+		marginTop: fr.spacing("10v"),
+		marginBottom: fr.spacing("6v"),
 	},
 	buttonsContainer: {
 		display: "grid",

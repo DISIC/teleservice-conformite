@@ -276,6 +276,11 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		gap: fr.spacing("8v"),
 		backgroundColor: fr.colors.decisions.background.open.blueFrance.default,
 		padding: fr.spacing("6v"),
+		"& > div": {
+			"& p:last-child": {
+				marginBottom: 0,
+			},
+		},
 	},
 	dialogActionButton: {
 		backgroundColor:
@@ -333,6 +338,9 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		"& .fr-modal__footer": {
 			marginTop: fr.spacing("8v"),
 			borderTop: `2px solid ${fr.colors.decisions.border.default.grey.default}`,
+		},
+		"& .fr-modal__content": {
+			marginBottom: fr.spacing("8v"),
 		},
 	},
 });
