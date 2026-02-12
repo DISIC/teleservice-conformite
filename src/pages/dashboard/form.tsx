@@ -36,7 +36,7 @@ export type ImportedDeclarationData = z.infer<
 >;
 
 export default function FormPage({ entity }: { entity: Entity | null }) {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const { classes: appClasses } = useAppStyles();
 	const router = useRouter();
 	const [importedDeclarationData, setImportedDeclarationData] =
@@ -151,9 +151,10 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	declarationMultiStepFormOptions.defaultValues.section = "initialDeclaration";
 
 	const onClickCancel = () => {
-		if (section === "general")
+		if (section === "general") {
+			scrollTo(0, 0);
 			form.setFieldValue("section", "initialDeclaration");
-		else router.back();
+		} else router.back();
 	};
 
 	const addDeclaration = async (generalData: {
@@ -232,6 +233,8 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const form = useAppForm({
 		...declarationMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
+			scrollTo(0, 0);
+
 			if (
 				value.section === "initialDeclaration" &&
 				value.initialDeclaration.declarationUrl
@@ -297,53 +300,49 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 	const section = useStore(form.store, (state) => state.values.section);
 
+	if (isAnalyzingUrl || isGettingInfoFromAra) return <DeclarationLoader />;
+
 	return (
 		<section className={fr.cx("fr-container")}>
-			{!isAnalyzingUrl && !isGettingInfoFromAra ? (
-				<div className={appClasses.formContainer}>
-					<h2>
-						{section === "initialDeclaration"
-							? "Contexte"
-							: "Informations générales"}
-					</h2>
-					<form
-						onSubmit={(e) => {
-							e.preventDefault();
-							form.handleSubmit();
-						}}
-					>
-						<div className={classes.formWrapper}>
-							<div className={classes.whiteBackground}>
-								<h3 className={classes.description}>
-									Tous les champs sont obligatoires sauf précision contraire
-								</h3>
-								{section === "initialDeclaration" && (
-									<ContextForm form={form} />
-								)}
-								{section === "general" && (
-									<DeclarationGeneralForm form={form} readOnly={false} />
-								)}
-							</div>
-							<form.AppForm>
-								<div className={classes.actionButtonsContainer}>
-									<form.CancelButton
-										label="Retour"
-										onClick={onClickCancel}
-										priority="tertiary"
-									/>
-									<form.SubscribeButton
-										label="Continuer"
-										iconId="fr-icon-arrow-right-line"
-										iconPosition="right"
-									/>
-								</div>
-							</form.AppForm>
+			<div className={appClasses.formContainer}>
+				<h1>
+					{section === "initialDeclaration"
+						? "Contexte"
+						: "Informations générales"}
+				</h1>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						form.handleSubmit();
+					}}
+				>
+					<div className={classes.formWrapper}>
+						<div className={classes.whiteBackground}>
+							<h2 className={cx(classes.description, fr.cx("fr-text--sm"))}>
+								Tous les champs sont obligatoires sauf précision contraire
+							</h2>
+							{section === "initialDeclaration" && <ContextForm form={form} />}
+							{section === "general" && (
+								<DeclarationGeneralForm form={form} readOnly={false} />
+							)}
 						</div>
-					</form>
-				</div>
-			) : (
-				<DeclarationLoader />
-			)}
+						<form.AppForm>
+							<div className={classes.actionButtonsContainer}>
+								<form.CancelButton
+									label="Retour"
+									onClick={onClickCancel}
+									priority="tertiary"
+								/>
+								<form.SubscribeButton
+									label="Continuer"
+									iconId="fr-icon-arrow-right-line"
+									iconPosition="right"
+								/>
+							</div>
+						</form.AppForm>
+					</div>
+				</form>
+			</div>
 		</section>
 	);
 }
@@ -365,10 +364,10 @@ const useStyles = tss.withName(FormPage.name).create({
 		justifyContent: "space-between",
 	},
 	description: {
-		fontSize: "1rem",
-		color: "grey",
+		color: fr.colors.decisions.text.mention.grey.default,
 		margin: 0,
 		marginBottom: fr.spacing("10v"),
+		fontWeight: 400,
 	},
 });
 

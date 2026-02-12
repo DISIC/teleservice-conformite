@@ -4,8 +4,8 @@ import remarkGfm from "remark-gfm";
 
 export default function DeclarationMarkdownToJsx({
 	content,
-	mode = "default",
-}: { content: string; mode?: "default" | "preview" }) {
+	mode = "published",
+}: { content: string; mode?: "published" | "preview" }) {
 	const shiftHeading =
 		(from: "h1" | "h2" | "h3" | "h4" | "h5" | "h6") =>
 		(

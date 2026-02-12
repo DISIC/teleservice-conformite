@@ -19,7 +19,7 @@ interface SelectCardFieldProps {
 export function SelectCardField(props: SelectCardFieldProps) {
 	const { name, options = [], label, onChange } = props;
 	const field = useFieldContext<string>();
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const inputRef = useRef<(HTMLInputElement | null)[]>([]);
 
 	return (
@@ -35,9 +35,11 @@ export function SelectCardField(props: SelectCardFieldProps) {
 				>
 					{image}
 					<span>
-						<h2 className={classes.title}>{label}</h2>
+						<h2 className={classes.label}>{label}</h2>
 						{description && (
-							<p className={classes.description}>{description}</p>
+							<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
+								{description}
+							</p>
 						)}
 					</span>
 					<input
@@ -63,15 +65,15 @@ const useStyles = tss.withName(SelectCardField.name).create({
 	fieldWrapper: {
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("4w"),
+		gap: fr.spacing("4v"),
 	},
 	optionCard: {
 		display: "flex",
 		flexDirection: "row",
 		border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-		padding: fr.spacing("4w"),
+		padding: fr.spacing("6v"),
 		alignItems: "center",
-		gap: fr.spacing("2w"),
+		gap: fr.spacing("6v"),
 
 		"&:hover": {
 			backgroundColor: fr.colors.decisions.background.default.grey.hover,
@@ -100,18 +102,15 @@ const useStyles = tss.withName(SelectCardField.name).create({
 			gap: fr.spacing("2w"),
 		},
 	},
-	title: {
-		fontWeight: 700,
-		fontSize: "1rem",
-		lineHeight: "1.5rem",
+	label: {
 		color: fr.colors.decisions.text.title.grey.default,
 		margin: 0,
 		textAlign: "left",
+		fontSize: fr.typography[19].style.fontSize,
+		lineHeight: fr.typography[19].style.lineHeight,
+		fontWeight: 700,
 	},
 	description: {
 		color: fr.colors.decisions.text.default.grey.default,
-		fontSize: "0.875rem",
-		lineHeight: "1.25rem",
-		fontWeight: 400,
 	},
 });

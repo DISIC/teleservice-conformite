@@ -73,6 +73,7 @@ export default function DeclarationPreviewPage({
 				<div className={classes.declarationPreview}>
 					<PublishedDeclarationTemplate
 						declaration={publishedDeclarationContent}
+						mode="preview"
 					/>
 				</div>
 				<div className={classes.buttonsContainer}>
@@ -100,12 +101,26 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 	main: {
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("4w"),
 		paddingBlock: fr.spacing("12v"),
+		"& > h1": {
+			marginBottom: fr.spacing("4v"),
+		},
 	},
 	declarationPreview: {
 		backgroundColor: fr.colors.decisions.background.default.grey.default,
 		padding: fr.spacing("4w"),
+		marginTop: fr.spacing("10v"),
+		marginBottom: fr.spacing("6v"),
+
+		"& > h2": {
+			marginBottom: fr.spacing("10v"),
+		},
+		"& > h3, h4, h5, h6": {
+			marginBottom: fr.spacing("4v"),
+		},
+		"& > p": {
+			marginBottom: fr.spacing("10v"),
+		},
 	},
 	buttonsContainer: {
 		display: "grid",

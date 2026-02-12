@@ -1,9 +1,9 @@
-import PopupMessage from "./PopupMessage";
+import HelpingMessage from "./HelpingMessage";
 import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
 
-export default function VerifyGeneratedInfoPopUpMessage() {
+export default function VerifyGeneratedInfoHelpingMessage() {
 	return (
-		<PopupMessage
+		<HelpingMessage
 			image={<Innovation fontSize="6rem" />}
 			message={
 				<>

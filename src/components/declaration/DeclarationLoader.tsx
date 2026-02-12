@@ -8,11 +8,11 @@ export default function DeclarationLoader() {
 	return (
 		<div className={classes.loaderContainer}>
 			<System fontSize="6rem" />
-			<h1 className={classes.title}>Création de votre déclaration</h1>
-			<p className={classes.description}>
+			<h4 className={classes.title}>Création de votre déclaration</h4>
+			<h6 className={classes.description}>
 				Merci de vérifier les informations récupérées et de les modifier si
 				nécessaire
-			</p>
+			</h6>
 		</div>
 	);
 }
@@ -24,18 +24,16 @@ const useStyles = tss.withName(DeclarationLoader.name).create({
 		alignItems: "center",
 		justifyContent: "center",
 		gap: "1rem",
-		marginBlock: fr.spacing("20v"),
-		marginInline: fr.spacing("10v"),
+		paddingBlock: fr.spacing("20v"),
+		paddingInline: fr.spacing("10v"),
+		backgroundColor: fr.colors.decisions.background.default.grey.default,
+		width: "100%",
 	},
 	title: {
 		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-		fontSize: "1.5rem",
-		fontWeight: 700,
-		lineHeight: "2rem",
 		textAlign: "center",
 	},
 	description: {
-		fontSize: "1.25rem",
 		textAlign: "center",
 	},
 });

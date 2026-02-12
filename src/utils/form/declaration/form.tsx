@@ -9,7 +9,7 @@ import { useRef, useEffect, useState } from "react";
 import { appKindOptions, kindOptions } from "~/payload/selectOptions";
 import { withForm } from "../context";
 import { declarationMultiStepFormOptions } from "./schema";
-import PopupMessage from "~/components/declaration/PopupMessage";
+import HelpingMessage from "~/components/declaration/HelpingMessage";
 
 export const DeclarationGeneralForm = withForm({
 	...declarationMultiStepFormOptions,
@@ -185,7 +185,7 @@ export const ContextForm = withForm({
 								</form.AppField>
 							)}
 							{newDeclaration === "" && (
-								<PopupMessage
+								<HelpingMessage
 									image={<Accessibility fontSize="6rem" />}
 									message="Ara est un outil destiné aux auditeurs qui permet de réaliser un rapport d’audit complet et de générer automatiquement une déclaration d’accessibilité. "
 								/>

@@ -23,7 +23,7 @@ export function SelectField({
 	defaultStateMessage = "",
 	infoStateMessage,
 }: SelectFieldProps) {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const field = useFieldContext<string>();
 
 	return !readOnly ? (
@@ -42,10 +42,15 @@ export function SelectField({
 					field.state.meta.errors.map((error) => error.message).join(",") ??
 					defaultStateMessage
 				}
-				className={className}
+				className={cx(className, classes.select)}
 			/>
 			{infoStateMessage && (
-				<p className={classes.infoStateMessage}>{infoStateMessage}</p>
+				<div className={classes.infoStateMessageContainer}>
+					<i className={cx("fr-icon-information-fill", classes.infoIcon)} />
+					<p className={cx(classes.infoStateMessage, fr.cx("fr-text--xs"))}>
+						{infoStateMessage}
+					</p>
+				</div>
 			)}
 		</>
 	) : (
@@ -62,8 +67,23 @@ export function SelectField({
 const useStyles = tss.withName(SelectField.name).create({
 	infoStateMessage: {
 		color: fr.colors.decisions.text.default.info.default,
-		fontWeight: 400,
-		fontSize: "0.75rem",
-		lineHeight: "1.25rem",
+		margin: 0,
+	},
+	select: {
+		marginBottom: `${fr.spacing("4v")} !important`,
+	},
+	infoIcon: {
+		color: fr.colors.decisions.text.default.info.default,
+		display: "flex",
+
+		"&::before": {
+			width: fr.spacing("3v"),
+			height: fr.spacing("3v"),
+		},
+	},
+	infoStateMessageContainer: {
+		display: "flex",
+		gap: fr.spacing("1v"),
+		alignItems: "center",
 	},
 });

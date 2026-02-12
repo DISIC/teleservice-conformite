@@ -83,18 +83,21 @@ export default function AuditPage({
 
 	const goToPreviousSection = (currentSection: Section): Section | null => {
 		const currentIndex = sections.indexOf(currentSection);
-		if (currentIndex > 0) {
-			return sections[currentIndex - 1] ?? null;
-		}
-		return null;
+		if (currentIndex < 0) return null;
+
+		scrollTo(0, 0);
+
+		return sections[currentIndex - 1] ?? null;
 	};
 
 	const goToNextSection = (currentSection: Section): Section | null => {
 		const currentIndex = sections.indexOf(currentSection);
-		if (currentIndex < sections.length - 1) {
-			return sections[currentIndex + 1] ?? null;
-		}
-		return null;
+
+		if (currentIndex >= sections.length - 1) return null;
+
+		scrollTo(0, 0);
+
+		return sections[currentIndex + 1] ?? null;
 	};
 
 	const addAudit = async (auditData: any, declarationId: number) => {
@@ -294,6 +297,7 @@ export default function AuditPage({
 				)
 			}
 			showLayoutComponent={!declaration?.audit}
+			isAiGenerated={declaration?.audit?.status === "fromAI"}
 		>
 			{!declaration?.audit ? (
 				<form
@@ -322,7 +326,7 @@ export default function AuditPage({
 							/>
 							<form.SubscribeButton
 								label="Continuer"
-								iconId="fr-icon-arrow-right-line"
+								iconId="fr-icon-arrow-right-s-line"
 								iconPosition="right"
 							/>
 						</div>

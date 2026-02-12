@@ -19,11 +19,13 @@ import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDec
 import { contactFormOptions } from "~/utils/form/contact/schema";
 import { ContactTypeForm } from "~/utils/form/contact/form";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
+import { useCommonStyles } from "~/components/style/commonStyles";
 
 export default function ContactPage({
 	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
 	const { classes, cx } = useStyles();
+	const { classes: commonClasses } = useCommonStyles();
 	const router = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
@@ -197,6 +199,7 @@ export default function ContactPage({
 			isEditable={!!declaration?.contact}
 			editMode={editMode}
 			onToggleEdit={onEditInfos}
+			isAiGenerated={declaration?.contact?.status === "fromAI"}
 		>
 			<form
 				onSubmit={(e) => {
@@ -211,7 +214,7 @@ export default function ContactPage({
 			>
 				{!declaration?.contact ? (
 					<>
-						<div className={classes.whiteBackground}>
+						<div className={commonClasses.whiteBackground}>
 							<ContactTypeForm form={form} />
 						</div>
 						<form.AppForm>
@@ -225,7 +228,7 @@ export default function ContactPage({
 								/>
 								<form.SubscribeButton
 									label="Continuer"
-									iconId="fr-icon-arrow-right-line"
+									iconId="fr-icon-arrow-right-s-line"
 									iconPosition="right"
 								/>
 							</div>
@@ -235,7 +238,7 @@ export default function ContactPage({
 					<>
 						{editMode ? (
 							<>
-								<div className={classes.whiteBackground}>
+								<div className={commonClasses.whiteBackground}>
 									<DeclarationContactForm form={readOnlyForm} />
 								</div>
 								<readOnlyForm.AppForm>
@@ -243,7 +246,7 @@ export default function ContactPage({
 								</readOnlyForm.AppForm>
 							</>
 						) : (
-							<div className={classes.whiteBackground}>
+							<div className={commonClasses.whiteBackground}>
 								<ReadOnlyDeclarationContact declaration={declaration ?? null} />
 							</div>
 						)}
@@ -255,15 +258,6 @@ export default function ContactPage({
 }
 
 const useStyles = tss.withName(ContactPage.name).create({
-	whiteBackground: {
-		backgroundColor: fr.colors.decisions.background.raised.grey.default,
-		paddingInline: fr.spacing("10v"),
-		paddingBottom: fr.spacing("10v"),
-		marginBottom: fr.spacing("6v"),
-		width: "100%",
-		display: "flex",
-		flexDirection: "column",
-	},
 	actionButtonsContainer: {
 		display: "flex",
 		justifyContent: "space-between",

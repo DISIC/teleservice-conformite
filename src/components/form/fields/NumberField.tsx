@@ -8,12 +8,17 @@ interface NumberFieldProps extends DefaultFieldProps {
 	max?: number;
 }
 
-export function NumberField({ label, readOnly = false }: NumberFieldProps) {
+export function NumberField({
+	label,
+	description,
+	readOnly = false,
+}: NumberFieldProps) {
 	const field = useFieldContext<number>();
 
 	return !readOnly ? (
 		<Input
 			label={label}
+			hintText={description}
 			nativeInputProps={{
 				type: "number",
 				inputMode: "numeric",

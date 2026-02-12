@@ -7,6 +7,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import React from "react";
 
 import { useStyles as useAppStyles } from "~/pages/_app";
+import VerifyGeneratedInfoHelpingMessage from "./VerifyGeneratedInfoPopUpMessage";
 
 type DeclarationFormProps = {
 	declaration: PopulatedDeclaration;
@@ -20,6 +21,7 @@ type DeclarationFormProps = {
 	children: React.ReactNode;
 	LayoutComponent?: React.ComponentType<{ children: React.ReactNode }>;
 	showLayoutComponent?: boolean;
+	isAiGenerated?: boolean;
 };
 
 export default function DeclarationForm({
@@ -34,6 +36,7 @@ export default function DeclarationForm({
 	children,
 	LayoutComponent,
 	showLayoutComponent = false,
+	isAiGenerated = false,
 }: DeclarationFormProps) {
 	const { classes, cx } = useStyles();
 	const { classes: formClasses } = useAppStyles();
@@ -46,11 +49,11 @@ export default function DeclarationForm({
 	const Content = () => (
 		<div className={cx(classes.formWrapper)}>
 			<div className={classes.editButtonWrapper}>
-				<h3 className={classes.description}>
+				<h2 className={cx(classes.description, fr.cx("fr-text--sm"))}>
 					{isEditable
 						? "Vérifiez les informations et modifiez-les si nécessaire"
 						: "Tous les champs sont obligatoires sauf précision contraire"}
-				</h3>
+				</h2>
 				{isEditable && onToggleEdit && (
 					<Button
 						priority="secondary"
@@ -120,9 +123,9 @@ const useStyles = tss.withName(DeclarationForm.name).create({
 		marginTop: fr.spacing("6v"),
 	},
 	description: {
-		fontSize: "1rem",
-		color: "grey",
+		color: fr.colors.decisions.text.mention.grey.default,
 		margin: 0,
+		fontWeight: 400,
 	},
 	validateButton: {
 		marginTop: fr.spacing("4w"),

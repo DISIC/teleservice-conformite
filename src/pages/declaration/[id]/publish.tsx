@@ -34,6 +34,16 @@ export default function PublishPage({
 const useStyles = tss.withName(PublishPage.name).create({
 	publishedDeclarationContainer: {
 		paddingBlock: fr.spacing("12v"),
+
+		"& > h1": {
+			marginBottom: fr.spacing("10v"),
+		},
+		"& > h2, h3, h4, h5, h6": {
+			marginBottom: fr.spacing("4v"),
+		},
+		"& > p": {
+			marginBottom: fr.spacing("10v"),
+		},
 	},
 });
 

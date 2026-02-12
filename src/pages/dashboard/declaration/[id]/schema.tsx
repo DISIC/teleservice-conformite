@@ -4,13 +4,13 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { useRouter } from "next/router";
+import { fr } from "@codegouvfr/react-dsfr";
+import { tss } from "tss-react";
 
 import {
 	type PopulatedDeclaration,
 	getDeclarationById,
 } from "~/server/api/utils/payload-helper";
-import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
 import { useAppForm } from "~/utils/form/context";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { DeclarationSchema } from "~/utils/form/readonly/form";
@@ -19,11 +19,13 @@ import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
 import { schemaFormOptions } from "~/utils/form/schema/schema";
 import { api } from "~/utils/api";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
+import { useCommonStyles } from "~/components/style/commonStyles";
 
 export default function SchemaPage({
 	declaration: initialDeclaration,
 }: { declaration: PopulatedDeclaration }) {
 	const { classes, cx } = useStyles();
+	const { classes: commonClasses } = useCommonStyles();
 	const router = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
@@ -194,6 +196,7 @@ export default function SchemaPage({
 			onToggleEdit={onEditInfos}
 			editMode={editMode}
 			showLayoutComponent={false}
+			isAiGenerated={declaration?.actionPlan?.status === "fromAI"}
 		>
 			<form
 				onSubmit={(e) => {
@@ -206,7 +209,7 @@ export default function SchemaPage({
 					}
 				}}
 			>
-				<div className={classes.whiteBackground}>
+				<div className={commonClasses.whiteBackground}>
 					{!declaration?.actionPlan ? (
 						<DeclarationSchemaForm form={form} />
 					) : (
@@ -236,7 +239,7 @@ export default function SchemaPage({
 							/>
 							<form.SubscribeButton
 								label="Continuer"
-								iconId="fr-icon-arrow-right-line"
+								iconId="fr-icon-arrow-right-s-line"
 								iconPosition="right"
 							/>
 						</div>
@@ -248,15 +251,6 @@ export default function SchemaPage({
 }
 
 const useStyles = tss.withName(SchemaPage.name).create({
-	whiteBackground: {
-		backgroundColor: fr.colors.decisions.background.raised.grey.default,
-		paddingInline: fr.spacing("10v"),
-		paddingBottom: fr.spacing("10v"),
-		marginBottom: fr.spacing("6v"),
-		width: "100%",
-		display: "flex",
-		flexDirection: "column",
-	},
 	actionButtonsContainer: {
 		display: "flex",
 		justifyContent: "space-between",
