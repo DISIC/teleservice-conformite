@@ -155,6 +155,7 @@ export const useStyles = tss
 			backgroundColor: backgroundColor,
 			display: "flex",
 			width: "100%",
+			flexDirection: "row",
 		},
 		formContainer: {
 			paddingInline: "16rem",
