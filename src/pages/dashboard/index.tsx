@@ -88,7 +88,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 									href: "/dashboard/form",
 								}}
 							>
-								Ajouter une declaration
+								Ajouter une déclaration
 							</Button>
 						</div>
 						<div>

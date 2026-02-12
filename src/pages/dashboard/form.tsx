@@ -307,7 +307,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 			<div className={appClasses.formContainer}>
 				<h1>
 					{section === "initialDeclaration"
-						? "Contexte"
+						? "Ajouter une déclaration"
 						: "Informations générales"}
 				</h1>
 				<form
