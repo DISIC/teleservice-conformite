@@ -270,7 +270,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		display: "flex",
 		flexDirection: "row",
 		gap: fr.spacing("4v"),
-
 		"& > a": {
 			"&::after": {
 				display: "none",
@@ -301,7 +300,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			padding: 0,
 			margin: 0,
 			boxShadow: `0 -1px 0 0 ${fr.colors.decisions.border.default.grey.default} inset`,
-			gap: fr.spacing("16v"),
+			gap: fr.spacing("8v"),
 		},
 		"& > ul > li > button": {
 			border: "none !important",
@@ -318,7 +317,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			},
 		},
 		"& > div": {
-			padding: `${fr.spacing("16v")} 0`,
+			padding: `${fr.spacing("8v")} 0`,
 			border: "none !important",
 			boxShadow: "none !important",
 			marginBlock: fr.spacing("6v"),
