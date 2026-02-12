@@ -9,6 +9,7 @@ import { getDeclarationById } from "~/server/api/utils/payload-helper";
 import PublishedDeclarationTemplate, {
 	type PublishedDeclaration,
 } from "~/components/declaration/PublishedDeclarationTemplate";
+import ErrorPage from "~/components/declaration/ErrorPage";
 
 export default function PublishPage({
 	publishedContent,
@@ -16,7 +17,7 @@ export default function PublishPage({
 	const { classes } = useStyles();
 
 	if (!publishedContent) {
-		return <></>;
+		return <ErrorPage />;
 	}
 
 	return (
