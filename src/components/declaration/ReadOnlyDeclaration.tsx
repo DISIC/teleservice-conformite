@@ -80,7 +80,7 @@ export const ReadOnlyDeclarationAudit = ({
 }: { declaration: PopulatedDeclaration | null }) => {
 	const audit = declaration?.audit;
 
-	if (!audit) {
+	if (!audit || audit.status === "notRealised") {
 		return <ReadOnlyField label="Audit réalisé" value="Non" />;
 	}
 

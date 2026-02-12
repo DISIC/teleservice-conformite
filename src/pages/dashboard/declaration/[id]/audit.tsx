@@ -21,6 +21,7 @@ import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDecla
 import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
 import { MultiStep } from "~/components/MultiStep";
 import {
+	AuditRealisedForm,
 	AuditDateForm,
 	ToolsForm,
 	CompliantElementsForm,
@@ -35,6 +36,7 @@ type Steps<T> = {
 };
 
 const sections = [
+	"isAuditRealised",
 	"auditDate",
 	"tools",
 	"compliantElements",
@@ -60,7 +62,9 @@ export default function AuditPage({
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
-	const [isAchieved, setIsAchieved] = useState(!!declaration?.audit);
+	const [isAchieved, setIsAchieved] = useState(
+		!!declaration?.audit || declaration?.audit?.status !== "notRealised",
+	);
 	const audit = declaration?.audit;
 	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
 
@@ -82,6 +86,8 @@ export default function AuditPage({
 	});
 
 	const goToPreviousSection = (currentSection: Section): Section | null => {
+		form.reset();
+
 		const currentIndex = sections.indexOf(currentSection);
 		if (currentIndex < 0) return null;
 
@@ -115,12 +121,18 @@ export default function AuditPage({
 	const form = useAppForm({
 		...auditMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
+			if (value.section === "isAuditRealised" && !value.isAuditRealised) {
+				await addAudit({ status: "notRealised" }, declaration.id);
+				return;
+			}
+
 			if (value.section === "files") {
 				await addAudit(value, declaration.id);
-			} else {
-				const nextSection = goToNextSection(value.section as Section);
-				if (nextSection) formApi.setFieldValue("section", nextSection);
+				return;
 			}
+
+			const nextSection = goToNextSection(value.section as Section);
+			if (nextSection) formApi.setFieldValue("section", nextSection);
 		},
 	});
 
@@ -174,7 +186,10 @@ export default function AuditPage({
 	const onEditInfos = () => {
 		setEditMode((prev) => !prev);
 
-		if (editMode) setIsAchieved(!!declaration?.audit);
+		if (editMode)
+			setIsAchieved(
+				!!declaration?.audit && declaration?.audit?.status !== "notRealised",
+			);
 	};
 
 	if (audit) {
@@ -236,7 +251,7 @@ export default function AuditPage({
 	};
 
 	const onClickCancel = () => {
-		if (section === "auditDate") {
+		if (section === "isAuditRealised") {
 			router.push(`/dashboard/declaration/${declaration?.id}`);
 			return;
 		}
@@ -288,7 +303,7 @@ export default function AuditPage({
 			}
 			onValidate={updateAuditStatus}
 			LayoutComponent={({ children }) =>
-				declaration?.audit ? (
+				declaration?.audit || section === "isAuditRealised" ? (
 					children
 				) : (
 					<MultiStep steps={steps} currentStep={section}>
@@ -310,6 +325,7 @@ export default function AuditPage({
 					}}
 				>
 					<div className={classes.whiteBackground}>
+						{section === "isAuditRealised" && <AuditRealisedForm form={form} />}
 						{section === "auditDate" && <AuditDateForm form={form} />}
 						{section === "tools" && <ToolsForm form={form} />}
 						{section === "compliantElements" && (

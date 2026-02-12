@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 
 import { sourceOptions, rgaaVersionOptions, testEnvironmentOptions, toolOptions } from "../selectOptions";
+import type { Audit } from "../payload-types";
 
 export const Audits: CollectionConfig = {
 	slug: "audits",
@@ -70,25 +71,74 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Version RGAA" },
 			options: [...rgaaVersionOptions],
 			index: true,
-			required: true,
+			hasMany: false,
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== 'realized'
+			},
+			validate: (
+				value: string | null | undefined,
+				{ siblingData }: { siblingData?: { status?: string } },
+			) => {
+				if (siblingData?.status !== "notRealised" && !value) {
+					return "Ce champ est obligatoire";
+				}
+
+				return true;
+			}
 		},
 		{
 			name: "realisedBy",
 			type: "text",
 			label: { fr: "Entite ou personne ayant realise l'audit" },
-			required: true,
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== 'realized'
+			},
+			validate: (
+				value: string | null | undefined,
+				{ siblingData }: { siblingData?: { status?: string } },
+			) => {
+				if (siblingData?.status !== "notRealised" && !value) {
+					return "Ce champ est obligatoire";
+				}
+
+				return true;
+			}
 		},
 		{
 			name: "rate",
 			type: "number",
 			label: { fr: "Taux de conformité" },
-			required: true,
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== 'realized'
+			},
+			validate: (
+				value: number | null | undefined,
+				{ siblingData }: { siblingData?: { status?: string } },
+			) => {
+				if (siblingData?.status !== "notRealised" && !value) {
+					return "Ce champ est obligatoire";
+				}
+
+				return true;
+			}
 		},
 		{
 			name: "compliantElements",
 			type: "textarea",
 			label: { fr: "Éléments ayant fait l’objet de vérification" },
-			required: true,
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== 'realized'
+			},
+			validate: (
+				value: string | null | undefined,
+				{ siblingData }: { siblingData?: { status?: string } },
+			) => {
+				if (siblingData?.status !== "notRealised" && !value) {
+					return "Ce champ est obligatoire";
+				}
+
+				return true;
+			}
 		},
 		{
 			name: "nonCompliantElements",
@@ -148,7 +198,6 @@ export const Audits: CollectionConfig = {
 				},
 			],
 			label: { fr: "Technologies utilisées" },
-			required: false,
 		},
 		{
 			name: "declaration",
@@ -156,17 +205,13 @@ export const Audits: CollectionConfig = {
 			relationTo: "declarations",
 			label: { fr: "déclaration associée" },
 			required: true,
-			admin: {
-				position: "sidebar",
-			},
 		},
 		{
 			name: "status",
 			type: "select",
 			label: { fr: "Statut" },
 			defaultValue: "default",
-			options: [...sourceOptions],
-			required: false,
+			options: [...sourceOptions, { label: "pas realisé", value: "notRealised" }],
 		}
 	],
 };
