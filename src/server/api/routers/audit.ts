@@ -26,7 +26,7 @@ export const auditRouter = createTRPCRouter({
       optionalAuditFormSchema
     )
     .mutation(async ({ input, ctx }) => {
-      const { declarationId, usedTools = [], testEnvironments = [], technologies = [], ...rest } = input;
+      const { declarationId, usedTools = [], testEnvironments = [], technologies = [], date, ...rest } = input;
 
       await isDeclarationOwner({
         payload: ctx.payload,
@@ -39,6 +39,7 @@ export const auditRouter = createTRPCRouter({
         draft: true,
         data: {
           ...rest,
+          date: date && date !== "" ? date : undefined,
           testEnvironments: testEnvironments.map((tech) => ({ name: tech })),
           usedTools: usedTools.map((tech) => ({ name: tech })),
           technologies: technologies.map((tech) => ({ name: tech })),
@@ -71,11 +72,13 @@ export const auditRouter = createTRPCRouter({
   update: userProtectedProcedure
     .input(
       z.object({
-        audit: auditFormSchema.omit({ section: true }).extend({ id: z.number(), declarationId: z.number(), technologies: z.array(z.string()).optional() }),
+        audit: auditFormSchema.omit({ section: true, isAuditRealised: true }).extend({ id: z.number(), declarationId: z.number(), technologies: z.array(z.string()).optional() }),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { id, declarationId, technologies = [], ...rest } = input.audit;
+      const { id, declarationId, technologies = [], date, ...rest } = input.audit;
+
+      const normalizedDate = date && date !== "" ? date : undefined;
 
       await isDeclarationOwner({
         payload: ctx.payload,
@@ -88,7 +91,8 @@ export const auditRouter = createTRPCRouter({
         id,
         data: {
           ...rest,
-          usedTools: rest.usedTools.map((tech) => ({ name: tech })),
+          date: normalizedDate,
+          usedTools: rest.usedTools?.map((tech) => ({ name: tech })) ?? [],
           testEnvironments: rest.testEnvironments.map((tech) => ({ name: tech })),
           technologies: technologies.map((tech) => ({ name: tech })),
           status: "default",

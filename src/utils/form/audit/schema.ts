@@ -3,8 +3,18 @@ import z from "zod";
 
 import { rgaaVersionOptions, testEnvironmentOptions } from "~/payload/selectOptions";
 
+export const auditRealised = z.object({
+  isAuditRealised: z.boolean(),
+});
+
+export type ZAuditRealised = z.infer<typeof auditRealised>;
+
+export const auditRealisedDefaultValues: ZAuditRealised = {
+  isAuditRealised: false,
+};
+
 export const auditDate = z.object({
-  date: z.iso.date().min(1, { message: "La date est requise" }),
+  date: z.iso.date().optional().or(z.literal("")),
   realisedBy: z.string().min(1, {
     message: "L'organisation ayant réalisé l'audit est requise",
   }),
@@ -17,7 +27,7 @@ export const auditDate = z.object({
 export type ZAuditDate = z.infer<typeof auditDate>;
 
 export const auditDateDefaultValues: ZAuditDate = {
-  date: "",
+  date: undefined,
   realisedBy: "",
   rgaa_version: "rgaa_4",
   rate: 0,
@@ -26,10 +36,7 @@ export const auditDateDefaultValues: ZAuditDate = {
 export const tools = z.object({
   usedTools: z.array(
       z.string()
-    )
-    .min(1, {
-      message: "Au moins une technologie doit être sélectionnée",
-    }),
+    ).optional(),
   testEnvironments: z
     .array(
       z.string()
@@ -97,6 +104,7 @@ export const filesDefaultValues: ZFiles = {
 };
 
 const sections = [
+  "isAuditRealised",
   "auditDate",
   "tools",
   "compliantElements",
@@ -110,6 +118,7 @@ export type AuditFormSection = typeof sections[number];
 
 export const auditFormSchema = z.object({
   section: z.enum(sections),
+  ...auditRealised.shape,
   ...auditDate.shape,
   ...tools.shape,
   ...compliantElements.shape,
@@ -124,7 +133,8 @@ export type ZAuditFormSchema = z.infer<
 >;
 
 const defaultValues: ZAuditFormSchema = {
-  section: "auditDate",
+  section: "isAuditRealised",
+  ...auditRealisedDefaultValues,
   ...auditDateDefaultValues,
   ...toolsDefaultValues,
   ...compliantElementsDefaultValues,
@@ -138,6 +148,12 @@ export const auditMultiStepFormOptions = formOptions({
 	defaultValues,
 	validators: {
     onSubmit: ({ value, formApi }) => {
+      if (value.section === "isAuditRealised") {
+        return formApi.parseValuesWithSchema(
+          auditRealised as typeof auditFormSchema,
+        );
+      }
+
       if (value.section === "auditDate") {
         return formApi.parseValuesWithSchema(
           auditDate as typeof auditFormSchema,
