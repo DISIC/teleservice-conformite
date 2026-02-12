@@ -1,11 +1,15 @@
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import { tss } from "tss-react";
+import { fr } from "@codegouvfr/react-dsfr";
 
 export default function DeclarationMarkdownToJsx({
 	content,
 	mode = "published",
 }: { content: string; mode?: "published" | "preview" }) {
+	const { classes } = useStyles();
+
 	const shiftHeading =
 		(from: "h1" | "h2" | "h3" | "h4" | "h5" | "h6") =>
 		(
@@ -20,8 +24,22 @@ export default function DeclarationMarkdownToJsx({
 			return <Tag {...props} />;
 		};
 
-	const components =
-		mode === "preview"
+	const linkRenderer = (
+		props: React.DetailedHTMLProps<
+			React.HTMLAttributes<HTMLAnchorElement>,
+			HTMLAnchorElement
+		>,
+	) => {
+		return (
+			<a {...props} className={classes.link}>
+				{props.children}
+			</a>
+		);
+	};
+
+	const components = {
+		a: linkRenderer,
+		...(mode === "preview"
 			? {
 					h1: shiftHeading("h1"),
 					h2: shiftHeading("h2"),
@@ -30,7 +48,8 @@ export default function DeclarationMarkdownToJsx({
 					h5: shiftHeading("h5"),
 					h6: shiftHeading("h6"),
 				}
-			: {};
+			: {}),
+	};
 
 	return (
 		<Markdown
@@ -42,3 +61,9 @@ export default function DeclarationMarkdownToJsx({
 		</Markdown>
 	);
 }
+
+const useStyles = tss.withName(DeclarationMarkdownToJsx.name).create({
+	link: {
+		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+	},
+});
