@@ -89,7 +89,7 @@ export default function PublishedDeclarationTemplate({
 	const previewMd = [
 		`# ${declaration.name}`,
 		`${declaration.entityName} s’engage à rendre ses sites internet, intranet, extranet et ses progiciels accessibles (et ses applications mobiles et mobilier urbain numérique) conformément à  l’article 47 de la loi n°2005-102 du 11 février 2005.`,
-		`À cette fin, ${declaration.entityName} met en œuvre la stratégie et les actions suivantes :`,
+		`À cette fin, ${declaration.entityName} met en œuvre la stratégie et les actions suivantes :`,
 		"",
 		`- Lien URL du schéma annuel à jour : ${declaration.actionPlan.currentYearSchemaUrl ?? ""};`,
 		"",
@@ -140,15 +140,9 @@ export default function PublishedDeclarationTemplate({
 		"## Voies de recours",
 		"Si vous constatez un défaut d’accessibilité vous empêchant d’accéder à un contenu ou une fonctionnalité du site, que vous nous le signalez et  que vous ne parvenez pas à obtenir une réponse de notre part, vous êtes  en droit de faire parvenir vos doléances ou une demande de saisine au  Défenseur des droits.",
 		"Plusieurs moyens sont à votre disposition:",
-		"- Écrire un message au Défenseur des droits",
-		"- Contacter le délégué du Défenseur des droits dans votre région",
-		"- Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre):",
-		"",
-		"    Défenseur des droits",
-		"",
-		"    Libre réponse 71120",
-		"",
-		"    75342 Paris CEDEX 07",
+		"- Écrire un message au [Défenseur des droits](https://formulaire.defenseurdesdroits.fr/formulaire_saisine/)",
+		"- Contacter le délégué du [Défenseur des droits dans votre région](https://www.defenseurdesdroits.fr/saisir/delegues)",
+		"- Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre):<br/>Défenseur des droits<br/>Libre réponse 71120<br/>75342 Paris CEDEX 07",
 	].join("\n");
 
 	return <DeclarationMarkdownToJsx content={previewMd} mode={mode} />;
