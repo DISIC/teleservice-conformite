@@ -12,6 +12,26 @@ import { auditMultiStepFormOptions } from "./schema";
 import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
 import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
 
+export const AuditRealisedForm = withForm({
+	...auditMultiStepFormOptions,
+	render: function Render({ form }) {
+		return (
+			<form.AppField name="isAuditRealised">
+				{(field) => (
+					<field.RadioField
+						label="Avez-vous réalisé un audit d’accessibilité de votre service numérique ?"
+						description="Un audit d’accessibilité évalue votre service numérique selon le RGAA afin d’identifier les non-conformités et les points à améliorer. Il peut être réalisé par un prestataire externe."
+						options={[
+							{ label: "Oui", value: true },
+							{ label: "Non", value: false },
+						]}
+					/>
+				)}
+			</form.AppField>
+		);
+	},
+});
+
 export const AuditDateForm = withForm({
 	...auditMultiStepFormOptions,
 	render: function Render({ form }) {

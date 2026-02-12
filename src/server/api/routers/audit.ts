@@ -72,7 +72,7 @@ export const auditRouter = createTRPCRouter({
   update: userProtectedProcedure
     .input(
       z.object({
-        audit: auditFormSchema.omit({ section: true }).extend({ id: z.number(), declarationId: z.number(), technologies: z.array(z.string()).optional() }),
+        audit: auditFormSchema.omit({ section: true, isAuditRealised: true }).extend({ id: z.number(), declarationId: z.number(), technologies: z.array(z.string()).optional() }),
       })
     )
     .mutation(async ({ input, ctx }) => {

@@ -3,6 +3,16 @@ import z from "zod";
 
 import { rgaaVersionOptions, testEnvironmentOptions } from "~/payload/selectOptions";
 
+export const auditRealised = z.object({
+  isAuditRealised: z.boolean(),
+});
+
+export type ZAuditRealised = z.infer<typeof auditRealised>;
+
+export const auditRealisedDefaultValues: ZAuditRealised = {
+  isAuditRealised: false,
+};
+
 export const auditDate = z.object({
   date: z.iso.date().optional().or(z.literal("")),
   realisedBy: z.string().min(1, {
@@ -94,6 +104,7 @@ export const filesDefaultValues: ZFiles = {
 };
 
 const sections = [
+  "isAuditRealised",
   "auditDate",
   "tools",
   "compliantElements",
@@ -107,6 +118,7 @@ export type AuditFormSection = typeof sections[number];
 
 export const auditFormSchema = z.object({
   section: z.enum(sections),
+  ...auditRealised.shape,
   ...auditDate.shape,
   ...tools.shape,
   ...compliantElements.shape,
@@ -121,7 +133,8 @@ export type ZAuditFormSchema = z.infer<
 >;
 
 const defaultValues: ZAuditFormSchema = {
-  section: "auditDate",
+  section: "isAuditRealised",
+  ...auditRealisedDefaultValues,
   ...auditDateDefaultValues,
   ...toolsDefaultValues,
   ...compliantElementsDefaultValues,
@@ -135,6 +148,12 @@ export const auditMultiStepFormOptions = formOptions({
 	defaultValues,
 	validators: {
     onSubmit: ({ value, formApi }) => {
+      if (value.section === "isAuditRealised") {
+        return formApi.parseValuesWithSchema(
+          auditRealised as typeof auditFormSchema,
+        );
+      }
+
       if (value.section === "auditDate") {
         return formApi.parseValuesWithSchema(
           auditDate as typeof auditFormSchema,
