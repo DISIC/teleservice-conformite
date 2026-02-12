@@ -1,5 +1,4 @@
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { useRouter } from "next/router";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
@@ -22,6 +21,7 @@ type DeclarationFormProps = {
 	LayoutComponent?: React.ComponentType<{ children: React.ReactNode }>;
 	showLayoutComponent?: boolean;
 	isAiGenerated?: boolean;
+	mentionText?: string;
 };
 
 export default function DeclarationForm({
@@ -37,10 +37,10 @@ export default function DeclarationForm({
 	LayoutComponent,
 	showLayoutComponent = false,
 	isAiGenerated = false,
+	mentionText,
 }: DeclarationFormProps) {
 	const { classes, cx } = useStyles();
 	const { classes: formClasses } = useAppStyles();
-	const router = useRouter();
 	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
 
 	const Layout =
@@ -53,6 +53,12 @@ export default function DeclarationForm({
 					{isEditable
 						? "Vérifiez les informations et modifiez-les si nécessaire"
 						: "Tous les champs sont obligatoires sauf précision contraire"}
+					{mentionText && (
+						<>
+							<br />
+							{mentionText}
+						</>
+					)}
 				</h2>
 				{isEditable && onToggleEdit && (
 					<Button

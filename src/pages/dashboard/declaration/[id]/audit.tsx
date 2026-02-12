@@ -298,6 +298,9 @@ export default function AuditPage({
 			}
 			showLayoutComponent={!declaration?.audit}
 			isAiGenerated={declaration?.audit?.status === "fromAI"}
+			{...(section === "files"
+				? { mentionText: "Les documents ajoutés doivent être accessibles" }
+				: {})}
 		>
 			{!declaration?.audit ? (
 				<form
