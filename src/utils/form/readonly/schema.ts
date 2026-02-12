@@ -1,7 +1,7 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
-import { rgaaVersionOptions, appKindOptions } from "~/payload/selectOptions";
+import { rgaaVersionOptions, appKindOptions, sourceOptions } from "~/payload/selectOptions";
 
 export const declarationGeneral = z.object({
   general: z.object({
@@ -146,7 +146,7 @@ export const readOnlyFormOptions = formOptions({
           declarationGeneral as typeof declarationMultiStepFormSchema,
         );
       }
-
+      console.log(value);
       if (value.section === "audit") {
         return formApi.parseValuesWithSchema(
           declarationAudit as typeof declarationMultiStepFormSchema,

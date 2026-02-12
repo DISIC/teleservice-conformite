@@ -63,6 +63,7 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Date de realisation de l'audit" },
 			admin: {
 				position: "sidebar",
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
 			},
 		},
 		{
@@ -73,7 +74,7 @@ export const Audits: CollectionConfig = {
 			index: true,
 			hasMany: false,
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== 'realized'
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
 			},
 			validate: (
 				value: string | null | undefined,
@@ -91,7 +92,7 @@ export const Audits: CollectionConfig = {
 			type: "text",
 			label: { fr: "Entite ou personne ayant realise l'audit" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== 'realized'
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
 			},
 			validate: (
 				value: string | null | undefined,
@@ -109,7 +110,7 @@ export const Audits: CollectionConfig = {
 			type: "number",
 			label: { fr: "Taux de conformité" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== 'realized'
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
 			},
 			validate: (
 				value: number | null | undefined,
@@ -127,7 +128,7 @@ export const Audits: CollectionConfig = {
 			type: "textarea",
 			label: { fr: "Éléments ayant fait l’objet de vérification" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== 'realized'
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
 			},
 			validate: (
 				value: string | null | undefined,
@@ -144,21 +145,33 @@ export const Audits: CollectionConfig = {
 			name: "nonCompliantElements",
 			type: "textarea",
 			label: { fr: "Éléments non conformes" },
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "disproportionnedCharge",
 			type: "textarea",
 			label: { fr: "Éléments avec dérogation pour charge disproportionnée" },
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "optionalElements",
 			type: "textarea",
 			label: { fr: "Éléments non soumis à l’obligation d’accessibilité" },
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "auditReport",
 			type: "text",
 			label: { fr: "Rapport d'audit" },
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "usedTools",
@@ -172,6 +185,9 @@ export const Audits: CollectionConfig = {
 					required: true,
 				},
 			],
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "testEnvironments",
@@ -184,7 +200,10 @@ export const Audits: CollectionConfig = {
 					label: { fr: "Nom de l’environnement de test" },
 					required: true,
 				}
-		],
+			],
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "technologies",
@@ -198,6 +217,9 @@ export const Audits: CollectionConfig = {
 				},
 			],
 			label: { fr: "Technologies utilisées" },
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "declaration",

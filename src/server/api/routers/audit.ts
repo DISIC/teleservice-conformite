@@ -14,7 +14,7 @@ const optionalAuditFormSchema = auditFormSchema
   })
   .extend({
     declarationId: z.number(),
-    status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
+    status: z.enum([...sourceOptions, { label: "pas realisé", value: "notRealised" }].map(option => option.value)).optional().default("default"),
     technologies: z.array(z.string()).optional().default([]),
     usedTools: z.array(z.string()).optional().default([]),
     testEnvironments: z.array(z.string()).optional().default([]),

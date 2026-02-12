@@ -63,8 +63,9 @@ export default function AuditPage({
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
 	const [isAchieved, setIsAchieved] = useState(
-		!!declaration?.audit || declaration?.audit?.status !== "notRealised",
+		!!declaration?.audit && declaration?.audit?.status !== "notRealised",
 	);
+
 	const audit = declaration?.audit;
 	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
 
