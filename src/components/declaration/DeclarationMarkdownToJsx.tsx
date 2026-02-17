@@ -52,18 +52,29 @@ export default function DeclarationMarkdownToJsx({
 	};
 
 	return (
-		<Markdown
-			remarkPlugins={[remarkGfm]}
-			rehypePlugins={[rehypeRaw]}
-			components={components}
-		>
-			{content}
-		</Markdown>
+		<div className={classes.markdownContainer}>
+			<Markdown
+				remarkPlugins={[remarkGfm]}
+				rehypePlugins={[rehypeRaw]}
+				components={components}
+			>
+				{content}
+			</Markdown>
+		</div>
 	);
 }
 
 const useStyles = tss.withName(DeclarationMarkdownToJsx.name).create({
 	link: {
 		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+	},
+	markdownContainer: {
+		p: {
+			marginBottom: 0,
+		},
+		"h1, h2, h3, h4, h5, h6": {
+			marginTop: fr.spacing("10v"),
+			marginBottom: fr.spacing("4v"),
+		},
 	},
 });
