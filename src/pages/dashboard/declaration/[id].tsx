@@ -140,34 +140,36 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 					</div>
 					<div className={classes.buttonsContainer}>
 						{hasPublishedDeclaration && (
-							<Button
-								priority="tertiary"
-								iconId="fr-icon-eye-fill"
-								linkProps={{
-									href: `/declaration/${declaration.id}/publish`,
-									target: "_blank",
-									rel: "noopener noreferrer",
-								}}
-							>
-								Voir la declaration
-							</Button>
+							<>
+								<Button
+									priority="tertiary"
+									iconId="fr-icon-eye-fill"
+									linkProps={{
+										href: `/declaration/${declaration.id}/publish`,
+										target: "_blank",
+										rel: "noopener noreferrer",
+									}}
+								>
+									Voir la declaration
+								</Button>
+								<Button
+									priority="tertiary"
+									iconId="fr-icon-eye-fill"
+									onClick={() =>
+										copyToClipboard(
+											`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+											() =>
+												showDeclarationAlert({
+													description: "Lien copié dans le presse-papier",
+													severity: "success",
+												}),
+										)
+									}
+								>
+									Copier le lien
+								</Button>
+							</>
 						)}
-						<Button
-							priority="tertiary"
-							iconId="fr-icon-eye-fill"
-							onClick={() =>
-								copyToClipboard(
-									`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
-									() =>
-										showDeclarationAlert({
-											description: "Lien copié dans le presse-papier",
-											severity: "success",
-										}),
-								)
-							}
-						>
-							Copier le lien
-						</Button>
 						<Button
 							iconId="fr-icon-delete-fill"
 							priority="tertiary"
@@ -270,10 +272,9 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		display: "flex",
 		flexDirection: "row",
 		gap: fr.spacing("4v"),
-		"& > a": {
-			"&::after": {
-				display: "none",
-			},
+
+		"& a[target='_blank']::after": {
+			content: "none",
 		},
 	},
 	emptyStateContainer: {

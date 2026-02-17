@@ -15,6 +15,7 @@ export default function DeclarationListItem({
 	const { classes, cx } = useStyles();
 	const { name } = declaration.entity || {};
 	const { rate } = declaration.audit || {};
+	const hasPublishedDeclaration = !!declaration?.publishedContent;
 
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertDetails, setAlertDetails] = useState<{
@@ -70,7 +71,7 @@ export default function DeclarationListItem({
 			</div>
 			<div
 				style={
-					declaration.status === "published" && rate !== undefined
+					hasPublishedDeclaration && rate !== undefined
 						? { visibility: "visible" }
 						: { visibility: "hidden" }
 				}
@@ -78,23 +79,25 @@ export default function DeclarationListItem({
 				<h3 className={cx(classes.auditRateValue)}>{rate}%</h3>
 				<p className={classes.auditRateLabel}>taux conformité</p>
 			</div>
-			<Button
-				iconId="fr-icon-share-line"
-				priority="tertiary"
-				style={{ width: "100%" }}
-				onClick={() =>
-					copyToClipboard(
-						`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
-						() =>
-							showDeclarationAlert({
-								description: "Lien copié dans le presse-papier",
-								severity: "success",
-							}),
-					)
-				}
-			>
-				Copier le lien
-			</Button>
+			{hasPublishedDeclaration && (
+				<Button
+					iconId="fr-icon-share-line"
+					priority="tertiary"
+					style={{ width: "100%" }}
+					onClick={() =>
+						copyToClipboard(
+							`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+							() =>
+								showDeclarationAlert({
+									description: "Lien copié dans le presse-papier",
+									severity: "success",
+								}),
+						)
+					}
+				>
+					Copier le lien
+				</Button>
+			)}
 		</div>
 	);
 }

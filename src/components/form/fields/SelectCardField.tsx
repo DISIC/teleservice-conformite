@@ -20,43 +20,52 @@ export function SelectCardField(props: SelectCardFieldProps) {
 	const { name, options = [], label, onChange } = props;
 	const field = useFieldContext<string>();
 	const { classes, cx } = useStyles();
-	const inputRef = useRef<(HTMLInputElement | null)[]>([]);
+	const inputRef = useRef<Record<string, HTMLInputElement | null>>({});
 
 	return (
 		<div className={classes.fieldWrapper}>
 			<label htmlFor={name}>{label}</label>
-			{options.map(({ id, image, label, description }, index) => (
-				<button
-					type="button"
-					id={id}
-					key={index}
-					className={classes.optionCard}
-					onClick={() => inputRef.current[index]?.click()}
-				>
-					{image}
-					<span>
-						<h2 className={classes.label}>{label}</h2>
-						{description && (
-							<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
-								{description}
-							</p>
-						)}
-					</span>
-					<input
-						ref={(element) => {
-							inputRef.current[index] = element;
-						}}
-						key={index}
-						type="radio"
-						name={name}
-						id={id}
-						onChange={() => {
-							onChange(id);
-							field.setValue(id);
-						}}
-					/>
-				</button>
-			))}
+			{options.map(({ id, image, label: optionLabel, description }) => {
+				const inputId = `${name}-${id}`;
+				const checked = field.state.value === id;
+
+				return (
+					<div key={id} className={classes.optionWrapper}>
+						<input
+							ref={(element) => {
+								inputRef.current[id] = element;
+							}}
+							id={inputId}
+							name={name}
+							type="radio"
+							value={id}
+							checked={checked}
+							onChange={() => {
+								onChange(id);
+								field.setValue(id);
+							}}
+							className={classes.hiddenRadio}
+						/>
+						<label
+							htmlFor={inputId}
+							className={cx(
+								classes.optionButton,
+								checked && classes.optionButtonChecked,
+							)}
+						>
+							{image}
+							<span>
+								<h2 className={classes.label}>{optionLabel}</h2>
+								{description && (
+									<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
+										{description}
+									</p>
+								)}
+							</span>
+						</label>
+					</div>
+				);
+			})}
 		</div>
 	);
 }
@@ -67,28 +76,28 @@ const useStyles = tss.withName(SelectCardField.name).create({
 		flexDirection: "column",
 		gap: fr.spacing("4v"),
 	},
-	optionCard: {
+	optionWrapper: {
+		display: "flex",
+		alignItems: "center",
+	},
+	hiddenRadio: {
+		position: "absolute",
+		opacity: 0,
+		pointerEvents: "none",
+	},
+	optionButton: {
 		display: "flex",
 		flexDirection: "row",
 		border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
 		padding: fr.spacing("6v"),
 		alignItems: "center",
 		gap: fr.spacing("6v"),
+		cursor: "pointer",
+		width: "100%",
+		backgroundColor: fr.colors.decisions.background.default.grey.default,
 
 		"&:hover": {
 			backgroundColor: fr.colors.decisions.background.default.grey.hover,
-		},
-
-		"& input[type='radio']": {
-			display: "none",
-		},
-
-		"&:has(input[type='radio']:checked)": {
-			backgroundColor: fr.colors.decisions.background.raised.grey.active,
-
-			"& > span > h2": {
-				color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-			},
 		},
 
 		"& p": {
@@ -100,6 +109,13 @@ const useStyles = tss.withName(SelectCardField.name).create({
 			display: "flex",
 			flexDirection: "column",
 			gap: fr.spacing("2w"),
+		},
+	},
+	optionButtonChecked: {
+		backgroundColor: fr.colors.decisions.background.raised.grey.active,
+
+		"& > span > h2": {
+			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 		},
 	},
 	label: {

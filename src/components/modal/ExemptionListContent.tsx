@@ -1,17 +1,16 @@
 import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
-// import { Icon } from "@codegouvfr/react-dsfr/Icon";
 
 export default function ExemptionListModalContent() {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 
 	return (
 		<section className={classes.modal}>
 			<div className={classes.headingContainer}>
-				{/* <Icon iconId="fr-icon-information-line" /> */}
-				<h3 className={classes.heading}>
+				<i className={cx("fr-icon-question-line", classes.infoIcon)} />
+				<h1 className={classes.heading}>
 					Liste des contenus non soumis à l’obligation d’accessibilité
-				</h3>
+				</h1>
 			</div>
 			<p>
 				<strong>
@@ -87,6 +86,9 @@ const useStyles = tss.withName("ExemptionListModalContent").create({
 	heading: {
 		margin: 0,
 		color: fr.colors.decisions.text.title.blueFrance.default,
+		fontSize: fr.typography[3].style.fontSize,
+		lineHeight: fr.typography[3].style.lineHeight,
+		fontWeight: 700,
 	},
 	modal: {
 		padding: fr.spacing("4v"),
@@ -96,6 +98,15 @@ const useStyles = tss.withName("ExemptionListModalContent").create({
 			"& > li": {
 				marginBlock: fr.spacing("5v"),
 			},
+		},
+	},
+	infoIcon: {
+		color: fr.colors.decisions.text.title.blueFrance.default,
+		display: "flex",
+
+		"&::before": {
+			width: fr.spacing("8v"),
+			height: fr.spacing("8v"),
 		},
 	},
 });

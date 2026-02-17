@@ -1,6 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import NextLink from "next/link";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import { tss } from "tss-react";
 
 import {
 	rgaaVersionOptions,
@@ -166,6 +168,8 @@ const disproportionnedChargeModal = createModal({
 export const NonCompliantElementsForm = withForm({
 	...auditMultiStepFormOptions,
 	render: function Render({ form }) {
+		const { classes } = useStyles();
+
 		return (
 			<>
 				<form.AppField name="nonCompliantElements">
@@ -198,18 +202,15 @@ export const NonCompliantElementsForm = withForm({
 							label="Éléments non soumis à l’obligation d’accessibilité (facultatif)"
 							description={
 								<>
-									<NextLink
-										style={{
-											color: fr.colors.decisions.text.active.blueFrance.default,
-										}}
+									<Button
 										onClick={(e) => {
 											e.preventDefault();
 											exemptionListmodal.open();
 										}}
-										href="#"
+										className={classes.dialogActionButton}
 									>
 										Liste des contenus non soumis à l’obligation d’accessibilité
-									</NextLink>
+									</Button>
 									<exemptionListmodal.Component title="">
 										<ExemptionListModalContent />
 									</exemptionListmodal.Component>
@@ -229,18 +230,15 @@ export const NonCompliantElementsForm = withForm({
 							label="Éléments avec dérogation pour charge disproportionnée (facultatif)"
 							description={
 								<>
-									<NextLink
-										style={{
-											color: fr.colors.decisions.text.active.blueFrance.default,
-										}}
+									<Button
 										onClick={(e) => {
 											e.preventDefault();
 											disproportionnedChargeModal.open();
 										}}
-										href="#"
+										className={classes.dialogActionButton}
 									>
 										Qu’est-ce qu’une charge disproportionnée ?
-									</NextLink>
+									</Button>
 									<disproportionnedChargeModal.Component title="">
 										<DisproportionnedChargeContent />
 									</disproportionnedChargeModal.Component>
@@ -260,6 +258,29 @@ export const NonCompliantElementsForm = withForm({
 				</form.AppField>
 			</>
 		);
+	},
+});
+
+export const useStyles = tss.withName(NonCompliantElementsForm.name).create({
+	dialogActionButton: {
+		fontSize: fr.typography[18].style.fontSize,
+		lineHeight: fr.typography[18].style.lineHeight,
+		color: fr.colors.decisions.text.label.blueFrance.default,
+		backgroundColor: "transparent !important",
+		backgroundImage: "none !important",
+		border: "none !important",
+		boxShadow: "none !important",
+		padding: 0,
+		margin: 0,
+		minHeight: "unset",
+		height: "auto",
+		display: "inline",
+
+		"&:not(:disabled):hover:not([class^='Mui'])": {
+			backgroundColor: "transparent",
+			textDecoration: "underline",
+			textUnderlineOffset: 4,
+		},
 	},
 });
 
