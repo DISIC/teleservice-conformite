@@ -20,6 +20,25 @@ export const Audits: CollectionConfig = {
 
         if (operation !== "update") return;
 
+				if (data.status === "notRealised") {
+          return {
+            declaration: data.declaration ?? originalDoc?.declaration,
+            status: data.status,
+            date: null,
+            rgaa_version: null,
+            realisedBy: null,
+            rate: null,
+            compliantElements: null,
+            nonCompliantElements: null,
+            disproportionnedCharge: null,
+            optionalElements: null,
+            auditReport: null,
+            usedTools: [],
+            testEnvironments: [],
+            technologies: [],
+          };
+				}
+
 				const declaration = await req.payload.findByID({
 					collection: "declarations",
 					id: data.declaration ?? originalDoc?.declaration,

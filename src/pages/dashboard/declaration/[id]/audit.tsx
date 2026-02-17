@@ -281,7 +281,9 @@ export default function AuditPage({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (!isAchieved && declaration?.audit) {
-				await deleteDeclarationAudit(audit?.id ?? -1);
+				await updateDeclarationAudit(audit?.id ?? -1, {
+					status: "notRealised",
+				});
 
 				return;
 			}

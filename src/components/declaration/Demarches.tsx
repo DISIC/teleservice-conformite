@@ -23,14 +23,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const { rate } = declaration?.audit || {};
 	const linkToDeclarationPage = `/dashboard/declaration/${declaration.id}`;
 
-	const wasUpdated =
-		declaration?.updatedAt &&
-		declaration?.published_at &&
-		declaration?.updatedAt > declaration?.published_at;
-
 	const declarationComplete =
 		declaration.status === "unpublished" &&
-		declaration?.audit?.status === "default" &&
+		["default", "notRealised"].includes(declaration?.audit?.status ?? "") &&
 		declaration?.contact?.status === "default" &&
 		declaration?.actionPlan?.status === "default";
 
@@ -95,9 +90,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				<div className={classes.summaryCardsContainer}>
 					<div className={cx(classes.card, classes.summaryRateCard)}>
 						<p className={classes.cardLabel}>Taux de conformité</p>
-						<p
-							className={cx(classes.cardValue, fr.cx("fr-text--lead"))}
-						>{`${rate}%`}</p>
+						<p className={cx(classes.cardValue, fr.cx("fr-text--lead"))}>
+							{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}
+						</p>
 					</div>
 					<div className={cx(classes.card, classes.summaryUpdateDateCard)}>
 						<p className={classes.cardLabel}>Dernière mise à jour</p>
@@ -213,7 +208,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					detail={
 						<>
 							{declaration?.audit &&
-								declaration?.audit?.status === "default" && (
+								["default", "notRealised"].includes(
+									declaration?.audit?.status ?? "",
+								) && (
 									<Button
 										iconId="fr-icon-arrow-right-line"
 										priority="tertiary no outline"

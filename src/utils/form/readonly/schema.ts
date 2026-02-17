@@ -45,14 +45,9 @@ export const declarationAudit = z.object({
       .max(100, { message: "Le taux doit être entre 0 et 100" }),
     compliantElements: z.string().min(1, { message: "Les éléments conformes sont requis" }),
     technologies: z.array(z.string()).optional(),
-    usedTools: z.array(z.string()).min(1, {
-      message: "Au moins un outil doit être sélectionnée",
-    }),
+    usedTools: z.array(z.string()).optional(),
     testEnvironments: z
-      .array(z.string())
-      .min(1, {
-        message: "Au moins un environnement de test doit être sélectionné",
-      }),
+      .array(z.string()).optional(),
     disproportionnedCharge: z.string().optional(),
     nonCompliantElements: z.string().optional(),
     optionalElements: z.string().optional(),

@@ -76,11 +76,11 @@ export const auditRouter = createTRPCRouter({
   update: userProtectedProcedure
     .input(
       z.object({
-        audit: auditFormSchema.omit({ section: true, isAuditRealised: true }).extend({ id: z.number(), declarationId: z.number(), technologies: z.array(z.string()).optional() }),
+        audit: auditFormSchema.partial().omit({ section: true, isAuditRealised: true }).extend({ id: z.number(), declarationId: z.number(), technologies: z.array(z.string()).optional(), status: z.enum(auditStatusOptions.map(option => option.value)).optional().default("default"), }),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { id, declarationId, technologies = [], date, ...rest } = input.audit;
+      const { id, declarationId, technologies = [], date, status,...rest } = input.audit;
 
       const normalizedDate = date && date !== "" ? date : undefined;
 
@@ -89,6 +89,9 @@ export const auditRouter = createTRPCRouter({
         declarationId,
         userId: Number(ctx.session?.user?.id) ?? null,
       });
+
+      const hasMinimumFields = Boolean(rest.rgaa_version) && Boolean(rest.realisedBy?.trim()) && typeof rest.rate === "number" && rest.rate > 0 && Boolean(rest.compliantElements?.trim());
+      const statusToSave = status ?? (hasMinimumFields ? "default" : "notRealised");
       
       const updatedAudit = await ctx.payload.update({
         collection: "audits",
@@ -97,9 +100,9 @@ export const auditRouter = createTRPCRouter({
           ...rest,
           date: normalizedDate,
           usedTools: rest.usedTools?.map((tech) => ({ name: tech })) ?? [],
-          testEnvironments: rest.testEnvironments.map((tech) => ({ name: tech })),
-          technologies: technologies.map((tech) => ({ name: tech })),
-          status: "default",
+          testEnvironments: rest?.testEnvironments?.map((tech) => ({ name: tech })) ?? [],
+          technologies: technologies?.map((tech) => ({ name: tech })) ?? [],
+          status: statusToSave,
         },
       });
 

@@ -76,7 +76,9 @@ export default function DeclarationListItem({
 						: { visibility: "hidden" }
 				}
 			>
-				<h3 className={cx(classes.auditRateValue)}>{rate}%</h3>
+				<h3 className={cx(classes.auditRateValue)}>
+					{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}
+				</h3>
 				<p className={classes.auditRateLabel}>taux conformité</p>
 			</div>
 			{hasPublishedDeclaration && (
