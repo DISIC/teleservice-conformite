@@ -1,17 +1,16 @@
 import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
-// import { Icon } from "@codegouvfr/react-dsfr/Icon";
 
 export default function DisproportionnedChargeContent() {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 
 	return (
 		<section className={classes.modal}>
 			<div className={classes.headingContainer}>
-				{/* <Icon iconId="fr-icon-information-line" /> */}
-				<h3 className={classes.heading}>
+				<i className={cx("fr-icon-question-line", classes.infoIcon)} />
+				<h1 className={classes.heading}>
 					Qu’est-ce qu’une charge disproportionnée ?
-				</h3>
+				</h1>
 			</div>
 			<p>
 				Un organisme peut invoquer une dérogation pour charge disproportionnée
@@ -41,23 +40,17 @@ export default function DisproportionnedChargeContent() {
 			<p>Lorsque la dérogation est utilisée :</p>
 			<ul>
 				<li>
-					<p>
-						le contenu ou la fonctionnalité concerné(e) doit être accompagné(e)
-						d’une alternative accessible, sauf si produire cette alternative
-						constitue elle-même une charge disproportionnée ;
-					</p>
+					le contenu ou la fonctionnalité concerné(e) doit être accompagné(e)
+					d’une alternative accessible, sauf si produire cette alternative
+					constitue elle-même une charge disproportionnée ;
 				</li>
 				<li>
-					<p>
-						pour les missions principales d’un service public, une alternative
-						équivalente est obligatoire ;
-					</p>
+					pour les missions principales d’un service public, une alternative
+					équivalente est obligatoire ;
 				</li>
 				<li>
-					<p>
-						la dérogation ne peut pas porter sur l’ensemble d’un service sans
-						justification.
-					</p>
+					la dérogation ne peut pas porter sur l’ensemble d’un service sans
+					justification.
 				</li>
 			</ul>
 			<p>
@@ -65,16 +58,12 @@ export default function DisproportionnedChargeContent() {
 			</p>
 			<ul>
 				<li>
-					<p>
-						sa taille, ses ressources, la nature de ses missions ; les coûts
-						(investissement, fonctionnement, temps requis) ;
-					</p>
+					sa taille, ses ressources, la nature de ses missions ; les coûts
+					(investissement, fonctionnement, temps requis) ;
 				</li>
 				<li>
-					<p>
-						l’avantage pour les usagers handicapés et la fréquence d’usage du
-						service.
-					</p>
+					l’avantage pour les usagers handicapés et la fréquence d’usage du
+					service.
 				</li>
 			</ul>
 			<p>
@@ -101,6 +90,9 @@ const useStyles = tss.withName("DisproportionnedChargeContent").create({
 	heading: {
 		margin: 0,
 		color: fr.colors.decisions.text.title.blueFrance.default,
+		fontSize: fr.typography[3].style.fontSize,
+		lineHeight: fr.typography[3].style.lineHeight,
+		fontWeight: 700,
 	},
 	modal: {
 		padding: fr.spacing("4v"),
@@ -118,5 +110,14 @@ const useStyles = tss.withName("DisproportionnedChargeContent").create({
 		borderRadius: fr.spacing("1v"),
 		padding: fr.spacing("6v"),
 		marginBlock: fr.spacing("4v"),
+	},
+	infoIcon: {
+		color: fr.colors.decisions.text.title.blueFrance.default,
+		display: "flex",
+
+		"&::before": {
+			width: fr.spacing("8v"),
+			height: fr.spacing("8v"),
+		},
 	},
 });
