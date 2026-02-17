@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 
-import { sourceOptions, rgaaVersionOptions, testEnvironmentOptions, toolOptions } from "../selectOptions";
+import { auditStatusOptions, rgaaVersionOptions, testEnvironmentOptions, toolOptions } from "../selectOptions";
+import type { Audit } from "../payload-types";
 
 export const Audits: CollectionConfig = {
 	slug: "audits",
@@ -62,11 +63,8 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Date de realisation de l'audit" },
 			admin: {
 				position: "sidebar",
-				date: {
-					pickerAppearance: "dayOnly",
-				},
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
 			},
-			required: true,
 		},
 		{
 			name: "rgaa_version",
@@ -74,45 +72,106 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Version RGAA" },
 			options: [...rgaaVersionOptions],
 			index: true,
-			required: true,
+			hasMany: false,
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
+			validate: (
+				value: string | null | undefined,
+				{ siblingData }: { siblingData?: { status?: string } },
+			) => {
+				if (siblingData?.status !== "notRealised" && !value) {
+					return "Ce champ est obligatoire";
+				}
+
+				return true;
+			}
 		},
 		{
 			name: "realisedBy",
 			type: "text",
 			label: { fr: "Entite ou personne ayant realise l'audit" },
-			required: true,
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
+			validate: (
+				value: string | null | undefined,
+				{ siblingData }: { siblingData?: { status?: string } },
+			) => {
+				if (siblingData?.status !== "notRealised" && !value) {
+					return "Ce champ est obligatoire";
+				}
+
+				return true;
+			}
 		},
 		{
 			name: "rate",
 			type: "number",
 			label: { fr: "Taux de conformité" },
-			required: true,
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
+			validate: (
+				value: number | null | undefined,
+				{ siblingData }: { siblingData?: { status?: string } },
+			) => {
+				if (siblingData?.status !== "notRealised" && value == null) {
+					return "Ce champ est obligatoire";
+				}
+
+				return true;
+			}
 		},
 		{
 			name: "compliantElements",
 			type: "textarea",
 			label: { fr: "Éléments ayant fait l’objet de vérification" },
-			required: true,
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
+			validate: (
+				value: string | null | undefined,
+				{ siblingData }: { siblingData?: { status?: string } },
+			) => {
+				if (siblingData?.status !== "notRealised" && !value) {
+					return "Ce champ est obligatoire";
+				}
+
+				return true;
+			}
 		},
 		{
 			name: "nonCompliantElements",
 			type: "textarea",
 			label: { fr: "Éléments non conformes" },
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "disproportionnedCharge",
 			type: "textarea",
 			label: { fr: "Éléments avec dérogation pour charge disproportionnée" },
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "optionalElements",
 			type: "textarea",
 			label: { fr: "Éléments non soumis à l’obligation d’accessibilité" },
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "auditReport",
 			type: "text",
 			label: { fr: "Rapport d'audit" },
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "usedTools",
@@ -126,6 +185,9 @@ export const Audits: CollectionConfig = {
 					required: true,
 				},
 			],
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "testEnvironments",
@@ -138,7 +200,10 @@ export const Audits: CollectionConfig = {
 					label: { fr: "Nom de l’environnement de test" },
 					required: true,
 				}
-		],
+			],
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "technologies",
@@ -152,7 +217,9 @@ export const Audits: CollectionConfig = {
 				},
 			],
 			label: { fr: "Technologies utilisées" },
-			required: false,
+			admin: {
+				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+			},
 		},
 		{
 			name: "declaration",
@@ -160,17 +227,13 @@ export const Audits: CollectionConfig = {
 			relationTo: "declarations",
 			label: { fr: "déclaration associée" },
 			required: true,
-			admin: {
-				position: "sidebar",
-			},
 		},
 		{
 			name: "status",
 			type: "select",
 			label: { fr: "Statut" },
 			defaultValue: "default",
-			options: [...sourceOptions],
-			required: false,
+			options: [...auditStatusOptions],
 		}
 	],
 };

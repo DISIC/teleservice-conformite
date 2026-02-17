@@ -12,6 +12,26 @@ import { auditMultiStepFormOptions } from "./schema";
 import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
 import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
 
+export const AuditRealisedForm = withForm({
+	...auditMultiStepFormOptions,
+	render: function Render({ form }) {
+		return (
+			<form.AppField name="isAuditRealised">
+				{(field) => (
+					<field.RadioField
+						label="Avez-vous réalisé un audit d’accessibilité de votre service numérique ?"
+						description="Un audit d’accessibilité évalue votre service numérique selon le RGAA afin d’identifier les non-conformités et les points à améliorer. Il peut être réalisé par un prestataire externe."
+						options={[
+							{ label: "Oui", value: true },
+							{ label: "Non", value: false },
+						]}
+					/>
+				)}
+			</form.AppField>
+		);
+	},
+});
+
 export const AuditDateForm = withForm({
 	...auditMultiStepFormOptions,
 	render: function Render({ form }) {
@@ -67,12 +87,12 @@ export const ToolsForm = withForm({
 					{(field) => (
 						<div>
 							<field.CheckboxGroupField
-								label="Outils utilisés pour évaluer l’accessibilité"
+								label="Outils utilisés pour évaluer l’accessibilité (facultatif)"
 								options={[...toolOptions]}
 							/>
 							<field.TagGroupField
-								label=""
-								initialTags={field.state.value.filter(
+								label="Ajouter un outil"
+								initialTags={field.state.value?.filter(
 									(tag) =>
 										![...toolOptions]
 											.map((option) => option.value as string)
@@ -90,7 +110,7 @@ export const ToolsForm = withForm({
 								options={[...testEnvironmentOptions]}
 							/>
 							<field.TagGroupField
-								label=""
+								label="Ajouter un environnement"
 								initialTags={field.state.value.filter(
 									(tag) =>
 										![...testEnvironmentOptions]
@@ -249,7 +269,12 @@ export const FilesForm = withForm({
 		return (
 			<>
 				<form.AppField name="report">
-					{(field) => <field.TextField label="Rapport d’audit (facultatif)" />}
+					{(field) => (
+						<field.TextField
+							label="Rapport d’audit (facultatif)"
+							description="Format attendu: https://www.example.fr"
+						/>
+					)}
 				</form.AppField>
 			</>
 		);

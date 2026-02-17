@@ -33,7 +33,7 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 
 export const declarationAudit = z.object({
   audit: z.object({
-    date: z.iso.date().min(1, { message: "La date est requise" }),
+    date: z.iso.date().optional().or(z.literal("")),
     report: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
     realisedBy: z.string().min(1, {
       message: "L'organisation ayant réalisé l'audit est requise",
@@ -63,7 +63,7 @@ export type ZDeclarationAudit = z.infer<typeof declarationAudit>;
 
 export const declarationAuditDefaultValues: ZDeclarationAudit = {
   audit: {
-    date: "",
+    date: undefined,
     report: undefined,
     realisedBy: "",
     rgaa_version: "rgaa_4",
@@ -146,7 +146,7 @@ export const readOnlyFormOptions = formOptions({
           declarationGeneral as typeof declarationMultiStepFormSchema,
         );
       }
-
+      console.log(value);
       if (value.section === "audit") {
         return formApi.parseValuesWithSchema(
           declarationAudit as typeof declarationMultiStepFormSchema,

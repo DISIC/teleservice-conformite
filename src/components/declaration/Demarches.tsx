@@ -301,6 +301,7 @@ const useStyles = tss.withName(Demarches.name).create({
 	},
 	card: {
 		display: "flex",
+		alignItems: "center",
 		flexDirection: "row",
 		gap: fr.spacing("3v"),
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,

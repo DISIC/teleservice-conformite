@@ -4,6 +4,8 @@ export const sourceOptions = [
   { label: "Ara", value: "fromAra" },
 ] as const;
 
+export const auditStatusOptions = [...sourceOptions, { label: "pas realisé", value: "notRealised" }] as const;
+
 export const rgaaVersionOptions = [
   {
     label: "RGAA 4",
