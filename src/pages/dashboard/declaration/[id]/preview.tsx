@@ -69,7 +69,11 @@ export default function DeclarationPreviewPage({
 		<section id="declaration-preview" className={fr.cx("fr-container")}>
 			<div className={classes.main}>
 				<h1>Votre déclaration est prête à être publiée</h1>
-				<p>Voici un aperçu de votre déclaration</p>
+				<p>
+					Voici un aperçu de votre déclaration. Publiez-la pour la rendre
+					accessible en ligne, puis partagez-la via le bouton ”Publier la
+					déclaration”.
+				</p>
 				<div className={classes.declarationPreview}>
 					<PublishedDeclarationTemplate
 						declaration={publishedDeclarationContent}
