@@ -124,8 +124,11 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 	},
 	buttonsContainer: {
 		display: "grid",
-		gridTemplateColumns: "1fr auto auto",
 		gap: fr.spacing("4v"),
+
+		"@media (min-width: 600px)": {
+			gridTemplateColumns: "1fr auto auto",
+		},
 	},
 });
 

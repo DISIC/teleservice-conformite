@@ -75,6 +75,10 @@ const useStyles = tss.withName(SelectCardField.name).create({
 		alignItems: "center",
 		gap: fr.spacing("6v"),
 
+		"@media (max-width: 830px)": {
+			flexDirection: "column",
+		},
+
 		"&:hover": {
 			backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		},
