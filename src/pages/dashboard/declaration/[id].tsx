@@ -272,10 +272,9 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		display: "flex",
 		flexDirection: "row",
 		gap: fr.spacing("4v"),
-		"& > a": {
-			"&::after": {
-				display: "none",
-			},
+
+		"& a[target='_blank']::after": {
+			content: "none",
 		},
 	},
 	emptyStateContainer: {
