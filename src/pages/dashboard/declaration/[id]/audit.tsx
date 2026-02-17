@@ -113,7 +113,7 @@ export default function AuditPage({
 				...auditData,
 			};
 
-			await createAudit({ ...audit, declarationId: declaration.id });
+			await createAudit({ ...audit, declarationId });
 		} catch (error) {
 			console.error("Error adding audit:", error);
 		}
@@ -189,7 +189,7 @@ export default function AuditPage({
 
 		if (editMode)
 			setIsAchieved(
-				!!declaration?.audit && declaration?.audit?.status !== "notRealised",
+				!!declaration?.audit && declaration.audit.status !== "notRealised",
 			);
 	};
 
@@ -316,7 +316,7 @@ export default function AuditPage({
 			isAiGenerated={declaration?.audit?.status === "fromAI"}
 			{...(section === "files"
 				? { mentionText: "Les documents ajoutés doivent être accessibles" }
-				: {})}
+				: undefined)}
 		>
 			{!declaration?.audit ? (
 				<form
