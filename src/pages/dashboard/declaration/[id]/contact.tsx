@@ -6,6 +6,7 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationContactForm } from "~/utils/form/readonly/form";
@@ -186,74 +187,83 @@ export default function ContactPage({
 	};
 
 	return (
-		<DeclarationForm
-			declaration={declaration}
-			title="Contact"
-			breadcrumbLabel={declaration?.name ?? ""}
-			showValidateButton={
-				!editMode &&
-				(declaration?.contact?.status === "fromAI" ||
-					declaration?.contact?.status === "fromAra")
-			}
-			onValidate={updateContactStatus}
-			isEditable={!!declaration?.contact}
-			editMode={editMode}
-			onToggleEdit={onEditInfos}
-			isAiGenerated={declaration?.contact?.status === "fromAI"}
-		>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-
-					if (!declaration?.contact) {
-						form.handleSubmit();
-					} else {
-						readOnlyForm.handleSubmit();
-					}
-				}}
+		<>
+			<Head>
+				<title>
+					Déclaration de {declaration.name} - Téléservice Conformité
+				</title>
+			</Head>
+			<DeclarationForm
+				declaration={declaration}
+				title="Contact"
+				breadcrumbLabel={declaration?.name ?? ""}
+				showValidateButton={
+					!editMode &&
+					(declaration?.contact?.status === "fromAI" ||
+						declaration?.contact?.status === "fromAra")
+				}
+				onValidate={updateContactStatus}
+				isEditable={!!declaration?.contact}
+				editMode={editMode}
+				onToggleEdit={onEditInfos}
+				isAiGenerated={declaration?.contact?.status === "fromAI"}
 			>
-				{!declaration?.contact ? (
-					<>
-						<div className={commonClasses.whiteBackground}>
-							<ContactTypeForm form={form} />
-						</div>
-						<form.AppForm>
-							<div className={classes.actionButtonsContainer}>
-								<form.CancelButton
-									label="Retour"
-									onClick={() =>
-										router.push(`/dashboard/declaration/${declaration.id}`)
-									}
-									priority="tertiary"
-								/>
-								<form.SubscribeButton
-									label="Continuer"
-									iconId="fr-icon-arrow-right-s-line"
-									iconPosition="right"
-								/>
-							</div>
-						</form.AppForm>
-					</>
-				) : (
-					<>
-						{editMode ? (
-							<>
-								<div className={commonClasses.whiteBackground}>
-									<DeclarationContactForm form={readOnlyForm} />
-								</div>
-								<readOnlyForm.AppForm>
-									<readOnlyForm.SubscribeButton label="Valider" />
-								</readOnlyForm.AppForm>
-							</>
-						) : (
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+
+						if (!declaration?.contact) {
+							form.handleSubmit();
+						} else {
+							readOnlyForm.handleSubmit();
+						}
+					}}
+				>
+					{!declaration?.contact ? (
+						<>
 							<div className={commonClasses.whiteBackground}>
-								<ReadOnlyDeclarationContact declaration={declaration ?? null} />
+								<ContactTypeForm form={form} />
 							</div>
-						)}
-					</>
-				)}
-			</form>
-		</DeclarationForm>
+							<form.AppForm>
+								<div className={classes.actionButtonsContainer}>
+									<form.CancelButton
+										label="Retour"
+										onClick={() =>
+											router.push(`/dashboard/declaration/${declaration.id}`)
+										}
+										priority="tertiary"
+									/>
+									<form.SubscribeButton
+										label="Continuer"
+										iconId="fr-icon-arrow-right-s-line"
+										iconPosition="right"
+									/>
+								</div>
+							</form.AppForm>
+						</>
+					) : (
+						<>
+							{editMode ? (
+								<>
+									<div className={commonClasses.whiteBackground}>
+										<DeclarationContactForm form={readOnlyForm} />
+									</div>
+									<readOnlyForm.AppForm>
+										<readOnlyForm.SubscribeButton label="Valider" />
+									</readOnlyForm.AppForm>
+								</>
+							) : (
+								<div className={commonClasses.whiteBackground}>
+									<ReadOnlyDeclarationContact
+										declaration={declaration ?? null}
+									/>
+								</div>
+							)}
+						</>
+					)}
+				</form>
+			</DeclarationForm>
+		</>
 	);
 }
 

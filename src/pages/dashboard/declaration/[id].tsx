@@ -12,6 +12,8 @@ import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react";
+import Head from "next/head";
+
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
@@ -112,6 +114,9 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 
 	return (
 		<>
+			<Head>
+				<title>Déclaration de {declarationName} - Téléservice Conformité</title>
+			</Head>
 			<section id="declaration-page" className={fr.cx("fr-container")}>
 				<Breadcrumb
 					homeLinkProps={{

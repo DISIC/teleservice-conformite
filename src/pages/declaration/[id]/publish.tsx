@@ -4,6 +4,7 @@ import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
+import Head from "next/head";
 
 import { getDeclarationById } from "~/server/api/utils/payload-helper";
 import PublishedDeclarationTemplate, {
@@ -21,14 +22,21 @@ export default function PublishPage({
 	}
 
 	return (
-		<section
-			id="published-declaration-section"
-			className={fr.cx("fr-container")}
-		>
-			<div className={classes.publishedDeclarationContainer}>
-				<PublishedDeclarationTemplate declaration={publishedContent} />
-			</div>
-		</section>
+		<>
+			<Head>
+				<title>
+					Déclaration de {publishedContent.name} - Téléservice Conformité
+				</title>
+			</Head>
+			<section
+				id="published-declaration-section"
+				className={fr.cx("fr-container")}
+			>
+				<div className={classes.publishedDeclarationContainer}>
+					<PublishedDeclarationTemplate declaration={publishedContent} />
+				</div>
+			</section>
+		</>
 	);
 }
 

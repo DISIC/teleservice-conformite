@@ -4,6 +4,7 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 
@@ -182,71 +183,80 @@ export default function SchemaPage({
 	});
 
 	return (
-		<DeclarationForm
-			declaration={declaration}
-			title="Schéma et plans d'actions"
-			breadcrumbLabel={declaration?.name ?? ""}
-			showValidateButton={
-				(declaration?.actionPlan?.status === "fromAI" ||
-					declaration?.actionPlan?.status === "fromAra") &&
-				!editMode
-			}
-			onValidate={updateSchemaStatus}
-			isEditable={!!declaration?.actionPlan}
-			onToggleEdit={onEditInfos}
-			editMode={editMode}
-			showLayoutComponent={false}
-			isAiGenerated={declaration?.actionPlan?.status === "fromAI"}
-		>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-
-					if (!declaration?.actionPlan) {
-						form.handleSubmit();
-					} else {
-						readOnlyForm.handleSubmit();
-					}
-				}}
+		<>
+			<Head>
+				<title>
+					Déclaration de {declaration.name} - Téléservice Conformité
+				</title>
+			</Head>
+			<DeclarationForm
+				declaration={declaration}
+				title="Schéma et plans d'actions"
+				breadcrumbLabel={declaration?.name ?? ""}
+				showValidateButton={
+					(declaration?.actionPlan?.status === "fromAI" ||
+						declaration?.actionPlan?.status === "fromAra") &&
+					!editMode
+				}
+				onValidate={updateSchemaStatus}
+				isEditable={!!declaration?.actionPlan}
+				onToggleEdit={onEditInfos}
+				editMode={editMode}
+				showLayoutComponent={false}
+				isAiGenerated={declaration?.actionPlan?.status === "fromAI"}
 			>
-				<div className={commonClasses.whiteBackground}>
-					{!declaration?.actionPlan ? (
-						<DeclarationSchemaForm form={form} />
-					) : (
-						<>
-							{editMode ? (
-								<DeclarationSchema form={readOnlyForm} />
-							) : (
-								<ReadOnlyDeclarationSchema declaration={declaration ?? null} />
-							)}
-						</>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+
+						if (!declaration?.actionPlan) {
+							form.handleSubmit();
+						} else {
+							readOnlyForm.handleSubmit();
+						}
+					}}
+				>
+					<div className={commonClasses.whiteBackground}>
+						{!declaration?.actionPlan ? (
+							<DeclarationSchemaForm form={form} />
+						) : (
+							<>
+								{editMode ? (
+									<DeclarationSchema form={readOnlyForm} />
+								) : (
+									<ReadOnlyDeclarationSchema
+										declaration={declaration ?? null}
+									/>
+								)}
+							</>
+						)}
+					</div>
+					{editMode && (
+						<form.AppForm>
+							<form.SubscribeButton label={"Valider"} />
+						</form.AppForm>
 					)}
-				</div>
-				{editMode && (
-					<form.AppForm>
-						<form.SubscribeButton label={"Valider"} />
-					</form.AppForm>
-				)}
-				{!declaration?.actionPlan && (
-					<form.AppForm>
-						<div className={classes.actionButtonsContainer}>
-							<form.CancelButton
-								label="Retour"
-								onClick={() =>
-									router.push(`/dashboard/declaration/${declaration.id}`)
-								}
-								priority="tertiary"
-							/>
-							<form.SubscribeButton
-								label="Continuer"
-								iconId="fr-icon-arrow-right-s-line"
-								iconPosition="right"
-							/>
-						</div>
-					</form.AppForm>
-				)}
-			</form>
-		</DeclarationForm>
+					{!declaration?.actionPlan && (
+						<form.AppForm>
+							<div className={classes.actionButtonsContainer}>
+								<form.CancelButton
+									label="Retour"
+									onClick={() =>
+										router.push(`/dashboard/declaration/${declaration.id}`)
+									}
+									priority="tertiary"
+								/>
+								<form.SubscribeButton
+									label="Continuer"
+									iconId="fr-icon-arrow-right-s-line"
+									iconPosition="right"
+								/>
+							</div>
+						</form.AppForm>
+					)}
+				</form>
+			</DeclarationForm>
+		</>
 	);
 }
 

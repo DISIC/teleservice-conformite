@@ -74,6 +74,12 @@ function App({ Component, pageProps }: AppProps) {
 		authClient.useSession();
 	const isAuthenticated = !!authSession;
 
+	const getTitleFromPathname = (pathname: string): string | undefined => {
+		if (pathname === "/dashboard") return "Liste des déclarations";
+
+		if (pathname === "/dashboard/form") return "Création d’une déclaration";
+	};
+
 	const navigationItems =
 		isAuthenticated || router.pathname.startsWith("/dashboard")
 			? userNavigationItems.map((item) => ({
@@ -108,7 +114,12 @@ function App({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>Téléservice Conformité</title>
+				<title>
+					{getTitleFromPathname(router.pathname)
+						? `${getTitleFromPathname(router.pathname)} - `
+						: ""}
+					Téléservice Conformité
+				</title>
 			</Head>
 			<div className={classes.mainContainer}>
 				<Header

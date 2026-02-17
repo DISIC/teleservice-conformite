@@ -4,6 +4,7 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
@@ -122,39 +123,46 @@ export default function GeneralInformationsPage({
 	});
 
 	return (
-		<DeclarationForm
-			declaration={declaration}
-			title="Informations générales"
-			breadcrumbLabel={declaration?.name ?? ""}
-			showValidateButton={declaration.status === "unverified" && !editMode}
-			onValidate={updateDeclarationStatus}
-			isEditable={true}
-			onToggleEdit={onEditInfos}
-			editMode={editMode}
-			showLayoutComponent={false}
-		>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-					form.handleSubmit();
-				}}
+		<>
+			<Head>
+				<title>
+					Déclaration de {declaration.name} - Téléservice Conformité
+				</title>
+			</Head>
+			<DeclarationForm
+				declaration={declaration}
+				title="Informations générales"
+				breadcrumbLabel={declaration?.name ?? ""}
+				showValidateButton={declaration.status === "unverified" && !editMode}
+				onValidate={updateDeclarationStatus}
+				isEditable={true}
+				onToggleEdit={onEditInfos}
+				editMode={editMode}
+				showLayoutComponent={false}
 			>
-				{editMode ? (
-					<>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						form.handleSubmit();
+					}}
+				>
+					{editMode ? (
+						<>
+							<div className={commonClasses.whiteBackground}>
+								<DeclarationGeneralForm form={form} />
+							</div>
+							<form.AppForm>
+								<form.SubscribeButton label={"Valider"} />
+							</form.AppForm>
+						</>
+					) : (
 						<div className={commonClasses.whiteBackground}>
-							<DeclarationGeneralForm form={form} />
+							<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
 						</div>
-						<form.AppForm>
-							<form.SubscribeButton label={"Valider"} />
-						</form.AppForm>
-					</>
-				) : (
-					<div className={commonClasses.whiteBackground}>
-						<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
-					</div>
-				)}
-			</form>
-		</DeclarationForm>
+					)}
+				</form>
+			</DeclarationForm>
+		</>
 	);
 }
 
