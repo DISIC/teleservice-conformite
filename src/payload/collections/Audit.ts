@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { sourceOptions, rgaaVersionOptions, testEnvironmentOptions, toolOptions } from "../selectOptions";
+import { auditStatusOptions, rgaaVersionOptions, testEnvironmentOptions, toolOptions } from "../selectOptions";
 import type { Audit } from "../payload-types";
 
 export const Audits: CollectionConfig = {
@@ -116,7 +116,7 @@ export const Audits: CollectionConfig = {
 				value: number | null | undefined,
 				{ siblingData }: { siblingData?: { status?: string } },
 			) => {
-				if (siblingData?.status !== "notRealised" && !value) {
+				if (siblingData?.status !== "notRealised" && value == null) {
 					return "Ce champ est obligatoire";
 				}
 
@@ -233,7 +233,7 @@ export const Audits: CollectionConfig = {
 			type: "select",
 			label: { fr: "Statut" },
 			defaultValue: "default",
-			options: [...sourceOptions, { label: "pas realisé", value: "notRealised" }],
+			options: [...auditStatusOptions],
 		}
 	],
 };
