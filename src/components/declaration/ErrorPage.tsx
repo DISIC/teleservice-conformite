@@ -7,7 +7,7 @@ import Image from "next/image";
 import { authClient } from "~/utils/auth-client";
 import blob from "~/../assets/blob.svg";
 
-export default function ErrorPage() {
+export default function ErrorPage({ deleted }: { deleted?: boolean }) {
 	const { classes } = useStyles();
 	const { data: authSession } = authClient.useSession();
 	const isAuthenticated = !!authSession;
@@ -16,11 +16,15 @@ export default function ErrorPage() {
 		<section className={fr.cx("fr-container")}>
 			<div className={classes.errorPageContainer}>
 				<div className={classes.errorDescription}>
-					<h1>Page non trouvée</h1>
+					<h1>
+						{deleted ? "Cette déclaration n’existe plus" : "Page non trouvée"}
+					</h1>
 					<p className={classes.errorCode}>Erreur 404</p>
 					<p className={classes.errorMessage}>
-						La page que vous cherchez est introuvable. Excusez-nous pour la gêne
-						occasionnée.
+						{deleted
+							? "La déclaration que vous cherchez n’existe plus."
+							: "La page que vous cherchez est introuvable."}
+						Excusez-nous pour la gêne occasionnée.
 					</p>
 					{isAuthenticated && (
 						<>

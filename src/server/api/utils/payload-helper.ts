@@ -92,12 +92,14 @@ export async function getPopulatedDeclaration(declaration: Declaration): Promise
 export async function getDeclarationById(
 	payload: Payload,
 	declarationId: number,
+	options?: { trash?: boolean },
 ) {
 	try {
 		const result = await payload.findByID({
 			collection: "declarations",
 			id: declarationId,
 			depth: 0,
+			trash: options?.trash ?? false,
 		});
 
 		if (!result) {
