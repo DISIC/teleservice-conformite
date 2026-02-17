@@ -20,20 +20,20 @@ export function SelectCardField(props: SelectCardFieldProps) {
 	const { name, options = [], label, onChange } = props;
 	const field = useFieldContext<string>();
 	const { classes, cx } = useStyles();
-	const inputRef = useRef<(HTMLInputElement | null)[]>([]);
+	const inputRef = useRef<Record<string, HTMLInputElement | null>>({});
 
 	return (
 		<div className={classes.fieldWrapper}>
 			<label htmlFor={name}>{label}</label>
-			{options.map(({ id, image, label: optionLabel, description }, index) => {
+			{options.map(({ id, image, label: optionLabel, description }) => {
 				const inputId = `${name}-${id}`;
 				const checked = field.state.value === id;
 
 				return (
-					<div key={index} className={classes.optionWrapper}>
+					<div key={id} className={classes.optionWrapper}>
 						<input
 							ref={(element) => {
-								inputRef.current[index] = element;
+								inputRef.current[id] = element;
 							}}
 							id={inputId}
 							name={name}
