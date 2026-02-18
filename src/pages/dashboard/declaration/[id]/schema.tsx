@@ -208,6 +208,9 @@ export default function SchemaPage({
 						readOnlyForm.handleSubmit();
 					}
 				}}
+				onInvalid={(e) => {
+					form.validate("submit");
+				}}
 			>
 				<div className={commonClasses.whiteBackground}>
 					{!declaration?.actionPlan ? (

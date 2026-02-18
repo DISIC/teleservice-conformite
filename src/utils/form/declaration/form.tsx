@@ -29,6 +29,7 @@ export const DeclarationGeneralForm = withForm({
 							label="Organisation"
 							readOnly={readOnly}
 							inputReadOnly
+							required
 						/>
 					)}
 				</form.AppField>
@@ -41,6 +42,7 @@ export const DeclarationGeneralForm = withForm({
 							onChange={() => {
 								form.setFieldValue("general.url", "");
 							}}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -57,6 +59,7 @@ export const DeclarationGeneralForm = withForm({
 									Outil de gestion des congés
 								</>
 							}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -91,6 +94,7 @@ export const DeclarationGeneralForm = withForm({
 							infoStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
 							readOnly={readOnly}
 							options={[...kindOptions]}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -113,6 +117,7 @@ export const ContextForm = withForm({
 						<field.SelectCardField
 							name="initialDeclaration.newDeclarationKind"
 							label="Quelle est votre situation pour ce service ?"
+							required
 							options={[
 								{
 									id: "fromUrl",
@@ -162,6 +167,7 @@ export const ContextForm = withForm({
 												label="Lien URL de la déclaration en ligne "
 												kind="url"
 												description="Format attendu : https://www.example.fr"
+												required
 											/>
 										)}
 									</form.AppField>
@@ -173,6 +179,7 @@ export const ContextForm = withForm({
 												label="URL de l’audit Ara"
 												kind="url"
 												description="Format attendu : https://ara.numerique.gouv.fr/declaration/xxxxxxx"
+												required
 											/>
 										)}
 									</form.AppField>

@@ -138,6 +138,9 @@ export default function GeneralInformationsPage({
 					e.preventDefault();
 					form.handleSubmit();
 				}}
+				onInvalid={(e) => {
+					form.validate("submit");
+				}}
 			>
 				{editMode ? (
 					<>

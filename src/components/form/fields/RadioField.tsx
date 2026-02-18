@@ -45,7 +45,6 @@ export function RadioField({
 				},
 			}))}
 			className={className ?? fr.cx("fr-mb-0")}
-			style={{ userSelect: "none" }}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={
 				field.state.meta.errors.map((error) => error.message).join(",") ?? ""

@@ -27,6 +27,7 @@ export const AuditRealisedForm = withForm({
 							{ label: "Oui", value: true },
 							{ label: "Non", value: false },
 						]}
+						required
 					/>
 				)}
 			</form.AppField>
@@ -45,6 +46,7 @@ export const AuditDateForm = withForm({
 							kind="date"
 							label="Date de réalisation de l'audit"
 							max={new Date().toISOString().split("T")[0]}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -53,6 +55,7 @@ export const AuditDateForm = withForm({
 						<field.TextField
 							label="Entité ou personne ayant réalisé l’audit"
 							description='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
+							required
 						/>
 					)}
 				</form.AppField>
@@ -64,6 +67,7 @@ export const AuditDateForm = withForm({
 								label: option.label,
 								value: option.value,
 							}))}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -72,6 +76,9 @@ export const AuditDateForm = withForm({
 						<field.NumberField
 							label="Pourcentage de critères du RGAA respectés"
 							description="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
+							max={100}
+							min={0}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -110,6 +117,7 @@ export const ToolsForm = withForm({
 							<field.CheckboxGroupField
 								label="Environnement de tests"
 								options={[...testEnvironmentOptions]}
+								required
 							/>
 							<field.TagGroupField
 								label="Ajouter un environnement"
@@ -148,6 +156,7 @@ export const CompliantElementsForm = withForm({
 						}
 						kind="text"
 						textArea
+						required
 					/>
 				)}
 			</form.AppField>

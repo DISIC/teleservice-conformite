@@ -315,6 +315,9 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						e.preventDefault();
 						form.handleSubmit();
 					}}
+					onInvalid={(e) => {
+						form.validate("submit");
+					}}
 				>
 					<div className={classes.formWrapper}>
 						<div className={classes.whiteBackground}>

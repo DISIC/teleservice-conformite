@@ -1,200 +1,197 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
-import { rgaaVersionOptions, testEnvironmentOptions } from "~/payload/selectOptions";
+import {
+	rgaaVersionOptions,
+	testEnvironmentOptions,
+} from "~/payload/selectOptions";
 
 export const auditRealised = z.object({
-  isAuditRealised: z.boolean(),
+	isAuditRealised: z.boolean().optional(),
 });
 
 export type ZAuditRealised = z.infer<typeof auditRealised>;
 
 export const auditRealisedDefaultValues: ZAuditRealised = {
-  isAuditRealised: false,
+	isAuditRealised: undefined,
 };
 
 export const auditDate = z.object({
-  date: z.iso.date().optional().or(z.literal("")),
-  realisedBy: z.string().min(1, {
-    message: "L'organisation ayant réalisé l'audit est requise",
-  }),
-  rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
-  rate: z.number()
-    .min(0, { message: "Le taux doit être entre 0 et 100" })
-    .max(100, { message: "Le taux doit être entre 0 et 100" }),
+	date: z.iso.date().optional().or(z.literal("")),
+	realisedBy: z.string().min(1, {
+		message: "L'organisation ayant réalisé l'audit est requise",
+	}),
+	rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
+	rate: z
+		.number()
+		.min(0, { message: "Le taux doit être entre 0 et 100" })
+		.max(100, { message: "Le taux doit être entre 0 et 100" }),
 });
 
 export type ZAuditDate = z.infer<typeof auditDate>;
 
 export const auditDateDefaultValues: ZAuditDate = {
-  date: undefined,
-  realisedBy: "",
-  rgaa_version: "rgaa_4",
-  rate: 0,
+	date: undefined,
+	realisedBy: "",
+	rgaa_version: "rgaa_4",
+	rate: 0,
 };
 
 export const tools = z.object({
-  usedTools: z.array(
-      z.string()
-    ).optional(),
-  testEnvironments: z
-    .array(
-      z.string()
-    )
-    .min(1, {
-      message: "Au moins un environnement de test doit être sélectionné",
-    }),
+	usedTools: z.array(z.string()).optional(),
+	testEnvironments: z.array(z.string()).min(1, {
+		message: "Au moins un environnement de test doit être sélectionné",
+	}),
 });
 
 export type ZTools = z.infer<typeof tools>;
 
 export const toolsDefaultValues: ZTools = {
-  usedTools: [],
-  testEnvironments: [],
+	usedTools: [],
+	testEnvironments: [],
 };
 
 export const compliantElements = z.object({
-  compliantElements: z.string().min(1, { message: "Les éléments conformes sont requis" }),
+	compliantElements: z
+		.string()
+		.min(1, { message: "Les éléments conformes sont requis" }),
 });
 
 export type ZCompliantElements = z.infer<typeof compliantElements>;
 
 export const compliantElementsDefaultValues: ZCompliantElements = {
-  compliantElements: "",
+	compliantElements: "",
 };
 
 export const nonCompliantElements = z.object({
-  nonCompliantElements: z.string().optional(),
+	nonCompliantElements: z.string().optional(),
 });
 
 export type ZNonCompliantElements = z.infer<typeof nonCompliantElements>;
 
 export const nonCompliantElementsDefaultValues: ZNonCompliantElements = {
-  nonCompliantElements: "",
+	nonCompliantElements: "",
 };
 
 export const disproportionnedCharge = z.object({
-  disproportionnedCharge: z.string().optional(),
+	disproportionnedCharge: z.string().optional(),
 });
 
 export type ZDisproportionnedCharge = z.infer<typeof disproportionnedCharge>;
 
 export const disproportionnedChargeDefaultValues: ZDisproportionnedCharge = {
-  disproportionnedCharge: "",
+	disproportionnedCharge: "",
 };
 
 export const optionalElements = z.object({
-  optionalElements: z.string().optional(),
+	optionalElements: z.string().optional(),
 });
 
 export type ZOptionalElements = z.infer<typeof optionalElements>;
 
 export const optionalElementsDefaultValues: ZOptionalElements = {
-  optionalElements: "",
+	optionalElements: "",
 };
 
 export const files = z.object({
-  report: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
+	report: z
+		.url("Lien invalide (ex: https://www.example.fr)")
+		.optional()
+		.or(z.literal("")),
 });
 
 export type ZFiles = z.infer<typeof files>;
 
 export const filesDefaultValues: ZFiles = {
-  report: undefined,
+	report: undefined,
 };
 
 const sections = [
-  "isAuditRealised",
-  "auditDate",
-  "tools",
-  "compliantElements",
-  "nonCompliantElements",
-  "disproportionnedCharge",
-  "optionalElements",
-  "files",
+	"isAuditRealised",
+	"auditDate",
+	"tools",
+	"compliantElements",
+	"nonCompliantElements",
+	"disproportionnedCharge",
+	"optionalElements",
+	"files",
 ] as const;
 
-export type AuditFormSection = typeof sections[number];
+export type AuditFormSection = (typeof sections)[number];
 
 export const auditFormSchema = z.object({
-  section: z.enum(sections),
-  ...auditRealised.shape,
-  ...auditDate.shape,
-  ...tools.shape,
-  ...compliantElements.shape,
-  ...nonCompliantElements.shape,
-  ...disproportionnedCharge.shape,
-  ...optionalElements.shape,
-  ...files.shape,
+	section: z.enum(sections),
+	...auditRealised.shape,
+	...auditDate.shape,
+	...tools.shape,
+	...compliantElements.shape,
+	...nonCompliantElements.shape,
+	...disproportionnedCharge.shape,
+	...optionalElements.shape,
+	...files.shape,
 });
 
-export type ZAuditFormSchema = z.infer<
-  typeof auditFormSchema
->;
+export type ZAuditFormSchema = z.infer<typeof auditFormSchema>;
 
 const defaultValues: ZAuditFormSchema = {
-  section: "isAuditRealised",
-  ...auditRealisedDefaultValues,
-  ...auditDateDefaultValues,
-  ...toolsDefaultValues,
-  ...compliantElementsDefaultValues,
-  ...nonCompliantElementsDefaultValues,
-  ...disproportionnedChargeDefaultValues,
-  ...optionalElementsDefaultValues,
-  ...filesDefaultValues,
+	section: "isAuditRealised",
+	...auditRealisedDefaultValues,
+	...auditDateDefaultValues,
+	...toolsDefaultValues,
+	...compliantElementsDefaultValues,
+	...nonCompliantElementsDefaultValues,
+	...disproportionnedChargeDefaultValues,
+	...optionalElementsDefaultValues,
+	...filesDefaultValues,
 };
 
 export const auditMultiStepFormOptions = formOptions({
 	defaultValues,
 	validators: {
-    onSubmit: ({ value, formApi }) => {
-      if (value.section === "isAuditRealised") {
-        return formApi.parseValuesWithSchema(
-          auditRealised as typeof auditFormSchema,
-        );
-      }
+		onSubmit: ({ value, formApi }) => {
+			if (value.section === "isAuditRealised") {
+				return formApi.parseValuesWithSchema(
+					auditRealised as typeof auditFormSchema,
+				);
+			}
 
-      if (value.section === "auditDate") {
-        return formApi.parseValuesWithSchema(
-          auditDate as typeof auditFormSchema,
-        );
-      }
+			if (value.section === "auditDate") {
+				return formApi.parseValuesWithSchema(
+					auditDate as typeof auditFormSchema,
+				);
+			}
 
-      if (value.section === "tools") {
-        return formApi.parseValuesWithSchema(
-          tools as typeof auditFormSchema,
-        );
-      }
+			if (value.section === "tools") {
+				return formApi.parseValuesWithSchema(tools as typeof auditFormSchema);
+			}
 
-      if (value.section === "compliantElements") {
-        return formApi.parseValuesWithSchema(
-          compliantElements as typeof auditFormSchema,
-        );
-      }
+			if (value.section === "compliantElements") {
+				return formApi.parseValuesWithSchema(
+					compliantElements as typeof auditFormSchema,
+				);
+			}
 
-      if (value.section === "nonCompliantElements") {
-        return formApi.parseValuesWithSchema(
-          nonCompliantElements as typeof auditFormSchema,
-        );
-      }
+			if (value.section === "nonCompliantElements") {
+				return formApi.parseValuesWithSchema(
+					nonCompliantElements as typeof auditFormSchema,
+				);
+			}
 
-      if (value.section === "disproportionnedCharge") {
-        return formApi.parseValuesWithSchema(
-          disproportionnedCharge as typeof auditFormSchema,
-        );
-      }
+			if (value.section === "disproportionnedCharge") {
+				return formApi.parseValuesWithSchema(
+					disproportionnedCharge as typeof auditFormSchema,
+				);
+			}
 
-      if (value.section === "optionalElements") {
-        return formApi.parseValuesWithSchema(
-          optionalElements as typeof auditFormSchema,
-        );
-      }
+			if (value.section === "optionalElements") {
+				return formApi.parseValuesWithSchema(
+					optionalElements as typeof auditFormSchema,
+				);
+			}
 
-      if (value.section === "files") {
-        return formApi.parseValuesWithSchema(
-          files as typeof auditFormSchema,
-        );
-      }
-    },
-  },
+			if (value.section === "files") {
+				return formApi.parseValuesWithSchema(files as typeof auditFormSchema);
+			}
+		},
+	},
 });

@@ -211,6 +211,9 @@ export default function ContactPage({
 						readOnlyForm.handleSubmit();
 					}
 				}}
+				onInvalid={(e) => {
+					form.validate("submit");
+				}}
 			>
 				{!declaration?.contact ? (
 					<>

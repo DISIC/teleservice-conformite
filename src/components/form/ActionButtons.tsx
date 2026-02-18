@@ -19,20 +19,15 @@ export function SubscribeButton({
 	const { classes } = useStyles();
 	const form = useFormContext();
 
-	const iconProps = {
-		...(iconId ? { iconId } : {}),
-		...(iconPosition ? { iconPosition } : {}),
-	} as const;
-
 	return (
 		<div className={classes.buttonWrapper}>
 			<form.Subscribe
 				selector={(state) => [state.isSubmitting, state.canSubmit]}
 			>
-				{([isSubmitting, canSubmit]) =>
+				{([isSubmitting]) =>
 					iconId && iconPosition ? (
 						<Button
-							disabled={isSubmitting || !canSubmit}
+							disabled={isSubmitting}
 							type="submit"
 							iconId={iconId}
 							iconPosition={iconPosition}
@@ -40,7 +35,7 @@ export function SubscribeButton({
 							{label}
 						</Button>
 					) : (
-						<Button disabled={isSubmitting || !canSubmit} type="submit">
+						<Button disabled={isSubmitting} type="submit">
 							{label}
 						</Button>
 					)

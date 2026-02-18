@@ -324,6 +324,9 @@ export default function AuditPage({
 						e.preventDefault();
 						form.handleSubmit();
 					}}
+					onInvalid={(e) => {
+						form.validate("submit");
+					}}
 				>
 					<div className={classes.whiteBackground}>
 						{section === "isAuditRealised" && <AuditRealisedForm form={form} />}
@@ -359,6 +362,9 @@ export default function AuditPage({
 							onSubmit={(e) => {
 								e.preventDefault();
 								readOnlyForm.handleSubmit();
+							}}
+							onInvalid={(e) => {
+								form.validate("submit");
 							}}
 						>
 							<div className={classes.whiteBackground}>

@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Information from "@codegouvfr/react-dsfr/picto/Information";
 import { useState } from "react";
 
@@ -30,6 +30,7 @@ export const DeclarationGeneralForm = withForm({
 							onChange={() => {
 								form.setFieldValue("general.url", "");
 							}}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -38,6 +39,7 @@ export const DeclarationGeneralForm = withForm({
 						<field.TextField
 							label="Nom du service numérique"
 							description="Exemples : Demande de logement social, Service public.fr, Outil de gestion des congés"
+							required
 						/>
 					)}
 				</form.AppField>
@@ -57,6 +59,7 @@ export const DeclarationGeneralForm = withForm({
 							placeholder="Sélectionnez un secteur"
 							defaultStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
 							options={[...kindOptions]}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -80,6 +83,7 @@ export const DeclarationSchema = withForm({
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
+								required
 							/>
 							{field.state.value ? (
 								<form.AppField name="schema.currentYearSchemaUrl">
@@ -95,6 +99,7 @@ export const DeclarationSchema = withForm({
 													attendu : https://www.example.fr
 												</>
 											}
+											required
 										/>
 									)}
 								</form.AppField>
@@ -123,6 +128,7 @@ export const DeclarationSchema = withForm({
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
+								required
 							/>
 							{field.state.value && (
 								<form.AppField name="schema.previousYearsSchemaUrl">
@@ -131,6 +137,7 @@ export const DeclarationSchema = withForm({
 											kind="url"
 											label="Lien URL du bilan des actions"
 											description="Format attendu : https://www.example.fr"
+											required
 										/>
 									)}
 								</form.AppField>
@@ -156,26 +163,33 @@ export const DeclarationAuditForm = withForm({
 	}) {
 		const [isAchieved, setIsAchieved] = useState(initialIsAchieved);
 
-		const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-			const checked = event.target.checked;
-			setIsAchieved(checked);
-			onChangeIsAchieved(checked);
-		};
-
 		return (
 			<>
-				<Checkbox
+				<RadioButtons
+					legend="L'audit d'accessibilité a-t-il été réalisé ?"
 					options={[
 						{
-							label: "L'audit d'accessibilité a-t-il été réalisé ?",
+							label: "Oui",
 							nativeInputProps: {
 								checked: isAchieved,
-								onChange,
+								onChange: () => {
+									setIsAchieved(true);
+									onChangeIsAchieved(true);
+								},
+							},
+						},
+						{
+							label: "Non",
+							nativeInputProps: {
+								checked: !isAchieved,
+								onChange: () => {
+									setIsAchieved(false);
+									onChangeIsAchieved(false);
+								},
 							},
 						},
 					]}
 					className={fr.cx("fr-mb-3w")}
-					style={{ userSelect: "none" }}
 				/>
 				{isAchieved && (
 					<>
@@ -185,6 +199,7 @@ export const DeclarationAuditForm = withForm({
 									label="Date de réalisation"
 									kind="date"
 									max={new Date().toISOString().split("T")[0]}
+									required
 								/>
 							)}
 						</form.AppField>
@@ -193,6 +208,7 @@ export const DeclarationAuditForm = withForm({
 								<field.TextField
 									kind="text"
 									label="Entité ou personne ayant réalisé l'audit"
+									required
 								/>
 							)}
 						</form.AppField>
@@ -201,11 +217,19 @@ export const DeclarationAuditForm = withForm({
 								<field.RadioField
 									label="Référentiel RGAA utilisé"
 									options={[...rgaaVersionOptions]}
+									required
 								/>
 							)}
 						</form.AppField>
 						<form.AppField name="audit.rate">
-							{(field) => <field.NumberField label="Résultats" />}
+							{(field) => (
+								<field.NumberField
+									label="Résultats"
+									min={0}
+									max={100}
+									required
+								/>
+							)}
 						</form.AppField>
 						<form.AppField name="audit.technologies">
 							{(field) =>
@@ -227,7 +251,7 @@ export const DeclarationAuditForm = withForm({
 										/>
 										<field.TagGroupField
 											label="Ajouter un outil"
-											initialTags={field.state.value.filter(
+											initialTags={(field.state.value || []).filter(
 												(tag) =>
 													![...toolOptions]
 														.map((option) => option.value as string)
@@ -244,6 +268,7 @@ export const DeclarationAuditForm = withForm({
 									<field.CheckboxGroupField
 										label="Environnement de tests"
 										options={[...testEnvironmentOptions]}
+										required
 									/>
 									<field.TagGroupField
 										label="Ajouter un environnement"
@@ -262,6 +287,7 @@ export const DeclarationAuditForm = withForm({
 								<field.TextField
 									label="Éléments ayant fait l’objet de vérification"
 									textArea
+									required
 								/>
 							)}
 						</form.AppField>
@@ -310,6 +336,7 @@ export const DeclarationContactForm = withForm({
 									{ label: "Formulaire en ligne", value: "url" },
 									{ label: "Point de contact", value: "email" },
 								]}
+								required
 							/>
 							{field.state.value?.includes("url") && (
 								<form.AppField name="contact.contactName">
@@ -317,6 +344,7 @@ export const DeclarationContactForm = withForm({
 										<field.TextField
 											label="Lien URL du formulaire"
 											kind="url"
+											required
 										/>
 									)}
 								</form.AppField>
@@ -324,7 +352,11 @@ export const DeclarationContactForm = withForm({
 							{field.state.value?.includes("email") && (
 								<form.AppField name="contact.contactEmail">
 									{(field) => (
-										<field.TextField label="Email de contact" kind="email" />
+										<field.TextField
+											label="Email de contact"
+											kind="email"
+											required
+										/>
 									)}
 								</form.AppField>
 							)}
