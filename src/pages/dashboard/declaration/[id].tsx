@@ -143,24 +143,29 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							<>
 								<Button
 									priority="tertiary"
-									iconId="fr-icon-eye-fill"
 									linkProps={{
 										href: `/declaration/${declaration.id}/publish`,
 										target: "_blank",
 										rel: "noopener noreferrer",
+										title: `Voir la déclaration ${declaration.name}, nouvelle fenêtre`,
 									}}
 								>
-									Voir la declaration
+									Voir la déclaration
 								</Button>
 								<Button
 									priority="tertiary"
-									iconId="fr-icon-eye-fill"
+									iconId="ri-file-copy-line"
+									nativeButtonProps={{
+										"aria-label":
+											"Copier le lien web de la déclaration publiée",
+									}}
 									onClick={() =>
 										copyToClipboard(
 											`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
 											() =>
 												showDeclarationAlert({
-													description: "Lien copié dans le presse-papier",
+													description:
+														"Lien de la déclaration publiée copié dans le presse-papier",
 													severity: "success",
 												}),
 										)
@@ -174,12 +179,15 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							iconId="fr-icon-delete-fill"
 							priority="tertiary"
 							onClick={onDelete}
+							nativeButtonProps={{
+								"aria-label": "Supprimer la déclaration",
+							}}
 						>
 							Supprimer
 						</Button>
 					</div>
-					{showAlert && (
-						<div className={classes.alertWrapper}>
+					<div className={classes.alertWrapper}>
+						{showAlert && (
 							<Alert
 								small={true}
 								severity={alertDetails.severity}
@@ -189,8 +197,8 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 								isClosed={!showAlert}
 								onClose={() => setShowAlert(false)}
 							/>
-						</div>
-					)}
+						)}
+					</div>
 				</section>
 				<Tabs
 					selectedTabId={selectedTabId}
@@ -210,12 +218,18 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 					{
 						doClosesModal: true,
 						children: "Annuler",
+						nativeButtonProps: {
+							"aria-label": "Annuler la suppression de la déclaration",
+						},
 					},
 					{
 						doClosesModal: false,
 						priority: "primary",
 						children: "Supprimer",
 						iconId: "fr-icon-delete-fill",
+						nativeButtonProps: {
+							"aria-label": "Confirmer la suppression de la déclaration",
+						},
 						className: classes.dialogActionButton,
 
 						onClick: async () => {
@@ -259,7 +273,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		flexDirection: "column",
 		alignItems: "start",
 		justifyContent: "flex-start",
-		marginBottom: fr.spacing("16v"),
+		marginBottom: fr.spacing("6v"),
 	},
 	header: {
 		display: "flex",
@@ -272,10 +286,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		display: "flex",
 		flexDirection: "row",
 		gap: fr.spacing("4v"),
-
-		"& a[target='_blank']::after": {
-			content: "none",
-		},
 	},
 	emptyStateContainer: {
 		display: "flex",
@@ -336,7 +346,8 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 	alertWrapper: {
 		width: "100%",
 		display: "flex",
-		marginTop: fr.spacing("8v"),
+		height: fr.spacing("12v"),
+		marginTop: fr.spacing("6v"),
 
 		"& div": {
 			width: "100%",

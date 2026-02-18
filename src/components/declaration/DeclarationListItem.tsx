@@ -42,13 +42,15 @@ export default function DeclarationListItem({
 	return (
 		<div key={declaration.id} className={classes.declarationCard}>
 			<div>
-				<h2 className={classes.declarationTitle}>
-					<NextLink
-						href={`/dashboard/declaration/${declaration.id}`}
-						title={declaration.name || ""}
-					>
-						{declaration.name}
-					</NextLink>
+				<div className={classes.declarationTitle}>
+					<h2>
+						<NextLink
+							href={`/dashboard/declaration/${declaration.id}`}
+							title={declaration.name || ""}
+						>
+							{declaration.name}
+						</NextLink>
+					</h2>
 					<StatusBadge
 						isPublished={declaration?.status === "published"}
 						isModified={
@@ -60,7 +62,7 @@ export default function DeclarationListItem({
 							!declaration?.publishedContent
 						}
 					/>
-				</h2>
+				</div>
 				<p className={cx(classes.details, fr.cx("fr-text--sm"))}>{name}</p>
 				<p className={cx(classes.details, fr.cx("fr-text--sm"))}>
 					{appKindOptions.find(
@@ -90,7 +92,8 @@ export default function DeclarationListItem({
 							`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
 							() =>
 								showDeclarationAlert({
-									description: "Lien copié dans le presse-papier",
+									description:
+										"Lien de la déclaration publiée copié dans le presse-papier",
 									severity: "success",
 								}),
 						)
@@ -116,17 +119,21 @@ const useStyles = tss.withName(DeclarationListItem.name).create({
 		},
 	},
 	declarationTitle: {
+		display: "flex",
+		gap: fr.spacing("2v"),
 		marginBottom: fr.spacing("4v"),
-		color: fr.colors.decisions.background.actionHigh.blueFrance.default,
-		fontSize: fr.typography[0].style.fontSize,
-		lineHeight: fr.typography[0].style.lineHeight,
-		overflowWrap: "anywhere",
-		wordBreak: "break-word",
-
-		"& a": {
-			marginRight: fr.spacing("2v"),
+		h2: {
+			color: fr.colors.decisions.background.actionHigh.blueFrance.default,
+			fontSize: fr.typography[0].style.fontSize,
+			lineHeight: fr.typography[0].style.lineHeight,
 			overflowWrap: "anywhere",
 			wordBreak: "break-word",
+			marginBottom: 0,
+
+			"& a": {
+				overflowWrap: "anywhere",
+				wordBreak: "break-word",
+			},
 		},
 	},
 	details: {
