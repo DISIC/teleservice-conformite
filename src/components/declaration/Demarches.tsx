@@ -323,8 +323,11 @@ const useStyles = tss.withName(Demarches.name).create({
 	},
 	tilesContainer: {
 		display: "grid",
-		gridTemplateColumns: "1fr 1fr 1fr 1fr",
 		gap: fr.spacing("4v"),
+
+		"@media (min-width: 800px)": {
+			gridTemplateColumns: "1fr 1fr 1fr 1fr",
+		},
 	},
 	tile: {
 		padding: `${fr.spacing("4v")} ${fr.spacing("4v")} ${fr.spacing("5v")}`,

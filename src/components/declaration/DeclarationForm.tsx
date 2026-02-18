@@ -127,6 +127,11 @@ const useStyles = tss.withName(DeclarationForm.name).create({
 		backgroundColor: fr.colors.decisions.background.raised.grey.default,
 		padding: fr.spacing("10v"),
 		marginTop: fr.spacing("6v"),
+		"@media (max-width: 1024px)": {
+			flexDirection: "column",
+			gap: fr.spacing("4v"),
+			paddingBottom: fr.spacing("4v"),
+		},
 	},
 	description: {
 		color: fr.colors.decisions.text.mention.grey.default,

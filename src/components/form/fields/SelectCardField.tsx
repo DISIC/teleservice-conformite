@@ -96,6 +96,10 @@ const useStyles = tss.withName(SelectCardField.name).create({
 		width: "100%",
 		backgroundColor: fr.colors.decisions.background.default.grey.default,
 
+		"@media (max-width: 830px)": {
+			flexDirection: "column",
+		},
+
 		"&:hover": {
 			backgroundColor: fr.colors.decisions.background.default.grey.hover,
 		},

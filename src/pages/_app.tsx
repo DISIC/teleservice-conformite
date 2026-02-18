@@ -158,8 +158,15 @@ export const useStyles = tss
 			flexDirection: "column",
 		},
 		formContainer: {
-			paddingInline: "16rem",
+			boxSizing: "border-box",
+			paddingInline: fr.spacing("4v"),
 			paddingBlock: fr.spacing("12v"),
+			width: "100%",
+			height: "100%",
+
+			"@media (min-width: 1024px)": {
+				paddingInline: "16rem",
+			},
 		},
 	}));
 

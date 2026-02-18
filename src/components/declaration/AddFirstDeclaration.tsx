@@ -162,6 +162,13 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 		alignItems: "center",
 		justifyContent: "space-between",
 		paddingBlock: fr.spacing("5w"),
+		gap: fr.spacing("4v"),
+
+		"@media (max-width: 768px)": {
+			flexDirection: "column",
+			justifyContent: "center",
+			textAlign: "center",
+		},
 	},
 	body: {
 		"& > p": {
@@ -170,11 +177,18 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 			fontFamily: "Marianne",
 			fontSize: "1.25rem",
 			lineHeight: "2rem",
+			overflowWrap: "anywhere",
+			wordBreak: "break-word",
 		},
 
 		"& > div": {
 			display: "grid",
 			gridTemplateColumns: "auto auto",
+			gap: fr.spacing("4w"),
+
+			"@media (max-width: 1024px)": {
+				gridTemplateColumns: "1fr",
+			},
 		},
 	},
 	infoSection: {
@@ -198,6 +212,11 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 				margin: 0,
 			},
 		},
+
+		"@media (max-width: 768px)": {
+			padding: fr.spacing("4w"),
+			textAlign: "left",
+		},
 	},
 	documentsSection: {
 		padding: fr.spacing("4w"),
@@ -218,6 +237,10 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 				marginBottom: fr.spacing("2w"),
 				"& > p": { margin: 0 },
 			},
+		},
+
+		"@media (max-width: 768px)": {
+			padding: fr.spacing("3w"),
 		},
 	},
 	documentsSectionTitle: {
@@ -255,6 +278,19 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 				"& > p": { margin: 0 },
 				"& > h4": {
 					color: fr.colors.decisions.text.title.blueFrance.default,
+				},
+			},
+
+			"@media (max-width: 1024px)": {
+				flexDirection: "column",
+				textAlign: "center",
+				gap: fr.spacing("4w"),
+				"& > div": {
+					width: "100%",
+				},
+				"& .fr-artwork-major": {
+					width: "6rem !important",
+					height: "6rem !important",
 				},
 			},
 		},

@@ -105,24 +105,34 @@ export default function DeclarationListItem({
 const useStyles = tss.withName(DeclarationListItem.name).create({
 	declarationCard: {
 		display: "grid",
-		gridTemplateColumns: "2fr 1fr auto",
+
 		alignItems: "center",
 		border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
 		padding: fr.spacing("4v"),
+
+		"@media (min-width: 768px)": {
+			gridTemplateColumns: "2fr 1fr auto",
+		},
 	},
 	declarationTitle: {
 		marginBottom: fr.spacing("4v"),
 		color: fr.colors.decisions.background.actionHigh.blueFrance.default,
 		fontSize: fr.typography[0].style.fontSize,
 		lineHeight: fr.typography[0].style.lineHeight,
+		overflowWrap: "anywhere",
+		wordBreak: "break-word",
 
 		"& a": {
 			marginRight: fr.spacing("2v"),
+			overflowWrap: "anywhere",
+			wordBreak: "break-word",
 		},
 	},
 	details: {
 		margin: 0,
 		color: fr.colors.decisions.text.mention.grey.default,
+		overflowWrap: "anywhere",
+		wordBreak: "break-word",
 	},
 	auditRateValue: {
 		color: fr.colors.decisions.text.label.grey.default,

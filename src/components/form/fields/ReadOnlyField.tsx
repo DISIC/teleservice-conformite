@@ -74,6 +74,11 @@ const useStyles = tss
 				: {
 						display: "inline-flex",
 					}),
+
+			"@media (max-width: 1024px)": {
+				flexDirection: "column",
+				gap: fr.spacing("2v"),
+			},
 		},
 		label: {
 			fontWeight: 700,
