@@ -19,170 +19,170 @@ import { authClient } from "~/utils/auth-client";
 
 // Only in TypeScript projects
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
-  interface RegisterLink {
-    Link: typeof Link;
-  }
+	interface RegisterLink {
+		Link: typeof Link;
+	}
 }
 
 const { augmentDocumentWithEmotionCache, withAppEmotionCache } =
-  createEmotionSsrAdvancedApproach({ key: "css" });
+	createEmotionSsrAdvancedApproach({ key: "css" });
 
 const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
-  defaultColorScheme: "system",
-  Link,
-  preloadFonts: [
-    //"Marianne-Light",
-    //"Marianne-Light_Italic",
-    "Marianne-Regular",
-    //"Marianne-Regular_Italic",
-    "Marianne-Medium",
-    //"Marianne-Medium_Italic",
-    "Marianne-Bold",
-    //"Marianne-Bold_Italic",
-    //"Spectral-Regular",
-    //"Spectral-ExtraBold"
-  ],
+	defaultColorScheme: "system",
+	Link,
+	preloadFonts: [
+		//"Marianne-Light",
+		//"Marianne-Light_Italic",
+		"Marianne-Regular",
+		//"Marianne-Regular_Italic",
+		"Marianne-Medium",
+		//"Marianne-Medium_Italic",
+		"Marianne-Bold",
+		//"Marianne-Bold_Italic",
+		//"Spectral-Regular",
+		//"Spectral-ExtraBold"
+	],
 });
 
 export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
 
 const userNavigationItems: MainNavigationProps.Item[] = [
-  { text: "Accueil", linkProps: { href: "/dashboard" } },
-  { text: "Test - Ara", linkProps: { href: "/dashboard/ara" } },
-  { text: "Test - Déclaration", linkProps: { href: "/dashboard/declaration" } },
+	{ text: "Accueil", linkProps: { href: "/dashboard" } },
+	{ text: "Test - Ara", linkProps: { href: "/dashboard/ara" } },
+	{ text: "Test - Déclaration", linkProps: { href: "/dashboard/declaration" } },
 ];
 
 const getBackgroundColor = (pathname: string) => {
-  const page = pathname.split("/").pop() || "";
+	const page = pathname.split("/").pop() || "";
 
-  if (["infos", "audit", "schema", "contact", "form"].includes(page)) {
-    return fr.colors.decisions.background.alt.blueFrance.default;
-  }
+	if (["infos", "audit", "schema", "contact", "form"].includes(page)) {
+		return fr.colors.decisions.background.alt.blueFrance.default;
+	}
 
-  if (["preview"].includes(page)) {
-    return fr.colors.decisions.background.alt.blueFrance.default;
-  }
+	if (["preview"].includes(page)) {
+		return fr.colors.decisions.background.alt.blueFrance.default;
+	}
 
-  return "inherit";
+	return "inherit";
 };
 
 function App({ Component, pageProps }: AppProps) {
-  const router = useRouter();
-  const { classes, cx } = useStyles({
-    backgroundColor: getBackgroundColor(router.pathname),
-  });
-  const { data: authSession, isPending: isPendingAuth } =
-    authClient.useSession();
-  const isAuthenticated = !!authSession;
+	const router = useRouter();
+	const { classes, cx } = useStyles({
+		backgroundColor: getBackgroundColor(router.pathname),
+	});
+	const { data: authSession, isPending: isPendingAuth } =
+		authClient.useSession();
+	const isAuthenticated = !!authSession;
 
-  const navigationItems =
-    isAuthenticated || router.pathname.startsWith("/dashboard")
-      ? userNavigationItems.map((item) => ({
-          ...item,
-          isActive: router.asPath === item?.linkProps?.href,
-        }))
-      : [];
+	const navigationItems =
+		isAuthenticated || router.pathname.startsWith("/dashboard")
+			? userNavigationItems.map((item) => ({
+					...item,
+					isActive: router.asPath === item?.linkProps?.href,
+				}))
+			: [];
 
-  const quickAccessItems = useMemo(() => {
-    const items = [] as HeaderProps.QuickAccessItem[];
+	const quickAccessItems = useMemo(() => {
+		const items = [] as HeaderProps.QuickAccessItem[];
 
-    if (isPendingAuth) return [];
+		if (isPendingAuth) return [];
 
-    if (isAuthenticated) {
-      items.push({
-        iconId: "ri-logout-box-line",
-        text: "Se déconnecter",
-        buttonProps: {
-          onClick: async () => {
-            await authClient.signOut({
-              fetchOptions: { onSuccess: () => void router.push("/") },
-            });
-          },
-          style: { color: fr.colors.decisions.text.default.error.default },
-        },
-      });
-    }
+		if (isAuthenticated) {
+			items.push({
+				iconId: "ri-logout-box-line",
+				text: "Se déconnecter",
+				buttonProps: {
+					onClick: async () => {
+						await authClient.signOut({
+							fetchOptions: { onSuccess: () => void router.push("/") },
+						});
+					},
+					style: { color: fr.colors.decisions.text.default.error.default },
+				},
+			});
+		}
 
-    return items;
-  }, [authSession?.session, authSession?.user, isAuthenticated, isPendingAuth]);
+		return items;
+	}, [authSession?.session, authSession?.user, isAuthenticated, isPendingAuth]);
 
-  return (
-    <>
-      <Head>
-        <title>Téléservice Conformité</title>
-      </Head>{" "}
-      <div className={classes.mainContainer}>
-        {" "}
-        <SkipLinks
-          links={[
-            {
-              anchor: "#contenu",
-              label: "Contenu",
-            },
-            {
-              anchor: "#footer",
-              label: "Pied de page",
-            },
-          ]}
-        />
-        <Header
-          brandTop={
-            <>
-              RÉPUBLIQUE
-              <br />
-              FRANÇAISE
-            </>
-          }
-          homeLinkProps={{
-            href: "/",
-            title: "Accueil Téléservice Conformité",
-          }}
-          // navigation={navigationItems}
-          quickAccessItems={quickAccessItems}
-          serviceTitle="Téléservice Conformité"
-        />
-        <main id="contenu" className={classes.main} style={{ flex: 1 }}>
-          <AlertHost />
-          <Component {...pageProps} />
-        </main>
-        <Footer
-          id="footer"
-          accessibility="non compliant"
-          bottomItems={[headerFooterDisplayItem]}
-        />
-      </div>
-    </>
-  );
+	return (
+		<>
+			<Head>
+				<title>Téléservice Conformité</title>
+			</Head>{" "}
+			<div className={classes.mainContainer}>
+				{" "}
+				<SkipLinks
+					links={[
+						{
+							anchor: "#contenu",
+							label: "Contenu",
+						},
+						{
+							anchor: "#footer",
+							label: "Pied de page",
+						},
+					]}
+				/>
+				<Header
+					brandTop={
+						<>
+							RÉPUBLIQUE
+							<br />
+							FRANÇAISE
+						</>
+					}
+					homeLinkProps={{
+						href: "/",
+						title: "Accueil Téléservice Conformité",
+					}}
+					// navigation={navigationItems}
+					quickAccessItems={quickAccessItems}
+					serviceTitle="Téléservice Conformité"
+				/>
+				<main id="contenu" className={classes.main} style={{ flex: 1 }}>
+					<AlertHost />
+					<Component {...pageProps} />
+				</main>
+				<Footer
+					id="footer"
+					accessibility="non compliant"
+					bottomItems={[headerFooterDisplayItem]}
+				/>
+			</div>
+		</>
+	);
 }
 
 export const useStyles = tss
-  .withName(App.name)
-  .withParams<{
-    backgroundColor?: string;
-  }>()
-  .create(({ backgroundColor = "inherit" }) => ({
-    mainContainer: {
-      minHeight: "100vh",
-      display: "flex",
-      flexDirection: "column",
-    },
-    main: {
-      backgroundColor: backgroundColor,
-      display: "flex",
-      width: "100%",
-      flexDirection: "column",
-    },
-    formContainer: {
-      boxSizing: "border-box",
-      paddingInline: fr.spacing("4v"),
-      paddingBlock: fr.spacing("12v"),
-      width: "100%",
-      height: "100%",
+	.withName(App.name)
+	.withParams<{
+		backgroundColor?: string;
+	}>()
+	.create(({ backgroundColor = "inherit" }) => ({
+		mainContainer: {
+			minHeight: "100vh",
+			display: "flex",
+			flexDirection: "column",
+		},
+		main: {
+			backgroundColor: backgroundColor,
+			display: "flex",
+			width: "100%",
+			flexDirection: "column",
+		},
+		formContainer: {
+			boxSizing: "border-box",
+			paddingInline: fr.spacing("4v"),
+			paddingBlock: fr.spacing("12v"),
+			width: "100%",
+			height: "100%",
 
-      "@media (min-width: 1024px)": {
-        paddingInline: "16rem",
-      },
-    },
-  }));
+			"@media (min-width: 1024px)": {
+				paddingInline: "16rem",
+			},
+		},
+	}));
 
 export default withDsfr(api.withTRPC(withAppEmotionCache(App)));
