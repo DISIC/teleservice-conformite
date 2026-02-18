@@ -286,6 +286,10 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		display: "flex",
 		flexDirection: "row",
 		gap: fr.spacing("4v"),
+
+		"@media (max-width: 1024px)": {
+			flexDirection: "column",
+		},
 	},
 	emptyStateContainer: {
 		display: "flex",
@@ -346,7 +350,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 	alertWrapper: {
 		width: "100%",
 		display: "flex",
-		height: fr.spacing("12v"),
 		marginTop: fr.spacing("6v"),
 
 		"& div": {
