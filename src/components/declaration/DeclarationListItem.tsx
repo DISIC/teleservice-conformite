@@ -43,7 +43,10 @@ export default function DeclarationListItem({
     <div key={declaration.id} className={classes.declarationCard}>
       <div>
         <h2 className={classes.declarationTitle}>
-          <NextLink href={`/dashboard/declaration/${declaration.id}`}>
+          <NextLink
+            href={`/dashboard/declaration/${declaration.id}`}
+            title={declaration.name || ""}
+          >
             {declaration.name}
           </NextLink>
           <StatusBadge
@@ -72,17 +75,16 @@ export default function DeclarationListItem({
         </p>
       </div>
       {hasPublishedDeclaration && rate !== undefined && (
-        <div>
-          <h3 className={cx(classes.auditRateValue)}>{rate}%</h3>
-          <p className={classes.auditRateLabel}>taux conformité</p>
-        </div>
+        <p className={cx(classes.auditRateWrapper, fr.cx("fr-mb-0"))}>
+          <span className={cx(classes.auditRateValue)}>{rate}%</span>
+          <span className={classes.auditRateLabel}>taux conformité</span>
+        </p>
       )}
 
       {hasPublishedDeclaration && (
         <Button
           iconId="fr-icon-share-line"
           priority="tertiary"
-          style={{ width: "100%" }}
           onClick={() =>
             copyToClipboard(
               `${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
@@ -133,10 +135,22 @@ const useStyles = tss.withName(DeclarationListItem.name).create({
     overflowWrap: "anywhere",
     wordBreak: "break-word",
   },
+  auditRateWrapper: {
+    "@media (max-width: 768px)": {
+      display: "flex",
+      flexDirection: "row-reverse",
+      alignItems: "center",
+      justifyContent: "flex-end",
+      "& > span:last-of-type": {
+        marginRight: fr.spacing("2v"),
+      },
+    },
+  },
   auditRateValue: {
+    ...fr.typography[3].style,
     color: fr.colors.decisions.text.label.grey.default,
-
     margin: 0,
+    display: "block",
   },
   auditRateLabel: {
     color: fr.colors.decisions.text.label.grey.default,
