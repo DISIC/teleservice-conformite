@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
-import type { ParsedUrlQuery } from "node:querystring";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useRouter } from "next/router";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
@@ -22,12 +20,11 @@ interface DeclarationsPageProps {
 
 export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { declarations, firstDeclaration = false } = props;
-	const router = useRouter();
 	const { classes, cx } = useStyles({
 		declarationLength: declarations.length || 0,
 	});
 	const [showAlert, setShowAlert] = useState<boolean>(false);
-	const [alertDetails, setAlertDetails] = useState<{
+	const [alertDetails] = useState<{
 		title?: string;
 		description?: string;
 		severity: "info" | "success" | "warning" | "error";
@@ -36,19 +33,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	if (firstDeclaration) {
 		return <AddFirstDeclaration />;
 	}
-
-	const showDeclarationAlert = ({
-		title,
-		description,
-		severity,
-	}: {
-		title?: string;
-		description?: string;
-		severity: "info" | "success" | "warning" | "error";
-	}) => {
-		setAlertDetails({ title, description, severity });
-		setShowAlert(true);
-	};
 
 	useEffect(() => {
 		if (!showAlert) return;
@@ -91,7 +75,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 								Ajouter une déclaration
 							</Button>
 						</div>
-						<div>
+						<div className={cx(classes.declarationCardsContainer)}>
 							{declarations.map((declaration) => (
 								<DeclarationListItem
 									key={declaration.id}
@@ -122,20 +106,6 @@ const useStyles = tss
 			justifyContent: "flex-end",
 			display: declarationLength ? "flex" : "none",
 		},
-		emptyStateContainer: {
-			display: "flex",
-			flexDirection: "column",
-			gap: fr.spacing("5v"),
-			justifyContent: "center",
-			alignItems: "center",
-			marginTop: fr.spacing("25v"),
-		},
-		emptyStateTitle: {
-			fontFamily: "Marianne",
-			fontWeight: 700,
-			fontSize: fr.typography[22].style.fontSize,
-			lineHeight: fr.typography[20].style.lineHeight,
-		},
 		alertWrapper: {
 			width: "100%",
 			display: "flex",
@@ -145,11 +115,13 @@ const useStyles = tss
 				width: "100%",
 			},
 		},
-	}));
 
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
+		declarationCardsContainer: {
+			display: "flex",
+			flexDirection: "column",
+			gap: fr.spacing("6v"),
+		},
+	}));
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const payload = await getPayload({ config });
