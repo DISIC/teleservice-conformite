@@ -49,7 +49,7 @@ export default function DeclarationForm({
 	const Content = () => (
 		<div className={cx(classes.formWrapper)}>
 			<div className={classes.editButtonWrapper}>
-				<h2 className={cx(classes.description, fr.cx("fr-text--sm"))}>
+				<p className={cx(classes.description, fr.cx("fr-text--sm", "fr-mb-0"))}>
 					{isEditable
 						? "Vérifiez les informations et modifiez-les si nécessaire"
 						: "Tous les champs sont obligatoires sauf précision contraire"}
@@ -59,7 +59,7 @@ export default function DeclarationForm({
 							{mentionText}
 						</>
 					)}
-				</h2>
+				</p>
 				{isEditable && onToggleEdit && (
 					<Button
 						priority="secondary"
