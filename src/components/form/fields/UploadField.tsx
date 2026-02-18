@@ -3,8 +3,14 @@ import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
-export function UploadField(props: DefaultFieldProps) {
-	const { readOnly, label, description, disabled, className } = props;
+export function UploadField({
+	readOnly,
+	label,
+	description,
+	disabled,
+	className,
+	required,
+}: DefaultFieldProps) {
 	const field = useFieldContext<File | undefined>();
 
 	return !readOnly ? (
@@ -21,6 +27,7 @@ export function UploadField(props: DefaultFieldProps) {
 				name: field.name,
 				onChange: (e) =>
 					field.setValue(e.currentTarget.files?.[0] ?? undefined),
+				required,
 			}}
 		/>
 	) : (

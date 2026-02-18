@@ -10,9 +10,12 @@ import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 export function TagGroupField({
 	label,
 	description,
+	disabled,
+	className,
+	placeholder,
 	initialTags,
 }: DefaultFieldProps & { initialTags?: string[] }) {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 	const field = useFieldContext<string[]>();
 	const [tagInput, setTagInput] = useState<string>("");
 	const [tags, setTags] = useState<string[]>(
@@ -35,20 +38,22 @@ export function TagGroupField({
 	};
 
 	return (
-		<div className={classes.tagGroupContainer}>
+		<div className={cx(classes.tagGroupContainer, className)}>
 			<div className={classes.inputWrapper}>
 				<Input
 					label={label}
 					hintText={description}
+					disabled={disabled}
 					nativeInputProps={{
 						type: "text",
 						name: field.name,
 						value: tagInput,
 						onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
 							setTagInput(e.target.value),
+						placeholder,
 					}}
 				/>
-				<Button onClick={addTags} priority="secondary">
+				<Button onClick={addTags} priority="secondary" disabled={disabled}>
 					Ajouter
 				</Button>
 			</div>

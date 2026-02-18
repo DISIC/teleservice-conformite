@@ -12,6 +12,12 @@ export function NumberField({
 	label,
 	description,
 	readOnly = false,
+	disabled,
+	className,
+	placeholder,
+	required,
+	min,
+	max,
 }: NumberFieldProps) {
 	const field = useFieldContext<number>();
 
@@ -19,14 +25,19 @@ export function NumberField({
 		<Input
 			label={label}
 			hintText={description}
+			disabled={disabled}
+			className={className}
 			nativeInputProps={{
 				type: "number",
 				inputMode: "numeric",
 				pattern: "[0-9]*",
-				min: 0,
+				min: min ?? 0,
+				max,
 				name: field.name,
 				value: field.state.value,
 				onChange: (e) => field.setValue(e.target.valueAsNumber),
+				placeholder,
+				required,
 			}}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={

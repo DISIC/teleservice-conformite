@@ -19,6 +19,9 @@ export function RadioField({
 	description,
 	options,
 	readOnly,
+	disabled,
+	className,
+	required,
 	onChange,
 }: RadioFieldProps) {
 	const field = useFieldContext<string | boolean>();
@@ -28,6 +31,7 @@ export function RadioField({
 			legend={label}
 			hintText={description}
 			name={field.name}
+			disabled={disabled}
 			options={options.map(({ label, value, description }) => ({
 				label,
 				hintText: description,
@@ -37,9 +41,10 @@ export function RadioField({
 						field.setValue(value);
 						onChange?.(value);
 					},
+					required,
 				},
 			}))}
-			className={fr.cx("fr-mb-0")}
+			className={className ?? fr.cx("fr-mb-0")}
 			style={{ userSelect: "none" }}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={

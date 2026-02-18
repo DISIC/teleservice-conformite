@@ -14,18 +14,20 @@ interface TextFieldProps extends DefaultFieldProps {
 	inputReadOnly?: boolean;
 }
 
-export function TextField(props: TextFieldProps) {
-	const {
-		label,
-		description,
-		placeholder,
-		disabled,
-		className,
-		kind,
-		readOnly = false,
-		textArea = false,
-		inputReadOnly,
-	} = props;
+export function TextField({
+	label,
+	description,
+	placeholder,
+	disabled,
+	className,
+	kind,
+	readOnly = false,
+	required,
+	textArea = false,
+	inputReadOnly,
+	min,
+	max,
+}: TextFieldProps) {
 	const { classes } = useStyles();
 	const field = useFieldContext<string>();
 	const state: "error" | "success" | "info" | "default" =
@@ -62,6 +64,7 @@ export function TextField(props: TextFieldProps) {
 						onChange: (e) => field.setValue(e.target.value),
 						placeholder,
 						readOnly: inputReadOnly,
+						required,
 					}}
 				/>
 			) : (
@@ -72,10 +75,11 @@ export function TextField(props: TextFieldProps) {
 						name: field.name,
 						value: field.state.value,
 						onChange: (e) => field.setValue(e.target.value),
-						min: kind === "date" && props.min ? props.min : undefined,
-						max: kind === "date" && props.max ? props.max : undefined,
+						min: kind === "date" && min ? min : undefined,
+						max: kind === "date" && max ? max : undefined,
 						placeholder,
 						readOnly: inputReadOnly,
+						required,
 					}}
 				/>
 			)}
