@@ -23,11 +23,6 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const { rate } = declaration?.audit || {};
 	const linkToDeclarationPage = `/dashboard/declaration/${declaration.id}`;
 
-	const wasUpdated =
-		declaration?.updatedAt &&
-		declaration?.published_at &&
-		declaration?.updatedAt > declaration?.published_at;
-
 	const declarationComplete =
 		declaration.status === "unpublished" &&
 		declaration?.audit?.status === "default" &&
@@ -73,6 +68,97 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			));
 	};
 
+	const getDetailButton = (
+		section:
+			| typeof declaration.contact
+			| typeof declaration.audit
+			| typeof declaration.actionPlan
+			| undefined,
+		href: string,
+	) => {
+		if (section && section.status === "default") {
+			return (
+				<Button
+					iconId="fr-icon-arrow-right-line"
+					priority="tertiary no outline"
+					title="Label button"
+					linkProps={{ href }}
+				/>
+			);
+		}
+
+		if (!section) {
+			return <RedirectButton href={href} />;
+		}
+
+		if (section.status === "fromAI" || section.status === "fromAra") {
+			return <RedirectButton label="Vérifier les informations" href={href} />;
+		}
+
+		return null;
+	};
+
+	const tiles = [
+		{
+			title: "Informations générales",
+			desc: "Informations à propos du service et l'administration à laquelle il est lié",
+			pictogram: <Document fontSize="small" />,
+			path: "/infos",
+			showToCompleteBadge: false,
+			showVerifyBadge: declaration.status === "unverified",
+			section: undefined,
+			customDetail:
+				declaration?.status === "unverified" ? (
+					<RedirectButton
+						label="Vérifier les informations"
+						href={`${linkToDeclarationPage}/infos`}
+					/>
+				) : (
+					<Button
+						iconId="fr-icon-arrow-right-line"
+						priority="tertiary no outline"
+						title="Label button"
+						linkProps={{
+							href: `${linkToDeclarationPage}/infos`,
+						}}
+					/>
+				),
+		},
+		{
+			title: "Contact",
+			desc: "Moyen de contact pour pouvoir accéder aux éventuels contenus inaccessibles",
+			pictogram: <Community />,
+			path: "/contact",
+			showToCompleteBadge: !declaration?.contact,
+			showVerifyBadge:
+				declaration?.contact?.status === "fromAI" ||
+				declaration?.contact?.status === "fromAra",
+			section: declaration?.contact,
+		},
+		{
+			title: "Résultat de l'audit",
+			desc: "Taux de conformité et détails de l'audit",
+			pictogram: <Search />,
+			path: "/audit",
+			showToCompleteBadge: !declaration?.audit,
+			showVerifyBadge:
+				declaration?.audit?.status === "fromAI" ||
+				declaration?.audit?.status === "fromAra",
+			section: declaration?.audit,
+		},
+		{
+			title: "Schéma et plans d'actions",
+			desc: "État des lieux et actions prévues pour améliorer l'accessibilité",
+			pictogram: <Conclusion fontSize="1rem" />,
+			path: "/schema",
+			showToCompleteBadge: !declaration?.actionPlan,
+			showVerifyBadge:
+				declaration?.actionPlan?.status === "fromAI" ||
+				declaration?.actionPlan?.status === "fromAra",
+			section: declaration?.actionPlan,
+		},
+	];
+
 	return (
 		<section id="demarches-tab" className={classes.main}>
 			{declarationComplete && (
@@ -110,179 +196,30 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				</div>
 			)}
 			<div className={classes.tilesContainer}>
-				<Tile
-					classes={{ title: classes.tileTitle, desc: classes.tileDesc }}
-					desc="Informations à propos du service et l’administration à laquelle il est lié"
-					title="Informations générales"
-					linkProps={{
-						href: `${linkToDeclarationPage}/infos`,
-					}}
-					start={
-						<StartBadges
-							showToCompleteBadge={false}
-							showVerifyBadge={declaration.status === "unverified"}
-						/>
-					}
-					enlargeLinkOrButton={true}
-					orientation="vertical"
-					pictogram={<Document fontSize="small" />}
-					className={classes.tile}
-					detail={
-						declaration?.status === "unverified" ? (
-							<RedirectButton
-								label="Vérifier les informations"
-								href={`${linkToDeclarationPage}/infos`}
-							/>
-						) : (
-							<Button
-								iconId="fr-icon-arrow-right-line"
-								priority="tertiary no outline"
-								title="Label button"
-								linkProps={{
-									href: `${linkToDeclarationPage}/infos`,
-								}}
-							/>
-						)
-					}
-				/>
-				<Tile
-					classes={{ title: classes.tileTitle, desc: classes.tileDesc }}
-					title="Contact"
-					desc="Moyen de contact pour pouvoir accéder aux éventuels contenus inaccessibles"
-					linkProps={{
-						href: `${linkToDeclarationPage}/contact`,
-					}}
-					enlargeLinkOrButton={true}
-					orientation="vertical"
-					pictogram={<Community />}
-					start={
-						<StartBadges
-							showToCompleteBadge={!declaration?.contact}
-							showVerifyBadge={
-								declaration?.contact?.status === "fromAI" ||
-								declaration?.contact?.status === "fromAra"
-							}
-						/>
-					}
-					detail={
-						<>
-							{declaration?.contact &&
-								declaration?.contact?.status === "default" && (
-									<Button
-										iconId="fr-icon-arrow-right-line"
-										priority="tertiary no outline"
-										title="Label button"
-										linkProps={{
-											href: `${linkToDeclarationPage}/contact`,
-										}}
-									/>
-								)}
-							{!declaration?.contact && (
-								<RedirectButton href={`${linkToDeclarationPage}/contact`} />
-							)}
-							{(declaration?.contact?.status === "fromAI" ||
-								declaration?.contact?.status === "fromAra") && (
-								<RedirectButton
-									label="Vérifier les informations"
-									href={`${linkToDeclarationPage}/contact`}
+				{tiles.map((tile) => {
+					const href = `${linkToDeclarationPage}${tile.path}`;
+					return (
+						<Tile
+							key={tile.path}
+							classes={{ title: classes.tileTitle, desc: classes.tileDesc }}
+							desc={tile.desc}
+							title={tile.title}
+							linkProps={{ href }}
+							titleAs="h2"
+							start={
+								<StartBadges
+									showToCompleteBadge={tile.showToCompleteBadge}
+									showVerifyBadge={tile.showVerifyBadge}
 								/>
-							)}
-						</>
-					}
-					className={classes.tile}
-				/>
-				<Tile
-					classes={{ title: classes.tileTitle, desc: classes.tileDesc }}
-					title="Résultat de l’audit"
-					desc="Taux de conformité et détails de l'audit"
-					linkProps={{
-						href: `${linkToDeclarationPage}/audit`,
-					}}
-					enlargeLinkOrButton={true}
-					orientation="vertical"
-					pictogram={<Search />}
-					start={
-						<StartBadges
-							showToCompleteBadge={!declaration?.audit}
-							showVerifyBadge={
-								declaration?.audit?.status === "fromAI" ||
-								declaration?.audit?.status === "fromAra"
 							}
+							enlargeLinkOrButton={true}
+							orientation="vertical"
+							pictogram={tile.pictogram}
+							className={classes.tile}
+							detail={tile.customDetail ?? getDetailButton(tile.section, href)}
 						/>
-					}
-					detail={
-						<>
-							{declaration?.audit &&
-								declaration?.audit?.status === "default" && (
-									<Button
-										iconId="fr-icon-arrow-right-line"
-										priority="tertiary no outline"
-										title="Label button"
-										linkProps={{
-											href: `${linkToDeclarationPage}/audit`,
-										}}
-									/>
-								)}
-							{!declaration?.audit && (
-								<RedirectButton href={`${linkToDeclarationPage}/audit`} />
-							)}
-							{(declaration?.audit?.status === "fromAI" ||
-								declaration?.audit?.status === "fromAra") && (
-								<RedirectButton
-									label="Vérifier les informations"
-									href={`${linkToDeclarationPage}/audit`}
-								/>
-							)}
-						</>
-					}
-					className={classes.tile}
-				/>
-				<Tile
-					classes={{ title: classes.tileTitle, desc: classes.tileDesc }}
-					title="Schéma et plans d'actions"
-					desc="État des lieux et actions prévues pour améliorer l'accessibilité"
-					linkProps={{
-						href: `${linkToDeclarationPage}/schema`,
-					}}
-					enlargeLinkOrButton={true}
-					orientation="vertical"
-					pictogram={<Conclusion fontSize="1rem" />}
-					start={
-						<StartBadges
-							showToCompleteBadge={!declaration?.actionPlan}
-							showVerifyBadge={
-								declaration?.actionPlan?.status === "fromAI" ||
-								declaration?.actionPlan?.status === "fromAra"
-							}
-						/>
-					}
-					detail={
-						<>
-							{declaration?.actionPlan &&
-								declaration?.actionPlan?.status === "default" && (
-									<Button
-										iconId="fr-icon-arrow-right-line"
-										priority="tertiary no outline"
-										title="Label button"
-										linkProps={{
-											href: `${linkToDeclarationPage}/schema`,
-										}}
-									/>
-								)}
-							{!declaration?.actionPlan && (
-								<RedirectButton href={`${linkToDeclarationPage}/schema`} />
-							)}
-							{(declaration?.actionPlan?.status === "fromAI" ||
-								declaration?.actionPlan?.status === "fromAra") && (
-								<RedirectButton
-									label="Vérifier les informations"
-									href={`${linkToDeclarationPage}/schema`}
-								/>
-							)}
-						</>
-					}
-					className={classes.tile}
-				/>
+					);
+				})}
 			</div>
 		</section>
 	);
