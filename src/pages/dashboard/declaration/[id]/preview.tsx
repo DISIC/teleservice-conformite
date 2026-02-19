@@ -89,11 +89,18 @@ export default function DeclarationPreviewPage({
 						/>
 					</div>
 					<div className={classes.buttonsContainer}>
-						<Button priority="tertiary" onClick={() => router.back()}>
+						<Button
+							priority="tertiary"
+							onClick={() => router.back()}
+							nativeButtonProps={{
+								"aria-label": "Retour à l'étape précédente",
+							}}
+						>
 							Retour
 						</Button>
 						<Button
 							priority="secondary"
+							title="Retour à la page de la déclaration sans publication"
 							linkProps={{
 								href: `/dashboard/declaration/${declaration.id}`,
 							}}

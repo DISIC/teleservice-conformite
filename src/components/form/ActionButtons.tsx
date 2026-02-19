@@ -1,10 +1,10 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import type {
 	FrIconClassName,
 	RiIconClassName,
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import { tss } from "tss-react";
-import { fr } from "@codegouvfr/react-dsfr";
 import { useFormContext } from "~/utils/form/context";
 
 export function SubscribeButton({
@@ -51,12 +51,14 @@ export function CancelButton({
 	priority = "secondary",
 	iconId,
 	iconPosition,
+	ariaLabel,
 }: {
 	label?: string;
 	onClick?: () => void;
 	priority?: "secondary" | "tertiary";
 	iconId?: FrIconClassName | RiIconClassName;
 	iconPosition?: "left" | "right";
+	ariaLabel?: string;
 }) {
 	const { classes } = useStyles();
 	const form = useFormContext();
@@ -83,11 +85,17 @@ export function CancelButton({
 					onClick={handleClick}
 					iconId={iconId}
 					iconPosition={iconPosition}
+					aria-label={ariaLabel}
 				>
 					{label}
 				</Button>
 			) : (
-				<Button type="button" priority={priority} onClick={handleClick}>
+				<Button
+					type="button"
+					priority={priority}
+					onClick={handleClick}
+					aria-label={ariaLabel}
+				>
 					{label}
 				</Button>
 			)}

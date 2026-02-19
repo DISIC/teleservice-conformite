@@ -231,6 +231,7 @@ export default function ContactPage({
 								<div className={classes.actionButtonsContainer}>
 									<form.CancelButton
 										label="Retour"
+										ariaLabel="Retour à la déclaration"
 										onClick={() =>
 											router.push(`/dashboard/declaration/${declaration.id}`)
 										}

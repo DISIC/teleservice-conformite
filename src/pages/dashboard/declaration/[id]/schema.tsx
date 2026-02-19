@@ -249,6 +249,7 @@ export default function SchemaPage({
 										router.push(`/dashboard/declaration/${declaration.id}`)
 									}
 									priority="tertiary"
+									ariaLabel="Retour à la déclaration"
 								/>
 								<form.SubscribeButton
 									label="Continuer"

@@ -1,6 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import { useRef } from "react";
 import { tss } from "tss-react";
-import { fr } from "@codegouvfr/react-dsfr";
 
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 
@@ -64,7 +64,7 @@ export function SelectCardField({
 						>
 							{image}
 							<span>
-								<h2 className={classes.label}>{optionLabel}</h2>
+								<p className={classes.label}>{optionLabel}</p>
 								{description && (
 									<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
 										{description}

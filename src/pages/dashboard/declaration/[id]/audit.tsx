@@ -358,6 +358,7 @@ export default function AuditPage({
 									label="Retour"
 									onClick={onClickCancel}
 									priority="tertiary"
+									ariaLabel="Retour à la déclaration"
 								/>
 								<form.SubscribeButton
 									label="Continuer"
