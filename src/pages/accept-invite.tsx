@@ -18,13 +18,16 @@ export default function AcceptInvite({
 	const { classes } = useStyles();
 	const router = useRouter();
 
-	const { isSuccess, isError } = api.accessRight.validateInvite.useQuery({
-		token,
-	});
+	const { isSuccess, isError, error } = api.accessRight.validateInvite.useQuery(
+		{ token },
+	);
 
 	useEffect(() => {
 		if (isSuccess) router.push(`/dashboard/declaration/${declarationId}`);
-		if (isError) router.push("/dashboard/declarations");
+		if (isError) {
+			console.error("Error validating invite:", error);
+			router.push("/dashboard/declarations");
+		}
 	}, [isSuccess, isError]);
 
 	return (

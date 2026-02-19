@@ -180,7 +180,7 @@ export default function Membres({ declaration }: MembresProps) {
 				className={classes.table}
 				data={accessRights.map((accessRight) => [
 					<div key={`user-${accessRight.user.id}`}>
-						{accessRight.user.email}
+						{accessRight.user.name}
 					</div>,
 					<div key={`mail-${accessRight.user.id}`}>
 						{accessRight.user.email}
