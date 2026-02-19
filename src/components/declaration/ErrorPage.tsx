@@ -23,7 +23,7 @@ export default function ErrorPage({ deleted }: { deleted?: boolean }) {
 					<p className={classes.errorMessage}>
 						{deleted
 							? "La déclaration que vous cherchez n’existe plus."
-							: "La page que vous cherchez est introuvable."}
+							: "La page que vous cherchez est introuvable."}{" "}
 						Excusez-nous pour la gêne occasionnée.
 					</p>
 					{isAuthenticated && (
