@@ -79,7 +79,7 @@ export default function DeclarationListItem({
 			{hasPublishedDeclaration && (
 				<p className={cx(classes.auditRateWrapper, fr.cx("fr-mb-0"))}>
 					<span className={cx(classes.auditRateValue)}>
-						{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}%
+						{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}
 					</span>
 					<span className={classes.auditRateLabel}>taux conformité</span>
 				</p>
