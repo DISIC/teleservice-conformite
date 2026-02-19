@@ -25,7 +25,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 
 	const declarationComplete =
 		declaration.status === "unpublished" &&
-		declaration?.audit?.status === "default" &&
+		["default", "notRealised"].includes(declaration?.audit?.status ?? "") &&
 		declaration?.contact?.status === "default" &&
 		declaration?.actionPlan?.status === "default";
 
@@ -76,7 +76,10 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			| undefined,
 		href: string,
 	) => {
-		if (section && section.status === "default") {
+		if (
+			section &&
+			["default", "notRealised"].includes(declaration?.audit?.status ?? "")
+		) {
 			return (
 				<Button
 					iconId="fr-icon-arrow-right-line"
@@ -181,9 +184,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				<div className={classes.summaryCardsContainer}>
 					<div className={cx(classes.card, classes.summaryRateCard)}>
 						<p className={classes.cardLabel}>Taux de conformité</p>
-						<p
-							className={cx(classes.cardValue, fr.cx("fr-text--lead"))}
-						>{`${rate}%`}</p>
+						<p className={cx(classes.cardValue, fr.cx("fr-text--lead"))}>
+							{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}
+						</p>
 					</div>
 					<div className={cx(classes.card, classes.summaryUpdateDateCard)}>
 						<p className={classes.cardLabel}>Dernière mise à jour</p>

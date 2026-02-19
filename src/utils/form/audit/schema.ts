@@ -39,9 +39,7 @@ export const auditDateDefaultValues: ZAuditDate = {
 
 export const tools = z.object({
 	usedTools: z.array(z.string()).optional(),
-	testEnvironments: z.array(z.string()).min(1, {
-		message: "Au moins un environnement de test doit être sélectionné",
-	}),
+	testEnvironments: z.array(z.string()).optional(),
 });
 
 export type ZTools = z.infer<typeof tools>;

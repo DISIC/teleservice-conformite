@@ -220,14 +220,6 @@ export default function AuditPage({
 		};
 	}
 
-	const deleteDeclarationAudit = async (auditId: number) => {
-		try {
-			await deleteAudit({ id: auditId, declarationId: declaration.id });
-		} catch (error) {
-			console.error(`Error deleting audit with id ${auditId}:`, error);
-		}
-	};
-
 	const updateDeclarationAudit = async (auditId: number, auditData: any) => {
 		try {
 			await updateAudit({
@@ -283,7 +275,9 @@ export default function AuditPage({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (!isAchieved && declaration?.audit) {
-				await deleteDeclarationAudit(audit?.id ?? -1);
+				await updateDeclarationAudit(audit?.id ?? -1, {
+					status: "notRealised",
+				});
 
 				return;
 			}

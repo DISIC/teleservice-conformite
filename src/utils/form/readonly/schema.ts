@@ -1,7 +1,7 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
-import { rgaaVersionOptions, appKindOptions } from "~/payload/selectOptions";
+import { appKindOptions, rgaaVersionOptions } from "~/payload/selectOptions";
 
 export const declarationGeneral = z.object({
 	general: z.object({
@@ -56,9 +56,7 @@ export const declarationAudit = z.object({
 			.min(1, { message: "Les éléments conformes sont requis" }),
 		technologies: z.array(z.string()).optional(),
 		usedTools: z.array(z.string()).optional(),
-		testEnvironments: z.array(z.string()).min(1, {
-			message: "Au moins un environnement de test doit être sélectionné",
-		}),
+		testEnvironments: z.array(z.string()).optional(),
 		disproportionnedCharge: z.string().optional(),
 		nonCompliantElements: z.string().optional(),
 		optionalElements: z.string().optional(),

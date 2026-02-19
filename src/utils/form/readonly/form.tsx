@@ -3,16 +3,16 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Information from "@codegouvfr/react-dsfr/picto/Information";
 import { useState } from "react";
 
+import HelpingMessage from "~/components/declaration/HelpingMessage";
 import {
-	rgaaVersionOptions,
-	toolOptions,
-	testEnvironmentOptions,
-	kindOptions,
 	appKindOptions,
+	kindOptions,
+	rgaaVersionOptions,
+	testEnvironmentOptions,
+	toolOptions,
 } from "~/payload/selectOptions";
 import { withForm } from "../context";
 import { readOnlyFormOptions } from "./schema";
-import HelpingMessage from "~/components/declaration/HelpingMessage";
 
 export const DeclarationGeneralForm = withForm({
 	...readOnlyFormOptions,
@@ -268,11 +268,10 @@ export const DeclarationAuditForm = withForm({
 									<field.CheckboxGroupField
 										label="Environnement de tests"
 										options={[...testEnvironmentOptions]}
-										required
 									/>
 									<field.TagGroupField
 										label="Ajouter un environnement"
-										initialTags={field.state.value.filter(
+										initialTags={(field.state.value || []).filter(
 											(tag) =>
 												![...testEnvironmentOptions]
 													.map((option) => option.value as string)

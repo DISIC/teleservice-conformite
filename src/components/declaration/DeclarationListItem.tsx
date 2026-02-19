@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import NextLink from "next/link";
-import { fr } from "@codegouvfr/react-dsfr";
+import { useState } from "react";
 import { tss } from "tss-react";
 
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { copyToClipboard } from "~/utils/declaration-helper";
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import { appKindOptions } from "~/payload/selectOptions";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { copyToClipboard } from "~/utils/declaration-helper";
 
 export default function DeclarationListItem({
 	declaration,
@@ -76,9 +76,11 @@ export default function DeclarationListItem({
 					Dernière modification le {declaration.updatedAtFormatted}
 				</p>
 			</div>
-			{hasPublishedDeclaration && rate !== undefined && (
+			{hasPublishedDeclaration && (
 				<p className={cx(classes.auditRateWrapper, fr.cx("fr-mb-0"))}>
-					<span className={cx(classes.auditRateValue)}>{rate}%</span>
+					<span className={cx(classes.auditRateValue)}>
+						{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}%
+					</span>
 					<span className={classes.auditRateLabel}>taux conformité</span>
 				</p>
 			)}

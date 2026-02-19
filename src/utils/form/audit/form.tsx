@@ -1,9 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import NextLink from "next/link";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import NextLink from "next/link";
 import { tss } from "tss-react";
 
+import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
+import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
@@ -11,8 +13,6 @@ import {
 } from "~/payload/selectOptions";
 import { withForm } from "../context";
 import { auditMultiStepFormOptions } from "./schema";
-import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
-import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
 
 export const AuditRealisedForm = withForm({
 	...auditMultiStepFormOptions,
@@ -101,7 +101,7 @@ export const ToolsForm = withForm({
 							/>
 							<field.TagGroupField
 								label="Ajouter un outil"
-								initialTags={field.state.value?.filter(
+								initialTags={(field.state.value || []).filter(
 									(tag) =>
 										![...toolOptions]
 											.map((option) => option.value as string)
@@ -117,11 +117,10 @@ export const ToolsForm = withForm({
 							<field.CheckboxGroupField
 								label="Environnement de tests"
 								options={[...testEnvironmentOptions]}
-								required
 							/>
 							<field.TagGroupField
 								label="Ajouter un environnement"
-								initialTags={field.state.value.filter(
+								initialTags={(field.state.value || []).filter(
 									(tag) =>
 										![...testEnvironmentOptions]
 											.map((option) => option.value as string)
