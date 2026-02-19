@@ -2,7 +2,10 @@ import * as crypto from "node:crypto";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import type { AccessRight, User } from "~/payload/payload-types";
-import { getInvitationUserEmailHtml } from "~/utils/emails";
+import {
+	getInvitationUserEmailHtml,
+	getInviteAcceptRecapEmailHtml,
+} from "~/utils/emails";
 import {
 	createTRPCRouter,
 	publicProcedure,
@@ -116,7 +119,7 @@ export const accessRightRouter = createTRPCRouter({
 			await ctx.payload.sendEmail({
 				to: email,
 				subject: "Invitation à collaborer sur une déclaration",
-				html: getInvitationUserEmailHtml({
+				html: getInviteAcceptRecapEmailHtml({
 					link: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/accept-invite?token=${token}&declarationId=${declarationId}`,
 					fullName: `${user.name}`,
 					declarationName: declaration?.name || `Déclaration #${declarationId}`,
@@ -127,7 +130,7 @@ export const accessRightRouter = createTRPCRouter({
 			return accessRight;
 		}),
 
-	validateInvite: publicProcedure
+	validateInvite: userProtectedProcedure
 		.input(z.object({ token: z.string() }))
 		.query(async ({ input, ctx }) => {
 			const { token } = input;
@@ -141,14 +144,40 @@ export const accessRightRouter = createTRPCRouter({
 					status: { equals: "pending" },
 				},
 				limit: 1,
+				depth: 2,
 			});
 
-			const invite = invites.docs[0];
-			if (!invite || !invite.inviteExpiresAt)
+			const tmpInvite = invites.docs[0];
+			if (!tmpInvite || !tmpInvite.inviteExpiresAt)
 				throw new TRPCError({ code: "NOT_FOUND" });
 
-			const isExpired = new Date(invite.inviteExpiresAt) < new Date();
-			if (isExpired) throw new TRPCError({ code: "BAD_REQUEST" });
+			const invite = {
+				...tmpInvite,
+				user: await fetchOrReturnRealValue(tmpInvite.user as number, "users"),
+				declaration: await fetchOrReturnRealValue(
+					tmpInvite.declaration as number,
+					"declarations",
+				),
+				invitedBy: await fetchOrReturnRealValue(
+					tmpInvite.invitedBy as number,
+					"users",
+				),
+			};
+
+			const currentEntity = await fetchOrReturnRealValue(
+				typeof invite.declaration.entity === "number"
+					? invite.declaration.entity
+					: invite.declaration.entity.id,
+				"entities",
+			);
+
+			if (invite.user.id !== Number(ctx.session.user.id))
+				throw new TRPCError({ code: "UNAUTHORIZED" });
+
+			const isExpired =
+				invite.inviteExpiresAt && new Date(invite.inviteExpiresAt) < new Date();
+			if (!invite.inviteExpiresAt && isExpired)
+				throw new TRPCError({ code: "BAD_REQUEST" });
 
 			const updatedInvite = await ctx.payload.update({
 				collection: "access-rights",
@@ -158,6 +187,21 @@ export const accessRightRouter = createTRPCRouter({
 					inviteExpiresAt: null,
 					inviteTokenHash: null,
 				},
+			});
+
+			const declrationListLink = `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/dashboard/declarations`;
+
+			await ctx.payload.sendEmail({
+				to: invite.invitedBy.email,
+				subject: "Invitation à collaborer sur une déclaration",
+				html: getInvitationUserEmailHtml({
+					link: `${declrationListLink}/${invite.declaration.id}`,
+					linkDeclarationList: declrationListLink,
+					fullName: `${invite.user.name}`,
+					declarationName:
+						invite.declaration?.name || `Déclaration #${invite.declaration.id}`,
+					administrationName: `${currentEntity.name}`,
+				}),
 			});
 
 			return updatedInvite;

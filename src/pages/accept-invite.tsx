@@ -18,11 +18,14 @@ export default function AcceptInvite({
 	const { classes } = useStyles();
 	const router = useRouter();
 
-	const { isSuccess } = api.accessRight.validateInvite.useQuery({ token });
+	const { isSuccess, isError } = api.accessRight.validateInvite.useQuery({
+		token,
+	});
 
 	useEffect(() => {
-		if (isSuccess) router.push(`/declaration/${declarationId}`);
-	}, [isSuccess]);
+		if (isSuccess) router.push(`/dashboard/declaration/${declarationId}`);
+		if (isError) router.push("/dashboard/declarations");
+	}, [isSuccess, isError]);
 
 	return (
 		<section id="declarations-page" className={classes.main}>
@@ -50,7 +53,7 @@ export const getServerSideProps = (async (context) => {
 	const { token, declarationId } = context.query as Params;
 
 	const redirect: Redirect = {
-		destination: "/declarations",
+		destination: "/dashboard/declarations",
 		permanent: false,
 	};
 
