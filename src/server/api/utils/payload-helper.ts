@@ -1,14 +1,14 @@
 import { TRPCError } from "@trpc/server";
 import { type Payload, getPayload } from "payload";
-import payloadConfig from "~/payload/payload.config";
 import type {
+	ActionPlan,
 	Audit,
 	Contact,
-	ActionPlan,
 	Declaration,
 	Entity,
 	User,
 } from "~/payload/payload-types";
+import payloadConfig from "~/payload/payload.config";
 
 type CollectionMap = {
 	audits: Audit;
@@ -54,7 +54,9 @@ export async function fetchOrReturnRealValue<T extends keyof CollectionMap>(
 	return value;
 }
 
-export async function getPopulatedDeclaration(declaration: Declaration): Promise<PopulatedDeclaration> {
+export async function getPopulatedDeclaration(
+	declaration: Declaration,
+): Promise<PopulatedDeclaration> {
 	const { audit, contact, actionPlan, created_by, entity } = declaration;
 
 	const sanitizedAudit = await fetchOrReturnRealValue(audit ?? null, "audits");
@@ -92,12 +94,14 @@ export async function getPopulatedDeclaration(declaration: Declaration): Promise
 export async function getDeclarationById(
 	payload: Payload,
 	declarationId: number,
+	options?: { trash?: boolean },
 ) {
 	try {
 		const result = await payload.findByID({
 			collection: "declarations",
 			id: declarationId,
 			depth: 0,
+			trash: options?.trash ?? false,
 		});
 
 		if (!result) {
@@ -150,7 +154,7 @@ export async function isDeclarationOwner({
 			code: "UNAUTHORIZED",
 			message: "User not authorized to access this declaration.",
 		});
-	};
+	}
 
 	const declaration = await payload.findByID({
 		collection: "declarations",
@@ -162,7 +166,7 @@ export async function isDeclarationOwner({
 			code: "NOT_FOUND",
 			message: "Declaration not found.",
 		});
-	};
+	}
 
 	const createdBy = await fetchOrReturnRealValue(
 		declaration.created_by as number,
@@ -172,7 +176,8 @@ export async function isDeclarationOwner({
 	if (createdBy?.id !== userId) {
 		throw new TRPCError({
 			code: "UNAUTHORIZED",
-			message: "Must be owner of the declaration to update or delete this declaration",
+			message:
+				"Must be owner of the declaration to update or delete this declaration",
 		});
 	}
 

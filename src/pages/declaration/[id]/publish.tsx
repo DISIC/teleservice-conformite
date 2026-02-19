@@ -14,11 +14,12 @@ import { getDeclarationById } from "~/server/api/utils/payload-helper";
 
 export default function PublishPage({
 	publishedContent,
-}: { publishedContent: PublishedDeclaration | null }) {
+	deleted,
+}: { publishedContent: PublishedDeclaration | null; deleted?: boolean }) {
 	const { classes } = useStyles();
 
 	if (!publishedContent) {
-		return <ErrorPage />;
+		return <ErrorPage deleted={deleted} />;
 	}
 
 	return (
@@ -72,12 +73,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const payload = await getPayload({ config });
 
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
-
-	if (!declaration || !declaration.publishedContent) {
+	const declaration = await getDeclarationById(payload, Number.parseInt(id), {
+		trash: true,
+	});
+	if (
+		!declaration ||
+		!declaration.publishedContent ||
+		!!declaration.deletedAt
+	) {
 		return {
 			props: {
 				publishedContent: null,
+				deleted: !!declaration?.deletedAt,
 			},
 		};
 	}
