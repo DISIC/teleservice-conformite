@@ -198,6 +198,7 @@ export default function ContactPage({
 				</title>
 			</Head>
 			<DeclarationForm
+				showAraUpdatePrompt={!editMode && !!declaration?.contact}
 				declaration={declaration}
 				title="Contact"
 				breadcrumbLabel={declaration?.name ?? ""}

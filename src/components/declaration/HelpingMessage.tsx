@@ -7,6 +7,7 @@ import type {
 import { tss } from "tss-react";
 
 interface HelpingMessageProps {
+	title?: string;
 	image: React.ReactNode;
 	message: string | React.ReactNode;
 	actionButtons?: {
@@ -15,61 +16,88 @@ interface HelpingMessageProps {
 		iconId?: FrIconClassName | RiIconClassName;
 		onClick?: () => void;
 	}[];
+	buttonsAlignment?: "vertical" | "horizontal";
 }
 
 export default function HelpingMessage({
+	title,
 	image,
 	message,
 	actionButtons,
+	buttonsAlignment = "vertical",
 }: HelpingMessageProps) {
-	const { classes } = useStyles();
+	const { classes } = useStyles({ buttonsAlignment });
 
 	return (
-		<div className={classes.helpingMessageContainer}>
-			{image}
-			<p className={classes.messageWrapper}>{message}</p>
-			{!!actionButtons?.length && (
-				<div className={classes.buttonsContainer}>
-					{actionButtons?.map((button) => (
-						<Button
-							key={button.label}
-							priority={button.priority || "primary"}
-							iconId={button.iconId as any}
-							onClick={button.onClick}
-						>
-							{button.label}
-						</Button>
-					))}
+		<div className={classes.container}>
+			{title && <p className={fr.cx("fr-text--lg")}>{title}</p>}
+			<div className={classes.body}>
+				{image}
+				<div className={classes.messageWrapper}>
+					<p>{message}</p>
+					{!!actionButtons?.length && (
+						<div className={classes.buttonsContainer}>
+							{actionButtons?.map((button) => (
+								<Button
+									key={button.label}
+									priority={button.priority || "primary"}
+									iconId={button.iconId as any}
+									onClick={button.onClick}
+								>
+									{button.label}
+								</Button>
+							))}
+						</div>
+					)}
 				</div>
-			)}
+			</div>
 		</div>
 	);
 }
 
-const useStyles = tss.withName(HelpingMessage.name).create({
-	helpingMessageContainer: {
-		display: "grid",
+const useStyles = tss
+	.withName(HelpingMessage.name)
+	.withParams<{ buttonsAlignment?: "vertical" | "horizontal" }>()
+	.create(({ buttonsAlignment }) => ({
+		container: {
+			display: "flex",
+			flexDirection: "column",
+			padding: fr.spacing("6v"),
+			marginBlock: fr.spacing("2w"),
+			gap: fr.spacing("4v"),
+			backgroundColor:
+				fr.colors.decisions.background.contrast.blueFrance.default,
 
-		padding: fr.spacing("6v"),
-		marginBlock: fr.spacing("2w"),
-		gap: fr.spacing("6v"),
-		backgroundColor: fr.colors.decisions.background.contrast.blueFrance.default,
-
-		"@media (min-width: 830px)": {
-			gridTemplateColumns: "auto auto 1fr",
+			"& > p": {
+				margin: 0,
+				fontWeight: 700,
+			},
 		},
-	},
-	messageWrapper: {
-		display: "flex",
-		alignItems: "flex-start",
-		flexDirection: "column",
-		justifyContent: "center",
-		margin: 0,
-	},
-	buttonsContainer: {
-		display: "flex",
-		gap: fr.spacing("4w"),
-		alignItems: "center",
-		justifyContent: "flex-end",
-	},
-});
+		body: {
+			display: "grid",
+			gap: fr.spacing("6v"),
+
+			"@media (min-width: 830px)": {
+				gridTemplateColumns: "auto 1fr",
+			},
+		},
+		messageWrapper: {
+			display: "grid",
+			alignItems: "center",
+			gap: fr.spacing("4v"),
+			"@media (min-width: 830px)": {
+				...(buttonsAlignment === "vertical"
+					? { gridTemplateColumns: "1fr auto" }
+					: { gridTemplateRows: "auto auto" }),
+			},
+
+			"& > p": {
+				margin: 0,
+			},
+		},
+		buttonsContainer: {
+			display: "flex",
+			gap: fr.spacing("4w"),
+			alignItems: "center",
+		},
+	}));

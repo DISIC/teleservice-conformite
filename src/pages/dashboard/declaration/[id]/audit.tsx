@@ -293,6 +293,7 @@ export default function AuditPage({
 				</title>
 			</Head>
 			<DeclarationForm
+				showAraUpdatePrompt={!editMode && !!declaration?.audit}
 				declaration={declaration}
 				title="Résultat de l’audit"
 				breadcrumbLabel={declaration?.name ?? ""}

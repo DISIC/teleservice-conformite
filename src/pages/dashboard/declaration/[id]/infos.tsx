@@ -129,6 +129,7 @@ export default function GeneralInformationsPage({
 				</title>
 			</Head>
 			<DeclarationForm
+				showAraUpdatePrompt={!editMode}
 				declaration={declaration}
 				title="Informations générales"
 				breadcrumbLabel={declaration?.name ?? ""}

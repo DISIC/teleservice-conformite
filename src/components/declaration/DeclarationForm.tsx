@@ -3,9 +3,12 @@ import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import React from "react";
 import { tss } from "tss-react";
+import Information from "@codegouvfr/react-dsfr/picto/Information";
+
 import { useStyles as useAppStyles } from "~/pages/_app";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import VerifyGeneratedInfoHelpingMessage from "./VerifyGeneratedInfoPopUpMessage";
+import HelpingMessage from "./HelpingMessage";
 
 type DeclarationFormProps = {
 	declaration: PopulatedDeclaration;
@@ -21,6 +24,7 @@ type DeclarationFormProps = {
 	showLayoutComponent?: boolean;
 	isAiGenerated?: boolean;
 	mentionText?: string;
+	showAraUpdatePrompt?: boolean;
 };
 
 export default function DeclarationForm({
@@ -37,6 +41,7 @@ export default function DeclarationForm({
 	showLayoutComponent = false,
 	isAiGenerated = false,
 	mentionText,
+	showAraUpdatePrompt = false,
 }: DeclarationFormProps) {
 	const { classes, cx } = useStyles();
 	const { classes: formClasses } = useAppStyles();
@@ -96,6 +101,22 @@ export default function DeclarationForm({
 					</h1>
 				</div>
 				{isAiGenerated && <VerifyGeneratedInfoHelpingMessage />}
+				{showAraUpdatePrompt && (
+					<HelpingMessage
+						title="Mettre à jour"
+						message={
+							"Renseignez le lien d’un nouvel audit Ara pour mettre à jour la déclaration automatiquement, ou modifiez les informations manuellement."
+						}
+						image={<Information fontSize="4rem" />}
+						actionButtons={[
+							{
+								label: "Mettre à jour avec Ara",
+								iconId: "fr-icon-upload-line",
+							},
+						]}
+						buttonsAlignment="horizontal"
+					/>
+				)}
 				{
 					<Layout>
 						<Content />
