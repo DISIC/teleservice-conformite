@@ -1,28 +1,29 @@
+import type { ParsedUrlQuery } from "node:querystring";
+import { fr } from "@codegouvfr/react-dsfr";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
-import { getPayload } from "payload";
-import type { ParsedUrlQuery } from "node:querystring";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
 import { useRouter } from "next/router";
+import { getPayload } from "payload";
+import { tss } from "tss-react";
 import type {
-	Entity,
+	ActionPlan,
 	Audit,
 	Contact,
-	ActionPlan,
+	Entity,
 	User,
 } from "~/payload/payload-types";
 
-import {
-	getDeclarationById,
-	type PopulatedDeclaration,
-} from "~/server/api/utils/payload-helper";
-import { api } from "~/utils/api";
+import Head from "next/head";
 import PublishedDeclarationTemplate, {
 	extractDeclarationContentToPublish,
 	type PublishedDeclaration,
 } from "~/components/declaration/PublishedDeclarationTemplate";
+import {
+	type PopulatedDeclaration,
+	getDeclarationById,
+} from "~/server/api/utils/payload-helper";
+import { api } from "~/utils/api";
 
 type RequiredPopulatedDeclaration = Omit<
 	PopulatedDeclaration,
@@ -66,38 +67,46 @@ export default function DeclarationPreviewPage({
 	};
 
 	return (
-		<section id="declaration-preview" className={fr.cx("fr-container")}>
-			<div className={classes.main}>
-				<h1>Votre déclaration est prête à être publiée</h1>
-				<p>
-					Voici un aperçu de votre déclaration. Publiez-la pour la rendre
-					accessible en ligne, puis partagez-la via le bouton ”Publier la
-					déclaration”.
-				</p>
-				<div className={classes.declarationPreview}>
-					<PublishedDeclarationTemplate
-						declaration={publishedDeclarationContent}
-						mode="preview"
-					/>
+		<>
+			<Head>
+				<title>
+					Votre déclaration est prête à être publiée - Déclaration de{" "}
+					{declaration.name} - Téléservice Conformité
+				</title>
+			</Head>
+			<section id="declaration-preview" className={fr.cx("fr-container")}>
+				<div className={classes.main}>
+					<h1>Votre déclaration est prête à être publiée</h1>
+					<p>
+						Voici un aperçu de votre déclaration. Publiez-la pour la rendre
+						accessible en ligne, puis partagez-la via le bouton ”Publier la
+						déclaration”.
+					</p>
+					<div className={classes.declarationPreview}>
+						<PublishedDeclarationTemplate
+							declaration={publishedDeclarationContent}
+							mode="preview"
+						/>
+					</div>
+					<div className={classes.buttonsContainer}>
+						<Button priority="tertiary" onClick={() => router.back()}>
+							Retour
+						</Button>
+						<Button
+							priority="secondary"
+							linkProps={{
+								href: `/dashboard/declaration/${declaration.id}`,
+							}}
+						>
+							Continuer sans publier
+						</Button>
+						<Button priority="primary" onClick={onPublish}>
+							Publier la déclaration
+						</Button>
+					</div>
 				</div>
-				<div className={classes.buttonsContainer}>
-					<Button priority="tertiary" onClick={() => router.back()}>
-						Retour
-					</Button>
-					<Button
-						priority="secondary"
-						linkProps={{
-							href: `/dashboard/declaration/${declaration.id}`,
-						}}
-					>
-						Continuer sans publier
-					</Button>
-					<Button priority="primary" onClick={onPublish}>
-						Publier la déclaration
-					</Button>
-				</div>
-			</div>
-		</section>
+			</section>
+		</>
 	);
 }
 

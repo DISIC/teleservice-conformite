@@ -3,8 +3,8 @@ import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { Header, type HeaderProps } from "@codegouvfr/react-dsfr/Header";
 import type { MainNavigationProps } from "@codegouvfr/react-dsfr/MainNavigation";
-import { createNextDsfrIntegrationApi } from "@codegouvfr/react-dsfr/next-pagesdir";
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
+import { createNextDsfrIntegrationApi } from "@codegouvfr/react-dsfr/next-pagesdir";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import Link from "next/link";
@@ -75,6 +75,12 @@ function App({ Component, pageProps }: AppProps) {
 		authClient.useSession();
 	const isAuthenticated = !!authSession;
 
+	const getTitleFromPathname = (pathname: string): string | undefined => {
+		if (pathname === "/dashboard") return "Liste des déclarations";
+
+		if (pathname === "/dashboard/form") return "Ajouter une déclaration";
+	};
+
 	const navigationItems =
 		isAuthenticated || router.pathname.startsWith("/dashboard")
 			? userNavigationItems.map((item) => ({
@@ -109,8 +115,13 @@ function App({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>Téléservice Conformité</title>
-			</Head>{" "}
+				<title>
+					{getTitleFromPathname(router.pathname)
+						? `${getTitleFromPathname(router.pathname)} - `
+						: ""}
+					Téléservice Conformité
+				</title>
+			</Head>
 			<div className={classes.mainContainer}>
 				{" "}
 				<SkipLinks

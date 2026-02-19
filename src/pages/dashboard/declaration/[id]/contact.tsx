@@ -1,25 +1,26 @@
-import { useState } from "react";
-import config from "@payload-config";
-import type { GetServerSideProps } from "next";
-import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
+import config from "@payload-config";
+import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
+import { getPayload } from "payload";
+import { useState } from "react";
+import { tss } from "tss-react";
 
+import Head from "next/head";
+import DeclarationForm from "~/components/declaration/DeclarationForm";
+import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
+import { useCommonStyles } from "~/components/style/commonStyles";
+import {
+	type PopulatedDeclaration,
+	getDeclarationById,
+} from "~/server/api/utils/payload-helper";
+import { api } from "~/utils/api";
+import { ContactTypeForm } from "~/utils/form/contact/form";
+import { contactFormOptions } from "~/utils/form/contact/schema";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationContactForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
-import { api } from "~/utils/api";
-import {
-	getDeclarationById,
-	type PopulatedDeclaration,
-} from "~/server/api/utils/payload-helper";
-import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
-import { contactFormOptions } from "~/utils/form/contact/schema";
-import { ContactTypeForm } from "~/utils/form/contact/form";
-import DeclarationForm from "~/components/declaration/DeclarationForm";
-import { useCommonStyles } from "~/components/style/commonStyles";
 
 export default function ContactPage({
 	declaration: initialDeclaration,
@@ -186,77 +187,86 @@ export default function ContactPage({
 	};
 
 	return (
-		<DeclarationForm
-			declaration={declaration}
-			title="Contact"
-			breadcrumbLabel={declaration?.name ?? ""}
-			showValidateButton={
-				!editMode &&
-				(declaration?.contact?.status === "fromAI" ||
-					declaration?.contact?.status === "fromAra")
-			}
-			onValidate={updateContactStatus}
-			isEditable={!!declaration?.contact}
-			editMode={editMode}
-			onToggleEdit={onEditInfos}
-			isAiGenerated={declaration?.contact?.status === "fromAI"}
-		>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-
-					if (!declaration?.contact) {
-						form.handleSubmit();
-					} else {
-						readOnlyForm.handleSubmit();
-					}
-				}}
-				onInvalid={(e) => {
-					form.validate("submit");
-				}}
+		<>
+			<Head>
+				<title>
+					Contact - Déclaration de {declaration.name} - Téléservice Conformité
+				</title>
+			</Head>
+			<DeclarationForm
+				declaration={declaration}
+				title="Contact"
+				breadcrumbLabel={declaration?.name ?? ""}
+				showValidateButton={
+					!editMode &&
+					(declaration?.contact?.status === "fromAI" ||
+						declaration?.contact?.status === "fromAra")
+				}
+				onValidate={updateContactStatus}
+				isEditable={!!declaration?.contact}
+				editMode={editMode}
+				onToggleEdit={onEditInfos}
+				isAiGenerated={declaration?.contact?.status === "fromAI"}
 			>
-				{!declaration?.contact ? (
-					<>
-						<div className={commonClasses.whiteBackground}>
-							<ContactTypeForm form={form} />
-						</div>
-						<form.AppForm>
-							<div className={classes.actionButtonsContainer}>
-								<form.CancelButton
-									label="Retour"
-									onClick={() =>
-										router.push(`/dashboard/declaration/${declaration.id}`)
-									}
-									priority="tertiary"
-								/>
-								<form.SubscribeButton
-									label="Continuer"
-									iconId="fr-icon-arrow-right-s-line"
-									iconPosition="right"
-								/>
-							</div>
-						</form.AppForm>
-					</>
-				) : (
-					<>
-						{editMode ? (
-							<>
-								<div className={commonClasses.whiteBackground}>
-									<DeclarationContactForm form={readOnlyForm} />
-								</div>
-								<readOnlyForm.AppForm>
-									<readOnlyForm.SubscribeButton label="Valider" />
-								</readOnlyForm.AppForm>
-							</>
-						) : (
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+
+						if (!declaration?.contact) {
+							form.handleSubmit();
+						} else {
+							readOnlyForm.handleSubmit();
+						}
+					}}
+					onInvalid={(e) => {
+						form.validate("submit");
+					}}
+				>
+					{!declaration?.contact ? (
+						<>
 							<div className={commonClasses.whiteBackground}>
-								<ReadOnlyDeclarationContact declaration={declaration ?? null} />
+								<ContactTypeForm form={form} />
 							</div>
-						)}
-					</>
-				)}
-			</form>
-		</DeclarationForm>
+							<form.AppForm>
+								<div className={classes.actionButtonsContainer}>
+									<form.CancelButton
+										label="Retour"
+										onClick={() =>
+											router.push(`/dashboard/declaration/${declaration.id}`)
+										}
+										priority="tertiary"
+									/>
+									<form.SubscribeButton
+										label="Continuer"
+										iconId="fr-icon-arrow-right-s-line"
+										iconPosition="right"
+									/>
+								</div>
+							</form.AppForm>
+						</>
+					) : (
+						<>
+							{editMode ? (
+								<>
+									<div className={commonClasses.whiteBackground}>
+										<DeclarationContactForm form={readOnlyForm} />
+									</div>
+									<readOnlyForm.AppForm>
+										<readOnlyForm.SubscribeButton label="Valider" />
+									</readOnlyForm.AppForm>
+								</>
+							) : (
+								<div className={commonClasses.whiteBackground}>
+									<ReadOnlyDeclarationContact
+										declaration={declaration ?? null}
+									/>
+								</div>
+							)}
+						</>
+					)}
+				</form>
+			</DeclarationForm>
+		</>
 	);
 }
 

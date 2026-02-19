@@ -1,15 +1,16 @@
+import type { ParsedUrlQuery } from "node:querystring";
+import { fr } from "@codegouvfr/react-dsfr";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
-import type { ParsedUrlQuery } from "node:querystring";
 import { tss } from "tss-react";
-import { fr } from "@codegouvfr/react-dsfr";
 
-import { getDeclarationById } from "~/server/api/utils/payload-helper";
+import Head from "next/head";
+import ErrorPage from "~/components/declaration/ErrorPage";
 import PublishedDeclarationTemplate, {
 	type PublishedDeclaration,
 } from "~/components/declaration/PublishedDeclarationTemplate";
-import ErrorPage from "~/components/declaration/ErrorPage";
+import { getDeclarationById } from "~/server/api/utils/payload-helper";
 
 export default function PublishPage({
 	publishedContent,
@@ -21,14 +22,21 @@ export default function PublishPage({
 	}
 
 	return (
-		<section
-			id="published-declaration-section"
-			className={fr.cx("fr-container")}
-		>
-			<div className={classes.publishedDeclarationContainer}>
-				<PublishedDeclarationTemplate declaration={publishedContent} />
-			</div>
-		</section>
+		<>
+			<Head>
+				<title>
+					Déclaration de {publishedContent.name} - Téléservice Conformité
+				</title>
+			</Head>
+			<section
+				id="published-declaration-section"
+				className={fr.cx("fr-container")}
+			>
+				<div className={classes.publishedDeclarationContainer}>
+					<PublishedDeclarationTemplate declaration={publishedContent} />
+				</div>
+			</section>
+		</>
 	);
 }
 

@@ -8,6 +8,7 @@ import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useEffect, useState } from "react";
@@ -112,6 +113,9 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 
 	return (
 		<>
+			<Head>
+				<title>Déclaration de {declarationName} - Téléservice Conformité</title>
+			</Head>
 			<section id="declaration-page" className={fr.cx("fr-container")}>
 				<Breadcrumb
 					homeLinkProps={{
