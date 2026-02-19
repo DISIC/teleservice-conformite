@@ -126,22 +126,18 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 					className={fr.cx("fr-mb-3w")}
 				/>
 				<section id="header" className={classes.headerSection}>
-					<div className={classes.header}>
-						<h1>
-							{declarationName}{" "}
-							<StatusBadge
-								isPublished={declaration?.status === "published"}
-								isModified={
-									declaration?.status === "unpublished" &&
-									hasPublishedDeclaration
-								}
-								isDraft={
-									declaration?.status !== "published" &&
-									!hasPublishedDeclaration
-								}
-							/>
-						</h1>
-					</div>
+					<span className={classes.header}>
+						<h1>{declarationName} </h1>
+						<StatusBadge
+							isPublished={declaration?.status === "published"}
+							isModified={
+								declaration?.status === "unpublished" && hasPublishedDeclaration
+							}
+							isDraft={
+								declaration?.status !== "published" && !hasPublishedDeclaration
+							}
+						/>
+					</span>
 					<div className={classes.buttonsContainer}>
 						{hasPublishedDeclaration && (
 							<>
@@ -280,11 +276,10 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		marginBottom: fr.spacing("6v"),
 	},
 	header: {
-		display: "flex",
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "flex-start",
-		gap: fr.spacing("3v"),
+		"& > h1": {
+			margin: 0,
+			display: "inline",
+		},
 	},
 	buttonsContainer: {
 		display: "flex",
