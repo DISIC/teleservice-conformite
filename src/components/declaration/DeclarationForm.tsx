@@ -4,11 +4,19 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import React from "react";
 import { tss } from "tss-react";
 import Information from "@codegouvfr/react-dsfr/picto/Information";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useState } from "react";
 
 import { useStyles as useAppStyles } from "~/pages/_app";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import VerifyGeneratedInfoHelpingMessage from "./VerifyGeneratedInfoPopUpMessage";
 import HelpingMessage from "./HelpingMessage";
+import AraUpdateModalContent from "../modal/AraUpdateModalContent";
+
+const araUpdateModal = createModal({
+	id: "ara-update-modal",
+	isOpenedByDefault: false,
+});
 
 type DeclarationFormProps = {
 	declaration: PopulatedDeclaration;
@@ -46,6 +54,7 @@ export default function DeclarationForm({
 	const { classes, cx } = useStyles();
 	const { classes: formClasses } = useAppStyles();
 	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
+	const [araLink, setAraLink] = useState<string>("");
 
 	const Layout =
 		showLayoutComponent && LayoutComponent ? LayoutComponent : React.Fragment;
@@ -78,6 +87,10 @@ export default function DeclarationForm({
 		</div>
 	);
 
+	const openUpdateWithAraModal = () => {
+		araUpdateModal.open();
+	};
+
 	return (
 		<section className={fr.cx("fr-container")}>
 			<div className={cx(classes.main, formClasses.formContainer)}>
@@ -102,20 +115,50 @@ export default function DeclarationForm({
 				</div>
 				{isAiGenerated && <VerifyGeneratedInfoHelpingMessage />}
 				{showAraUpdatePrompt && (
-					<HelpingMessage
-						title="Mettre à jour"
-						message={
-							"Renseignez le lien d’un nouvel audit Ara pour mettre à jour la déclaration automatiquement, ou modifiez les informations manuellement."
-						}
-						image={<Information fontSize="4rem" />}
-						actionButtons={[
-							{
-								label: "Mettre à jour avec Ara",
-								iconId: "fr-icon-upload-line",
-							},
-						]}
-						buttonsAlignment="horizontal"
-					/>
+					<>
+						<HelpingMessage
+							title="Mettre à jour"
+							message={
+								"Renseignez le lien d’un nouvel audit Ara pour mettre à jour la déclaration automatiquement, ou modifiez les informations manuellement."
+							}
+							image={<Information fontSize="4rem" />}
+							actionButtons={[
+								{
+									label: "Mettre à jour avec Ara",
+									iconId: "fr-icon-upload-line",
+									onClick: openUpdateWithAraModal,
+								},
+							]}
+							buttonsAlignment="horizontal"
+						/>
+						<araUpdateModal.Component
+							title="Mettre à jour avec Ara"
+							buttons={[
+								{
+									doClosesModal: true,
+									children: "Annuler",
+									nativeButtonProps: {
+										"aria-label": "Annuler la suppression de la déclaration",
+									},
+								},
+								{
+									doClosesModal: false,
+									priority: "primary",
+									children: "Mettre à jour les informations",
+									nativeButtonProps: {
+										"aria-label": "Confirmer la mise à jour des informations",
+									},
+									disabled: !araLink,
+									onClick: async () => {},
+								},
+							]}
+						>
+							<AraUpdateModalContent
+								araLink={araLink}
+								setAraLink={setAraLink}
+							/>
+						</araUpdateModal.Component>
+					</>
 				)}
 				{
 					<Layout>
