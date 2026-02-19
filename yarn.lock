@@ -1220,6 +1220,13 @@
     to-snake-case "1.0.0"
     uuid "9.0.0"
 
+"@payloadcms/email-nodemailer@^3.77.0":
+  version "3.77.0"
+  resolved "https://registry.yarnpkg.com/@payloadcms/email-nodemailer/-/email-nodemailer-3.77.0.tgz#54e9aa9dc3e8900ea75782d6719c60c9e1727b9e"
+  integrity sha512-1i4JSYAzQ+t2htdZAbfek7cslWXYV0YeLN9MoDI6LSbR8Q6Run6idPBLdEkBNLPc0NJFVWepj2IgXt72ifdbtw==
+  dependencies:
+    nodemailer "7.0.12"
+
 "@payloadcms/graphql@3.61.1":
   version "3.61.1"
   resolved "https://registry.yarnpkg.com/@payloadcms/graphql/-/graphql-3.61.1.tgz#0b1c3e26893c154b0527e4c61ee409cb4aeda092"
@@ -3269,6 +3276,11 @@ next@15.5.5:
     "@next/swc-win32-arm64-msvc" "15.5.5"
     "@next/swc-win32-x64-msvc" "15.5.5"
     sharp "^0.34.3"
+
+nodemailer@7.0.12:
+  version "7.0.12"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-7.0.12.tgz#b6b7bb05566c6c8458ee360aa30a407a478d35b7"
+  integrity sha512-H+rnK5bX2Pi/6ms3sN4/jRQvYSMltV6vqup/0SFOrxYYY/qoNvhXPlYq3e+Pm9RFJRwrMGbMIwi81M4dxpomhA==
 
 normalize-path@^3.0.0, normalize-path@~3.0.0:
   version "3.0.0"

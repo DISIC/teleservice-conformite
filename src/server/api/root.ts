@@ -1,9 +1,10 @@
 import { createTRPCRouter } from "~/server/api/trpc";
-import { declarationRouter } from "./routers/declaration";
+import { accessRightRouter } from "./routers/accesRight";
+import { albertRouter } from "./routers/albert";
 import { auditRouter } from "./routers/audit";
 import { contactRouter } from "./routers/contact";
+import { declarationRouter } from "./routers/declaration";
 import { schemaRouter } from "./routers/schema";
-import { albertRouter } from "./routers/albert";
 
 /**
  * This is the primary router for your server.
@@ -11,11 +12,12 @@ import { albertRouter } from "./routers/albert";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  declaration: declarationRouter,
-  audit: auditRouter,
-  contact: contactRouter,
-  schema: schemaRouter,
-  albert: albertRouter,
+	declaration: declarationRouter,
+	audit: auditRouter,
+	contact: contactRouter,
+	schema: schemaRouter,
+	albert: albertRouter,
+	accessRight: accessRightRouter,
 });
 
 // export type definition of API
