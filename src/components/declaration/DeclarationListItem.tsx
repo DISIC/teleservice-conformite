@@ -1,7 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import NextLink from "next/link";
-import { useState } from "react";
 import { tss } from "tss-react";
 
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
@@ -11,33 +10,15 @@ import { copyToClipboard } from "~/utils/declaration-helper";
 
 export default function DeclarationListItem({
 	declaration,
+	onCopySuccess,
 }: {
 	declaration: PopulatedDeclaration & { updatedAtFormatted: string };
+	onCopySuccess?: (declarationName: string) => void;
 }) {
 	const { classes, cx } = useStyles();
 	const { name } = declaration.entity || {};
 	const { rate } = declaration.audit || {};
 	const hasPublishedDeclaration = !!declaration?.publishedContent;
-
-	const [showAlert, setShowAlert] = useState<boolean>(false);
-	const [alertDetails, setAlertDetails] = useState<{
-		title?: string;
-		description?: string;
-		severity: "info" | "success" | "warning" | "error";
-	}>({ title: "", description: "", severity: "info" });
-
-	const showDeclarationAlert = ({
-		title,
-		description,
-		severity,
-	}: {
-		title?: string;
-		description?: string;
-		severity: "info" | "success" | "warning" | "error";
-	}) => {
-		setAlertDetails({ title, description, severity });
-		setShowAlert(true);
-	};
 
 	return (
 		<div key={declaration.id} className={classes.declarationCard}>
@@ -92,12 +73,7 @@ export default function DeclarationListItem({
 					onClick={() =>
 						copyToClipboard(
 							`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
-							() =>
-								showDeclarationAlert({
-									description:
-										"Lien de la déclaration publiée copié dans le presse-papier",
-									severity: "success",
-								}),
+							() => onCopySuccess?.(declaration.name || ""),
 						)
 					}
 				>

@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
+import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { fr } from "@codegouvfr/react-dsfr";
+import { useEffect, useState } from "react";
 import { tss } from "tss-react";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
-import { auth } from "~/utils/auth";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
-import EmptyState from "~/components/declaration/EmptyState";
 import DeclarationListItem from "~/components/declaration/DeclarationListItem";
+import EmptyState from "~/components/declaration/EmptyState";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { auth } from "~/utils/auth";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -24,11 +24,24 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		declarationLength: declarations.length || 0,
 	});
 	const [showAlert, setShowAlert] = useState<boolean>(false);
-	const [alertDetails] = useState<{
+	const [alertDetails, setAlertDetails] = useState<{
 		title?: string;
 		description?: string;
 		severity: "info" | "success" | "warning" | "error";
 	}>({ title: "", description: "", severity: "info" });
+
+	const showDeclarationAlert = ({
+		title,
+		description,
+		severity,
+	}: {
+		title?: string;
+		description?: string;
+		severity: "info" | "success" | "warning" | "error";
+	}) => {
+		setAlertDetails({ title, description, severity });
+		setShowAlert(true);
+	};
 
 	if (firstDeclaration) {
 		return <AddFirstDeclaration />;
@@ -80,6 +93,12 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 								<DeclarationListItem
 									key={declaration.id}
 									declaration={declaration}
+									onCopySuccess={(declarationName) =>
+										showDeclarationAlert({
+											description: `Lien de la déclaration "${declarationName}" copié dans le presse-papier`,
+											severity: "success",
+										})
+									}
 								/>
 							))}
 						</div>
@@ -109,7 +128,6 @@ const useStyles = tss
 		alertWrapper: {
 			width: "100%",
 			display: "flex",
-			marginTop: fr.spacing("8v"),
 
 			"& div": {
 				width: "100%",
