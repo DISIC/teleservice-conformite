@@ -165,7 +165,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 									}}
 									onClick={() =>
 										copyToClipboard(
-											`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+											`${process.env.NEXT_PUBLIC_FRONT_URL}/declaration/${declaration.id}/publish`,
 											() =>
 												showDeclarationAlert({
 													description:

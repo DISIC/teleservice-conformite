@@ -72,10 +72,13 @@ export default function DeclarationListItem({
 					priority="tertiary"
 					onClick={() =>
 						copyToClipboard(
-							`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
+							`${process.env.NEXT_PUBLIC_FRONT_URL}/declaration/${declaration.id}/publish`,
 							() => onCopySuccess?.(declaration.name || ""),
 						)
 					}
+					nativeButtonProps={{
+						"aria-label": "Copier le lien web de la déclaration publiée",
+					}}
 				>
 					Copier le lien
 				</Button>
