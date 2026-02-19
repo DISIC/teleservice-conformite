@@ -39,6 +39,7 @@ export type DefaultFieldProps = {
 	label: string;
 	className?: string;
 	disabled?: boolean;
+	required?: boolean;
 	readOnly?: boolean;
 	description?: string | React.ReactNode;
 	placeholder?: string;

@@ -5,7 +5,13 @@ import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 
 interface CheckboxFieldProps extends DefaultFieldProps {}
 
-export function CheckboxField({ label }: CheckboxFieldProps) {
+export function CheckboxField({
+	label,
+	className,
+	disabled,
+	description,
+	required,
+}: CheckboxFieldProps) {
 	const field = useFieldContext<boolean>();
 
 	return (
@@ -13,15 +19,17 @@ export function CheckboxField({ label }: CheckboxFieldProps) {
 			options={[
 				{
 					label,
+					hintText: description,
 					nativeInputProps: {
 						name: field.name,
 						checked: field.state.value,
 						onChange: (e) => field.setValue(e.target.checked),
+						disabled,
+						required,
 					},
 				},
 			]}
-			className={fr.cx("fr-mb-0")}
-			style={{ userSelect: "none" }}
+			className={className ?? fr.cx("fr-mb-0")}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={
 				field.state.meta.errors.map((error) => error.message).join(",") ?? ""

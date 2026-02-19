@@ -8,8 +8,14 @@ import { useRef, useEffect, useState } from "react";
 
 import { appKindOptions, kindOptions } from "~/payload/selectOptions";
 import { withForm } from "../context";
-import { declarationMultiStepFormOptions } from "./schema";
+import {
+	declarationMultiStepFormOptions,
+	type ZInitialDeclaration,
+} from "./schema";
 import HelpingMessage from "~/components/declaration/HelpingMessage";
+
+type DeclarationKind =
+	ZInitialDeclaration["initialDeclaration"]["newDeclarationKind"];
 
 export const DeclarationGeneralForm = withForm({
 	...declarationMultiStepFormOptions,
@@ -23,6 +29,7 @@ export const DeclarationGeneralForm = withForm({
 							label="Organisation"
 							readOnly={readOnly}
 							inputReadOnly
+							required
 						/>
 					)}
 				</form.AppField>
@@ -35,6 +42,7 @@ export const DeclarationGeneralForm = withForm({
 							onChange={() => {
 								form.setFieldValue("general.url", "");
 							}}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -51,6 +59,7 @@ export const DeclarationGeneralForm = withForm({
 									Outil de gestion des congés
 								</>
 							}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -85,6 +94,7 @@ export const DeclarationGeneralForm = withForm({
 							infoStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
 							readOnly={readOnly}
 							options={[...kindOptions]}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -97,35 +107,20 @@ export const ContextForm = withForm({
 	...declarationMultiStepFormOptions,
 	render: function Render({ form }) {
 		const { classes } = useStyles();
-		const [newDeclaration, setNewDeclaration] = useState("");
-
-		const textFieldContainerRef = useRef<HTMLDivElement | null>(null);
-		useEffect(() => {
-			if (
-				textFieldContainerRef.current &&
-				["viaUrl", "viaAra"].includes(newDeclaration)
-			) {
-				textFieldContainerRef.current.scrollIntoView({ behavior: "smooth" });
-
-				setTimeout(() => {
-					const el = textFieldContainerRef.current?.querySelector(
-						"input, textarea",
-					) as HTMLInputElement | HTMLTextAreaElement | null;
-					el?.focus();
-				}, 200);
-			}
-		}, [newDeclaration]);
+		const [newDeclarationKind, setNewDeclarationKind] =
+			useState<DeclarationKind>(undefined);
 
 		return (
 			<div className={classes.contextFormContainer}>
-				<form.AppField name="initialDeclaration.newDeclaration">
+				<form.AppField name="initialDeclaration.newDeclarationKind">
 					{(field) => (
 						<field.SelectCardField
-							name="initialDeclaration.newDeclaration"
+							name="initialDeclaration.newDeclarationKind"
 							label="Quelle est votre situation pour ce service ?"
+							required
 							options={[
 								{
-									id: "viaUrl",
+									id: "fromUrl",
 									label:
 										"J'ai une déclaration en ligne, sans avoir utilisé Ara",
 									description:
@@ -133,7 +128,7 @@ export const ContextForm = withForm({
 									image: <Internet fontSize="3rem" />,
 								},
 								{
-									id: "viaAra",
+									id: "fromAra",
 									label:
 										"J'ai une déclaration en ligne réalisée avec l’outil Ara",
 									description:
@@ -141,7 +136,7 @@ export const ContextForm = withForm({
 									image: <System fontSize="3rem" />,
 								},
 								{
-									id: "new",
+									id: "fromScratch",
 									label: "Je n’ai pas de déclaration d’accessibilité",
 									description:
 										"La nouvelle déclaration sera à créer manuellement",
@@ -152,47 +147,68 @@ export const ContextForm = withForm({
 								form.resetField("initialDeclaration.declarationUrl");
 								form.resetField("initialDeclaration.araUrl");
 
-								setNewDeclaration(value);
+								setNewDeclarationKind(value as DeclarationKind);
 							}}
 						/>
 					)}
 				</form.AppField>
-				<form.Subscribe
-					selector={(store) => store.values.initialDeclaration?.newDeclaration}
-				>
-					{(newDeclaration) => (
-						<div ref={textFieldContainerRef}>
-							{newDeclaration === "viaUrl" && (
-								<form.AppField name="initialDeclaration.declarationUrl">
-									{(field) => (
-										<field.TextField
-											label="Lien URL de la déclaration en ligne "
-											kind="url"
-											description="Format attendu : https://www.example.fr"
-										/>
-									)}
-								</form.AppField>
-							)}
-							{newDeclaration === "viaAra" && (
-								<form.AppField name="initialDeclaration.araUrl">
-									{(field) => (
-										<field.TextField
-											label="URL de l’audit Ara"
-											kind="url"
-											description="Format attendu : https://ara.numerique.gouv.fr/declaration/xxxxxxx"
-										/>
-									)}
-								</form.AppField>
-							)}
-							{newDeclaration === "" && (
-								<HelpingMessage
-									image={<Accessibility fontSize="6rem" />}
-									message="Ara est un outil destiné aux auditeurs qui permet de réaliser un rapport d’audit complet et de générer automatiquement une déclaration d’accessibilité. "
-								/>
-							)}
-						</div>
-					)}
-				</form.Subscribe>
+				{newDeclarationKind !== "fromScratch" && (
+					<form.Subscribe
+						selector={(store) =>
+							store.values.initialDeclaration?.newDeclarationKind
+						}
+					>
+						{(newDeclarationKind) => (
+							<div>
+								{newDeclarationKind === "fromUrl" && (
+									<form.AppField name="initialDeclaration.declarationUrl">
+										{(field) => (
+											<field.TextField
+												label="Lien URL de la déclaration en ligne "
+												kind="url"
+												description="Format attendu : https://www.example.fr"
+												required
+											/>
+										)}
+									</form.AppField>
+								)}
+								{newDeclarationKind === "fromAra" && (
+									<form.AppField name="initialDeclaration.araUrl">
+										{(field) => (
+											<field.TextField
+												label="URL de l’audit Ara"
+												kind="url"
+												description="Format attendu : https://ara.numerique.gouv.fr/declaration/xxxxxxx"
+												required
+											/>
+										)}
+									</form.AppField>
+								)}
+								{!newDeclarationKind && (
+									<HelpingMessage
+										image={<Accessibility fontSize="6rem" />}
+										message={
+											<span>
+												<a
+													href="https://ara.numerique.gouv.fr/"
+													className={fr.cx("fr-link")}
+													target="_blank"
+													rel="noreferrer"
+													title="Ara, nouvelle fenêtre"
+												>
+													Ara
+												</a>{" "}
+												est un outil destiné aux auditeurs qui permet de
+												réaliser un rapport d’audit complet et de générer
+												automatiquement une déclaration d’accessibilité.
+											</span>
+										}
+									/>
+								)}
+							</div>
+						)}
+					</form.Subscribe>
+				)}
 			</div>
 		);
 	},

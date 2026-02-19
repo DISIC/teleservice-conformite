@@ -1,12 +1,11 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import { useRef } from "react";
 import { tss } from "tss-react";
-import { fr } from "@codegouvfr/react-dsfr";
 
-import { useFieldContext } from "~/utils/form/context";
+import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 
-interface SelectCardFieldProps {
+interface SelectCardFieldProps extends DefaultFieldProps {
 	name: string;
-	label: string;
 	options: {
 		id: string;
 		image: React.ReactNode;
@@ -16,14 +15,21 @@ interface SelectCardFieldProps {
 	onChange: (value: string) => void;
 }
 
-export function SelectCardField(props: SelectCardFieldProps) {
-	const { name, options = [], label, onChange } = props;
+export function SelectCardField({
+	name,
+	options = [],
+	label,
+	onChange,
+	disabled,
+	className,
+	required,
+}: SelectCardFieldProps) {
 	const field = useFieldContext<string>();
 	const { classes, cx } = useStyles();
 	const inputRef = useRef<Record<string, HTMLInputElement | null>>({});
 
 	return (
-		<div className={classes.fieldWrapper}>
+		<div className={cx(classes.fieldWrapper, className)}>
 			<label htmlFor={name}>{label}</label>
 			{options.map(({ id, image, label: optionLabel, description }) => {
 				const inputId = `${name}-${id}`;
@@ -40,6 +46,8 @@ export function SelectCardField(props: SelectCardFieldProps) {
 							type="radio"
 							value={id}
 							checked={checked}
+							disabled={disabled}
+							required={required}
 							onChange={() => {
 								onChange(id);
 								field.setValue(id);
@@ -51,11 +59,12 @@ export function SelectCardField(props: SelectCardFieldProps) {
 							className={cx(
 								classes.optionButton,
 								checked && classes.optionButtonChecked,
+								disabled && classes.optionButtonDisabled,
 							)}
 						>
 							{image}
 							<span>
-								<h2 className={classes.label}>{optionLabel}</h2>
+								<p className={classes.label}>{optionLabel}</p>
 								{description && (
 									<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
 										{description}
@@ -84,6 +93,11 @@ const useStyles = tss.withName(SelectCardField.name).create({
 		position: "absolute",
 		opacity: 0,
 		pointerEvents: "none",
+
+		"&:focus + label": {
+			outline: `2px solid ${fr.colors.decisions.border.actionHigh.blueFrance.default}`,
+			outlineOffset: "2px",
+		},
 	},
 	optionButton: {
 		display: "flex",
@@ -132,5 +146,10 @@ const useStyles = tss.withName(SelectCardField.name).create({
 	},
 	description: {
 		color: fr.colors.decisions.text.default.grey.default,
+	},
+	optionButtonDisabled: {
+		opacity: 0.5,
+		cursor: "not-allowed",
+		pointerEvents: "none",
 	},
 });

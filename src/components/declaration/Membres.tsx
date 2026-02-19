@@ -139,27 +139,12 @@ export default function Membres({ declaration }: MembresProps) {
 					headers={[
 						<div key="user" className={classes.tableHeader}>
 							Utilisateur{" "}
-							<Button
-								iconId="fr-icon-settings-5-line"
-								priority="tertiary"
-								title=""
-							/>
 						</div>,
 						<div key="user" className={classes.tableHeader}>
 							Mail{" "}
-							<Button
-								iconId="fr-icon-settings-5-line"
-								priority="tertiary"
-								title=""
-							/>
 						</div>,
 						<div key="user" className={classes.tableHeader}>
 							Statut{" "}
-							<Button
-								iconId="fr-icon-settings-5-line"
-								priority="tertiary"
-								title=""
-							/>
 						</div>,
 					]}
 				/>

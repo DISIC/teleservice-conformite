@@ -1,35 +1,35 @@
+import type { ParsedUrlQuery } from "node:querystring";
+import { fr } from "@codegouvfr/react-dsfr";
+import config from "@payload-config";
+import { useStore } from "@tanstack/react-form";
+import type { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
+import { getPayload } from "payload";
 import { useState } from "react";
 import { tss } from "tss-react";
-import { fr } from "@codegouvfr/react-dsfr";
-import { useStore } from "@tanstack/react-form";
-import { useRouter } from "next/router";
-import type { GetServerSideProps } from "next";
-import { getPayload } from "payload";
-import type { ParsedUrlQuery } from "node:querystring";
-import config from "@payload-config";
 import type { z } from "zod";
 
-import { useAppForm } from "~/utils/form/context";
-import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
-import {
-	DeclarationGeneralForm,
-	ContextForm,
-} from "~/utils/form/declaration/form";
-import { api } from "~/utils/api";
-import { auth } from "~/utils/auth";
+import DeclarationLoader from "~/components/declaration/DeclarationLoader";
+import { useStyles as useAppStyles } from "~/pages/_app";
 import type { Entity } from "~/payload/payload-types";
 import {
-	type rgaaVersionOptions,
 	appKindOptions,
+	type rgaaVersionOptions,
 } from "~/payload/selectOptions";
-import {
-	extractToolsFromUrl,
-	extractTestEnvironmentsFromUrl,
-} from "~/utils/declaration-helper";
-import { showAlert } from "~/utils/alert-event";
-import DeclarationLoader from "~/components/declaration/DeclarationLoader";
 import type { importedDeclarationDataSchema } from "~/server/api/routers/declaration";
-import { useStyles as useAppStyles } from "~/pages/_app";
+import { showAlert } from "~/utils/alert-event";
+import { api } from "~/utils/api";
+import { auth } from "~/utils/auth";
+import {
+	extractTestEnvironmentsFromUrl,
+	extractToolsFromUrl,
+} from "~/utils/declaration-helper";
+import { useAppForm } from "~/utils/form/context";
+import {
+	ContextForm,
+	DeclarationGeneralForm,
+} from "~/utils/form/declaration/form";
+import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
 
 export type ImportedDeclarationData = z.infer<
 	typeof importedDeclarationDataSchema
@@ -315,12 +315,20 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						e.preventDefault();
 						form.handleSubmit();
 					}}
+					onInvalid={(e) => {
+						form.validate("submit");
+					}}
 				>
 					<div className={classes.formWrapper}>
 						<div className={classes.whiteBackground}>
-							<h2 className={cx(classes.description, fr.cx("fr-text--sm"))}>
+							<p
+								className={cx(
+									classes.description,
+									fr.cx("fr-text--sm", "fr-mb-6v"),
+								)}
+							>
 								Tous les champs sont obligatoires sauf précision contraire
-							</h2>
+							</p>
 							{section === "initialDeclaration" && <ContextForm form={form} />}
 							{section === "general" && (
 								<DeclarationGeneralForm form={form} readOnly={false} />
@@ -332,6 +340,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 									label="Retour"
 									onClick={onClickCancel}
 									priority="tertiary"
+									ariaLabel="Retour à la liste des déclarations"
 								/>
 								<form.SubscribeButton
 									label="Continuer"

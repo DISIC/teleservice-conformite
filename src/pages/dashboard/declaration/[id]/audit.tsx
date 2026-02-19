@@ -1,34 +1,35 @@
-import { useState } from "react";
-import config from "@payload-config";
-import type { GetServerSideProps } from "next";
-import { getPayload } from "payload";
 import type { ParsedUrlQuery } from "node:querystring";
-import { useRouter } from "next/router";
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
+import config from "@payload-config";
 import { useStore } from "@tanstack/react-form";
+import type { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
+import { getPayload } from "payload";
+import { useState } from "react";
 import React from "react";
+import { tss } from "tss-react";
 
+import Head from "next/head";
+import { MultiStep } from "~/components/MultiStep";
+import DeclarationForm from "~/components/declaration/DeclarationForm";
+import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
+import {
+	type PopulatedDeclaration,
+	getDeclarationById,
+} from "~/server/api/utils/payload-helper";
+import { api } from "~/utils/api";
+import {
+	AuditDateForm,
+	AuditRealisedForm,
+	CompliantElementsForm,
+	FilesForm,
+	NonCompliantElementsForm,
+	ToolsForm,
+} from "~/utils/form/audit/form";
+import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationAuditForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
-import { api } from "~/utils/api";
-import {
-	getDeclarationById,
-	type PopulatedDeclaration,
-} from "~/server/api/utils/payload-helper";
-import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
-import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
-import { MultiStep } from "~/components/MultiStep";
-import {
-	AuditRealisedForm,
-	AuditDateForm,
-	ToolsForm,
-	CompliantElementsForm,
-	NonCompliantElementsForm,
-	FilesForm,
-} from "~/utils/form/audit/form";
-import DeclarationForm from "~/components/declaration/DeclarationForm";
 
 type Steps<T> = {
 	slug: T;
@@ -56,7 +57,9 @@ const steps: Steps<Section>[] = [
 
 export default function AuditPage({
 	declaration: initialDeclaration,
-}: { declaration: PopulatedDeclaration }) {
+}: {
+	declaration: PopulatedDeclaration;
+}) {
 	const router = useRouter();
 	const { classes, cx } = useStyles();
 	const [declaration, setDeclaration] =
@@ -217,14 +220,6 @@ export default function AuditPage({
 		};
 	}
 
-	const deleteDeclarationAudit = async (auditId: number) => {
-		try {
-			await deleteAudit({ id: auditId, declarationId: declaration.id });
-		} catch (error) {
-			console.error(`Error deleting audit with id ${auditId}:`, error);
-		}
-	};
-
 	const updateDeclarationAudit = async (auditId: number, auditData: any) => {
 		try {
 			await updateAudit({
@@ -280,7 +275,9 @@ export default function AuditPage({
 		...readOnlyFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (!isAchieved && declaration?.audit) {
-				await deleteDeclarationAudit(audit?.id ?? -1);
+				await updateDeclarationAudit(audit?.id ?? -1, {
+					status: "notRealised",
+				});
 
 				return;
 			}
@@ -290,96 +287,113 @@ export default function AuditPage({
 	});
 
 	return (
-		<DeclarationForm
-			declaration={declaration}
-			title="Résultat de l’audit"
-			breadcrumbLabel={declaration?.name ?? ""}
-			isEditable={!!declaration?.audit}
-			editMode={editMode}
-			onToggleEdit={onEditInfos}
-			showValidateButton={
-				(declaration?.audit?.status === "fromAI" ||
-					declaration?.audit?.status === "fromAra") &&
-				!editMode
-			}
-			onValidate={updateAuditStatus}
-			LayoutComponent={({ children }) =>
-				declaration?.audit || section === "isAuditRealised" ? (
-					children
-				) : (
-					<MultiStep steps={steps} currentStep={section}>
-						{children}
-					</MultiStep>
-				)
-			}
-			showLayoutComponent={!declaration?.audit}
-			isAiGenerated={declaration?.audit?.status === "fromAI"}
-			{...(section === "files"
-				? { mentionText: "Les documents ajoutés doivent être accessibles" }
-				: undefined)}
-		>
-			{!declaration?.audit ? (
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-				>
-					<div className={classes.whiteBackground}>
-						{section === "isAuditRealised" && <AuditRealisedForm form={form} />}
-						{section === "auditDate" && <AuditDateForm form={form} />}
-						{section === "tools" && <ToolsForm form={form} />}
-						{section === "compliantElements" && (
-							<CompliantElementsForm form={form} />
-						)}
-						{section === "nonCompliantElements" && (
-							<NonCompliantElementsForm form={form} />
-						)}
-						{section === "files" && <FilesForm form={form} />}
-					</div>
-					<form.AppForm>
-						<div className={classes.actionButtonsContainer}>
-							<form.CancelButton
-								label="Retour"
-								onClick={onClickCancel}
-								priority="tertiary"
-							/>
-							<form.SubscribeButton
-								label="Continuer"
-								iconId="fr-icon-arrow-right-s-line"
-								iconPosition="right"
-							/>
+		<>
+			<Head>
+				<title>
+					Résultat de l’audit - Déclaration de {declaration.name} - Téléservice
+					Conformité
+				</title>
+			</Head>
+			<DeclarationForm
+				declaration={declaration}
+				title="Résultat de l’audit"
+				breadcrumbLabel={declaration?.name ?? ""}
+				isEditable={!!declaration?.audit}
+				editMode={editMode}
+				onToggleEdit={onEditInfos}
+				showValidateButton={
+					(declaration?.audit?.status === "fromAI" ||
+						declaration?.audit?.status === "fromAra") &&
+					!editMode
+				}
+				onValidate={updateAuditStatus}
+				LayoutComponent={({ children }) =>
+					declaration?.audit || section === "isAuditRealised" ? (
+						children
+					) : (
+						<MultiStep steps={steps} currentStep={section}>
+							{children}
+						</MultiStep>
+					)
+				}
+				showLayoutComponent={!declaration?.audit}
+				isAiGenerated={declaration?.audit?.status === "fromAI"}
+				{...(section === "files"
+					? { mentionText: "Les documents ajoutés doivent être accessibles" }
+					: undefined)}
+			>
+				{!declaration?.audit ? (
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							form.handleSubmit();
+						}}
+						onInvalid={(e) => {
+							form.validate("submit");
+						}}
+					>
+						<div className={classes.whiteBackground}>
+							{section === "isAuditRealised" && (
+								<AuditRealisedForm form={form} />
+							)}
+							{section === "auditDate" && <AuditDateForm form={form} />}
+							{section === "tools" && <ToolsForm form={form} />}
+							{section === "compliantElements" && (
+								<CompliantElementsForm form={form} />
+							)}
+							{section === "nonCompliantElements" && (
+								<NonCompliantElementsForm form={form} />
+							)}
+							{section === "files" && <FilesForm form={form} />}
 						</div>
-					</form.AppForm>
-				</form>
-			) : (
-				<>
-					{editMode ? (
-						<form
-							onSubmit={(e) => {
-								e.preventDefault();
-								readOnlyForm.handleSubmit();
-							}}
-						>
-							<div className={classes.whiteBackground}>
-								<DeclarationAuditForm
-									form={readOnlyForm}
-									isAchieved={isAchieved}
-									onChangeIsAchieved={(value) => setIsAchieved(value)}
+						<form.AppForm>
+							<div className={classes.actionButtonsContainer}>
+								<form.CancelButton
+									label="Retour"
+									onClick={onClickCancel}
+									priority="tertiary"
+									ariaLabel="Retour à la déclaration"
+								/>
+								<form.SubscribeButton
+									label="Continuer"
+									iconId="fr-icon-arrow-right-s-line"
+									iconPosition="right"
 								/>
 							</div>
-							<readOnlyForm.AppForm>
-								<readOnlyForm.SubscribeButton label={"Valider"} />
-							</readOnlyForm.AppForm>
-						</form>
-					) : (
-						<div className={classes.whiteBackground}>
-							<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
-						</div>
-					)}
-				</>
-			)}
-		</DeclarationForm>
+						</form.AppForm>
+					</form>
+				) : (
+					<>
+						{editMode ? (
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									readOnlyForm.handleSubmit();
+								}}
+								onInvalid={(e) => {
+									form.validate("submit");
+								}}
+							>
+								<div className={classes.whiteBackground}>
+									<DeclarationAuditForm
+										form={readOnlyForm}
+										isAchieved={isAchieved}
+										onChangeIsAchieved={(value) => setIsAchieved(value)}
+									/>
+								</div>
+								<readOnlyForm.AppForm>
+									<readOnlyForm.SubscribeButton label={"Valider"} />
+								</readOnlyForm.AppForm>
+							</form>
+						) : (
+							<div className={classes.whiteBackground}>
+								<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
+							</div>
+						)}
+					</>
+				)}
+			</DeclarationForm>
+		</>
 	);
 }
 

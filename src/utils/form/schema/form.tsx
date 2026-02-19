@@ -18,6 +18,7 @@ export const SchemaForm = withForm({
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
+								required
 							/>
 							{field.state.value ? (
 								<form.AppField name="currentYearSchemaUrl">
@@ -33,6 +34,7 @@ export const SchemaForm = withForm({
 													attendu : https://www.example.fr
 												</>
 											}
+											required
 										/>
 									)}
 								</form.AppField>
@@ -61,6 +63,7 @@ export const SchemaForm = withForm({
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
+								required
 							/>
 							{field.state.value && (
 								<form.AppField name="previousYearsSchemaUrl">
@@ -69,6 +72,7 @@ export const SchemaForm = withForm({
 											kind="url"
 											label="Lien URL du bilan des actions"
 											description="Format attendu : https://www.example.fr"
+											required
 										/>
 									)}
 								</form.AppField>

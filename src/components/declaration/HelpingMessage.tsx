@@ -28,18 +28,20 @@ export default function HelpingMessage({
 		<div className={classes.helpingMessageContainer}>
 			{image}
 			<p className={classes.messageWrapper}>{message}</p>
-			<div className={classes.buttonsContainer}>
-				{actionButtons?.map((button) => (
-					<Button
-						key={button.label}
-						priority={button.priority || "primary"}
-						iconId={button.iconId as any}
-						onClick={button.onClick}
-					>
-						{button.label}
-					</Button>
-				))}
-			</div>
+			{!!actionButtons?.length && (
+				<div className={classes.buttonsContainer}>
+					{actionButtons?.map((button) => (
+						<Button
+							key={button.label}
+							priority={button.priority || "primary"}
+							iconId={button.iconId as any}
+							onClick={button.onClick}
+						>
+							{button.label}
+						</Button>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }
@@ -54,7 +56,7 @@ const useStyles = tss.withName(HelpingMessage.name).create({
 		backgroundColor: fr.colors.decisions.background.contrast.blueFrance.default,
 
 		"@media (min-width: 830px)": {
-			gridTemplateColumns: "auto 2fr 1fr",
+			gridTemplateColumns: "auto auto 1fr",
 		},
 	},
 	messageWrapper: {

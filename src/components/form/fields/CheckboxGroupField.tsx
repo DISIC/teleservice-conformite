@@ -13,6 +13,7 @@ export function CheckboxGroupField({
 	options,
 	className,
 	disabled,
+	required,
 	readOnly = false,
 }: CheckboxGroupFieldProps) {
 	const field = useFieldContext<string[]>();
@@ -28,7 +29,7 @@ export function CheckboxGroupField({
 			stateRelatedMessage={
 				field.state.meta.errors.map((e) => e.message).join(",") ?? ""
 			}
-			options={options.map((opt) => ({
+			options={options.map((opt, index) => ({
 				label: opt.label,
 				nativeInputProps: {
 					name: field.name,
@@ -43,6 +44,7 @@ export function CheckboxGroupField({
 						}
 					},
 					value: opt.value,
+					required: required && index === 0 && valueSet.size === 0,
 				},
 			}))}
 		/>

@@ -3,6 +3,7 @@ import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { Header, type HeaderProps } from "@codegouvfr/react-dsfr/Header";
 import type { MainNavigationProps } from "@codegouvfr/react-dsfr/MainNavigation";
+import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
 import { createNextDsfrIntegrationApi } from "@codegouvfr/react-dsfr/next-pagesdir";
 import type { AppProps } from "next/app";
 import Head from "next/head";
@@ -74,6 +75,12 @@ function App({ Component, pageProps }: AppProps) {
 		authClient.useSession();
 	const isAuthenticated = !!authSession;
 
+	const getTitleFromPathname = (pathname: string): string | undefined => {
+		if (pathname === "/dashboard") return "Liste des déclarations";
+
+		if (pathname === "/dashboard/form") return "Ajouter une déclaration";
+	};
+
 	const navigationItems =
 		isAuthenticated || router.pathname.startsWith("/dashboard")
 			? userNavigationItems.map((item) => ({
@@ -108,9 +115,27 @@ function App({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>Téléservice Conformité</title>
+				<title>
+					{getTitleFromPathname(router.pathname)
+						? `${getTitleFromPathname(router.pathname)} - `
+						: ""}
+					Téléservice Conformité
+				</title>
 			</Head>
 			<div className={classes.mainContainer}>
+				{" "}
+				<SkipLinks
+					links={[
+						{
+							anchor: "#contenu",
+							label: "Contenu",
+						},
+						{
+							anchor: "#footer",
+							label: "Pied de page",
+						},
+					]}
+				/>
 				<Header
 					brandTop={
 						<>
@@ -127,11 +152,12 @@ function App({ Component, pageProps }: AppProps) {
 					quickAccessItems={quickAccessItems}
 					serviceTitle="Téléservice Conformité"
 				/>
-				<main className={classes.main} style={{ flex: 1 }}>
+				<main id="contenu" className={classes.main} style={{ flex: 1 }}>
 					<AlertHost />
 					<Component {...pageProps} />
 				</main>
 				<Footer
+					id="footer"
 					accessibility="non compliant"
 					bottomItems={[headerFooterDisplayItem]}
 				/>

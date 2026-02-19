@@ -20,6 +20,9 @@ export function SelectField({
 	disabled,
 	className,
 	readOnly = false,
+	description,
+	placeholder,
+	required,
 	defaultStateMessage = "",
 	infoStateMessage,
 }: SelectFieldProps) {
@@ -30,10 +33,13 @@ export function SelectField({
 		<>
 			<Select
 				label={label}
+				hint={description}
+				placeholder={placeholder}
 				nativeSelectProps={{
 					name: field.name,
 					value: field.state.value,
 					onChange: (e) => field.setValue(e.target.value),
+					required,
 				}}
 				options={options}
 				disabled={disabled}

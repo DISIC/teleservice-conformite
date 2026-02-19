@@ -1,10 +1,10 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import type {
 	FrIconClassName,
 	RiIconClassName,
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import { tss } from "tss-react";
-import { fr } from "@codegouvfr/react-dsfr";
 import { useFormContext } from "~/utils/form/context";
 
 export function SubscribeButton({
@@ -19,20 +19,15 @@ export function SubscribeButton({
 	const { classes } = useStyles();
 	const form = useFormContext();
 
-	const iconProps = {
-		...(iconId ? { iconId } : {}),
-		...(iconPosition ? { iconPosition } : {}),
-	} as const;
-
 	return (
 		<div className={classes.buttonWrapper}>
 			<form.Subscribe
 				selector={(state) => [state.isSubmitting, state.canSubmit]}
 			>
-				{([isSubmitting, canSubmit]) =>
+				{([isSubmitting]) =>
 					iconId && iconPosition ? (
 						<Button
-							disabled={isSubmitting || !canSubmit}
+							disabled={isSubmitting}
 							type="submit"
 							iconId={iconId}
 							iconPosition={iconPosition}
@@ -40,7 +35,7 @@ export function SubscribeButton({
 							{label}
 						</Button>
 					) : (
-						<Button disabled={isSubmitting || !canSubmit} type="submit">
+						<Button disabled={isSubmitting} type="submit">
 							{label}
 						</Button>
 					)
@@ -56,12 +51,14 @@ export function CancelButton({
 	priority = "secondary",
 	iconId,
 	iconPosition,
+	ariaLabel,
 }: {
 	label?: string;
 	onClick?: () => void;
 	priority?: "secondary" | "tertiary";
 	iconId?: FrIconClassName | RiIconClassName;
 	iconPosition?: "left" | "right";
+	ariaLabel?: string;
 }) {
 	const { classes } = useStyles();
 	const form = useFormContext();
@@ -88,11 +85,17 @@ export function CancelButton({
 					onClick={handleClick}
 					iconId={iconId}
 					iconPosition={iconPosition}
+					aria-label={ariaLabel}
 				>
 					{label}
 				</Button>
 			) : (
-				<Button type="button" priority={priority} onClick={handleClick}>
+				<Button
+					type="button"
+					priority={priority}
+					onClick={handleClick}
+					aria-label={ariaLabel}
+				>
 					{label}
 				</Button>
 			)}

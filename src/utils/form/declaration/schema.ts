@@ -10,7 +10,10 @@ export const declarationGeneral = z.object({
 			.min(1, { message: "Le nom de l'organisation est requis" }),
 		kind: z.enum(appKindOptions.map((option) => option.value)),
 		name: z.string().min(1, { message: "Le nom de l'application est requis" }),
-		url: z.url("Lien invalide (ex: https://www.example.fr)").optional().or(z.literal("")),
+		url: z
+			.url("Lien invalide (ex: https://www.example.fr)")
+			.optional()
+			.or(z.literal("")),
 		domain: z
 			.string()
 			.meta({ kind: "select" })
@@ -30,20 +33,51 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 	},
 };
 
-export const initialDeclaration = z.object({
-	initialDeclaration: z.object({
-		newDeclaration: z.string().optional(),
-		publishedDate: z.iso.date().optional(),
-		araUrl: z.string().optional(),
-		declarationUrl: z.string().optional(),
-	}),
-});
+export const declarationKindOptions = [
+	"fromUrl",
+	"fromAra",
+	"fromScratch",
+] as const;
+
+export const initialDeclaration = z
+	.object({
+		initialDeclaration: z.object({
+			newDeclarationKind: z.enum(declarationKindOptions).optional(),
+			publishedDate: z.iso.date().optional(),
+			araUrl: z.string().optional(),
+			declarationUrl: z.string().optional(),
+		}),
+	})
+	.refine(
+		(data) => {
+			if (data.initialDeclaration.newDeclarationKind === "fromAra") {
+				return !!data.initialDeclaration.araUrl;
+			}
+			return true;
+		},
+		{
+			message: "L'URL de l'audit Ara est requise",
+			path: ["initialDeclaration", "araUrl"],
+		},
+	)
+	.refine(
+		(data) => {
+			if (data.initialDeclaration.newDeclarationKind === "fromUrl") {
+				return !!data.initialDeclaration.declarationUrl;
+			}
+			return true;
+		},
+		{
+			message: "L'URL de la déclaration est requise",
+			path: ["initialDeclaration", "declarationUrl"],
+		},
+	);
 
 export type ZInitialDeclaration = z.infer<typeof initialDeclaration>;
 
 export const initialDeclarationDefaultValues: ZInitialDeclaration = {
 	initialDeclaration: {
-		newDeclaration: "",
+		newDeclarationKind: undefined,
 		publishedDate: undefined,
 		araUrl: undefined,
 		declarationUrl: undefined,

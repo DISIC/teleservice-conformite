@@ -1,7 +1,12 @@
 import type { CollectionConfig } from "payload";
 
-import { auditStatusOptions, rgaaVersionOptions, testEnvironmentOptions, toolOptions } from "../selectOptions";
 import type { Audit } from "../payload-types";
+import {
+	auditStatusOptions,
+	rgaaVersionOptions,
+	testEnvironmentOptions,
+	toolOptions,
+} from "../selectOptions";
 
 export const Audits: CollectionConfig = {
 	slug: "audits",
@@ -14,11 +19,30 @@ export const Audits: CollectionConfig = {
 		},
 	},
 	hooks: {
-    beforeChange: [
-      async (args) => {
-        const { req, originalDoc, data, operation } = args;
+		beforeChange: [
+			async (args) => {
+				const { req, originalDoc, data, operation } = args;
 
-        if (operation !== "update") return;
+				if (operation !== "update") return;
+
+				if (data.status === "notRealised") {
+					return {
+						declaration: data.declaration ?? originalDoc?.declaration,
+						status: data.status,
+						date: null,
+						rgaa_version: null,
+						realisedBy: null,
+						rate: null,
+						compliantElements: null,
+						nonCompliantElements: null,
+						disproportionnedCharge: null,
+						optionalElements: null,
+						auditReport: null,
+						usedTools: [],
+						testEnvironments: [],
+						technologies: [],
+					};
+				}
 
 				const declaration = await req.payload.findByID({
 					collection: "declarations",
@@ -27,12 +51,13 @@ export const Audits: CollectionConfig = {
 
 				if (!declaration?.publishedContent) return;
 
-        const {
-					audit
-				} = JSON.parse(declaration?.publishedContent ?? "{}");
+				const { audit } = JSON.parse(declaration?.publishedContent ?? "{}");
 
 				const newContent = {
-					rgaa_version: rgaaVersionOptions.find(option => option.value === data.rgaa_version)?.label ?? "RGAA 4",
+					rgaa_version:
+						rgaaVersionOptions.find(
+							(option) => option.value === data.rgaa_version,
+						)?.label ?? "RGAA 4",
 					realised_by: data.realisedBy,
 					rate: data.rate,
 					nonCompliantElements: data.nonCompliantElements,
@@ -40,21 +65,32 @@ export const Audits: CollectionConfig = {
 					optionalElements: data.optionalElements,
 					compliantElements: data.compliantElements,
 					technologies: data.technologies,
-					testEnvironments: (data.testEnvironments ?? []).map((env: string) => testEnvironmentOptions.find(option => option.value === env)?.label ?? ""),
-					usedTools: (data.usedTools ?? []).map((tool: { id: number; name: string; }) => toolOptions.find(option => option.value === tool.name)?.label ?? ""),
+					testEnvironments: (data.testEnvironments ?? []).map(
+						(env: string) =>
+							testEnvironmentOptions.find((option) => option.value === env)
+								?.label ?? "",
+					),
+					usedTools: (data.usedTools ?? []).map(
+						(tool: { id: number; name: string }) =>
+							toolOptions.find((option) => option.value === tool.name)?.label ??
+							"",
+					),
 				};
 
-				const status = (JSON.stringify(audit) === JSON.stringify(newContent)) ? "published" : "unpublished"; 
+				const status =
+					JSON.stringify(audit) === JSON.stringify(newContent)
+						? "published"
+						: "unpublished";
 
-        await req.payload.update({
-          collection: "declarations",
-          id: data.declaration ?? originalDoc?.declaration,
-          data: {
-            status,
-          },
-        });
-      },
-    ],
+				await req.payload.update({
+					collection: "declarations",
+					id: data.declaration ?? originalDoc?.declaration,
+					data: {
+						status,
+					},
+				});
+			},
+		],
 	},
 	fields: [
 		{
@@ -63,7 +99,7 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Date de realisation de l'audit" },
 			admin: {
 				position: "sidebar",
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 		},
 		{
@@ -74,7 +110,7 @@ export const Audits: CollectionConfig = {
 			index: true,
 			hasMany: false,
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 			validate: (
 				value: string | null | undefined,
@@ -85,14 +121,14 @@ export const Audits: CollectionConfig = {
 				}
 
 				return true;
-			}
+			},
 		},
 		{
 			name: "realisedBy",
 			type: "text",
 			label: { fr: "Entite ou personne ayant realise l'audit" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 			validate: (
 				value: string | null | undefined,
@@ -103,14 +139,14 @@ export const Audits: CollectionConfig = {
 				}
 
 				return true;
-			}
+			},
 		},
 		{
 			name: "rate",
 			type: "number",
 			label: { fr: "Taux de conformité" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 			validate: (
 				value: number | null | undefined,
@@ -121,14 +157,14 @@ export const Audits: CollectionConfig = {
 				}
 
 				return true;
-			}
+			},
 		},
 		{
 			name: "compliantElements",
 			type: "textarea",
 			label: { fr: "Éléments ayant fait l’objet de vérification" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 			validate: (
 				value: string | null | undefined,
@@ -139,14 +175,14 @@ export const Audits: CollectionConfig = {
 				}
 
 				return true;
-			}
+			},
 		},
 		{
 			name: "nonCompliantElements",
 			type: "textarea",
 			label: { fr: "Éléments non conformes" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 		},
 		{
@@ -154,7 +190,7 @@ export const Audits: CollectionConfig = {
 			type: "textarea",
 			label: { fr: "Éléments avec dérogation pour charge disproportionnée" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 		},
 		{
@@ -162,7 +198,7 @@ export const Audits: CollectionConfig = {
 			type: "textarea",
 			label: { fr: "Éléments non soumis à l’obligation d’accessibilité" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 		},
 		{
@@ -170,7 +206,7 @@ export const Audits: CollectionConfig = {
 			type: "text",
 			label: { fr: "Rapport d'audit" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 		},
 		{
@@ -186,7 +222,7 @@ export const Audits: CollectionConfig = {
 				},
 			],
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 		},
 		{
@@ -199,10 +235,10 @@ export const Audits: CollectionConfig = {
 					type: "text",
 					label: { fr: "Nom de l’environnement de test" },
 					required: true,
-				}
+				},
 			],
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 		},
 		{
@@ -218,7 +254,7 @@ export const Audits: CollectionConfig = {
 			],
 			label: { fr: "Technologies utilisées" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised"
+				condition: (_, siblingData) => siblingData?.status !== "notRealised",
 			},
 		},
 		{
@@ -234,6 +270,6 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Statut" },
 			defaultValue: "default",
 			options: [...auditStatusOptions],
-		}
+		},
 	],
 };

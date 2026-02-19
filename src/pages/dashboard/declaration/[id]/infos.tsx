@@ -1,23 +1,24 @@
-import { useState } from "react";
+import type { ParsedUrlQuery } from "node:querystring";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
-import { getPayload } from "payload";
-import type { ParsedUrlQuery } from "node:querystring";
 import { useRouter } from "next/router";
+import { getPayload } from "payload";
+import { useState } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
+import Head from "next/head";
 import { tss } from "tss-react";
+import DeclarationForm from "~/components/declaration/DeclarationForm";
+import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
+import { useCommonStyles } from "~/components/style/commonStyles";
+import {
+	type PopulatedDeclaration,
+	getDeclarationById,
+} from "~/server/api/utils/payload-helper";
+import { api } from "~/utils/api";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
-import { api } from "~/utils/api";
-import {
-	getDeclarationById,
-	type PopulatedDeclaration,
-} from "~/server/api/utils/payload-helper";
-import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
-import DeclarationForm from "~/components/declaration/DeclarationForm";
-import { useCommonStyles } from "~/components/style/commonStyles";
 
 export default function GeneralInformationsPage({
 	declaration: initialDeclaration,
@@ -122,39 +123,50 @@ export default function GeneralInformationsPage({
 	});
 
 	return (
-		<DeclarationForm
-			declaration={declaration}
-			title="Informations générales"
-			breadcrumbLabel={declaration?.name ?? ""}
-			showValidateButton={declaration.status === "unverified" && !editMode}
-			onValidate={updateDeclarationStatus}
-			isEditable={true}
-			onToggleEdit={onEditInfos}
-			editMode={editMode}
-			showLayoutComponent={false}
-		>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-					form.handleSubmit();
-				}}
+		<>
+			<Head>
+				<title>
+					Informations générales - Déclaration de {declaration.name} -
+					Téléservice Conformité
+				</title>
+			</Head>
+			<DeclarationForm
+				declaration={declaration}
+				title="Informations générales"
+				breadcrumbLabel={declaration?.name ?? ""}
+				showValidateButton={declaration.status === "unverified" && !editMode}
+				onValidate={updateDeclarationStatus}
+				isEditable={true}
+				onToggleEdit={onEditInfos}
+				editMode={editMode}
+				showLayoutComponent={false}
 			>
-				{editMode ? (
-					<>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						form.handleSubmit();
+					}}
+					onInvalid={(e) => {
+						form.validate("submit");
+					}}
+				>
+					{editMode ? (
+						<>
+							<div className={commonClasses.whiteBackground}>
+								<DeclarationGeneralForm form={form} />
+							</div>
+							<form.AppForm>
+								<form.SubscribeButton label={"Valider"} />
+							</form.AppForm>
+						</>
+					) : (
 						<div className={commonClasses.whiteBackground}>
-							<DeclarationGeneralForm form={form} />
+							<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
 						</div>
-						<form.AppForm>
-							<form.SubscribeButton label={"Valider"} />
-						</form.AppForm>
-					</>
-				) : (
-					<div className={commonClasses.whiteBackground}>
-						<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
-					</div>
-				)}
-			</form>
-		</DeclarationForm>
+					)}
+				</form>
+			</DeclarationForm>
+		</>
 	);
 }
 

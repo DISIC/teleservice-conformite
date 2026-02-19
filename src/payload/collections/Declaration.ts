@@ -128,6 +128,6 @@ export const Declarations: CollectionConfig = {
 			type: "text",
 			label: { fr: "Contenu publié" },
 			required: false,
-		}
+		},
 	],
 };

@@ -15,6 +15,7 @@ export const ContactTypeForm = withForm({
 								{ label: "Formulaire en ligne", value: "onlineForm" },
 								{ label: "Point de contact", value: "contactPoint" },
 							]}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -27,6 +28,7 @@ export const ContactTypeForm = withForm({
 										kind="url"
 										label="Lien URL du formulaire"
 										description="Format attendu : https://www.example.fr"
+										required
 									/>
 								)}
 							</form.AppField>
@@ -42,6 +44,7 @@ export const ContactTypeForm = withForm({
 										kind="email"
 										label="Email de contact"
 										description="Indiquez de préférence une adresse de type “contact@monservice.com” plutôt qu’une adresse personnelle"
+										required
 									/>
 								)}
 							</form.AppField>

@@ -1,17 +1,19 @@
-import { useState } from "react";
+import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import NextLink from "next/link";
-import { fr } from "@codegouvfr/react-dsfr";
+import { useState } from "react";
 import { tss } from "tss-react";
 
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { copyToClipboard } from "~/utils/declaration-helper";
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import { appKindOptions } from "~/payload/selectOptions";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { copyToClipboard } from "~/utils/declaration-helper";
 
 export default function DeclarationListItem({
 	declaration,
-}: { declaration: PopulatedDeclaration & { updatedAtFormatted: string } }) {
+}: {
+	declaration: PopulatedDeclaration & { updatedAtFormatted: string };
+}) {
 	const { classes, cx } = useStyles();
 	const { name } = declaration.entity || {};
 	const { rate } = declaration.audit || {};
@@ -40,10 +42,15 @@ export default function DeclarationListItem({
 	return (
 		<div key={declaration.id} className={classes.declarationCard}>
 			<div>
-				<h2 className={classes.declarationTitle}>
-					<NextLink href={`/dashboard/declaration/${declaration.id}`}>
-						{declaration.name}
-					</NextLink>
+				<div className={classes.declarationTitle}>
+					<h2>
+						<NextLink
+							href={`/dashboard/declaration/${declaration.id}`}
+							title={declaration.name || ""}
+						>
+							{declaration.name}
+						</NextLink>
+					</h2>
 					<StatusBadge
 						isPublished={declaration?.status === "published"}
 						isModified={
@@ -55,7 +62,7 @@ export default function DeclarationListItem({
 							!declaration?.publishedContent
 						}
 					/>
-				</h2>
+				</div>
 				<p className={cx(classes.details, fr.cx("fr-text--sm"))}>{name}</p>
 				<p className={cx(classes.details, fr.cx("fr-text--sm"))}>
 					{appKindOptions.find(
@@ -69,27 +76,26 @@ export default function DeclarationListItem({
 					Dernière modification le {declaration.updatedAtFormatted}
 				</p>
 			</div>
-			<div
-				style={
-					hasPublishedDeclaration && rate !== undefined
-						? { visibility: "visible" }
-						: { visibility: "hidden" }
-				}
-			>
-				<h3 className={cx(classes.auditRateValue)}>{rate}%</h3>
-				<p className={classes.auditRateLabel}>taux conformité</p>
-			</div>
+			{hasPublishedDeclaration && (
+				<p className={cx(classes.auditRateWrapper, fr.cx("fr-mb-0"))}>
+					<span className={cx(classes.auditRateValue)}>
+						{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}%
+					</span>
+					<span className={classes.auditRateLabel}>taux conformité</span>
+				</p>
+			)}
+
 			{hasPublishedDeclaration && (
 				<Button
 					iconId="fr-icon-share-line"
 					priority="tertiary"
-					style={{ width: "100%" }}
 					onClick={() =>
 						copyToClipboard(
 							`${process.env.NEXT_PUBLIC_FRONT_URL}/dashboard/declaration/${declaration.id}`,
 							() =>
 								showDeclarationAlert({
-									description: "Lien copié dans le presse-papier",
+									description:
+										"Lien de la déclaration publiée copié dans le presse-papier",
 									severity: "success",
 								}),
 						)
@@ -115,17 +121,21 @@ const useStyles = tss.withName(DeclarationListItem.name).create({
 		},
 	},
 	declarationTitle: {
+		display: "flex",
+		gap: fr.spacing("2v"),
 		marginBottom: fr.spacing("4v"),
-		color: fr.colors.decisions.background.actionHigh.blueFrance.default,
-		fontSize: fr.typography[0].style.fontSize,
-		lineHeight: fr.typography[0].style.lineHeight,
-		overflowWrap: "anywhere",
-		wordBreak: "break-word",
-
-		"& a": {
-			marginRight: fr.spacing("2v"),
+		h2: {
+			color: fr.colors.decisions.background.actionHigh.blueFrance.default,
+			fontSize: fr.typography[0].style.fontSize,
+			lineHeight: fr.typography[0].style.lineHeight,
 			overflowWrap: "anywhere",
 			wordBreak: "break-word",
+			marginBottom: 0,
+
+			"& a": {
+				overflowWrap: "anywhere",
+				wordBreak: "break-word",
+			},
 		},
 	},
 	details: {
@@ -134,13 +144,26 @@ const useStyles = tss.withName(DeclarationListItem.name).create({
 		overflowWrap: "anywhere",
 		wordBreak: "break-word",
 	},
+	auditRateWrapper: {
+		"@media (max-width: 768px)": {
+			display: "flex",
+			flexDirection: "row-reverse",
+			alignItems: "center",
+			justifyContent: "flex-end",
+			"& > span:last-of-type": {
+				marginRight: fr.spacing("2v"),
+			},
+		},
+	},
 	auditRateValue: {
+		...fr.typography[3].style,
 		color: fr.colors.decisions.text.label.grey.default,
-
 		margin: 0,
+		display: "block",
 	},
 	auditRateLabel: {
 		color: fr.colors.decisions.text.label.grey.default,
+		marginBottom: 0,
 	},
 	emptyStateContainer: {
 		display: "flex",

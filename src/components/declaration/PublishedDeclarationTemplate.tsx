@@ -1,12 +1,12 @@
 import DeclarationMarkdownToJsx from "~/components/declaration/DeclarationMarkdownToJsx";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { getConformityStatus } from "~/utils/declaration-helper";
 import {
+	appKindOptions,
 	rgaaVersionOptions,
 	testEnvironmentOptions,
 	toolOptions,
-	appKindOptions,
 } from "~/payload/selectOptions";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { getConformityStatus } from "~/utils/declaration-helper";
 
 export const extractDeclarationContentToPublish = (
 	declaration: PopulatedDeclaration,
@@ -182,6 +182,18 @@ export default function PublishedDeclarationTemplate({
 			]
 		: [];
 
+	const hasCompliantElements =
+		!!declaration.audit.compliantElements &&
+		declaration.audit.compliantElements.trim().length > 0;
+
+	const compliantElementsSection = hasCompliantElements
+		? [
+				"#### Pages du site ayant fait l’objet de la vérification de conformité",
+				`${declaration.audit.compliantElements}`,
+				"",
+			]
+		: [];
+
 	const previewMd = [
 		`# ${declaration.name}`,
 		`${declaration.entityName} s’engage à rendre ses sites internet, intranet, extranet et ses progiciels accessibles (et ses applications mobiles et mobilier urbain numérique) conformément à  l’article 47 de la loi n°2005-102 du 11 février 2005.`,
@@ -201,9 +213,7 @@ export default function PublishedDeclarationTemplate({
 		...technologiesSection,
 		...testEnvironmentsSection,
 		...usedToolsSection,
-		"#### Pages du site ayant fait l’objet de la vérification de conformité",
-		`${declaration.audit.compliantElements}`,
-		"",
+		...compliantElementsSection,
 		"## Retour d’information et contact",
 		"Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de Impôts particulier pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.",
 		`${declaration.contact.url ? `- Envoyer un message sur le formulaire : ${declaration.contact.url}` : ""}`,

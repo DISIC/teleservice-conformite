@@ -1,9 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import NextLink from "next/link";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import NextLink from "next/link";
 import { tss } from "tss-react";
 
+import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
+import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
@@ -11,8 +13,6 @@ import {
 } from "~/payload/selectOptions";
 import { withForm } from "../context";
 import { auditMultiStepFormOptions } from "./schema";
-import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
-import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
 
 export const AuditRealisedForm = withForm({
 	...auditMultiStepFormOptions,
@@ -27,6 +27,7 @@ export const AuditRealisedForm = withForm({
 							{ label: "Oui", value: true },
 							{ label: "Non", value: false },
 						]}
+						required
 					/>
 				)}
 			</form.AppField>
@@ -45,6 +46,7 @@ export const AuditDateForm = withForm({
 							kind="date"
 							label="Date de réalisation de l'audit"
 							max={new Date().toISOString().split("T")[0]}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -53,6 +55,7 @@ export const AuditDateForm = withForm({
 						<field.TextField
 							label="Entité ou personne ayant réalisé l’audit"
 							description='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
+							required
 						/>
 					)}
 				</form.AppField>
@@ -64,6 +67,7 @@ export const AuditDateForm = withForm({
 								label: option.label,
 								value: option.value,
 							}))}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -72,6 +76,9 @@ export const AuditDateForm = withForm({
 						<field.NumberField
 							label="Pourcentage de critères du RGAA respectés"
 							description="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
+							max={100}
+							min={0}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -94,7 +101,7 @@ export const ToolsForm = withForm({
 							/>
 							<field.TagGroupField
 								label="Ajouter un outil"
-								initialTags={field.state.value?.filter(
+								initialTags={(field.state.value || []).filter(
 									(tag) =>
 										![...toolOptions]
 											.map((option) => option.value as string)
@@ -113,7 +120,7 @@ export const ToolsForm = withForm({
 							/>
 							<field.TagGroupField
 								label="Ajouter un environnement"
-								initialTags={field.state.value.filter(
+								initialTags={(field.state.value || []).filter(
 									(tag) =>
 										![...testEnvironmentOptions]
 											.map((option) => option.value as string)
@@ -148,6 +155,7 @@ export const CompliantElementsForm = withForm({
 						}
 						kind="text"
 						textArea
+						required
 					/>
 				)}
 			</form.AppField>
