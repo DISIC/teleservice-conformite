@@ -1,7 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import type { Payload } from "payload";
 import z from "zod";
-
 import {
 	appKindOptions,
 	declarationStatusOptions,
@@ -391,7 +390,7 @@ export const declarationRouter = createTRPCRouter({
 					collection: "audits",
 					data: {
 						declaration: declarationId,
-						realisedBy: auditRealizedBy || "",
+						realisedBy: auditRealizedBy || "-",
 						rgaa_version: (rgaaVersion ??
 							"rgaa_4") as (typeof rgaaVersionOptions)[number]["value"],
 						rate: Number(taux?.replace("%", "")) || 0,

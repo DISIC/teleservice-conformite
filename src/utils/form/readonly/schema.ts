@@ -158,7 +158,7 @@ export const readOnlyFormOptions = formOptions({
 					declarationGeneral as typeof declarationMultiStepFormSchema,
 				);
 			}
-			console.log(value);
+
 			if (value.section === "audit") {
 				return formApi.parseValuesWithSchema(
 					declarationAudit as typeof declarationMultiStepFormSchema,
@@ -168,6 +168,12 @@ export const readOnlyFormOptions = formOptions({
 			if (value.section === "schema") {
 				return formApi.parseValuesWithSchema(
 					declarationSchema as typeof declarationMultiStepFormSchema,
+				);
+			}
+
+			if (value.section === "contact") {
+				return formApi.parseValuesWithSchema(
+					declarationContact as typeof declarationMultiStepFormSchema,
 				);
 			}
 		},
