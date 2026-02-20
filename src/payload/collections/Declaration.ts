@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { declarationStatusOptions, appKindOptions } from "../selectOptions";
+import { appKindOptions, declarationStatusOptions } from "../selectOptions";
 
 export const Declarations: CollectionConfig = {
 	slug: "declarations",
@@ -128,6 +128,17 @@ export const Declarations: CollectionConfig = {
 			type: "text",
 			label: { fr: "Contenu publié" },
 			required: false,
+		},
+		{
+			name: "accessRights",
+			label: { fr: "Droits d'accès" },
+			type: "join",
+			collection: "access-rights",
+			on: "declaration",
+			hasMany: true,
+			admin: {
+				position: "sidebar",
+			},
 		},
 	],
 };
