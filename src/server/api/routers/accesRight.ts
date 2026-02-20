@@ -129,7 +129,7 @@ export const accessRightRouter = createTRPCRouter({
 				subject: "Invitation à collaborer sur une déclaration",
 				html: getInviteAcceptRecapEmailHtml({
 					link: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/accept-invite?token=${token}&email=${email}`,
-					fullName: `${email}`,
+					fullName: `${ctx.session.user.name}`,
 					declarationName: declaration?.name || `Déclaration #${declarationId}`,
 					administrationName: `${declaration?.entity?.name}`,
 				}),
