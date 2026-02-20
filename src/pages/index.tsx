@@ -1,8 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { ProConnectButton } from "@codegouvfr/react-dsfr/ProConnectButton";
+import Cookies from "js-cookie";
 import { tss } from "tss-react";
 import { authClient } from "~/utils/auth-client";
-import Cookies from "js-cookie";
 
 export default function Home() {
 	const { classes, cx } = useStyles();

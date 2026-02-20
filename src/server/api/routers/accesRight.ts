@@ -14,7 +14,7 @@ import {
 import { fetchOrReturnRealValue } from "../utils/payload-helper";
 
 export interface AccesRightAugmented extends AccessRight {
-	user: User;
+	user: User | null;
 }
 
 export const accessRightRouter = createTRPCRouter({
@@ -26,18 +26,17 @@ export const accessRightRouter = createTRPCRouter({
 			const accessRights = await ctx.payload.find({
 				collection: "access-rights",
 				where: {
-					declaration: {
-						equals: id,
-					},
+					declaration: { equals: id },
 				},
 				sort: "createdAt",
-				limit: 10,
+				limit: 100,
+				depth: 1,
 			});
 
 			const tmpAccessRights = await Promise.all(
 				accessRights.docs.map(async (ar) => ({
 					...ar,
-					user: await fetchOrReturnRealValue(ar.user, "users"),
+					user: ar.user ? await fetchOrReturnRealValue(ar.user, "users") : null,
 				})),
 			);
 
@@ -68,6 +67,24 @@ export const accessRightRouter = createTRPCRouter({
 				),
 			};
 
+			const isAccessRightExist = await ctx.payload.find({
+				collection: "access-rights",
+				where: {
+					declaration: { equals: declarationId },
+					or: [
+						{ tmpUserEmail: { equals: email } },
+						{ "user.email": { equals: email } },
+					],
+				},
+				limit: 1,
+			});
+
+			if (isAccessRightExist.totalDocs > 0)
+				throw new TRPCError({
+					code: "CONFLICT",
+					message: "Un droit d'accès existe déjà pour cet utilisateur.",
+				});
+
 			const users = await ctx.payload.find({
 				collection: "users",
 				where: {
@@ -78,13 +95,11 @@ export const accessRightRouter = createTRPCRouter({
 				limit: 1,
 			});
 
-			if (users.totalDocs === 0)
-				throw new TRPCError({
-					code: "NOT_FOUND",
-					message: `Utilisateur avec l'email ${email} non trouvé`,
-				});
+			// To handle the case user doesn't exist, we create an access right with a null user and the email in tmpUserEmail.
+			// When the user will sign up with this email, we will link the access right to the user and send them a notification email.
+			let user = null;
 
-			const user = users.docs[0] as User;
+			if (users.totalDocs === 1) user = users.docs[0] as User;
 
 			const token = crypto.randomBytes(32).toString("hex");
 			const inviteTokenHash = crypto
@@ -92,11 +107,12 @@ export const accessRightRouter = createTRPCRouter({
 				.update(token)
 				.digest("hex");
 
-			const tmpAccesRight = await ctx.payload.create({
+			const accessRight = await ctx.payload.create({
 				collection: "access-rights",
 				data: {
 					declaration: declarationId,
-					user: user.id,
+					user: user ? user.id : null,
+					tmpUserEmail: user ? null : email,
 					role,
 					status: "pending",
 					inviteTokenHash,
@@ -108,20 +124,12 @@ export const accessRightRouter = createTRPCRouter({
 				depth: 1,
 			});
 
-			const accessRight = {
-				...tmpAccesRight,
-				user: await fetchOrReturnRealValue(
-					tmpAccesRight.user as number,
-					"users",
-				),
-			};
-
 			await ctx.payload.sendEmail({
 				to: email,
 				subject: "Invitation à collaborer sur une déclaration",
 				html: getInviteAcceptRecapEmailHtml({
-					link: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/accept-invite?token=${token}&declarationId=${declarationId}`,
-					fullName: `${user.name}`,
+					link: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/accept-invite?token=${token}&email=${email}`,
+					fullName: `${email}`,
 					declarationName: declaration?.name || `Déclaration #${declarationId}`,
 					administrationName: `${declaration?.entity?.name}`,
 				}),
@@ -136,6 +144,17 @@ export const accessRightRouter = createTRPCRouter({
 			const { token } = input;
 
 			const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+			const userExists = await ctx.payload.find({
+				collection: "users",
+				where: { id: { equals: Number(ctx.session.user.id) } },
+				limit: 1,
+			});
+
+			if (userExists.totalDocs === 0)
+				throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+			const currentUser = userExists.docs[0] as User;
 
 			const invites = await ctx.payload.find({
 				collection: "access-rights",
@@ -153,7 +172,9 @@ export const accessRightRouter = createTRPCRouter({
 
 			const invite = {
 				...tmpInvite,
-				user: await fetchOrReturnRealValue(tmpInvite.user as number, "users"),
+				user: tmpInvite.user
+					? await fetchOrReturnRealValue(tmpInvite.user, "users")
+					: null,
 				declaration: await fetchOrReturnRealValue(
 					tmpInvite.declaration as number,
 					"declarations",
@@ -171,7 +192,10 @@ export const accessRightRouter = createTRPCRouter({
 				"entities",
 			);
 
-			if (invite.user.id !== Number(ctx.session.user.id))
+			if (
+				(invite.user && invite.user.id !== currentUser.id) ||
+				(!invite.user && invite.tmpUserEmail !== currentUser.email)
+			)
 				throw new TRPCError({ code: "UNAUTHORIZED" });
 
 			const isExpired =
@@ -183,7 +207,9 @@ export const accessRightRouter = createTRPCRouter({
 				collection: "access-rights",
 				id: invite.id,
 				data: {
+					user: currentUser.id,
 					status: "approved",
+					tmpUserEmail: null,
 					inviteExpiresAt: null,
 					inviteTokenHash: null,
 				},
@@ -197,7 +223,7 @@ export const accessRightRouter = createTRPCRouter({
 				html: getInvitationUserEmailHtml({
 					link: `${declrationListLink}/${invite.declaration.id}`,
 					linkDeclarationList: declrationListLink,
-					fullName: `${invite.user.name}`,
+					fullName: `${currentUser.name}`,
 					declarationName:
 						invite.declaration?.name || `Déclaration #${invite.declaration.id}`,
 					administrationName: `${currentEntity.name}`,

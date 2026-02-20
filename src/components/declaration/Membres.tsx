@@ -8,11 +8,11 @@ import { tss } from "tss-react";
 import z from "zod";
 import type { AccessRight } from "~/payload/payload-types";
 import type { AccesRightAugmented } from "~/server/api/routers/accesRight";
-
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { type Session, authClient } from "~/utils/auth-client";
 import { useAppForm } from "~/utils/form/context";
+import { Loader } from "../system/Loader";
 
 const inviteMembersModal = createModal({
 	id: "inviteMembersModal",
@@ -34,9 +34,8 @@ export default function Membres({ declaration }: MembresProps) {
 
 	const apiUtils = api.useUtils();
 
-	const { data: tmpAccessRights } = api.accessRight.getByDeclarationId.useQuery(
-		{ id: declaration.id },
-	);
+	const { data: tmpAccessRights, isLoading: isLoadingAccessRight } =
+		api.accessRight.getByDeclarationId.useQuery({ id: declaration.id });
 
 	const accessRights = tmpAccessRights ?? [];
 
@@ -65,7 +64,7 @@ export default function Membres({ declaration }: MembresProps) {
 				inviteMembersModal.close();
 				form.reset();
 			} catch (e) {
-				if (e instanceof TRPCClientError && e.data?.code === "NOT_FOUND") {
+				if (e instanceof TRPCClientError && e.data?.code === "CONFLICT") {
 					formApi.fieldInfo.email.instance?.setErrorMap({
 						onSubmit: { message: e.message },
 					});
@@ -96,7 +95,7 @@ export default function Membres({ declaration }: MembresProps) {
 		accessRight,
 		session,
 	}: { accessRight: AccesRightAugmented; session: Session | null }) => {
-		if (Number(session?.user.id) === accessRight.user.id) {
+		if (Number(session?.user.id) === accessRight?.user?.id) {
 			return <></>;
 		}
 
@@ -113,6 +112,8 @@ export default function Membres({ declaration }: MembresProps) {
 			</div>
 		);
 	};
+
+	if (isLoadingAccessRight) return <Loader />;
 
 	return (
 		<section id="members-tab">
@@ -135,7 +136,11 @@ export default function Membres({ declaration }: MembresProps) {
 						buttons={[
 							{
 								children: "Annuler",
-								onClick: () => inviteMembersModal.close(),
+								type: "button",
+								onClick: () => {
+									inviteMembersModal.close();
+									setTimeout(() => form.reset(), 200);
+								},
 							},
 							{ children: "Inviter", type: "submit", doClosesModal: false },
 						]}
@@ -179,17 +184,17 @@ export default function Membres({ declaration }: MembresProps) {
 				bordered
 				className={classes.table}
 				data={accessRights.map((accessRight) => [
-					<div key={`user-${accessRight.user.id}`}>
-						{accessRight.user.name}
+					<div key={`user-${accessRight.id}`}>
+						{accessRight?.user?.name || "-"}
 					</div>,
-					<div key={`mail-${accessRight.user.id}`}>
-						{accessRight.user.email}
+					<div key={`mail-${accessRight.id}`}>
+						{accessRight?.user?.email || accessRight.tmpUserEmail}
 					</div>,
-					<div key={`status-${accessRight.user.id}`}>
+					<div key={`status-${accessRight.id}`}>
 						<StatusBadge role={accessRight.role} status={accessRight.status} />
 					</div>,
 					<ActionsButtons
-						key={`actions-${accessRight.user.id}`}
+						key={`actions-${accessRight.id}`}
 						accessRight={accessRight}
 						session={session}
 					/>,

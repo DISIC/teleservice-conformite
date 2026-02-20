@@ -31,7 +31,14 @@ export const AccessRights: CollectionConfig = {
 			name: "user",
 			type: "relationship",
 			relationTo: "users",
-			required: true,
+		},
+		{
+			name: "tmpUserEmail",
+			label: "Email de l'invité (si l'utilisateur n'existe pas encore)",
+			type: "text",
+			admin: {
+				position: "sidebar",
+			},
 		},
 		{
 			name: "declaration",
