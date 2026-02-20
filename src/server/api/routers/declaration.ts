@@ -4,7 +4,13 @@ import type { Payload } from "payload";
 
 import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { type rgaaVersionOptions, kindOptions, 	appKindOptions, declarationStatusOptions, sourceOptions } from "~/payload/selectOptions";
+import {
+	type rgaaVersionOptions,
+	kindOptions,
+	appKindOptions,
+	declarationStatusOptions,
+	sourceOptions,
+} from "~/payload/selectOptions";
 import {
 	isDeclarationOwner,
 	getDefaultDeclarationName,
@@ -43,7 +49,10 @@ export const importedDeclarationDataSchema = z.object({
 		name: z.string().nullable(),
 		kind: z.string().nullable(),
 	}),
-	status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
+	status: z
+		.enum(sourceOptions.map((option) => option.value))
+		.optional()
+		.default("default"),
 });
 
 const createOrUpdateEntity = async (
@@ -254,7 +263,7 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, name } = input;
 
-		  await isDeclarationOwner({
+			await isDeclarationOwner({
 				payload: ctx.payload,
 				declarationId: id,
 				userId: Number(ctx.session?.user?.id) ?? null,
@@ -316,7 +325,7 @@ export const declarationRouter = createTRPCRouter({
 				contact,
 				schema,
 				entity,
-				status = "default" as typeof sourceOptions[number]["value"],
+				status = "default" as (typeof sourceOptions)[number]["value"],
 			} = input;
 
 			const transactionID = await ctx.payload.db.beginTransaction();
@@ -351,11 +360,13 @@ export const declarationRouter = createTRPCRouter({
 				const declaration = await ctx.payload.create({
 					collection: "declarations",
 					data: {
-						name: service?.name ? `Déclaration de ${service.name}` : declarationName,
+						name: service?.name
+							? `Déclaration de ${service.name}`
+							: declarationName,
 						url: service.url ?? "",
 						app_kind:
-							appKindOptions.find(option => option.value === service.type)?.value ??
-							"other",
+							appKindOptions.find((option) => option.value === service.type)
+								?.value ?? "other",
 						status: "unpublished",
 						entity: newEntityId,
 						created_by: Number(ctx.session.user.id),
@@ -370,7 +381,7 @@ export const declarationRouter = createTRPCRouter({
 					collection: "audits",
 					data: {
 						declaration: declarationId,
-						realisedBy: auditRealizedBy || "",
+						realisedBy: auditRealizedBy || "-",
 						rgaa_version: (rgaaVersion ??
 							"rgaa_4") as (typeof rgaaVersionOptions)[number]["value"],
 						rate: Number(taux?.replace("%", "")) || 0,
@@ -392,7 +403,6 @@ export const declarationRouter = createTRPCRouter({
 					req: { transactionID },
 				});
 
-
 				const relatedContact = await ctx.payload.create({
 					collection: "contacts",
 					data: {
@@ -403,7 +413,6 @@ export const declarationRouter = createTRPCRouter({
 					},
 					req: { transactionID },
 				});
-
 
 				const relatedSchema = await ctx.payload.create({
 					collection: "action-plans",
@@ -454,11 +463,12 @@ export const declarationRouter = createTRPCRouter({
 				declarationId: id,
 				userId: Number(ctx.session?.user?.id) ?? null,
 			});
-			
+
 			if (!isOwner) {
 				throw new TRPCError({
 					code: "UNAUTHORIZED",
-					message: "Must be owner of the declaration to update its published content",
+					message:
+						"Must be owner of the declaration to update its published content",
 				});
 			}
 
