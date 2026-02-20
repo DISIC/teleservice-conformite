@@ -186,7 +186,7 @@ export const declarationRouter = createTRPCRouter({
 				},
 			});
 
-			const accessRight = await ctx.payload.create({
+			await ctx.payload.create({
 				collection: "access-rights",
 				data: {
 					declaration: declaration.id,
