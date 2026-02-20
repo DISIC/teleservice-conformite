@@ -53,8 +53,15 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		},
 	);
 
+	const [loadingStartTime, setLoadingStartTime] = useState<number | null>(null);
+	const [isMinimumDelayComplete, setIsMinimumDelayComplete] = useState(true);
+
 	const { mutateAsync: analyzeUrl, isPending: isAnalyzingUrl } =
 		api.albert.analyzeUrl.useMutation({
+			onMutate: () => {
+				setLoadingStartTime(Date.now());
+				setIsMinimumDelayComplete(false);
+			},
 			onSuccess: async (result) => {
 				const declarationInfos = result.data;
 
@@ -100,10 +107,20 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 				console.error("Error analyzing URL:", error);
 			},
+			onSettled: () => {
+				const elapsed = Date.now() - (loadingStartTime ?? Date.now());
+				const remaining = Math.max(0, 2000 - elapsed);
+				setTimeout(() => setIsMinimumDelayComplete(true), remaining);
+			},
 		});
 
 	const { mutateAsync: getInfoFromAra, isPending: isGettingInfoFromAra } =
 		api.declaration.getInfoFromAra.useMutation({
+			onMutate: () => {
+				setLoadingStartTime(Date.now());
+				console.log("here");
+				setIsMinimumDelayComplete(false);
+			},
 			onSuccess: async (result) => {
 				if (!result.data) {
 					showAlert({
@@ -136,6 +153,15 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				};
 			},
 			onError: (error) => console.error("error", error),
+			onSettled: () => {
+				const elapsed = Date.now() - (loadingStartTime ?? Date.now());
+				const remaining = Math.max(0, 2000 - elapsed);
+				console.log(remaining);
+				setTimeout(() => {
+					console.log("here2");
+					setIsMinimumDelayComplete(true);
+				}, remaining);
+			},
 		});
 
 	const { mutateAsync: createDeclarationFromUrl } =
@@ -300,7 +326,10 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 	const section = useStore(form.store, (state) => state.values.section);
 
-	if (isAnalyzingUrl || isGettingInfoFromAra) return <DeclarationLoader />;
+	const isLoading =
+		isAnalyzingUrl || isGettingInfoFromAra || !isMinimumDelayComplete;
+
+	if (isLoading) return <DeclarationLoader />;
 
 	return (
 		<section className={fr.cx("fr-container")}>
