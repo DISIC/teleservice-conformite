@@ -14,8 +14,8 @@ import type { Payload } from "payload";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import getPayloadClient from "../../payload/payloadClient";
 import { auth } from "~/utils/auth";
+import getPayloadClient from "../../payload/payloadClient";
 
 export type BetterAuthSession = Awaited<ReturnType<typeof auth.api.getSession>>;
 
@@ -57,7 +57,9 @@ export const createTRPCContext = async (_opts: CreateNextContextOptions) => {
 	});
 
 	// Retrieve Better Auth session from incoming request headers
-	const session = await auth.api.getSession({ headers: new Headers(_opts.req.headers as HeadersInit) });
+	const session = await auth.api.getSession({
+		headers: new Headers(_opts.req.headers as HeadersInit),
+	});
 
 	return {
 		payload,
@@ -91,7 +93,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 const isAuthedAsUser = t.middleware(async ({ next, ctx }) => {
 	const userId = Number(ctx.session?.user?.id);
 
-	if (!userId) {
+	if (!userId || !ctx.session) {
 		throw new TRPCError({
 			code: "UNAUTHORIZED",
 			message: "Missing or invalid session",
@@ -100,7 +102,7 @@ const isAuthedAsUser = t.middleware(async ({ next, ctx }) => {
 
 	const user = await ctx.payload.findByID({
 		collection: "users",
-			id: userId,
+		id: userId,
 	});
 
 	if (!user) {
@@ -111,12 +113,9 @@ const isAuthedAsUser = t.middleware(async ({ next, ctx }) => {
 	}
 
 	return next({
-		ctx: {
-			session: ctx.session,
-		},
+		ctx: { session: ctx.session },
 	});
 });
-
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)

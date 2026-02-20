@@ -3,6 +3,7 @@ import { type Payload, getPayload } from "payload";
 import type {
 	ActionPlan,
 	Audit,
+	Config,
 	Contact,
 	Declaration,
 	Entity,
@@ -30,28 +31,22 @@ export type PopulatedDeclaration = Omit<
 	entity: Entity | null;
 };
 
-export async function fetchOrReturnRealValue<T extends keyof CollectionMap>(
-	item: number | CollectionMap[T] | null,
+export async function fetchOrReturnRealValue<
+	T extends keyof Config["collections"],
+>(
+	item: number | Config["collections"][T],
 	collection: T,
-): Promise<CollectionMap[T] | null> {
-	let value: CollectionMap[T];
-
-	if (!item) {
-		return null;
-	}
-
+): Promise<Config["collections"][T]> {
 	if (typeof item === "number") {
 		const payload = await getPayload({ config: payloadConfig });
 
-		value = (await payload.findByID({
+		return (await payload.findByID({
 			collection,
 			id: item,
-		})) as CollectionMap[T];
-	} else {
-		value = item as CollectionMap[T];
+		})) as Config["collections"][T];
 	}
 
-	return value;
+	return item as Config["collections"][T];
 }
 
 export async function getPopulatedDeclaration(
@@ -59,27 +54,25 @@ export async function getPopulatedDeclaration(
 ): Promise<PopulatedDeclaration> {
 	const { audit, contact, actionPlan, created_by, entity } = declaration;
 
-	const sanitizedAudit = await fetchOrReturnRealValue(audit ?? null, "audits");
+	const sanitizedAudit = audit
+		? await fetchOrReturnRealValue(audit, "audits")
+		: null;
 
-	const sanitizedContact = await fetchOrReturnRealValue(
-		contact ?? null,
-		"contacts",
-	);
+	const sanitizedContact = contact
+		? await fetchOrReturnRealValue(contact, "contacts")
+		: null;
 
-	const sanitizedActionPlan = await fetchOrReturnRealValue(
-		actionPlan ?? null,
-		"action-plans",
-	);
+	const sanitizedActionPlan = actionPlan
+		? await fetchOrReturnRealValue(actionPlan, "action-plans")
+		: null;
 
-	const sanitizedEntity = await fetchOrReturnRealValue(
-		entity ?? null,
-		"entities",
-	);
+	const sanitizedEntity = entity
+		? await fetchOrReturnRealValue(entity, "entities")
+		: null;
 
-	const sanitizedUser = await fetchOrReturnRealValue(
-		created_by ?? null,
-		"users",
-	);
+	const sanitizedUser = created_by
+		? await fetchOrReturnRealValue(created_by, "users")
+		: null;
 
 	return {
 		...declaration,

@@ -23,6 +23,7 @@
 		"@emotion/styled": "^11.14.1",
 		"@mui/material": "^7.3.4",
 		"@payloadcms/db-postgres": "^3.61.1",
+		"@payloadcms/email-nodemailer": "3.61.1",
 		"@payloadcms/next": "^3.61.1",
 		"@payloadcms/richtext-lexical": "^3.61.1",
 		"@t3-oss/env-nextjs": "^0.12.0",

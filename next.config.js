@@ -13,6 +13,7 @@ const config = {
   transpilePackages: [
     "@codegouvfr/react-dsfr",
     "tss-react", // This is for MUI or if you use htts://tss-react.dev
+    "better-auth",
   ],
   i18n: {
     locales: ["en"],

@@ -157,9 +157,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			trash: true,
 			depth: 3,
 			where: {
-				"created_by.id": {
-					equals: authSession?.user?.id,
-				},
+				"accessRights.user": { equals: authSession?.user?.id },
 			},
 		});
 
