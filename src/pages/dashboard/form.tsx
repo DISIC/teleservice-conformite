@@ -109,7 +109,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 			},
 			onSettled: () => {
 				const elapsed = Date.now() - (loadingStartTime ?? Date.now());
-				const remaining = Math.max(0, 2000 - elapsed);
+				const remaining = Math.max(0, 15000 - elapsed);
 				setTimeout(() => setIsMinimumDelayComplete(true), remaining);
 			},
 		});
@@ -329,7 +329,8 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const isLoading =
 		isAnalyzingUrl || isGettingInfoFromAra || !isMinimumDelayComplete;
 
-	if (isLoading) return <DeclarationLoader />;
+	if (isLoading)
+		return <DeclarationLoader duration={isAnalyzingUrl ? 15000 : 2000} />;
 
 	return (
 		<section className={fr.cx("fr-container")}>
