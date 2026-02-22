@@ -119,7 +119,7 @@ export const declarationRouter = createTRPCRouter({
 				auditRealizedBy: araJson.context.auditorOrganisation,
 				responsibleEntity: araJson.procedureInitiator,
 				compliantElements: araJson.pageDistributions.map(
-					(page: any) => `${page?.name} (${page?.url})`,
+					(page: any) => page?.name,
 				),
 				testEnvironments: araJson.context.environments.map(
 					(env: any) => env?.assistiveTechnology,

@@ -14,16 +14,15 @@ import { useStyles as useAppStyles } from "~/pages/_app";
 import type { Entity } from "~/payload/payload-types";
 import {
 	appKindOptions,
+	testEnvironmentOptions,
 	type rgaaVersionOptions,
+	toolOptions,
 } from "~/payload/selectOptions";
 import type { importedDeclarationDataSchema } from "~/server/api/routers/declaration";
 import { showAlert } from "~/utils/alert-event";
 import { api } from "~/utils/api";
 import { auth } from "~/utils/auth";
-import {
-	extractTestEnvironmentsFromUrl,
-	extractToolsFromUrl,
-} from "~/utils/declaration-helper";
+import { extractTechnologiesFromUrl } from "~/utils/declaration-helper";
 import { useAppForm } from "~/utils/form/context";
 import {
 	ContextForm,
@@ -77,10 +76,14 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 				setImportedDeclarationData({
 					...declarationInfos,
-					testEnvironments: extractTestEnvironmentsFromUrl(
+					testEnvironments: extractTechnologiesFromUrl(
 						declarationInfos?.testEnvironments ?? [],
+						testEnvironmentOptions,
 					),
-					usedTools: extractToolsFromUrl(declarationInfos?.usedTools ?? []),
+					usedTools: extractTechnologiesFromUrl(
+						declarationInfos?.usedTools ?? [],
+						toolOptions,
+					),
 					rgaaVersion: declarationInfos.rgaaVersion
 						? (declarationInfos.rgaaVersion as (typeof rgaaVersionOptions)[number]["value"])
 						: "rgaa_4",
@@ -134,10 +137,14 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 				setImportedDeclarationData({
 					...result.data,
-					testEnvironments: extractTestEnvironmentsFromUrl(
+					testEnvironments: extractTechnologiesFromUrl(
 						result.data?.testEnvironments ?? [],
+						testEnvironmentOptions,
 					),
-					usedTools: extractToolsFromUrl(result.data?.usedTools ?? []),
+					usedTools: extractTechnologiesFromUrl(
+						result.data?.usedTools ?? [],
+						toolOptions,
+					),
 					entity: {
 						id: entity?.id ?? null,
 						name: entity?.name ?? "",

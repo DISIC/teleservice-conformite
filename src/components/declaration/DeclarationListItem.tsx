@@ -24,14 +24,14 @@ export default function DeclarationListItem({
 		<div key={declaration.id} className={classes.declarationCard}>
 			<div>
 				<div className={classes.declarationTitle}>
-					<h2>
-						<NextLink
-							href={`/dashboard/declaration/${declaration.id}`}
-							title={declaration.name || ""}
-						>
-							{declaration.name}
-						</NextLink>
-					</h2>
+					<Button
+						linkProps={{
+							href: `/dashboard/declaration/${declaration.id}`,
+						}}
+						className={classes.textButton}
+					>
+						{declaration.name}
+					</Button>
 					<StatusBadge
 						isPublished={declaration?.status === "published"}
 						isModified={
@@ -68,7 +68,7 @@ export default function DeclarationListItem({
 
 			{hasPublishedDeclaration && (
 				<Button
-					iconId="fr-icon-share-line"
+					iconId="ri-file-copy-line"
 					priority="tertiary"
 					onClick={() =>
 						copyToClipboard(
@@ -115,6 +115,22 @@ const useStyles = tss.withName(DeclarationListItem.name).create({
 				overflowWrap: "anywhere",
 				wordBreak: "break-word",
 			},
+		},
+	},
+	textButton: {
+		padding: 0,
+		height: "fit-content",
+		minHeight: "fit-content",
+		backgroundColor: "inherit",
+		color: fr.colors.decisions.background.actionHigh.blueFrance.default,
+		fontSize: fr.typography[0].style.fontSize,
+		lineHeight: fr.typography[0].style.lineHeight,
+		fontWeight: 700,
+
+		"&:hover": {
+			textDecoration: "underline",
+			textUnderlineOffset: "4px",
+			backgroundColor: "inherit !important",
 		},
 	},
 	details: {
