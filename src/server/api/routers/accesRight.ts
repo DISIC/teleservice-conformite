@@ -215,14 +215,14 @@ export const accessRightRouter = createTRPCRouter({
 				},
 			});
 
-			const declrationListLink = `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/dashboard/declarations`;
+			const declarationListLink = `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/dashboard/declarations`;
 
 			await ctx.payload.sendEmail({
 				to: invite.invitedBy.email,
 				subject: "Invitation à collaborer sur une déclaration",
 				html: getInvitationUserEmailHtml({
-					link: `${declrationListLink}/${invite.declaration.id}`,
-					linkDeclarationList: declrationListLink,
+					link: `${declarationListLink}/${invite.declaration.id}`,
+					linkDeclarationList: declarationListLink,
 					fullName: `${currentUser.name}`,
 					declarationName:
 						invite.declaration?.name || `Déclaration #${invite.declaration.id}`,

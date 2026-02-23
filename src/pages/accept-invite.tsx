@@ -52,7 +52,10 @@ export const getServerSideProps = (async (context) => {
 		limit: 1,
 	});
 
-	if (userExist.totalDocs === 0) {
+	if (
+		userExist.totalDocs === 0 ||
+		(userExist.totalDocs === 1 && session === null)
+	) {
 		const callback = await auth.api.signInWithOAuth2({
 			body: {
 				providerId: "proconnect",
