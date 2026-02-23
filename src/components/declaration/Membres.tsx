@@ -14,6 +14,11 @@ import { type Session, authClient } from "~/utils/auth-client";
 import { useAppForm } from "~/utils/form/context";
 import { Loader } from "../system/Loader";
 
+const removeAccessRightModal = createModal({
+	id: "removeAccessRightModal",
+	isOpenedByDefault: false,
+});
+
 const inviteMembersModal = createModal({
 	id: "inviteMembersModal",
 	isOpenedByDefault: false,
@@ -34,6 +39,14 @@ export default function Membres({ declaration }: MembresProps) {
 
 	const apiUtils = api.useUtils();
 
+	const { mutateAsync: removeAccessRight } = api.accessRight.delete.useMutation(
+		{
+			onSuccess: () =>
+				apiUtils.accessRight.getByDeclarationId.invalidate({
+					id: declaration.id,
+				}),
+		},
+	);
 	const { data: tmpAccessRights, isLoading: isLoadingAccessRight } =
 		api.accessRight.getByDeclarationId.useQuery({ id: declaration.id });
 
@@ -105,9 +118,40 @@ export default function Membres({ declaration }: MembresProps) {
 		return (
 			<div className={classes.buttonsContainer}>
 				{isCreator && (
-					<Button size="small" priority="secondary" className={classes.button}>
-						Retirer l’accès
-					</Button>
+					<>
+						<Button
+							size="small"
+							priority="secondary"
+							className={classes.button}
+							onClick={removeAccessRightModal.open}
+						>
+							Retirer l’accès
+						</Button>
+						<removeAccessRightModal.Component
+							title="Confirmer la suppression"
+							buttons={[
+								{
+									children: "Annuler",
+									type: "button",
+									onClick: removeAccessRightModal.close,
+								},
+								{
+									children: "Confirmer",
+									onClick: () => removeAccessRight(accessRight.id),
+									type: "button",
+									doClosesModal: true,
+								},
+							]}
+						>
+							<p>
+								Êtes-vous sûr de vouloir retirer l’accès à{" "}
+								{accessRight?.user?.name
+									? `${accessRight.user.name} (${accessRight.user.email})`
+									: accessRight.tmpUserEmail}{" "}
+								?
+							</p>
+						</removeAccessRightModal.Component>
+					</>
 				)}
 				{isInvitePending && (
 					<Button size="small" priority="secondary" className={classes.button}>

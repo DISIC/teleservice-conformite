@@ -232,4 +232,42 @@ export const accessRightRouter = createTRPCRouter({
 
 			return updatedInvite;
 		}),
+
+	delete: userProtectedProcedure
+		.input(z.number())
+		.mutation(async ({ input: id, ctx }) => {
+			const accessRight = await ctx.payload.findByID({
+				collection: "access-rights",
+				id,
+				depth: 0,
+			});
+
+			if (!accessRight)
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Access right not found",
+				});
+
+			const currentUserAccessRight = await ctx.payload.find({
+				collection: "access-rights",
+				where: {
+					declaration: { equals: accessRight.declaration as number },
+					user: { equals: Number(ctx.session.user.id) },
+				},
+				limit: 1,
+			});
+
+			if (currentUserAccessRight.totalDocs === 0)
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Current user cannot remove this access right",
+				});
+
+			const deletedAccesRight = await ctx.payload.delete({
+				collection: "access-rights",
+				id,
+			});
+
+			return deletedAccesRight;
+		}),
 });
