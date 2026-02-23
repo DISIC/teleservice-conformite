@@ -39,6 +39,10 @@ export default function Membres({ declaration }: MembresProps) {
 
 	const apiUtils = api.useUtils();
 
+	const {
+		mutateAsync: resendInviteMail,
+		isSuccess: isResendInviteMailSuccess,
+	} = api.accessRight.resendInviteMail.useMutation();
 	const { mutateAsync: removeAccessRight } = api.accessRight.delete.useMutation(
 		{
 			onSuccess: () =>
@@ -154,7 +158,12 @@ export default function Membres({ declaration }: MembresProps) {
 					</>
 				)}
 				{isInvitePending && (
-					<Button size="small" priority="secondary" className={classes.button}>
+					<Button
+						size="small"
+						priority="secondary"
+						className={classes.button}
+						onClick={() => resendInviteMail(accessRight.id)}
+					>
 						Renvoyer l'invitation
 					</Button>
 				)}

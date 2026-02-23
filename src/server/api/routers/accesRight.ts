@@ -1,7 +1,14 @@
 import * as crypto from "node:crypto";
 import { TRPCError } from "@trpc/server";
+import type { Payload } from "payload";
 import z from "zod";
-import type { AccessRight, User } from "~/payload/payload-types";
+import type {
+	AccessRight,
+	Declaration,
+	Entity,
+	User,
+} from "~/payload/payload-types";
+import type { Session } from "~/utils/auth-client";
 import {
 	getInvitationUserEmailHtml,
 	getInviteAcceptRecapEmailHtml,
@@ -12,6 +19,33 @@ import {
 	userProtectedProcedure,
 } from "../trpc";
 import { fetchOrReturnRealValue } from "../utils/payload-helper";
+
+const sendEmailToInviteUserDeclaration = async ({
+	payload,
+	emailToInvite,
+	declaration,
+	invitedBy,
+	token,
+	entity,
+}: {
+	payload: Payload;
+	emailToInvite: string;
+	declaration: Declaration;
+	invitedBy: { name: string };
+	token: string;
+	entity: Entity;
+}) => {
+	await payload.sendEmail({
+		to: emailToInvite,
+		subject: "Invitation à collaborer sur une déclaration",
+		html: getInviteAcceptRecapEmailHtml({
+			link: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/accept-invite?token=${token}&email=${emailToInvite}`,
+			fullName: `${invitedBy.name}`,
+			declarationName: declaration?.name || `Déclaration #${declaration.id}`,
+			administrationName: `${entity.name}`,
+		}),
+	});
+};
 
 export interface AccesRightAugmented extends AccessRight {
 	user: User | null;
@@ -124,15 +158,13 @@ export const accessRightRouter = createTRPCRouter({
 				depth: 1,
 			});
 
-			await ctx.payload.sendEmail({
-				to: email,
-				subject: "Invitation à collaborer sur une déclaration",
-				html: getInviteAcceptRecapEmailHtml({
-					link: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/accept-invite?token=${token}&email=${email}`,
-					fullName: `${ctx.session.user.name}`,
-					declarationName: declaration?.name || `Déclaration #${declarationId}`,
-					administrationName: `${declaration?.entity?.name}`,
-				}),
+			sendEmailToInviteUserDeclaration({
+				payload: ctx.payload,
+				emailToInvite: email,
+				declaration,
+				invitedBy: ctx.session.user,
+				token,
+				entity: declaration?.entity as Entity,
 			});
 
 			return accessRight;
@@ -218,19 +250,92 @@ export const accessRightRouter = createTRPCRouter({
 			const declarationListLink = `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/dashboard/declarations`;
 
 			await ctx.payload.sendEmail({
-				to: invite.invitedBy.email,
+				to: ctx.session.user.email,
 				subject: "Invitation à collaborer sur une déclaration",
 				html: getInvitationUserEmailHtml({
 					link: `${declarationListLink}/${invite.declaration.id}`,
 					linkDeclarationList: declarationListLink,
-					fullName: `${currentUser.name}`,
+					fullName: currentUser.name,
 					declarationName:
-						invite.declaration?.name || `Déclaration #${invite.declaration.id}`,
-					administrationName: `${currentEntity.name}`,
+						invite.declaration.name || `Déclaration #${invite.declaration.id}`,
+					administrationName: currentEntity.name,
 				}),
 			});
 
 			return updatedInvite;
+		}),
+
+	resendInviteMail: userProtectedProcedure
+		.input(z.number())
+		.mutation(async ({ input: id, ctx }) => {
+			const tmpAccessRight = await ctx.payload.findByID({
+				collection: "access-rights",
+				id,
+				depth: 2,
+			});
+
+			if (!tmpAccessRight)
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Access right not found",
+				});
+
+			const accessRight = {
+				...tmpAccessRight,
+				declaration: await fetchOrReturnRealValue(
+					tmpAccessRight.declaration as number,
+					"declarations",
+				),
+				invitedBy: await fetchOrReturnRealValue(
+					tmpAccessRight.invitedBy as number,
+					"users",
+				),
+				user: tmpAccessRight.user
+					? await fetchOrReturnRealValue(tmpAccessRight.user, "users")
+					: null,
+			};
+
+			const currentEntity = await fetchOrReturnRealValue(
+				typeof accessRight.declaration.entity === "number"
+					? accessRight.declaration.entity
+					: accessRight.declaration.entity.id,
+				"entities",
+			);
+
+			if (accessRight.status !== "pending")
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Only pending invites can be resent",
+				});
+
+			const token = crypto.randomBytes(32).toString("hex");
+			const inviteTokenHash = crypto
+				.createHash("sha256")
+				.update(token)
+				.digest("hex");
+
+			await ctx.payload.update({
+				collection: "access-rights",
+				id,
+				data: {
+					inviteTokenHash,
+					inviteExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+						.toISOString()
+						.split("T")[0], // 7 days from now
+				},
+			});
+
+			await sendEmailToInviteUserDeclaration({
+				payload: ctx.payload,
+				emailToInvite:
+					accessRight.tmpUserEmail || (accessRight.user?.email as string),
+				declaration: accessRight.declaration,
+				invitedBy: accessRight.invitedBy,
+				token,
+				entity: currentEntity,
+			});
+
+			return accessRight;
 		}),
 
 	delete: userProtectedProcedure
