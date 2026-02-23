@@ -10,6 +10,7 @@ import type {
 	User,
 } from "~/payload/payload-types";
 import payloadConfig from "~/payload/payload.config";
+import type { Session } from "~/utils/auth-client";
 
 type CollectionMap = {
 	audits: Audit;
@@ -86,6 +87,7 @@ export async function getPopulatedDeclaration(
 
 export async function getDeclarationById(
 	payload: Payload,
+	session: Session,
 	declarationId: number,
 	options?: { trash?: boolean },
 ) {
@@ -97,7 +99,16 @@ export async function getDeclarationById(
 			trash: options?.trash ?? false,
 		});
 
-		if (!result) {
+		const hasAccessRight = await payload.find({
+			collection: "access-rights",
+			where: {
+				declaration: { equals: declarationId },
+				user: { equals: session.user.id },
+				status: { equals: "approved" },
+			},
+		});
+
+		if (hasAccessRight.totalDocs === 0) {
 			return null;
 		}
 

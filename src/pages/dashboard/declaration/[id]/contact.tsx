@@ -1,26 +1,19 @@
-import type { ParsedUrlQuery } from "node:querystring";
-import { fr } from "@codegouvfr/react-dsfr";
-import config from "@payload-config";
 import type { GetServerSideProps } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
-import { getPayload } from "payload";
 import { useState } from "react";
 import { tss } from "tss-react";
-
-import Head from "next/head";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
 import { useCommonStyles } from "~/components/style/commonStyles";
-import {
-	type PopulatedDeclaration,
-	getDeclarationById,
-} from "~/server/api/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { ContactTypeForm } from "~/utils/form/contact/form";
 import { contactFormOptions } from "~/utils/form/contact/schema";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationContactForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
+import { guardDeclaration } from "~/utils/server-guards";
 
 export default function ContactPage({
 	declaration: initialDeclaration,
@@ -278,34 +271,5 @@ const useStyles = tss.withName(ContactPage.name).create({
 	},
 });
 
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.params as Params;
-
-	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	const payload = await getPayload({ config });
-
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
-
-	if (!declaration) {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	return {
-		props: {
-			declaration: declaration,
-		},
-	};
-};
+export const getServerSideProps: GetServerSideProps = async (context) =>
+	guardDeclaration(context);

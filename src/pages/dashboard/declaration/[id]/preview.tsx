@@ -2,7 +2,11 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import config from "@payload-config";
-import type { GetServerSideProps } from "next";
+import type {
+	GetServerSideProps,
+	InferGetServerSidePropsType,
+	Redirect,
+} from "next";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { tss } from "tss-react";
@@ -24,6 +28,7 @@ import {
 	getDeclarationById,
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
+import { auth } from "~/utils/auth";
 
 type RequiredPopulatedDeclaration = Omit<
 	PopulatedDeclaration,
@@ -38,7 +43,7 @@ type RequiredPopulatedDeclaration = Omit<
 
 export default function DeclarationPreviewPage({
 	declaration,
-}: { declaration: RequiredPopulatedDeclaration }) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes, cx } = useStyles();
 	const router = useRouter();
 
@@ -156,46 +161,59 @@ interface Params extends ParsedUrlQuery {
 	id: string;
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = (async (context) => {
 	const { id } = context.params as Params;
 
+	const redirect: Redirect = {
+		destination: "/dashboard",
+		permanent: false,
+	};
+
 	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
+		return { redirect };
 	}
 
 	const payload = await getPayload({ config });
 
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
+	const session = await auth.api.getSession({
+		headers: context.req.headers as HeadersInit,
+	});
 
-	const { audit, contact, entity, actionPlan, created_by } = declaration || {};
+	if (!session) return { redirect };
 
-	if (!declaration) {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
+	const declaration = await getDeclarationById(
+		payload,
+		session,
+		Number.parseInt(id),
+	);
+
+	if (!declaration) return { redirect };
+
+	const { audit, contact, entity, actionPlan, created_by } = declaration;
 
 	if (!audit || !contact || !entity || !actionPlan || !created_by) {
 		return {
-			props: {},
-			redirect: { destination: `/dashboard/declaration/${declaration.id}` },
+			redirect: {
+				destination: `/dashboard/declaration/${declaration.id}`,
+				permanent: false,
+			},
 		};
 	}
 
 	if (declaration?.publishedContent && declaration.status === "published") {
 		return {
-			props: {},
-			redirect: { destination: `/dashboard/declaration/${declaration.id}` },
+			redirect: {
+				destination: `/dashboard/declaration/${declaration.id}`,
+				permanent: false,
+			},
 		};
 	}
 
 	return {
 		props: {
-			declaration,
+			declaration: declaration as RequiredPopulatedDeclaration,
 		},
 	};
-};
+}) satisfies GetServerSideProps<{
+	declaration: RequiredPopulatedDeclaration;
+}>;

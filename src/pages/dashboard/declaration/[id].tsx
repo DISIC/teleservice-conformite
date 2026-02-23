@@ -1,4 +1,3 @@
-import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
@@ -6,33 +5,27 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
-import config from "@payload-config";
-import type { GetServerSideProps } from "next";
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { getPayload } from "payload";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react";
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
-import {
-	type PopulatedDeclaration,
-	getDeclarationById,
-} from "~/server/api/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { copyToClipboard } from "~/utils/declaration-helper";
+import { guardDeclaration } from "~/utils/server-guards";
 
 const deleteModal = createModal({
 	id: "delete-modal",
 	isOpenedByDefault: false,
 });
 
-interface DeclarationPageProps {
-	declaration: PopulatedDeclaration;
-}
-
-export default function DeclarationPage({ declaration }: DeclarationPageProps) {
+export default function DeclarationPage({
+	declaration,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
 	const { published } = router.query;
 	const hasPublishedDeclaration = !!declaration?.publishedContent;
@@ -371,34 +364,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 	},
 });
 
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.params as Params;
-
-	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	const payload = await getPayload({ config });
-
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
-
-	if (!declaration) {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	return {
-		props: {
-			declaration: declaration,
-		},
-	};
-};
+export const getServerSideProps = (async (context) =>
+	guardDeclaration(context)) satisfies GetServerSideProps<{
+	declaration: PopulatedDeclaration;
+}>;

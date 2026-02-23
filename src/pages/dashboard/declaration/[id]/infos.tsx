@@ -1,28 +1,21 @@
-import type { ParsedUrlQuery } from "node:querystring";
-import config from "@payload-config";
-import type { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
-import { getPayload } from "payload";
-import { useState } from "react";
-
-import { fr } from "@codegouvfr/react-dsfr";
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { useState } from "react";
 import { tss } from "tss-react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
 import { useCommonStyles } from "~/components/style/commonStyles";
-import {
-	type PopulatedDeclaration,
-	getDeclarationById,
-} from "~/server/api/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
+import { guardDeclaration } from "~/utils/server-guards";
 
 export default function GeneralInformationsPage({
 	declaration: initialDeclaration,
-}: { declaration: PopulatedDeclaration }) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
 	const { classes } = useStyles();
 	const { classes: commonClasses } = useCommonStyles();
@@ -177,34 +170,7 @@ const useStyles = tss.withName(GeneralInformationsPage.name).create({
 	},
 });
 
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.params as Params;
-
-	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	const payload = await getPayload({ config });
-
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
-
-	if (!declaration) {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	return {
-		props: {
-			declaration: declaration,
-		},
-	};
-};
+export const getServerSideProps = (async (context) =>
+	guardDeclaration(context)) satisfies GetServerSideProps<{
+	declaration: PopulatedDeclaration;
+}>;

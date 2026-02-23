@@ -1,22 +1,15 @@
-import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
-import config from "@payload-config";
 import { useStore } from "@tanstack/react-form";
-import type { GetServerSideProps } from "next";
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
-import { getPayload } from "payload";
 import { useState } from "react";
 import React from "react";
 import { tss } from "tss-react";
-
-import Head from "next/head";
 import { MultiStep } from "~/components/MultiStep";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
-import {
-	type PopulatedDeclaration,
-	getDeclarationById,
-} from "~/server/api/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import {
 	AuditDateForm,
@@ -30,6 +23,7 @@ import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationAuditForm } from "~/utils/form/readonly/form";
 import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
+import { guardDeclaration } from "~/utils/server-guards";
 
 type Steps<T> = {
 	slug: T;
@@ -57,9 +51,7 @@ const steps: Steps<Section>[] = [
 
 export default function AuditPage({
 	declaration: initialDeclaration,
-}: {
-	declaration: PopulatedDeclaration;
-}) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
 	const { classes, cx } = useStyles();
 	const [declaration, setDeclaration] =
@@ -413,34 +405,5 @@ const useStyles = tss.withName(AuditPage.name).create({
 	},
 });
 
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.params as Params;
-
-	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	const payload = await getPayload({ config });
-
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
-
-	if (!declaration) {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	return {
-		props: {
-			declaration: declaration,
-		},
-	};
-};
+export const getServerSideProps: GetServerSideProps = async (context) =>
+	guardDeclaration(context);
