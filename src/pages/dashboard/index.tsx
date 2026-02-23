@@ -158,6 +158,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			depth: 3,
 			where: {
 				"accessRights.user": { equals: authSession?.user?.id },
+				"accessRights.status": { equals: "approved" },
 			},
 		});
 
