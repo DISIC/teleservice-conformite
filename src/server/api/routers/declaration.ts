@@ -390,7 +390,7 @@ export const declarationRouter = createTRPCRouter({
 						technologies: technologies.map((tech) => ({ name: tech })),
 						compliantElements:
 							compliantElements.map((element) => `- ${element}`).join("\n") ||
-							"",
+							"N/A",
 						nonCompliantElements: nonCompliantElements || "",
 						disproportionnedCharge: disproportionnedCharge || "",
 						optionalElements: optionalElements || "",
