@@ -29,7 +29,7 @@ interface MembresProps {
 }
 
 export default function Membres({ declaration }: MembresProps) {
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 	const { data: session } = authClient.useSession();
 
 	const apiUtils = api.useUtils();
@@ -99,12 +99,17 @@ export default function Membres({ declaration }: MembresProps) {
 			return <></>;
 		}
 
+		const isCreator = declaration.created_by?.id === Number(session?.user.id);
+		const isInvitePending = accessRight.status === "pending";
+
 		return (
 			<div className={classes.buttonsContainer}>
-				<Button size="small" priority="secondary" className={classes.button}>
-					Retirer l’accès
-				</Button>
-				{accessRight.status === "pending" && (
+				{isCreator && (
+					<Button size="small" priority="secondary" className={classes.button}>
+						Retirer l’accès
+					</Button>
+				)}
+				{isInvitePending && (
 					<Button size="small" priority="secondary" className={classes.button}>
 						Renvoyer l'invitation
 					</Button>
