@@ -23,18 +23,13 @@ export function RadioField(props: RadioFieldProps) {
 	const field = useFieldContext<TValue>();
 
 	if (readOnlyField) {
-		return (
-			<ReadOnlyField
-				label={commonProps.legend}
-				value={
-					typeof field.state.value === "boolean"
-						? commonProps.options
-								.find((option) => option.value === field.state.value)
-								?.label?.toString() || ""
-						: field.state.value
-				}
-			/>
-		);
+		const value =
+			typeof field.state.value === "boolean"
+				? commonProps.options
+						.find((option) => option.value === field.state.value)
+						?.label?.toString() || ""
+				: field.state.value;
+		return <ReadOnlyField label={commonProps.legend} value={value} />;
 	}
 
 	return (
