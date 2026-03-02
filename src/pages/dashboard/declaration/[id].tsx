@@ -46,7 +46,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 	const [declarationName, _setDeclarationName] = useState<string>(
 		declaration?.name ?? "",
 	);
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{

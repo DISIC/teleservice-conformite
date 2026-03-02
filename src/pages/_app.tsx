@@ -68,7 +68,7 @@ const getBackgroundColor = (pathname: string) => {
 
 function App({ Component, pageProps }: AppProps) {
 	const router = useRouter();
-	const { classes, cx } = useStyles({
+	const { classes } = useStyles({
 		backgroundColor: getBackgroundColor(router.pathname),
 	});
 	const { data: authSession, isPending: isPendingAuth } =

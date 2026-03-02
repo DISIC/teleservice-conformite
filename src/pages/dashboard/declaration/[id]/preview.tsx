@@ -40,7 +40,7 @@ export default function DeclarationPreviewPage({
 }: {
 	declaration: RequiredPopulatedDeclaration;
 }) {
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 	const router = useRouter();
 
 	const publishedDeclarationContent: PublishedDeclaration =

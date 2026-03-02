@@ -21,7 +21,7 @@ export const contactDefaultValues: ZContact = {
 export const contactFormOptions = formOptions({
 	defaultValues: contactDefaultValues,
 	validators: {
-		onSubmit: ({ value, formApi }) => {
+		onSubmit: ({ formApi }) => {
 			return formApi.parseValuesWithSchema(contact as typeof contact);
 		},
 	},

@@ -59,7 +59,7 @@ export default function AuditPage({
 	declaration: PopulatedDeclaration;
 }) {
 	const router = useRouter();
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
@@ -156,7 +156,7 @@ export default function AuditPage({
 		},
 	});
 
-	const { mutateAsync: deleteAudit } = api.audit.delete.useMutation({
+	api.audit.delete.useMutation({
 		onSuccess: async () => {
 			router.push(declarationPagePath);
 		},
@@ -271,7 +271,7 @@ export default function AuditPage({
 
 	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			if (!isAchieved && declaration?.audit) {
 				await updateDeclarationAudit(audit?.id ?? -1, {
 					status: "notRealised",

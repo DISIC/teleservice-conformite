@@ -36,7 +36,7 @@ const defaultValues: ZSchemaFormSchema = {
 export const schemaFormOptions = formOptions({
 	defaultValues,
 	validators: {
-		onSubmit: ({ value, formApi }) => {
+		onSubmit: ({ formApi }) => {
 			return formApi.parseValuesWithSchema(
 				schemaFormSchema as typeof schemaFormSchema,
 			);

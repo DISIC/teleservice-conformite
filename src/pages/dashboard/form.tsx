@@ -1,4 +1,3 @@
-import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
 import config from "@payload-config";
 import { useStore } from "@tanstack/react-form";
@@ -416,10 +415,6 @@ const useStyles = tss.withName(FormPage.name).create({
 		fontWeight: 400,
 	},
 });
-
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const payload = await getPayload({ config });

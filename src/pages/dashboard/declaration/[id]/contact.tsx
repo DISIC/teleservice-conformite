@@ -25,7 +25,7 @@ export default function ContactPage({
 }: {
 	declaration: PopulatedDeclaration;
 }) {
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 	const { classes: commonClasses } = useCommonStyles();
 	const router = useRouter();
 	const [declaration, setDeclaration] =
@@ -145,7 +145,7 @@ export default function ContactPage({
 
 	const form = useAppForm({
 		...contactFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			await addContact({
 				email: value?.emailContact ?? "",
 				url: value?.contactLink ?? "",
@@ -156,7 +156,7 @@ export default function ContactPage({
 
 	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			const data = value.contact.contactOptions?.reduce(
 				(acc: { email?: string; url?: string }, option) => {
 					if (option === "email") {

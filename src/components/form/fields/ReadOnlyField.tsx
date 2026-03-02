@@ -7,7 +7,6 @@ import type { DefaultFieldProps } from "~/utils/form/context";
 interface ReadOnlyFieldProps extends DefaultFieldProps {
 	label: ReactNode;
 	placeholder?: string;
-	className?: string;
 	value: string | string[];
 	textArea?: boolean;
 	addSectionBorder?: boolean;
@@ -18,7 +17,6 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 	const {
 		label,
 		placeholder = "Non",
-		className,
 		value,
 		textArea = false,
 		addSectionBorder = false,

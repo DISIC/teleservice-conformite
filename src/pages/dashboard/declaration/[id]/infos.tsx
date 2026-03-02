@@ -5,7 +5,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useState } from "react";
-import { tss } from "tss-react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
 import { useCommonStyles } from "~/components/style/commonStyles";
@@ -24,7 +23,6 @@ export default function GeneralInformationsPage({
 	declaration: PopulatedDeclaration;
 }) {
 	const router = useRouter();
-	const { classes } = useStyles();
 	const { classes: commonClasses } = useCommonStyles();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
@@ -117,7 +115,7 @@ export default function GeneralInformationsPage({
 
 	const form = useAppForm({
 		...readOnlyFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			await updateDeclaration(value.general, declaration?.id ?? -1);
 		},
 	});
@@ -169,13 +167,6 @@ export default function GeneralInformationsPage({
 		</>
 	);
 }
-
-const useStyles = tss.withName(GeneralInformationsPage.name).create({
-	actionButtonsContainer: {
-		display: "flex",
-		justifyContent: "space-between",
-	},
-});
 
 interface Params extends ParsedUrlQuery {
 	id: string;

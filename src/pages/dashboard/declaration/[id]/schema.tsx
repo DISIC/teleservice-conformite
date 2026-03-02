@@ -25,7 +25,7 @@ export default function SchemaPage({
 }: {
 	declaration: PopulatedDeclaration;
 }) {
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 	const { classes: commonClasses } = useCommonStyles();
 	const router = useRouter();
 	const [declaration, setDeclaration] =
@@ -152,7 +152,7 @@ export default function SchemaPage({
 
 	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			const {
 				hasDoneCurrentYearSchema,
 				currentYearSchemaUrl = "",
@@ -173,7 +173,7 @@ export default function SchemaPage({
 
 	const form = useAppForm({
 		...schemaFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			await addSchema({
 				currentYearSchemaUrl: value.currentYearSchemaUrl ?? "",
 				previousYearsSchemaUrl: value.previousYearsSchemaUrl ?? "",

@@ -313,7 +313,7 @@ export const declarationRouter = createTRPCRouter({
 				rgaaVersion,
 				auditRealizedBy,
 				publishedAt,
-				responsibleEntity,
+				// responsibleEntity,
 				compliantElements,
 				technologies,
 				testEnvironments,
