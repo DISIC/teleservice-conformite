@@ -191,7 +191,9 @@ export const getServerSideProps = (async (context) => {
 
 	const { audit, contact, entity, actionPlan, created_by } = declaration;
 
-	if (!audit || !contact || !entity || !actionPlan || !created_by) {
+	const isDeclarationFull = audit && contact && entity && actionPlan && created_by;
+
+	if (!isDeclarationFull) {
 		return {
 			redirect: {
 				destination: `/dashboard/declaration/${declaration.id}`,

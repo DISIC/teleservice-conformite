@@ -28,9 +28,8 @@ export const getServerSideProps = (async (context) => {
 		typeof token !== "string" ||
 		!email ||
 		typeof email !== "string"
-	) {
+	)
 		return { redirect };
-	}
 
 	const payload = await getPayloadClient({
 		seed: false,

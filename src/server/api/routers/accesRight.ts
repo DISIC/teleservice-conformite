@@ -20,6 +20,18 @@ import {
 } from "../trpc";
 import { fetchOrReturnRealValue } from "../utils/payload-helper";
 
+type EmailToInviteUserDeclarationProps = {
+	payload: Payload;
+	emailToInvite: string;
+	declaration: Declaration;
+	invitedBy: { name: string };
+	token: string;
+	entity: Entity;
+};
+
+const getInviteExpiresAt = () =>
+	new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
 const sendEmailToInviteUserDeclaration = async ({
 	payload,
 	emailToInvite,
@@ -27,14 +39,7 @@ const sendEmailToInviteUserDeclaration = async ({
 	invitedBy,
 	token,
 	entity,
-}: {
-	payload: Payload;
-	emailToInvite: string;
-	declaration: Declaration;
-	invitedBy: { name: string };
-	token: string;
-	entity: Entity;
-}) => {
+}: EmailToInviteUserDeclarationProps) => {
 	await payload.sendEmail({
 		to: emailToInvite,
 		subject: "Invitation à collaborer sur une déclaration",
@@ -95,10 +100,7 @@ export const accessRightRouter = createTRPCRouter({
 
 			const declaration = {
 				...tmpDeclaration,
-				entity: await fetchOrReturnRealValue(
-					tmpDeclaration.entity as number,
-					"entities",
-				),
+				entity: await fetchOrReturnRealValue(tmpDeclaration.entity, "entities"),
 			};
 
 			const isAccessRightExist = await ctx.payload.find({
@@ -151,9 +153,7 @@ export const accessRightRouter = createTRPCRouter({
 					status: "pending",
 					inviteTokenHash,
 					invitedBy: Number(ctx.session.user.id),
-					inviteExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-						.toISOString()
-						.split("T")[0], // 7 days from now
+					inviteExpiresAt: getInviteExpiresAt(),
 				},
 				depth: 1,
 			});
@@ -208,19 +208,13 @@ export const accessRightRouter = createTRPCRouter({
 					? await fetchOrReturnRealValue(tmpInvite.user, "users")
 					: null,
 				declaration: await fetchOrReturnRealValue(
-					tmpInvite.declaration as number,
+					tmpInvite.declaration,
 					"declarations",
-				),
-				invitedBy: await fetchOrReturnRealValue(
-					tmpInvite.invitedBy as number,
-					"users",
 				),
 			};
 
 			const currentEntity = await fetchOrReturnRealValue(
-				typeof invite.declaration.entity === "number"
-					? invite.declaration.entity
-					: invite.declaration.entity.id,
+				invite.declaration.entity,
 				"entities",
 			);
 
@@ -283,12 +277,8 @@ export const accessRightRouter = createTRPCRouter({
 			const accessRight = {
 				...tmpAccessRight,
 				declaration: await fetchOrReturnRealValue(
-					tmpAccessRight.declaration as number,
+					tmpAccessRight.declaration,
 					"declarations",
-				),
-				invitedBy: await fetchOrReturnRealValue(
-					tmpAccessRight.invitedBy as number,
-					"users",
 				),
 				user: tmpAccessRight.user
 					? await fetchOrReturnRealValue(tmpAccessRight.user, "users")
@@ -296,9 +286,7 @@ export const accessRightRouter = createTRPCRouter({
 			};
 
 			const currentEntity = await fetchOrReturnRealValue(
-				typeof accessRight.declaration.entity === "number"
-					? accessRight.declaration.entity
-					: accessRight.declaration.entity.id,
+				accessRight.declaration.entity,
 				"entities",
 			);
 
@@ -319,9 +307,7 @@ export const accessRightRouter = createTRPCRouter({
 				id,
 				data: {
 					inviteTokenHash,
-					inviteExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-						.toISOString()
-						.split("T")[0], // 7 days from now
+					inviteExpiresAt: getInviteExpiresAt(),
 				},
 			});
 
@@ -330,7 +316,7 @@ export const accessRightRouter = createTRPCRouter({
 				emailToInvite:
 					accessRight.tmpUserEmail || (accessRight.user?.email as string),
 				declaration: accessRight.declaration,
-				invitedBy: accessRight.invitedBy,
+				invitedBy: { name: ctx.session.user.name },
 				token,
 				entity: currentEntity,
 			});
