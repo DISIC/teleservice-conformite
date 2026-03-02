@@ -5,24 +5,18 @@
 		"clientKind": "git",
 		"useIgnoreFile": true
 	},
-	"files": { "ignoreUnknown": false },
-	"formatter": {
-		"enabled": true,
+	"files": {
+		"ignoreUnknown": false,
 		"includes": [
 			"**",
-			"!./src/app/(payload)/**",
-			"!./src/payload/payload-types.ts",
-			"!./src/payload/migrations/**"
+			"!src/app/(payload)/*",
+			"!src/payload/payload-types.ts",
+			"!src/payload/migrations/*"
 		]
 	},
+	"formatter": { "enabled": true },
 	"linter": {
 		"enabled": true,
-		"includes": [
-			"**",
-			"!./src/app/(payload)/**",
-			"!./src/payload/payload-types.ts",
-			"!./src/payload/migrations/**"
-		],
 		"rules": {
 			"nursery": {
 				"useSortedClasses": {
