@@ -33,7 +33,8 @@ export function NumberField(props: NumberFieldProps) {
 			}}
 			state={field.state.meta.errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={
-				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
+				field.state.meta.errors.map((error) => error.message).join(",") ??
+				commonProps
 			}
 		/>
 	);

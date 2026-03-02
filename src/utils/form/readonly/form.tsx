@@ -244,7 +244,7 @@ export const DeclarationAuditForm = withForm({
 								return (
 									<div>
 										<field.CheckboxGroupField
-											label="Outils utilisés pour évaluer l’accessibilité (facultatif)"
+											legend="Outils utilisés pour évaluer l’accessibilité (facultatif)"
 											options={[...toolOptions]}
 										/>
 										<field.TagGroupField
@@ -264,7 +264,7 @@ export const DeclarationAuditForm = withForm({
 							{(field) => (
 								<div>
 									<field.CheckboxGroupField
-										label="Environnement de tests"
+										legend="Environnement de tests"
 										options={[...testEnvironmentOptions]}
 									/>
 									<field.TagGroupField
@@ -328,7 +328,7 @@ export const DeclarationContactForm = withForm({
 					{(field) => (
 						<>
 							<field.CheckboxGroupField
-								label="Manière de contacter la personne responsable de l’accessibilité"
+								legend="Manière de contacter la personne responsable de l’accessibilité"
 								options={[
 									{ label: "Formulaire en ligne", value: "url" },
 									{ label: "Point de contact", value: "email" },
