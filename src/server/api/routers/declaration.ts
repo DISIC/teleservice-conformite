@@ -1,21 +1,20 @@
 import { TRPCError } from "@trpc/server";
-import z from "zod";
 import type { Payload } from "payload";
-
-import { declarationGeneral } from "~/utils/form/declaration/schema";
-import { createTRPCRouter, userProtectedProcedure } from "../trpc";
+import z from "zod";
 import {
-	type rgaaVersionOptions,
-	kindOptions,
 	appKindOptions,
 	declarationStatusOptions,
+	kindOptions,
+	type rgaaVersionOptions,
 	sourceOptions,
 } from "~/payload/selectOptions";
 import {
-	isDeclarationOwner,
 	getDefaultDeclarationName,
 	getPopulatedDeclaration,
+	isDeclarationOwner,
 } from "~/server/api/utils/payload-helper";
+import { declarationGeneral } from "~/utils/form/declaration/schema";
+import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 
 const statusValues = declarationStatusOptions.map((option) => option.value);
 
@@ -439,7 +438,7 @@ export const declarationRouter = createTRPCRouter({
 				await ctx.payload.db.commitTransaction(transactionID);
 
 				return { data: declarationId };
-			} catch (error) {
+			} catch (_error) {
 				await ctx.payload.db.rollbackTransaction(transactionID);
 
 				throw new TRPCError({

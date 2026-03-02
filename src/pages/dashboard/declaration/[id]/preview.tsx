@@ -3,9 +3,14 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { tss } from "tss-react";
+import PublishedDeclarationTemplate, {
+	extractDeclarationContentToPublish,
+	type PublishedDeclaration,
+} from "~/components/declaration/PublishedDeclarationTemplate";
 import type {
 	ActionPlan,
 	Audit,
@@ -13,15 +18,9 @@ import type {
 	Entity,
 	User,
 } from "~/payload/payload-types";
-
-import Head from "next/head";
-import PublishedDeclarationTemplate, {
-	extractDeclarationContentToPublish,
-	type PublishedDeclaration,
-} from "~/components/declaration/PublishedDeclarationTemplate";
 import {
-	type PopulatedDeclaration,
 	getDeclarationById,
+	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 
@@ -38,7 +37,9 @@ type RequiredPopulatedDeclaration = Omit<
 
 export default function DeclarationPreviewPage({
 	declaration,
-}: { declaration: RequiredPopulatedDeclaration }) {
+}: {
+	declaration: RequiredPopulatedDeclaration;
+}) {
 	const { classes, cx } = useStyles();
 	const router = useRouter();
 
@@ -61,7 +62,7 @@ export default function DeclarationPreviewPage({
 				id: declaration.id,
 				content: JSON.stringify(publishedDeclarationContent),
 			});
-		} catch (error) {
+		} catch (_error) {
 			return;
 		}
 	};
@@ -168,7 +169,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const payload = await getPayload({ config });
 
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
+	const declaration = await getDeclarationById(
+		payload,
+		Number.parseInt(id, 10),
+	);
 
 	const { audit, contact, entity, actionPlan, created_by } = declaration || {};
 

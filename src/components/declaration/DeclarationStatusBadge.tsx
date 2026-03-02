@@ -1,11 +1,15 @@
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import type { AlertProps } from "@codegouvfr/react-dsfr/Alert";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
 export const StatusBadge = ({
 	isPublished,
 	isModified,
 	isDraft,
-}: { isPublished: boolean; isModified: boolean; isDraft: boolean }) => {
+}: {
+	isPublished: boolean;
+	isModified: boolean;
+	isDraft: boolean;
+}) => {
 	const statuses = [
 		{ show: isPublished, label: "Publiée", severity: "success" },
 		{ show: isModified, label: "Modifiée", severity: "warning" },

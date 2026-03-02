@@ -3,8 +3,8 @@ import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { Header, type HeaderProps } from "@codegouvfr/react-dsfr/Header";
 import type { MainNavigationProps } from "@codegouvfr/react-dsfr/MainNavigation";
-import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
 import { createNextDsfrIntegrationApi } from "@codegouvfr/react-dsfr/next-pagesdir";
+import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import Link from "next/link";
@@ -81,7 +81,7 @@ function App({ Component, pageProps }: AppProps) {
 		if (pathname === "/dashboard/form") return "Ajouter une déclaration";
 	};
 
-	const navigationItems =
+	const _navigationItems =
 		isAuthenticated || router.pathname.startsWith("/dashboard")
 			? userNavigationItems.map((item) => ({
 					...item,

@@ -3,15 +3,15 @@ import Accessibility from "@codegouvfr/react-dsfr/picto/Accessibility";
 import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
 import Internet from "@codegouvfr/react-dsfr/picto/Internet";
 import System from "@codegouvfr/react-dsfr/picto/System";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { tss } from "tss-react";
 
 import HelpingMessage from "~/components/declaration/HelpingMessage";
 import { appKindOptions, kindOptions } from "~/payload/selectOptions";
 import { withForm } from "../context";
 import {
-	type ZInitialDeclaration,
 	declarationMultiStepFormOptions,
+	type ZInitialDeclaration,
 } from "./schema";
 
 type DeclarationKind =

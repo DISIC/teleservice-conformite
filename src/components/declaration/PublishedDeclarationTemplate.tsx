@@ -85,7 +85,10 @@ export type PublishedDeclaration = {
 export default function PublishedDeclarationTemplate({
 	declaration,
 	mode = "published",
-}: { declaration: PublishedDeclaration; mode?: "preview" | "published" }) {
+}: {
+	declaration: PublishedDeclaration;
+	mode?: "preview" | "published";
+}) {
 	const hasCurrentSchema =
 		declaration.actionPlan.currentYearSchemaUrl.trim().length > 0;
 	const hasPreviousSchema =

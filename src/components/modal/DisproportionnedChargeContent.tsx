@@ -1,5 +1,5 @@
-import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
+import { tss } from "tss-react";
 
 export default function DisproportionnedChargeContent() {
 	const { classes, cx } = useStyles();

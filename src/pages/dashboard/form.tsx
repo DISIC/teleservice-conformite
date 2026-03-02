@@ -14,8 +14,8 @@ import { useStyles as useAppStyles } from "~/pages/_app";
 import type { Entity } from "~/payload/payload-types";
 import {
 	appKindOptions,
-	testEnvironmentOptions,
 	type rgaaVersionOptions,
+	testEnvironmentOptions,
 	toolOptions,
 } from "~/payload/selectOptions";
 import type { importedDeclarationDataSchema } from "~/server/api/routers/declaration";
@@ -231,7 +231,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					: (result?.data?.service?.type ?? "other"),
 				serviceUrl: result?.data?.service?.url ?? "",
 			};
-		} catch (error) {
+		} catch (_error) {
 			return { serviceName: "", serviceType: "other", serviceUrl: "" };
 		}
 	};
@@ -253,7 +253,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					: (result?.data?.service?.type ?? "other"),
 				serviceUrl: result?.data?.service?.url ?? "",
 			};
-		} catch (err) {
+		} catch (_err) {
 			return { serviceName: "", serviceType: "other", serviceUrl: "" };
 		}
 	};
@@ -352,7 +352,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						e.preventDefault();
 						form.handleSubmit();
 					}}
-					onInvalid={(e) => {
+					onInvalid={(_e) => {
 						form.validate("submit");
 					}}
 				>

@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import type { InputProps } from "@codegouvfr/react-dsfr/Input";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 

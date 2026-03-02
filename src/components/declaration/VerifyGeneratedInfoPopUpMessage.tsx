@@ -1,5 +1,5 @@
-import HelpingMessage from "./HelpingMessage";
 import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
+import HelpingMessage from "./HelpingMessage";
 
 export default function VerifyGeneratedInfoHelpingMessage() {
 	return (

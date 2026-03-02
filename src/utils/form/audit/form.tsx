@@ -1,7 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import NextLink from "next/link";
 import { tss } from "tss-react";
 
 import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
@@ -293,16 +292,14 @@ export const FilesForm = withForm({
 	...auditMultiStepFormOptions,
 	render: function Render({ form }) {
 		return (
-			<>
-				<form.AppField name="report">
-					{(field) => (
-						<field.TextField
-							label="Rapport d’audit (facultatif)"
-							hintText="Format attendu: https://www.example.fr"
-						/>
-					)}
-				</form.AppField>
-			</>
+			<form.AppField name="report">
+				{(field) => (
+					<field.TextField
+						label="Rapport d’audit (facultatif)"
+						hintText="Format attendu: https://www.example.fr"
+					/>
+				)}
+			</form.AppField>
 		);
 	},
 });

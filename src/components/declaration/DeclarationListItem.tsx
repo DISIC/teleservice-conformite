@@ -1,6 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import NextLink from "next/link";
 import { tss } from "tss-react";
 
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
