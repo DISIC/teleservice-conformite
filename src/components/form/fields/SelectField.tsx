@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Select, type SelectProps } from "@codegouvfr/react-dsfr/SelectNext";
 import { tss } from "tss-react";
-import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { type DefaultFieldProps, getFieldState, useFieldContext } from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface SelectFieldProps

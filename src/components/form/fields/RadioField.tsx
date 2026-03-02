@@ -3,7 +3,11 @@ import {
 	RadioButtons,
 	type RadioButtonsProps,
 } from "@codegouvfr/react-dsfr/RadioButtons";
-import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import {
+	type DefaultFieldProps,
+	getFieldState,
+	useFieldContext,
+} from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 type TValue = string | boolean;
@@ -35,8 +39,9 @@ export function RadioField(props: RadioFieldProps) {
 	return (
 		<RadioButtons
 			{...commonProps}
-			className={commonProps.className ?? fr.cx("fr-mb-0")}
+			{...getFieldState(field.state.meta.errors)}
 			name={field.name}
+			className={commonProps.className ?? fr.cx("fr-mb-0")}
 			options={commonProps.options.map(
 				({ value, nativeInputProps, ...option }) => ({
 					...option,
@@ -52,10 +57,6 @@ export function RadioField(props: RadioFieldProps) {
 					},
 				}),
 			)}
-			state={field.state.meta.errors.length > 0 ? "error" : "default"}
-			stateRelatedMessage={
-				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
-			}
 		/>
 	);
 }

@@ -1,5 +1,9 @@
 import { Checkbox, type CheckboxProps } from "@codegouvfr/react-dsfr/Checkbox";
-import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import {
+	type DefaultFieldProps,
+	getFieldState,
+	useFieldContext,
+} from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface CheckboxGroupFieldProps
@@ -24,10 +28,7 @@ export function CheckboxGroupField(props: CheckboxGroupFieldProps) {
 	return (
 		<Checkbox
 			{...commonProps}
-			state={field.state.meta.errors.length > 0 ? "error" : "default"}
-			stateRelatedMessage={
-				field.state.meta.errors.map((e) => e.message).join(",") ?? ""
-			}
+			{...getFieldState(field.state.meta.errors)}
 			options={commonProps.options.map((option, index) => ({
 				...option,
 				nativeInputProps: {

@@ -1,5 +1,9 @@
 import { Input, type InputProps } from "@codegouvfr/react-dsfr/Input";
-import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import {
+	type DefaultFieldProps,
+	getFieldState,
+	useFieldContext,
+} from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface NumberFieldProps
@@ -21,6 +25,7 @@ export function NumberField(props: NumberFieldProps) {
 	return (
 		<Input
 			{...commonProps}
+			{...getFieldState(field.state.meta.errors)}
 			nativeInputProps={{
 				...nativeInputProps,
 				type: "number",
@@ -31,11 +36,6 @@ export function NumberField(props: NumberFieldProps) {
 				required: nativeInputProps?.required ?? required,
 				onChange: (e) => field.setValue(e.target.valueAsNumber),
 			}}
-			state={field.state.meta.errors.length > 0 ? "error" : "default"}
-			stateRelatedMessage={
-				field.state.meta.errors.map((error) => error.message).join(",") ??
-				commonProps
-			}
 		/>
 	);
 }

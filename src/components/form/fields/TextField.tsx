@@ -2,7 +2,11 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Input, type InputProps } from "@codegouvfr/react-dsfr/Input";
 import type { InputHTMLAttributes } from "react";
 import { tss } from "tss-react";
-import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import {
+	type DefaultFieldProps,
+	getFieldState,
+	useFieldContext,
+} from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface TextFieldProps
@@ -35,11 +39,6 @@ export function TextField(props: TextFieldProps) {
 		);
 	}
 
-	const state: InputProps.Common["state"] =
-		field.state.meta.errors.length > 0 ? "error" : "default";
-	const stateRelatedMessage: InputProps.Common["stateRelatedMessage"] =
-		field.state.meta.errors.map((error) => error.message).join(",");
-
 	const customNativeProps: InputHTMLAttributes<
 		HTMLInputElement | HTMLTextAreaElement
 	> = {
@@ -53,9 +52,8 @@ export function TextField(props: TextFieldProps) {
 			{textArea ? (
 				<Input
 					{...commonProps}
+					{...getFieldState(field.state.meta.errors)}
 					textArea={textArea}
-					state={state}
-					stateRelatedMessage={stateRelatedMessage}
 					nativeTextAreaProps={{
 						...nativeTextAreaProps,
 						required: nativeTextAreaProps?.required ?? required,
@@ -65,8 +63,7 @@ export function TextField(props: TextFieldProps) {
 			) : (
 				<Input
 					{...commonProps}
-					state={state}
-					stateRelatedMessage={stateRelatedMessage}
+					{...getFieldState(field.state.meta.errors)}
 					nativeInputProps={{
 						...nativeInputProps,
 						required: nativeInputProps?.required ?? required,

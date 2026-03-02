@@ -39,3 +39,10 @@ export type DefaultFieldProps = {
 	readOnlyField?: boolean;
 	required?: boolean;
 };
+
+export function getFieldState(errors: Array<{ message: string }>) {
+	return {
+		state: errors.length > 0 ? ("error" as const) : ("default" as const),
+		stateRelatedMessage: errors.map((e) => e.message).join(","),
+	};
+}

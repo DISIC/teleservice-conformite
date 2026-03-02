@@ -1,6 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Checkbox, type CheckboxProps } from "@codegouvfr/react-dsfr/Checkbox";
-import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import {
+	type DefaultFieldProps,
+	getFieldState,
+	useFieldContext,
+} from "~/utils/form/context";
 
 type TValue = string | boolean;
 
@@ -20,6 +24,8 @@ export function CheckboxField(props: CheckboxFieldProps) {
 	return (
 		<Checkbox
 			{...commonProps}
+			{...getFieldState(field.state.meta.errors)}
+			className={commonProps.className ?? fr.cx("fr-mb-0")}
 			options={commonProps.options.map(({ value, ...option }) => ({
 				...option,
 				nativeInputProps: {
@@ -34,11 +40,6 @@ export function CheckboxField(props: CheckboxFieldProps) {
 					required: option.nativeInputProps?.required ?? required,
 				},
 			}))}
-			className={commonProps.className ?? fr.cx("fr-mb-0")}
-			state={field.state.meta.errors.length > 0 ? "error" : "default"}
-			stateRelatedMessage={
-				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
-			}
 		/>
 	);
 }
