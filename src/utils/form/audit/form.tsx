@@ -96,7 +96,7 @@ export const ToolsForm = withForm({
 					{(field) => (
 						<div>
 							<field.CheckboxGroupField
-								label="Outils utilisés pour évaluer l’accessibilité (facultatif)"
+								legend="Outils utilisés pour évaluer l’accessibilité (facultatif)"
 								options={[...toolOptions]}
 							/>
 							<field.TagGroupField
@@ -115,7 +115,7 @@ export const ToolsForm = withForm({
 					{(field) => (
 						<div>
 							<field.CheckboxGroupField
-								label="Environnement de tests"
+								legend="Environnement de tests"
 								options={[...testEnvironmentOptions]}
 							/>
 							<field.TagGroupField
@@ -256,7 +256,6 @@ export const NonCompliantElementsForm = withForm({
 									lecture du relief”
 								</>
 							}
-							kind="text"
 							textArea
 						/>
 					)}
