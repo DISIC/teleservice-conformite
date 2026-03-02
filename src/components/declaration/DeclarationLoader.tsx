@@ -4,11 +4,17 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { LinearProgress } from "@mui/material";
 import { useProgress } from "~/hooks/useProgress";
 
-export default function DeclarationLoader() {
+interface DeclarationLoaderProps {
+	duration?: number;
+}
+
+export default function DeclarationLoader({
+	duration = 1500,
+}: DeclarationLoaderProps) {
 	const { classes, cx } = useStyles();
 
 	const progress = useProgress({
-		duration: 1500,
+		duration: duration + 500,
 	});
 
 	return (

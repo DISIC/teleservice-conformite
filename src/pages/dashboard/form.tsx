@@ -14,16 +14,15 @@ import { useStyles as useAppStyles } from "~/pages/_app";
 import type { Entity } from "~/payload/payload-types";
 import {
 	appKindOptions,
+	testEnvironmentOptions,
 	type rgaaVersionOptions,
+	toolOptions,
 } from "~/payload/selectOptions";
 import type { importedDeclarationDataSchema } from "~/server/api/routers/declaration";
 import { showAlert } from "~/utils/alert-event";
 import { api } from "~/utils/api";
 import { auth } from "~/utils/auth";
-import {
-	extractTestEnvironmentsFromUrl,
-	extractToolsFromUrl,
-} from "~/utils/declaration-helper";
+import { extractTechnologiesFromUrl } from "~/utils/declaration-helper";
 import { useAppForm } from "~/utils/form/context";
 import {
 	ContextForm,
@@ -77,10 +76,14 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 				setImportedDeclarationData({
 					...declarationInfos,
-					testEnvironments: extractTestEnvironmentsFromUrl(
+					testEnvironments: extractTechnologiesFromUrl(
 						declarationInfos?.testEnvironments ?? [],
+						testEnvironmentOptions,
 					),
-					usedTools: extractToolsFromUrl(declarationInfos?.usedTools ?? []),
+					usedTools: extractTechnologiesFromUrl(
+						declarationInfos?.usedTools ?? [],
+						toolOptions,
+					),
 					rgaaVersion: declarationInfos.rgaaVersion
 						? (declarationInfos.rgaaVersion as (typeof rgaaVersionOptions)[number]["value"])
 						: "rgaa_4",
@@ -109,7 +112,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 			},
 			onSettled: () => {
 				const elapsed = Date.now() - (loadingStartTime ?? Date.now());
-				const remaining = Math.max(0, 2000 - elapsed);
+				const remaining = Math.max(0, 15000 - elapsed);
 				setTimeout(() => setIsMinimumDelayComplete(true), remaining);
 			},
 		});
@@ -134,10 +137,14 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 				setImportedDeclarationData({
 					...result.data,
-					testEnvironments: extractTestEnvironmentsFromUrl(
+					testEnvironments: extractTechnologiesFromUrl(
 						result.data?.testEnvironments ?? [],
+						testEnvironmentOptions,
 					),
-					usedTools: extractToolsFromUrl(result.data?.usedTools ?? []),
+					usedTools: extractTechnologiesFromUrl(
+						result.data?.usedTools ?? [],
+						toolOptions,
+					),
 					entity: {
 						id: entity?.id ?? null,
 						name: entity?.name ?? "",
@@ -329,7 +336,8 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const isLoading =
 		isAnalyzingUrl || isGettingInfoFromAra || !isMinimumDelayComplete;
 
-	if (isLoading) return <DeclarationLoader />;
+	if (isLoading)
+		return <DeclarationLoader duration={isAnalyzingUrl ? 15000 : 2000} />;
 
 	return (
 		<section className={fr.cx("fr-container")}>

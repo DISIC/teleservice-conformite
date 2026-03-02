@@ -8,6 +8,10 @@ import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
 import MentalDisabilities from "@codegouvfr/react-dsfr/picto/MentalDisabilities";
 import Notification from "@codegouvfr/react-dsfr/picto/Notification";
 import { tss } from "tss-react";
+import { ProConnectButton } from "@codegouvfr/react-dsfr/ProConnectButton";
+import Cookies from "js-cookie";
+
+import { authClient } from "~/utils/auth-client";
 
 const ToolAdvantages = () => {
 	const { classes } = useStyles();
@@ -63,6 +67,19 @@ const ToolAdvantages = () => {
 
 export default function AddFirstDeclaration() {
 	const { classes, cx } = useStyles();
+	const { data: authSession } = authClient.useSession();
+	const isAuthenticated = !!authSession;
+
+	const signIn = async () => {
+		const response = await authClient.signIn.oauth2({
+			providerId: "proconnect",
+			callbackURL: "/dashboard",
+		});
+
+		const urlParams = new URLSearchParams(response?.data?.url);
+		Cookies.set("oauth_state", urlParams.get("state") ?? "");
+		Cookies.set("oauth_nonce", urlParams.get("nonce") ?? "");
+	};
 
 	return (
 		<section className={classes.main}>
@@ -134,16 +151,25 @@ export default function AddFirstDeclaration() {
 					</div>
 				</div>
 			</div>
-			<div className={classes.buttonContainer}>
-				<Button
-					priority="primary"
-					linkProps={{
-						href: "/dashboard/form",
-					}}
-				>
-					Créer la déclaration
-				</Button>
-			</div>
+			{isAuthenticated ? (
+				<div className={classes.buttonContainer}>
+					<Button
+						priority="primary"
+						linkProps={{
+							href: "/dashboard/form",
+						}}
+					>
+						Créer la déclaration
+					</Button>
+				</div>
+			) : (
+				<div className={cx(classes.main, fr.cx("fr-container"))}>
+					<div className={classes.heroSection}>
+						<h3>Connectez-vous pour accéder à l'interface</h3>
+						<ProConnectButton onClick={signIn} />
+					</div>
+				</div>
+			)}
 			<ToolAdvantages />
 		</section>
 	);
@@ -300,5 +326,10 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("7w"),
+	},
+	heroSection: {
+		gridColumn: "4 / span 6",
+		marginTop: fr.spacing("14w"),
+		textAlign: "center",
 	},
 });

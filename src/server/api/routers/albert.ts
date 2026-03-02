@@ -81,7 +81,7 @@ async function extractAccessibilityRateWithAlbert(
   ${relevantContent}`;
 
   const payload = {
-    model: "albert-small",
+    model: "albert-large",
     messages: [
       {
         role: "user",
