@@ -1,9 +1,14 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import type { InputProps } from "@codegouvfr/react-dsfr/Input";
+import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
 import type { DefaultFieldProps } from "~/utils/form/context";
 
 interface ReadOnlyFieldProps extends DefaultFieldProps {
+	label: ReactNode;
+	placeholder?: string;
+	className?: string;
 	value: string | string[];
 	textArea?: boolean;
 	addSectionBorder?: boolean;
@@ -32,7 +37,7 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 		<div className={classes.fieldContainer}>
 			<p className={classes.label}>{label} :</p>
 			{valueIsArray ? (
-				<ul className={classes.list}>
+				<ul>
 					{value.map((item, index) => (
 						<li key={index}>
 							<p className={classes.value}>{item}</p>
@@ -84,7 +89,6 @@ const useStyles = tss
 			fontWeight: 700,
 			color: fr.colors.decisions.text.label.grey.default,
 		},
-		list: {},
 		value: {
 			color: fr.colors.decisions.text.label.grey.default,
 			whiteSpace: "pre-wrap",

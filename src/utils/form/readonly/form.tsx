@@ -20,34 +20,32 @@ export const DeclarationGeneralForm = withForm({
 		return (
 			<>
 				<form.AppField name="general.organisation">
-					{(field) => <field.TextField label="Organisation" inputReadOnly />}
+					{(field) => <field.TextField label="Organisation" readOnlyField />}
 				</form.AppField>
 				<form.AppField name="general.kind">
 					{(field) => (
 						<field.RadioField
-							label="Type de produit numérique"
+							legend="Type de produit numérique"
 							options={[...appKindOptions]}
-							onChange={() => {
-								form.setFieldValue("general.url", "");
-							}}
-							required
+							onOptionChange={() => form.setFieldValue("general.url", "")}
 						/>
 					)}
 				</form.AppField>
 				<form.AppField name="general.name">
 					{(field) => (
-						<field.TextField
-							label="Nom du service numérique"
-							description="Exemples : Demande de logement social, Service public.fr, Outil de gestion des congés"
-							required
-						/>
+						<field.TextField label="Nom du service numérique" required />
 					)}
 				</form.AppField>
 				<form.Subscribe selector={(store) => store.values.general?.kind}>
 					{(kind) =>
 						kind === "website" ? (
 							<form.AppField name="general.url">
-								{(field) => <field.TextField label="URL" kind="url" />}
+								{(field) => (
+									<field.TextField
+										label="URL"
+										nativeInputProps={{ type: "url" }}
+									/>
+								)}
 							</form.AppField>
 						) : null
 					}
@@ -57,7 +55,7 @@ export const DeclarationGeneralForm = withForm({
 						<field.SelectField
 							label="Secteur d'activité de l'organisation"
 							placeholder="Sélectionnez un secteur"
-							defaultStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
+							stateRelatedMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
 							options={[...kindOptions]}
 							required
 						/>
@@ -77,8 +75,8 @@ export const DeclarationSchema = withForm({
 					{(field) => (
 						<>
 							<field.RadioField
-								label="Avez-vous réalisé un plan d’action pour l’année en cours ?"
-								description="Le plan d’action, ou schéma annuel, détaille les actions prévues sur l’année pour améliorer l’accessibilité de vos services numériques."
+								legend="Avez-vous réalisé un plan d’action pour l’année en cours ?"
+								hintText="Le plan d’action, ou schéma annuel, détaille les actions prévues sur l’année pour améliorer l’accessibilité de vos services numériques."
 								options={[
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
@@ -89,9 +87,8 @@ export const DeclarationSchema = withForm({
 								<form.AppField name="schema.currentYearSchemaUrl">
 									{(field) => (
 										<field.TextField
-											kind="url"
 											label="Lien URL du schéma annuel à jour"
-											description={
+											hintText={
 												<>
 													Si vous êtes en cours de création de ce schéma,
 													laissez le champ vide et revenez modifier votre
@@ -100,6 +97,7 @@ export const DeclarationSchema = withForm({
 												</>
 											}
 											required
+											nativeInputProps={{ type: "url" }}
 										/>
 									)}
 								</form.AppField>
@@ -122,8 +120,8 @@ export const DeclarationSchema = withForm({
 					{(field) => (
 						<>
 							<field.RadioField
-								label="Avez-vous réalisé un bilan des actions des années précédentes ?"
-								description="Le bilan des actions liste les actions réalisées pendant les années précédentes pour améliorer l’accessibilité de vos services numériques."
+								legend="Avez-vous réalisé un bilan des actions des années précédentes ?"
+								hintText="Le bilan des actions liste les actions réalisées pendant les années précédentes pour améliorer l’accessibilité de vos services numériques."
 								options={[
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
@@ -134,10 +132,10 @@ export const DeclarationSchema = withForm({
 								<form.AppField name="schema.previousYearsSchemaUrl">
 									{(field) => (
 										<field.TextField
-											kind="url"
 											label="Lien URL du bilan des actions"
-											description="Format attendu : https://www.example.fr"
+											hintText="Format attendu : https://www.example.fr"
 											required
+											nativeInputProps={{ type: "url" }}
 										/>
 									)}
 								</form.AppField>
@@ -197,16 +195,17 @@ export const DeclarationAuditForm = withForm({
 							{(field) => (
 								<field.TextField
 									label="Date de réalisation"
-									kind="date"
-									max={new Date().toISOString().split("T")[0]}
 									required
+									nativeInputProps={{
+										type: "date",
+										max: new Date().toISOString().split("T")[0],
+									}}
 								/>
 							)}
 						</form.AppField>
 						<form.AppField name="audit.realisedBy">
 							{(field) => (
 								<field.TextField
-									kind="text"
 									label="Entité ou personne ayant réalisé l'audit"
 									required
 								/>
@@ -215,7 +214,7 @@ export const DeclarationAuditForm = withForm({
 						<form.AppField name="audit.rgaa_version">
 							{(field) => (
 								<field.RadioField
-									label="Référentiel RGAA utilisé"
+									legend="Référentiel RGAA utilisé"
 									options={[...rgaaVersionOptions]}
 									required
 								/>
@@ -225,8 +224,7 @@ export const DeclarationAuditForm = withForm({
 							{(field) => (
 								<field.NumberField
 									label="Résultats"
-									min={0}
-									max={100}
+									nativeInputProps={{ min: 0, max: 100 }}
 									required
 								/>
 							)}
@@ -342,7 +340,7 @@ export const DeclarationContactForm = withForm({
 									{(field) => (
 										<field.TextField
 											label="Lien URL du formulaire"
-											kind="url"
+											nativeInputProps={{ type: "url" }}
 											required
 										/>
 									)}
@@ -353,7 +351,7 @@ export const DeclarationContactForm = withForm({
 									{(field) => (
 										<field.TextField
 											label="Email de contact"
-											kind="email"
+											nativeInputProps={{ type: "email" }}
 											required
 										/>
 									)}

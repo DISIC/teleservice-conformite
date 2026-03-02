@@ -21,8 +21,8 @@ export const AuditRealisedForm = withForm({
 			<form.AppField name="isAuditRealised">
 				{(field) => (
 					<field.RadioField
-						label="Avez-vous réalisé un audit d’accessibilité de votre service numérique ?"
-						description="Un audit d’accessibilité évalue votre service numérique selon le RGAA afin d’identifier les non-conformités et les points à améliorer. Il peut être réalisé par un prestataire externe."
+						legend="Avez-vous réalisé un audit d’accessibilité de votre service numérique ?"
+						hintText="Un audit d’accessibilité évalue votre service numérique selon le RGAA afin d’identifier les non-conformités et les points à améliorer. Il peut être réalisé par un prestataire externe."
 						options={[
 							{ label: "Oui", value: true },
 							{ label: "Non", value: false },
@@ -43,10 +43,12 @@ export const AuditDateForm = withForm({
 				<form.AppField name="date">
 					{(field) => (
 						<field.TextField
-							kind="date"
 							label="Date de réalisation de l'audit"
-							max={new Date().toISOString().split("T")[0]}
-							required
+							nativeInputProps={{
+								type: "date",
+								max: new Date().toISOString().split("T")[0],
+								required: true,
+							}}
 						/>
 					)}
 				</form.AppField>
@@ -54,15 +56,15 @@ export const AuditDateForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Entité ou personne ayant réalisé l’audit"
-							description='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
-							required
+							hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
+							nativeInputProps={{ required: true }}
 						/>
 					)}
 				</form.AppField>
 				<form.AppField name="rgaa_version">
 					{(field) => (
 						<field.RadioField
-							label="Version du référentiel RGAA utilisée"
+							legend="Version du référentiel RGAA utilisée"
 							options={rgaaVersionOptions.map((option) => ({
 								label: option.label,
 								value: option.value,
@@ -75,10 +77,8 @@ export const AuditDateForm = withForm({
 					{(field) => (
 						<field.NumberField
 							label="Pourcentage de critères du RGAA respectés"
-							description="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
-							max={100}
-							min={0}
-							required
+							hintText="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
+							nativeInputProps={{ required: true, min: 0, max: 100 }}
 						/>
 					)}
 				</form.AppField>
@@ -143,7 +143,8 @@ export const CompliantElementsForm = withForm({
 				{(field) => (
 					<field.TextField
 						label="Éléments ayant fait l’objet de la vérification de conformité"
-						description={
+						textArea
+						hintText={
 							<>
 								Renseignez le nom de chaque élément. Pour un site web,
 								renseignez également l’URL.
@@ -153,9 +154,7 @@ export const CompliantElementsForm = withForm({
 								Exemple : 'Accueil - https://www.nomdelapage/accueil'
 							</>
 						}
-						kind="text"
-						textArea
-						required
+						nativeInputProps={{ required: true }}
 					/>
 				)}
 			</form.AppField>
@@ -184,7 +183,8 @@ export const NonCompliantElementsForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Éléments non conformes (facultatif)"
-							description={
+							textArea
+							hintText={
 								<>
 									Exemples : Vidéo sans transcription, navigation au clavier
 									impossible, ...
@@ -199,8 +199,6 @@ export const NonCompliantElementsForm = withForm({
 									<br />- Quelques vidéos n’ont pas de sous-titres
 								</>
 							}
-							kind="text"
-							textArea
 						/>
 					)}
 				</form.AppField>
@@ -208,7 +206,8 @@ export const NonCompliantElementsForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Éléments non soumis à l’obligation d’accessibilité (facultatif)"
-							description={
+							textArea
+							hintText={
 								<>
 									<Button
 										onClick={(e) => {
@@ -227,8 +226,6 @@ export const NonCompliantElementsForm = withForm({
 									suite des autres
 								</>
 							}
-							kind="text"
-							textArea
 						/>
 					)}
 				</form.AppField>
@@ -236,7 +233,7 @@ export const NonCompliantElementsForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Éléments avec dérogation pour charge disproportionnée (facultatif)"
-							description={
+							hintText={
 								<>
 									<Button
 										onClick={(e) => {
@@ -301,7 +298,7 @@ export const FilesForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Rapport d’audit (facultatif)"
-							description="Format attendu: https://www.example.fr"
+							hintText="Format attendu: https://www.example.fr"
 						/>
 					)}
 				</form.AppField>

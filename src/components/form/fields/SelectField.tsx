@@ -1,54 +1,44 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { Select, type SelectProps } from "@codegouvfr/react-dsfr/SelectNext";
 import { tss } from "tss-react";
-import { Select } from "@codegouvfr/react-dsfr/SelectNext";
-
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
-interface SelectFieldProps extends DefaultFieldProps {
-	options: Array<{
-		label: string;
-		value: string;
-	}>;
-	defaultStateMessage?: string;
+interface SelectFieldProps
+	extends DefaultFieldProps,
+		SelectProps<SelectProps.Option[]> {
 	infoStateMessage?: string | React.ReactNode;
 }
 
-export function SelectField({
-	label,
-	options,
-	disabled,
-	className,
-	readOnly = false,
-	description,
-	placeholder,
-	required,
-	defaultStateMessage = "",
-	infoStateMessage,
-}: SelectFieldProps) {
+export function SelectField(props: SelectFieldProps) {
+	const { readOnlyField, required, infoStateMessage, ...commonProps } = props;
 	const { classes, cx } = useStyles();
 	const field = useFieldContext<string>();
 
-	return !readOnly ? (
+	if (readOnlyField) {
+		const value = String(
+			commonProps.options.find((option) => option.value === field.state.value)
+				?.label ?? "",
+		);
+		return <ReadOnlyField label={commonProps.label} value={value} />;
+	}
+
+	return (
 		<>
 			<Select
-				label={label}
-				hint={description}
-				placeholder={placeholder}
+				{...commonProps}
 				nativeSelectProps={{
 					name: field.name,
 					value: field.state.value,
 					onChange: (e) => field.setValue(e.target.value),
 					required,
 				}}
-				options={options}
-				disabled={disabled}
 				state={field.state.meta.errors.length > 0 ? "error" : "default"}
 				stateRelatedMessage={
 					field.state.meta.errors.map((error) => error.message).join(",") ??
-					defaultStateMessage
+					commonProps.stateRelatedMessage
 				}
-				className={cx(className, classes.select)}
+				className={cx(commonProps.className, classes.select)}
 			/>
 			{infoStateMessage && (
 				<div className={classes.infoStateMessageContainer}>
@@ -59,14 +49,6 @@ export function SelectField({
 				</div>
 			)}
 		</>
-	) : (
-		<ReadOnlyField
-			label={label}
-			value={
-				options.find((option) => option.value === field.state.value)?.label ??
-				""
-			}
-		/>
 	);
 }
 
