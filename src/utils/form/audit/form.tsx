@@ -44,10 +44,10 @@ export const AuditDateForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Date de réalisation de l'audit"
+							required
 							nativeInputProps={{
 								type: "date",
 								max: new Date().toISOString().split("T")[0],
-								required: true,
 							}}
 						/>
 					)}
@@ -57,7 +57,7 @@ export const AuditDateForm = withForm({
 						<field.TextField
 							label="Entité ou personne ayant réalisé l’audit"
 							hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
-							nativeInputProps={{ required: true }}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -78,7 +78,8 @@ export const AuditDateForm = withForm({
 						<field.NumberField
 							label="Pourcentage de critères du RGAA respectés"
 							hintText="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
-							nativeInputProps={{ required: true, min: 0, max: 100 }}
+							nativeInputProps={{ min: 0, max: 100 }}
+							required
 						/>
 					)}
 				</form.AppField>
@@ -154,7 +155,7 @@ export const CompliantElementsForm = withForm({
 								Exemple : 'Accueil - https://www.nomdelapage/accueil'
 							</>
 						}
-						nativeInputProps={{ required: true }}
+						required
 					/>
 				)}
 			</form.AppField>
