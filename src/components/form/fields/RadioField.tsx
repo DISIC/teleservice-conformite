@@ -1,61 +1,62 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-
-import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import {
+	RadioButtons,
+	type RadioButtonsProps,
+} from "@codegouvfr/react-dsfr/RadioButtons";
+import {
+	type DefaultFieldProps,
+	getFieldState,
+	useFieldContext,
+} from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
-interface RadioFieldProps extends DefaultFieldProps {
-	options: Array<{
-		label: string;
-		value: string | boolean;
-		description?: string;
-	}>;
-	onChange?: (value: string | boolean) => void;
-	value?: string | boolean;
+type TValue = string | boolean;
+
+interface RadioFieldProps
+	extends DefaultFieldProps,
+		Omit<RadioButtonsProps, "state" | "stateRelatedMessage" | "options"> {
+	options: (Omit<RadioButtonsProps["options"][number], "nativeInputProps"> & {
+		value: TValue;
+		nativeInputProps?: RadioButtonsProps["options"][number]["nativeInputProps"];
+	})[];
+	onOptionChange?: (value: TValue) => void;
 }
 
-export function RadioField({
-	label,
-	description,
-	options,
-	readOnly,
-	disabled,
-	className,
-	required,
-	onChange,
-}: RadioFieldProps) {
-	const field = useFieldContext<string | boolean>();
+export function RadioField(props: RadioFieldProps) {
+	const { readOnlyField, required, onOptionChange, ...commonProps } = props;
+	const field = useFieldContext<TValue>();
 
-	return !readOnly ? (
+	if (readOnlyField) {
+		const value =
+			typeof field.state.value === "boolean"
+				? commonProps.options
+						.find((option) => option.value === field.state.value)
+						?.label?.toString() || ""
+				: field.state.value;
+		return <ReadOnlyField label={commonProps.legend} value={value} />;
+	}
+
+	return (
 		<RadioButtons
-			legend={label}
-			hintText={description}
+			{...commonProps}
+			{...getFieldState(field.state.meta.errors)}
 			name={field.name}
-			disabled={disabled}
-			options={options.map(({ label, value, description }) => ({
-				label,
-				hintText: description,
-				nativeInputProps: {
-					checked: field.state.value === value,
-					onChange: () => {
-						field.setValue(value);
-						onChange?.(value);
+			className={commonProps.className ?? fr.cx("fr-mb-0")}
+			options={commonProps.options.map(
+				({ value, nativeInputProps, ...option }) => ({
+					...option,
+					nativeInputProps: {
+						...nativeInputProps,
+						value: value.toString(),
+						checked: field.state.value === value,
+						required: nativeInputProps?.required ?? required,
+						onChange: () => {
+							field.setValue(value);
+							onOptionChange?.(value);
+						},
 					},
-					required,
-				},
-			}))}
-			className={className ?? fr.cx("fr-mb-0")}
-			state={field.state.meta.errors.length > 0 ? "error" : "default"}
-			stateRelatedMessage={
-				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
-			}
-		/>
-	) : (
-		<ReadOnlyField
-			label={label}
-			value={
-				options.find((opt) => field.state.value === opt.value)?.label ?? ""
-			}
+				}),
+			)}
 		/>
 	);
 }

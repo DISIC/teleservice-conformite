@@ -1,18 +1,18 @@
-import Internet from "@codegouvfr/react-dsfr/picto/Internet";
-import Accessibility from "@codegouvfr/react-dsfr/picto/Accessibility";
-import System from "@codegouvfr/react-dsfr/picto/System";
-import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
-import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
-import { useRef, useEffect, useState } from "react";
+import Accessibility from "@codegouvfr/react-dsfr/picto/Accessibility";
+import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
+import Internet from "@codegouvfr/react-dsfr/picto/Internet";
+import System from "@codegouvfr/react-dsfr/picto/System";
+import { useEffect, useRef, useState } from "react";
+import { tss } from "tss-react";
 
+import HelpingMessage from "~/components/declaration/HelpingMessage";
 import { appKindOptions, kindOptions } from "~/payload/selectOptions";
 import { withForm } from "../context";
 import {
-	declarationMultiStepFormOptions,
 	type ZInitialDeclaration,
+	declarationMultiStepFormOptions,
 } from "./schema";
-import HelpingMessage from "~/components/declaration/HelpingMessage";
 
 type DeclarationKind =
 	ZInitialDeclaration["initialDeclaration"]["newDeclarationKind"];
@@ -27,8 +27,7 @@ export const DeclarationGeneralForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Organisation"
-							readOnly={readOnly}
-							inputReadOnly
+							readOnlyField={readOnly}
 							required
 						/>
 					)}
@@ -36,12 +35,10 @@ export const DeclarationGeneralForm = withForm({
 				<form.AppField name="general.kind">
 					{(field) => (
 						<field.RadioField
-							label="Type de service"
+							legend="Type de service"
 							options={[...appKindOptions]}
-							readOnly={readOnly}
-							onChange={() => {
-								form.setFieldValue("general.url", "");
-							}}
+							readOnlyField={readOnly}
+							onOptionChange={() => form.setFieldValue("general.url", "")}
 							required
 						/>
 					)}
@@ -50,8 +47,8 @@ export const DeclarationGeneralForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Nom de la déclaration"
-							readOnly={readOnly}
-							description={
+							readOnlyField={readOnly}
+							hintText={
 								<>
 									Nous vous conseillons d’utiliser le nom du service numérique.
 									<br />
@@ -70,8 +67,8 @@ export const DeclarationGeneralForm = withForm({
 								{(field) => (
 									<field.TextField
 										label="URL du service (facultatif)"
-										kind="url"
-										description={
+										nativeInputProps={{ type: "url " }}
+										hintText={
 											<>
 												Pour un site web public, renseignez l’adresse accessible
 												par les usagers.
@@ -79,7 +76,7 @@ export const DeclarationGeneralForm = withForm({
 												Format attendu : https://www.monservice.gouv.fr
 											</>
 										}
-										readOnly={readOnly}
+										readOnlyField={readOnly}
 									/>
 								)}
 							</form.AppField>
@@ -92,7 +89,7 @@ export const DeclarationGeneralForm = withForm({
 							label="Secteur d’activité de l’organisation"
 							placeholder="Sélectionnez un secteur"
 							infoStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
-							readOnly={readOnly}
+							readOnlyField={readOnly}
 							options={[...kindOptions]}
 							required
 						/>
@@ -115,12 +112,11 @@ export const ContextForm = withForm({
 				<form.AppField name="initialDeclaration.newDeclarationKind">
 					{(field) => (
 						<field.SelectCardField
-							name="initialDeclaration.newDeclarationKind"
 							label="Quelle est votre situation pour ce service ?"
 							required
 							options={[
 								{
-									id: "fromUrl",
+									value: "fromUrl",
 									label:
 										"J'ai une déclaration en ligne, sans avoir utilisé Ara",
 									description:
@@ -128,7 +124,7 @@ export const ContextForm = withForm({
 									image: <Internet fontSize="3rem" />,
 								},
 								{
-									id: "fromAra",
+									value: "fromAra",
 									label:
 										"J'ai une déclaration en ligne réalisée avec l’outil Ara",
 									description:
@@ -136,17 +132,16 @@ export const ContextForm = withForm({
 									image: <System fontSize="3rem" />,
 								},
 								{
-									id: "fromScratch",
+									value: "fromScratch",
 									label: "Je n’ai pas de déclaration d’accessibilité",
 									description:
 										"La nouvelle déclaration sera à créer manuellement",
 									image: <DocumentSearch fontSize="3rem" />,
 								},
 							]}
-							onChange={(value) => {
+							onOptionChange={(value) => {
 								form.resetField("initialDeclaration.declarationUrl");
 								form.resetField("initialDeclaration.araUrl");
-
 								setNewDeclarationKind(value as DeclarationKind);
 							}}
 						/>
@@ -165,8 +160,8 @@ export const ContextForm = withForm({
 										{(field) => (
 											<field.TextField
 												label="Lien URL de la déclaration en ligne "
-												kind="url"
-												description="Format attendu : https://www.example.fr"
+												nativeInputProps={{ type: "url" }}
+												hintText="Format attendu : https://www.example.fr"
 												required
 											/>
 										)}
@@ -177,8 +172,8 @@ export const ContextForm = withForm({
 										{(field) => (
 											<field.TextField
 												label="URL de l’audit Ara"
-												kind="url"
-												description="Format attendu : https://ara.numerique.gouv.fr/declaration/xxxxxxx"
+												nativeInputProps={{ type: "url" }}
+												hintText="Format attendu : https://ara.numerique.gouv.fr/declaration/xxxxxxx"
 												required
 											/>
 										)}

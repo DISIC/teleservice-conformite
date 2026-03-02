@@ -1,59 +1,52 @@
-import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
-
-import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { Checkbox, type CheckboxProps } from "@codegouvfr/react-dsfr/Checkbox";
+import {
+	type DefaultFieldProps,
+	getFieldState,
+	useFieldContext,
+} from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
-interface CheckboxGroupFieldProps extends DefaultFieldProps {
-	options: Array<{ label: string; value: string }>;
+interface CheckboxGroupFieldProps
+	extends DefaultFieldProps,
+		Omit<CheckboxProps, "state" | "stateRelatedMessage" | "options"> {
+	options: (Omit<CheckboxProps["options"][number], "nativeInputProps"> & {
+		value: string;
+		nativeInputProps?: CheckboxProps["options"][number]["nativeInputProps"];
+	})[];
 }
 
-export function CheckboxGroupField({
-	label,
-	description,
-	options,
-	className,
-	disabled,
-	required,
-	readOnly = false,
-}: CheckboxGroupFieldProps) {
+export function CheckboxGroupField(props: CheckboxGroupFieldProps) {
+	const { readOnlyField, required, ...commonProps } = props;
 	const field = useFieldContext<string[]>();
 	const valueSet = new Set(field.state.value ?? []);
 
-	return !readOnly ? (
+	if (readOnlyField) {
+		const value = field.state.value.join(", ");
+		return <ReadOnlyField label={commonProps.legend} value={value} />;
+	}
+
+	return (
 		<Checkbox
-			legend={label}
-			hintText={description}
-			className={className}
-			disabled={disabled}
-			state={field.state.meta.errors.length > 0 ? "error" : "default"}
-			stateRelatedMessage={
-				field.state.meta.errors.map((e) => e.message).join(",") ?? ""
-			}
-			options={options.map((opt, index) => ({
-				label: opt.label,
+			{...commonProps}
+			{...getFieldState(field.state.meta.errors)}
+			options={commonProps.options.map((option, index) => ({
+				...option,
 				nativeInputProps: {
+					...option.nativeInputProps,
 					name: field.name,
-					checked: valueSet.has(opt.value),
+					checked: valueSet.has(option.value),
 					onChange: (e) => {
 						const checked = e.target.checked;
 						const current = field.state.value ?? [];
 						if (checked) {
-							field.setValue([...current, opt.value]);
+							field.setValue([...current, option.value]);
 						} else {
-							field.setValue(current.filter((v) => v !== opt.value));
+							field.setValue(current.filter((v) => v !== option.value));
 						}
 					},
-					value: opt.value,
 					required: required && index === 0 && valueSet.size === 0,
 				},
 			}))}
-		/>
-	) : (
-		<ReadOnlyField
-			label={label}
-			value={options
-				.filter((opt) => valueSet.has(opt.value))
-				.map((opt) => opt.label)}
 		/>
 	);
 }
