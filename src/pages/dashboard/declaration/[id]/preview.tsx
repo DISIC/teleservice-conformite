@@ -7,6 +7,7 @@ import type {
 	InferGetServerSidePropsType,
 	Redirect,
 } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { tss } from "tss-react";
@@ -189,7 +190,8 @@ export const getServerSideProps = (async (context) => {
 
 	const { audit, contact, entity, actionPlan, created_by } = declaration;
 
-	const isDeclarationFull = audit && contact && entity && actionPlan && created_by;
+	const isDeclarationFull =
+		audit && contact && entity && actionPlan && created_by;
 
 	if (!isDeclarationFull) {
 		return {

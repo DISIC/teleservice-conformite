@@ -10,7 +10,7 @@ import type { AccessRight } from "~/payload/payload-types";
 import type { AccesRightAugmented } from "~/server/api/routers/accesRight";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
-import { type Session, authClient } from "~/utils/auth-client";
+import { authClient, type Session } from "~/utils/auth-client";
 import { useAppForm } from "~/utils/form/context";
 import { Loader } from "../system/Loader";
 
@@ -93,7 +93,10 @@ export default function Membres({ declaration }: MembresProps) {
 	const StatusBadge = ({
 		role,
 		status,
-	}: { role: AccessRight["role"]; status: AccessRight["status"] }) => {
+	}: {
+		role: AccessRight["role"];
+		status: AccessRight["status"];
+	}) => {
 		if (status === "pending") {
 			return <Badge key="status">Invitation envoyée</Badge>;
 		}
@@ -111,7 +114,10 @@ export default function Membres({ declaration }: MembresProps) {
 	const ActionsButtons = ({
 		accessRight,
 		session,
-	}: { accessRight: AccesRightAugmented; session: Session | null }) => {
+	}: {
+		accessRight: AccesRightAugmented;
+		session: Session | null;
+	}) => {
 		if (Number(session?.user.id) === accessRight?.user?.id) {
 			return <></>;
 		}
@@ -214,7 +220,7 @@ export default function Membres({ declaration }: MembresProps) {
 						<form.AppField name="email">
 							{(field) => (
 								<field.TextField
-									description="Format attendu : nom@domaine.fr"
+									hintText="Format attendu : nom@domaine.fr"
 									label="Adresse e-mail"
 									{...field}
 								/>
@@ -223,10 +229,10 @@ export default function Membres({ declaration }: MembresProps) {
 						<form.AppField name="role">
 							{(field) => (
 								<field.RadioField
-									label="Rôle"
+									legend="Rôle"
 									options={[
 										{
-											description:
+											hintText:
 												"Peut modifier tout aspect de la déclaration et inviter de nouveaux membres",
 											label: "Administrateur",
 											value: "admin",

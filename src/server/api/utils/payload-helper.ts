@@ -10,7 +10,6 @@ import type {
 	Entity,
 	User,
 } from "~/payload/payload-types";
-import payloadConfig from "~/payload/payload.config";
 import type { Session } from "~/utils/auth-client";
 
 type CollectionMap = {
