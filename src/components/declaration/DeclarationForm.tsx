@@ -1,11 +1,10 @@
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import React from "react";
-
+import { tss } from "tss-react";
 import { useStyles as useAppStyles } from "~/pages/_app";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import VerifyGeneratedInfoHelpingMessage from "./VerifyGeneratedInfoPopUpMessage";
 
 type DeclarationFormProps = {

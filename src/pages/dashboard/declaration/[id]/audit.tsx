@@ -3,19 +3,17 @@ import { fr } from "@codegouvfr/react-dsfr";
 import config from "@payload-config";
 import { useStore } from "@tanstack/react-form";
 import type { GetServerSideProps } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useState } from "react";
-import React from "react";
 import { tss } from "tss-react";
-
-import Head from "next/head";
-import { MultiStep } from "~/components/MultiStep";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
+import { MultiStep } from "~/components/MultiStep";
 import {
-	type PopulatedDeclaration,
 	getDeclarationById,
+	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import {
@@ -61,7 +59,7 @@ export default function AuditPage({
 	declaration: PopulatedDeclaration;
 }) {
 	const router = useRouter();
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
@@ -158,7 +156,7 @@ export default function AuditPage({
 		},
 	});
 
-	const { mutateAsync: deleteAudit } = api.audit.delete.useMutation({
+	api.audit.delete.useMutation({
 		onSuccess: async () => {
 			router.push(declarationPagePath);
 		},
@@ -241,7 +239,7 @@ export default function AuditPage({
 				id: declaration?.audit?.id ?? -1,
 				status: "default",
 			});
-		} catch (error) {
+		} catch (_error) {
 			return;
 		}
 	};
@@ -273,7 +271,7 @@ export default function AuditPage({
 
 	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			if (!isAchieved && declaration?.audit) {
 				await updateDeclarationAudit(audit?.id ?? -1, {
 					status: "notRealised",
@@ -328,7 +326,7 @@ export default function AuditPage({
 							e.preventDefault();
 							form.handleSubmit();
 						}}
-						onInvalid={(e) => {
+						onInvalid={(_e) => {
 							form.validate("submit");
 						}}
 					>
@@ -362,35 +360,31 @@ export default function AuditPage({
 							</div>
 						</form.AppForm>
 					</form>
+				) : editMode ? (
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							readOnlyForm.handleSubmit();
+						}}
+						onInvalid={(_e) => {
+							form.validate("submit");
+						}}
+					>
+						<div className={classes.whiteBackground}>
+							<DeclarationAuditForm
+								form={readOnlyForm}
+								isAchieved={isAchieved}
+								onChangeIsAchieved={(value) => setIsAchieved(value)}
+							/>
+						</div>
+						<readOnlyForm.AppForm>
+							<readOnlyForm.SubscribeButton label={"Valider"} />
+						</readOnlyForm.AppForm>
+					</form>
 				) : (
-					<>
-						{editMode ? (
-							<form
-								onSubmit={(e) => {
-									e.preventDefault();
-									readOnlyForm.handleSubmit();
-								}}
-								onInvalid={(e) => {
-									form.validate("submit");
-								}}
-							>
-								<div className={classes.whiteBackground}>
-									<DeclarationAuditForm
-										form={readOnlyForm}
-										isAchieved={isAchieved}
-										onChangeIsAchieved={(value) => setIsAchieved(value)}
-									/>
-								</div>
-								<readOnlyForm.AppForm>
-									<readOnlyForm.SubscribeButton label={"Valider"} />
-								</readOnlyForm.AppForm>
-							</form>
-						) : (
-							<div className={classes.whiteBackground}>
-								<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
-							</div>
-						)}
-					</>
+					<div className={classes.whiteBackground}>
+						<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
+					</div>
 				)}
 			</DeclarationForm>
 		</>
@@ -429,7 +423,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const payload = await getPayload({ config });
 
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
+	const declaration = await getDeclarationById(
+		payload,
+		Number.parseInt(id, 10),
+	);
 
 	if (!declaration) {
 		return {

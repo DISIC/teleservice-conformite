@@ -4,8 +4,8 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
+import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
 import Head from "next/head";
@@ -17,8 +17,8 @@ import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
 import {
-	type PopulatedDeclaration,
 	getDeclarationById,
+	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { copyToClipboard } from "~/utils/declaration-helper";
@@ -43,14 +43,14 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 		description?: string;
 		severity: "info" | "success" | "warning" | "error";
 	}>({ title: "", description: "", severity: "info" });
-	const [declarationName, setDeclarationName] = useState<string>(
+	const [declarationName, _setDeclarationName] = useState<string>(
 		declaration?.name ?? "",
 	);
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
-			onSuccess: async (result) => {
+			onSuccess: async (_result) => {
 				router.push("/dashboard");
 			},
 			onError: (error) => {
@@ -382,7 +382,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const payload = await getPayload({ config });
 
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
+	const declaration = await getDeclarationById(
+		payload,
+		Number.parseInt(id, 10),
+	);
 
 	if (!declaration) {
 		return {

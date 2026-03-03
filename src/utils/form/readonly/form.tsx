@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Information from "@codegouvfr/react-dsfr/picto/Information";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { useState } from "react";
 
 import HelpingMessage from "~/components/declaration/HelpingMessage";
@@ -323,44 +323,42 @@ export const DeclarationContactForm = withForm({
 	...readOnlyFormOptions,
 	render: function Render({ form }) {
 		return (
-			<>
-				<form.AppField name="contact.contactOptions">
-					{(field) => (
-						<>
-							<field.CheckboxGroupField
-								legend="Manière de contacter la personne responsable de l’accessibilité"
-								options={[
-									{ label: "Formulaire en ligne", value: "url" },
-									{ label: "Point de contact", value: "email" },
-								]}
-								required
-							/>
-							{field.state.value?.includes("url") && (
-								<form.AppField name="contact.contactName">
-									{(field) => (
-										<field.TextField
-											label="Lien URL du formulaire"
-											nativeInputProps={{ type: "url" }}
-											required
-										/>
-									)}
-								</form.AppField>
-							)}
-							{field.state.value?.includes("email") && (
-								<form.AppField name="contact.contactEmail">
-									{(field) => (
-										<field.TextField
-											label="Email de contact"
-											nativeInputProps={{ type: "email" }}
-											required
-										/>
-									)}
-								</form.AppField>
-							)}
-						</>
-					)}
-				</form.AppField>
-			</>
+			<form.AppField name="contact.contactOptions">
+				{(field) => (
+					<>
+						<field.CheckboxGroupField
+							legend="Manière de contacter la personne responsable de l’accessibilité"
+							options={[
+								{ label: "Formulaire en ligne", value: "url" },
+								{ label: "Point de contact", value: "email" },
+							]}
+							required
+						/>
+						{field.state.value?.includes("url") && (
+							<form.AppField name="contact.contactName">
+								{(field) => (
+									<field.TextField
+										label="Lien URL du formulaire"
+										nativeInputProps={{ type: "url" }}
+										required
+									/>
+								)}
+							</form.AppField>
+						)}
+						{field.state.value?.includes("email") && (
+							<form.AppField name="contact.contactEmail">
+								{(field) => (
+									<field.TextField
+										label="Email de contact"
+										nativeInputProps={{ type: "email" }}
+										required
+									/>
+								)}
+							</form.AppField>
+						)}
+					</>
+				)}
+			</form.AppField>
 		);
 	},
 });

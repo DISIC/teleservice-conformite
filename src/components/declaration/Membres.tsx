@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Table } from "@codegouvfr/react-dsfr/Table";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Input } from "@codegouvfr/react-dsfr/Input";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import { fr } from "@codegouvfr/react-dsfr";
+import { Table } from "@codegouvfr/react-dsfr/Table";
+import { useState } from "react";
 import { tss } from "tss-react";
 
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";

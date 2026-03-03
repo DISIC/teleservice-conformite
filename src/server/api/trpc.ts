@@ -1,4 +1,4 @@
-import { TRPCError, initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 /**
  * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
  * 1. You want to modify request context (see Part 1).
@@ -8,42 +8,12 @@ import { TRPCError, initTRPC } from "@trpc/server";
  * need to use are documented accordingly near the end.
  */
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { jwtDecode } from "jwt-decode";
-import type { NextApiRequest } from "next";
-import type { Payload } from "payload";
 import superjson from "superjson";
 import { ZodError } from "zod";
-
-import getPayloadClient from "../../payload/payloadClient";
 import { auth } from "~/utils/auth";
+import getPayloadClient from "../../payload/payloadClient";
 
 export type BetterAuthSession = Awaited<ReturnType<typeof auth.api.getSession>>;
-
-/**
- * 1. CONTEXT
- *
- * This section defines the "contexts" that are available in the backend API.
- *
- * These allow you to access things when processing a request, like the database, the session, etc.
- */
-
-type CreateContextOptions = Record<string, never>;
-
-/**
- * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
- * it from here.
- *
- * Examples of things you may need it for:
- * - testing, so we don't have to mock Next.js' req/res
- * - tRPC's `createSSGHelpers`, where we don't have req/res
- *
- * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
- */
-type CustomTRPCContext = {
-	payload: Payload;
-	session: BetterAuthSession;
-	req?: NextApiRequest;
-};
 
 /**
  * This is the actual context you will use in your router. It will be used to process every request
@@ -57,7 +27,9 @@ export const createTRPCContext = async (_opts: CreateNextContextOptions) => {
 	});
 
 	// Retrieve Better Auth session from incoming request headers
-	const session = await auth.api.getSession({ headers: new Headers(_opts.req.headers as HeadersInit) });
+	const session = await auth.api.getSession({
+		headers: new Headers(_opts.req.headers as HeadersInit),
+	});
 
 	return {
 		payload,
@@ -100,7 +72,7 @@ const isAuthedAsUser = t.middleware(async ({ next, ctx }) => {
 
 	const user = await ctx.payload.findByID({
 		collection: "users",
-			id: userId,
+		id: userId,
 	});
 
 	if (!user) {
@@ -116,7 +88,6 @@ const isAuthedAsUser = t.middleware(async ({ next, ctx }) => {
 		},
 	});
 });
-
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)

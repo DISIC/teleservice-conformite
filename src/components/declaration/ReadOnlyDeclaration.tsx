@@ -1,15 +1,17 @@
 import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import {
+	appKindOptions,
 	rgaaVersionOptions,
 	testEnvironmentOptions,
 	toolOptions,
-	appKindOptions,
 } from "~/payload/selectOptions";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 export const ReadOnlyDeclarationGeneral = ({
 	declaration,
-}: { declaration: PopulatedDeclaration | null }) => {
+}: {
+	declaration: PopulatedDeclaration | null;
+}) => {
 	return (
 		<>
 			<ReadOnlyField
@@ -40,7 +42,9 @@ export const ReadOnlyDeclarationGeneral = ({
 
 export const ReadOnlyDeclarationSchema = ({
 	declaration,
-}: { declaration: PopulatedDeclaration | null }) => {
+}: {
+	declaration: PopulatedDeclaration | null;
+}) => {
 	const currentYearSchemaUrl =
 		declaration?.actionPlan?.currentYearSchemaUrl ?? "";
 	const previousYearsSchemaUrl =
@@ -77,7 +81,9 @@ export const ReadOnlyDeclarationSchema = ({
 
 export const ReadOnlyDeclarationAudit = ({
 	declaration,
-}: { declaration: PopulatedDeclaration | null }) => {
+}: {
+	declaration: PopulatedDeclaration | null;
+}) => {
 	const audit = declaration?.audit;
 
 	if (!audit || audit.status === "notRealised") {
@@ -168,7 +174,9 @@ export const ReadOnlyDeclarationAudit = ({
 
 export const ReadOnlyDeclarationContact = ({
 	declaration,
-}: { declaration: PopulatedDeclaration | null }) => {
+}: {
+	declaration: PopulatedDeclaration | null;
+}) => {
 	const email = declaration?.contact?.email ?? "";
 	const url = declaration?.contact?.url ?? "";
 	const contactOptions = [];

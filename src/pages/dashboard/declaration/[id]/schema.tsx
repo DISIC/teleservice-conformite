@@ -1,19 +1,17 @@
 import type { ParsedUrlQuery } from "node:querystring";
-import { fr } from "@codegouvfr/react-dsfr";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useState } from "react";
 import { tss } from "tss-react";
-
-import Head from "next/head";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { ReadOnlyDeclarationSchema } from "~/components/declaration/ReadOnlyDeclaration";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import {
-	type PopulatedDeclaration,
 	getDeclarationById,
+	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { useAppForm } from "~/utils/form/context";
@@ -24,8 +22,10 @@ import { schemaFormOptions } from "~/utils/form/schema/schema";
 
 export default function SchemaPage({
 	declaration: initialDeclaration,
-}: { declaration: PopulatedDeclaration }) {
-	const { classes, cx } = useStyles();
+}: {
+	declaration: PopulatedDeclaration;
+}) {
+	const { classes } = useStyles();
 	const { classes: commonClasses } = useCommonStyles();
 	const router = useRouter();
 	const [declaration, setDeclaration] =
@@ -145,14 +145,14 @@ export default function SchemaPage({
 				id: declaration?.actionPlan?.id ?? -1,
 				status: "default",
 			});
-		} catch (error) {
+		} catch (_error) {
 			return;
 		}
 	};
 
 	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			const {
 				hasDoneCurrentYearSchema,
 				currentYearSchemaUrl = "",
@@ -173,7 +173,7 @@ export default function SchemaPage({
 
 	const form = useAppForm({
 		...schemaFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			await addSchema({
 				currentYearSchemaUrl: value.currentYearSchemaUrl ?? "",
 				previousYearsSchemaUrl: value.previousYearsSchemaUrl ?? "",
@@ -216,23 +216,17 @@ export default function SchemaPage({
 							readOnlyForm.handleSubmit();
 						}
 					}}
-					onInvalid={(e) => {
+					onInvalid={(_e) => {
 						form.validate("submit");
 					}}
 				>
 					<div className={commonClasses.whiteBackground}>
 						{!declaration?.actionPlan ? (
 							<DeclarationSchemaForm form={form} />
+						) : editMode ? (
+							<DeclarationSchema form={readOnlyForm} />
 						) : (
-							<>
-								{editMode ? (
-									<DeclarationSchema form={readOnlyForm} />
-								) : (
-									<ReadOnlyDeclarationSchema
-										declaration={declaration ?? null}
-									/>
-								)}
-							</>
+							<ReadOnlyDeclarationSchema declaration={declaration ?? null} />
 						)}
 					</div>
 					{editMode && (
@@ -288,7 +282,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const payload = await getPayload({ config });
 
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
+	const declaration = await getDeclarationById(
+		payload,
+		Number.parseInt(id, 10),
+	);
 
 	if (!declaration) {
 		return {

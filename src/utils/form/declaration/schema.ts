@@ -1,6 +1,6 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
-import { appKindOptions, rgaaVersionOptions } from "~/payload/selectOptions";
+import { appKindOptions } from "~/payload/selectOptions";
 
 export const declarationGeneral = z.object({
 	general: z.object({

@@ -25,7 +25,10 @@ export function UploadField(props: UploadFieldProps) {
 	return (
 		<Upload
 			{...commonProps}
-			{...getFieldState(field.state.meta.errors)}
+			state={field.state.meta.errors.length > 0 ? "error" : "default"}
+			stateRelatedMessage={
+				getFieldState(field.state.meta.errors).stateRelatedMessage
+			}
 			nativeInputProps={{
 				name: field.name,
 				onChange: (e) =>

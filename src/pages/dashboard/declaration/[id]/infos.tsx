@@ -1,19 +1,16 @@
 import type { ParsedUrlQuery } from "node:querystring";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useState } from "react";
-
-import { fr } from "@codegouvfr/react-dsfr";
-import Head from "next/head";
-import { tss } from "tss-react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import {
-	type PopulatedDeclaration,
 	getDeclarationById,
+	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { useAppForm } from "~/utils/form/context";
@@ -22,9 +19,10 @@ import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 
 export default function GeneralInformationsPage({
 	declaration: initialDeclaration,
-}: { declaration: PopulatedDeclaration }) {
+}: {
+	declaration: PopulatedDeclaration;
+}) {
 	const router = useRouter();
-	const { classes } = useStyles();
 	const { classes: commonClasses } = useCommonStyles();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
@@ -110,14 +108,14 @@ export default function GeneralInformationsPage({
 				status: "unpublished",
 				id: declaration?.id ?? -1,
 			});
-		} catch (error) {
+		} catch (_error) {
 			return;
 		}
 	};
 
 	const form = useAppForm({
 		...readOnlyFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			await updateDeclaration(value.general, declaration?.id ?? -1);
 		},
 	});
@@ -146,7 +144,7 @@ export default function GeneralInformationsPage({
 						e.preventDefault();
 						form.handleSubmit();
 					}}
-					onInvalid={(e) => {
+					onInvalid={(_e) => {
 						form.validate("submit");
 					}}
 				>
@@ -170,13 +168,6 @@ export default function GeneralInformationsPage({
 	);
 }
 
-const useStyles = tss.withName(GeneralInformationsPage.name).create({
-	actionButtonsContainer: {
-		display: "flex",
-		justifyContent: "space-between",
-	},
-});
-
 interface Params extends ParsedUrlQuery {
 	id: string;
 }
@@ -193,7 +184,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const payload = await getPayload({ config });
 
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
+	const declaration = await getDeclarationById(
+		payload,
+		Number.parseInt(id, 10),
+	);
 
 	if (!declaration) {
 		return {

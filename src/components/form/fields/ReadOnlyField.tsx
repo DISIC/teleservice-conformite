@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import type { InputProps } from "@codegouvfr/react-dsfr/Input";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
@@ -8,7 +7,6 @@ import type { DefaultFieldProps } from "~/utils/form/context";
 interface ReadOnlyFieldProps extends DefaultFieldProps {
 	label: ReactNode;
 	placeholder?: string;
-	className?: string;
 	value: string | string[];
 	textArea?: boolean;
 	addSectionBorder?: boolean;
@@ -19,7 +17,6 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 	const {
 		label,
 		placeholder = "Non",
-		className,
 		value,
 		textArea = false,
 		addSectionBorder = false,

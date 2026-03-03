@@ -1,6 +1,4 @@
 import type { CollectionConfig } from "payload";
-
-import type { Audit } from "../payload-types";
 import {
 	auditStatusOptions,
 	rgaaVersionOptions,

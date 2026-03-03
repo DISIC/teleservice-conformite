@@ -43,10 +43,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		setShowAlert(true);
 	};
 
-	if (firstDeclaration) {
-		return <AddFirstDeclaration />;
-	}
-
 	useEffect(() => {
 		if (!showAlert) return;
 
@@ -56,6 +52,10 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 
 		return () => clearTimeout(timer);
 	}, [showAlert]);
+
+	if (firstDeclaration) {
+		return <AddFirstDeclaration />;
+	}
 
 	return (
 		<div className={fr.cx("fr-container")}>
