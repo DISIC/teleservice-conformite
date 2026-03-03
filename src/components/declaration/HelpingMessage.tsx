@@ -1,10 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
 import Button from "@codegouvfr/react-dsfr/Button";
 import type {
 	FrIconClassName,
 	RiIconClassName,
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
+import { tss } from "tss-react";
 
 interface HelpingMessageProps {
 	image: React.ReactNode;

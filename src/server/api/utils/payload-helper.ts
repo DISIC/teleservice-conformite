@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
-import { type Payload, getPayload } from "payload";
+import { getPayload, type Payload } from "payload";
+import payloadConfig from "~/payload/payload.config";
 import type {
 	ActionPlan,
 	Audit,
@@ -8,7 +9,6 @@ import type {
 	Entity,
 	User,
 } from "~/payload/payload-types";
-import payloadConfig from "~/payload/payload.config";
 
 type CollectionMap = {
 	audits: Audit;

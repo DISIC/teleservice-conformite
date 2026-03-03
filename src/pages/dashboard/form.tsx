@@ -1,4 +1,3 @@
-import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
 import config from "@payload-config";
 import { useStore } from "@tanstack/react-form";
@@ -14,8 +13,8 @@ import { useStyles as useAppStyles } from "~/pages/_app";
 import type { Entity } from "~/payload/payload-types";
 import {
 	appKindOptions,
-	testEnvironmentOptions,
 	type rgaaVersionOptions,
+	testEnvironmentOptions,
 	toolOptions,
 } from "~/payload/selectOptions";
 import type { importedDeclarationDataSchema } from "~/server/api/routers/declaration";
@@ -231,7 +230,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					: (result?.data?.service?.type ?? "other"),
 				serviceUrl: result?.data?.service?.url ?? "",
 			};
-		} catch (error) {
+		} catch (_error) {
 			return { serviceName: "", serviceType: "other", serviceUrl: "" };
 		}
 	};
@@ -253,7 +252,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					: (result?.data?.service?.type ?? "other"),
 				serviceUrl: result?.data?.service?.url ?? "",
 			};
-		} catch (err) {
+		} catch (_err) {
 			return { serviceName: "", serviceType: "other", serviceUrl: "" };
 		}
 	};
@@ -352,7 +351,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						e.preventDefault();
 						form.handleSubmit();
 					}}
-					onInvalid={(e) => {
+					onInvalid={(_e) => {
 						form.validate("submit");
 					}}
 				>
@@ -416,10 +415,6 @@ const useStyles = tss.withName(FormPage.name).create({
 		fontWeight: 400,
 	},
 });
-
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const payload = await getPayload({ config });

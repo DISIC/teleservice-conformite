@@ -1,13 +1,16 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { tss } from "tss-react";
-import { fr } from "@codegouvfr/react-dsfr";
 
 export default function DeclarationMarkdownToJsx({
 	content,
 	mode = "published",
-}: { content: string; mode?: "published" | "preview" }) {
+}: {
+	content: string;
+	mode?: "published" | "preview";
+}) {
 	const { classes } = useStyles();
 
 	const shiftHeading =

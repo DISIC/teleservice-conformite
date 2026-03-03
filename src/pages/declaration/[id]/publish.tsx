@@ -2,10 +2,9 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
 import config from "@payload-config";
 import type { GetServerSideProps } from "next";
+import Head from "next/head";
 import { getPayload } from "payload";
 import { tss } from "tss-react";
-
-import Head from "next/head";
 import ErrorPage from "~/components/declaration/ErrorPage";
 import PublishedDeclarationTemplate, {
 	type PublishedDeclaration,
@@ -15,7 +14,10 @@ import { getDeclarationById } from "~/server/api/utils/payload-helper";
 export default function PublishPage({
 	publishedContent,
 	deleted,
-}: { publishedContent: PublishedDeclaration | null; deleted?: boolean }) {
+}: {
+	publishedContent: PublishedDeclaration | null;
+	deleted?: boolean;
+}) {
 	const { classes } = useStyles();
 
 	if (!publishedContent) {
@@ -73,9 +75,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	const payload = await getPayload({ config });
 
-	const declaration = await getDeclarationById(payload, Number.parseInt(id), {
-		trash: true,
-	});
+	const declaration = await getDeclarationById(
+		payload,
+		Number.parseInt(id, 10),
+		{
+			trash: true,
+		},
+	);
 	if (
 		!declaration ||
 		!declaration.publishedContent ||

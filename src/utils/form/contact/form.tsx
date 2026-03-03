@@ -9,8 +9,8 @@ export const ContactTypeForm = withForm({
 				<form.AppField name="contactType">
 					{(field) => (
 						<field.CheckboxGroupField
-							label="Manière de contacter la personne responsable de l’accessibilité"
-							description="Vous pouvez sélectionner plusieurs choix."
+							legend="Manière de contacter la personne responsable de l’accessibilité"
+							hintText="Vous pouvez sélectionner plusieurs choix."
 							options={[
 								{ label: "Formulaire en ligne", value: "onlineForm" },
 								{ label: "Point de contact", value: "contactPoint" },
@@ -25,9 +25,9 @@ export const ContactTypeForm = withForm({
 							<form.AppField name="contactLink">
 								{(field) => (
 									<field.TextField
-										kind="url"
 										label="Lien URL du formulaire"
-										description="Format attendu : https://www.example.fr"
+										hintText="Format attendu : https://www.example.fr"
+										nativeInputProps={{ type: "url" }}
 										required
 									/>
 								)}
@@ -41,9 +41,9 @@ export const ContactTypeForm = withForm({
 							<form.AppField name="emailContact">
 								{(field) => (
 									<field.TextField
-										kind="email"
 										label="Email de contact"
-										description="Indiquez de préférence une adresse de type “contact@monservice.com” plutôt qu’une adresse personnelle"
+										hintText="Indiquez de préférence une adresse de type “contact@monservice.com” plutôt qu’une adresse personnelle"
+										nativeInputProps={{ type: "email" }}
 										required
 									/>
 								)}

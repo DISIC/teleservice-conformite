@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { declarationStatusOptions, appKindOptions } from "../selectOptions";
+import { appKindOptions, declarationStatusOptions } from "../selectOptions";
 
 export const Declarations: CollectionConfig = {
 	slug: "declarations",

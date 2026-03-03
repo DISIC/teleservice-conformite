@@ -8,17 +8,17 @@ import sharp from "sharp";
 
 import { AccessRights } from "./collections/AccessRight";
 import { Accounts } from "./collections/Account";
+import { ActionPlans } from "./collections/ActionPlans";
 import { Admins } from "./collections/Admin";
 import { Audits } from "./collections/Audit";
+import { Contacts } from "./collections/Contact";
 import { Declarations } from "./collections/Declaration";
 import { Domains } from "./collections/Domain";
 import { Entities } from "./collections/Entity";
+import { Media } from "./collections/Media";
 import { Sessions } from "./collections/Session";
 import { Users } from "./collections/User";
 import { Verifications } from "./collections/Verification";
-import { Media } from "./collections/Media";
-import { ActionPlans } from "./collections/ActionPlans";
-import { Contacts } from "./collections/Contact";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);

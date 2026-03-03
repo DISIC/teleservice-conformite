@@ -1,7 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import NextLink from "next/link";
 import { tss } from "tss-react";
 
 import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
@@ -21,8 +20,8 @@ export const AuditRealisedForm = withForm({
 			<form.AppField name="isAuditRealised">
 				{(field) => (
 					<field.RadioField
-						label="Avez-vous réalisé un audit d’accessibilité de votre service numérique ?"
-						description="Un audit d’accessibilité évalue votre service numérique selon le RGAA afin d’identifier les non-conformités et les points à améliorer. Il peut être réalisé par un prestataire externe."
+						legend="Avez-vous réalisé un audit d’accessibilité de votre service numérique ?"
+						hintText="Un audit d’accessibilité évalue votre service numérique selon le RGAA afin d’identifier les non-conformités et les points à améliorer. Il peut être réalisé par un prestataire externe."
 						options={[
 							{ label: "Oui", value: true },
 							{ label: "Non", value: false },
@@ -43,10 +42,12 @@ export const AuditDateForm = withForm({
 				<form.AppField name="date">
 					{(field) => (
 						<field.TextField
-							kind="date"
 							label="Date de réalisation de l'audit"
-							max={new Date().toISOString().split("T")[0]}
 							required
+							nativeInputProps={{
+								type: "date",
+								max: new Date().toISOString().split("T")[0],
+							}}
 						/>
 					)}
 				</form.AppField>
@@ -54,7 +55,7 @@ export const AuditDateForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Entité ou personne ayant réalisé l’audit"
-							description='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
+							hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
 							required
 						/>
 					)}
@@ -62,7 +63,7 @@ export const AuditDateForm = withForm({
 				<form.AppField name="rgaa_version">
 					{(field) => (
 						<field.RadioField
-							label="Version du référentiel RGAA utilisée"
+							legend="Version du référentiel RGAA utilisée"
 							options={rgaaVersionOptions.map((option) => ({
 								label: option.label,
 								value: option.value,
@@ -75,9 +76,8 @@ export const AuditDateForm = withForm({
 					{(field) => (
 						<field.NumberField
 							label="Pourcentage de critères du RGAA respectés"
-							description="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
-							max={100}
-							min={0}
+							hintText="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
+							nativeInputProps={{ min: 0, max: 100 }}
 							required
 						/>
 					)}
@@ -96,7 +96,7 @@ export const ToolsForm = withForm({
 					{(field) => (
 						<div>
 							<field.CheckboxGroupField
-								label="Outils utilisés pour évaluer l’accessibilité (facultatif)"
+								legend="Outils utilisés pour évaluer l’accessibilité (facultatif)"
 								options={[...toolOptions]}
 							/>
 							<field.TagGroupField
@@ -115,7 +115,7 @@ export const ToolsForm = withForm({
 					{(field) => (
 						<div>
 							<field.CheckboxGroupField
-								label="Environnement de tests"
+								legend="Environnement de tests"
 								options={[...testEnvironmentOptions]}
 							/>
 							<field.TagGroupField
@@ -143,7 +143,8 @@ export const CompliantElementsForm = withForm({
 				{(field) => (
 					<field.TextField
 						label="Éléments ayant fait l’objet de la vérification de conformité"
-						description={
+						textArea
+						hintText={
 							<>
 								Renseignez le nom de chaque élément. Pour un site web,
 								renseignez également l’URL.
@@ -153,8 +154,6 @@ export const CompliantElementsForm = withForm({
 								Exemple : 'Accueil - https://www.nomdelapage/accueil'
 							</>
 						}
-						kind="text"
-						textArea
 						required
 					/>
 				)}
@@ -184,7 +183,8 @@ export const NonCompliantElementsForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Éléments non conformes (facultatif)"
-							description={
+							textArea
+							hintText={
 								<>
 									Exemples : Vidéo sans transcription, navigation au clavier
 									impossible, ...
@@ -199,8 +199,6 @@ export const NonCompliantElementsForm = withForm({
 									<br />- Quelques vidéos n’ont pas de sous-titres
 								</>
 							}
-							kind="text"
-							textArea
 						/>
 					)}
 				</form.AppField>
@@ -208,7 +206,8 @@ export const NonCompliantElementsForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Éléments non soumis à l’obligation d’accessibilité (facultatif)"
-							description={
+							textArea
+							hintText={
 								<>
 									<Button
 										onClick={(e) => {
@@ -227,8 +226,6 @@ export const NonCompliantElementsForm = withForm({
 									suite des autres
 								</>
 							}
-							kind="text"
-							textArea
 						/>
 					)}
 				</form.AppField>
@@ -236,7 +233,7 @@ export const NonCompliantElementsForm = withForm({
 					{(field) => (
 						<field.TextField
 							label="Éléments avec dérogation pour charge disproportionnée (facultatif)"
-							description={
+							hintText={
 								<>
 									<Button
 										onClick={(e) => {
@@ -259,7 +256,6 @@ export const NonCompliantElementsForm = withForm({
 									lecture du relief”
 								</>
 							}
-							kind="text"
 							textArea
 						/>
 					)}
@@ -296,16 +292,14 @@ export const FilesForm = withForm({
 	...auditMultiStepFormOptions,
 	render: function Render({ form }) {
 		return (
-			<>
-				<form.AppField name="report">
-					{(field) => (
-						<field.TextField
-							label="Rapport d’audit (facultatif)"
-							description="Format attendu: https://www.example.fr"
-						/>
-					)}
-				</form.AppField>
-			</>
+			<form.AppField name="report">
+				{(field) => (
+					<field.TextField
+						label="Rapport d’audit (facultatif)"
+						hintText="Format attendu: https://www.example.fr"
+					/>
+				)}
+			</form.AppField>
 		);
 	},
 });
