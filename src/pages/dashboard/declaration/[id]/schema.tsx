@@ -191,6 +191,7 @@ export default function SchemaPage({
 				</title>
 			</Head>
 			<DeclarationForm
+				showAraUpdatePrompt={!editMode && !!declaration?.actionPlan}
 				declaration={declaration}
 				title="Schéma et plans d'actions"
 				breadcrumbLabel={declaration?.name ?? ""}
