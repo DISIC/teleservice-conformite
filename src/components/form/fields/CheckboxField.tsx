@@ -19,7 +19,7 @@ interface CheckboxFieldProps
 
 export function CheckboxField(props: CheckboxFieldProps) {
 	const { readOnlyField, required, ...commonProps } = props;
-	const field = useFieldContext<TValue>();
+	const field = useFieldContext<TValue | undefined>();
 
 	return (
 		<Checkbox
@@ -35,7 +35,7 @@ export function CheckboxField(props: CheckboxFieldProps) {
 					checked: field.state.value === value,
 					onChange: (e) =>
 						field.setValue(
-							e.target.checked ? value : (undefined as unknown as TValue),
+							e.target.checked ? value : undefined,
 						),
 					required: option.nativeInputProps?.required ?? required,
 				},
