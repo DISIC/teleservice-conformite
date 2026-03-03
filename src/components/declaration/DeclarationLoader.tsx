@@ -1,7 +1,7 @@
-import System from "@codegouvfr/react-dsfr/picto/System";
-import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
+import System from "@codegouvfr/react-dsfr/picto/System";
 import { LinearProgress } from "@mui/material";
+import { tss } from "tss-react";
 import { useProgress } from "~/hooks/useProgress";
 
 interface DeclarationLoaderProps {

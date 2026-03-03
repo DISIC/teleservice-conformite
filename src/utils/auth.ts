@@ -60,7 +60,7 @@ export const auth = betterAuth({
 								name: data.given_name,
 								email: data.email,
 								emailVerified: true,
-								siret: Number.parseInt(data.siret),
+								siret: Number.parseInt(data.siret, 10),
 								createdAt: data.created_at
 									? new Date(data.created_at)
 									: new Date(),

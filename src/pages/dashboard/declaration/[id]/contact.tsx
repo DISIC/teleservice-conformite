@@ -17,8 +17,10 @@ import { guardDeclaration } from "~/utils/server-guards";
 
 export default function ContactPage({
 	declaration: initialDeclaration,
-}: { declaration: PopulatedDeclaration }) {
-	const { classes, cx } = useStyles();
+}: {
+	declaration: PopulatedDeclaration;
+}) {
+	const { classes } = useStyles();
 	const { classes: commonClasses } = useCommonStyles();
 	const router = useRouter();
 	const [declaration, setDeclaration] =
@@ -124,7 +126,11 @@ export default function ContactPage({
 		email,
 		url,
 		declarationId,
-	}: { email: string; url: string; declarationId: number }) => {
+	}: {
+		email: string;
+		url: string;
+		declarationId: number;
+	}) => {
 		try {
 			await createContact({ email, url, declarationId });
 		} catch (error) {
@@ -134,7 +140,7 @@ export default function ContactPage({
 
 	const form = useAppForm({
 		...contactFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			await addContact({
 				email: value?.emailContact ?? "",
 				url: value?.contactLink ?? "",
@@ -145,7 +151,7 @@ export default function ContactPage({
 
 	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			const data = value.contact.contactOptions?.reduce(
 				(acc: { email?: string; url?: string }, option) => {
 					if (option === "email") {
@@ -174,7 +180,7 @@ export default function ContactPage({
 				id: declaration?.contact?.id ?? -1,
 				status: "default",
 			});
-		} catch (error) {
+		} catch (_error) {
 			return;
 		}
 	};
@@ -211,7 +217,7 @@ export default function ContactPage({
 							readOnlyForm.handleSubmit();
 						}
 					}}
-					onInvalid={(e) => {
+					onInvalid={(_e) => {
 						form.validate("submit");
 					}}
 				>
@@ -238,25 +244,19 @@ export default function ContactPage({
 								</div>
 							</form.AppForm>
 						</>
-					) : (
+					) : editMode ? (
 						<>
-							{editMode ? (
-								<>
-									<div className={commonClasses.whiteBackground}>
-										<DeclarationContactForm form={readOnlyForm} />
-									</div>
-									<readOnlyForm.AppForm>
-										<readOnlyForm.SubscribeButton label="Valider" />
-									</readOnlyForm.AppForm>
-								</>
-							) : (
-								<div className={commonClasses.whiteBackground}>
-									<ReadOnlyDeclarationContact
-										declaration={declaration ?? null}
-									/>
-								</div>
-							)}
+							<div className={commonClasses.whiteBackground}>
+								<DeclarationContactForm form={readOnlyForm} />
+							</div>
+							<readOnlyForm.AppForm>
+								<readOnlyForm.SubscribeButton label="Valider" />
+							</readOnlyForm.AppForm>
 						</>
+					) : (
+						<div className={commonClasses.whiteBackground}>
+							<ReadOnlyDeclarationContact declaration={declaration ?? null} />
+						</div>
 					)}
 				</form>
 			</DeclarationForm>

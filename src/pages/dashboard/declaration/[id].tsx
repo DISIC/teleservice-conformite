@@ -3,7 +3,6 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
@@ -36,14 +35,14 @@ export default function DeclarationPage({
 		description?: string;
 		severity: "info" | "success" | "warning" | "error";
 	}>({ title: "", description: "", severity: "info" });
-	const [declarationName, setDeclarationName] = useState<string>(
+	const [declarationName, _setDeclarationName] = useState<string>(
 		declaration?.name ?? "",
 	);
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
-			onSuccess: async (result) => {
+			onSuccess: async (_result) => {
 				router.push("/dashboard");
 			},
 			onError: (error) => {

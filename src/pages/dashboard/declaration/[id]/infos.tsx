@@ -17,7 +17,6 @@ export default function GeneralInformationsPage({
 	declaration: initialDeclaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
-	const { classes } = useStyles();
 	const { classes: commonClasses } = useCommonStyles();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
@@ -103,14 +102,14 @@ export default function GeneralInformationsPage({
 				status: "unpublished",
 				id: declaration?.id ?? -1,
 			});
-		} catch (error) {
+		} catch (_error) {
 			return;
 		}
 	};
 
 	const form = useAppForm({
 		...readOnlyFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			await updateDeclaration(value.general, declaration?.id ?? -1);
 		},
 	});
@@ -139,7 +138,7 @@ export default function GeneralInformationsPage({
 						e.preventDefault();
 						form.handleSubmit();
 					}}
-					onInvalid={(e) => {
+					onInvalid={(_e) => {
 						form.validate("submit");
 					}}
 				>

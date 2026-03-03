@@ -4,7 +4,6 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import React from "react";
 import { tss } from "tss-react";
 import { MultiStep } from "~/components/MultiStep";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
@@ -53,7 +52,7 @@ export default function AuditPage({
 	declaration: initialDeclaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [editMode, setEditMode] = useState(false);
@@ -150,7 +149,7 @@ export default function AuditPage({
 		},
 	});
 
-	const { mutateAsync: deleteAudit } = api.audit.delete.useMutation({
+	api.audit.delete.useMutation({
 		onSuccess: async () => {
 			router.push(declarationPagePath);
 		},
@@ -233,7 +232,7 @@ export default function AuditPage({
 				id: declaration?.audit?.id ?? -1,
 				status: "default",
 			});
-		} catch (error) {
+		} catch (_error) {
 			return;
 		}
 	};
@@ -265,7 +264,7 @@ export default function AuditPage({
 
 	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			if (!isAchieved && declaration?.audit) {
 				await updateDeclarationAudit(audit?.id ?? -1, {
 					status: "notRealised",
@@ -320,7 +319,7 @@ export default function AuditPage({
 							e.preventDefault();
 							form.handleSubmit();
 						}}
-						onInvalid={(e) => {
+						onInvalid={(_e) => {
 							form.validate("submit");
 						}}
 					>
@@ -354,35 +353,31 @@ export default function AuditPage({
 							</div>
 						</form.AppForm>
 					</form>
+				) : editMode ? (
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							readOnlyForm.handleSubmit();
+						}}
+						onInvalid={(_e) => {
+							form.validate("submit");
+						}}
+					>
+						<div className={classes.whiteBackground}>
+							<DeclarationAuditForm
+								form={readOnlyForm}
+								isAchieved={isAchieved}
+								onChangeIsAchieved={(value) => setIsAchieved(value)}
+							/>
+						</div>
+						<readOnlyForm.AppForm>
+							<readOnlyForm.SubscribeButton label={"Valider"} />
+						</readOnlyForm.AppForm>
+					</form>
 				) : (
-					<>
-						{editMode ? (
-							<form
-								onSubmit={(e) => {
-									e.preventDefault();
-									readOnlyForm.handleSubmit();
-								}}
-								onInvalid={(e) => {
-									form.validate("submit");
-								}}
-							>
-								<div className={classes.whiteBackground}>
-									<DeclarationAuditForm
-										form={readOnlyForm}
-										isAchieved={isAchieved}
-										onChangeIsAchieved={(value) => setIsAchieved(value)}
-									/>
-								</div>
-								<readOnlyForm.AppForm>
-									<readOnlyForm.SubscribeButton label={"Valider"} />
-								</readOnlyForm.AppForm>
-							</form>
-						) : (
-							<div className={classes.whiteBackground}>
-								<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
-							</div>
-						)}
-					</>
+					<div className={classes.whiteBackground}>
+						<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
+					</div>
 				)}
 			</DeclarationForm>
 		</>

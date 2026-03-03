@@ -1,8 +1,7 @@
 import { createAuthMiddleware } from "better-auth/plugins";
 import { getPayload } from "payload";
-
-import type { Entity } from "~/payload/payload-types";
 import payloadConfig from "~/payload/payload.config";
+import type { Entity } from "~/payload/payload-types";
 import { getEntityInfosFromSiret } from "~/utils/siret-helper";
 
 export const upsertEntityToUser = createAuthMiddleware(async (ctx) => {

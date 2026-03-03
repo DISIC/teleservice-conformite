@@ -323,7 +323,7 @@ export const declarationRouter = createTRPCRouter({
 				rgaaVersion,
 				auditRealizedBy,
 				publishedAt,
-				responsibleEntity,
+				// responsibleEntity,
 				compliantElements,
 				technologies,
 				testEnvironments,
@@ -448,7 +448,7 @@ export const declarationRouter = createTRPCRouter({
 				await ctx.payload.db.commitTransaction(transactionID);
 
 				return { data: declarationId };
-			} catch (error) {
+			} catch (_error) {
 				await ctx.payload.db.rollbackTransaction(transactionID);
 
 				throw new TRPCError({

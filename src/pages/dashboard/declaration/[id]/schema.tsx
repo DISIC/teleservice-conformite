@@ -138,14 +138,14 @@ export default function SchemaPage({
 				id: declaration?.actionPlan?.id ?? -1,
 				status: "default",
 			});
-		} catch (error) {
+		} catch (_error) {
 			return;
 		}
 	};
 
 	const readOnlyForm = useAppForm({
 		...readOnlyFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			const {
 				hasDoneCurrentYearSchema,
 				currentYearSchemaUrl = "",
@@ -166,7 +166,7 @@ export default function SchemaPage({
 
 	const form = useAppForm({
 		...schemaFormOptions,
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			await addSchema({
 				currentYearSchemaUrl: value.currentYearSchemaUrl ?? "",
 				previousYearsSchemaUrl: value.previousYearsSchemaUrl ?? "",
@@ -209,23 +209,17 @@ export default function SchemaPage({
 							readOnlyForm.handleSubmit();
 						}
 					}}
-					onInvalid={(e) => {
+					onInvalid={(_e) => {
 						form.validate("submit");
 					}}
 				>
 					<div className={commonClasses.whiteBackground}>
 						{!declaration?.actionPlan ? (
 							<DeclarationSchemaForm form={form} />
+						) : editMode ? (
+							<DeclarationSchema form={readOnlyForm} />
 						) : (
-							<>
-								{editMode ? (
-									<DeclarationSchema form={readOnlyForm} />
-								) : (
-									<ReadOnlyDeclarationSchema
-										declaration={declaration ?? null}
-									/>
-								)}
-							</>
+							<ReadOnlyDeclarationSchema declaration={declaration ?? null} />
 						)}
 					</div>
 					{editMode && (

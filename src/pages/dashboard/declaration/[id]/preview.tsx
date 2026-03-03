@@ -10,6 +10,10 @@ import type {
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { tss } from "tss-react";
+import PublishedDeclarationTemplate, {
+	extractDeclarationContentToPublish,
+	type PublishedDeclaration,
+} from "~/components/declaration/PublishedDeclarationTemplate";
 import type {
 	ActionPlan,
 	Audit,
@@ -17,15 +21,9 @@ import type {
 	Entity,
 	User,
 } from "~/payload/payload-types";
-
-import Head from "next/head";
-import PublishedDeclarationTemplate, {
-	extractDeclarationContentToPublish,
-	type PublishedDeclaration,
-} from "~/components/declaration/PublishedDeclarationTemplate";
 import {
-	type PopulatedDeclaration,
 	getDeclarationById,
+	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { auth } from "~/utils/auth";
@@ -66,7 +64,7 @@ export default function DeclarationPreviewPage({
 				id: declaration.id,
 				content: JSON.stringify(publishedDeclarationContent),
 			});
-		} catch (error) {
+		} catch (_error) {
 			return;
 		}
 	};

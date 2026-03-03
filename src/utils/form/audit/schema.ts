@@ -1,10 +1,7 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
-import {
-	rgaaVersionOptions,
-	testEnvironmentOptions,
-} from "~/payload/selectOptions";
+import { rgaaVersionOptions } from "~/payload/selectOptions";
 
 export const auditRealised = z.object({
 	isAuditRealised: z.boolean().optional(),

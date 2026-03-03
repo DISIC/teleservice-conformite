@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { ProConnectButton } from "@codegouvfr/react-dsfr/ProConnectButton";
 import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
 import Document from "@codegouvfr/react-dsfr/picto/Document";
@@ -7,9 +8,8 @@ import FlowList from "@codegouvfr/react-dsfr/picto/FlowList";
 import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
 import MentalDisabilities from "@codegouvfr/react-dsfr/picto/MentalDisabilities";
 import Notification from "@codegouvfr/react-dsfr/picto/Notification";
-import { tss } from "tss-react";
-import { ProConnectButton } from "@codegouvfr/react-dsfr/ProConnectButton";
 import Cookies from "js-cookie";
+import { tss } from "tss-react";
 
 import { authClient } from "~/utils/auth-client";
 

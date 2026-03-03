@@ -1,56 +1,71 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import type { InputHTMLAttributes } from "react";
 import { useRef } from "react";
 import { tss } from "tss-react";
 
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 interface SelectCardFieldProps extends DefaultFieldProps {
-	name: string;
+	label: string;
 	options: {
-		id: string;
+		value: string;
 		image: React.ReactNode;
 		label: string;
 		description?: string;
+		nativeInputProps?: Omit<
+			InputHTMLAttributes<HTMLInputElement>,
+			"value" | "checked" | "onChange" | "name" | "type"
+		>;
 	}[];
-	onChange: (value: string) => void;
+	onOptionChange?: (value: string) => void;
+	disabled?: boolean;
+	className?: string;
 }
 
-export function SelectCardField({
-	name,
-	options = [],
-	label,
-	onChange,
-	disabled,
-	className,
-	required,
-}: SelectCardFieldProps) {
+export function SelectCardField(props: SelectCardFieldProps) {
+	const {
+		readOnlyField,
+		required,
+		onOptionChange,
+		disabled,
+		className,
+		label,
+		options = [],
+	} = props;
 	const field = useFieldContext<string>();
 	const { classes, cx } = useStyles();
 	const inputRef = useRef<Record<string, HTMLInputElement | null>>({});
 
+	if (readOnlyField) {
+		const selectedOption = options.find((o) => o.value === field.state.value);
+		return <ReadOnlyField label={label} value={selectedOption?.label ?? ""} />;
+	}
+
 	return (
 		<div className={cx(classes.fieldWrapper, className)}>
-			<label htmlFor={name}>{label}</label>
-			{options.map(({ id, image, label: optionLabel, description }) => {
-				const inputId = `${name}-${id}`;
-				const checked = field.state.value === id;
+			<label htmlFor={field.name}>{label}</label>
+			{options.map(({ value, ...option }) => {
+				const inputId = `${field.name}-${value}`;
+				const checked = field.state.value === value;
 
 				return (
-					<div key={id} className={classes.optionWrapper}>
+					<div key={value} className={classes.optionWrapper}>
 						<input
 							ref={(element) => {
-								inputRef.current[id] = element;
+								inputRef.current[value] = element;
 							}}
+							{...option}
+							{...option.nativeInputProps}
 							id={inputId}
-							name={name}
+							name={field.name}
 							type="radio"
-							value={id}
 							checked={checked}
-							disabled={disabled}
-							required={required}
+							disabled={option.nativeInputProps?.disabled ?? disabled}
+							required={option.nativeInputProps?.required ?? required}
 							onChange={() => {
-								onChange(id);
-								field.setValue(id);
+								field.setValue(value);
+								onOptionChange?.(value);
 							}}
 							className={classes.hiddenRadio}
 						/>
@@ -59,15 +74,16 @@ export function SelectCardField({
 							className={cx(
 								classes.optionButton,
 								checked && classes.optionButtonChecked,
-								disabled && classes.optionButtonDisabled,
+								(option.nativeInputProps?.disabled ?? disabled) &&
+									classes.optionButtonDisabled,
 							)}
 						>
-							{image}
+							{option.image}
 							<span>
-								<p className={classes.label}>{optionLabel}</p>
-								{description && (
+								<p className={classes.label}>{option.label}</p>
+								{option.description && (
 									<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
-										{description}
+										{option.description}
 									</p>
 								)}
 							</span>

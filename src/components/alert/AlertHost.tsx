@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { useEffect, useRef, useState } from "react";
+import { tss } from "tss-react";
 
-import { onAlert, showAlert, type AlertEvent } from "~/utils/alert-event";
+import { type AlertEvent, onAlert, showAlert } from "~/utils/alert-event";
 
 type Item = AlertEvent & { id: string; expiresAt?: number };
 

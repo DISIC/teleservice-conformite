@@ -38,4 +38,3 @@ export function onAlert(listener: Listener) {
 export function offAlert(listener: Listener) {
 	alertEvents.off(listener);
 }
-

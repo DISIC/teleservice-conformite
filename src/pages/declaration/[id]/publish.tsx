@@ -15,7 +15,10 @@ import { auth } from "~/utils/auth";
 export default function PublishPage({
 	publishedContent,
 	deleted,
-}: { publishedContent: PublishedDeclaration | null; deleted?: boolean }) {
+}: {
+	publishedContent: PublishedDeclaration | null;
+	deleted?: boolean;
+}) {
 	const { classes } = useStyles();
 
 	if (!publishedContent) {
