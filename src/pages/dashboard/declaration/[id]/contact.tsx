@@ -31,29 +31,19 @@ export default function ContactPage({
 
 	const onEditInfos = () => setReadOnly((prev) => !prev);
 
-	const { mutateAsync: createContact } = api.contact.create.useMutation({
-		onSuccess: () => {
-			const isComplete = declaration.audit && declaration.actionPlan;
-			router.push(
-				`/dashboard/declaration/${declaration.id}${isComplete ? "/preview" : ""}`,
-			);
-		},
-		onError: (error) => console.error("Error adding contact:", error),
-	});
-
-	const { mutateAsync: updateContact } = api.contact.update.useMutation({
+	const { mutateAsync: upsertContract } = api.contact.upsert.useMutation({
 		onSuccess: (result) => {
-			setDeclaration((prev) => ({
-				...prev,
-				contact: result.data,
-			}));
-			setReadOnly(true);
+			if (!declaration.contact) {
+				const isComplete = declaration.audit && declaration.actionPlan;
+				router.push(
+					`/dashboard/declaration/${declaration.id}${isComplete ? "/preview" : ""}`,
+				);
+			} else {
+				setDeclaration((prev) => ({ ...prev, contact: result.data }));
+				setReadOnly(true);
+			}
 		},
-		onError: (error) =>
-			console.error(
-				`Error updating contact for declaration with id ${declaration?.id}:`,
-				error,
-			),
+		onError: (error) => console.error("Error upserting contact:", error),
 	});
 
 	const defaultValues: ZContact = useMemo(() => {
@@ -74,15 +64,11 @@ export default function ContactPage({
 		...contactFormOptions,
 		defaultValues,
 		onSubmit: async ({ value }) => {
-			if (!declaration?.contact?.id) {
-				await createContact({ ...value, declarationId: declaration.id });
-			} else {
-				await updateContact({
-					...value,
-					id: declaration.contact.id,
-					declarationId: declaration.id,
-				});
-			}
+			await upsertContract({
+				...value,
+				id: declaration.contact?.id,
+				declarationId: declaration.id,
+			});
 		},
 	});
 
