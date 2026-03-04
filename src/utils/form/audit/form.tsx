@@ -113,16 +113,17 @@ export const ToolsForm = withForm({
 								options={[...toolOptions]}
 								readOnlyField={readOnly}
 							/>
-							<field.TagGroupField
-								label="Ajouter un outil"
-								initialTags={(field.state.value || []).filter(
-									(tag) =>
-										![...toolOptions]
-											.map((option) => option.value as string)
-											.includes(tag),
-								)}
-								readOnlyField={readOnly}
-							/>
+							{!readOnly && (
+								<field.TagGroupField
+									label="Ajouter un outil"
+									initialTags={(field.state.value || []).filter(
+										(tag) =>
+											![...toolOptions]
+												.map((option) => option.value as string)
+												.includes(tag),
+									)}
+								/>
+							)}
 						</div>
 					)}
 				</form.AppField>
@@ -134,16 +135,17 @@ export const ToolsForm = withForm({
 								options={[...testEnvironmentOptions]}
 								readOnlyField={readOnly}
 							/>
-							<field.TagGroupField
-								label="Ajouter un environnement"
-								initialTags={(field.state.value || []).filter(
-									(tag) =>
-										![...testEnvironmentOptions]
-											.map((option) => option.value as string)
-											.includes(tag),
-								)}
-								readOnlyField={readOnly}
-							/>
+							{!readOnly && (
+								<field.TagGroupField
+									label="Ajouter un environnement"
+									initialTags={(field.state.value || []).filter(
+										(tag) =>
+											![...testEnvironmentOptions]
+												.map((option) => option.value as string)
+												.includes(tag),
+									)}
+								/>
+							)}
 						</div>
 					)}
 				</form.AppField>
