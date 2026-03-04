@@ -4,9 +4,8 @@ import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
-import { ReadOnlyDeclarationGeneral } from "~/components/declaration/ReadOnlyDeclaration";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import {
 	getDeclarationById,
@@ -14,109 +13,63 @@ import {
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { useAppForm } from "~/utils/form/context";
-import { DeclarationGeneralForm } from "~/utils/form/readonly/form";
-import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
+import { DeclarationGeneralForm } from "~/utils/form/declaration/form";
+import {
+	declarationMultiStepFormOptions,
+	type ZDeclarationMultiStepFormSchema,
+} from "~/utils/form/declaration/schema";
 
 export default function GeneralInformationsPage({
 	declaration: initialDeclaration,
 }: {
 	declaration: PopulatedDeclaration;
 }) {
-	const router = useRouter();
 	const { classes: commonClasses } = useCommonStyles();
+	const router = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
-	const [editMode, setEditMode] = useState(false);
-	const { name, kind } = declaration?.entity || {};
-	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
+	const [readOnly, setReadOnly] = useState(true);
+
+	const onEditInfos = () => setReadOnly((prev) => !prev);
 
 	const { mutateAsync: update } = api.declaration.update.useMutation({
-		onSuccess: async (result) => {
-			setDeclaration((prev) => ({
-				...prev,
-				...result.data,
-			}));
-			setEditMode(false);
+		onSuccess: ({ data }) => {
+			setDeclaration((prev) => ({ ...prev, ...data }));
+			setReadOnly(true);
 		},
-		onError: async (error) => {
+		onError: (error) =>
 			console.error(
 				`Error updating declaration with id ${declaration?.id}:`,
 				error,
-			);
-		},
+			),
 	});
 
-	const { mutateAsync: updateStatus } =
-		api.declaration.updateStatus.useMutation({
-			onSuccess: async (result) => {
-				setDeclaration((prev) => ({
-					...prev,
-					status: result.data.status,
-				}));
-
-				router.push(declarationPagePath);
+	const defaultValues: ZDeclarationMultiStepFormSchema = useMemo(
+		() => ({
+			section: "general",
+			initialDeclaration: {},
+			general: {
+				organisation: declaration.entity?.name ?? "",
+				kind: declaration.app_kind,
+				name: declaration.name ?? "",
+				url: declaration.url ?? "",
+				domain: declaration.entity?.kind ?? "",
 			},
-			onError: async (error) => {
-				console.error(
-					`Error updating declaration status with id ${declaration?.id}:`,
-					error,
-				);
-			},
-		});
-
-	const onEditInfos = () => {
-		setEditMode((prev) => !prev);
-	};
-
-	if (declaration) {
-		readOnlyFormOptions.defaultValues.general = {
-			organisation: name ?? "",
-			kind: declaration?.app_kind as (typeof readOnlyFormOptions)["defaultValues"]["general"]["kind"],
-			name: declaration?.name ?? "",
-			url: declaration?.url ?? "",
-			domain: kind ?? "",
-		};
-	}
-
-	const updateDeclaration = async (
-		generalValues: typeof readOnlyFormOptions.defaultValues.general,
-		declarationId: number,
-	) => {
-		try {
-			await update({
-				general: {
-					domain: generalValues.domain,
-					name: generalValues.name,
-					url: generalValues.url,
-					kind: generalValues.kind,
-					organisation: generalValues.organisation,
-					declarationId,
-					entityId: declaration?.entity?.id ?? -1,
-				},
-			});
-		} catch (error) {
-			console.error(
-				`Error updating declaration with id ${declarationId}:`,
-				error,
-			);
-		}
-	};
-
-	const updateDeclarationStatus = async () => {
-		try {
-			await updateStatus({
-				status: "unpublished",
-				id: declaration?.id ?? -1,
-			});
-		} catch (_error) {
-			return;
-		}
-	};
+		}),
+		[declaration],
+	);
 
 	const form = useAppForm({
-		...readOnlyFormOptions,
+		...declarationMultiStepFormOptions,
+		defaultValues,
 		onSubmit: async ({ value }) => {
-			await updateDeclaration(value.general, declaration?.id ?? -1);
+			await update({
+				general: {
+					...value.general,
+					declarationId: declaration.id,
+					entityId: declaration.entity?.id ?? -1,
+				},
+			});
 		},
 	});
 
@@ -132,36 +85,39 @@ export default function GeneralInformationsPage({
 				declaration={declaration}
 				title="Informations générales"
 				breadcrumbLabel={declaration?.name ?? ""}
-				showValidateButton={declaration.status === "unverified" && !editMode}
-				onValidate={updateDeclarationStatus}
-				isEditable={true}
+				isEditable
+				readOnly={readOnly}
 				onToggleEdit={onEditInfos}
-				editMode={editMode}
-				showLayoutComponent={false}
 			>
 				<form
 					onSubmit={(e) => {
 						e.preventDefault();
 						form.handleSubmit();
 					}}
-					onInvalid={(_e) => {
-						form.validate("submit");
-					}}
+					onInvalid={() => form.validate("submit")}
 				>
-					{editMode ? (
-						<>
-							<div className={commonClasses.whiteBackground}>
-								<DeclarationGeneralForm form={form} />
-							</div>
-							<form.AppForm>
-								<form.SubscribeButton label={"Valider"} />
-							</form.AppForm>
-						</>
-					) : (
-						<div className={commonClasses.whiteBackground}>
-							<ReadOnlyDeclarationGeneral declaration={declaration ?? null} />
+					<div className={commonClasses.whiteBackground}>
+						<DeclarationGeneralForm form={form} readOnly={readOnly} />
+					</div>
+					<form.AppForm>
+						<div className={commonClasses.actionButtonsContainer}>
+							<form.CancelButton
+								label="Retour"
+								ariaLabel="Retour à la déclaration"
+								onClick={() =>
+									router.push(`/dashboard/declaration/${declaration.id}`)
+								}
+								priority="tertiary"
+							/>
+							{!readOnly && (
+								<form.SubscribeButton
+									label="Valider"
+									iconId="fr-icon-check-line"
+									iconPosition="right"
+								/>
+							)}
 						</div>
-					)}
+					</form.AppForm>
 				</form>
 			</DeclarationForm>
 		</>
