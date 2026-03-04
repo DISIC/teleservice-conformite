@@ -23,11 +23,15 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const { rate } = declaration?.audit || {};
 	const linkToDeclarationPage = `/dashboard/declaration/${declaration.id}`;
 
+	const isDeclarationFromExternalSource =
+		declaration.fromSource === "ai" || declaration.fromSource === "ara";
+
 	const declarationComplete =
 		declaration.status === "unpublished" &&
-		["default", "notRealised"].includes(declaration?.audit?.status ?? "") &&
-		declaration?.contact?.status === "default" &&
-		declaration?.actionPlan?.status === "default";
+		declaration.audit?.isRealised &&
+		!declaration?.audit?.toVerify &&
+		!declaration?.contact?.toVerify &&
+		!declaration?.actionPlan?.toVerify;
 
 	const RedirectButton = ({
 		href,
@@ -82,10 +86,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			| undefined,
 		href: string,
 	) => {
-		if (
-			section &&
-			["default", "notRealised"].includes(declaration?.audit?.status ?? "")
-		) {
+		if (section && !declaration?.audit?.isRealised) {
 			return (
 				<Button
 					iconId="fr-icon-arrow-right-line"
@@ -100,7 +101,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			return <RedirectButton href={href} />;
 		}
 
-		if (section.status === "fromAI" || section.status === "fromAra") {
+		if (isDeclarationFromExternalSource) {
 			return <RedirectButton label="Vérifier les informations" href={href} />;
 		}
 
@@ -139,9 +140,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Community />,
 			path: "/contact",
 			showToCompleteBadge: !declaration?.contact,
-			showVerifyBadge:
-				declaration?.contact?.status === "fromAI" ||
-				declaration?.contact?.status === "fromAra",
+			showVerifyBadge: isDeclarationFromExternalSource,
 			section: declaration?.contact,
 		},
 		{
@@ -150,9 +149,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Search />,
 			path: "/audit",
 			showToCompleteBadge: !declaration?.audit,
-			showVerifyBadge:
-				declaration?.audit?.status === "fromAI" ||
-				declaration?.audit?.status === "fromAra",
+			showVerifyBadge: isDeclarationFromExternalSource,
 			section: declaration?.audit,
 		},
 		{
@@ -161,9 +158,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Conclusion fontSize="1rem" />,
 			path: "/schema",
 			showToCompleteBadge: !declaration?.actionPlan,
-			showVerifyBadge:
-				declaration?.actionPlan?.status === "fromAI" ||
-				declaration?.actionPlan?.status === "fromAra",
+			showVerifyBadge: isDeclarationFromExternalSource,
 			section: declaration?.actionPlan,
 		},
 	];

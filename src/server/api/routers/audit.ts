@@ -1,6 +1,5 @@
 import z from "zod";
-
-import { auditStatusOptions } from "~/payload/selectOptions";
+import { sourceOptions } from "~/payload/selectOptions";
 import { auditFormSchema } from "~/utils/form/audit/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { isDeclarationOwner, linkToDeclaration } from "../utils/payload-helper";
@@ -13,10 +12,6 @@ const optionalAuditFormSchema = auditFormSchema
 	})
 	.extend({
 		declarationId: z.number(),
-		status: z
-			.enum(auditStatusOptions.map((option) => option.value))
-			.optional()
-			.default("default"),
 		technologies: z.array(z.string()).optional().default([]),
 		usedTools: z.array(z.string()).optional().default([]),
 		testEnvironments: z.array(z.string()).optional().default([]),
@@ -32,7 +27,6 @@ export const auditRouter = createTRPCRouter({
 				testEnvironments = [],
 				technologies = [],
 				date,
-				status,
 				...rest
 			} = input;
 
@@ -48,20 +42,18 @@ export const auditRouter = createTRPCRouter({
 				typeof rest.rate === "number" &&
 				rest.rate > 0 &&
 				Boolean(rest.compliantElements?.trim());
-			const statusToSave =
-				status ?? (hasMinimumFields ? "default" : "notRealised");
 
 			const audit = await ctx.payload.create({
 				collection: "audits",
 				draft: true,
 				data: {
 					...rest,
+					isRealised: hasMinimumFields,
 					date: date && date !== "" ? date : undefined,
 					testEnvironments: testEnvironments.map((tech) => ({ name: tech })),
 					usedTools: usedTools.map((tech) => ({ name: tech })),
 					technologies: technologies.map((tech) => ({ name: tech })),
 					declaration: declarationId,
-					status: statusToSave,
 				},
 			});
 
@@ -97,10 +89,6 @@ export const auditRouter = createTRPCRouter({
 						id: z.number(),
 						declarationId: z.number(),
 						technologies: z.array(z.string()).optional(),
-						status: z
-							.enum(auditStatusOptions.map((option) => option.value))
-							.optional()
-							.default("default"),
 					}),
 			}),
 		)
@@ -110,7 +98,6 @@ export const auditRouter = createTRPCRouter({
 				declarationId,
 				technologies = [],
 				date,
-				status,
 				...rest
 			} = input.audit;
 
@@ -129,9 +116,6 @@ export const auditRouter = createTRPCRouter({
 				rest.rate > 0 &&
 				Boolean(rest.compliantElements?.trim());
 
-			const statusToSave =
-				status ?? (hasMinimumFields ? "default" : "notRealised");
-
 			const updatedAudit = await ctx.payload.update({
 				collection: "audits",
 				id,
@@ -142,18 +126,19 @@ export const auditRouter = createTRPCRouter({
 					testEnvironments:
 						rest?.testEnvironments?.map((tech) => ({ name: tech })) ?? [],
 					technologies: technologies?.map((tech) => ({ name: tech })) ?? [],
-					status: statusToSave,
+					isRealised: hasMinimumFields,
 				},
 			});
 
 			return { data: updatedAudit };
 		}),
+
 	updateStatus: userProtectedProcedure
 		.input(
 			z.object({
 				declarationId: z.number(),
 				id: z.number(),
-				status: z.enum(auditStatusOptions.map((option) => option.value)),
+				status: z.enum(sourceOptions.map((option) => option.value)),
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
@@ -169,7 +154,7 @@ export const auditRouter = createTRPCRouter({
 				collection: "audits",
 				id,
 				data: {
-					status,
+					toVerify: status === "manual",
 				},
 			});
 

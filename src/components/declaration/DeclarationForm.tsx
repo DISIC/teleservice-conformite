@@ -14,7 +14,6 @@ type DeclarationFormProps = {
 	isEditable?: boolean;
 	readOnly?: boolean;
 	onToggleEdit?: () => void;
-	showValidateButton?: boolean;
 	onValidate?: () => void;
 	children: React.ReactNode;
 	LayoutComponent?: React.ComponentType<{ children: React.ReactNode }>;
@@ -30,8 +29,6 @@ export default function DeclarationForm({
 	isEditable,
 	readOnly,
 	onToggleEdit,
-	showValidateButton,
-	onValidate,
 	children,
 	LayoutComponent,
 	showLayoutComponent = false,
@@ -96,16 +93,9 @@ export default function DeclarationForm({
 					</h1>
 				</div>
 				{isAiGenerated && <VerifyGeneratedInfoHelpingMessage />}
-				{
-					<Layout>
-						<Content />
-					</Layout>
-				}
-				{showValidateButton && onValidate && (
-					<div className={classes.validateButton}>
-						<Button onClick={onValidate}>Valider les informations</Button>
-					</div>
-				)}
+				<Layout>
+					<Content />
+				</Layout>
 			</div>
 		</section>
 	);

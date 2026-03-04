@@ -1,6 +1,5 @@
 import type { CollectionConfig } from "payload";
 import {
-	auditStatusOptions,
 	rgaaVersionOptions,
 	testEnvironmentOptions,
 	toolOptions,
@@ -92,12 +91,21 @@ export const Audits: CollectionConfig = {
 	},
 	fields: [
 		{
+			name: "isRealised",
+			type: "checkbox",
+			label: { fr: "Audit réalisé" },
+			defaultValue: false,
+			admin: {
+				position: "sidebar",
+			},
+		},
+		{
 			name: "date",
 			type: "date",
 			label: { fr: "Date de realisation de l'audit" },
 			admin: {
 				position: "sidebar",
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 		},
 		{
@@ -108,13 +116,13 @@ export const Audits: CollectionConfig = {
 			index: true,
 			hasMany: false,
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 			validate: (
 				value: string | null | undefined,
-				{ siblingData }: { siblingData?: { status?: string } },
+				{ siblingData }: { siblingData?: { isRealised?: boolean } },
 			) => {
-				if (siblingData?.status !== "notRealised" && !value) {
+				if (siblingData?.isRealised && !value) {
 					return "Ce champ est obligatoire";
 				}
 
@@ -126,13 +134,13 @@ export const Audits: CollectionConfig = {
 			type: "text",
 			label: { fr: "Entite ou personne ayant realise l'audit" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 			validate: (
 				value: string | null | undefined,
-				{ siblingData }: { siblingData?: { status?: string } },
+				{ siblingData }: { siblingData?: { isRealised?: boolean } },
 			) => {
-				if (siblingData?.status !== "notRealised" && !value) {
+				if (siblingData?.isRealised && !value) {
 					return "Ce champ est obligatoire";
 				}
 
@@ -144,13 +152,13 @@ export const Audits: CollectionConfig = {
 			type: "number",
 			label: { fr: "Taux de conformité" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 			validate: (
 				value: number | null | undefined,
-				{ siblingData }: { siblingData?: { status?: string } },
+				{ siblingData }: { siblingData?: { isRealised?: boolean } },
 			) => {
-				if (siblingData?.status !== "notRealised" && value == null) {
+				if (siblingData?.isRealised && value == null) {
 					return "Ce champ est obligatoire";
 				}
 
@@ -162,13 +170,13 @@ export const Audits: CollectionConfig = {
 			type: "textarea",
 			label: { fr: "Éléments ayant fait l’objet de vérification" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 			validate: (
 				value: string | null | undefined,
-				{ siblingData }: { siblingData?: { status?: string } },
+				{ siblingData }: { siblingData?: { isRealised?: boolean } },
 			) => {
-				if (siblingData?.status !== "notRealised" && !value) {
+				if (siblingData?.isRealised && !value) {
 					return "Ce champ est obligatoire";
 				}
 
@@ -180,7 +188,7 @@ export const Audits: CollectionConfig = {
 			type: "textarea",
 			label: { fr: "Éléments non conformes" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 		},
 		{
@@ -188,7 +196,7 @@ export const Audits: CollectionConfig = {
 			type: "textarea",
 			label: { fr: "Éléments avec dérogation pour charge disproportionnée" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 		},
 		{
@@ -196,7 +204,7 @@ export const Audits: CollectionConfig = {
 			type: "textarea",
 			label: { fr: "Éléments non soumis à l’obligation d’accessibilité" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 		},
 		{
@@ -204,7 +212,7 @@ export const Audits: CollectionConfig = {
 			type: "text",
 			label: { fr: "Rapport d'audit" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 		},
 		{
@@ -220,7 +228,7 @@ export const Audits: CollectionConfig = {
 				},
 			],
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 		},
 		{
@@ -236,7 +244,7 @@ export const Audits: CollectionConfig = {
 				},
 			],
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 		},
 		{
@@ -252,22 +260,22 @@ export const Audits: CollectionConfig = {
 			],
 			label: { fr: "Technologies utilisées" },
 			admin: {
-				condition: (_, siblingData) => siblingData?.status !== "notRealised",
+				condition: (_, siblingData) => siblingData?.isRealised,
 			},
 		},
 		{
 			name: "declaration",
 			type: "relationship",
 			relationTo: "declarations",
-			label: { fr: "déclaration associée" },
+			label: { fr: "Déclaration associée" },
 			required: true,
 		},
 		{
-			name: "status",
-			type: "select",
-			label: { fr: "Statut" },
-			defaultValue: "default",
-			options: [...auditStatusOptions],
+			name: "toVerify",
+			type: "checkbox",
+			label: { fr: "À vérifier" },
+			defaultValue: false,
+			required: true,
 		},
 	],
 };

@@ -1,7 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import type { Contact } from "~/payload/payload-types";
-import { sourceOptions } from "~/payload/selectOptions";
 import { contact } from "~/utils/form/contact/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { isDeclarationOwner, linkToDeclaration } from "../utils/payload-helper";
@@ -32,6 +31,7 @@ export const contactRouter = createTRPCRouter({
 						email: emailContact,
 						url: contactLink,
 						declaration: declarationId,
+						toVerify: false,
 					},
 				});
 
@@ -59,39 +59,11 @@ export const contactRouter = createTRPCRouter({
 					data: {
 						email: emailContact,
 						url: contactLink,
-						status: "default",
+						toVerify: false,
 					},
 				});
 			}
 
 			return { data: upsertedContact };
-		}),
-
-	updateStatus: userProtectedProcedure
-		.input(
-			z.object({
-				declarationId: z.number(),
-				id: z.number(),
-				status: z.enum(sourceOptions.map((option) => option.value)),
-			}),
-		)
-		.mutation(async ({ input, ctx }) => {
-			const { declarationId, id, status } = input;
-
-			await isDeclarationOwner({
-				payload: ctx.payload,
-				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
-			});
-
-			const updatedContact = await ctx.payload.update({
-				collection: "contacts",
-				id,
-				data: {
-					status,
-				},
-			});
-
-			return { data: updatedContact };
 		}),
 });

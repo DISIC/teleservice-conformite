@@ -91,7 +91,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						name: entity?.name ?? "",
 						kind: entity?.kind ?? "none",
 					},
-					status: "fromAI",
+					status: "ai",
 				});
 
 				return {
@@ -149,7 +149,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						name: entity?.name ?? "",
 						kind: entity?.kind ?? "none",
 					},
-					status: "fromAra",
+					status: "ara",
 				});
 
 				return {

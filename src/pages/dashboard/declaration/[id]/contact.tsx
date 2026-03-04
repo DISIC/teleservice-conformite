@@ -5,7 +5,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useMemo, useState } from "react";
-import { tss } from "tss-react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import {
@@ -22,7 +21,6 @@ export default function ContactPage({
 }: {
 	declaration: PopulatedDeclaration;
 }) {
-	const { classes } = useStyles();
 	const { classes: commonClasses } = useCommonStyles();
 	const router = useRouter();
 	const [declaration, setDeclaration] =
@@ -31,15 +29,15 @@ export default function ContactPage({
 
 	const onEditInfos = () => setReadOnly((prev) => !prev);
 
-	const { mutateAsync: upsertContract } = api.contact.upsert.useMutation({
-		onSuccess: (result) => {
+	const { mutateAsync: upsertContact } = api.contact.upsert.useMutation({
+		onSuccess: ({ data }) => {
 			if (!declaration.contact) {
 				const isComplete = declaration.audit && declaration.actionPlan;
 				router.push(
 					`/dashboard/declaration/${declaration.id}${isComplete ? "/preview" : ""}`,
 				);
 			} else {
-				setDeclaration((prev) => ({ ...prev, contact: result.data }));
+				setDeclaration((prev) => ({ ...prev, contact: data }));
 				setReadOnly(true);
 			}
 		},
@@ -64,7 +62,7 @@ export default function ContactPage({
 		...contactFormOptions,
 		defaultValues,
 		onSubmit: async ({ value }) => {
-			await upsertContract({
+			await upsertContact({
 				...value,
 				id: declaration.contact?.id,
 				declarationId: declaration.id,
@@ -83,15 +81,12 @@ export default function ContactPage({
 				declaration={declaration}
 				title="Contact"
 				breadcrumbLabel={declaration?.name ?? ""}
-				showValidateButton={
-					!readOnly &&
-					(declaration?.contact?.status === "fromAI" ||
-						declaration?.contact?.status === "fromAra")
-				}
 				isEditable={!!declaration?.contact}
 				readOnly={readOnly}
 				onToggleEdit={onEditInfos}
-				isAiGenerated={declaration?.contact?.status === "fromAI"}
+				isAiGenerated={
+					declaration.contact?.toVerify && declaration.fromSource === "ai"
+				}
 			>
 				<form
 					onSubmit={(e) => {
@@ -104,7 +99,7 @@ export default function ContactPage({
 						<ContactTypeForm form={form} readOnly={readOnly} />
 					</div>
 					<form.AppForm>
-						<div className={classes.actionButtonsContainer}>
+						<div className={commonClasses.actionButtonsContainer}>
 							<form.CancelButton
 								label="Retour"
 								ariaLabel="Retour à la déclaration"
@@ -113,10 +108,17 @@ export default function ContactPage({
 								}
 								priority="tertiary"
 							/>
-							{!readOnly && (
+							{!declaration.contact && (
 								<form.SubscribeButton
-									label={declaration?.contact ? "Valider" : "Continuer"}
+									label="Continuer"
 									iconId="fr-icon-arrow-right-s-line"
+									iconPosition="right"
+								/>
+							)}
+							{declaration.contact && !readOnly && (
+								<form.SubscribeButton
+									label="Valider les informations"
+									iconId="fr-icon-check-line"
 									iconPosition="right"
 								/>
 							)}
@@ -127,13 +129,6 @@ export default function ContactPage({
 		</>
 	);
 }
-
-const useStyles = tss.withName(ContactPage.name).create({
-	actionButtonsContainer: {
-		display: "flex",
-		justifyContent: "space-between",
-	},
-});
 
 interface Params extends ParsedUrlQuery {
 	id: string;
