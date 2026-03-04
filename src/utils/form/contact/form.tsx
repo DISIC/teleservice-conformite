@@ -3,7 +3,10 @@ import { contactFormOptions } from "./schema";
 
 export const ContactTypeForm = withForm({
 	...contactFormOptions,
-	render: function Render({ form }) {
+	props: {
+		readOnly: false,
+	},
+	render: function Render({ form, readOnly }) {
 		return (
 			<>
 				<form.AppField name="contactType">
@@ -15,6 +18,7 @@ export const ContactTypeForm = withForm({
 								{ label: "Formulaire en ligne", value: "onlineForm" },
 								{ label: "Point de contact", value: "contactPoint" },
 							]}
+							readOnlyField={readOnly}
 							required
 						/>
 					)}
@@ -28,6 +32,7 @@ export const ContactTypeForm = withForm({
 										label="Lien URL du formulaire"
 										hintText="Format attendu : https://www.example.fr"
 										nativeInputProps={{ type: "url" }}
+										readOnlyField={readOnly}
 										required
 									/>
 								)}
@@ -44,6 +49,7 @@ export const ContactTypeForm = withForm({
 										label="Email de contact"
 										hintText="Indiquez de préférence une adresse de type “contact@monservice.com” plutôt qu’une adresse personnelle"
 										nativeInputProps={{ type: "email" }}
+										readOnlyField={readOnly}
 										required
 									/>
 								)}

@@ -1,15 +1,14 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import { sourceOptions } from "~/payload/selectOptions";
+import { contact } from "~/utils/form/contact/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { isDeclarationOwner, linkToDeclaration } from "../utils/payload-helper";
 
 export const contactRouter = createTRPCRouter({
 	create: userProtectedProcedure
 		.input(
-			z.object({
-				email: z.string().optional().default(""),
-				url: z.string().optional().default(""),
+			contact.omit({ contactType: true }).extend({
 				declarationId: z.number(),
 				status: z
 					.enum(sourceOptions.map((option) => option.value))
@@ -18,7 +17,7 @@ export const contactRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const { email, url, declarationId, status } = input;
+			const { contactLink, emailContact, declarationId, status } = input;
 
 			await isDeclarationOwner({
 				payload: ctx.payload,
@@ -29,8 +28,8 @@ export const contactRouter = createTRPCRouter({
 			const contact = await ctx.payload.create({
 				collection: "contacts",
 				data: {
-					email,
-					url,
+					email: emailContact,
+					url: contactLink,
 					declaration: declarationId,
 					status,
 				},
@@ -47,15 +46,13 @@ export const contactRouter = createTRPCRouter({
 		}),
 	update: userProtectedProcedure
 		.input(
-			z.object({
+			contact.omit({ contactType: true }).extend({
 				id: z.number(),
-				email: z.string().optional().default(""),
-				url: z.string().optional().default(""),
 				declarationId: z.number(),
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const { id, email, url, declarationId } = input;
+			const { id, emailContact, contactLink, declarationId } = input;
 
 			if (!ctx.session?.user?.id) {
 				throw new TRPCError({
@@ -74,8 +71,8 @@ export const contactRouter = createTRPCRouter({
 				collection: "contacts",
 				id,
 				data: {
-					email: email ?? "",
-					url: url ?? "",
+					email: emailContact,
+					url: contactLink,
 					status: "default",
 				},
 			});

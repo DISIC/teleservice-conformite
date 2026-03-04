@@ -12,7 +12,7 @@ type DeclarationFormProps = {
 	title: string;
 	breadcrumbLabel?: string;
 	isEditable?: boolean;
-	editMode?: boolean;
+	readOnly?: boolean;
 	onToggleEdit?: () => void;
 	showValidateButton?: boolean;
 	onValidate?: () => void;
@@ -28,7 +28,7 @@ export default function DeclarationForm({
 	title,
 	breadcrumbLabel,
 	isEditable,
-	editMode,
+	readOnly,
 	onToggleEdit,
 	showValidateButton,
 	onValidate,
@@ -63,9 +63,9 @@ export default function DeclarationForm({
 					<Button
 						priority="secondary"
 						onClick={onToggleEdit}
-						{...(!editMode && { iconId: "fr-icon-edit-line" })}
+						{...(readOnly && { iconId: "fr-icon-edit-line" })}
 					>
-						{!editMode ? "Modifier" : "Annuler"}
+						{readOnly ? "Modifier" : "Annuler"}
 					</Button>
 				)}
 			</div>

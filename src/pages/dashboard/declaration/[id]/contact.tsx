@@ -4,10 +4,9 @@ import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { tss } from "tss-react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
-import { ReadOnlyDeclarationContact } from "~/components/declaration/ReadOnlyDeclaration";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import {
 	getDeclarationById,
@@ -15,10 +14,8 @@ import {
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { ContactTypeForm } from "~/utils/form/contact/form";
-import { contactFormOptions } from "~/utils/form/contact/schema";
+import { contactFormOptions, type ZContact } from "~/utils/form/contact/schema";
 import { useAppForm } from "~/utils/form/context";
-import { DeclarationContactForm } from "~/utils/form/readonly/form";
-import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 
 export default function ContactPage({
 	declaration: initialDeclaration,
@@ -30,165 +27,64 @@ export default function ContactPage({
 	const router = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
-	const [editMode, setEditMode] = useState(false);
-	const { id, email, url } = declaration?.contact || {};
-	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
+	const [readOnly, setReadOnly] = useState(!!declaration?.contact);
+
+	const onEditInfos = () => setReadOnly((prev) => !prev);
+
+	const { mutateAsync: createContact } = api.contact.create.useMutation({
+		onSuccess: () => {
+			const isComplete = declaration.audit && declaration.actionPlan;
+			router.push(
+				`/dashboard/declaration/${declaration.id}${isComplete ? "/preview" : ""}`,
+			);
+		},
+		onError: (error) => console.error("Error adding contact:", error),
+	});
 
 	const { mutateAsync: updateContact } = api.contact.update.useMutation({
-		onSuccess: async (result) => {
+		onSuccess: (result) => {
 			setDeclaration((prev) => ({
 				...prev,
 				contact: result.data,
 			}));
-			setEditMode(false);
+			setReadOnly(true);
 		},
-		onError: async (error) => {
+		onError: (error) =>
 			console.error(
 				`Error updating contact for declaration with id ${declaration?.id}:`,
 				error,
-			);
-		},
+			),
 	});
 
-	const { mutateAsync: updateStatus } = api.contact.updateStatus.useMutation({
-		onSuccess: async (result) => {
-			setDeclaration((prev) => ({
-				...prev,
-				contact: {
-					...prev.contact,
-					...result.data,
-				},
-			}));
+	const defaultValues: ZContact = useMemo(() => {
+		if (!declaration.contact) return contactFormOptions.defaultValues;
 
-			router.push(declarationPagePath);
-		},
-		onError: async (error) => {
-			console.error(
-				`Error updating contact status for declaration with id ${declaration?.id}:`,
-				error,
-			);
-		},
-	});
+		const contactType: ZContact["contactType"] = [];
+		if (declaration.contact.url) contactType.push("onlineForm");
+		if (declaration.contact.email) contactType.push("contactPoint");
 
-	const onEditInfos = () => {
-		setEditMode((prev) => !prev);
-	};
-
-	const contactOptions = [email, url].reduce(
-		(acc: ("email" | "url")[], option) => {
-			if (!option) return acc;
-
-			if (option === email) acc.push("email");
-			if (option === url) acc.push("url");
-
-			return acc;
-		},
-		[],
-	);
-
-	if (declaration?.contact) {
-		readOnlyFormOptions.defaultValues = {
-			...readOnlyFormOptions.defaultValues,
-			section: "contact",
-			contact: {
-				contactOptions,
-				contactEmail: email ?? "",
-				contactName: url ?? "",
-			},
+		return {
+			contactType,
+			contactLink: declaration.contact.url || "",
+			emailContact: declaration.contact.email || "",
 		};
-	}
-
-	const updateDeclarationContact = async (
-		id: number,
-		email: string,
-		url: string,
-	) => {
-		try {
-			await updateContact({ id, email, url, declarationId: declaration.id });
-		} catch (error) {
-			console.error(
-				`Error updating contact for declaration with id ${declaration?.id}:`,
-				error,
-			);
-		}
-	};
-
-	const { mutateAsync: createContact } = api.contact.create.useMutation({
-		onSuccess: async () => {
-			if (declaration?.audit && declaration.actionPlan) {
-				router.push(`/dashboard/declaration/${declaration.id}/preview`);
-				return;
-			}
-
-			router.push(`/dashboard/declaration/${declaration.id}`);
-		},
-		onError: (error) => {
-			console.error("Error adding contact:", error);
-		},
-	});
-
-	const addContact = async ({
-		email,
-		url,
-		declarationId,
-	}: {
-		email: string;
-		url: string;
-		declarationId: number;
-	}) => {
-		try {
-			await createContact({ email, url, declarationId });
-		} catch (error) {
-			console.error("Error adding contact:", error);
-		}
-	};
+	}, [declaration.contact]);
 
 	const form = useAppForm({
 		...contactFormOptions,
+		defaultValues,
 		onSubmit: async ({ value }) => {
-			await addContact({
-				email: value?.emailContact ?? "",
-				url: value?.contactLink ?? "",
-				declarationId: declaration.id,
-			});
+			if (!declaration?.contact?.id) {
+				await createContact({ ...value, declarationId: declaration.id });
+			} else {
+				await updateContact({
+					...value,
+					id: declaration.contact.id,
+					declarationId: declaration.id,
+				});
+			}
 		},
 	});
-
-	const readOnlyForm = useAppForm({
-		...readOnlyFormOptions,
-		onSubmit: async ({ value }) => {
-			const data = value.contact.contactOptions?.reduce(
-				(acc: { email?: string; url?: string }, option) => {
-					if (option === "email") {
-						acc.email = value.contact.contactEmail ?? "";
-					}
-					if (option === "url") {
-						acc.url = value.contact.contactName ?? "";
-					}
-					return acc;
-				},
-				{},
-			);
-
-			await updateDeclarationContact(
-				id ?? -1,
-				data?.email ?? "",
-				data?.url ?? "",
-			);
-		},
-	});
-
-	const updateContactStatus = async () => {
-		try {
-			await updateStatus({
-				declarationId: declaration.id,
-				id: declaration?.contact?.id ?? -1,
-				status: "default",
-			});
-		} catch (_error) {
-			return;
-		}
-	};
 
 	return (
 		<>
@@ -202,67 +98,44 @@ export default function ContactPage({
 				title="Contact"
 				breadcrumbLabel={declaration?.name ?? ""}
 				showValidateButton={
-					!editMode &&
+					!readOnly &&
 					(declaration?.contact?.status === "fromAI" ||
 						declaration?.contact?.status === "fromAra")
 				}
-				onValidate={updateContactStatus}
 				isEditable={!!declaration?.contact}
-				editMode={editMode}
+				readOnly={readOnly}
 				onToggleEdit={onEditInfos}
 				isAiGenerated={declaration?.contact?.status === "fromAI"}
 			>
 				<form
 					onSubmit={(e) => {
 						e.preventDefault();
-
-						if (!declaration?.contact) {
-							form.handleSubmit();
-						} else {
-							readOnlyForm.handleSubmit();
-						}
+						form.handleSubmit();
 					}}
-					onInvalid={(_e) => {
-						form.validate("submit");
-					}}
+					onInvalid={() => form.validate("submit")}
 				>
-					{!declaration?.contact ? (
-						<>
-							<div className={commonClasses.whiteBackground}>
-								<ContactTypeForm form={form} />
-							</div>
-							<form.AppForm>
-								<div className={classes.actionButtonsContainer}>
-									<form.CancelButton
-										label="Retour"
-										ariaLabel="Retour à la déclaration"
-										onClick={() =>
-											router.push(`/dashboard/declaration/${declaration.id}`)
-										}
-										priority="tertiary"
-									/>
-									<form.SubscribeButton
-										label="Continuer"
-										iconId="fr-icon-arrow-right-s-line"
-										iconPosition="right"
-									/>
-								</div>
-							</form.AppForm>
-						</>
-					) : editMode ? (
-						<>
-							<div className={commonClasses.whiteBackground}>
-								<DeclarationContactForm form={readOnlyForm} />
-							</div>
-							<readOnlyForm.AppForm>
-								<readOnlyForm.SubscribeButton label="Valider" />
-							</readOnlyForm.AppForm>
-						</>
-					) : (
-						<div className={commonClasses.whiteBackground}>
-							<ReadOnlyDeclarationContact declaration={declaration ?? null} />
+					<div className={commonClasses.whiteBackground}>
+						<ContactTypeForm form={form} readOnly={readOnly} />
+					</div>
+					<form.AppForm>
+						<div className={classes.actionButtonsContainer}>
+							<form.CancelButton
+								label="Retour"
+								ariaLabel="Retour à la déclaration"
+								onClick={() =>
+									router.push(`/dashboard/declaration/${declaration.id}`)
+								}
+								priority="tertiary"
+							/>
+							{!readOnly && (
+								<form.SubscribeButton
+									label={declaration?.contact ? "Valider" : "Continuer"}
+									iconId="fr-icon-arrow-right-s-line"
+									iconPosition="right"
+								/>
+							)}
 						</div>
-					)}
+					</form.AppForm>
 				</form>
 			</DeclarationForm>
 		</>

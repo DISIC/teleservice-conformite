@@ -21,6 +21,18 @@ export function CheckboxField(props: CheckboxFieldProps) {
 	const { readOnlyField, required, ...commonProps } = props;
 	const field = useFieldContext<TValue | undefined>();
 
+	if (readOnlyField) {
+		const selectedOption = commonProps.options.find(
+			(option) => option.value === field.state.value,
+		)?.label;
+
+		return (
+			<div className={fr.cx("fr-mb-0")}>
+				{selectedOption || "Aucune option sélectionnée"}
+			</div>
+		);
+	}
+
 	return (
 		<Checkbox
 			{...commonProps}
@@ -33,10 +45,7 @@ export function CheckboxField(props: CheckboxFieldProps) {
 					value: value.toString(),
 					name: field.name,
 					checked: field.state.value === value,
-					onChange: (e) =>
-						field.setValue(
-							e.target.checked ? value : undefined,
-						),
+					onChange: (e) => field.setValue(e.target.checked ? value : undefined),
 					required: option.nativeInputProps?.required ?? required,
 				},
 			}))}

@@ -2,7 +2,9 @@ import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
 export const contact = z.object({
-	contactType: z.array(z.string()),
+	contactType: z
+		.array(z.enum(["onlineForm", "contactPoint"]))
+		.min(1, "Sélectionnez au moins une option"),
 	contactLink: z
 		.url("Lien invalide (ex: https://www.example.fr)")
 		.optional()
