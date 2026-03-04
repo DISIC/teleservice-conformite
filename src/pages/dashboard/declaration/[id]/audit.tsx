@@ -29,8 +29,8 @@ import {
 	ToolsForm,
 } from "~/utils/form/audit/form";
 import {
-	auditFormOptions,
 	auditMultiStepFormOptions,
+	type ZAuditFormSchema,
 } from "~/utils/form/audit/schema";
 import { useAppForm } from "~/utils/form/context";
 
@@ -73,23 +73,32 @@ export default function AuditPage({
 
 	const { mutateAsync: createAudit } = api.audit.create.useMutation({
 		onSuccess: async () => {
-			if (declaration?.contact && declaration.actionPlan) {
-				router.push(`/dashboard/declaration/${declaration.id}/preview`);
-				return;
-			}
-
-			router.push(`/dashboard/declaration/${declaration?.id}`);
+			const isComplete = declaration.contact && declaration.actionPlan;
+			router.push(
+				`/dashboard/declaration/${declaration.id}${isComplete ? "/preview" : ""}`,
+			);
 		},
-		onError: (error) => {
+		onError: (error) =>
 			console.error(
 				`Error adding audit for declarationId ${declaration?.id}:`,
 				error,
-			);
+			),
+	});
+
+	const { mutateAsync: updateAudit } = api.audit.update.useMutation({
+		onSuccess: async (result) => {
+			setDeclaration((prev) => ({
+				...prev,
+				audit: result.data,
+			}));
+			setReadOnly(true);
 		},
+		onError: async (error) =>
+			console.error(`Error updating audit with id ${audit?.id}`, error),
 	});
 
 	const goToPreviousSection = (currentSection: Section): Section | null => {
-		form.reset();
+		multiStepForm.reset();
 
 		const currentIndex = sections.indexOf(currentSection);
 		if (currentIndex < 0) return null;
@@ -109,11 +118,11 @@ export default function AuditPage({
 		return sections[currentIndex + 1] ?? null;
 	};
 
-	const defaultValues = useMemo(() => {
+	const defaultValues: ZAuditFormSchema = useMemo(() => {
 		if (!audit) return auditMultiStepFormOptions.defaultValues;
 
 		return {
-			section: "isAuditRealised" as const,
+			section: "isAuditRealised", // Always start with the first section when editing an existing audit
 			isAuditRealised: audit.isRealised ?? undefined,
 			rgaa_version:
 				rgaaVersionOptions.find((option) => option.value === audit.rgaa_version)
@@ -137,9 +146,8 @@ export default function AuditPage({
 		};
 	}, [audit]);
 
-	const form = useAppForm({
-		...(audit ? auditFormOptions : auditMultiStepFormOptions),
-		defaultValues,
+	const multiStepForm = useAppForm({
+		...auditMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
 			if (value.section === "isAuditRealised" && !value.isAuditRealised) {
 				await createAudit({
@@ -149,18 +157,8 @@ export default function AuditPage({
 				return;
 			}
 
-			if (value.section === "files") {
-				if (audit) {
-					await updateAudit({
-						audit: {
-							id: audit.id,
-							declarationId: declaration.id,
-							...value,
-						},
-					});
-				} else {
-					await createAudit({ ...value, declarationId: declaration.id });
-				}
+			if (value.section === "files" || value.section) {
+				await createAudit({ ...value, declarationId: declaration.id });
 				return;
 			}
 
@@ -169,23 +167,25 @@ export default function AuditPage({
 		},
 	});
 
-	const section = useStore(
-		form.store,
-		(state) => state.values.section as Section,
-	);
-
-	const { mutateAsync: updateAudit } = api.audit.update.useMutation({
-		onSuccess: async (result) => {
-			setDeclaration((prev) => ({
-				...prev,
-				audit: result.data,
-			}));
-			setReadOnly(true);
-		},
-		onError: async (error) => {
-			console.error(`Error updating audit with id ${audit?.id}`, error);
+	const updateForm = useAppForm({
+		...auditMultiStepFormOptions,
+		defaultValues,
+		onSubmit: async ({ value }) => {
+			if (!audit) return;
+			await updateAudit({
+				audit: {
+					id: audit.id,
+					declarationId: declaration.id,
+					...value,
+				},
+			});
 		},
 	});
+
+	const section = useStore(
+		multiStepForm.store,
+		(state) => state.values.section as Section,
+	);
 
 	const onEditInfos = () => setReadOnly((prev) => !prev);
 
@@ -196,22 +196,23 @@ export default function AuditPage({
 		}
 
 		if (section === "tools") {
-			form.setFieldValue("usedTools", []);
-			form.setFieldValue("testEnvironments", []);
+			multiStepForm.setFieldValue("usedTools", []);
+			multiStepForm.setFieldValue("testEnvironments", []);
 		}
 
 		if (section === "nonCompliantElements") {
-			form.setFieldValue("nonCompliantElements", "");
-			form.setFieldValue("disproportionnedCharge", "");
-			form.setFieldValue("optionalElements", "");
+			multiStepForm.setFieldValue("nonCompliantElements", "");
+			multiStepForm.setFieldValue("disproportionnedCharge", "");
+			multiStepForm.setFieldValue("optionalElements", "");
 		}
 
 		if (section === "files") {
-			form.setFieldValue("report", "");
+			multiStepForm.setFieldValue("report", "");
 		}
 
 		const previousSection = goToPreviousSection(section);
-		if (previousSection) form.setFieldValue("section", previousSection);
+		if (previousSection)
+			multiStepForm.setFieldValue("section", previousSection);
 	};
 
 	return (
@@ -248,60 +249,63 @@ export default function AuditPage({
 					<form
 						onSubmit={(e) => {
 							e.preventDefault();
-							form.handleSubmit();
+							multiStepForm.handleSubmit();
 						}}
-						onInvalid={() => form.validate("submit")}
+						onInvalid={() => multiStepForm.validate("submit")}
 					>
 						<div className={commonClasses.whiteBackground}>
 							{section === "isAuditRealised" && (
-								<AuditRealisedForm form={form} readOnly={false} />
+								<AuditRealisedForm form={multiStepForm} readOnly={false} />
 							)}
 							{section === "auditDate" && (
-								<AuditDateForm form={form} readOnly={false} />
+								<AuditDateForm form={multiStepForm} readOnly={false} />
 							)}
 							{section === "tools" && (
-								<ToolsForm form={form} readOnly={false} />
+								<ToolsForm form={multiStepForm} readOnly={false} />
 							)}
 							{section === "compliantElements" && (
-								<CompliantElementsForm form={form} readOnly={false} />
+								<CompliantElementsForm form={multiStepForm} readOnly={false} />
 							)}
 							{section === "nonCompliantElements" && (
-								<NonCompliantElementsForm form={form} readOnly={false} />
+								<NonCompliantElementsForm
+									form={multiStepForm}
+									readOnly={false}
+								/>
 							)}
 							{section === "files" && (
-								<FilesForm form={form} readOnly={false} />
+								<FilesForm form={multiStepForm} readOnly={false} />
 							)}
 						</div>
-						<form.AppForm>
+						<multiStepForm.AppForm>
 							<div className={commonClasses.actionButtonsContainer}>
-								<form.CancelButton
+								<multiStepForm.CancelButton
 									label="Retour"
 									onClick={onClickCancel}
 									priority="tertiary"
 									ariaLabel="Retour à la déclaration"
 								/>
-								<form.SubscribeButton
+								<multiStepForm.SubscribeButton
 									label="Continuer"
 									iconId="fr-icon-arrow-right-s-line"
 									iconPosition="right"
 								/>
 							</div>
-						</form.AppForm>
+						</multiStepForm.AppForm>
 					</form>
 				) : (
 					<form
 						onSubmit={(e) => {
 							e.preventDefault();
-							form.handleSubmit();
+							updateForm.handleSubmit();
 						}}
-						onInvalid={() => form.validate("submit")}
+						onInvalid={() => updateForm.validate("submit")}
 					>
 						<div className={commonClasses.whiteBackground}>
-							<AuditFlatForm form={form} readOnly={readOnly} />
+							<AuditFlatForm form={updateForm} readOnly={readOnly} />
 						</div>
-						<form.AppForm>
-							<form.SubscribeButton label="Valider" />
-						</form.AppForm>
+						<updateForm.AppForm>
+							<updateForm.SubscribeButton label="Valider" />
+						</updateForm.AppForm>
 					</form>
 				)}
 			</DeclarationForm>

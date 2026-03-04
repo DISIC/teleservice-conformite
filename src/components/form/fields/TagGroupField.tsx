@@ -5,6 +5,7 @@ import Tag from "@codegouvfr/react-dsfr/Tag";
 import { useState } from "react";
 import { tss } from "tss-react";
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 interface TagGroupFieldProps
 	extends DefaultFieldProps,
@@ -27,6 +28,11 @@ export function TagGroupField(props: TagGroupFieldProps) {
 	const [tags, setTags] = useState<string[]>(
 		initialTags ?? field.state.value ?? [],
 	);
+
+	if (readOnlyField) {
+		const value = tags.filter((tag) => tag.trim() !== "").join(", ");
+		return <ReadOnlyField label={commonProps.label} value={value} />;
+	}
 
 	const addTags = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
