@@ -57,7 +57,7 @@ const useStyles = tss
 		textArea: boolean;
 		addSectionBorder: boolean;
 	}>()
-	.create(({ valueIsArray, textArea, addSectionBorder }) => ({
+	.create(({ addSectionBorder }) => ({
 		fieldContainer: {
 			gap: fr.spacing("1v"),
 			paddingBlock: fr.spacing("3w"),

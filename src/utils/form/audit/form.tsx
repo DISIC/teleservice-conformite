@@ -2,7 +2,6 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { tss } from "tss-react";
-
 import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
 import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
 import {
@@ -15,7 +14,10 @@ import { auditMultiStepFormOptions } from "./schema";
 
 export const AuditRealisedForm = withForm({
 	...auditMultiStepFormOptions,
-	render: function Render({ form }) {
+	props: {
+		readOnly: false,
+	},
+	render: function Render({ form, readOnly }) {
 		return (
 			<form.AppField name="isAuditRealised">
 				{(field) => (
@@ -26,6 +28,7 @@ export const AuditRealisedForm = withForm({
 							{ label: "Oui", value: true },
 							{ label: "Non", value: false },
 						]}
+						readOnlyField={readOnly}
 						required
 					/>
 				)}
@@ -36,7 +39,10 @@ export const AuditRealisedForm = withForm({
 
 export const AuditDateForm = withForm({
 	...auditMultiStepFormOptions,
-	render: function Render({ form }) {
+	props: {
+		readOnly: false,
+	},
+	render: function Render({ form, readOnly }) {
 		return (
 			<>
 				<form.AppField name="date">
@@ -48,6 +54,7 @@ export const AuditDateForm = withForm({
 								type: "date",
 								max: new Date().toISOString().split("T")[0],
 							}}
+							readOnlyField={readOnly}
 						/>
 					)}
 				</form.AppField>
@@ -56,6 +63,7 @@ export const AuditDateForm = withForm({
 						<field.TextField
 							label="Entité ou personne ayant réalisé l’audit"
 							hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
+							readOnlyField={readOnly}
 							required
 						/>
 					)}
@@ -68,6 +76,7 @@ export const AuditDateForm = withForm({
 								label: option.label,
 								value: option.value,
 							}))}
+							readOnlyField={readOnly}
 							required
 						/>
 					)}
@@ -78,6 +87,7 @@ export const AuditDateForm = withForm({
 							label="Pourcentage de critères du RGAA respectés"
 							hintText="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
 							nativeInputProps={{ min: 0, max: 100 }}
+							readOnlyField={readOnly}
 							required
 						/>
 					)}
@@ -89,7 +99,10 @@ export const AuditDateForm = withForm({
 
 export const ToolsForm = withForm({
 	...auditMultiStepFormOptions,
-	render: function Render({ form }) {
+	props: {
+		readOnly: false,
+	},
+	render: function Render({ form, readOnly }) {
 		return (
 			<>
 				<form.AppField name="usedTools">
@@ -98,6 +111,7 @@ export const ToolsForm = withForm({
 							<field.CheckboxGroupField
 								legend="Outils utilisés pour évaluer l’accessibilité (facultatif)"
 								options={[...toolOptions]}
+								readOnlyField={readOnly}
 							/>
 							<field.TagGroupField
 								label="Ajouter un outil"
@@ -107,6 +121,7 @@ export const ToolsForm = withForm({
 											.map((option) => option.value as string)
 											.includes(tag),
 								)}
+								readOnlyField={readOnly}
 							/>
 						</div>
 					)}
@@ -117,6 +132,7 @@ export const ToolsForm = withForm({
 							<field.CheckboxGroupField
 								legend="Environnement de tests"
 								options={[...testEnvironmentOptions]}
+								readOnlyField={readOnly}
 							/>
 							<field.TagGroupField
 								label="Ajouter un environnement"
@@ -126,6 +142,7 @@ export const ToolsForm = withForm({
 											.map((option) => option.value as string)
 											.includes(tag),
 								)}
+								readOnlyField={readOnly}
 							/>
 						</div>
 					)}
@@ -137,7 +154,10 @@ export const ToolsForm = withForm({
 
 export const CompliantElementsForm = withForm({
 	...auditMultiStepFormOptions,
-	render: function Render({ form }) {
+	props: {
+		readOnly: false,
+	},
+	render: function Render({ form, readOnly }) {
 		return (
 			<form.AppField name="compliantElements">
 				{(field) => (
@@ -154,6 +174,7 @@ export const CompliantElementsForm = withForm({
 								Exemple : 'Accueil - https://www.nomdelapage/accueil'
 							</>
 						}
+						readOnlyField={readOnly}
 						required
 					/>
 				)}
@@ -174,7 +195,10 @@ const disproportionnedChargeModal = createModal({
 
 export const NonCompliantElementsForm = withForm({
 	...auditMultiStepFormOptions,
-	render: function Render({ form }) {
+	props: {
+		readOnly: false,
+	},
+	render: function Render({ form, readOnly }) {
 		const { classes } = useStyles();
 
 		return (
@@ -199,6 +223,7 @@ export const NonCompliantElementsForm = withForm({
 									<br />- Quelques vidéos n’ont pas de sous-titres
 								</>
 							}
+							readOnlyField={readOnly}
 						/>
 					)}
 				</form.AppField>
@@ -226,6 +251,7 @@ export const NonCompliantElementsForm = withForm({
 									suite des autres
 								</>
 							}
+							readOnlyField={readOnly}
 						/>
 					)}
 				</form.AppField>
@@ -257,6 +283,7 @@ export const NonCompliantElementsForm = withForm({
 								</>
 							}
 							textArea
+							readOnlyField={readOnly}
 						/>
 					)}
 				</form.AppField>
@@ -279,7 +306,6 @@ export const useStyles = tss.withName(NonCompliantElementsForm.name).create({
 		minHeight: "unset",
 		height: "auto",
 		display: "inline",
-
 		"&:not(:disabled):hover:not([class^='Mui'])": {
 			backgroundColor: "transparent",
 			textDecoration: "underline",
@@ -290,16 +316,48 @@ export const useStyles = tss.withName(NonCompliantElementsForm.name).create({
 
 export const FilesForm = withForm({
 	...auditMultiStepFormOptions,
-	render: function Render({ form }) {
+	props: {
+		readOnly: false,
+	},
+	render: function Render({ form, readOnly }) {
 		return (
 			<form.AppField name="report">
 				{(field) => (
 					<field.TextField
 						label="Rapport d’audit (facultatif)"
 						hintText="Format attendu: https://www.example.fr"
+						nativeInputProps={{ type: "url" }}
+						readOnlyField={readOnly}
 					/>
 				)}
 			</form.AppField>
+		);
+	},
+});
+
+export const AuditFlatForm = withForm({
+	...auditMultiStepFormOptions,
+	props: {
+		readOnly: false,
+	},
+	render: function Render({ form, readOnly }) {
+		return (
+			<>
+				<AuditRealisedForm form={form} readOnly={readOnly} />
+				<form.Subscribe selector={(store) => store.values.isAuditRealised}>
+					{(isAuditRealised) =>
+						isAuditRealised && (
+							<>
+								<AuditDateForm form={form} readOnly={readOnly} />
+								<ToolsForm form={form} readOnly={readOnly} />
+								<CompliantElementsForm form={form} readOnly={readOnly} />
+								<NonCompliantElementsForm form={form} readOnly={readOnly} />
+								<FilesForm form={form} readOnly={readOnly} />
+							</>
+						)
+					}
+				</form.Subscribe>
+			</>
 		);
 	},
 });

@@ -14,7 +14,6 @@ type DeclarationFormProps = {
 	isEditable?: boolean;
 	readOnly?: boolean;
 	onToggleEdit?: () => void;
-	onValidate?: () => void;
 	children: React.ReactNode;
 	LayoutComponent?: React.ComponentType<{ children: React.ReactNode }>;
 	showLayoutComponent?: boolean;

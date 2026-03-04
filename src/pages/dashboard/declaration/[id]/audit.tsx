@@ -1,16 +1,19 @@
 import type { ParsedUrlQuery } from "node:querystring";
-import { fr } from "@codegouvfr/react-dsfr";
 import config from "@payload-config";
 import { useStore } from "@tanstack/react-form";
 import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
-import { useState } from "react";
-import { tss } from "tss-react";
+import { useMemo, useState } from "react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
-import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
 import { MultiStep } from "~/components/MultiStep";
+import { useCommonStyles } from "~/components/style/commonStyles";
+import {
+	rgaaVersionOptions,
+	testEnvironmentOptions,
+	toolOptions,
+} from "~/payload/selectOptions";
 import {
 	getDeclarationById,
 	type PopulatedDeclaration,
@@ -18,16 +21,18 @@ import {
 import { api } from "~/utils/api";
 import {
 	AuditDateForm,
+	AuditFlatForm,
 	AuditRealisedForm,
 	CompliantElementsForm,
 	FilesForm,
 	NonCompliantElementsForm,
 	ToolsForm,
 } from "~/utils/form/audit/form";
-import { auditMultiStepFormOptions } from "~/utils/form/audit/schema";
+import {
+	auditFormOptions,
+	auditMultiStepFormOptions,
+} from "~/utils/form/audit/schema";
 import { useAppForm } from "~/utils/form/context";
-import { DeclarationAuditForm } from "~/utils/form/readonly/form";
-import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 
 type Steps<T> = {
 	slug: T;
@@ -59,16 +64,12 @@ export default function AuditPage({
 	declaration: PopulatedDeclaration;
 }) {
 	const router = useRouter();
-	const { classes } = useStyles();
+	const { classes: commonClasses } = useCommonStyles();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
-	const [editMode, setEditMode] = useState(false);
-	const [isAchieved, setIsAchieved] = useState(
-		!!declaration?.audit && declaration?.audit?.status !== "notRealised",
-	);
+	const [readOnly, setReadOnly] = useState(!!declaration?.audit);
 
 	const audit = declaration?.audit;
-	const declarationPagePath = `/dashboard/declaration/${declaration?.id}`;
 
 	const { mutateAsync: createAudit } = api.audit.create.useMutation({
 		onSuccess: async () => {
@@ -108,28 +109,58 @@ export default function AuditPage({
 		return sections[currentIndex + 1] ?? null;
 	};
 
-	const addAudit = async (auditData: any, declarationId: number) => {
-		try {
-			const audit = {
-				...auditData,
-			};
+	const defaultValues = useMemo(() => {
+		if (!audit) return auditMultiStepFormOptions.defaultValues;
 
-			await createAudit({ ...audit, declarationId });
-		} catch (error) {
-			console.error("Error adding audit:", error);
-		}
-	};
+		return {
+			section: "isAuditRealised" as const,
+			isAuditRealised: audit.isRealised ?? undefined,
+			rgaa_version:
+				rgaaVersionOptions.find((option) => option.value === audit.rgaa_version)
+					?.value ?? "rgaa_4",
+			realisedBy: audit.realisedBy ?? "",
+			rate: audit.rate ?? 0,
+			compliantElements: audit.compliantElements ?? "",
+			nonCompliantElements: audit.nonCompliantElements ?? "",
+			disproportionnedCharge: audit.disproportionnedCharge ?? "",
+			optionalElements: audit.optionalElements ?? "",
+			usedTools: (audit.usedTools ?? []).map(
+				(tool) =>
+					toolOptions.find((option) => option.value === tool.name)?.value ?? "",
+			),
+			testEnvironments: (audit.testEnvironments ?? []).map(
+				(env) =>
+					testEnvironmentOptions.find((option) => option.value === env.name)
+						?.value ?? "",
+			),
+			report: audit.auditReport ?? "",
+		};
+	}, [audit]);
 
 	const form = useAppForm({
-		...auditMultiStepFormOptions,
+		...(audit ? auditFormOptions : auditMultiStepFormOptions),
+		defaultValues,
 		onSubmit: async ({ value, formApi }) => {
 			if (value.section === "isAuditRealised" && !value.isAuditRealised) {
-				await addAudit({ status: "notRealised" }, declaration.id);
+				await createAudit({
+					declarationId: declaration.id,
+					isAuditRealised: false,
+				});
 				return;
 			}
 
 			if (value.section === "files") {
-				await addAudit(value, declaration.id);
+				if (audit) {
+					await updateAudit({
+						audit: {
+							id: audit.id,
+							declarationId: declaration.id,
+							...value,
+						},
+					});
+				} else {
+					await createAudit({ ...value, declarationId: declaration.id });
+				}
 				return;
 			}
 
@@ -149,100 +180,14 @@ export default function AuditPage({
 				...prev,
 				audit: result.data,
 			}));
-			setEditMode(false);
+			setReadOnly(true);
 		},
 		onError: async (error) => {
 			console.error(`Error updating audit with id ${audit?.id}`, error);
 		},
 	});
 
-	api.audit.delete.useMutation({
-		onSuccess: async () => {
-			router.push(declarationPagePath);
-		},
-		onError: async (error) => {
-			console.error(`Error deleting audit with id ${audit?.id}`, error);
-		},
-	});
-
-	const { mutateAsync: updateStatus } = api.audit.updateStatus.useMutation({
-		onSuccess: async (result) => {
-			setDeclaration((prev) => ({
-				...prev,
-				audit: {
-					...prev.audit,
-					...result.data,
-				},
-			}));
-
-			router.push(declarationPagePath);
-		},
-		onError: async (error) => {
-			console.error(
-				`Error updating declaration status with id ${declaration?.id}:`,
-				error,
-			);
-		},
-	});
-
-	const onEditInfos = () => {
-		setEditMode((prev) => !prev);
-
-		if (editMode)
-			setIsAchieved(
-				!!declaration?.audit && declaration.audit.status !== "notRealised",
-			);
-	};
-
-	if (audit) {
-		readOnlyFormOptions.defaultValues = {
-			...readOnlyFormOptions.defaultValues,
-			section: "audit",
-			audit: {
-				date: audit?.date
-					? new Date(audit.date).toISOString().slice(0, 10)
-					: "",
-				report: audit?.auditReport ?? "",
-				realisedBy: audit?.realisedBy ?? "",
-				rgaa_version: audit?.rgaa_version ?? "rgaa_4",
-				rate: audit?.rate ?? 0,
-				compliantElements: audit?.compliantElements ?? "",
-				technologies: audit?.technologies?.map((tech) => tech.name) ?? [],
-				usedTools: audit?.usedTools?.map((tech) => tech.name) ?? [],
-				testEnvironments:
-					audit?.testEnvironments?.map((tech) => tech.name) ?? [],
-				nonCompliantElements: audit?.nonCompliantElements ?? "",
-				disproportionnedCharge: audit?.disproportionnedCharge ?? "",
-				optionalElements: audit?.optionalElements ?? "",
-			},
-		};
-	}
-
-	const updateDeclarationAudit = async (auditId: number, auditData: any) => {
-		try {
-			await updateAudit({
-				audit: {
-					id: auditId,
-					declarationId: declaration.id,
-					...auditData,
-				},
-			});
-		} catch (error) {
-			console.error(`Error deleting audit with id ${auditId}:`, error);
-		}
-	};
-
-	const updateAuditStatus = async () => {
-		try {
-			await updateStatus({
-				declarationId: declaration.id,
-				id: declaration?.audit?.id ?? -1,
-				status: "default",
-			});
-		} catch (_error) {
-			return;
-		}
-	};
+	const onEditInfos = () => setReadOnly((prev) => !prev);
 
 	const onClickCancel = () => {
 		if (section === "isAuditRealised") {
@@ -269,21 +214,6 @@ export default function AuditPage({
 		if (previousSection) form.setFieldValue("section", previousSection);
 	};
 
-	const readOnlyForm = useAppForm({
-		...readOnlyFormOptions,
-		onSubmit: async ({ value }) => {
-			if (!isAchieved && declaration?.audit) {
-				await updateDeclarationAudit(audit?.id ?? -1, {
-					status: "notRealised",
-				});
-
-				return;
-			}
-
-			await updateDeclarationAudit(audit?.id ?? -1, value.audit);
-		},
-	});
-
 	return (
 		<>
 			<Head>
@@ -297,14 +227,8 @@ export default function AuditPage({
 				title="Résultat de l’audit"
 				breadcrumbLabel={declaration?.name ?? ""}
 				isEditable={!!declaration?.audit}
-				editMode={editMode}
+				readOnly={readOnly}
 				onToggleEdit={onEditInfos}
-				showValidateButton={
-					(declaration?.audit?.status === "fromAI" ||
-						declaration?.audit?.status === "fromAra") &&
-					!editMode
-				}
-				onValidate={updateAuditStatus}
 				LayoutComponent={({ children }) =>
 					declaration?.audit || section === "isAuditRealised" ? (
 						children
@@ -315,7 +239,7 @@ export default function AuditPage({
 					)
 				}
 				showLayoutComponent={!declaration?.audit}
-				isAiGenerated={declaration?.audit?.status === "fromAI"}
+				isAiGenerated={declaration?.fromSource === "ai"}
 				{...(section === "files"
 					? { mentionText: "Les documents ajoutés doivent être accessibles" }
 					: undefined)}
@@ -326,26 +250,30 @@ export default function AuditPage({
 							e.preventDefault();
 							form.handleSubmit();
 						}}
-						onInvalid={(_e) => {
-							form.validate("submit");
-						}}
+						onInvalid={() => form.validate("submit")}
 					>
-						<div className={classes.whiteBackground}>
+						<div className={commonClasses.whiteBackground}>
 							{section === "isAuditRealised" && (
-								<AuditRealisedForm form={form} />
+								<AuditRealisedForm form={form} readOnly={false} />
 							)}
-							{section === "auditDate" && <AuditDateForm form={form} />}
-							{section === "tools" && <ToolsForm form={form} />}
+							{section === "auditDate" && (
+								<AuditDateForm form={form} readOnly={false} />
+							)}
+							{section === "tools" && (
+								<ToolsForm form={form} readOnly={false} />
+							)}
 							{section === "compliantElements" && (
-								<CompliantElementsForm form={form} />
+								<CompliantElementsForm form={form} readOnly={false} />
 							)}
 							{section === "nonCompliantElements" && (
-								<NonCompliantElementsForm form={form} />
+								<NonCompliantElementsForm form={form} readOnly={false} />
 							)}
-							{section === "files" && <FilesForm form={form} />}
+							{section === "files" && (
+								<FilesForm form={form} readOnly={false} />
+							)}
 						</div>
 						<form.AppForm>
-							<div className={classes.actionButtonsContainer}>
+							<div className={commonClasses.actionButtonsContainer}>
 								<form.CancelButton
 									label="Retour"
 									onClick={onClickCancel}
@@ -360,52 +288,26 @@ export default function AuditPage({
 							</div>
 						</form.AppForm>
 					</form>
-				) : editMode ? (
+				) : (
 					<form
 						onSubmit={(e) => {
 							e.preventDefault();
-							readOnlyForm.handleSubmit();
+							form.handleSubmit();
 						}}
-						onInvalid={(_e) => {
-							form.validate("submit");
-						}}
+						onInvalid={() => form.validate("submit")}
 					>
-						<div className={classes.whiteBackground}>
-							<DeclarationAuditForm
-								form={readOnlyForm}
-								isAchieved={isAchieved}
-								onChangeIsAchieved={(value) => setIsAchieved(value)}
-							/>
+						<div className={commonClasses.whiteBackground}>
+							<AuditFlatForm form={form} readOnly={readOnly} />
 						</div>
-						<readOnlyForm.AppForm>
-							<readOnlyForm.SubscribeButton label={"Valider"} />
-						</readOnlyForm.AppForm>
+						<form.AppForm>
+							<form.SubscribeButton label="Valider" />
+						</form.AppForm>
 					</form>
-				) : (
-					<div className={classes.whiteBackground}>
-						<ReadOnlyDeclarationAudit declaration={declaration ?? null} />
-					</div>
 				)}
 			</DeclarationForm>
 		</>
 	);
 }
-
-const useStyles = tss.withName(AuditPage.name).create({
-	whiteBackground: {
-		backgroundColor: fr.colors.decisions.background.raised.grey.default,
-		paddingInline: fr.spacing("10v"),
-		paddingBottom: fr.spacing("10v"),
-		marginBottom: fr.spacing("6v"),
-		width: "100%",
-		display: "flex",
-		flexDirection: "column",
-	},
-	actionButtonsContainer: {
-		display: "flex",
-		justifyContent: "space-between",
-	},
-});
 
 interface Params extends ParsedUrlQuery {
 	id: string;

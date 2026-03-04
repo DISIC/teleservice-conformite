@@ -190,3 +190,10 @@ export const auditMultiStepFormOptions = formOptions({
 		},
 	},
 });
+
+export const auditFormOptions = formOptions({
+	defaultValues,
+	validators: {
+		onSubmit: ({ formApi }) => formApi.parseValuesWithSchema(auditFormSchema),
+	},
+});
