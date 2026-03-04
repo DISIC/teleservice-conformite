@@ -14,9 +14,7 @@ import { auditMultiStepFormOptions } from "./schema";
 
 export const AuditRealisedForm = withForm({
 	...auditMultiStepFormOptions,
-	props: {
-		readOnly: false,
-	},
+	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
 			<form.AppField name="isAuditRealised">
@@ -39,9 +37,7 @@ export const AuditRealisedForm = withForm({
 
 export const AuditDateForm = withForm({
 	...auditMultiStepFormOptions,
-	props: {
-		readOnly: false,
-	},
+	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
 			<>
@@ -99,9 +95,7 @@ export const AuditDateForm = withForm({
 
 export const ToolsForm = withForm({
 	...auditMultiStepFormOptions,
-	props: {
-		readOnly: false,
-	},
+	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
 			<>
@@ -156,9 +150,7 @@ export const ToolsForm = withForm({
 
 export const CompliantElementsForm = withForm({
 	...auditMultiStepFormOptions,
-	props: {
-		readOnly: false,
-	},
+	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
 			<form.AppField name="compliantElements">
@@ -197,9 +189,7 @@ const disproportionnedChargeModal = createModal({
 
 export const NonCompliantElementsForm = withForm({
 	...auditMultiStepFormOptions,
-	props: {
-		readOnly: false,
-	},
+	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		const { classes } = useStyles();
 
@@ -318,9 +308,7 @@ export const useStyles = tss.withName(NonCompliantElementsForm.name).create({
 
 export const FilesForm = withForm({
 	...auditMultiStepFormOptions,
-	props: {
-		readOnly: false,
-	},
+	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
 			<form.AppField name="report">
@@ -339,27 +327,48 @@ export const FilesForm = withForm({
 
 export const AuditFlatForm = withForm({
 	...auditMultiStepFormOptions,
-	props: {
-		readOnly: false,
-	},
+	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
+		const { classes } = useAuditFormStyles();
 		return (
 			<>
 				<AuditRealisedForm form={form} readOnly={readOnly} />
 				<form.Subscribe selector={(store) => store.values.isAuditRealised}>
 					{(isAuditRealised) =>
 						isAuditRealised && (
-							<>
-								<AuditDateForm form={form} readOnly={readOnly} />
-								<ToolsForm form={form} readOnly={readOnly} />
-								<CompliantElementsForm form={form} readOnly={readOnly} />
-								<NonCompliantElementsForm form={form} readOnly={readOnly} />
-								<FilesForm form={form} readOnly={readOnly} />
-							</>
+							<div className={classes.wrapperSections}>
+								<div className={classes.section}>
+									<AuditDateForm form={form} readOnly={readOnly} />
+								</div>
+								<div className={classes.section}>
+									<ToolsForm form={form} readOnly={readOnly} />
+								</div>
+								<div className={classes.section}>
+									<CompliantElementsForm form={form} readOnly={readOnly} />
+								</div>
+								<div className={classes.section}>
+									<NonCompliantElementsForm form={form} readOnly={readOnly} />
+								</div>
+								<div className={classes.section}>
+									<FilesForm form={form} readOnly={readOnly} />
+								</div>
+							</div>
 						)
 					}
 				</form.Subscribe>
 			</>
 		);
+	},
+});
+
+const useAuditFormStyles = tss.withName(AuditFlatForm.name).create({
+	wrapperSections: {
+		display: "flex",
+		flexDirection: "column",
+	},
+	section: {
+		borderTopWidth: "10px",
+		borderTopStyle: "solid",
+		borderTopColor: fr.colors.decisions.border.default.grey.default,
 	},
 });

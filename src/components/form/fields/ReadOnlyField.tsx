@@ -57,7 +57,7 @@ const useStyles = tss
 		textArea: boolean;
 		addSectionBorder: boolean;
 	}>()
-	.create(({ addSectionBorder }) => ({
+	.create(({ valueIsArray, textArea, addSectionBorder }) => ({
 		fieldContainer: {
 			gap: fr.spacing("1v"),
 			paddingBlock: fr.spacing("3w"),
@@ -68,6 +68,7 @@ const useStyles = tss
 			...(addSectionBorder && {
 				borderTop: `10px solid ${fr.colors.decisions.border.default.grey.default}`,
 			}),
+			flexDirection: valueIsArray || textArea ? "column" : undefined,
 			display: "flex",
 			flexWrap: "wrap",
 			"@media (max-width: 1024px)": {
