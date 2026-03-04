@@ -5,7 +5,10 @@ import { schemaFormOptions } from "./schema";
 
 export const SchemaForm = withForm({
 	...schemaFormOptions,
-	render: function Render({ form }) {
+	props: {
+		readOnly: true,
+	},
+	render: function Render({ form, readOnly }) {
 		return (
 			<>
 				<form.AppField name="hasDoneCurrentYearSchema">
@@ -18,6 +21,7 @@ export const SchemaForm = withForm({
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
+								readOnlyField={readOnly}
 								required
 							/>
 							{field.state.value ? (
@@ -34,6 +38,7 @@ export const SchemaForm = withForm({
 												</>
 											}
 											nativeInputProps={{ type: "url" }}
+											readOnlyField={readOnly}
 											required
 										/>
 									)}
@@ -63,6 +68,7 @@ export const SchemaForm = withForm({
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
+								readOnlyField={readOnly}
 								required
 							/>
 							{field.state.value && (
@@ -72,6 +78,7 @@ export const SchemaForm = withForm({
 											label="Lien URL du bilan des actions"
 											hintText="Format attendu : https://www.example.fr"
 											nativeInputProps={{ type: "url" }}
+											readOnlyField={readOnly}
 											required
 										/>
 									)}

@@ -108,16 +108,13 @@ export default function ContactPage({
 								}
 								priority="tertiary"
 							/>
-							{!declaration.contact && (
+							{!readOnly && (
 								<form.SubscribeButton
-									label="Continuer"
-									iconId="fr-icon-arrow-right-s-line"
-									iconPosition="right"
-								/>
-							)}
-							{declaration.contact && !readOnly && (
-								<form.SubscribeButton
-									label="Valider les informations"
+									label={
+										declaration.contact?.toVerify
+											? "Valider les informations"
+											: "Valider"
+									}
 									iconId="fr-icon-check-line"
 									iconPosition="right"
 								/>

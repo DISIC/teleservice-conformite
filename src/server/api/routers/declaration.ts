@@ -183,6 +183,7 @@ export const declarationRouter = createTRPCRouter({
 					entity: newEntityId,
 					created_by: Number(ctx.session.user.id),
 					status: status ?? "unpublished",
+					fromSource: "manual",
 				},
 			});
 
