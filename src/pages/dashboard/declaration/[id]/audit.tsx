@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useMemo, useState } from "react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
-import { MultiStep } from "~/components/MultiStep";
+import { MultiStep } from "~/components/form/MultiStep";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import {
 	rgaaVersionOptions,
