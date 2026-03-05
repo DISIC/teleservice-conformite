@@ -99,7 +99,6 @@ const useStyles = tss.withName({ TagGroupField }).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("4v"),
-		marginBottom: fr.spacing("4w"),
 	},
 	inputWrapper: {
 		display: "flex",
@@ -117,5 +116,6 @@ const useStyles = tss.withName({ TagGroupField }).create({
 		display: "flex",
 		flexWrap: "wrap",
 		gap: fr.spacing("2v"),
+		marginBottom: fr.spacing("4v"),
 	},
 });

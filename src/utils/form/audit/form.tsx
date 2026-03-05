@@ -100,48 +100,54 @@ export const ToolsForm = withForm({
 		return (
 			<>
 				<form.AppField name="usedTools">
-					{(field) => (
-						<div>
-							<field.CheckboxGroupField
-								legend="Outils utilisés pour évaluer l’accessibilité (facultatif)"
-								options={[...toolOptions]}
-								readOnlyField={readOnly}
-							/>
-							{!readOnly && (
-								<field.TagGroupField
-									label="Ajouter un outil"
-									initialTags={(field.state.value || []).filter(
-										(tag) =>
-											![...toolOptions]
-												.map((option) => option.value as string)
-												.includes(tag),
-									)}
+					{(field) => {
+						const extraTools = (field.state.value || []).filter(
+							(tag) =>
+								![...toolOptions]
+									.map((option) => option.value as string)
+									.includes(tag),
+						);
+						return (
+							<div>
+								<field.CheckboxGroupField
+									legend="Outils utilisés pour évaluer l’accessibilité (facultatif)"
+									options={[...toolOptions]}
+									readOnlyField={readOnly}
 								/>
-							)}
-						</div>
-					)}
+								{!readOnly && (
+									<field.TagGroupField
+										label="Ajouter un outil"
+										initialTags={extraTools}
+									/>
+								)}
+							</div>
+						);
+					}}
 				</form.AppField>
 				<form.AppField name="testEnvironments">
-					{(field) => (
-						<div>
-							<field.CheckboxGroupField
-								legend="Environnement de tests"
-								options={[...testEnvironmentOptions]}
-								readOnlyField={readOnly}
-							/>
-							{!readOnly && (
-								<field.TagGroupField
-									label="Ajouter un environnement"
-									initialTags={(field.state.value || []).filter(
-										(tag) =>
-											![...testEnvironmentOptions]
-												.map((option) => option.value as string)
-												.includes(tag),
-									)}
+					{(field) => {
+						const extraTestEnvironments = (field.state.value || []).filter(
+							(tag) =>
+								![...testEnvironmentOptions]
+									.map((option) => option.value as string)
+									.includes(tag),
+						);
+						return (
+							<div>
+								<field.CheckboxGroupField
+									legend="Environnement de tests"
+									options={[...testEnvironmentOptions]}
+									readOnlyField={readOnly}
 								/>
-							)}
-						</div>
-					)}
+								{!readOnly && (
+									<field.TagGroupField
+										label="Ajouter un environnement"
+										initialTags={extraTestEnvironments}
+									/>
+								)}
+							</div>
+						);
+					}}
 				</form.AppField>
 			</>
 		);
@@ -329,7 +335,7 @@ export const AuditFlatForm = withForm({
 	...auditMultiStepFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
-		const { classes } = useAuditFormStyles();
+		const { classes } = useAuditFormStyles({ readOnly });
 		return (
 			<>
 				<AuditRealisedForm form={form} readOnly={readOnly} />
@@ -361,14 +367,19 @@ export const AuditFlatForm = withForm({
 	},
 });
 
-const useAuditFormStyles = tss.withName(AuditFlatForm.name).create({
-	wrapperSections: {
-		display: "flex",
-		flexDirection: "column",
-	},
-	section: {
-		borderTopWidth: "10px",
-		borderTopStyle: "solid",
-		borderTopColor: fr.colors.decisions.border.default.grey.default,
-	},
-});
+const useAuditFormStyles = tss
+	.withName(AuditFlatForm.name)
+	.withParams<{ readOnly: boolean }>()
+	.create(({ readOnly }) => ({
+		wrapperSections: {
+			display: "flex",
+			flexDirection: "column",
+		},
+		section: {
+			marginTop: !readOnly ? fr.spacing("6v") : undefined,
+			paddingTop: !readOnly ? fr.spacing("6v") : undefined,
+			borderTopWidth: "7px",
+			borderTopStyle: "solid",
+			borderTopColor: fr.colors.decisions.border.default.grey.default,
+		},
+	}));

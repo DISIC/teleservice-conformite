@@ -122,8 +122,9 @@ export default function AuditPage({
 		if (!audit) return auditMultiStepFormOptions.defaultValues;
 
 		return {
-			section: "isAuditRealised", // Always start with the first section when editing an existing audit
+			section: "isAuditRealised",
 			isAuditRealised: audit.isRealised ?? undefined,
+			date: audit.date ? new Date(audit.date).toLocaleDateString("en-CA") : "",
 			rgaa_version:
 				rgaaVersionOptions.find((option) => option.value === audit.rgaa_version)
 					?.value ?? "rgaa_4",
@@ -135,12 +136,13 @@ export default function AuditPage({
 			optionalElements: audit.optionalElements ?? "",
 			usedTools: (audit.usedTools ?? []).map(
 				(tool) =>
-					toolOptions.find((option) => option.value === tool.name)?.value ?? "",
+					toolOptions.find((option) => option.value === tool.name)?.value ??
+					tool.name,
 			),
 			testEnvironments: (audit.testEnvironments ?? []).map(
 				(env) =>
 					testEnvironmentOptions.find((option) => option.value === env.name)
-						?.value ?? "",
+						?.value ?? env.name,
 			),
 			report: audit.auditReport ?? "",
 		};
