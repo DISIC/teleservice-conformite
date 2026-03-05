@@ -67,13 +67,12 @@ export default function ContactPage({
 	const form = useAppForm({
 		...contactFormOptions,
 		defaultValues,
-		onSubmit: async ({ value }) => {
+		onSubmit: async ({ value }) =>
 			await upsertContact({
 				...value,
 				id: declaration.contact?.id,
 				declarationId: declaration.id,
-			});
-		},
+			}),
 	});
 
 	return (
