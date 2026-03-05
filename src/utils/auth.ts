@@ -19,9 +19,7 @@ const genericOAuthPlugin = genericOAuth({
 			redirectURI: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/better-auth/callback/proconnect`,
 			discoveryUrl: `https://${process.env.PROCONNECT_DOMAIN}/api/v2/.well-known/openid-configuration`,
 			pkce: true,
-			authorizationUrlParams: {
-				nonce: "some_random_nonce",
-			},
+			authorizationUrlParams: { nonce: "some_random_nonce" },
 			getUserInfo: async (tokens) => {
 				const res = await fetch(
 					`https://${process.env.PROCONNECT_DOMAIN}/api/v2/userinfo`,

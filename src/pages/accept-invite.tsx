@@ -70,7 +70,10 @@ export const getServerSideProps = (async (context) => {
 			callback.headers.get("set-cookie") ?? "",
 		);
 
-		return { redirect: { destination: callback.response.url } };
+		const authUrl = new URL(callback.response.url);
+		authUrl.searchParams.set("login_hint", email);
+
+		return { redirect: { destination: authUrl.toString() } };
 	}
 
 	try {
