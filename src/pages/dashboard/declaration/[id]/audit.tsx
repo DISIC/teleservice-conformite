@@ -149,6 +149,7 @@ export default function AuditPage({
 	const multiStepForm = useAppForm({
 		...auditMultiStepFormOptions,
 		onSubmit: async ({ value, formApi }) => {
+			console.log("Submitting audit form with values:", value);
 			if (value.section === "isAuditRealised" && !value.isAuditRealised) {
 				await createAudit({
 					declarationId: declaration.id,
@@ -157,7 +158,7 @@ export default function AuditPage({
 				return;
 			}
 
-			if (value.section === "files" || value.section) {
+			if (value.section === "files") {
 				await createAudit({ ...value, declarationId: declaration.id });
 				return;
 			}
