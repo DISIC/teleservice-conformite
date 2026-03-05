@@ -198,7 +198,7 @@ export const accessRightRouter = createTRPCRouter({
 			});
 
 			const tmpInvite = invites.docs[0];
-			if (!tmpInvite || !tmpInvite.inviteExpiresAt)
+			if (!tmpInvite || !tmpInvite.inviteExpiresAt || !tmpInvite.invitedBy)
 				throw new TRPCError({ code: "NOT_FOUND" });
 
 			const invite = {
@@ -210,6 +210,7 @@ export const accessRightRouter = createTRPCRouter({
 					tmpInvite.declaration,
 					"declarations",
 				),
+				invitedBy: await fetchOrReturnRealValue(tmpInvite.invitedBy, "users"),
 			};
 
 			const currentEntity = await fetchOrReturnRealValue(
@@ -243,7 +244,7 @@ export const accessRightRouter = createTRPCRouter({
 			const declarationListLink = `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/dashboard/declarations`;
 
 			await ctx.payload.sendEmail({
-				to: ctx.session.user.email,
+				to: invite.invitedBy.email,
 				subject: "Invitation à collaborer sur une déclaration",
 				html: getInvitationUserEmailHtml({
 					link: `${declarationListLink}/${invite.declaration.id}`,
