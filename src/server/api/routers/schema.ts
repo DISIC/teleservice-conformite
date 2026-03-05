@@ -1,14 +1,14 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import type { ActionPlan } from "~/payload/payload-types";
-import { schema } from "~/utils/form/schema/schema";
+import { schemaForm } from "~/utils/form/schema/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { isDeclarationOwner, linkToDeclaration } from "../utils/payload-helper";
 
 export const schemaRouter = createTRPCRouter({
 	upsert: userProtectedProcedure
 		.input(
-			schema
+			schemaForm
 				.omit({
 					hasDoneCurrentYearSchema: true,
 					hasDonePreviousYearsSchema: true,
