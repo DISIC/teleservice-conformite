@@ -29,9 +29,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const declarationComplete =
 		declaration.status === "unpublished" &&
 		declaration.audit?.isRealised &&
-		!declaration?.audit?.toVerify &&
-		!declaration?.contact?.toVerify &&
-		!declaration?.actionPlan?.toVerify;
+		declaration?.audit?.toVerify === false &&
+		declaration?.contact?.toVerify === false &&
+		declaration?.actionPlan?.toVerify === false;
 
 	const RedirectButton = ({
 		href,
