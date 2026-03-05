@@ -87,7 +87,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	const declaration = await getDeclarationById(
 		payload,
 		session,
-		Number.parseInt(id),
+		Number.parseInt(id, 10),
 		{ trash: true },
 	);
 

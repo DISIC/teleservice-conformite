@@ -8,7 +8,6 @@ import type {
 	Entity,
 	User,
 } from "~/payload/payload-types";
-import type { Session } from "~/utils/auth-client";
 import {
 	getInvitationUserEmailHtml,
 	getInviteAcceptRecapEmailHtml,

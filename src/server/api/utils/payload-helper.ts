@@ -12,15 +12,6 @@ import type {
 } from "~/payload/payload-types";
 import type { Session } from "~/utils/auth-client";
 
-type CollectionMap = {
-	audits: Audit;
-	contacts: Contact;
-	"action-plans": ActionPlan;
-	users: User;
-	entities: Entity;
-	declarations: Declaration;
-};
-
 export type PopulatedDeclaration = Omit<
 	Declaration,
 	"audit" | "contact" | "entity" | "actionPlan" | "created_by"

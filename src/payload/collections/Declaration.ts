@@ -142,9 +142,9 @@ export const Declarations: CollectionConfig = {
 			hasMany: true,
 			admin: {
 				position: "sidebar",
-      }
+			},
 		},
-    {
+		{
 			name: "fromSource",
 			type: "select",
 			label: { fr: "Provenance de la déclaration" },

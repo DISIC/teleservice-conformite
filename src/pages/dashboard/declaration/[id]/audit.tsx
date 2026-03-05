@@ -1,13 +1,16 @@
-import { fr } from "@codegouvfr/react-dsfr";
 import { useStore } from "@tanstack/react-form";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import { tss } from "tss-react";
-import { MultiStep } from "~/components/MultiStep";
+import { useMemo, useState } from "react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
-import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
+import { MultiStep } from "~/components/form/MultiStep";
+import { useCommonStyles } from "~/components/style/commonStyles";
+import {
+	rgaaVersionOptions,
+	testEnvironmentOptions,
+	toolOptions,
+} from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import {
@@ -24,8 +27,6 @@ import {
 	type ZAuditFormSchema,
 } from "~/utils/form/audit/schema";
 import { useAppForm } from "~/utils/form/context";
-import { DeclarationAuditForm } from "~/utils/form/readonly/form";
-import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { guardDeclaration } from "~/utils/server-guards";
 
 type Steps<T> = {

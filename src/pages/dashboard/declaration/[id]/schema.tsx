@@ -1,14 +1,14 @@
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { useAppForm } from "~/utils/form/context";
 import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
-import { schemaFormOptions } from "~/utils/form/schema/schema";
+import { schemaFormOptions, type ZSchema } from "~/utils/form/schema/schema";
 import { guardDeclaration } from "~/utils/server-guards";
 
 export default function SchemaPage({

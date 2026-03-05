@@ -2,8 +2,8 @@ import type { ParsedUrlQuery } from "node:querystring";
 import config from "@payload-config";
 import type { GetServerSidePropsContext, Redirect } from "next";
 import { getPayload } from "payload";
-import { getDeclarationById } from "~/server/api/utils/payload-helper";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { getDeclarationById } from "~/server/api/utils/payload-helper";
 import { auth } from "~/utils/auth";
 
 export interface DeclarationParams extends ParsedUrlQuery {
@@ -52,7 +52,7 @@ export async function guardDeclaration(
 	const declaration = await getDeclarationById(
 		payload,
 		session,
-		Number.parseInt(id),
+		Number.parseInt(id, 10),
 		{ trash },
 	);
 

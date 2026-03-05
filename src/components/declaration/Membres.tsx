@@ -39,10 +39,8 @@ export default function Membres({ declaration }: MembresProps) {
 
 	const apiUtils = api.useUtils();
 
-	const {
-		mutateAsync: resendInviteMail,
-		isSuccess: isResendInviteMailSuccess,
-	} = api.accessRight.resendInviteMail.useMutation();
+	const { mutateAsync: resendInviteMail } =
+		api.accessRight.resendInviteMail.useMutation();
 	const { mutateAsync: removeAccessRight } = api.accessRight.delete.useMutation(
 		{
 			onSuccess: () =>

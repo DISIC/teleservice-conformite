@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
@@ -12,8 +12,6 @@ import {
 	type ZContactForm,
 } from "~/utils/form/contact/schema";
 import { useAppForm } from "~/utils/form/context";
-import { DeclarationContactForm } from "~/utils/form/readonly/form";
-import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
 import { guardDeclaration } from "~/utils/server-guards";
 
 export default function ContactPage({

@@ -43,7 +43,7 @@ type RequiredPopulatedDeclaration = Omit<
 export default function DeclarationPreviewPage({
 	declaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 	const router = useRouter();
 
 	const publishedDeclarationContent: PublishedDeclaration =
@@ -183,7 +183,7 @@ export const getServerSideProps = (async (context) => {
 	const declaration = await getDeclarationById(
 		payload,
 		session,
-		Number.parseInt(id),
+		Number.parseInt(id, 10),
 	);
 
 	if (!declaration) return { redirect };

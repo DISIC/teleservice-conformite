@@ -70,7 +70,7 @@ export default buildConfig({
 			defaultFromName: process.env.SMTP_FROM_NAME || "Payload",
 			transportOptions: {
 				host: process.env.SMTP_HOST,
-				port: Number.parseInt(process.env.SMTP_PORT as string),
+				port: Number.parseInt(process.env.SMTP_PORT as string, 10),
 				secure: process.env.NODE_ENV === "production",
 				auth:
 					process.env.SMTP_USER && process.env.SMTP_PASSWORD

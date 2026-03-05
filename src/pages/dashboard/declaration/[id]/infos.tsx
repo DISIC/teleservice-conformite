@@ -1,15 +1,17 @@
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState, useMemo } from "react";
-import { tss } from "tss-react";
+import { useMemo, useState } from "react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { useAppForm } from "~/utils/form/context";
-import { DeclarationGeneralForm, type ZDeclarationMultiStepFormSchema } from "~/utils/form/readonly/form";
-import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
+import { DeclarationGeneralForm } from "~/utils/form/declaration/form";
+import {
+	declarationMultiStepFormOptions,
+	type ZDeclarationMultiStepFormSchema,
+} from "~/utils/form/declaration/schema";
 import { guardDeclaration } from "~/utils/server-guards";
 
 export default function GeneralInformationsPage({
@@ -17,7 +19,6 @@ export default function GeneralInformationsPage({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
 	const { classes: commonClasses } = useCommonStyles();
-	const router = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [readOnly, setReadOnly] = useState(true);
@@ -118,13 +119,6 @@ export default function GeneralInformationsPage({
 		</>
 	);
 }
-
-const useStyles = tss.withName(GeneralInformationsPage.name).create({
-	actionButtonsContainer: {
-		display: "flex",
-		justifyContent: "space-between",
-	},
-});
 
 export const getServerSideProps = (async (context) =>
 	guardDeclaration(context)) satisfies GetServerSideProps<{
