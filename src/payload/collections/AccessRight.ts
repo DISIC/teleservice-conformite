@@ -31,13 +31,43 @@ export const AccessRights: CollectionConfig = {
 			name: "user",
 			type: "relationship",
 			relationTo: "users",
-			required: true,
+		},
+		{
+			name: "tmpUserEmail",
+			label: "Email de l'invité (si l'utilisateur n'existe pas encore)",
+			type: "text",
+			admin: {
+				position: "sidebar",
+			},
 		},
 		{
 			name: "declaration",
 			type: "relationship",
 			relationTo: "declarations",
 			required: true,
+		},
+		{
+			name: "invitedBy",
+			type: "relationship",
+			relationTo: "users",
+			admin: {
+				position: "sidebar",
+			},
+		},
+		{
+			name: "inviteExpiresAt",
+			type: "date",
+			admin: {
+				position: "sidebar",
+			},
+		},
+		{
+			name: "inviteTokenHash",
+			type: "text",
+			admin: {
+				readOnly: true,
+				position: "sidebar",
+			},
 		},
 	],
 };

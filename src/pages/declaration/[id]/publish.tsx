@@ -1,7 +1,7 @@
 import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
 import config from "@payload-config";
-import type { GetServerSideProps } from "next";
+import type { GetServerSideProps, Redirect } from "next";
 import Head from "next/head";
 import { getPayload } from "payload";
 import { tss } from "tss-react";
@@ -10,6 +10,7 @@ import PublishedDeclarationTemplate, {
 	type PublishedDeclaration,
 } from "~/components/declaration/PublishedDeclarationTemplate";
 import { getDeclarationById } from "~/server/api/utils/payload-helper";
+import { auth } from "~/utils/auth";
 
 export default function PublishPage({
 	publishedContent,
@@ -66,22 +67,30 @@ interface Params extends ParsedUrlQuery {
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { id } = context.params as Params;
 
+	const redirect: Redirect = {
+		destination: "/",
+		permanent: false,
+	};
+
 	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			redirect: { destination: "/" },
-		};
+		return { redirect };
 	}
 
 	const payload = await getPayload({ config });
 
+	const session = await auth.api.getSession({
+		headers: context.req.headers as HeadersInit,
+	});
+
+	if (!session) return { redirect };
+
 	const declaration = await getDeclarationById(
 		payload,
-		Number.parseInt(id, 10),
-		{
-			trash: true,
-		},
+		session,
+		Number.parseInt(id),
+		{ trash: true },
 	);
+
 	if (
 		!declaration ||
 		!declaration.publishedContent ||

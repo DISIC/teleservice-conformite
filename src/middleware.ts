@@ -15,7 +15,8 @@ export async function middleware(request: NextRequest) {
 		headers: request.headers,
 	});
 
-	if (pathname.endsWith("/publish")) return NextResponse.next();
+	if (pathname.endsWith("/publish") || pathname.endsWith("/accept-invite"))
+		return NextResponse.next();
 
 	if (authSession) {
 		if (!pathname.startsWith("/dashboard")) {

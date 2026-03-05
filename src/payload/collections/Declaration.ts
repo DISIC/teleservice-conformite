@@ -134,6 +134,17 @@ export const Declarations: CollectionConfig = {
 			required: false,
 		},
 		{
+			name: "accessRights",
+			label: { fr: "Droits d'accès" },
+			type: "join",
+			collection: "access-rights",
+			on: "declaration",
+			hasMany: true,
+			admin: {
+				position: "sidebar",
+      }
+		},
+    {
 			name: "fromSource",
 			type: "select",
 			label: { fr: "Provenance de la déclaration" },

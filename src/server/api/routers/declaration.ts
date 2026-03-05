@@ -187,6 +187,16 @@ export const declarationRouter = createTRPCRouter({
 				},
 			});
 
+			await ctx.payload.create({
+				collection: "access-rights",
+				data: {
+					declaration: declaration.id,
+					user: Number(ctx.session.user.id),
+					role: "admin",
+					status: "approved",
+				},
+			});
+
 			return { data: declaration.id };
 		}),
 	delete: userProtectedProcedure

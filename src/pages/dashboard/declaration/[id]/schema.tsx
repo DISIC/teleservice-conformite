@@ -1,26 +1,19 @@
-import type { ParsedUrlQuery } from "node:querystring";
-import config from "@payload-config";
-import type { GetServerSideProps } from "next";
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { getPayload } from "payload";
-import { useMemo, useState } from "react";
+import { useState, useMemo } from "react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
 import { useCommonStyles } from "~/components/style/commonStyles";
-import {
-	getDeclarationById,
-	type PopulatedDeclaration,
-} from "~/server/api/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { useAppForm } from "~/utils/form/context";
 import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
-import { schemaFormOptions, type ZSchema } from "~/utils/form/schema/schema";
+import { schemaFormOptions } from "~/utils/form/schema/schema";
+import { guardDeclaration } from "~/utils/server-guards";
 
 export default function SchemaPage({
 	declaration: initialDeclaration,
-}: {
-	declaration: PopulatedDeclaration;
-}) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes: commonClasses } = useCommonStyles();
 	const router = useRouter();
 	const [declaration, setDeclaration] =
@@ -131,37 +124,7 @@ export default function SchemaPage({
 	);
 }
 
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.params as Params;
-
-	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	const payload = await getPayload({ config });
-
-	const declaration = await getDeclarationById(
-		payload,
-		Number.parseInt(id, 10),
-	);
-
-	if (!declaration) {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	return {
-		props: {
-			declaration: declaration,
-		},
-	};
-};
+export const getServerSideProps = (async (context) =>
+	guardDeclaration(context)) satisfies GetServerSideProps<{
+	declaration: PopulatedDeclaration;
+}>;

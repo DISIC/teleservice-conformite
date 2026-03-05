@@ -1,23 +1,14 @@
-import type { ParsedUrlQuery } from "node:querystring";
-import config from "@payload-config";
+import { fr } from "@codegouvfr/react-dsfr";
 import { useStore } from "@tanstack/react-form";
-import type { GetServerSideProps } from "next";
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { getPayload } from "payload";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { tss } from "tss-react";
+import { MultiStep } from "~/components/MultiStep";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
-import { MultiStep } from "~/components/form/MultiStep";
-import { useCommonStyles } from "~/components/style/commonStyles";
-import {
-	rgaaVersionOptions,
-	testEnvironmentOptions,
-	toolOptions,
-} from "~/payload/selectOptions";
-import {
-	getDeclarationById,
-	type PopulatedDeclaration,
-} from "~/server/api/utils/payload-helper";
+import { ReadOnlyDeclarationAudit } from "~/components/declaration/ReadOnlyDeclaration";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import {
 	AuditDateForm,
@@ -33,6 +24,9 @@ import {
 	type ZAuditFormSchema,
 } from "~/utils/form/audit/schema";
 import { useAppForm } from "~/utils/form/context";
+import { DeclarationAuditForm } from "~/utils/form/readonly/form";
+import { readOnlyFormOptions } from "~/utils/form/readonly/schema";
+import { guardDeclaration } from "~/utils/server-guards";
 
 type Steps<T> = {
 	slug: T;
@@ -60,9 +54,7 @@ const steps: Steps<Section>[] = [
 
 export default function AuditPage({
 	declaration: initialDeclaration,
-}: {
-	declaration: PopulatedDeclaration;
-}) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
 	const { classes: commonClasses } = useCommonStyles();
 	const [declaration, setDeclaration] =
@@ -319,37 +311,5 @@ export default function AuditPage({
 	);
 }
 
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.params as Params;
-
-	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	const payload = await getPayload({ config });
-
-	const declaration = await getDeclarationById(
-		payload,
-		Number.parseInt(id, 10),
-	);
-
-	if (!declaration) {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	return {
-		props: {
-			declaration: declaration,
-		},
-	};
-};
+export const getServerSideProps: GetServerSideProps = async (context) =>
+	guardDeclaration(context);

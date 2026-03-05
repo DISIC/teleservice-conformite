@@ -1,18 +1,32 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Input } from "@codegouvfr/react-dsfr/Input";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Table } from "@codegouvfr/react-dsfr/Table";
-import { useState } from "react";
+import { TRPCClientError } from "@trpc/client";
 import { tss } from "tss-react";
-
+import z from "zod";
+import type { AccessRight } from "~/payload/payload-types";
+import type { AccesRightAugmented } from "~/server/api/routers/accesRight";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { api } from "~/utils/api";
+import { authClient, type Session } from "~/utils/auth-client";
+import { useAppForm } from "~/utils/form/context";
+import { Loader } from "../system/Loader";
+
+const removeAccessRightModal = createModal({
+	id: "removeAccessRightModal",
+	isOpenedByDefault: false,
+});
 
 const inviteMembersModal = createModal({
 	id: "inviteMembersModal",
 	isOpenedByDefault: false,
+});
+
+const inviteMemberFormSchema = z.object({
+	email: z.email("Adresse e-mail invalide"),
+	role: z.enum(["admin"], { message: "Rôle invalide" }),
 });
 
 interface MembresProps {
@@ -20,55 +34,154 @@ interface MembresProps {
 }
 
 export default function Membres({ declaration }: MembresProps) {
-	const [value, setValue] = useState<"reader" | "admin">("admin");
 	const { classes } = useStyles();
-	const { name, email } = declaration?.created_by || {};
+	const { data: session } = authClient.useSession();
 
-	const StatusBadge = ({ status }: { status: string }) => {
-		switch (status) {
+	const apiUtils = api.useUtils();
+
+	const {
+		mutateAsync: resendInviteMail,
+		isSuccess: isResendInviteMailSuccess,
+	} = api.accessRight.resendInviteMail.useMutation();
+	const { mutateAsync: removeAccessRight } = api.accessRight.delete.useMutation(
+		{
+			onSuccess: () =>
+				apiUtils.accessRight.getByDeclarationId.invalidate({
+					id: declaration.id,
+				}),
+		},
+	);
+	const { data: tmpAccessRights, isLoading: isLoadingAccessRight } =
+		api.accessRight.getByDeclarationId.useQuery({ id: declaration.id });
+
+	const accessRights = tmpAccessRights ?? [];
+
+	const { mutateAsync: createAccessRight } = api.accessRight.create.useMutation(
+		{
+			onSuccess: () =>
+				apiUtils.accessRight.getByDeclarationId.invalidate({
+					id: declaration.id,
+				}),
+		},
+	);
+
+	const form = useAppForm({
+		defaultValues: {
+			email: "",
+			role: "admin",
+		} as z.infer<typeof inviteMemberFormSchema>,
+		validators: { onSubmit: inviteMemberFormSchema },
+		onSubmit: async ({ value, formApi }) => {
+			try {
+				await createAccessRight({
+					declarationId: declaration.id,
+					email: value.email,
+					role: value.role,
+				});
+				inviteMembersModal.close();
+				form.reset();
+			} catch (e) {
+				if (e instanceof TRPCClientError && e.data?.code === "CONFLICT") {
+					formApi.fieldInfo.email.instance?.setErrorMap({
+						onSubmit: { message: e.message },
+					});
+				}
+			}
+		},
+	});
+
+	const StatusBadge = ({
+		role,
+		status,
+	}: {
+		role: AccessRight["role"];
+		status: AccessRight["status"];
+	}) => {
+		if (status === "pending") {
+			return <Badge key="status">Invitation envoyée</Badge>;
+		}
+
+		switch (role) {
 			case "admin":
 				return (
 					<Badge key="status" className={classes.adminBadge}>
 						Administrateur
 					</Badge>
 				);
-			default:
-				return (
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							alignItems: "center",
-							justifyContent: "space-between",
-						}}
-					>
-						<Badge key="status" className={classes.readerBadge}>
-							Lecteur
-						</Badge>
-						<div className={classes.buttonsContainer}>
-							<Button
-								size="small"
-								priority="tertiary"
-								className={classes.button}
-							>
-								Retirer l’accès
-							</Button>
-							<Button
-								size="small"
-								priority="tertiary"
-								className={classes.button}
-							>
-								Renvoyer l'invitation
-							</Button>
-						</div>
-					</div>
-				);
 		}
 	};
 
+	const ActionsButtons = ({
+		accessRight,
+		session,
+	}: {
+		accessRight: AccesRightAugmented;
+		session: Session | null;
+	}) => {
+		if (Number(session?.user.id) === accessRight?.user?.id) {
+			return <></>;
+		}
+
+		const isCreator = declaration.created_by?.id === Number(session?.user.id);
+		const isInvitePending = accessRight.status === "pending";
+
+		return (
+			<div className={classes.buttonsContainer}>
+				{isCreator && (
+					<>
+						<Button
+							size="small"
+							priority="secondary"
+							className={classes.button}
+							onClick={removeAccessRightModal.open}
+						>
+							Retirer l’accès
+						</Button>
+						<removeAccessRightModal.Component
+							title="Confirmer la suppression"
+							buttons={[
+								{
+									children: "Annuler",
+									type: "button",
+									onClick: removeAccessRightModal.close,
+								},
+								{
+									children: "Confirmer",
+									onClick: () => removeAccessRight(accessRight.id),
+									type: "button",
+									doClosesModal: true,
+								},
+							]}
+						>
+							<p>
+								Êtes-vous sûr de vouloir retirer l’accès à{" "}
+								{accessRight?.user?.name
+									? `${accessRight.user.name} (${accessRight.user.email})`
+									: accessRight.tmpUserEmail}{" "}
+								?
+							</p>
+						</removeAccessRightModal.Component>
+					</>
+				)}
+				{isInvitePending && (
+					<Button
+						size="small"
+						priority="secondary"
+						className={classes.button}
+						onClick={() => resendInviteMail(accessRight.id)}
+					>
+						Renvoyer l'invitation
+					</Button>
+				)}
+			</div>
+		);
+	};
+
+	if (isLoadingAccessRight) return <Loader />;
+
 	return (
 		<section id="members-tab">
-			<div className={classes.modal}>
+			<div className={classes.wrapperMembers}>
 				<Button
 					priority="secondary"
 					iconId="fr-icon-user-add-line"
@@ -76,79 +189,93 @@ export default function Membres({ declaration }: MembresProps) {
 				>
 					Inviter un membre
 				</Button>
-				<inviteMembersModal.Component
-					buttons={[
-						{
-							children: "Annuler",
-						},
-						{
-							children: "Inviter",
-						},
-					]}
-					title={
-						<section id="modal-header">
-							<h1 className={classes.modalHeading}>Inviter un membre</h1>
-							<p className={classes.modalSubheading}>
-								Tous les champs sont obligatoires
-							</p>
-						</section>
-					}
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						form.handleSubmit();
+					}}
 				>
-					<form>
-						<Input
-							hintText="Format attendu : nom@domaine.fr"
-							label="Adresse e-mail"
-							state="default"
-							stateRelatedMessage="Text de validation / d'explication de l'erreur"
-						/>
-
-						<RadioButtons
-							legend="Rôle"
-							name="my-radio"
-							options={[
-								{
-									hintText:
-										"Peut voir les informations de la déclaration, mais ne peut pas faire de modification ou inviter d’autres membres",
-									label: "Lecteur",
-									nativeInputProps: {
-										value: "reader",
-										checked: value === "reader",
-										onChange: () => setValue("reader"),
-										disabled: true,
-									},
+					<inviteMembersModal.Component
+						buttons={[
+							{
+								children: "Annuler",
+								type: "button",
+								onClick: () => {
+									inviteMembersModal.close();
+									setTimeout(() => form.reset(), 200);
 								},
-								{
-									hintText:
-										"Peut modifier tout aspect de la déclaration et inviter de nouveaux membres",
-									label: "Administrateur",
-									nativeInputProps: {
-										value: "admin",
-										checked: value === "admin",
-										onChange: () => setValue("admin"),
-									},
-								},
-							]}
-						/>
-					</form>
-				</inviteMembersModal.Component>
+							},
+							{ children: "Inviter", type: "submit", doClosesModal: false },
+						]}
+						title={
+							<section id="modal-header">
+								<h1 className={classes.modalHeading}>Inviter un membre</h1>
+								<p className={classes.modalSubheading}>
+									Tous les champs sont obligatoires
+								</p>
+							</section>
+						}
+					>
+						<form.AppField name="email">
+							{(field) => (
+								<field.TextField
+									hintText="Format attendu : nom@domaine.fr"
+									label="Adresse e-mail"
+									{...field}
+								/>
+							)}
+						</form.AppField>
+						<form.AppField name="role">
+							{(field) => (
+								<field.RadioField
+									legend="Rôle"
+									options={[
+										{
+											hintText:
+												"Peut modifier tout aspect de la déclaration et inviter de nouveaux membres",
+											label: "Administrateur",
+											value: "admin",
+										},
+									]}
+								/>
+							)}
+						</form.AppField>
+					</inviteMembersModal.Component>
+				</form>
 			</div>
-			<div>
-				<Table
-					fixed
-					data={[[name, email, <StatusBadge key="status" status="admin" />]]}
-					headers={[
-						<div key="user" className={classes.tableHeader}>
-							Utilisateur{" "}
-						</div>,
-						<div key="user" className={classes.tableHeader}>
-							Mail{" "}
-						</div>,
-						<div key="user" className={classes.tableHeader}>
-							Statut{" "}
-						</div>,
-					]}
-				/>
-			</div>
+			<Table
+				bordered
+				className={classes.table}
+				data={accessRights.map((accessRight) => [
+					<div key={`user-${accessRight.id}`}>
+						{accessRight?.user?.name || "-"}
+					</div>,
+					<div key={`mail-${accessRight.id}`}>
+						{accessRight?.user?.email || accessRight.tmpUserEmail}
+					</div>,
+					<div key={`status-${accessRight.id}`}>
+						<StatusBadge role={accessRight.role} status={accessRight.status} />
+					</div>,
+					<ActionsButtons
+						key={`actions-${accessRight.id}`}
+						accessRight={accessRight}
+						session={session}
+					/>,
+				])}
+				headers={[
+					<div key="user" className={classes.tableHeader}>
+						Utilisateur
+					</div>,
+					<div key="mail" className={classes.tableHeader}>
+						Mail
+					</div>,
+					<div key="status" className={classes.tableHeader}>
+						Statut
+					</div>,
+					<div key="actions" />,
+				]}
+			/>
 		</section>
 	);
 }
@@ -164,20 +291,17 @@ const useStyles = tss.withName(Membres.name).create({
 		color: fr.colors.decisions.text.default.info.default,
 	},
 	buttonsContainer: {
+		width: "min-content",
 		display: "flex",
 		flexDirection: "row",
-		gap: fr.spacing("4v"),
+		gap: fr.spacing("2v"),
 	},
 	button: {
-		fontSize: "1rem",
-		lineHeight: "1.5rem",
-		fontFamily: "Marianne",
-		fontWeight: 500,
+		width: "max-content",
 	},
-	modal: {
+	wrapperMembers: {
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("4v"),
 		alignItems: "flex-end",
 	},
 	modalHeading: {
@@ -197,9 +321,24 @@ const useStyles = tss.withName(Membres.name).create({
 		fontWeight: 400,
 		lineHeight: fr.spacing("5v"),
 	},
+	table: {
+		table: {
+			display: "table",
+		},
+		"thead::after, tbody::after": {
+			backgroundImage: "none!important",
+		},
+		"tbody::after": {
+			borderBottom: `1px solid ${fr.colors.decisions.border.contrast.grey.default}`,
+		},
+		"table tbody tr": {
+			backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.contrast.grey.default},  ${fr.colors.decisions.border.contrast.grey.default})!important`,
+		},
+	},
 	tableHeader: {
-		display: "flex",
-		alignItems: "center",
-		gap: fr.spacing("4v"),
+		minWidth: "max-content",
+		// display: "flex",
+		// alignItems: "center",
+		// gap: fr.spacing("2v"),
 	},
 });

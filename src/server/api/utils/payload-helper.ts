@@ -4,11 +4,13 @@ import payloadConfig from "~/payload/payload.config";
 import type {
 	ActionPlan,
 	Audit,
+	Config,
 	Contact,
 	Declaration,
 	Entity,
 	User,
 } from "~/payload/payload-types";
+import type { Session } from "~/utils/auth-client";
 
 type CollectionMap = {
 	audits: Audit;
@@ -30,28 +32,22 @@ export type PopulatedDeclaration = Omit<
 	entity: Entity | null;
 };
 
-export async function fetchOrReturnRealValue<T extends keyof CollectionMap>(
-	item: number | CollectionMap[T] | null,
+export async function fetchOrReturnRealValue<
+	T extends keyof Config["collections"],
+>(
+	item: number | Config["collections"][T],
 	collection: T,
-): Promise<CollectionMap[T] | null> {
-	let value: CollectionMap[T];
-
-	if (!item) {
-		return null;
-	}
-
+): Promise<Config["collections"][T]> {
 	if (typeof item === "number") {
 		const payload = await getPayload({ config: payloadConfig });
 
-		value = (await payload.findByID({
+		return (await payload.findByID({
 			collection,
 			id: item,
-		})) as CollectionMap[T];
-	} else {
-		value = item as CollectionMap[T];
+		})) as Config["collections"][T];
 	}
 
-	return value;
+	return item as Config["collections"][T];
 }
 
 export async function getPopulatedDeclaration(
@@ -59,27 +55,25 @@ export async function getPopulatedDeclaration(
 ): Promise<PopulatedDeclaration> {
 	const { audit, contact, actionPlan, created_by, entity } = declaration;
 
-	const sanitizedAudit = await fetchOrReturnRealValue(audit ?? null, "audits");
+	const sanitizedAudit = audit
+		? await fetchOrReturnRealValue(audit, "audits")
+		: null;
 
-	const sanitizedContact = await fetchOrReturnRealValue(
-		contact ?? null,
-		"contacts",
-	);
+	const sanitizedContact = contact
+		? await fetchOrReturnRealValue(contact, "contacts")
+		: null;
 
-	const sanitizedActionPlan = await fetchOrReturnRealValue(
-		actionPlan ?? null,
-		"action-plans",
-	);
+	const sanitizedActionPlan = actionPlan
+		? await fetchOrReturnRealValue(actionPlan, "action-plans")
+		: null;
 
-	const sanitizedEntity = await fetchOrReturnRealValue(
-		entity ?? null,
-		"entities",
-	);
+	const sanitizedEntity = entity
+		? await fetchOrReturnRealValue(entity, "entities")
+		: null;
 
-	const sanitizedUser = await fetchOrReturnRealValue(
-		created_by ?? null,
-		"users",
-	);
+	const sanitizedUser = created_by
+		? await fetchOrReturnRealValue(created_by, "users")
+		: null;
 
 	return {
 		...declaration,
@@ -93,6 +87,7 @@ export async function getPopulatedDeclaration(
 
 export async function getDeclarationById(
 	payload: Payload,
+	session: Session,
 	declarationId: number,
 	options?: { trash?: boolean },
 ) {
@@ -104,7 +99,16 @@ export async function getDeclarationById(
 			trash: options?.trash ?? false,
 		});
 
-		if (!result) {
+		const hasAccessRight = await payload.find({
+			collection: "access-rights",
+			where: {
+				declaration: { equals: declarationId },
+				user: { equals: session.user.id },
+				status: { equals: "approved" },
+			},
+		});
+
+		if (hasAccessRight.totalDocs === 0) {
 			return null;
 		}
 
