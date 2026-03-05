@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { toVerifyField } from "../fields/common";
 
 export const ActionPlans: CollectionConfig = {
 	slug: "action-plans",
@@ -60,12 +61,6 @@ export const ActionPlans: CollectionConfig = {
 			label: { fr: "Déclaration associée" },
 			required: true,
 		},
-		{
-			name: "toVerify",
-			type: "checkbox",
-			label: { fr: "À vérifier" },
-			defaultValue: false,
-			required: true,
-		},
+		toVerifyField,
 	],
 };

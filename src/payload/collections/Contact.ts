@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { toVerifyField } from "../fields/common";
 
 export const Contacts: CollectionConfig = {
 	slug: "contacts",
@@ -60,12 +61,6 @@ export const Contacts: CollectionConfig = {
 			relationTo: "declarations",
 			required: true,
 		},
-		{
-			name: "toVerify",
-			type: "checkbox",
-			label: { fr: "À vérifier" },
-			defaultValue: false,
-			required: true,
-		},
+		toVerifyField,
 	],
 };

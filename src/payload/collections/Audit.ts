@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { toVerifyField } from "../fields/common";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
@@ -270,12 +271,6 @@ export const Audits: CollectionConfig = {
 			label: { fr: "Déclaration associée" },
 			required: true,
 		},
-		{
-			name: "toVerify",
-			type: "checkbox",
-			label: { fr: "À vérifier" },
-			defaultValue: false,
-			required: true,
-		},
+		toVerifyField,
 	],
 };
