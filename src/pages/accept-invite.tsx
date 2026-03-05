@@ -4,7 +4,7 @@ import type { GetServerSideProps, Redirect } from "next";
 import SuperJSON from "superjson";
 import getPayloadClient from "~/payload/payloadClient";
 import { appRouter } from "~/server/api/root";
-import { auth } from "~/utils/auth";
+import { authPages } from "~/utils/auth";
 
 interface Params extends ParsedUrlQuery {
 	token: string;
@@ -35,7 +35,7 @@ export const getServerSideProps = (async (context) => {
 		seed: false,
 	});
 
-	const session = await auth.api.getSession({
+	const session = await authPages.api.getSession({
 		headers: context.req.headers as any,
 	});
 
@@ -55,7 +55,7 @@ export const getServerSideProps = (async (context) => {
 		userExist.totalDocs === 0 ||
 		(userExist.totalDocs === 1 && session === null)
 	) {
-		const callback = await auth.api.signInWithOAuth2({
+		const callback = await authPages.api.signInWithOAuth2({
 			body: {
 				providerId: "proconnect",
 				callbackURL: `/accept-invite?token=${token}&email=${email}`,
