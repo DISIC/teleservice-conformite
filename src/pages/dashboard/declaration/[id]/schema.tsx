@@ -46,7 +46,10 @@ export default function SchemaPage({
 			),
 	});
 
-	const onEditInfos = () => setReadOnly((prev) => !prev);
+	const onEditInfos = () => {
+		if (!readOnly) form.reset();
+		setReadOnly((prev) => !prev);
+	};
 
 	const defaultValues: ZSchema = useMemo(() => {
 		if (!declaration.actionPlan) return schemaFormOptions.defaultValues;

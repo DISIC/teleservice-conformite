@@ -187,7 +187,10 @@ export default function AuditPage({
 		(state) => state.values.section as Section,
 	);
 
-	const onEditInfos = () => setReadOnly((prev) => !prev);
+	const onEditInfos = () => {
+		if (!readOnly) updateForm.reset();
+		setReadOnly((prev) => !prev);
+	};
 
 	const onClickCancel = () => {
 		if (section === "isAuditRealised") {

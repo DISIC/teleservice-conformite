@@ -13,7 +13,10 @@ import {
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { ContactTypeForm } from "~/utils/form/contact/form";
-import { contactFormOptions, type ZContact } from "~/utils/form/contact/schema";
+import {
+	contactFormOptions,
+	type ZContactForm,
+} from "~/utils/form/contact/schema";
 import { useAppForm } from "~/utils/form/context";
 
 export default function ContactPage({
@@ -27,7 +30,10 @@ export default function ContactPage({
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [readOnly, setReadOnly] = useState(!!declaration?.contact);
 
-	const onEditInfos = () => setReadOnly((prev) => !prev);
+	const onEditInfos = () => {
+		if (!readOnly) form.reset();
+		setReadOnly((prev) => !prev);
+	};
 
 	const { mutateAsync: upsertContact } = api.contact.upsert.useMutation({
 		onSuccess: ({ data }) => {
@@ -44,17 +50,17 @@ export default function ContactPage({
 		onError: (error) => console.error("Error upserting contact:", error),
 	});
 
-	const defaultValues: ZContact = useMemo(() => {
+	const defaultValues: ZContactForm = useMemo(() => {
 		if (!declaration.contact) return contactFormOptions.defaultValues;
 
-		const contactType: ZContact["contactType"] = [];
+		const contactType: ZContactForm["contactType"] = [];
 		if (declaration.contact.url) contactType.push("onlineForm");
 		if (declaration.contact.email) contactType.push("contactPoint");
 
 		return {
 			contactType,
-			contactLink: declaration.contact.url || "",
-			emailContact: declaration.contact.email || "",
+			url: declaration.contact.url || "",
+			email: declaration.contact.email || "",
 		};
 	}, [declaration.contact]);
 

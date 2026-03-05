@@ -8,13 +8,13 @@ import { isDeclarationOwner, linkToDeclaration } from "../utils/payload-helper";
 export const contactRouter = createTRPCRouter({
 	upsert: userProtectedProcedure
 		.input(
-			contact.omit({ contactType: true }).extend({
+			contact.extend({
 				id: z.number().optional(),
 				declarationId: z.number(),
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const { id, emailContact, contactLink, declarationId } = input;
+			const { id, declarationId, ...formValues } = input;
 
 			await isDeclarationOwner({
 				payload: ctx.payload,
@@ -27,12 +27,7 @@ export const contactRouter = createTRPCRouter({
 			if (!id) {
 				upsertedContact = await ctx.payload.create({
 					collection: "contacts",
-					data: {
-						email: emailContact,
-						url: contactLink,
-						declaration: declarationId,
-						toVerify: false,
-					},
+					data: { ...formValues, declaration: declarationId, toVerify: false },
 				});
 
 				await linkToDeclaration(
@@ -56,11 +51,7 @@ export const contactRouter = createTRPCRouter({
 				upsertedContact = await ctx.payload.update({
 					collection: "contacts",
 					id,
-					data: {
-						email: emailContact,
-						url: contactLink,
-						toVerify: false,
-					},
+					data: { ...formValues, toVerify: false },
 				});
 			}
 

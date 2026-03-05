@@ -30,7 +30,10 @@ export default function GeneralInformationsPage({
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [readOnly, setReadOnly] = useState(true);
 
-	const onEditInfos = () => setReadOnly((prev) => !prev);
+	const onEditInfos = () => {
+		if (!readOnly) form.reset();
+		setReadOnly((prev) => !prev);
+	};
 
 	const { mutateAsync: update } = api.declaration.update.useMutation({
 		onSuccess: ({ data }) => {
