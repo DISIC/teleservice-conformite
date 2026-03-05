@@ -1,7 +1,7 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
-export const schema = z.object({
+export const schemaForm = z.object({
 	hasDoneCurrentYearSchema: z.boolean(),
 	currentYearSchemaUrl: z
 		.url("Lien invalide (ex: https://www.example.fr)")
@@ -14,7 +14,7 @@ export const schema = z.object({
 		.or(z.literal("")),
 });
 
-export type ZSchema = z.infer<typeof schema>;
+export type ZSchema = z.infer<typeof schemaForm>;
 
 export const schemaDefaultValues: ZSchema = {
 	hasDoneCurrentYearSchema: false,
@@ -23,23 +23,9 @@ export const schemaDefaultValues: ZSchema = {
 	previousYearsSchemaUrl: undefined,
 };
 
-export const schemaFormSchema = z.object({
-	...schema.shape,
-});
-
-export type ZSchemaFormSchema = z.infer<typeof schemaFormSchema>;
-
-const defaultValues: ZSchemaFormSchema = {
-	...schemaDefaultValues,
-};
-
 export const schemaFormOptions = formOptions({
-	defaultValues,
+	defaultValues: schemaDefaultValues,
 	validators: {
-		onSubmit: ({ formApi }) => {
-			return formApi.parseValuesWithSchema(
-				schemaFormSchema as typeof schemaFormSchema,
-			);
-		},
+		onSubmit: ({ formApi }) => formApi.parseValuesWithSchema(schemaForm),
 	},
 });

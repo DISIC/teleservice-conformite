@@ -1,114 +1,81 @@
+import { TRPCError } from "@trpc/server";
 import z from "zod";
-import { sourceOptions } from "~/payload/selectOptions";
+import type { ActionPlan } from "~/payload/payload-types";
+import { schemaForm } from "~/utils/form/schema/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { isDeclarationOwner, linkToDeclaration } from "../utils/payload-helper";
 
 export const schemaRouter = createTRPCRouter({
-	create: userProtectedProcedure
+	upsert: userProtectedProcedure
 		.input(
-			z.object({
-				currentYearSchemaUrl: z.string().optional(),
-				previousYearsSchemaUrl: z.string().optional(),
-				declarationId: z.number(),
-				status: z
-					.enum(sourceOptions.map((option) => option.value))
-					.optional()
-					.default("default"),
-			}),
+			schemaForm
+				.omit({
+					hasDoneCurrentYearSchema: true,
+					hasDonePreviousYearsSchema: true,
+				})
+				.extend({
+					currentYearSchemaUrl: z.string().optional(),
+					previousYearsSchemaUrl: z.string().optional(),
+					id: z.number().optional(),
+					declarationId: z.number(),
+				}),
 		)
 		.mutation(async ({ input, ctx }) => {
 			const {
-				currentYearSchemaUrl,
-				previousYearsSchemaUrl,
-				declarationId,
-				status,
-			} = input;
-
-			await isDeclarationOwner({
-				payload: ctx.payload,
-				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
-			});
-
-			const schema = await ctx.payload.create({
-				collection: "action-plans",
-				data: {
-					currentYearSchemaUrl: currentYearSchemaUrl ?? "",
-					previousYearsSchemaUrl: previousYearsSchemaUrl ?? "",
-					declaration: declarationId,
-					status: status || "default",
-				},
-			});
-
-			await linkToDeclaration(
-				ctx.payload,
-				declarationId,
-				schema.id,
-				"actionPlan",
-			);
-
-			return { data: schema.id };
-		}),
-	update: userProtectedProcedure
-		.input(
-			z.object({
-				currentYearSchemaUrl: z.string().optional(),
-				previousYearsSchemaUrl: z.string().optional(),
-				schemaId: z.number(),
-				declarationId: z.number(),
-			}),
-		)
-		.mutation(async ({ input, ctx }) => {
-			const {
-				currentYearSchemaUrl,
-				previousYearsSchemaUrl,
-				schemaId,
-				declarationId,
-			} = input;
-
-			await isDeclarationOwner({
-				payload: ctx.payload,
-				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
-			});
-
-			const updatedSchema = await ctx.payload.update({
-				collection: "action-plans",
-				id: schemaId,
-				data: {
-					currentYearSchemaUrl: currentYearSchemaUrl ?? "",
-					previousYearsSchemaUrl: previousYearsSchemaUrl ?? "",
-					status: "default",
-				},
-			});
-
-			return { data: updatedSchema };
-		}),
-	updateStatus: userProtectedProcedure
-		.input(
-			z.object({
-				declarationId: z.number(),
-				id: z.number(),
-				status: z.enum(sourceOptions.map((option) => option.value)),
-			}),
-		)
-		.mutation(async ({ input, ctx }) => {
-			const { declarationId, id, status } = input;
-
-			await isDeclarationOwner({
-				payload: ctx.payload,
-				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
-			});
-
-			const updatedSchema = await ctx.payload.update({
-				collection: "action-plans",
 				id,
-				data: {
-					status,
-				},
+				declarationId,
+				currentYearSchemaUrl,
+				previousYearsSchemaUrl,
+			} = input;
+
+			await isDeclarationOwner({
+				payload: ctx.payload,
+				declarationId,
+				userId: Number(ctx.session?.user?.id) ?? null,
 			});
 
-			return { data: updatedSchema };
+			let upsertedContact: ActionPlan;
+
+			if (!id) {
+				upsertedContact = await ctx.payload.create({
+					collection: "action-plans",
+					data: {
+						currentYearSchemaUrl: currentYearSchemaUrl ?? "",
+						previousYearsSchemaUrl: previousYearsSchemaUrl ?? "",
+						declaration: declarationId,
+						toVerify: false,
+					},
+				});
+
+				await linkToDeclaration(
+					ctx.payload,
+					declarationId,
+					upsertedContact.id,
+					"actionPlan",
+				);
+			} else {
+				const existingActionPlan = await ctx.payload.findByID({
+					collection: "action-plans",
+					id,
+				});
+
+				if (!existingActionPlan)
+					throw new TRPCError({
+						code: "NOT_FOUND",
+						message: `Action plan with id ${id} not found`,
+					});
+
+				upsertedContact = await ctx.payload.update({
+					collection: "action-plans",
+					id,
+					data: {
+						currentYearSchemaUrl: currentYearSchemaUrl ?? "",
+						previousYearsSchemaUrl: previousYearsSchemaUrl ?? "",
+						toVerify: false,
+					},
+				});
+			}
+
+			return { data: upsertedContact };
 		}),
 });

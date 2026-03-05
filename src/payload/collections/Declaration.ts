@@ -1,6 +1,10 @@
 import type { CollectionConfig } from "payload";
 
-import { appKindOptions, declarationStatusOptions } from "../selectOptions";
+import {
+	appKindOptions,
+	declarationStatusOptions,
+	sourceOptions,
+} from "../selectOptions";
 
 export const Declarations: CollectionConfig = {
 	slug: "declarations",
@@ -138,7 +142,14 @@ export const Declarations: CollectionConfig = {
 			hasMany: true,
 			admin: {
 				position: "sidebar",
-			},
+      }
+		},
+    {
+			name: "fromSource",
+			type: "select",
+			label: { fr: "Provenance de la déclaration" },
+			options: [...sourceOptions],
+			required: true,
 		},
 	],
 };

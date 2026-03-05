@@ -51,7 +51,7 @@ export const importedDeclarationDataSchema = z.object({
 	status: z
 		.enum(sourceOptions.map((option) => option.value))
 		.optional()
-		.default("default"),
+		.default("manual"),
 });
 
 const createOrUpdateEntity = async (
@@ -175,6 +175,7 @@ export const declarationRouter = createTRPCRouter({
 
 			const declaration = await ctx.payload.create({
 				collection: "declarations",
+				draft: true,
 				data: {
 					name: declarationName,
 					app_kind: kind,
@@ -182,6 +183,7 @@ export const declarationRouter = createTRPCRouter({
 					entity: newEntityId,
 					created_by: Number(ctx.session.user.id),
 					status: status ?? "unpublished",
+					fromSource: "manual",
 				},
 			});
 
@@ -334,7 +336,7 @@ export const declarationRouter = createTRPCRouter({
 				contact,
 				schema,
 				entity,
-				status = "default" as (typeof sourceOptions)[number]["value"],
+				status = "manual",
 			} = input;
 
 			const transactionID = await ctx.payload.db.beginTransaction();
@@ -379,6 +381,7 @@ export const declarationRouter = createTRPCRouter({
 						status: "unpublished",
 						entity: newEntityId,
 						created_by: Number(ctx.session.user.id),
+						fromSource: status,
 					},
 					req: { transactionID },
 					draft: true,
@@ -407,7 +410,7 @@ export const declarationRouter = createTRPCRouter({
 							publishedAt && !Number.isNaN(Date.parse(publishedAt))
 								? new Date(publishedAt).toISOString().slice(0, 10)
 								: new Date().toISOString().slice(0, 10),
-						status,
+						toVerify: status !== "manual",
 					},
 					req: { transactionID },
 				});
@@ -418,7 +421,7 @@ export const declarationRouter = createTRPCRouter({
 						declaration: declarationId,
 						email: contact.email || "",
 						url: contact.url || "",
-						status,
+						toVerify: status !== "manual",
 					},
 					req: { transactionID },
 				});
@@ -429,7 +432,7 @@ export const declarationRouter = createTRPCRouter({
 						declaration: declarationId,
 						currentYearSchemaUrl: schema?.currentYearSchemaUrl ?? "",
 						previousYearsSchemaUrl: "",
-						status,
+						toVerify: status !== "manual",
 					},
 					req: { transactionID },
 				});

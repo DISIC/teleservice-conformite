@@ -21,7 +21,9 @@ export function CheckboxGroupField(props: CheckboxGroupFieldProps) {
 	const valueSet = new Set(field.state.value ?? []);
 
 	if (readOnlyField) {
-		const value = field.state.value.join(", ");
+		const value = commonProps.options
+			.filter((option) => valueSet.has(option.value))
+			.map((option) => option.label?.toString() ?? "");
 		return <ReadOnlyField label={commonProps.legend} value={value} />;
 	}
 
