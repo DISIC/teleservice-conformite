@@ -3,7 +3,10 @@ import z from "zod";
 import type { Contact } from "~/payload/payload-types";
 import { contact } from "~/utils/form/contact/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { isDeclarationOwner, linkToDeclaration } from "../utils/payload-helper";
+import {
+	hasAccessToDeclaration,
+	linkToDeclaration,
+} from "../utils/payload-helper";
 
 export const contactRouter = createTRPCRouter({
 	upsert: userProtectedProcedure
@@ -16,7 +19,7 @@ export const contactRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, declarationId, ...formValues } = input;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
 				userId: Number(ctx.session?.user?.id) ?? null,

@@ -3,7 +3,10 @@ import z from "zod";
 import type { ActionPlan } from "~/payload/payload-types";
 import { schemaForm } from "~/utils/form/schema/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { isDeclarationOwner, linkToDeclaration } from "../utils/payload-helper";
+import {
+	hasAccessToDeclaration,
+	linkToDeclaration,
+} from "../utils/payload-helper";
 
 export const schemaRouter = createTRPCRouter({
 	upsert: userProtectedProcedure
@@ -28,7 +31,7 @@ export const schemaRouter = createTRPCRouter({
 				previousYearsSchemaUrl,
 			} = input;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
 				userId: Number(ctx.session?.user?.id) ?? null,

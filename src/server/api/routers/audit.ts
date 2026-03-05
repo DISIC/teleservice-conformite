@@ -2,7 +2,10 @@ import z from "zod";
 import { sourceOptions } from "~/payload/selectOptions";
 import { auditFormSchema } from "~/utils/form/audit/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { isDeclarationOwner, linkToDeclaration } from "../utils/payload-helper";
+import {
+	hasAccessToDeclaration,
+	linkToDeclaration,
+} from "../utils/payload-helper";
 
 const optionalAuditFormSchema = auditFormSchema
 	.partial()
@@ -30,7 +33,7 @@ export const auditRouter = createTRPCRouter({
 				...rest
 			} = input;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
 				userId: Number(ctx.session?.user?.id) ?? null,
@@ -66,7 +69,7 @@ export const auditRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, declarationId } = input;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
 				userId: Number(ctx.session?.user?.id) ?? null,
@@ -103,7 +106,7 @@ export const auditRouter = createTRPCRouter({
 
 			const normalizedDate = date && date !== "" ? date : undefined;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
 				userId: Number(ctx.session?.user?.id) ?? null,
@@ -144,7 +147,7 @@ export const auditRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { declarationId, id, status } = input;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
 				userId: Number(ctx.session?.user?.id) ?? null,

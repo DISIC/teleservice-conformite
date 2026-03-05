@@ -11,7 +11,7 @@ import {
 import {
 	getDefaultDeclarationName,
 	getPopulatedDeclaration,
-	isDeclarationOwner,
+	hasAccessToDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
@@ -204,7 +204,7 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id } = input;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
 				userId: Number(ctx.session?.user?.id) ?? null,
@@ -232,7 +232,7 @@ export const declarationRouter = createTRPCRouter({
 			const { organisation, kind, url, domain, name, declarationId, entityId } =
 				input.general;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
 				userId: Number(ctx.session?.user?.id) ?? null,
@@ -274,7 +274,7 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, name } = input;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
 				userId: Number(ctx.session?.user?.id) ?? null,
@@ -300,7 +300,7 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, status } = input;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
 				userId: Number(ctx.session?.user?.id) ?? null,
@@ -470,7 +470,7 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, content } = input;
 
-			const isOwner = await isDeclarationOwner({
+			const isOwner = await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
 				userId: Number(ctx.session?.user?.id) ?? null,

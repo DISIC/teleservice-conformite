@@ -135,7 +135,7 @@ export async function linkToDeclaration(
 	}
 }
 
-export async function isDeclarationOwner({
+export async function hasAccessToDeclaration({
 	payload,
 	userId,
 	declarationId,
@@ -163,16 +163,20 @@ export async function isDeclarationOwner({
 		});
 	}
 
-	const createdBy = await fetchOrReturnRealValue(
-		declaration.created_by as number,
-		"users",
-	);
+	const accessRight = await payload.find({
+		collection: "access-rights",
+		where: {
+			declaration: { equals: declarationId },
+			user: { equals: userId },
+			status: { equals: "approved" },
+		},
+		limit: 1,
+	});
 
-	if (createdBy?.id !== userId) {
+	if (accessRight.totalDocs === 0) {
 		throw new TRPCError({
 			code: "UNAUTHORIZED",
-			message:
-				"Must be owner of the declaration to update or delete this declaration",
+			message: "Must have an approved access right to access this declaration.",
 		});
 	}
 
