@@ -1,14 +1,15 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import Information from "@codegouvfr/react-dsfr/picto/Information";
+import { tss } from "tss-react";
 import HelpingMessage from "~/components/declaration/HelpingMessage";
 import { withForm } from "../context";
 import { schemaFormOptions } from "./schema";
 
 export const SchemaForm = withForm({
 	...schemaFormOptions,
-	props: {
-		readOnly: true,
-	},
+	props: { readOnly: true },
 	render: function Render({ form, readOnly }) {
+		const { classes } = useStyles();
 		return (
 			<>
 				<form.AppField name="hasDoneCurrentYearSchema">
@@ -62,6 +63,7 @@ export const SchemaForm = withForm({
 						</>
 					)}
 				</form.AppField>
+				{readOnly && <div className={classes.separator} />}
 				<form.AppField name="hasDonePreviousYearsSchema">
 					{(field) => (
 						<>
@@ -97,5 +99,12 @@ export const SchemaForm = withForm({
 				</form.AppField>
 			</>
 		);
+	},
+});
+
+const useStyles = tss.withName(SchemaForm.name).create({
+	separator: {
+		height: "7px",
+		backgroundColor: fr.colors.decisions.border.default.grey.default,
 	},
 });

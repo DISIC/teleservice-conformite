@@ -380,7 +380,7 @@ export const AuditFlatForm = withForm({
 	},
 });
 
-const useAuditFormStyles = tss
+export const useAuditFormStyles = tss
 	.withName(AuditFlatForm.name)
 	.withParams<{ readOnly: boolean }>()
 	.create(({ readOnly }) => ({
