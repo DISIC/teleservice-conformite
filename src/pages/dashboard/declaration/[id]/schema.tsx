@@ -25,7 +25,7 @@ export default function SchemaPage({
 	const router = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
-	const [readOnly, setReadOnly] = useState(!!declaration?.contact);
+	const [readOnly, setReadOnly] = useState(!!declaration?.actionPlan);
 
 	const { mutateAsync: upsertSchema } = api.schema.upsert.useMutation({
 		onSuccess: async ({ data: actionPlan }) => {
@@ -41,7 +41,7 @@ export default function SchemaPage({
 		},
 		onError: (error) =>
 			console.error(
-				`Error updating contact for declaration with id ${declaration?.id}:`,
+				`Error updating schema for declaration with id ${declaration?.id}:`,
 				error,
 			),
 	});
