@@ -24,7 +24,11 @@ export const ContactTypeForm = withForm({
 				>
 					{(field) => (
 						<field.CheckboxGroupField
-							legend="Manière de contacter la personne responsable de l’accessibilité"
+							legend={
+								readOnly
+									? "Moyen de contact"
+									: "Manière de contacter la personne responsable de l’accessibilité"
+							}
 							hintText="Vous pouvez sélectionner plusieurs choix."
 							options={[
 								{ label: "Formulaire en ligne", value: "onlineForm" },
@@ -58,7 +62,7 @@ export const ContactTypeForm = withForm({
 							<form.AppField name="email">
 								{(field) => (
 									<field.TextField
-										label="Email de contact"
+										label={readOnly ? "E-mail" : "Email de contact"}
 										hintText="Indiquez de préférence une adresse de type “contact@monservice.com” plutôt qu’une adresse personnelle"
 										nativeInputProps={{ type: "email" }}
 										readOnlyField={readOnly}

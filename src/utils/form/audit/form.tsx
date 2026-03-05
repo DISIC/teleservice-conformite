@@ -20,7 +20,11 @@ export const AuditRealisedForm = withForm({
 			<form.AppField name="isAuditRealised">
 				{(field) => (
 					<field.RadioField
-						legend="Avez-vous réalisé un audit d’accessibilité de votre service numérique ?"
+						legend={
+							readOnly
+								? "Audit réalisé"
+								: "Avez-vous réalisé un audit d’accessibilité de votre service numérique ?"
+						}
 						hintText="Un audit d’accessibilité évalue votre service numérique selon le RGAA afin d’identifier les non-conformités et les points à améliorer. Il peut être réalisé par un prestataire externe."
 						options={[
 							{ label: "Oui", value: true },
@@ -41,19 +45,20 @@ export const AuditDateForm = withForm({
 	render: function Render({ form, readOnly }) {
 		return (
 			<>
-				<form.AppField name="date">
-					{(field) => (
-						<field.TextField
-							label="Date de réalisation de l'audit"
-							required
-							nativeInputProps={{
-								type: "date",
-								max: new Date().toISOString().split("T")[0],
-							}}
-							readOnlyField={readOnly}
-						/>
-					)}
-				</form.AppField>
+				{!readOnly && (
+					<form.AppField name="date">
+						{(field) => (
+							<field.TextField
+								label="Date de réalisation de l'audit"
+								required
+								nativeInputProps={{
+									type: "date",
+									max: new Date().toISOString().split("T")[0],
+								}}
+							/>
+						)}
+					</form.AppField>
+				)}
 				<form.AppField name="realisedBy">
 					{(field) => (
 						<field.TextField
@@ -67,7 +72,11 @@ export const AuditDateForm = withForm({
 				<form.AppField name="rgaa_version">
 					{(field) => (
 						<field.RadioField
-							legend="Version du référentiel RGAA utilisée"
+							legend={
+								readOnly
+									? "Référentiel RGAA utilisé"
+									: "Version du référentiel RGAA utilisée"
+							}
 							options={rgaaVersionOptions.map((option) => ({
 								label: option.label,
 								value: option.value,
@@ -80,7 +89,11 @@ export const AuditDateForm = withForm({
 				<form.AppField name="rate">
 					{(field) => (
 						<field.NumberField
-							label="Pourcentage de critères du RGAA respectés"
+							label={
+								readOnly
+									? "Résultats"
+									: "Pourcentage de critères du RGAA respectés"
+							}
 							hintText="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
 							nativeInputProps={{ min: 0, max: 100 }}
 							readOnlyField={readOnly}
@@ -110,7 +123,7 @@ export const ToolsForm = withForm({
 						return (
 							<div>
 								<field.CheckboxGroupField
-									legend="Outils utilisés pour évaluer l’accessibilité (facultatif)"
+									legend={`Outils utilisés pour évaluer l’accessibilité ${readOnly ? "" : "(facultatif)"}`}
 									options={[...toolOptions]}
 									readOnlyField={readOnly}
 								/>
@@ -320,7 +333,7 @@ export const FilesForm = withForm({
 			<form.AppField name="report">
 				{(field) => (
 					<field.TextField
-						label="Rapport d’audit (facultatif)"
+						label={`Rapport d’audit ${!readOnly ? "(facultatif)" : ""}`}
 						hintText="Format attendu: https://www.example.fr"
 						nativeInputProps={{ type: "url" }}
 						readOnlyField={readOnly}

@@ -28,6 +28,7 @@ export const DeclarationGeneralForm = withForm({
 						<field.TextField
 							label="Organisation"
 							readOnlyField={readOnly}
+							nativeInputProps={{ readOnly: true }}
 							required
 						/>
 					)}
