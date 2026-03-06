@@ -110,28 +110,44 @@ export const Declarations: CollectionConfig = {
 			label: { fr: "URL du service numérique" },
 		},
 		{
-			name: "audit",
-			type: "relationship",
-			relationTo: "audits",
-			label: { fr: "Audit associé" },
-		},
-		{
-			name: "actionPlan",
-			type: "relationship",
-			relationTo: "action-plans",
-			label: { fr: "Plan d'actions associé" },
-		},
-		{
-			name: "contact",
-			type: "relationship",
-			relationTo: "contacts",
-			label: { fr: "Contact associé" },
-		},
-		{
 			name: "publishedContent",
 			type: "text",
 			label: { fr: "Contenu publié" },
 			required: false,
+		},
+		{
+			name: "audit",
+			type: "join",
+			collection: "audits",
+			on: "declaration",
+			hasMany: false,
+			label: { fr: "Audit associé" },
+		},
+		{
+			name: "actionPlan",
+			type: "join",
+			collection: "action-plans",
+			on: "declaration",
+			hasMany: false,
+			label: { fr: "Plan d'actions associé" },
+		},
+		{
+			name: "contact",
+			type: "join",
+			collection: "contacts",
+			on: "declaration",
+			hasMany: false,
+			label: { fr: "Contact associé" },
+		},
+		{
+			name: "fromSource",
+			type: "select",
+			label: { fr: "Provenance de la déclaration" },
+			options: [...sourceOptions],
+			required: true,
+			admin: {
+				position: "sidebar",
+			},
 		},
 		{
 			name: "accessRights",
@@ -143,13 +159,6 @@ export const Declarations: CollectionConfig = {
 			admin: {
 				position: "sidebar",
 			},
-		},
-		{
-			name: "fromSource",
-			type: "select",
-			label: { fr: "Provenance de la déclaration" },
-			options: [...sourceOptions],
-			required: true,
 		},
 	],
 };

@@ -389,7 +389,7 @@ export const declarationRouter = createTRPCRouter({
 
 				const declarationId = Number(declaration?.id);
 
-				const relatedAudit = await ctx.payload.create({
+				await ctx.payload.create({
 					collection: "audits",
 					data: {
 						declaration: declarationId,
@@ -415,7 +415,7 @@ export const declarationRouter = createTRPCRouter({
 					req: { transactionID },
 				});
 
-				const relatedContact = await ctx.payload.create({
+				await ctx.payload.create({
 					collection: "contacts",
 					data: {
 						declaration: declarationId,
@@ -426,24 +426,13 @@ export const declarationRouter = createTRPCRouter({
 					req: { transactionID },
 				});
 
-				const relatedSchema = await ctx.payload.create({
+				await ctx.payload.create({
 					collection: "action-plans",
 					data: {
 						declaration: declarationId,
 						currentYearSchemaUrl: schema?.currentYearSchemaUrl ?? "",
 						previousYearsSchemaUrl: "",
 						toVerify: status !== "manual",
-					},
-					req: { transactionID },
-				});
-
-				await ctx.payload.update({
-					collection: "declarations",
-					id: declarationId,
-					data: {
-						audit: relatedAudit.id,
-						contact: relatedContact.id,
-						actionPlan: relatedSchema.id,
 					},
 					req: { transactionID },
 				});

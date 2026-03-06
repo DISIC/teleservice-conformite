@@ -3,10 +3,7 @@ import z from "zod";
 import type { Contact } from "~/payload/payload-types";
 import { contact } from "~/utils/form/contact/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import {
-	hasAccessToDeclaration,
-	linkToDeclaration,
-} from "../utils/payload-helper";
+import { hasAccessToDeclaration } from "../utils/payload-helper";
 
 export const contactRouter = createTRPCRouter({
 	upsert: userProtectedProcedure
@@ -32,13 +29,6 @@ export const contactRouter = createTRPCRouter({
 					collection: "contacts",
 					data: { ...formValues, declaration: declarationId, toVerify: false },
 				});
-
-				await linkToDeclaration(
-					ctx.payload,
-					declarationId,
-					upsertedContact.id,
-					"contact",
-				);
 			} else {
 				const existingContact = await ctx.payload.findByID({
 					collection: "contacts",

@@ -3,10 +3,7 @@ import z from "zod";
 import type { ActionPlan } from "~/payload/payload-types";
 import { schemaForm } from "~/utils/form/schema/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import {
-	hasAccessToDeclaration,
-	linkToDeclaration,
-} from "../utils/payload-helper";
+import { hasAccessToDeclaration } from "../utils/payload-helper";
 
 export const schemaRouter = createTRPCRouter({
 	upsert: userProtectedProcedure
@@ -49,13 +46,6 @@ export const schemaRouter = createTRPCRouter({
 						toVerify: false,
 					},
 				});
-
-				await linkToDeclaration(
-					ctx.payload,
-					declarationId,
-					upsertedContact.id,
-					"actionPlan",
-				);
 			} else {
 				const existingActionPlan = await ctx.payload.findByID({
 					collection: "action-plans",

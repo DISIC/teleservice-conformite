@@ -2,10 +2,7 @@ import z from "zod";
 import { sourceOptions } from "~/payload/selectOptions";
 import { auditFormSchema } from "~/utils/form/audit/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import {
-	hasAccessToDeclaration,
-	linkToDeclaration,
-} from "../utils/payload-helper";
+import { hasAccessToDeclaration } from "../utils/payload-helper";
 
 const optionalAuditFormSchema = auditFormSchema
 	.partial()
@@ -59,8 +56,6 @@ export const auditRouter = createTRPCRouter({
 					declaration: declarationId,
 				},
 			});
-
-			await linkToDeclaration(ctx.payload, declarationId, audit.id, "audit");
 
 			return { data: audit.id };
 		}),

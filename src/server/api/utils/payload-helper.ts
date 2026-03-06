@@ -46,16 +46,16 @@ export async function getPopulatedDeclaration(
 ): Promise<PopulatedDeclaration> {
 	const { audit, contact, actionPlan, created_by, entity } = declaration;
 
-	const sanitizedAudit = audit
-		? await fetchOrReturnRealValue(audit, "audits")
+	const sanitizedAudit = audit?.docs?.[0]
+		? await fetchOrReturnRealValue(audit.docs[0], "audits")
 		: null;
 
-	const sanitizedContact = contact
-		? await fetchOrReturnRealValue(contact, "contacts")
+	const sanitizedContact = contact?.docs?.[0]
+		? await fetchOrReturnRealValue(contact.docs[0], "contacts")
 		: null;
 
-	const sanitizedActionPlan = actionPlan
-		? await fetchOrReturnRealValue(actionPlan, "action-plans")
+	const sanitizedActionPlan = actionPlan?.docs?.[0]
+		? await fetchOrReturnRealValue(actionPlan.docs[0], "action-plans")
 		: null;
 
 	const sanitizedEntity = entity
@@ -110,28 +110,6 @@ export async function getDeclarationById(
 		console.error("Error fetching declaration by ID:", error);
 
 		return null;
-	}
-}
-
-export async function linkToDeclaration(
-	payload: Payload,
-	declarationId: number,
-	keyId: number,
-	keyName = "contact",
-) {
-	try {
-		await payload.update({
-			collection: "declarations",
-			id: declarationId,
-			data: {
-				[keyName]: keyId,
-			},
-		});
-	} catch (error) {
-		throw new TRPCError({
-			code: "INTERNAL_SERVER_ERROR",
-			message: `Failed to link contact to declaration: ${(error as Error).message}`,
-		});
 	}
 }
 
