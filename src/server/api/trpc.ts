@@ -63,7 +63,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 const isAuthedAsUser = t.middleware(async ({ next, ctx }) => {
 	const userId = Number(ctx.session?.user?.id);
 
-	if (!userId) {
+	if (!userId || !ctx.session) {
 		throw new TRPCError({
 			code: "UNAUTHORIZED",
 			message: "Missing or invalid session",
@@ -83,9 +83,7 @@ const isAuthedAsUser = t.middleware(async ({ next, ctx }) => {
 	}
 
 	return next({
-		ctx: {
-			session: ctx.session,
-		},
+		ctx: { session: ctx.session },
 	});
 });
 

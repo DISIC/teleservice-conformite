@@ -9,82 +9,73 @@ const pool = new Pool({
 	connectionString: process.env.POSTGRESQL_ADDON_URI,
 });
 
-export const auth = betterAuth({
+const genericOAuthPlugin = genericOAuth({
+	config: [
+		{
+			providerId: "proconnect",
+			clientId: process.env.PROCONNECT_CLIENT_ID as string,
+			clientSecret: process.env.PROCONNECT_CLIENT_SECRET as string,
+			scopes: ["openid", "email", "given_name", "usual_name", "siret"],
+			redirectURI: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/better-auth/callback/proconnect`,
+			discoveryUrl: `https://${process.env.PROCONNECT_DOMAIN}/api/v2/.well-known/openid-configuration`,
+			pkce: true,
+			authorizationUrlParams: { nonce: "some_random_nonce" },
+			getUserInfo: async (tokens) => {
+				const res = await fetch(
+					`https://${process.env.PROCONNECT_DOMAIN}/api/v2/userinfo`,
+					{
+						headers: {
+							Authorization: `Bearer ${tokens.accessToken}`,
+						},
+					},
+				);
+
+				const responseText = await res.text();
+
+				let data: Record<string, string | number> = {};
+
+				try {
+					data = JSON.parse(responseText);
+				} catch (_) {
+					data =
+						(jwtDecode(responseText) as Record<string, string | number>) || {};
+				}
+
+				if (
+					typeof data.sub === "string" &&
+					typeof data.given_name === "string" &&
+					typeof data.email === "string" &&
+					typeof data.siret === "string"
+				) {
+					return {
+						id: data.sub,
+						name: data.given_name,
+						email: data.email,
+						emailVerified: true,
+						siret: Number.parseInt(data.siret, 10),
+						createdAt: data.created_at ? new Date(data.created_at) : new Date(),
+						updatedAt: data.updated_at ? new Date(data.updated_at) : new Date(),
+					};
+				}
+				return null;
+			},
+			mapProfileToUser(profile) {
+				return {
+					name: profile.name,
+					email: profile.email,
+					emailVerified: profile.emailVerified,
+					siret: profile.siret,
+					createdAt: profile.createdAt,
+					updatedAt: profile.updatedAt,
+				};
+			},
+		},
+	],
+});
+
+const baseConfig = {
 	database: pool,
 	basePath: "/api/better-auth",
-	plugins: [
-		nextCookies(),
-		genericOAuth({
-			config: [
-				{
-					providerId: "proconnect",
-					clientId: process.env.PROCONNECT_CLIENT_ID as string,
-					clientSecret: process.env.PROCONNECT_CLIENT_SECRET as string,
-					scopes: ["openid", "email", "given_name", "usual_name", "siret"],
-					redirectURI: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/better-auth/callback/proconnect`,
-					discoveryUrl: `https://${process.env.PROCONNECT_DOMAIN}/api/v2/.well-known/openid-configuration`,
-					pkce: true,
-					authorizationUrlParams: {
-						nonce: "some_random_nonce",
-					},
-					getUserInfo: async (tokens) => {
-						const res = await fetch(
-							`https://${process.env.PROCONNECT_DOMAIN}/api/v2/userinfo`,
-							{
-								headers: {
-									Authorization: `Bearer ${tokens.accessToken}`,
-								},
-							},
-						);
-
-						const responseText = await res.text();
-
-						let data: Record<string, string | number> = {};
-
-						try {
-							data = JSON.parse(responseText);
-						} catch (_) {
-							data =
-								(jwtDecode(responseText) as Record<string, string | number>) ||
-								{};
-						}
-
-						if (
-							typeof data.sub === "string" &&
-							typeof data.given_name === "string" &&
-							typeof data.email === "string" &&
-							typeof data.siret === "string"
-						) {
-							return {
-								id: data.sub,
-								name: data.given_name,
-								email: data.email,
-								emailVerified: true,
-								siret: Number.parseInt(data.siret, 10),
-								createdAt: data.created_at
-									? new Date(data.created_at)
-									: new Date(),
-								updatedAt: data.updated_at
-									? new Date(data.updated_at)
-									: new Date(),
-							};
-						}
-						return null;
-					},
-					mapProfileToUser(profile) {
-						return {
-							name: profile.name,
-							email: profile.email,
-							emailVerified: profile.emailVerified,
-							siret: profile.siret,
-							createdAt: profile.createdAt,
-							updatedAt: profile.updatedAt,
-						};
-					},
-				},
-			],
-		}),
-	],
 	hooks: {
 		after: upsertEntityToUser,
 	},
@@ -131,7 +122,7 @@ export const auth = betterAuth({
 		},
 		additionalFields: {
 			siret: {
-				type: "number",
+				type: "number" as const,
 			},
 		},
 	},
@@ -143,5 +134,26 @@ export const auth = betterAuth({
 		database: {
 			useNumberId: true,
 		},
+		cookies: {
+			state: {
+				attributes: {
+					sameSite: "none" as const,
+					secure: true,
+				},
+			},
+		},
 	},
+} as const;
+
+// App Router instance — includes nextCookies() for automatic cookie handling in RSC/Server Actions
+export const auth = betterAuth({
+	...baseConfig,
+	plugins: [nextCookies(), genericOAuthPlugin],
+});
+
+// Pages Router instance — no nextCookies() to avoid next/headers import errors.
+// Use this in getServerSideProps / API routes where you pass headers explicitly.
+export const authPages = betterAuth({
+	...baseConfig,
+	plugins: [genericOAuthPlugin],
 });

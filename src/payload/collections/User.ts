@@ -35,8 +35,9 @@ export const Users: CollectionConfig = {
 		{
 			name: "accessRights",
 			label: { fr: "Droits d'accès" },
-			type: "relationship",
-			relationTo: "access-rights",
+			type: "join",
+			collection: "access-rights",
+			on: "user",
 			hasMany: true,
 		},
 		{

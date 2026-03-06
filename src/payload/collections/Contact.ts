@@ -1,6 +1,5 @@
 import type { CollectionConfig } from "payload";
-
-import { sourceOptions } from "../selectOptions";
+import { toVerifyField } from "../fields/common";
 
 export const Contacts: CollectionConfig = {
 	slug: "contacts",
@@ -62,13 +61,6 @@ export const Contacts: CollectionConfig = {
 			relationTo: "declarations",
 			required: true,
 		},
-		{
-			name: "status",
-			type: "select",
-			label: { fr: "Statut" },
-			defaultValue: "default",
-			options: [...sourceOptions],
-			required: false,
-		},
+		toVerifyField,
 	],
 };

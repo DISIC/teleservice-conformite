@@ -91,7 +91,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						name: entity?.name ?? "",
 						kind: entity?.kind ?? "none",
 					},
-					status: "fromAI",
+					status: "ai",
 				});
 
 				return {
@@ -120,7 +120,6 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		api.declaration.getInfoFromAra.useMutation({
 			onMutate: () => {
 				setLoadingStartTime(Date.now());
-				console.log("here");
 				setIsMinimumDelayComplete(false);
 			},
 			onSuccess: async (result) => {
@@ -149,7 +148,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						name: entity?.name ?? "",
 						kind: entity?.kind ?? "none",
 					},
-					status: "fromAra",
+					status: "ara",
 				});
 
 				return {
@@ -162,9 +161,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 			onSettled: () => {
 				const elapsed = Date.now() - (loadingStartTime ?? Date.now());
 				const remaining = Math.max(0, 2000 - elapsed);
-				console.log(remaining);
 				setTimeout(() => {
-					console.log("here2");
 					setIsMinimumDelayComplete(true);
 				}, remaining);
 			},

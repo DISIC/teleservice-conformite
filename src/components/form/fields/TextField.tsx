@@ -77,7 +77,9 @@ export function TextField(props: TextFieldProps) {
 
 const useStyles = tss.withName(TextField.name).create({
 	inputWrapper: {
-		marginBottom: fr.spacing("4w"),
+		"&:not(:last-child)": {
+			marginBottom: fr.spacing("4w"),
+		},
 		"& label:has(+ input[readonly])": {
 			color: fr.colors.decisions.text.disabled.grey.default,
 		},

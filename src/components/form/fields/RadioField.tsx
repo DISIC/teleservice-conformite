@@ -28,11 +28,9 @@ export function RadioField(props: RadioFieldProps) {
 
 	if (readOnlyField) {
 		const value =
-			typeof field.state.value === "boolean"
-				? commonProps.options
-						.find((option) => option.value === field.state.value)
-						?.label?.toString() || ""
-				: field.state.value;
+			commonProps.options
+				.find((option) => option.value === field.state.value)
+				?.label?.toString() || "";
 		return <ReadOnlyField label={commonProps.legend} value={value} />;
 	}
 

@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { postgresAdapter } from "@payloadcms/db-postgres";
+import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { fr } from "@payloadcms/translations/languages/fr";
 import { buildConfig } from "payload";
@@ -22,6 +23,12 @@ import { Verifications } from "./collections/Verification";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
+
+const hasSmtpCreds = Boolean(
+	process.env.SMTP_HOST &&
+		process.env.SMTP_PORT &&
+		process.env.SMTP_FROM_ADDRESS,
+);
 
 export default buildConfig({
 	admin: { user: "admins" },
@@ -56,4 +63,23 @@ export default buildConfig({
 	typescript: {
 		outputFile: path.resolve(dirname, "payload-types.ts"),
 	},
+	...(hasSmtpCreds && {
+		email: nodemailerAdapter({
+			defaultFromAddress:
+				process.env.SMTP_FROM_ADDRESS || "info@payloadcms.com",
+			defaultFromName: process.env.SMTP_FROM_NAME || "Payload",
+			transportOptions: {
+				host: process.env.SMTP_HOST,
+				port: Number.parseInt(process.env.SMTP_PORT as string, 10),
+				secure: process.env.NODE_ENV === "production",
+				auth:
+					process.env.SMTP_USER && process.env.SMTP_PASSWORD
+						? {
+								user: process.env.SMTP_USER,
+								pass: process.env.SMTP_PASSWORD,
+							}
+						: undefined,
+			},
+		}),
+	}),
 });
