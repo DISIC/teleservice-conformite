@@ -49,8 +49,7 @@ export const AuditDateForm = withForm({
 					<form.AppField name="date">
 						{(field) => (
 							<field.TextField
-								label="Date de réalisation de l'audit"
-								required
+								label={`Date de réalisation de l'audit ${!readOnly ? "(facultatif)" : ""}`}
 								nativeInputProps={{
 									type: "date",
 									max: new Date().toISOString().split("T")[0],
@@ -110,8 +109,12 @@ export const ToolsForm = withForm({
 	...auditMultiStepFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
+		const { classes } = useAuditFormStyles({ readOnly });
 		return (
-			<>
+			<div
+				className={classes.wrapperSections}
+				style={{ gap: fr.spacing("8v") }}
+			>
 				<form.AppField name="usedTools">
 					{(field) => {
 						const extraTools = (field.state.value || []).filter(
@@ -162,7 +165,7 @@ export const ToolsForm = withForm({
 						);
 					}}
 				</form.AppField>
-			</>
+			</div>
 		);
 	},
 });

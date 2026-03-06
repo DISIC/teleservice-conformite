@@ -1,8 +1,6 @@
 import { withForm } from "../context";
 import { contactFormOptions } from "./schema";
 
-const defaultValues = contactFormOptions.defaultValues;
-
 export const ContactTypeForm = withForm({
 	...contactFormOptions,
 	props: { readOnly: false },
@@ -13,12 +11,8 @@ export const ContactTypeForm = withForm({
 					name="contactType"
 					listeners={{
 						onChange: ({ value }) => {
-							if (!value.includes("onlineForm")) {
-								form.setFieldValue("url", defaultValues.url);
-							}
-							if (!value.includes("contactPoint")) {
-								form.setFieldValue("email", defaultValues.email);
-							}
+							if (!value.includes("onlineForm")) form.resetField("url");
+							if (!value.includes("contactPoint")) form.resetField("email");
 						},
 					}}
 				>

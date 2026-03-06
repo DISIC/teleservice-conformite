@@ -22,6 +22,7 @@ export const auditRouter = createTRPCRouter({
 		.input(optionalAuditFormSchema)
 		.mutation(async ({ input, ctx }) => {
 			const {
+				isAuditRealised,
 				declarationId,
 				usedTools = [],
 				testEnvironments = [],
@@ -36,19 +37,12 @@ export const auditRouter = createTRPCRouter({
 				userId: Number(ctx.session?.user?.id) ?? null,
 			});
 
-			const hasMinimumFields =
-				Boolean(rest.rgaa_version) &&
-				Boolean(rest.realisedBy?.trim()) &&
-				typeof rest.rate === "number" &&
-				rest.rate > 0 &&
-				Boolean(rest.compliantElements?.trim());
-
 			const audit = await ctx.payload.create({
 				collection: "audits",
 				draft: true,
 				data: {
 					...rest,
-					isRealised: hasMinimumFields,
+					isRealised: isAuditRealised,
 					date: date && date !== "" ? date : undefined,
 					testEnvironments: testEnvironments.map((tech) => ({ name: tech })),
 					usedTools: usedTools.map((tech) => ({ name: tech })),

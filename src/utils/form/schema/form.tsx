@@ -12,7 +12,13 @@ export const SchemaForm = withForm({
 		const { classes } = useStyles();
 		return (
 			<>
-				<form.AppField name="hasDoneCurrentYearSchema">
+				<form.AppField
+					name="hasDoneCurrentYearSchema"
+					listeners={{
+						onChange: ({ value }) =>
+							!value && form.resetField("currentYearSchemaUrl"),
+					}}
+				>
 					{(field) => (
 						<>
 							<field.RadioField
@@ -64,7 +70,13 @@ export const SchemaForm = withForm({
 					)}
 				</form.AppField>
 				{readOnly && <div className={classes.separator} />}
-				<form.AppField name="hasDonePreviousYearsSchema">
+				<form.AppField
+					name="hasDonePreviousYearsSchema"
+					listeners={{
+						onChange: ({ value }) =>
+							!value && form.resetField("previousYearsSchemaUrl"),
+					}}
+				>
 					{(field) => (
 						<>
 							<field.RadioField
