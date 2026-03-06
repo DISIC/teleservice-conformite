@@ -136,6 +136,7 @@ export default function DeclarationPage({
 							<>
 								<Button
 									priority="tertiary"
+									size="small"
 									linkProps={{
 										href: `/declaration/${declaration.id}/publish`,
 										target: "_blank",
@@ -148,6 +149,7 @@ export default function DeclarationPage({
 								<Button
 									priority="tertiary"
 									iconId="ri-file-copy-line"
+									size="small"
 									nativeButtonProps={{
 										"aria-label":
 											"Copier le lien web de la déclaration publiée",
@@ -172,6 +174,7 @@ export default function DeclarationPage({
 							iconId="fr-icon-delete-fill"
 							priority="tertiary"
 							onClick={onDelete}
+							size="small"
 							nativeButtonProps={{
 								"aria-label": "Supprimer la déclaration",
 							}}
@@ -179,8 +182,8 @@ export default function DeclarationPage({
 							Supprimer
 						</Button>
 					</div>
-					<div className={classes.alertWrapper}>
-						{showAlert && (
+					{showAlert && (
+						<div className={classes.alertWrapper}>
 							<Alert
 								small={true}
 								severity={alertDetails.severity}
@@ -190,8 +193,8 @@ export default function DeclarationPage({
 								isClosed={!showAlert}
 								onClose={() => setShowAlert(false)}
 							/>
-						)}
-					</div>
+						</div>
+					)}
 				</section>
 				<Tabs
 					selectedTabId={selectedTabId}
@@ -263,9 +266,10 @@ export default function DeclarationPage({
 const useStyles = tss.withName(DeclarationPage.name).create({
 	headerSection: {
 		display: "flex",
-		flexDirection: "column",
-		alignItems: "start",
-		justifyContent: "flex-start",
+		flexWrap: "wrap",
+		alignItems: "center",
+		justifyContent: "space-between",
+		rowGap: fr.spacing("2v"),
 		marginBottom: fr.spacing("6v"),
 	},
 	header: {
@@ -324,13 +328,12 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			},
 		},
 		"& > div": {
-			padding: `${fr.spacing("10v")} 0`,
-			border: "none !important",
-			boxShadow: "none !important",
-			marginBlock: fr.spacing("6v"),
+			paddingRight: 0,
+			paddingLeft: 0,
+			paddingBottom: fr.spacing("16v"),
 		},
 		"&::before": {
-			display: "none",
+			boxShadow: "none",
 		},
 	},
 	editableNameInput: {

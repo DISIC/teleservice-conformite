@@ -185,13 +185,23 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				<div className={classes.summaryCardsContainer}>
 					<div className={cx(classes.card, classes.summaryRateCard)}>
 						<p className={classes.cardLabel}>Taux de conformité</p>
-						<p className={cx(classes.cardValue, fr.cx("fr-text--lead"))}>
+						<p
+							className={cx(
+								classes.cardValue,
+								fr.cx("fr-text--lead", "fr-text--bold"),
+							)}
+						>
 							{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}
 						</p>
 					</div>
 					<div className={cx(classes.card, classes.summaryUpdateDateCard)}>
 						<p className={classes.cardLabel}>Dernière mise à jour</p>
-						<p className={cx(classes.cardValue, fr.cx("fr-text--lead"))}>
+						<p
+							className={cx(
+								classes.cardValue,
+								fr.cx("fr-text--lead", "fr-text--bold"),
+							)}
+						>
 							{declaration?.published_at
 								? new Date(declaration.published_at).toLocaleDateString("fr-FR")
 								: "N/A"}
@@ -244,11 +254,10 @@ const useStyles = tss.withName(Demarches.name).create({
 		display: "flex",
 		alignItems: "center",
 		flexDirection: "row",
-		gap: fr.spacing("3v"),
+		gap: fr.spacing("2v"),
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
 		paddingInline: fr.spacing("7v"),
 		paddingBlock: fr.spacing("10v"),
-		borderRadius: "0.375rem",
 	},
 	summaryRateCard: {
 		justifyContent: "space-between",
@@ -265,7 +274,6 @@ const useStyles = tss.withName(Demarches.name).create({
 	tilesContainer: {
 		display: "grid",
 		gap: fr.spacing("4v"),
-
 		"@media (min-width: 800px)": {
 			gridTemplateColumns: "1fr 1fr 1fr 1fr",
 		},
