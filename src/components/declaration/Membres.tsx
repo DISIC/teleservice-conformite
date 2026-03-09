@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import Information from "@codegouvfr/react-dsfr/picto/Information";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { TRPCClientError } from "@trpc/client";
 import { tss } from "tss-react";
@@ -13,6 +14,7 @@ import { api } from "~/utils/api";
 import { authClient, type Session } from "~/utils/auth-client";
 import { useAppForm } from "~/utils/form/context";
 import { Loader } from "../system/Loader";
+import HelpingMessage from "./HelpingMessage";
 
 const removeAccessRightModal = createModal({
 	id: "removeAccessRightModal",
@@ -26,7 +28,6 @@ const inviteMembersModal = createModal({
 
 const inviteMemberFormSchema = z.object({
 	email: z.email("Adresse e-mail invalide"),
-	role: z.enum(["admin"], { message: "Rôle invalide" }),
 });
 
 interface MembresProps {
@@ -64,17 +65,14 @@ export default function Membres({ declaration }: MembresProps) {
 	);
 
 	const form = useAppForm({
-		defaultValues: {
-			email: "",
-			role: "admin",
-		} as z.infer<typeof inviteMemberFormSchema>,
+		defaultValues: { email: "" } as z.infer<typeof inviteMemberFormSchema>,
 		validators: { onSubmit: inviteMemberFormSchema },
 		onSubmit: async ({ value, formApi }) => {
 			try {
 				await createAccessRight({
 					declarationId: declaration.id,
 					email: value.email,
-					role: value.role,
+					role: "admin",
 				});
 				inviteMembersModal.close();
 				form.reset();
@@ -87,6 +85,11 @@ export default function Membres({ declaration }: MembresProps) {
 			}
 		},
 	});
+
+	const openInviteMemberModal = () => {
+		form.reset();
+		inviteMembersModal.open();
+	};
 
 	const StatusBadge = ({
 		role,
@@ -116,9 +119,7 @@ export default function Membres({ declaration }: MembresProps) {
 		accessRight: AccesRightAugmented;
 		session: Session | null;
 	}) => {
-		if (Number(session?.user.id) === accessRight?.user?.id) {
-			return <></>;
-		}
+		if (Number(session?.user.id) === accessRight?.user?.id) return;
 
 		const isCreator = declaration.created_by?.id === Number(session?.user.id);
 		const isInvitePending = accessRight.status === "pending";
@@ -183,7 +184,7 @@ export default function Membres({ declaration }: MembresProps) {
 				<Button
 					priority="secondary"
 					iconId="fr-icon-user-add-line"
-					onClick={() => inviteMembersModal.open()}
+					onClick={openInviteMemberModal}
 				>
 					Inviter un membre
 				</Button>
@@ -196,18 +197,12 @@ export default function Membres({ declaration }: MembresProps) {
 				>
 					<inviteMembersModal.Component
 						buttons={[
-							{
-								children: "Annuler",
-								type: "button",
-								onClick: () => {
-									inviteMembersModal.close();
-									setTimeout(() => form.reset(), 200);
-								},
-							},
+							{ children: "Annuler", type: "button" },
 							{ children: "Inviter", type: "submit", doClosesModal: false },
 						]}
+						size="large"
 						title={
-							<section id="modal-header">
+							<section id="modal-header" className={classes.modalHeader}>
 								<h1 className={classes.modalHeading}>Inviter un membre</h1>
 								<p className={classes.modalSubheading}>
 									Tous les champs sont obligatoires
@@ -215,27 +210,27 @@ export default function Membres({ declaration }: MembresProps) {
 							</section>
 						}
 					>
+						<div className={classes.helpingMessageContainer}>
+							<HelpingMessage
+								image={<Information fontSize="5rem" />}
+								message={
+									<span>
+										Seuls les <strong>membres de votre organisation</strong>{" "}
+										peuvent être invité sur cette déclaration.
+										<br />
+										Une fois invité, ils pourront{" "}
+										<strong>modifier tous les éléments</strong> de la
+										déclaration.
+									</span>
+								}
+							/>
+						</div>
 						<form.AppField name="email">
 							{(field) => (
 								<field.TextField
 									hintText="Format attendu : nom@domaine.fr"
 									label="Adresse e-mail"
 									{...field}
-								/>
-							)}
-						</form.AppField>
-						<form.AppField name="role">
-							{(field) => (
-								<field.RadioField
-									legend="Rôle"
-									options={[
-										{
-											hintText:
-												"Peut modifier tout aspect de la déclaration et inviter de nouveaux membres",
-											label: "Administrateur",
-											value: "admin",
-										},
-									]}
 								/>
 							)}
 						</form.AppField>
@@ -302,6 +297,15 @@ const useStyles = tss.withName(Membres.name).create({
 		flexDirection: "column",
 		alignItems: "flex-end",
 	},
+	helpingMessageContainer: {
+		paddingTop: fr.spacing("2v"),
+		marginBottom: fr.spacing("6v"),
+	},
+	modalHeader: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("2v"),
+	},
 	modalHeading: {
 		color: fr.colors.decisions.text.title.grey.default,
 		fontFamily: "Marianne",
@@ -318,6 +322,7 @@ const useStyles = tss.withName(Membres.name).create({
 		fontStyle: "normal",
 		fontWeight: 400,
 		lineHeight: fr.spacing("5v"),
+		margin: 0,
 	},
 	table: {
 		table: {
