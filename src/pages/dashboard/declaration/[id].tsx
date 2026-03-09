@@ -321,13 +321,13 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			paddingRight: 0,
 			margin: 0,
 			borderBottom: "3px solid transparent !important",
-
 			"&[aria-selected='true']": {
 				borderColor: `${fr.colors.decisions.border.actionHigh.blueFrance.default} !important`,
 				borderTop: "none !important",
 			},
 		},
 		"& > div": {
+			paddingTop: fr.spacing("6v"),
 			paddingRight: 0,
 			paddingLeft: 0,
 			paddingBottom: fr.spacing("16v"),
@@ -346,7 +346,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		width: "100%",
 		display: "flex",
 		marginTop: fr.spacing("6v"),
-
 		"& div": {
 			width: "100%",
 		},

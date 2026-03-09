@@ -49,12 +49,9 @@ export default function HelpingMessage({
 const useStyles = tss.withName(HelpingMessage.name).create({
 	helpingMessageContainer: {
 		display: "grid",
-
 		padding: fr.spacing("6v"),
-		marginBlock: fr.spacing("2w"),
 		gap: fr.spacing("6v"),
 		backgroundColor: fr.colors.decisions.background.contrast.blueFrance.default,
-
 		"@media (min-width: 830px)": {
 			gridTemplateColumns: "auto auto 1fr",
 		},
