@@ -24,11 +24,15 @@ import { Verifications } from "./collections/Verification";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-const hasSmtpCreds = Boolean(
-	process.env.SMTP_HOST &&
-		process.env.SMTP_PORT &&
-		process.env.SMTP_FROM_ADDRESS,
+const hasNodemailerCreds = Boolean(
+	process.env.NODEMAILER_HOST &&
+		process.env.NODEMAILER_PORT &&
+		process.env.NODEMAILER_FROM_ADDRESS,
 );
+
+const user = process.env.NODEMAILER_USER || process.env.MAILPACE_API_KEY;
+const pass = process.env.NODEMAILER_PASSWORD || process.env.MAILPACE_API_KEY;
+const hasAuth = !!user && !!pass && user !== "null" && pass !== "null";
 
 export default buildConfig({
 	admin: { user: "admins" },
@@ -63,22 +67,17 @@ export default buildConfig({
 	typescript: {
 		outputFile: path.resolve(dirname, "payload-types.ts"),
 	},
-	...(hasSmtpCreds && {
+	...(hasNodemailerCreds && {
 		email: nodemailerAdapter({
 			defaultFromAddress:
-				process.env.SMTP_FROM_ADDRESS || "info@payloadcms.com",
-			defaultFromName: process.env.SMTP_FROM_NAME || "Payload",
+				process.env.NODEMAILER_FROM_ADDRESS || "info@payloadcms.com",
+			defaultFromName: process.env.NODEMAILER_FROM_NAME || "Payload",
 			transportOptions: {
-				host: process.env.SMTP_HOST,
-				port: Number.parseInt(process.env.SMTP_PORT as string, 10),
-				secure: process.env.NODE_ENV === "production",
-				auth:
-					process.env.SMTP_USER && process.env.SMTP_PASSWORD
-						? {
-								user: process.env.SMTP_USER,
-								pass: process.env.SMTP_PASSWORD,
-							}
-						: undefined,
+				host: process.env.NODEMAILER_HOST,
+				port: Number.parseInt(process.env.NODEMAILER_PORT as string, 10),
+				secure:
+					Number.parseInt(process.env.NODEMAILER_PORT as string, 10) === 465,
+				auth: hasAuth ? { user, pass } : undefined,
 			},
 		}),
 	}),
