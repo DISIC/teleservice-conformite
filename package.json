@@ -26,6 +26,8 @@
 		"@payloadcms/email-nodemailer": "3.61.1",
 		"@payloadcms/next": "^3.61.1",
 		"@payloadcms/richtext-lexical": "^3.61.1",
+		"@react-email/components": "^1.0.8",
+		"@react-email/render": "^2.0.4",
 		"@t3-oss/env-nextjs": "^0.12.0",
 		"@tanstack/react-form": "^1.25.0",
 		"@tanstack/react-query": "^5.69.0",

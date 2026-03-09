@@ -42,7 +42,7 @@ const sendEmailToInviteUserDeclaration = async ({
 	await payload.sendEmail({
 		to: emailToInvite,
 		subject: "Invitation à collaborer sur une déclaration",
-		html: getInviteAcceptRecapEmailHtml({
+		html: await getInviteAcceptRecapEmailHtml({
 			link: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/accept-invite?token=${token}&email=${emailToInvite}`,
 			fullName: `${invitedBy.name}`,
 			declarationName: declaration?.name || `Déclaration #${declaration.id}`,
@@ -241,12 +241,12 @@ export const accessRightRouter = createTRPCRouter({
 				},
 			});
 
-			const declarationListLink = `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/dashboard/declarations`;
+			const declarationListLink = `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/dashboard/declaration`;
 
 			await ctx.payload.sendEmail({
 				to: invite.invitedBy.email,
 				subject: "Invitation à collaborer sur une déclaration",
-				html: getInvitationUserEmailHtml({
+				html: await getInvitationUserEmailHtml({
 					link: `${declarationListLink}/${invite.declaration.id}`,
 					linkDeclarationList: declarationListLink,
 					fullName: currentUser.name,

@@ -35,6 +35,6 @@ export const config = {
 	runtime: "nodejs",
 	matcher: [
 		"/",
-		"/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+		"/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:png|jpg|jpeg|svg|ico)).*)",
 	],
 };
