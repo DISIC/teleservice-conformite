@@ -302,7 +302,27 @@ export default function AuditPage({
 							<AuditFlatForm form={updateForm} readOnly={readOnly} />
 						</div>
 						<updateForm.AppForm>
-							<updateForm.SubscribeButton label="Valider" />
+							<div className={commonClasses.actionButtonsContainer}>
+								<updateForm.CancelButton
+									label="Retour"
+									onClick={() =>
+										router.push(`/dashboard/declaration/${declaration.id}`)
+									}
+									priority="tertiary"
+									ariaLabel="Retour à la déclaration"
+								/>
+								{!readOnly && (
+									<updateForm.SubscribeButton
+										label={
+											declaration.audit?.toVerify
+												? "Valider les informations"
+												: "Valider"
+										}
+										iconId="fr-icon-check-line"
+										iconPosition="right"
+									/>
+								)}
+							</div>
 						</updateForm.AppForm>
 					</form>
 				)}
