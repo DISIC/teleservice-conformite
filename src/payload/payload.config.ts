@@ -27,7 +27,7 @@ const dirname = path.dirname(filename);
 const hasNodemailerCreds = Boolean(
 	process.env.NODEMAILER_HOST &&
 		process.env.NODEMAILER_PORT &&
-		process.env.NODEMAILER_FROM_ADDRESS,
+		process.env.NODEMAILER_FROM,
 );
 
 const user = process.env.NODEMAILER_USER || process.env.MAILPACE_API_KEY;
@@ -69,8 +69,7 @@ export default buildConfig({
 	},
 	...(hasNodemailerCreds && {
 		email: nodemailerAdapter({
-			defaultFromAddress:
-				process.env.NODEMAILER_FROM_ADDRESS || "info@payloadcms.com",
+			defaultFromAddress: process.env.NODEMAILER_FROM || "info@payloadcms.com",
 			defaultFromName: process.env.NODEMAILER_FROM_NAME || "Payload",
 			transportOptions: {
 				host: process.env.NODEMAILER_HOST,
