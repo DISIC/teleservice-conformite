@@ -1,9 +1,8 @@
 import type { ParsedUrlQuery } from "node:querystring";
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import type { GetServerSideProps, Redirect } from "next";
-import SuperJSON from "superjson";
+import type { GetServerSideProps, NextApiRequest, Redirect } from "next";
 import getPayloadClient from "~/payload/payloadClient";
 import { appRouter } from "~/server/api/root";
+import { createTRPCCallerFactory } from "~/server/api/trpc";
 import { authPages } from "~/utils/auth";
 
 interface Params extends ParsedUrlQuery {
@@ -36,13 +35,15 @@ export const getServerSideProps = (async (context) => {
 	});
 
 	const session = await authPages.api.getSession({
-		headers: context.req.headers as any,
+		headers: context.req.headers as HeadersInit,
 	});
 
-	const helpers = createServerSideHelpers({
-		router: appRouter,
-		ctx: { payload, session, req: context.req as any },
-		transformer: SuperJSON,
+	const createCaller = createTRPCCallerFactory(appRouter);
+
+	const caller = createCaller({
+		payload,
+		session,
+		req: context.req as NextApiRequest,
 	});
 
 	const userExist = await payload.find({
@@ -61,7 +62,7 @@ export const getServerSideProps = (async (context) => {
 				callbackURL: `/accept-invite?token=${token}&email=${email}`,
 				errorCallbackURL: "/",
 			},
-			headers: context.req.headers as any,
+			headers: context.req.headers as HeadersInit,
 			returnHeaders: true,
 		});
 
@@ -77,7 +78,7 @@ export const getServerSideProps = (async (context) => {
 	}
 
 	try {
-		await helpers.accessRight.validateInvite.fetch({ token });
+		await caller.accessRight.validateInvite({ token });
 		return { redirect };
 	} catch (error) {
 		console.error("Error validating invite:", error);

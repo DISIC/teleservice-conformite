@@ -176,7 +176,7 @@ export const accessRightRouter = createTRPCRouter({
 
 	validateInvite: userProtectedProcedure
 		.input(z.object({ token: z.string() }))
-		.query(async ({ input, ctx }) => {
+		.mutation(async ({ input, ctx }) => {
 			const { token } = input;
 
 			const tokenHash = crypto.createHash("sha256").update(token).digest("hex");

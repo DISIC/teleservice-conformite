@@ -87,6 +87,8 @@ const isAuthedAsUser = t.middleware(async ({ next, ctx }) => {
 	});
 });
 
+export const createTRPCCallerFactory = t.createCallerFactory;
+
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
  *
