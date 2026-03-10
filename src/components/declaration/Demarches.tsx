@@ -23,12 +23,6 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const { rate } = declaration?.audit || {};
 	const linkToDeclarationPage = `/dashboard/declaration/${declaration.id}`;
 
-	const isDeclarationToVerify =
-		(declaration.fromSource === "ai" || declaration.fromSource === "ara") &&
-		(declaration?.actionPlan?.toVerify === true ||
-			declaration?.audit?.toVerify === true ||
-			declaration?.contact?.toVerify === true);
-
 	const declarationComplete =
 		declaration.status === "unpublished" &&
 		declaration.audit?.isRealised &&
@@ -104,7 +98,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			return <RedirectButton href={href} />;
 		}
 
-		if (isDeclarationToVerify) {
+		if (section.toVerify) {
 			return <RedirectButton label="Vérifier les informations" href={href} />;
 		}
 
@@ -118,24 +112,18 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Document fontSize="small" />,
 			path: "/infos",
 			showToCompleteBadge: false,
-			showVerifyBadge: declaration.status === "unverified",
+			showVerifyBadge: false,
 			section: undefined,
-			customDetail:
-				declaration?.status === "unverified" ? (
-					<RedirectButton
-						label="Vérifier les informations"
-						href={`${linkToDeclarationPage}/infos`}
-					/>
-				) : (
-					<Button
-						iconId="fr-icon-arrow-right-line"
-						priority="tertiary no outline"
-						title="Label button"
-						linkProps={{
-							href: `${linkToDeclarationPage}/infos`,
-						}}
-					/>
-				),
+			customDetail: (
+				<Button
+					iconId="fr-icon-arrow-right-line"
+					priority="tertiary no outline"
+					title="Voir les informations"
+					linkProps={{
+						href: `${linkToDeclarationPage}/infos`,
+					}}
+				/>
+			),
 		},
 		{
 			title: "Contact",

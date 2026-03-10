@@ -77,10 +77,6 @@ export const declarationStatusOptions = [
 		label: "Brouillon",
 		value: "unpublished",
 	},
-	{
-		label: "Non vérifié",
-		value: "unverified",
-	},
 ] as const;
 
 export const kindOptions = [
