@@ -52,24 +52,6 @@ export const auditRouter = createTRPCRouter({
 
 			return { data: audit.id };
 		}),
-	delete: userProtectedProcedure
-		.input(z.object({ id: z.number(), declarationId: z.number() }))
-		.mutation(async ({ input, ctx }) => {
-			const { id, declarationId } = input;
-
-			await hasAccessToDeclaration({
-				payload: ctx.payload,
-				declarationId,
-				userId: Number(ctx.session.user.id),
-			});
-
-			await ctx.payload.delete({
-				collection: "audits",
-				id,
-			});
-
-			return { data: true };
-		}),
 	update: userProtectedProcedure
 		.input(
 			z.object({
