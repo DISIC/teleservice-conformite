@@ -42,7 +42,7 @@ const sendEmailToInviteUserDeclaration = async ({
 		to: emailToInvite,
 		subject: "Invitation à collaborer sur une déclaration",
 		html: await getInviteAcceptRecapEmailHtml({
-			link: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/accept-invite?token=${token}&email=${emailToInvite}`,
+			link: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/accept-invite?token=${encodeURIComponent(token)}&email=${encodeURIComponent(emailToInvite)}`,
 			fullName: `${invitedBy.name}`,
 			declarationName: declaration?.name || `Déclaration #${declaration.id}`,
 			administrationName: `${entity.name}`,
