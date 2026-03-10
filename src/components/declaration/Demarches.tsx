@@ -23,8 +23,11 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const { rate } = declaration?.audit || {};
 	const linkToDeclarationPage = `/dashboard/declaration/${declaration.id}`;
 
-	const isDeclarationFromExternalSource =
-		declaration.fromSource === "ai" || declaration.fromSource === "ara";
+	const isDeclarationToVerify =
+		(declaration.fromSource === "ai" || declaration.fromSource === "ara") &&
+		(declaration?.actionPlan?.toVerify === true ||
+			declaration?.audit?.toVerify === true ||
+			declaration?.contact?.toVerify === true);
 
 	const declarationComplete =
 		declaration.status === "unpublished" &&
@@ -101,7 +104,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			return <RedirectButton href={href} />;
 		}
 
-		if (isDeclarationFromExternalSource) {
+		if (isDeclarationToVerify) {
 			return <RedirectButton label="Vérifier les informations" href={href} />;
 		}
 
@@ -140,7 +143,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Community />,
 			path: "/contact",
 			showToCompleteBadge: !declaration?.contact,
-			showVerifyBadge: isDeclarationFromExternalSource,
+			showVerifyBadge: declaration?.contact?.toVerify === true,
 			section: declaration?.contact,
 		},
 		{
@@ -149,7 +152,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Search />,
 			path: "/audit",
 			showToCompleteBadge: !declaration?.audit,
-			showVerifyBadge: isDeclarationFromExternalSource,
+			showVerifyBadge: declaration?.audit?.toVerify === true,
 			section: declaration?.audit,
 		},
 		{
@@ -158,7 +161,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Conclusion fontSize="1rem" />,
 			path: "/schema",
 			showToCompleteBadge: !declaration?.actionPlan,
-			showVerifyBadge: isDeclarationFromExternalSource,
+			showVerifyBadge: declaration?.actionPlan?.toVerify === true,
 			section: declaration?.actionPlan,
 		},
 	];
