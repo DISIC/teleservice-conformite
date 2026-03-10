@@ -23,7 +23,7 @@ interface InviteMembersModalProps {
 	actions: InviteMembersModalActions;
 }
 
-export default function InviteMembersModal({
+export function InviteMembersModal({
 	declarationId,
 	actions,
 }: InviteMembersModalProps) {

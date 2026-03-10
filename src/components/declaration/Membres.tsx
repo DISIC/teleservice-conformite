@@ -4,18 +4,20 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { useState } from "react";
 import { tss } from "tss-react";
+import {
+	InviteMembersModal,
+	type InviteMembersModalActions,
+} from "~/components/modal/InviteMembersModal";
+import {
+	RemoveAccessRightModal,
+	type RemoveAccessRightModalActions,
+} from "~/components/modal/RemoveAccessRightModal";
+import { Loader } from "~/components/system/Loader";
 import type { AccessRight } from "~/payload/payload-types";
 import type { AccesRightAugmented } from "~/server/api/routers/accesRight";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { authClient, type Session } from "~/utils/auth-client";
-import InviteMembersModal, {
-	type InviteMembersModalActions,
-} from "../modal/InviteMembersModal";
-import RemoveAccessRightModal, {
-	type RemoveAccessRightModalActions,
-} from "../modal/RemoveAccessRightModal";
-import { Loader } from "../system/Loader";
 
 interface MembresProps {
 	declaration: PopulatedDeclaration;

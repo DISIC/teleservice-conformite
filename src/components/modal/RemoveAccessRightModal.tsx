@@ -17,7 +17,7 @@ interface RemoveAccessRightModalProps {
 	actions: RemoveAccessRightModalActions;
 }
 
-export default function RemoveAccessRightModal({
+export function RemoveAccessRightModal({
 	declarationId,
 	actions,
 }: RemoveAccessRightModalProps) {
