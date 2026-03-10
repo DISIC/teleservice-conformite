@@ -146,7 +146,7 @@ export const auditRouter = createTRPCRouter({
 				collection: "audits",
 				id,
 				data: {
-					toVerify: status === "manual",
+					toVerify: status !== "manual",
 				},
 			});
 
