@@ -162,7 +162,7 @@ export const accessRightRouter = createTRPCRouter({
 				depth: 1,
 			});
 
-			sendEmailToInviteUserDeclaration({
+			await sendEmailToInviteUserDeclaration({
 				payload: ctx.payload,
 				emailToInvite: email,
 				declaration,
