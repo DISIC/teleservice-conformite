@@ -284,32 +284,7 @@ export const declarationRouter = createTRPCRouter({
 
 			return { data: updatedDeclaration };
 		}),
-	updateStatus: userProtectedProcedure
-		.input(
-			z.object({
-				id: z.number(),
-				status: z.enum(statusValues),
-			}),
-		)
-		.mutation(async ({ input, ctx }) => {
-			const { id, status } = input;
 
-			await hasAccessToDeclaration({
-				payload: ctx.payload,
-				declarationId: id,
-				userId: Number(ctx.session.user.id),
-			});
-
-			const updatedDeclaration = await ctx.payload.update({
-				collection: "declarations",
-				id,
-				data: {
-					status,
-				},
-			});
-
-			return { data: updatedDeclaration };
-		}),
 	createFromUrl: userProtectedProcedure
 		.input(importedDeclarationDataSchema)
 		.mutation(async ({ input, ctx }) => {

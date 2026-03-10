@@ -1,5 +1,4 @@
 import z from "zod";
-import { sourceOptions } from "~/payload/selectOptions";
 import { auditFormSchema } from "~/utils/form/audit/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { hasAccessToDeclaration } from "../utils/payload-helper";
@@ -119,34 +118,7 @@ export const auditRouter = createTRPCRouter({
 						rest?.testEnvironments?.map((tech) => ({ name: tech })) ?? [],
 					technologies: technologies?.map((tech) => ({ name: tech })) ?? [],
 					isRealised: hasMinimumFields,
-				},
-			});
-
-			return { data: updatedAudit };
-		}),
-
-	updateStatus: userProtectedProcedure
-		.input(
-			z.object({
-				declarationId: z.number(),
-				id: z.number(),
-				status: z.enum(sourceOptions.map((option) => option.value)),
-			}),
-		)
-		.mutation(async ({ input, ctx }) => {
-			const { declarationId, id, status } = input;
-
-			await hasAccessToDeclaration({
-				payload: ctx.payload,
-				declarationId,
-				userId: Number(ctx.session.user.id),
-			});
-
-			const updatedAudit = await ctx.payload.update({
-				collection: "audits",
-				id,
-				data: {
-					toVerify: status !== "manual",
+					toVerify: false,
 				},
 			});
 
