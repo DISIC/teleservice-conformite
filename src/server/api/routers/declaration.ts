@@ -437,6 +437,17 @@ export const declarationRouter = createTRPCRouter({
 					req: { transactionID },
 				});
 
+				await ctx.payload.create({
+					collection: "access-rights",
+					data: {
+						declaration: declarationId,
+						user: Number(ctx.session.user.id),
+						role: "admin",
+						status: "approved",
+					},
+					req: { transactionID },
+				});
+
 				await ctx.payload.db.commitTransaction(transactionID);
 
 				return { data: declarationId };
