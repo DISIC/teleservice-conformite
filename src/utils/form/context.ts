@@ -46,6 +46,6 @@ export function getFieldState(
 ): Pick<InputProps.Common, "state" | "stateRelatedMessage"> {
 	return {
 		state: errors.length > 0 ? "error" : "default",
-		stateRelatedMessage: errors.map((e) => e.message).join(","),
+		stateRelatedMessage: errors.map((e) => e.message).join(", "),
 	};
 }

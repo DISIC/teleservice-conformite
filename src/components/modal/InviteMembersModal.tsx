@@ -15,7 +15,9 @@ export type InviteMembersModalActions = {
 };
 
 const inviteMemberFormSchema = z.object({
-	email: z.email("Adresse e-mail invalide"),
+	email: z
+		.email("Adresse e-mail invalide")
+		.min(1, { message: "L'adresse e-mail est requise" }),
 });
 
 interface InviteMembersModalProps {
@@ -90,6 +92,7 @@ export function InviteMembersModal({
 				e.stopPropagation();
 				form.handleSubmit();
 			}}
+			onInvalid={() => form.validate("submit")}
 		>
 			<modal.Component
 				buttons={[
@@ -125,7 +128,8 @@ export function InviteMembersModal({
 						<field.TextField
 							hintText="Format attendu : nom@domaine.fr"
 							label="Adresse e-mail"
-							{...field}
+							nativeInputProps={{ type: "email" }}
+							required
 						/>
 					)}
 				</form.AppField>
