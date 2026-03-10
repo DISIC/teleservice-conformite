@@ -13,12 +13,7 @@ export const schemaRouter = createTRPCRouter({
 					hasDoneCurrentYearSchema: true,
 					hasDonePreviousYearsSchema: true,
 				})
-				.extend({
-					currentYearSchemaUrl: z.string().optional(),
-					previousYearsSchemaUrl: z.string().optional(),
-					id: z.number().optional(),
-					declarationId: z.number(),
-				}),
+				.extend({ id: z.number().optional(), declarationId: z.number() }),
 		)
 		.mutation(async ({ input, ctx }) => {
 			const {
