@@ -1,34 +1,21 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import Information from "@codegouvfr/react-dsfr/picto/Information";
 import { Table } from "@codegouvfr/react-dsfr/Table";
-import { TRPCClientError } from "@trpc/client";
+import { useState } from "react";
 import { tss } from "tss-react";
-import z from "zod";
 import type { AccessRight } from "~/payload/payload-types";
 import type { AccesRightAugmented } from "~/server/api/routers/accesRight";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { authClient, type Session } from "~/utils/auth-client";
-import { useAppForm } from "~/utils/form/context";
+import InviteMembersModal, {
+	type InviteMembersModalActions,
+} from "../modal/InviteMembersModal";
+import RemoveAccessRightModal, {
+	type RemoveAccessRightModalActions,
+} from "../modal/RemoveAccessRightModal";
 import { Loader } from "../system/Loader";
-import HelpingMessage from "./HelpingMessage";
-
-const removeAccessRightModal = createModal({
-	id: "removeAccessRightModal",
-	isOpenedByDefault: false,
-});
-
-const inviteMembersModal = createModal({
-	id: "inviteMembersModal",
-	isOpenedByDefault: false,
-});
-
-const inviteMemberFormSchema = z.object({
-	email: z.email("Adresse e-mail invalide"),
-});
 
 interface MembresProps {
 	declaration: PopulatedDeclaration;
@@ -38,58 +25,16 @@ export default function Membres({ declaration }: MembresProps) {
 	const { classes } = useStyles();
 	const { data: session } = authClient.useSession();
 
-	const apiUtils = api.useUtils();
-
 	const { mutateAsync: resendInviteMail } =
 		api.accessRight.resendInviteMail.useMutation();
-	const { mutateAsync: removeAccessRight } = api.accessRight.delete.useMutation(
-		{
-			onSuccess: () =>
-				apiUtils.accessRight.getByDeclarationId.invalidate({
-					id: declaration.id,
-				}),
-		},
-	);
 	const { data: tmpAccessRights, isLoading: isLoadingAccessRight } =
 		api.accessRight.getByDeclarationId.useQuery({ id: declaration.id });
 
 	const accessRights = tmpAccessRights ?? [];
 
-	const { mutateAsync: createAccessRight } = api.accessRight.create.useMutation(
-		{
-			onSuccess: () =>
-				apiUtils.accessRight.getByDeclarationId.invalidate({
-					id: declaration.id,
-				}),
-		},
-	);
-
-	const form = useAppForm({
-		defaultValues: { email: "" } as z.infer<typeof inviteMemberFormSchema>,
-		validators: { onSubmit: inviteMemberFormSchema },
-		onSubmit: async ({ value, formApi }) => {
-			try {
-				await createAccessRight({
-					declarationId: declaration.id,
-					email: value.email,
-					role: "admin",
-				});
-				inviteMembersModal.close();
-				form.reset();
-			} catch (e) {
-				if (e instanceof TRPCClientError && e.data?.code === "CONFLICT") {
-					formApi.fieldInfo.email.instance?.setErrorMap({
-						onSubmit: { message: e.message },
-					});
-				}
-			}
-		},
-	});
-
-	const openInviteMemberModal = () => {
-		form.reset();
-		inviteMembersModal.open();
-	};
+	const [inviteMembersModalActions] = useState<InviteMembersModalActions>({});
+	const [removeAccessRightModalActions] =
+		useState<RemoveAccessRightModalActions>({});
 
 	const StatusBadge = ({
 		role,
@@ -124,43 +69,26 @@ export default function Membres({ declaration }: MembresProps) {
 		const isCreator = declaration.created_by?.id === Number(session?.user.id);
 		const isInvitePending = accessRight.status === "pending";
 
+		const displayName = accessRight?.user?.name
+			? `${accessRight.user.name} (${accessRight.user.email})`
+			: (accessRight.tmpUserEmail ?? "");
+
 		return (
 			<div className={classes.buttonsContainer}>
 				{isCreator && (
-					<>
-						<Button
-							size="small"
-							priority="secondary"
-							className={classes.button}
-							onClick={removeAccessRightModal.open}
-						>
-							Retirer l’accès
-						</Button>
-						<removeAccessRightModal.Component
-							title="Confirmer la suppression"
-							buttons={[
-								{
-									children: "Annuler",
-									type: "button",
-									onClick: removeAccessRightModal.close,
-								},
-								{
-									children: "Confirmer",
-									onClick: () => removeAccessRight(accessRight.id),
-									type: "button",
-									doClosesModal: true,
-								},
-							]}
-						>
-							<p>
-								Êtes-vous sûr de vouloir retirer l’accès à{" "}
-								{accessRight?.user?.name
-									? `${accessRight.user.name} (${accessRight.user.email})`
-									: accessRight.tmpUserEmail}{" "}
-								?
-							</p>
-						</removeAccessRightModal.Component>
-					</>
+					<Button
+						size="small"
+						priority="secondary"
+						className={classes.button}
+						onClick={() =>
+							removeAccessRightModalActions.open?.({
+								accessRightId: accessRight.id,
+								displayName,
+							})
+						}
+					>
+						Retirer l'accès
+					</Button>
 				)}
 				{isInvitePending && (
 					<Button
@@ -184,58 +112,18 @@ export default function Membres({ declaration }: MembresProps) {
 				<Button
 					priority="secondary"
 					iconId="fr-icon-user-add-line"
-					onClick={openInviteMemberModal}
+					onClick={() => inviteMembersModalActions.open?.()}
 				>
 					Inviter un membre
 				</Button>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						e.stopPropagation();
-						form.handleSubmit();
-					}}
-				>
-					<inviteMembersModal.Component
-						buttons={[
-							{ children: "Annuler", type: "button" },
-							{ children: "Inviter", type: "submit", doClosesModal: false },
-						]}
-						size="large"
-						title={
-							<section id="modal-header" className={classes.modalHeader}>
-								<h1 className={classes.modalHeading}>Inviter un membre</h1>
-								<p className={classes.modalSubheading}>
-									Tous les champs sont obligatoires
-								</p>
-							</section>
-						}
-					>
-						<div className={classes.helpingMessageContainer}>
-							<HelpingMessage
-								image={<Information fontSize="5rem" />}
-								message={
-									<span>
-										Seuls les <strong>membres de votre organisation</strong>{" "}
-										peuvent être invité sur cette déclaration.
-										<br />
-										Une fois invité, ils pourront{" "}
-										<strong>modifier tous les éléments</strong> de la
-										déclaration.
-									</span>
-								}
-							/>
-						</div>
-						<form.AppField name="email">
-							{(field) => (
-								<field.TextField
-									hintText="Format attendu : nom@domaine.fr"
-									label="Adresse e-mail"
-									{...field}
-								/>
-							)}
-						</form.AppField>
-					</inviteMembersModal.Component>
-				</form>
+				<InviteMembersModal
+					declarationId={declaration.id}
+					actions={inviteMembersModalActions}
+				/>
+				<RemoveAccessRightModal
+					declarationId={declaration.id}
+					actions={removeAccessRightModalActions}
+				/>
 			</div>
 			<Table
 				bordered
@@ -296,33 +184,6 @@ const useStyles = tss.withName(Membres.name).create({
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "flex-end",
-	},
-	helpingMessageContainer: {
-		paddingTop: fr.spacing("2v"),
-		marginBottom: fr.spacing("6v"),
-	},
-	modalHeader: {
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("2v"),
-	},
-	modalHeading: {
-		color: fr.colors.decisions.text.title.grey.default,
-		fontFamily: "Marianne",
-		fontSize: "1.5rem",
-		fontStyle: "normal",
-		fontWeight: 700,
-		lineHeight: "2rem",
-		marginBottom: 0,
-	},
-	modalSubheading: {
-		color: fr.colors.decisions.text.mention.grey.default,
-		fontFamily: "Marianne",
-		fontSize: "0.75rem",
-		fontStyle: "normal",
-		fontWeight: 400,
-		lineHeight: fr.spacing("5v"),
-		margin: 0,
 	},
 	table: {
 		table: {
