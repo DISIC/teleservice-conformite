@@ -266,12 +266,6 @@ export const accessRightRouter = createTRPCRouter({
 	resendInviteMail: userProtectedProcedure
 		.input(z.number())
 		.mutation(async ({ input: id, ctx }) => {
-			await hasAccessToDeclaration({
-				payload: ctx.payload,
-				declarationId: id,
-				userId: Number(ctx.session.user.id),
-			});
-
 			const tmpAccessRight = await ctx.payload.findByID({
 				collection: "access-rights",
 				id,
@@ -294,6 +288,12 @@ export const accessRightRouter = createTRPCRouter({
 					? await fetchOrReturnRealValue(tmpAccessRight.user, "users")
 					: null,
 			};
+
+			await hasAccessToDeclaration({
+				payload: ctx.payload,
+				declarationId: accessRight.declaration.id,
+				userId: Number(ctx.session.user.id),
+			});
 
 			const currentEntity = await fetchOrReturnRealValue(
 				accessRight.declaration.entity,
