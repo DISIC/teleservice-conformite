@@ -13,7 +13,10 @@ import {
 	getInviteAcceptRecapEmailHtml,
 } from "~/utils/emails";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { fetchOrReturnRealValue } from "../utils/payload-helper";
+import {
+	fetchOrReturnRealValue,
+	hasAccessToDeclaration,
+} from "../utils/payload-helper";
 
 type EmailToInviteUserDeclarationProps = {
 	payload: Payload;
@@ -87,6 +90,12 @@ export const accessRightRouter = createTRPCRouter({
 		)
 		.mutation(async ({ input, ctx }) => {
 			const { declarationId, email, role } = input;
+
+			await hasAccessToDeclaration({
+				payload: ctx.payload,
+				declarationId,
+				userId: Number(ctx.session.user.id),
+			});
 
 			const tmpDeclaration = await ctx.payload.findByID({
 				collection: "declarations",
