@@ -226,8 +226,7 @@ export const accessRightRouter = createTRPCRouter({
 
 			const isExpired =
 				invite.inviteExpiresAt && new Date(invite.inviteExpiresAt) < new Date();
-			if (!invite.inviteExpiresAt && isExpired)
-				throw new TRPCError({ code: "BAD_REQUEST" });
+			if (isExpired) throw new TRPCError({ code: "BAD_REQUEST" });
 
 			const updatedInvite = await ctx.payload.update({
 				collection: "access-rights",
