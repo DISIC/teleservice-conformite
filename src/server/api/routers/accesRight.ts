@@ -12,11 +12,7 @@ import {
 	getInvitationUserEmailHtml,
 	getInviteAcceptRecapEmailHtml,
 } from "~/utils/emails";
-import {
-	createTRPCRouter,
-	publicProcedure,
-	userProtectedProcedure,
-} from "../trpc";
+import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { fetchOrReturnRealValue } from "../utils/payload-helper";
 
 type EmailToInviteUserDeclarationProps = {
@@ -56,7 +52,7 @@ export interface AccesRightAugmented extends AccessRight {
 }
 
 export const accessRightRouter = createTRPCRouter({
-	getByDeclarationId: publicProcedure
+	getByDeclarationId: userProtectedProcedure
 		.input(z.object({ id: z.number() }))
 		.query(async ({ input, ctx }) => {
 			const { id } = input;
