@@ -34,7 +34,7 @@ export const auditRouter = createTRPCRouter({
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			const audit = await ctx.payload.create({
@@ -61,7 +61,7 @@ export const auditRouter = createTRPCRouter({
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			await ctx.payload.delete({
@@ -98,7 +98,7 @@ export const auditRouter = createTRPCRouter({
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			const hasMinimumFields =
@@ -139,7 +139,7 @@ export const auditRouter = createTRPCRouter({
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			const updatedAudit = await ctx.payload.update({

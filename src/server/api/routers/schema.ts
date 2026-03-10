@@ -26,7 +26,7 @@ export const schemaRouter = createTRPCRouter({
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			let upsertedContact: ActionPlan;

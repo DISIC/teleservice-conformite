@@ -157,21 +157,15 @@ export const declarationRouter = createTRPCRouter({
 				name ??
 				(await getDefaultDeclarationName(
 					ctx.payload,
-					Number(ctx.session?.user?.id) ?? null,
+					Number(ctx.session.user.id),
 				));
+
 			const newEntityId = await createOrUpdateEntity(
 				ctx.payload,
 				entityId ?? undefined,
 				organisation,
 				domain,
 			);
-
-			if (!ctx.session?.user?.id) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "User must be logged in to create a declaration",
-				});
-			}
 
 			const declaration = await ctx.payload.create({
 				collection: "declarations",
@@ -207,7 +201,7 @@ export const declarationRouter = createTRPCRouter({
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			await ctx.payload.update({
@@ -235,7 +229,7 @@ export const declarationRouter = createTRPCRouter({
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			await ctx.payload.update({
@@ -277,7 +271,7 @@ export const declarationRouter = createTRPCRouter({
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			const updatedDeclaration = await ctx.payload.update({
@@ -303,7 +297,7 @@ export const declarationRouter = createTRPCRouter({
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			const updatedDeclaration = await ctx.payload.update({
@@ -345,13 +339,6 @@ export const declarationRouter = createTRPCRouter({
 				throw new TRPCError({
 					code: "INTERNAL_SERVER_ERROR",
 					message: "Failed to start database transaction",
-				});
-			}
-
-			if (!ctx.session?.user?.id) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "User must be logged in to create a declaration",
 				});
 			}
 
@@ -473,7 +460,7 @@ export const declarationRouter = createTRPCRouter({
 			const isOwner = await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			if (!isOwner) {
