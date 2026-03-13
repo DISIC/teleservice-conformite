@@ -3,9 +3,14 @@ import z from "zod";
 
 import { rgaaVersionOptions } from "~/payload/selectOptions";
 
-export const auditRealised = z.object({
-	isAuditRealised: z.boolean().optional(),
-});
+export const auditRealised = z
+	.object({
+		isAuditRealised: z.boolean().optional(),
+	})
+	.refine((data) => data.isAuditRealised !== undefined, {
+		message: "La question de la réalisation de l'audit est requise",
+		path: ["isAuditRealised"],
+	});
 
 export type ZAuditRealised = z.infer<typeof auditRealised>;
 

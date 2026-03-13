@@ -1,12 +1,7 @@
 export const sourceOptions = [
-	{ label: "manuel/défaut", value: "default" },
-	{ label: "IA", value: "fromAI" },
-	{ label: "Ara", value: "fromAra" },
-] as const;
-
-export const auditStatusOptions = [
-	...sourceOptions,
-	{ label: "pas realisé", value: "notRealised" },
+	{ label: "Manuel", value: "manual" },
+	{ label: "IA", value: "ai" },
+	{ label: "Ara", value: "ara" },
 ] as const;
 
 export const rgaaVersionOptions = [
@@ -81,10 +76,6 @@ export const declarationStatusOptions = [
 	{
 		label: "Brouillon",
 		value: "unpublished",
-	},
-	{
-		label: "Non vérifié",
-		value: "unverified",
 	},
 ] as const;
 

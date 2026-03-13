@@ -48,30 +48,28 @@ export const initialDeclaration = z
 			declarationUrl: z.string().optional(),
 		}),
 	})
-	.refine(
-		(data) => {
-			if (data.initialDeclaration.newDeclarationKind === "fromAra") {
-				return !!data.initialDeclaration.araUrl;
-			}
-			return true;
-		},
-		{
-			message: "L'URL de l'audit Ara est requise",
-			path: ["initialDeclaration", "araUrl"],
-		},
-	)
-	.refine(
-		(data) => {
-			if (data.initialDeclaration.newDeclarationKind === "fromUrl") {
-				return !!data.initialDeclaration.declarationUrl;
-			}
-			return true;
-		},
-		{
-			message: "L'URL de la déclaration est requise",
-			path: ["initialDeclaration", "declarationUrl"],
-		},
-	);
+	.superRefine((data, ctx) => {
+		if (
+			data.initialDeclaration.newDeclarationKind === "fromAra" &&
+			!data.initialDeclaration.araUrl
+		) {
+			ctx.addIssue({
+				code: "custom",
+				message: "L'URL de l'audit Ara est requise",
+				path: ["initialDeclaration", "araUrl"],
+			});
+		}
+		if (
+			data.initialDeclaration.newDeclarationKind === "fromUrl" &&
+			!data.initialDeclaration.declarationUrl
+		) {
+			ctx.addIssue({
+				code: "custom",
+				message: "L'URL de la déclaration est requise",
+				path: ["initialDeclaration", "declarationUrl"],
+			});
+		}
+	});
 
 export type ZInitialDeclaration = z.infer<typeof initialDeclaration>;
 

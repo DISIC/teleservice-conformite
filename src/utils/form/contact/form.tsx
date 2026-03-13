@@ -3,31 +3,46 @@ import { contactFormOptions } from "./schema";
 
 export const ContactTypeForm = withForm({
 	...contactFormOptions,
-	render: function Render({ form }) {
+	props: { readOnly: false },
+	render: function Render({ form, readOnly }) {
 		return (
 			<>
-				<form.AppField name="contactType">
+				<form.AppField
+					name="contactType"
+					listeners={{
+						onChange: ({ value }) => {
+							if (!value.includes("onlineForm")) form.resetField("url");
+							if (!value.includes("contactPoint")) form.resetField("email");
+						},
+					}}
+				>
 					{(field) => (
 						<field.CheckboxGroupField
-							legend="Manière de contacter la personne responsable de l’accessibilité"
+							legend={
+								readOnly
+									? "Moyen de contact"
+									: "Manière de contacter la personne responsable de l’accessibilité"
+							}
 							hintText="Vous pouvez sélectionner plusieurs choix."
 							options={[
 								{ label: "Formulaire en ligne", value: "onlineForm" },
 								{ label: "Point de contact", value: "contactPoint" },
 							]}
+							readOnlyField={readOnly}
 							required
 						/>
 					)}
 				</form.AppField>
-				<form.Subscribe selector={(store) => store.values?.contactType}>
+				<form.Subscribe selector={(store) => store.values.contactType}>
 					{(contactType) =>
-						contactType?.includes("onlineForm") && (
-							<form.AppField name="contactLink">
+						contactType.includes("onlineForm") && (
+							<form.AppField name="url">
 								{(field) => (
 									<field.TextField
 										label="Lien URL du formulaire"
 										hintText="Format attendu : https://www.example.fr"
 										nativeInputProps={{ type: "url" }}
+										readOnlyField={readOnly}
 										required
 									/>
 								)}
@@ -35,15 +50,16 @@ export const ContactTypeForm = withForm({
 						)
 					}
 				</form.Subscribe>
-				<form.Subscribe selector={(store) => store.values?.contactType}>
+				<form.Subscribe selector={(store) => store.values.contactType}>
 					{(contactType) =>
-						contactType?.includes("contactPoint") && (
-							<form.AppField name="emailContact">
+						contactType.includes("contactPoint") && (
+							<form.AppField name="email">
 								{(field) => (
 									<field.TextField
-										label="Email de contact"
+										label={readOnly ? "E-mail" : "Email de contact"}
 										hintText="Indiquez de préférence une adresse de type “contact@monservice.com” plutôt qu’une adresse personnelle"
 										nativeInputProps={{ type: "email" }}
+										readOnlyField={readOnly}
 										required
 									/>
 								)}

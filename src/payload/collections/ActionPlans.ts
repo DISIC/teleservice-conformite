@@ -1,6 +1,5 @@
 import type { CollectionConfig } from "payload";
-
-import { sourceOptions } from "../selectOptions";
+import { toVerifyField } from "../fields/common";
 
 export const ActionPlans: CollectionConfig = {
 	slug: "action-plans",
@@ -62,13 +61,6 @@ export const ActionPlans: CollectionConfig = {
 			label: { fr: "Déclaration associée" },
 			required: true,
 		},
-		{
-			name: "status",
-			type: "select",
-			label: { fr: "Statut" },
-			defaultValue: "default",
-			options: [...sourceOptions],
-			required: false,
-		},
+		toVerifyField,
 	],
 };

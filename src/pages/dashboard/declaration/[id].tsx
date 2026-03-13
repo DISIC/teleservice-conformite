@@ -1,4 +1,3 @@
-import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
@@ -6,33 +5,27 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
-import config from "@payload-config";
-import type { GetServerSideProps } from "next";
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { getPayload } from "payload";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react";
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import Demarches from "~/components/declaration/Demarches";
 import Membres from "~/components/declaration/Membres";
-import {
-	getDeclarationById,
-	type PopulatedDeclaration,
-} from "~/server/api/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { copyToClipboard } from "~/utils/declaration-helper";
+import { guardDeclaration } from "~/utils/server-guards";
 
 const deleteModal = createModal({
 	id: "delete-modal",
 	isOpenedByDefault: false,
 });
 
-interface DeclarationPageProps {
-	declaration: PopulatedDeclaration;
-}
-
-export default function DeclarationPage({ declaration }: DeclarationPageProps) {
+export default function DeclarationPage({
+	declaration,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
 	const { published } = router.query;
 	const hasPublishedDeclaration = !!declaration?.publishedContent;
@@ -143,6 +136,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							<>
 								<Button
 									priority="tertiary"
+									size="small"
 									linkProps={{
 										href: `/declaration/${declaration.id}/publish`,
 										target: "_blank",
@@ -155,6 +149,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 								<Button
 									priority="tertiary"
 									iconId="ri-file-copy-line"
+									size="small"
 									nativeButtonProps={{
 										"aria-label":
 											"Copier le lien web de la déclaration publiée",
@@ -179,6 +174,7 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							iconId="fr-icon-delete-fill"
 							priority="tertiary"
 							onClick={onDelete}
+							size="small"
 							nativeButtonProps={{
 								"aria-label": "Supprimer la déclaration",
 							}}
@@ -186,8 +182,8 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 							Supprimer
 						</Button>
 					</div>
-					<div className={classes.alertWrapper}>
-						{showAlert && (
+					{showAlert && (
+						<div className={classes.alertWrapper}>
 							<Alert
 								small={true}
 								severity={alertDetails.severity}
@@ -197,8 +193,8 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 								isClosed={!showAlert}
 								onClose={() => setShowAlert(false)}
 							/>
-						)}
-					</div>
+						</div>
+					)}
 				</section>
 				<Tabs
 					selectedTabId={selectedTabId}
@@ -270,9 +266,10 @@ export default function DeclarationPage({ declaration }: DeclarationPageProps) {
 const useStyles = tss.withName(DeclarationPage.name).create({
 	headerSection: {
 		display: "flex",
-		flexDirection: "column",
-		alignItems: "start",
-		justifyContent: "flex-start",
+		flexWrap: "wrap",
+		alignItems: "center",
+		justifyContent: "space-between",
+		rowGap: fr.spacing("2v"),
 		marginBottom: fr.spacing("6v"),
 	},
 	header: {
@@ -324,20 +321,19 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			paddingRight: 0,
 			margin: 0,
 			borderBottom: "3px solid transparent !important",
-
 			"&[aria-selected='true']": {
 				borderColor: `${fr.colors.decisions.border.actionHigh.blueFrance.default} !important`,
 				borderTop: "none !important",
 			},
 		},
 		"& > div": {
-			padding: `${fr.spacing("10v")} 0`,
-			border: "none !important",
-			boxShadow: "none !important",
-			marginBlock: fr.spacing("6v"),
+			paddingTop: fr.spacing("6v"),
+			paddingRight: 0,
+			paddingLeft: 0,
+			paddingBottom: fr.spacing("16v"),
 		},
 		"&::before": {
-			display: "none",
+			boxShadow: "none",
 		},
 	},
 	editableNameInput: {
@@ -350,7 +346,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		width: "100%",
 		display: "flex",
 		marginTop: fr.spacing("6v"),
-
 		"& div": {
 			width: "100%",
 		},
@@ -366,37 +361,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 	},
 });
 
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.params as Params;
-
-	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	const payload = await getPayload({ config });
-
-	const declaration = await getDeclarationById(
-		payload,
-		Number.parseInt(id, 10),
-	);
-
-	if (!declaration) {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	return {
-		props: {
-			declaration: declaration,
-		},
-	};
-};
+export const getServerSideProps = (async (context) =>
+	guardDeclaration(context)) satisfies GetServerSideProps<{
+	declaration: PopulatedDeclaration;
+}>;

@@ -4,20 +4,13 @@ import payloadConfig from "~/payload/payload.config";
 import type {
 	ActionPlan,
 	Audit,
+	Config,
 	Contact,
 	Declaration,
 	Entity,
 	User,
 } from "~/payload/payload-types";
-
-type CollectionMap = {
-	audits: Audit;
-	contacts: Contact;
-	"action-plans": ActionPlan;
-	users: User;
-	entities: Entity;
-	declarations: Declaration;
-};
+import type { Session } from "~/utils/auth-client";
 
 export type PopulatedDeclaration = Omit<
 	Declaration,
@@ -30,28 +23,22 @@ export type PopulatedDeclaration = Omit<
 	entity: Entity | null;
 };
 
-export async function fetchOrReturnRealValue<T extends keyof CollectionMap>(
-	item: number | CollectionMap[T] | null,
+export async function fetchOrReturnRealValue<
+	T extends keyof Config["collections"],
+>(
+	item: number | Config["collections"][T],
 	collection: T,
-): Promise<CollectionMap[T] | null> {
-	let value: CollectionMap[T];
-
-	if (!item) {
-		return null;
-	}
-
+): Promise<Config["collections"][T]> {
 	if (typeof item === "number") {
 		const payload = await getPayload({ config: payloadConfig });
 
-		value = (await payload.findByID({
+		return (await payload.findByID({
 			collection,
 			id: item,
-		})) as CollectionMap[T];
-	} else {
-		value = item as CollectionMap[T];
+		})) as Config["collections"][T];
 	}
 
-	return value;
+	return item as Config["collections"][T];
 }
 
 export async function getPopulatedDeclaration(
@@ -59,27 +46,25 @@ export async function getPopulatedDeclaration(
 ): Promise<PopulatedDeclaration> {
 	const { audit, contact, actionPlan, created_by, entity } = declaration;
 
-	const sanitizedAudit = await fetchOrReturnRealValue(audit ?? null, "audits");
+	const sanitizedAudit = audit?.docs?.[0]
+		? await fetchOrReturnRealValue(audit.docs[0], "audits")
+		: null;
 
-	const sanitizedContact = await fetchOrReturnRealValue(
-		contact ?? null,
-		"contacts",
-	);
+	const sanitizedContact = contact?.docs?.[0]
+		? await fetchOrReturnRealValue(contact.docs[0], "contacts")
+		: null;
 
-	const sanitizedActionPlan = await fetchOrReturnRealValue(
-		actionPlan ?? null,
-		"action-plans",
-	);
+	const sanitizedActionPlan = actionPlan?.docs?.[0]
+		? await fetchOrReturnRealValue(actionPlan.docs[0], "action-plans")
+		: null;
 
-	const sanitizedEntity = await fetchOrReturnRealValue(
-		entity ?? null,
-		"entities",
-	);
+	const sanitizedEntity = entity
+		? await fetchOrReturnRealValue(entity, "entities")
+		: null;
 
-	const sanitizedUser = await fetchOrReturnRealValue(
-		created_by ?? null,
-		"users",
-	);
+	const sanitizedUser = created_by
+		? await fetchOrReturnRealValue(created_by, "users")
+		: null;
 
 	return {
 		...declaration,
@@ -93,6 +78,7 @@ export async function getPopulatedDeclaration(
 
 export async function getDeclarationById(
 	payload: Payload,
+	session: Session,
 	declarationId: number,
 	options?: { trash?: boolean },
 ) {
@@ -104,7 +90,16 @@ export async function getDeclarationById(
 			trash: options?.trash ?? false,
 		});
 
-		if (!result) {
+		const hasAccessRight = await payload.find({
+			collection: "access-rights",
+			where: {
+				declaration: { equals: declarationId },
+				user: { equals: session.user.id },
+				status: { equals: "approved" },
+			},
+		});
+
+		if (hasAccessRight.totalDocs === 0) {
 			return null;
 		}
 
@@ -118,29 +113,7 @@ export async function getDeclarationById(
 	}
 }
 
-export async function linkToDeclaration(
-	payload: Payload,
-	declarationId: number,
-	keyId: number,
-	keyName = "contact",
-) {
-	try {
-		await payload.update({
-			collection: "declarations",
-			id: declarationId,
-			data: {
-				[keyName]: keyId,
-			},
-		});
-	} catch (error) {
-		throw new TRPCError({
-			code: "INTERNAL_SERVER_ERROR",
-			message: `Failed to link contact to declaration: ${(error as Error).message}`,
-		});
-	}
-}
-
-export async function isDeclarationOwner({
+export async function hasAccessToDeclaration({
 	payload,
 	userId,
 	declarationId,
@@ -168,16 +141,20 @@ export async function isDeclarationOwner({
 		});
 	}
 
-	const createdBy = await fetchOrReturnRealValue(
-		declaration.created_by as number,
-		"users",
-	);
+	const accessRight = await payload.find({
+		collection: "access-rights",
+		where: {
+			declaration: { equals: declarationId },
+			user: { equals: userId },
+			status: { equals: "approved" },
+		},
+		limit: 1,
+	});
 
-	if (createdBy?.id !== userId) {
+	if (accessRight.totalDocs === 0) {
 		throw new TRPCError({
 			code: "UNAUTHORIZED",
-			message:
-				"Must be owner of the declaration to update or delete this declaration",
+			message: "Must have an approved access right to access this declaration.",
 		});
 	}
 

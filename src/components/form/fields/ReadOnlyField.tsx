@@ -68,15 +68,9 @@ const useStyles = tss
 			...(addSectionBorder && {
 				borderTop: `10px solid ${fr.colors.decisions.border.default.grey.default}`,
 			}),
-			...(valueIsArray || textArea
-				? {
-						display: "flex",
-						flexDirection: "column",
-					}
-				: {
-						display: "inline-flex",
-					}),
-
+			flexDirection: valueIsArray || textArea ? "column" : undefined,
+			display: "flex",
+			flexWrap: "wrap",
 			"@media (max-width: 1024px)": {
 				flexDirection: "column",
 				gap: fr.spacing("2v"),

@@ -101,7 +101,7 @@ function App({ Component, pageProps }: AppProps) {
 				buttonProps: {
 					onClick: async () => {
 						await authClient.signOut({
-							fetchOptions: { onSuccess: () => void router.push("/") },
+							fetchOptions: { onSuccess: () => router.reload()},
 						});
 					},
 					style: { color: fr.colors.decisions.text.default.error.default },

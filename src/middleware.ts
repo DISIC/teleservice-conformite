@@ -15,7 +15,8 @@ export async function middleware(request: NextRequest) {
 		headers: request.headers,
 	});
 
-	if (pathname.endsWith("/publish")) return NextResponse.next();
+	if (pathname.endsWith("/publish") || pathname.endsWith("/accept-invite"))
+		return NextResponse.next();
 
 	if (authSession) {
 		if (!pathname.startsWith("/dashboard")) {
@@ -34,6 +35,6 @@ export const config = {
 	runtime: "nodejs",
 	matcher: [
 		"/",
-		"/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+		"/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:png|jpg|jpeg|svg|ico)).*)",
 	],
 };

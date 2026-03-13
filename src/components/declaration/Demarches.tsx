@@ -25,9 +25,10 @@ export default function Demarches({ declaration }: DemarchesProps) {
 
 	const declarationComplete =
 		declaration.status === "unpublished" &&
-		["default", "notRealised"].includes(declaration?.audit?.status ?? "") &&
-		declaration?.contact?.status === "default" &&
-		declaration?.actionPlan?.status === "default";
+		declaration.audit?.isRealised &&
+		declaration?.audit?.toVerify === false &&
+		declaration?.contact?.toVerify === false &&
+		declaration?.actionPlan?.toVerify === false;
 
 	const RedirectButton = ({
 		href,
@@ -82,10 +83,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			| undefined,
 		href: string,
 	) => {
-		if (
-			section &&
-			["default", "notRealised"].includes(declaration?.audit?.status ?? "")
-		) {
+		if (section && !declaration?.audit?.isRealised) {
 			return (
 				<Button
 					iconId="fr-icon-arrow-right-line"
@@ -100,7 +98,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			return <RedirectButton href={href} />;
 		}
 
-		if (section.status === "fromAI" || section.status === "fromAra") {
+		if (section.toVerify) {
 			return <RedirectButton label="Vérifier les informations" href={href} />;
 		}
 
@@ -114,24 +112,18 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Document fontSize="small" />,
 			path: "/infos",
 			showToCompleteBadge: false,
-			showVerifyBadge: declaration.status === "unverified",
+			showVerifyBadge: false,
 			section: undefined,
-			customDetail:
-				declaration?.status === "unverified" ? (
-					<RedirectButton
-						label="Vérifier les informations"
-						href={`${linkToDeclarationPage}/infos`}
-					/>
-				) : (
-					<Button
-						iconId="fr-icon-arrow-right-line"
-						priority="tertiary no outline"
-						title="Label button"
-						linkProps={{
-							href: `${linkToDeclarationPage}/infos`,
-						}}
-					/>
-				),
+			customDetail: (
+				<Button
+					iconId="fr-icon-arrow-right-line"
+					priority="tertiary no outline"
+					title="Voir les informations"
+					linkProps={{
+						href: `${linkToDeclarationPage}/infos`,
+					}}
+				/>
+			),
 		},
 		{
 			title: "Contact",
@@ -139,9 +131,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Community />,
 			path: "/contact",
 			showToCompleteBadge: !declaration?.contact,
-			showVerifyBadge:
-				declaration?.contact?.status === "fromAI" ||
-				declaration?.contact?.status === "fromAra",
+			showVerifyBadge: declaration?.contact?.toVerify === true,
 			section: declaration?.contact,
 		},
 		{
@@ -150,9 +140,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Search />,
 			path: "/audit",
 			showToCompleteBadge: !declaration?.audit,
-			showVerifyBadge:
-				declaration?.audit?.status === "fromAI" ||
-				declaration?.audit?.status === "fromAra",
+			showVerifyBadge: declaration?.audit?.toVerify === true,
 			section: declaration?.audit,
 		},
 		{
@@ -161,9 +149,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Conclusion fontSize="1rem" />,
 			path: "/schema",
 			showToCompleteBadge: !declaration?.actionPlan,
-			showVerifyBadge:
-				declaration?.actionPlan?.status === "fromAI" ||
-				declaration?.actionPlan?.status === "fromAra",
+			showVerifyBadge: declaration?.actionPlan?.toVerify === true,
 			section: declaration?.actionPlan,
 		},
 	];
@@ -190,13 +176,23 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				<div className={classes.summaryCardsContainer}>
 					<div className={cx(classes.card, classes.summaryRateCard)}>
 						<p className={classes.cardLabel}>Taux de conformité</p>
-						<p className={cx(classes.cardValue, fr.cx("fr-text--lead"))}>
+						<p
+							className={cx(
+								classes.cardValue,
+								fr.cx("fr-text--lead", "fr-text--bold"),
+							)}
+						>
 							{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}
 						</p>
 					</div>
 					<div className={cx(classes.card, classes.summaryUpdateDateCard)}>
 						<p className={classes.cardLabel}>Dernière mise à jour</p>
-						<p className={cx(classes.cardValue, fr.cx("fr-text--lead"))}>
+						<p
+							className={cx(
+								classes.cardValue,
+								fr.cx("fr-text--lead", "fr-text--bold"),
+							)}
+						>
 							{declaration?.published_at
 								? new Date(declaration.published_at).toLocaleDateString("fr-FR")
 								: "N/A"}
@@ -249,11 +245,10 @@ const useStyles = tss.withName(Demarches.name).create({
 		display: "flex",
 		alignItems: "center",
 		flexDirection: "row",
-		gap: fr.spacing("3v"),
+		gap: fr.spacing("2v"),
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
 		paddingInline: fr.spacing("7v"),
 		paddingBlock: fr.spacing("10v"),
-		borderRadius: "0.375rem",
 	},
 	summaryRateCard: {
 		justifyContent: "space-between",
@@ -270,7 +265,6 @@ const useStyles = tss.withName(Demarches.name).create({
 	tilesContainer: {
 		display: "grid",
 		gap: fr.spacing("4v"),
-
 		"@media (min-width: 800px)": {
 			gridTemplateColumns: "1fr 1fr 1fr 1fr",
 		},

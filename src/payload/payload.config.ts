@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { postgresAdapter } from "@payloadcms/db-postgres";
+import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { fr } from "@payloadcms/translations/languages/fr";
 import { buildConfig } from "payload";
@@ -22,6 +23,16 @@ import { Verifications } from "./collections/Verification";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
+
+const hasNodemailerCreds = Boolean(
+	process.env.NODEMAILER_HOST &&
+		process.env.NODEMAILER_PORT &&
+		process.env.NODEMAILER_FROM,
+);
+
+const user = process.env.NODEMAILER_USER || process.env.MAILPACE_API_KEY;
+const pass = process.env.NODEMAILER_PASSWORD || process.env.MAILPACE_API_KEY;
+const hasAuth = !!user && !!pass && user !== "null" && pass !== "null";
 
 export default buildConfig({
 	admin: { user: "admins" },
@@ -56,4 +67,17 @@ export default buildConfig({
 	typescript: {
 		outputFile: path.resolve(dirname, "payload-types.ts"),
 	},
+	...(hasNodemailerCreds && {
+		email: nodemailerAdapter({
+			defaultFromAddress: process.env.NODEMAILER_FROM || "info@payloadcms.com",
+			defaultFromName: process.env.NODEMAILER_FROM_NAME || "Payload",
+			transportOptions: {
+				host: process.env.NODEMAILER_HOST,
+				port: Number.parseInt(process.env.NODEMAILER_PORT as string, 10),
+				secure:
+					Number.parseInt(process.env.NODEMAILER_PORT as string, 10) === 465,
+				auth: hasAuth ? { user, pass } : undefined,
+			},
+		}),
+	}),
 });

@@ -11,7 +11,7 @@ import {
 import {
 	getDefaultDeclarationName,
 	getPopulatedDeclaration,
-	isDeclarationOwner,
+	hasAccessToDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
@@ -51,7 +51,7 @@ export const importedDeclarationDataSchema = z.object({
 	status: z
 		.enum(sourceOptions.map((option) => option.value))
 		.optional()
-		.default("default"),
+		.default("manual"),
 });
 
 const createOrUpdateEntity = async (
@@ -157,8 +157,9 @@ export const declarationRouter = createTRPCRouter({
 				name ??
 				(await getDefaultDeclarationName(
 					ctx.payload,
-					Number(ctx.session?.user?.id) ?? null,
+					Number(ctx.session.user.id),
 				));
+
 			const newEntityId = await createOrUpdateEntity(
 				ctx.payload,
 				entityId ?? undefined,
@@ -166,15 +167,9 @@ export const declarationRouter = createTRPCRouter({
 				domain,
 			);
 
-			if (!ctx.session?.user?.id) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "User must be logged in to create a declaration",
-				});
-			}
-
 			const declaration = await ctx.payload.create({
 				collection: "declarations",
+				draft: true,
 				data: {
 					name: declarationName,
 					app_kind: kind,
@@ -182,6 +177,17 @@ export const declarationRouter = createTRPCRouter({
 					entity: newEntityId,
 					created_by: Number(ctx.session.user.id),
 					status: status ?? "unpublished",
+					fromSource: "manual",
+				},
+			});
+
+			await ctx.payload.create({
+				collection: "access-rights",
+				data: {
+					declaration: declaration.id,
+					user: Number(ctx.session.user.id),
+					role: "admin",
+					status: "approved",
 				},
 			});
 
@@ -192,10 +198,10 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id } = input;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			await ctx.payload.update({
@@ -220,10 +226,10 @@ export const declarationRouter = createTRPCRouter({
 			const { organisation, kind, url, domain, name, declarationId, entityId } =
 				input.general;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			await ctx.payload.update({
@@ -262,10 +268,10 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, name } = input;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			const updatedDeclaration = await ctx.payload.update({
@@ -278,32 +284,7 @@ export const declarationRouter = createTRPCRouter({
 
 			return { data: updatedDeclaration };
 		}),
-	updateStatus: userProtectedProcedure
-		.input(
-			z.object({
-				id: z.number(),
-				status: z.enum(statusValues),
-			}),
-		)
-		.mutation(async ({ input, ctx }) => {
-			const { id, status } = input;
 
-			await isDeclarationOwner({
-				payload: ctx.payload,
-				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
-			});
-
-			const updatedDeclaration = await ctx.payload.update({
-				collection: "declarations",
-				id,
-				data: {
-					status,
-				},
-			});
-
-			return { data: updatedDeclaration };
-		}),
 	createFromUrl: userProtectedProcedure
 		.input(importedDeclarationDataSchema)
 		.mutation(async ({ input, ctx }) => {
@@ -324,7 +305,7 @@ export const declarationRouter = createTRPCRouter({
 				contact,
 				schema,
 				entity,
-				status = "default" as (typeof sourceOptions)[number]["value"],
+				status = "manual",
 			} = input;
 
 			const transactionID = await ctx.payload.db.beginTransaction();
@@ -333,13 +314,6 @@ export const declarationRouter = createTRPCRouter({
 				throw new TRPCError({
 					code: "INTERNAL_SERVER_ERROR",
 					message: "Failed to start database transaction",
-				});
-			}
-
-			if (!ctx.session?.user?.id) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "User must be logged in to create a declaration",
 				});
 			}
 
@@ -369,6 +343,7 @@ export const declarationRouter = createTRPCRouter({
 						status: "unpublished",
 						entity: newEntityId,
 						created_by: Number(ctx.session.user.id),
+						fromSource: status,
 					},
 					req: { transactionID },
 					draft: true,
@@ -376,7 +351,7 @@ export const declarationRouter = createTRPCRouter({
 
 				const declarationId = Number(declaration?.id);
 
-				const relatedAudit = await ctx.payload.create({
+				await ctx.payload.create({
 					collection: "audits",
 					data: {
 						declaration: declarationId,
@@ -397,40 +372,40 @@ export const declarationRouter = createTRPCRouter({
 							publishedAt && !Number.isNaN(Date.parse(publishedAt))
 								? new Date(publishedAt).toISOString().slice(0, 10)
 								: new Date().toISOString().slice(0, 10),
-						status,
+						toVerify: status !== "manual",
 					},
 					req: { transactionID },
 				});
 
-				const relatedContact = await ctx.payload.create({
+				await ctx.payload.create({
 					collection: "contacts",
 					data: {
 						declaration: declarationId,
 						email: contact.email || "",
 						url: contact.url || "",
-						status,
+						toVerify: status !== "manual",
 					},
 					req: { transactionID },
 				});
 
-				const relatedSchema = await ctx.payload.create({
+				await ctx.payload.create({
 					collection: "action-plans",
 					data: {
 						declaration: declarationId,
 						currentYearSchemaUrl: schema?.currentYearSchemaUrl ?? "",
 						previousYearsSchemaUrl: "",
-						status,
+						toVerify: status !== "manual",
 					},
 					req: { transactionID },
 				});
 
-				await ctx.payload.update({
-					collection: "declarations",
-					id: declarationId,
+				await ctx.payload.create({
+					collection: "access-rights",
 					data: {
-						audit: relatedAudit.id,
-						contact: relatedContact.id,
-						actionPlan: relatedSchema.id,
+						declaration: declarationId,
+						user: Number(ctx.session.user.id),
+						role: "admin",
+						status: "approved",
 					},
 					req: { transactionID },
 				});
@@ -457,10 +432,10 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, content } = input;
 
-			const isOwner = await isDeclarationOwner({
+			const isOwner = await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			if (!isOwner) {
