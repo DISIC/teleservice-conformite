@@ -1,7 +1,7 @@
 import type { Payload } from "payload";
 import type { PopulatedDeclaration } from "./payload-helper";
-import type { PublishedDeclaration } from "~/components/declaration/PublishedDeclarationTemplate";
-import { extractDeclarationContentToPublish } from "~/components/declaration/PublishedDeclarationTemplate";
+import type { PublishedDeclaration } from "~/utils/declaration-content";
+import { extractDeclarationContentToPublish } from "~/utils/declaration-content";
 
 export type ComparisonResult = {
 	isModified: boolean;

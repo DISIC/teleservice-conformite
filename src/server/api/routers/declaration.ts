@@ -16,7 +16,7 @@ import {
 	hasAccessToDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
-import type { PublishedDeclaration } from "~/components/declaration/PublishedDeclarationTemplate";
+import type { PublishedDeclaration } from "~/utils/declaration-content";
 import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 
