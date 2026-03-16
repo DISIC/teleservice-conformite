@@ -7,6 +7,8 @@ import {
 	kindOptions,
 	rgaaVersionOptions,
 	sourceOptions,
+	testEnvironmentOptions,
+	toolOptions,
 } from "~/payload/selectOptions";
 import {
 	getDefaultDeclarationName,
@@ -488,14 +490,6 @@ export const declarationRouter = createTRPCRouter({
 				declaration.publishedContent,
 			);
 
-			if (!published._raw) {
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message:
-						"Published content does not contain raw values required for revert. Please republish the declaration first.",
-				});
-			}
-
 			const transactionID = await ctx.payload.db.beginTransaction();
 
 			if (!transactionID) {
@@ -506,17 +500,17 @@ export const declarationRouter = createTRPCRouter({
 			}
 
 			try {
+				const appKindValue = appKindOptions.find(
+					(o) => o.label === published.appKindLabel,
+				)?.value;
+
 				await ctx.payload.update({
 					collection: "declarations",
 					id,
 					data: {
 						name: published.name,
 						url: published.url,
-						app_kind: published._raw.app_kind as
-							| "website"
-							| "mobile_app_ios"
-							| "mobile_app_android"
-							| "other",
+						...(appKindValue ? { app_kind: appKindValue } : {}),
 						status: "published",
 					},
 					req: { transactionID },
@@ -531,24 +525,34 @@ export const declarationRouter = createTRPCRouter({
 				});
 
 				if (audits.docs[0]) {
+					const rgaaVersionValue = rgaaVersionOptions.find(
+						(o) => o.label === published.audit.rgaa_version,
+					)?.value;
+
 					await ctx.payload.update({
 						collection: "audits",
 						id: audits.docs[0].id,
 						data: {
-							rgaa_version: published._raw.audit
-								.rgaa_version as (typeof rgaaVersionOptions)[number]["value"],
-							realisedBy: published._raw.audit.realisedBy,
-							rate: published._raw.audit.rate,
-							compliantElements: published._raw.audit.compliantElements,
+							...(rgaaVersionValue ? { rgaa_version: rgaaVersionValue } : {}),
+							realisedBy: published.audit.realised_by,
+							rate: published.audit.rate,
+							compliantElements: published.audit.compliantElements,
 							nonCompliantElements:
-								published._raw.audit.nonCompliantElements ?? undefined,
+								published.audit.nonCompliantElements ?? undefined,
 							disproportionnedCharge:
-								published._raw.audit.disproportionnedCharge ?? undefined,
+								published.audit.disproportionnedCharge ?? undefined,
 							optionalElements:
-								published._raw.audit.optionalElements ?? undefined,
-							technologies: published._raw.audit.technologies,
-							testEnvironments: published._raw.audit.testEnvironments,
-							usedTools: published._raw.audit.usedTools,
+								published.audit.optionalElements ?? undefined,
+							technologies: published.audit.technologies,
+							testEnvironments: published.audit.testEnvironments.map((label) => ({
+								name:
+									testEnvironmentOptions.find((o) => o.label === label)?.value ??
+									label,
+							})),
+							usedTools: published.audit.usedTools.map((label) => ({
+								name:
+									toolOptions.find((o) => o.label === label)?.value ?? label,
+							})),
 						},
 						req: { transactionID },
 					});
@@ -566,8 +570,8 @@ export const declarationRouter = createTRPCRouter({
 						collection: "contacts",
 						id: contacts.docs[0].id,
 						data: {
-							email: published._raw.contact.email ?? undefined,
-							url: published._raw.contact.url ?? undefined,
+							email: published.contact.email ?? undefined,
+							url: published.contact.url ?? undefined,
 						},
 						req: { transactionID },
 					});
@@ -586,9 +590,9 @@ export const declarationRouter = createTRPCRouter({
 						id: actionPlans.docs[0].id,
 						data: {
 							currentYearSchemaUrl:
-								published._raw.actionPlan.currentYearSchemaUrl,
+								published.actionPlan.currentYearSchemaUrl,
 							previousYearsSchemaUrl:
-								published._raw.actionPlan.previousYearsSchemaUrl,
+								published.actionPlan.previousYearsSchemaUrl,
 						},
 						req: { transactionID },
 					});
