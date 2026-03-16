@@ -7,8 +7,8 @@ import { getPayload } from "payload";
 import { useState } from "react";
 import { tss } from "tss-react";
 import type { z } from "zod";
-
 import DeclarationLoader from "~/components/declaration/DeclarationLoader";
+import DeclarationUrlError from "~/components/declaration/DeclarationUrlError";
 import { useStyles as useAppStyles } from "~/pages/_app";
 import type { Entity } from "~/payload/payload-types";
 import {
@@ -18,7 +18,6 @@ import {
 	toolOptions,
 } from "~/payload/selectOptions";
 import type { importedDeclarationDataSchema } from "~/server/api/routers/declaration";
-import { showAlert } from "~/utils/alert-event";
 import { api } from "~/utils/api";
 import { auth } from "~/utils/auth";
 import { extractTechnologiesFromUrl } from "~/utils/declaration-helper";
@@ -37,8 +36,23 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { classes, cx } = useStyles();
 	const { classes: appClasses } = useAppStyles();
 	const router = useRouter();
+	const [errorGetInfos, setErrorGetInfos] = useState<{
+		from: "url" | "ara";
+	}>();
 	const [importedDeclarationData, setImportedDeclarationData] =
 		useState<ImportedDeclarationData | null>(null);
+
+	const onErrorRetry = () => {
+		form.handleSubmit();
+		setErrorGetInfos(undefined);
+	};
+
+	const onErrorForward = () => {
+		form.reset();
+		form.setFieldValue("initialDeclaration.newDeclarationKind", "fromScratch");
+		form.setFieldValue("section", "general");
+		setErrorGetInfos(undefined);
+	};
 
 	const { mutateAsync: createDeclaration } = api.declaration.create.useMutation(
 		{
@@ -62,16 +76,6 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 			},
 			onSuccess: async (result) => {
 				const declarationInfos = result.data;
-
-				if (!declarationInfos) {
-					showAlert({
-						title: "Erreur lors de l'analyse de l'URL",
-						description: "Echec de la récupération des informations.",
-						severity: "error",
-					});
-
-					return;
-				}
 
 				setImportedDeclarationData({
 					...declarationInfos,
@@ -101,13 +105,8 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				};
 			},
 			onError: (error) => {
-				showAlert({
-					title: "Erreur lors de l'analyse de l'URL",
-					description: error.message,
-					severity: "error",
-				});
-
-				console.error("Error analyzing URL:", error);
+				setErrorGetInfos({ from: "url" });
+				console.error("Error analyzing URL (Albert):", error);
 			},
 			onSettled: () => {
 				const elapsed = Date.now() - (loadingStartTime ?? Date.now());
@@ -123,16 +122,6 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				setIsMinimumDelayComplete(false);
 			},
 			onSuccess: async (result) => {
-				if (!result.data) {
-					showAlert({
-						title: "Erreur lors de l'analyse de l'URL",
-						description: "Echec de la récupération des informations.",
-						severity: "error",
-					});
-
-					return;
-				}
-
 				setImportedDeclarationData({
 					...result.data,
 					testEnvironments: extractTechnologiesFromUrl(
@@ -157,7 +146,10 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					serviceUrl: result.data.service.url,
 				};
 			},
-			onError: (error) => console.error("error", error),
+			onError: (error) => {
+				setErrorGetInfos({ from: "ara" });
+				console.error("Error getting info from Ara:", error);
+			},
 			onSettled: () => {
 				const elapsed = Date.now() - (loadingStartTime ?? Date.now());
 				const remaining = Math.max(0, 2000 - elapsed);
@@ -331,6 +323,11 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 
 	const isLoading =
 		isAnalyzingUrl || isGettingInfoFromAra || !isMinimumDelayComplete;
+
+	if (errorGetInfos)
+		return (
+			<DeclarationUrlError onRetry={onErrorRetry} onForward={onErrorForward} />
+		);
 
 	if (isLoading)
 		return <DeclarationLoader duration={isAnalyzingUrl ? 15000 : 2000} />;
