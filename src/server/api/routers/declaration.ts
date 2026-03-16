@@ -381,8 +381,8 @@ export const declarationRouter = createTRPCRouter({
 					collection: "contacts",
 					data: {
 						declaration: declarationId,
-						email: contact.email || "",
-						url: contact.url || "",
+						email: contact.email || undefined,
+						url: contact.url || undefined,
 						toVerify: status !== "manual",
 					},
 					req: { transactionID },
@@ -392,8 +392,8 @@ export const declarationRouter = createTRPCRouter({
 					collection: "action-plans",
 					data: {
 						declaration: declarationId,
-						currentYearSchemaUrl: schema?.currentYearSchemaUrl ?? "",
-						previousYearsSchemaUrl: "",
+						currentYearSchemaUrl: schema?.currentYearSchemaUrl ?? undefined,
+						previousYearsSchemaUrl: undefined,
 						toVerify: status !== "manual",
 					},
 					req: { transactionID },

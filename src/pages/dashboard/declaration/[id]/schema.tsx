@@ -52,9 +52,9 @@ export default function SchemaPage({
 
 		return {
 			hasDoneCurrentYearSchema: !!currentYearSchemaUrl,
-			currentYearSchemaUrl: currentYearSchemaUrl ?? "",
+			currentYearSchemaUrl: currentYearSchemaUrl ?? undefined,
 			hasDonePreviousYearsSchema: !!previousYearsSchemaUrl,
-			previousYearsSchemaUrl: previousYearsSchemaUrl ?? "",
+			previousYearsSchemaUrl: previousYearsSchemaUrl ?? undefined,
 		};
 	}, [declaration.actionPlan]);
 
@@ -62,7 +62,11 @@ export default function SchemaPage({
 		...schemaFormOptions,
 		defaultValues,
 		onSubmit: async ({ value }) => {
-			await upsertSchema({ ...value, declarationId: declaration.id });
+			await upsertSchema({
+				...value,
+				id: declaration.actionPlan?.id,
+				declarationId: declaration.id,
+			});
 		},
 	});
 
@@ -88,9 +92,7 @@ export default function SchemaPage({
 						e.preventDefault();
 						form.handleSubmit();
 					}}
-					onInvalid={(_e) => {
-						form.validate("submit");
-					}}
+					onInvalid={() => form.validate("submit")}
 				>
 					<div className={commonClasses.whiteBackground}>
 						<DeclarationSchemaForm form={form} readOnly={readOnly} />
