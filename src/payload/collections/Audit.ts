@@ -1,10 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { toVerifyField } from "../fields/common";
-import {
-	rgaaVersionOptions,
-	testEnvironmentOptions,
-	toolOptions,
-} from "../selectOptions";
+import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
 
 export const Audits: CollectionConfig = {
 	slug: "audits",
@@ -19,7 +15,7 @@ export const Audits: CollectionConfig = {
 	hooks: {
 		beforeChange: [
 			async (args) => {
-				const { req, originalDoc, data, operation } = args;
+				const { originalDoc, data, operation } = args;
 
 				if (operation !== "update") return;
 
@@ -41,52 +37,21 @@ export const Audits: CollectionConfig = {
 						technologies: [],
 					};
 				}
+			},
+		],
+		afterChange: [
+			async ({ req, doc, operation }) => {
+				if (operation !== "update") return;
 
-				const declaration = await req.payload.findByID({
-					collection: "declarations",
-					id: data.declaration ?? originalDoc?.declaration,
-				});
+				const declarationId = doc.declaration;
+				if (!declarationId) return;
 
-				if (!declaration?.publishedContent) return;
-
-				const { audit } = JSON.parse(declaration?.publishedContent ?? "{}");
-
-				const newContent = {
-					rgaa_version:
-						rgaaVersionOptions.find(
-							(option) => option.value === data.rgaa_version,
-						)?.label ?? "RGAA 4",
-					realised_by: data.realisedBy,
-					rate: data.rate,
-					nonCompliantElements: data.nonCompliantElements,
-					disproportionnedCharge: data.disproportionnedCharge,
-					optionalElements: data.optionalElements,
-					compliantElements: data.compliantElements,
-					technologies: data.technologies,
-					testEnvironments: (data.testEnvironments ?? []).map(
-						(env: string) =>
-							testEnvironmentOptions.find((option) => option.value === env)
-								?.label ?? "",
-					),
-					usedTools: (data.usedTools ?? []).map(
-						(tool: { id: number; name: string }) =>
-							toolOptions.find((option) => option.value === tool.name)?.label ??
-							"",
-					),
-				};
-
-				const status =
-					JSON.stringify(audit) === JSON.stringify(newContent)
-						? "published"
-						: "unpublished";
-
-				await req.payload.update({
-					collection: "declarations",
-					id: data.declaration ?? originalDoc?.declaration,
-					data: {
-						status,
-					},
-				});
+				await recalculateDeclarationStatus(
+					req.payload,
+					typeof declarationId === "number"
+						? declarationId
+						: Number(declarationId),
+				);
 			},
 		],
 	},

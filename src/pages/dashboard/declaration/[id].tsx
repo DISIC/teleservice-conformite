@@ -41,6 +41,9 @@ export default function DeclarationPage({
 	);
 	const { classes } = useStyles();
 
+	const isModified =
+		declaration?.status === "unpublished" && hasPublishedDeclaration;
+
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
 			onSuccess: async (_result) => {
@@ -51,6 +54,22 @@ export default function DeclarationPage({
 			},
 		},
 	);
+
+	const { mutateAsync: revertToPublished, isPending: isReverting } =
+		api.declaration.revertToPublished.useMutation({
+			onSuccess: () => {
+				router.reload();
+			},
+			onError: (error) => {
+				showDeclarationAlert({
+					title: "Erreur",
+					description:
+						error.message ||
+						"Une erreur est survenue lors de la restauration de la déclaration.",
+					severity: "error",
+				});
+			},
+		});
 
 	const onDelete = async () => {
 		deleteModal.open();
@@ -123,15 +142,30 @@ export default function DeclarationPage({
 						<h1>{declarationName} </h1>
 						<StatusBadge
 							isPublished={declaration?.status === "published"}
-							isModified={
-								declaration?.status === "unpublished" && hasPublishedDeclaration
-							}
+							isModified={isModified}
 							isDraft={
 								declaration?.status !== "published" && !hasPublishedDeclaration
 							}
 						/>
 					</span>
 					<div className={classes.buttonsContainer}>
+						{isModified && (
+							<Button
+								priority="secondary"
+								size="small"
+								iconId="fr-icon-arrow-go-back-fill"
+								nativeButtonProps={{
+									"aria-label":
+										"Annuler les modifications et restaurer la version publiée",
+									disabled: isReverting,
+								}}
+								onClick={() => revertToPublished({ id: declaration.id })}
+							>
+								{isReverting
+									? "Restauration..."
+									: "Annuler les modifications"}
+							</Button>
+						)}
 						{hasPublishedDeclaration && (
 							<>
 								<Button

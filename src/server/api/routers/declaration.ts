@@ -5,7 +5,7 @@ import {
 	appKindOptions,
 	declarationStatusOptions,
 	kindOptions,
-	type rgaaVersionOptions,
+	rgaaVersionOptions,
 	sourceOptions,
 } from "~/payload/selectOptions";
 import {
@@ -13,6 +13,8 @@ import {
 	getPopulatedDeclaration,
 	hasAccessToDeclaration,
 } from "~/server/api/utils/payload-helper";
+import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
+import type { PublishedDeclaration } from "~/components/declaration/PublishedDeclarationTemplate";
 import { declarationGeneral } from "~/utils/form/declaration/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 
@@ -250,9 +252,10 @@ export const declarationRouter = createTRPCRouter({
 					name,
 					app_kind: kind,
 					url,
-					status: "unpublished",
 				},
 			});
+
+			await recalculateDeclarationStatus(ctx.payload, declarationId);
 
 			const updatedDeclaration = await getPopulatedDeclaration(result);
 
@@ -457,5 +460,150 @@ export const declarationRouter = createTRPCRouter({
 			});
 
 			return { data: updatedDeclaration };
+		}),
+	revertToPublished: userProtectedProcedure
+		.input(z.object({ id: z.number() }))
+		.mutation(async ({ input, ctx }) => {
+			const { id } = input;
+
+			await hasAccessToDeclaration({
+				payload: ctx.payload,
+				declarationId: id,
+				userId: Number(ctx.session.user.id),
+			});
+
+			const declaration = await ctx.payload.findByID({
+				collection: "declarations",
+				id,
+			});
+
+			if (!declaration?.publishedContent) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "No published content to revert to",
+				});
+			}
+
+			const published: PublishedDeclaration = JSON.parse(
+				declaration.publishedContent,
+			);
+
+			if (!published._raw) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message:
+						"Published content does not contain raw values required for revert. Please republish the declaration first.",
+				});
+			}
+
+			const transactionID = await ctx.payload.db.beginTransaction();
+
+			if (!transactionID) {
+				throw new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message: "Failed to start database transaction",
+				});
+			}
+
+			try {
+				await ctx.payload.update({
+					collection: "declarations",
+					id,
+					data: {
+						name: published.name,
+						url: published.url,
+						app_kind: published._raw.app_kind as
+							| "website"
+							| "mobile_app_ios"
+							| "mobile_app_android"
+							| "other",
+						status: "published",
+					},
+					req: { transactionID },
+					context: { skipStatusRecalculation: true },
+				});
+
+				const audits = await ctx.payload.find({
+					collection: "audits",
+					where: { declaration: { equals: id } },
+					limit: 1,
+					req: { transactionID },
+				});
+
+				if (audits.docs[0]) {
+					await ctx.payload.update({
+						collection: "audits",
+						id: audits.docs[0].id,
+						data: {
+							rgaa_version: published._raw.audit
+								.rgaa_version as (typeof rgaaVersionOptions)[number]["value"],
+							realisedBy: published._raw.audit.realisedBy,
+							rate: published._raw.audit.rate,
+							compliantElements: published._raw.audit.compliantElements,
+							nonCompliantElements:
+								published._raw.audit.nonCompliantElements ?? undefined,
+							disproportionnedCharge:
+								published._raw.audit.disproportionnedCharge ?? undefined,
+							optionalElements:
+								published._raw.audit.optionalElements ?? undefined,
+							technologies: published._raw.audit.technologies,
+							testEnvironments: published._raw.audit.testEnvironments,
+							usedTools: published._raw.audit.usedTools,
+						},
+						req: { transactionID },
+					});
+				}
+
+				const contacts = await ctx.payload.find({
+					collection: "contacts",
+					where: { declaration: { equals: id } },
+					limit: 1,
+					req: { transactionID },
+				});
+
+				if (contacts.docs[0]) {
+					await ctx.payload.update({
+						collection: "contacts",
+						id: contacts.docs[0].id,
+						data: {
+							email: published._raw.contact.email ?? undefined,
+							url: published._raw.contact.url ?? undefined,
+						},
+						req: { transactionID },
+					});
+				}
+
+				const actionPlans = await ctx.payload.find({
+					collection: "action-plans",
+					where: { declaration: { equals: id } },
+					limit: 1,
+					req: { transactionID },
+				});
+
+				if (actionPlans.docs[0]) {
+					await ctx.payload.update({
+						collection: "action-plans",
+						id: actionPlans.docs[0].id,
+						data: {
+							currentYearSchemaUrl:
+								published._raw.actionPlan.currentYearSchemaUrl,
+							previousYearsSchemaUrl:
+								published._raw.actionPlan.previousYearsSchemaUrl,
+						},
+						req: { transactionID },
+					});
+				}
+
+				await ctx.payload.db.commitTransaction(transactionID);
+
+				return { data: id };
+			} catch (error) {
+				await ctx.payload.db.rollbackTransaction(transactionID);
+
+				throw new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message: "Failed to revert declaration to published state",
+				});
+			}
 		}),
 });

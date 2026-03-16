@@ -52,6 +52,32 @@ export const extractDeclarationContentToPublish = (
 			url: declaration.contact?.url ?? "",
 			email: declaration.contact?.email ?? "",
 		},
+		_raw: {
+			app_kind: declaration.app_kind ?? "",
+			audit: {
+				rgaa_version: declaration?.audit?.rgaa_version ?? "",
+				realisedBy: declaration.audit?.realisedBy ?? "",
+				rate: declaration.audit?.rate ?? 0,
+				compliantElements: declaration?.audit?.compliantElements ?? "",
+				nonCompliantElements: declaration?.audit?.nonCompliantElements ?? "",
+				disproportionnedCharge:
+					declaration?.audit?.disproportionnedCharge ?? "",
+				optionalElements: declaration?.audit?.optionalElements ?? "",
+				technologies: declaration?.audit?.technologies ?? [],
+				testEnvironments: declaration?.audit?.testEnvironments ?? [],
+				usedTools: declaration?.audit?.usedTools ?? [],
+			},
+			contact: {
+				email: declaration.contact?.email ?? "",
+				url: declaration.contact?.url ?? "",
+			},
+			actionPlan: {
+				currentYearSchemaUrl:
+					declaration?.actionPlan?.currentYearSchemaUrl ?? "",
+				previousYearsSchemaUrl:
+					declaration?.actionPlan?.previousYearsSchemaUrl ?? "",
+			},
+		},
 	};
 };
 
@@ -79,6 +105,29 @@ export type PublishedDeclaration = {
 	contact: {
 		url: string | null;
 		email: string | null;
+	};
+	_raw?: {
+		app_kind: string;
+		audit: {
+			rgaa_version: string;
+			realisedBy: string;
+			rate: number;
+			compliantElements: string;
+			nonCompliantElements: string | null;
+			disproportionnedCharge: string | null;
+			optionalElements: string | null;
+			technologies: { name: string }[];
+			testEnvironments: { name: string }[];
+			usedTools: { name: string }[];
+		};
+		contact: {
+			email: string | null;
+			url: string | null;
+		};
+		actionPlan: {
+			currentYearSchemaUrl: string;
+			previousYearsSchemaUrl: string;
+		};
 	};
 };
 
