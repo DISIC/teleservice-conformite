@@ -55,22 +55,6 @@ export default function DeclarationPage({
 		},
 	);
 
-	const { mutateAsync: revertToPublished, isPending: isReverting } =
-		api.declaration.revertToPublished.useMutation({
-			onSuccess: () => {
-				router.reload();
-			},
-			onError: (error) => {
-				showDeclarationAlert({
-					title: "Erreur",
-					description:
-						error.message ||
-						"Une erreur est survenue lors de la restauration de la déclaration.",
-					severity: "error",
-				});
-			},
-		});
-
 	const onDelete = async () => {
 		deleteModal.open();
 	};
@@ -149,23 +133,6 @@ export default function DeclarationPage({
 						/>
 					</span>
 					<div className={classes.buttonsContainer}>
-						{isModified && (
-							<Button
-								priority="secondary"
-								size="small"
-								iconId="fr-icon-arrow-go-back-fill"
-								nativeButtonProps={{
-									"aria-label":
-										"Annuler les modifications et restaurer la version publiée",
-									disabled: isReverting,
-								}}
-								onClick={() => revertToPublished({ id: declaration.id })}
-							>
-								{isReverting
-									? "Restauration..."
-									: "Annuler les modifications"}
-							</Button>
-						)}
 						{hasPublishedDeclaration && (
 							<>
 								<Button

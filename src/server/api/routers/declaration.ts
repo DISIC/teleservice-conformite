@@ -500,21 +500,28 @@ export const declarationRouter = createTRPCRouter({
 			}
 
 			try {
-				const appKindValue = appKindOptions.find(
-					(o) => o.label === published.appKindLabel,
-				)?.value;
-
-				await ctx.payload.update({
+				const declarationVersions = await ctx.payload.findVersions({
 					collection: "declarations",
-					id,
-					data: {
-						name: published.name,
-						url: published.url,
-						...(appKindValue ? { app_kind: appKindValue } : {}),
-						status: "published",
-					},
+					where: { parent: { equals: declaration.id } },
+					limit: 1000,
 					req: { transactionID },
-					context: { skipStatusRecalculation: true },
+				});
+
+				const previousVersionId = declarationVersions.docs
+					.filter((declaration) => declaration.version.status === "published")
+					.at(-1)?.id;
+
+				if (!previousVersionId) {
+					throw new TRPCError({
+						code: "INTERNAL_SERVER_ERROR",
+						message: "Failed to find previous version of the declaration",
+					});
+				}
+
+				await ctx.payload.restoreVersion({
+					collection: "declarations",
+					id: previousVersionId,
+					req: { transactionID },
 				});
 
 				const audits = await ctx.payload.find({
@@ -532,6 +539,7 @@ export const declarationRouter = createTRPCRouter({
 					await ctx.payload.update({
 						collection: "audits",
 						id: audits.docs[0].id,
+						context: { skipStatusRecalculation: true },
 						data: {
 							...(rgaaVersionValue ? { rgaa_version: rgaaVersionValue } : {}),
 							realisedBy: published.audit.realised_by,
@@ -541,14 +549,15 @@ export const declarationRouter = createTRPCRouter({
 								published.audit.nonCompliantElements ?? undefined,
 							disproportionnedCharge:
 								published.audit.disproportionnedCharge ?? undefined,
-							optionalElements:
-								published.audit.optionalElements ?? undefined,
+							optionalElements: published.audit.optionalElements ?? undefined,
 							technologies: published.audit.technologies,
-							testEnvironments: published.audit.testEnvironments.map((label) => ({
-								name:
-									testEnvironmentOptions.find((o) => o.label === label)?.value ??
-									label,
-							})),
+							testEnvironments: published.audit.testEnvironments.map(
+								(label) => ({
+									name:
+										testEnvironmentOptions.find((o) => o.label === label)
+											?.value ?? label,
+								}),
+							),
 							usedTools: published.audit.usedTools.map((label) => ({
 								name:
 									toolOptions.find((o) => o.label === label)?.value ?? label,
@@ -574,6 +583,7 @@ export const declarationRouter = createTRPCRouter({
 							url: published.contact.url ?? undefined,
 						},
 						req: { transactionID },
+						context: { skipStatusRecalculation: true },
 					});
 				}
 
@@ -589,12 +599,12 @@ export const declarationRouter = createTRPCRouter({
 						collection: "action-plans",
 						id: actionPlans.docs[0].id,
 						data: {
-							currentYearSchemaUrl:
-								published.actionPlan.currentYearSchemaUrl,
+							currentYearSchemaUrl: published.actionPlan.currentYearSchemaUrl,
 							previousYearsSchemaUrl:
 								published.actionPlan.previousYearsSchemaUrl,
 						},
 						req: { transactionID },
+						context: { skipStatusRecalculation: true },
 					});
 				}
 

@@ -8,10 +8,11 @@ import Information from "@codegouvfr/react-dsfr/picto/Information";
 import Search from "@codegouvfr/react-dsfr/picto/Search";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import { useRouter } from "next/router";
+import { useMemo } from "react";
 import { tss } from "tss-react";
-
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import HelpingMessage from "./HelpingMessage";
+import { api } from "~/utils/api";
+import HelpingMessage, { type HelpingMessageProps } from "./HelpingMessage";
 
 interface DemarchesProps {
 	declaration: PopulatedDeclaration;
@@ -22,6 +23,8 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const { classes, cx } = useStyles();
 	const { rate } = declaration?.audit || {};
 	const linkToDeclarationPage = `/dashboard/declaration/${declaration.id}`;
+	const isModified =
+		declaration?.status === "unpublished" && declaration.publishedContent;
 
 	const declarationComplete =
 		declaration.status === "unpublished" &&
@@ -29,6 +32,11 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		declaration?.audit?.toVerify === false &&
 		declaration?.contact?.toVerify === false &&
 		declaration?.actionPlan?.toVerify === false;
+
+	const { mutateAsync: revertToPublished } =
+		api.declaration.revertToPublished.useMutation({
+			onSuccess: () => router.reload(),
+		});
 
 	const RedirectButton = ({
 		href,
@@ -154,6 +162,28 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		},
 	];
 
+	const actionsButtons = useMemo(() => {
+		const buttons: HelpingMessageProps["actionButtons"] = [
+			{
+				label: "Prévisualiser et publier",
+				priority: "primary",
+				iconId: "fr-icon-upload-line",
+				onClick: () => router.push(`${declaration.id}/preview`),
+			},
+		];
+
+		if (isModified) {
+			buttons.unshift({
+				label: "Annuler les modifications",
+				priority: "secondary",
+				iconId: "fr-icon-arrow-go-back-line",
+				onClick: () => revertToPublished({ id: declaration.id }),
+			});
+		}
+
+		return buttons;
+	}, [isModified]);
+
 	return (
 		<section id="demarches-tab" className={classes.main}>
 			{declarationComplete && (
@@ -162,14 +192,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					message={
 						<strong>Votre déclaration est prête à être publiée !</strong>
 					}
-					actionButtons={[
-						{
-							label: "Prévisualiser et publier",
-							priority: "primary",
-							iconId: "fr-icon-upload-line",
-							onClick: () => router.push(`${declaration.id}/preview`),
-						},
-					]}
+					actionButtons={actionsButtons}
 				/>
 			)}
 			{declaration.status === "published" && (

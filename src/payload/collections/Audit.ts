@@ -41,8 +41,9 @@ export const Audits: CollectionConfig = {
 			},
 		],
 		afterChange: [
-			async ({ req, doc, operation }) => {
-				if (operation !== "update") return;
+			async ({ req, doc, previousDoc, operation, context }) => {
+				if (operation !== "update" || previousDoc.toVerify) return;
+				if (context?.skipStatusRecalculation) return;
 
 				const declaration = doc.declaration;
 				if (!declaration) return;

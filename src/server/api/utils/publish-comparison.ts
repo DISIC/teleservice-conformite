@@ -19,6 +19,8 @@ export function compareWithPublished(
 	if (current.appKindLabel !== published.appKindLabel) diffs.push("appKind");
 	if (current.entityName !== published.entityName) diffs.push("entityName");
 
+	console.log(current.contact, published.contact);
+
 	if (current.contact.email !== published.contact.email)
 		diffs.push("contact.email");
 	if (current.contact.url !== published.contact.url) diffs.push("contact.url");
