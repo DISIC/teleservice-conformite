@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
-import { toVerifyField } from "../fields/common";
 import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
+import { toVerifyField } from "../fields/common";
 
 export const Contacts: CollectionConfig = {
 	slug: "contacts",
@@ -16,14 +16,14 @@ export const Contacts: CollectionConfig = {
 			async ({ req, doc, operation }) => {
 				if (operation !== "update") return;
 
-				const declarationId = doc.declaration;
-				if (!declarationId) return;
+				const declaration = doc.declaration;
+				if (!declaration) return;
 
 				await recalculateDeclarationStatus(
 					req.payload,
-					typeof declarationId === "number"
-						? declarationId
-						: Number(declarationId),
+					typeof declaration === "number"
+						? declaration
+						: Number(declaration.id),
 				);
 			},
 		],

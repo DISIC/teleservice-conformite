@@ -11,8 +11,13 @@ export const ContactTypeForm = withForm({
 					name="contactType"
 					listeners={{
 						onChange: ({ value }) => {
-							if (!value.includes("onlineForm")) form.resetField("url");
-							if (!value.includes("contactPoint")) form.resetField("email");
+							if (!value.includes("onlineForm"))
+								form.setFieldValue("url", contactFormOptions.defaultValues.url);
+							if (!value.includes("contactPoint"))
+								form.setFieldValue(
+									"email",
+									contactFormOptions.defaultValues.email,
+								);
 						},
 					}}
 				>

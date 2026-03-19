@@ -1,8 +1,8 @@
 import DeclarationMarkdownToJsx from "~/components/declaration/DeclarationMarkdownToJsx";
-import { getConformityStatus } from "~/utils/declaration-helper";
-export type { PublishedDeclaration } from "~/utils/declaration-content";
-export { extractDeclarationContentToPublish } from "~/utils/declaration-content";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
+import { getConformityStatus } from "~/utils/declaration-helper";
+
+export { extractDeclarationContentToPublish } from "~/utils/declaration-content";
 
 export default function PublishedDeclarationTemplate({
 	declaration,
