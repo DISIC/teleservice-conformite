@@ -176,6 +176,10 @@ export const albertRouter = createTRPCRouter({
 					await extractAccessibilityRateWithAlbert(htmlContent);
 				const parsedResult = parseAlbertResponse(albertResponse);
 
+				if (parsedResult === null) {
+					throw new Error("Failed to parse Albert response");
+				}
+
 				return {
 					data: parsedResult,
 				};
