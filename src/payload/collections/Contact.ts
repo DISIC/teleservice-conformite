@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
+import { makeRecalculateAfterChangeHook } from "~/server/api/utils/publish-comparison";
 import { toVerifyField } from "../fields/common";
 
 export const Contacts: CollectionConfig = {
@@ -12,22 +12,7 @@ export const Contacts: CollectionConfig = {
 		plural: { fr: "Contacts" },
 	},
 	hooks: {
-		afterChange: [
-			async ({ req, doc, previousDoc, operation, context }) => {
-				if (operation !== "update" || previousDoc.toVerify) return;
-				if (context?.skipStatusRecalculation) return;
-
-				const declaration = doc.declaration;
-				if (!declaration) return;
-
-				await recalculateDeclarationStatus(
-					req.payload,
-					typeof declaration === "number"
-						? declaration
-						: Number(declaration.id),
-				);
-			},
-		],
+		afterChange: [makeRecalculateAfterChangeHook("contact")],
 	},
 	fields: [
 		{
