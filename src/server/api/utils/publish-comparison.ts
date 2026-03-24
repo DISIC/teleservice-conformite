@@ -1,17 +1,27 @@
 import type { CollectionAfterChangeHook, Payload } from "payload";
-import type { ActionPlan, Audit, Contact } from "~/payload/payload-types";
+import type {
+	ActionPlan,
+	Audit,
+	Contact,
+	Declaration,
+} from "~/payload/payload-types";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
 import { extractDeclarationContentToPublish } from "~/utils/declaration-content";
 import type { PopulatedDeclaration } from "./payload-helper";
+
+type DeclarationFieldOverrides = Partial<
+	Pick<Declaration, "name" | "app_kind" | "url">
+>;
 
 type DocOverrides = {
 	contact?: Contact;
 	audit?: Audit;
 	actionPlan?: ActionPlan;
+	declarationFields?: DeclarationFieldOverrides;
 };
 
 export function makeRecalculateAfterChangeHook(
-	overrideKey: keyof DocOverrides,
+	overrideKey: keyof Omit<DocOverrides, "declarationFields">,
 ): CollectionAfterChangeHook {
 	return async ({ req, doc, previousDoc, operation, context }) => {
 		if (operation !== "update" || previousDoc.toVerify) return;
@@ -32,14 +42,14 @@ export async function recalculateDeclarationStatus(
 	payload: Payload,
 	declarationId: number,
 	overrides: DocOverrides = {},
-): Promise<void> {
+): Promise<"published" | "unpublished" | null> {
 	const declaration = await payload.findByID({
 		collection: "declarations",
 		id: declarationId,
 		depth: 0,
 	});
 
-	if (!declaration?.publishedContent) return;
+	if (!declaration?.publishedContent) return null;
 
 	const published: PublishedDeclaration = JSON.parse(
 		declaration.publishedContent,
@@ -83,6 +93,7 @@ export async function recalculateDeclarationStatus(
 
 	const populatedDeclaration: PopulatedDeclaration = {
 		...(declaration as PopulatedDeclaration),
+		...overrides.declarationFields,
 		audit,
 		contact,
 		actionPlan,
@@ -92,13 +103,15 @@ export async function recalculateDeclarationStatus(
 
 	const current = extractDeclarationContentToPublish(populatedDeclaration);
 	const isModified = JSON.stringify(current) !== JSON.stringify(published);
-
 	const newStatus = isModified ? "unpublished" : "published";
-	if (declaration.status !== newStatus) {
+
+	if (!overrides.declarationFields && declaration.status !== newStatus) {
 		await payload.update({
 			collection: "declarations",
 			id: declarationId,
 			data: { status: newStatus },
 		});
 	}
+
+	return newStatus;
 }

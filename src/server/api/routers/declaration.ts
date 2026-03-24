@@ -247,7 +247,11 @@ export const declarationRouter = createTRPCRouter({
 				},
 			});
 
-			await recalculateDeclarationStatus(ctx.payload, declarationId, undefined);
+			const newStatus = await recalculateDeclarationStatus(
+				ctx.payload,
+				declarationId,
+				{ declarationFields: { name, app_kind: kind, url } },
+			);
 
 			const result = await ctx.payload.update({
 				collection: "declarations",
@@ -256,6 +260,7 @@ export const declarationRouter = createTRPCRouter({
 					name,
 					app_kind: kind,
 					url,
+					...(newStatus ? { status: newStatus } : {}),
 				},
 			});
 
