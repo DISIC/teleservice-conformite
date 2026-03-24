@@ -6,11 +6,10 @@ import Head from "next/head";
 import { getPayload } from "payload";
 import { tss } from "tss-react";
 import ErrorPage from "~/components/declaration/ErrorPage";
-import PublishedDeclarationTemplate, {
-	type PublishedDeclaration,
-} from "~/components/declaration/PublishedDeclarationTemplate";
+import PublishedDeclarationTemplate from "~/components/declaration/PublishedDeclarationTemplate";
 import { getDeclarationById } from "~/server/api/utils/payload-helper";
 import { auth } from "~/utils/auth";
+import type { PublishedDeclaration } from "~/utils/declaration-content";
 
 export default function PublishPage({
 	publishedContent,

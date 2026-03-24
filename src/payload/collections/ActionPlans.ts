@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { makeRecalculateAfterChangeHook } from "~/server/api/utils/publish-comparison";
 import { toVerifyField } from "../fields/common";
 
 export const ActionPlans: CollectionConfig = {
@@ -8,38 +9,7 @@ export const ActionPlans: CollectionConfig = {
 		plural: { fr: "Plans d'actions" },
 	},
 	hooks: {
-		beforeChange: [
-			async (args) => {
-				const { req, originalDoc, data, operation } = args;
-
-				if (operation !== "update") return;
-
-				const declaration = await req.payload.findByID({
-					id: data.declaration ?? originalDoc?.declaration,
-					collection: "declarations",
-				});
-
-				if (!declaration?.publishedContent) return;
-
-				const {
-					actionPlan: { currentYearSchemaUrl, previousYearsSchemaUrl },
-				} = JSON.parse(declaration?.publishedContent ?? "{}");
-
-				const status =
-					currentYearSchemaUrl === data.currentYearSchemaUrl &&
-					previousYearsSchemaUrl === data.previousYearsSchemaUrl
-						? "published"
-						: "unpublished";
-
-				await req.payload.update({
-					collection: "declarations",
-					id: data.declaration ?? originalDoc?.declaration,
-					data: {
-						status,
-					},
-				});
-			},
-		],
+		afterChange: [makeRecalculateAfterChangeHook("actionPlan")],
 	},
 	fields: [
 		{

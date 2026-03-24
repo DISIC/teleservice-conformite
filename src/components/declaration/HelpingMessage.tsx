@@ -6,7 +6,7 @@ import type {
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import { tss } from "tss-react";
 
-interface HelpingMessageProps {
+export interface HelpingMessageProps {
 	image: React.ReactNode;
 	message: string | React.ReactNode;
 	actionButtons?: {
@@ -65,7 +65,7 @@ const useStyles = tss.withName(HelpingMessage.name).create({
 	},
 	buttonsContainer: {
 		display: "flex",
-		gap: fr.spacing("4w"),
+		gap: fr.spacing("4v"),
 		alignItems: "center",
 		justifyContent: "flex-end",
 	},

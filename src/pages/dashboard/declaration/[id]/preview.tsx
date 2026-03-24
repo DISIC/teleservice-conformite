@@ -13,7 +13,6 @@ import { getPayload } from "payload";
 import { tss } from "tss-react";
 import PublishedDeclarationTemplate, {
 	extractDeclarationContentToPublish,
-	type PublishedDeclaration,
 } from "~/components/declaration/PublishedDeclarationTemplate";
 import type {
 	ActionPlan,
@@ -28,6 +27,7 @@ import {
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { auth } from "~/utils/auth";
+import type { PublishedDeclaration } from "~/utils/declaration-content";
 
 type RequiredPopulatedDeclaration = Omit<
 	PopulatedDeclaration,

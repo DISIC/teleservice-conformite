@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { makeRecalculateAfterChangeHook } from "~/server/api/utils/publish-comparison";
 import { toVerifyField } from "../fields/common";
 
 export const Contacts: CollectionConfig = {
@@ -11,37 +12,7 @@ export const Contacts: CollectionConfig = {
 		plural: { fr: "Contacts" },
 	},
 	hooks: {
-		beforeChange: [
-			async (args) => {
-				const { req, originalDoc, data, operation } = args;
-
-				if (operation !== "update") return;
-
-				const declaration = await req.payload.findByID({
-					id: data?.declaration ?? originalDoc?.declaration,
-					collection: "declarations",
-				});
-
-				if (!declaration?.publishedContent) return;
-
-				const {
-					contact: { url = "", email = "" },
-				} = JSON.parse(declaration?.publishedContent ?? "{}");
-
-				const status =
-					email === data?.email && url === data?.url
-						? "published"
-						: "unpublished";
-
-				await req.payload.update({
-					collection: "declarations",
-					id: data.declaration ?? originalDoc?.declaration,
-					data: {
-						status,
-					},
-				});
-			},
-		],
+		afterChange: [makeRecalculateAfterChangeHook("contact")],
 	},
 	fields: [
 		{

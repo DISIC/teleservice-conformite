@@ -41,6 +41,9 @@ export default function DeclarationPage({
 	);
 	const { classes } = useStyles();
 
+	const isModified =
+		declaration?.status === "unpublished" && hasPublishedDeclaration;
+
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
 			onSuccess: async (_result) => {
@@ -123,9 +126,7 @@ export default function DeclarationPage({
 						<h1>{declarationName} </h1>
 						<StatusBadge
 							isPublished={declaration?.status === "published"}
-							isModified={
-								declaration?.status === "unpublished" && hasPublishedDeclaration
-							}
+							isModified={isModified}
 							isDraft={
 								declaration?.status !== "published" && !hasPublishedDeclaration
 							}
