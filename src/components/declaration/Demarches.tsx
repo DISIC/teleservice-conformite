@@ -22,6 +22,19 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const router = useRouter();
 	const { classes, cx } = useStyles();
 	const { rate } = declaration?.audit || {};
+
+	const { data: previousRate } =
+		api.declaration.getPreviousPublishedRate.useQuery(
+			{ id: declaration.id },
+			{ enabled: declaration.status === "published" },
+		);
+
+	const rateProgression = useMemo(() => {
+		if (!rate || !previousRate) return null;
+		const diff = rate - previousRate;
+		return diff === 0 ? null : diff;
+	}, [rate, previousRate]);
+
 	const linkToDeclarationPage = `/dashboard/declaration/${declaration.id}`;
 	const isModified =
 		declaration?.status === "unpublished" && declaration.publishedContent;
@@ -198,24 +211,32 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			{declaration.status === "published" && (
 				<div className={classes.summaryCardsContainer}>
 					<div className={cx(classes.card, classes.summaryRateCard)}>
-						<p className={classes.cardLabel}>Taux de conformité</p>
-						<p
-							className={cx(
-								classes.cardValue,
-								fr.cx("fr-text--lead", "fr-text--bold"),
+						<p className={fr.cx("fr-mb-0")}>Taux de conformité</p>
+						<div className={classes.rateValueContainer}>
+							<p className={fr.cx("fr-mb-0", "fr-text--lead", "fr-text--bold")}>
+								{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}
+							</p>
+							{rateProgression !== null && (
+								<div className={classes.rateValueProgressionContainer}>
+									<Badge
+										small
+										noIcon
+										severity={rateProgression > 0 ? "success" : "error"}
+									>
+										{`${rateProgression > 0 ? "+" : ""} ${rateProgression}%`}
+									</Badge>
+									<p
+										className={fr.cx("fr-mb-0", "fr-hint-text", "fr-text--xs")}
+									>
+										depuis la dernière mise à jour
+									</p>
+								</div>
 							)}
-						>
-							{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}
-						</p>
+						</div>
 					</div>
 					<div className={cx(classes.card, classes.summaryUpdateDateCard)}>
-						<p className={classes.cardLabel}>Dernière mise à jour</p>
-						<p
-							className={cx(
-								classes.cardValue,
-								fr.cx("fr-text--lead", "fr-text--bold"),
-							)}
-						>
+						<p className={fr.cx("fr-mb-0")}>Dernière mise à jour</p>
+						<p className={fr.cx("fr-mb-0", "fr-text--lead", "fr-text--bold")}>
 							{declaration?.published_at
 								? new Date(declaration.published_at).toLocaleDateString("fr-FR")
 								: "N/A"}
@@ -279,11 +300,15 @@ const useStyles = tss.withName(Demarches.name).create({
 	summaryUpdateDateCard: {
 		justifyContent: "flex-start",
 	},
-	cardLabel: {
-		margin: 0,
+	rateValueContainer: {
+		display: "flex",
+		alignItems: "baseline",
+		gap: fr.spacing("4v"),
 	},
-	cardValue: {
-		margin: 0,
+	rateValueProgressionContainer: {
+		display: "flex",
+		alignItems: "center",
+		gap: fr.spacing("1v"),
 	},
 	tilesContainer: {
 		display: "grid",

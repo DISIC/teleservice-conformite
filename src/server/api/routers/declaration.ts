@@ -468,6 +468,41 @@ export const declarationRouter = createTRPCRouter({
 
 			return { data: updatedDeclaration };
 		}),
+	getPreviousPublishedRate: userProtectedProcedure
+		.input(z.object({ id: z.number() }))
+		.query(async ({ input, ctx }) => {
+			const { id } = input;
+
+			await hasAccessToDeclaration({
+				payload: ctx.payload,
+				declarationId: id,
+				userId: Number(ctx.session.user.id),
+			});
+
+			const versions = await ctx.payload.findVersions({
+				collection: "declarations",
+				where: {
+					parent: { equals: id },
+					"version.status": { equals: "published" },
+				},
+				limit: 2,
+				sort: "-updatedAt",
+			});
+
+			const previousVersion = versions.docs[1];
+
+			if (!previousVersion?.version?.publishedContent) return null;
+
+			try {
+				const published = JSON.parse(
+					previousVersion.version.publishedContent as string,
+				) as PublishedDeclaration;
+				return published.audit.rate ?? null;
+			} catch {
+				return null;
+			}
+		}),
+
 	revertToPublished: userProtectedProcedure
 		.input(z.object({ id: z.number() }))
 		.mutation(async ({ input, ctx }) => {
