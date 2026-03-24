@@ -39,8 +39,7 @@ export async function recalculateDeclarationStatus(
 		depth: 0,
 	});
 
-	if (!declaration?.publishedContent || declaration.status === "unpublished")
-		return;
+	if (!declaration?.publishedContent) return;
 
 	const published: PublishedDeclaration = JSON.parse(
 		declaration.publishedContent,
@@ -94,11 +93,12 @@ export async function recalculateDeclarationStatus(
 	const current = extractDeclarationContentToPublish(populatedDeclaration);
 	const isModified = JSON.stringify(current) !== JSON.stringify(published);
 
-	if (isModified) {
+	const newStatus = isModified ? "unpublished" : "published";
+	if (declaration.status !== newStatus) {
 		await payload.update({
 			collection: "declarations",
 			id: declarationId,
-			data: { status: "unpublished" },
+			data: { status: newStatus },
 		});
 	}
 }
