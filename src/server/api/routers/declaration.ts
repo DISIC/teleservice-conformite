@@ -500,16 +500,18 @@ export const declarationRouter = createTRPCRouter({
 			}
 
 			try {
-				const declarationVersions = await ctx.payload.findVersions({
+				const latestDeclarations = await ctx.payload.findVersions({
 					collection: "declarations",
-					where: { parent: { equals: declaration.id } },
-					limit: 1000,
+					where: {
+						parent: { equals: declaration.id },
+						"version.status": { equals: "published" },
+					},
+					limit: 1,
+					sort: "-updatedAt",
 					req: { transactionID },
 				});
 
-				const previousVersionId = declarationVersions.docs
-					.filter((declaration) => declaration.version.status === "published")
-					.at(-1)?.id;
+				const previousVersionId = latestDeclarations.docs[0]?.id;
 
 				if (!previousVersionId) {
 					throw new TRPCError({
