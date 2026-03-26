@@ -118,7 +118,7 @@ export const declarationRouter = createTRPCRouter({
 				},
 				taux: `${araJson.accessibilityRate}%`,
 				publishedAt: araJson.publishDate,
-				rgaaVersion: null,
+				rgaaVersion: "rgaa_4",
 				auditRealizedBy: araJson.context.auditorOrganisation,
 				responsibleEntity: araJson.procedureInitiator,
 				compliantElements: araJson.pageDistributions.map(

@@ -53,9 +53,9 @@ export const mapAraDataToFormValues = (
 	return {
 		isAuditRealised: true,
 		realisedBy: data.auditRealizedBy ?? "",
-		rgaa_version: (rgaaVersionOptions.find(
-			(o: any) => o.value === data.rgaaVersion,
-		)?.value ?? "rgaa_4") as ZAuditFormSchema["rgaa_version"],
+		rgaa_version:
+			rgaaVersionOptions.find((o) => o.value === data.rgaaVersion)?.value ??
+			"rgaa_4",
 		date: data.publishedAt
 			? new Date(data.publishedAt).toLocaleDateString("en-CA")
 			: "",
