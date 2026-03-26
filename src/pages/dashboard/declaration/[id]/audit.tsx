@@ -8,7 +8,6 @@ import DeclarationForm from "~/components/declaration/DeclarationForm";
 import HelpingMessage from "~/components/declaration/HelpingMessage";
 import { MultiStep } from "~/components/form/MultiStep";
 import {
-	type AraFetchedData,
 	UpdateAuditFromAraModal,
 	type UpdateAuditFromAraModalActions,
 } from "~/components/modal/UpdateAuditFromAraModal";
@@ -20,7 +19,7 @@ import {
 } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
-import { extractTechnologiesFromUrl } from "~/utils/declaration-helper";
+import { mapAraDataToFormValues } from "~/utils/declaration-helper";
 import {
 	AuditDateForm,
 	AuditFlatForm,
@@ -76,33 +75,6 @@ export default function AuditPage({
 		{},
 	)[0];
 	const hasBeenPublished = !!declaration.publishedContent;
-
-	const mapAraDataToFormValues = (
-		data: AraFetchedData,
-	): Partial<ZAuditFormSchema> => {
-		const rateRaw = parseFloat(data.taux?.replace("%", "") ?? "0");
-		return {
-			isAuditRealised: true,
-			realisedBy: data.auditRealizedBy ?? "",
-			rgaa_version:
-				rgaaVersionOptions.find((o) => o.value === data.rgaaVersion) ??
-				"rgaa_4",
-			date: data.publishedAt
-				? new Date(data.publishedAt).toLocaleDateString("en-CA")
-				: "",
-			rate: Number.isNaN(rateRaw) ? 0 : rateRaw,
-			compliantElements: data.compliantElements.join("\n"),
-			testEnvironments: extractTechnologiesFromUrl(
-				data.testEnvironments,
-				testEnvironmentOptions,
-			),
-			usedTools: extractTechnologiesFromUrl(data.usedTools, toolOptions),
-			nonCompliantElements: data.nonCompliantElements ?? "",
-			disproportionnedCharge: data.disproportionnedCharge ?? "",
-			optionalElements: data.optionalElements ?? "",
-			report: data.schema.currentYearSchemaUrl ?? "",
-		};
-	};
 
 	const { mutateAsync: createAudit } = api.audit.create.useMutation({
 		onSuccess: async () => {

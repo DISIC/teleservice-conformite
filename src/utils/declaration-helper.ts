@@ -1,7 +1,10 @@
 import {
-	type testEnvironmentOptions,
+	rgaaVersionOptions,
+	testEnvironmentOptions,
 	toolOptions,
 } from "~/payload/selectOptions";
+import type { RouterOutputs } from "~/utils/api";
+import type { ZAuditFormSchema } from "~/utils/form/audit/schema";
 
 export const getConformityStatus = (rate: number): string => {
 	if (rate < 50) {
@@ -16,7 +19,7 @@ export const getConformityStatus = (rate: number): string => {
 
 export const extractTechnologiesFromUrl = (
 	tools: string[],
-	options: typeof toolOptions | typeof testEnvironmentOptions = toolOptions,
+	options: typeof toolOptions | typeof testEnvironmentOptions,
 ): string[] => {
 	const toolLabels = options.map((option) => option.label);
 
@@ -41,6 +44,33 @@ export const extractTechnologiesFromUrl = (
 			}, []),
 		),
 	];
+};
+
+export const mapAraDataToFormValues = (
+	data: RouterOutputs["declaration"]["getInfoFromAra"]["data"],
+): Partial<ZAuditFormSchema> => {
+	const rateRaw = parseFloat(data.taux?.replace("%", "") ?? "0");
+	return {
+		isAuditRealised: true,
+		realisedBy: data.auditRealizedBy ?? "",
+		rgaa_version: (rgaaVersionOptions.find(
+			(o: any) => o.value === data.rgaaVersion,
+		)?.value ?? "rgaa_4") as ZAuditFormSchema["rgaa_version"],
+		date: data.publishedAt
+			? new Date(data.publishedAt).toLocaleDateString("en-CA")
+			: "",
+		rate: Number.isNaN(rateRaw) ? 0 : rateRaw,
+		compliantElements: data.compliantElements.join("\n"),
+		testEnvironments: extractTechnologiesFromUrl(
+			data.testEnvironments,
+			testEnvironmentOptions,
+		),
+		usedTools: extractTechnologiesFromUrl(data.usedTools, toolOptions),
+		nonCompliantElements: data.nonCompliantElements ?? "",
+		disproportionnedCharge: data.disproportionnedCharge ?? "",
+		optionalElements: data.optionalElements ?? "",
+		report: data.schema.currentYearSchemaUrl ?? "",
+	};
 };
 
 export const copyToClipboard = (textToCopy: string, fn: () => void) => {
