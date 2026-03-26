@@ -140,10 +140,6 @@ export function UpdateAuditFromAraModal({
 }
 
 const useStyles = tss.withName("UpdateAuditFromAraModal").create({
-	helpingMessageContainer: {
-		paddingTop: fr.spacing("2v"),
-		marginBottom: fr.spacing("6v"),
-	},
 	modalHeader: {
 		display: "flex",
 		flexDirection: "column",
