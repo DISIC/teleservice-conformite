@@ -156,6 +156,5 @@ const useStyles = tss.withName("UpdateAuditFromAraModal").create({
 	},
 	modalSubheading: {
 		fontWeight: 400,
-		// marginBottom: 0,
 	},
 });
