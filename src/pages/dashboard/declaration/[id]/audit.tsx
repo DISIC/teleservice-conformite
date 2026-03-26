@@ -1,10 +1,17 @@
+import Information from "@codegouvfr/react-dsfr/picto/Information";
 import { useStore } from "@tanstack/react-form";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
+import HelpingMessage from "~/components/declaration/HelpingMessage";
 import { MultiStep } from "~/components/form/MultiStep";
+import {
+	type AraFetchedData,
+	UpdateAuditFromAraModal,
+	type UpdateAuditFromAraModalActions,
+} from "~/components/modal/UpdateAuditFromAraModal";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import {
 	rgaaVersionOptions,
@@ -13,6 +20,7 @@ import {
 } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
+import { extractTechnologiesFromUrl } from "~/utils/declaration-helper";
 import {
 	AuditDateForm,
 	AuditFlatForm,
@@ -63,6 +71,38 @@ export default function AuditPage({
 	const [readOnly, setReadOnly] = useState(!!declaration?.audit);
 
 	const audit = declaration?.audit;
+
+	const updateAuditFromAraActions = useState<UpdateAuditFromAraModalActions>(
+		{},
+	)[0];
+	const hasBeenPublished = !!declaration.publishedContent;
+
+	const mapAraDataToFormValues = (
+		data: AraFetchedData,
+	): Partial<ZAuditFormSchema> => {
+		const rateRaw = parseFloat(data.taux?.replace("%", "") ?? "0");
+		return {
+			isAuditRealised: true,
+			realisedBy: data.auditRealizedBy ?? "",
+			rgaa_version:
+				rgaaVersionOptions.find((o) => o.value === data.rgaaVersion) ??
+				"rgaa_4",
+			date: data.publishedAt
+				? new Date(data.publishedAt).toLocaleDateString("en-CA")
+				: "",
+			rate: Number.isNaN(rateRaw) ? 0 : rateRaw,
+			compliantElements: data.compliantElements.join("\n"),
+			testEnvironments: extractTechnologiesFromUrl(
+				data.testEnvironments,
+				testEnvironmentOptions,
+			),
+			usedTools: extractTechnologiesFromUrl(data.usedTools, toolOptions),
+			nonCompliantElements: data.nonCompliantElements ?? "",
+			disproportionnedCharge: data.disproportionnedCharge ?? "",
+			optionalElements: data.optionalElements ?? "",
+			report: data.schema.currentYearSchemaUrl ?? "",
+		};
+	};
 
 	const { mutateAsync: createAudit } = api.audit.create.useMutation({
 		onSuccess: async () => {
@@ -221,6 +261,21 @@ export default function AuditPage({
 					Conformité
 				</title>
 			</Head>
+			{hasBeenPublished && declaration?.audit && (
+				<UpdateAuditFromAraModal
+					actions={updateAuditFromAraActions}
+					onAraDataFetched={(data) => {
+						updateForm.reset();
+						const mapped = mapAraDataToFormValues(data);
+						for (const [key, value] of Object.entries(mapped)) {
+							updateForm.setFieldValue(
+								key as keyof ZAuditFormSchema,
+								value as never,
+							);
+						}
+					}}
+				/>
+			)}
 			<DeclarationForm
 				declaration={declaration}
 				title="Résultat de l’audit"
@@ -241,6 +296,31 @@ export default function AuditPage({
 				isAiGenerated={declaration?.fromSource === "ai"}
 				{...(section === "files"
 					? { mentionText: "Les documents ajoutés doivent être accessibles" }
+					: undefined)}
+				{...(hasBeenPublished && declaration?.audit
+					? {
+							headerAction: (
+								<HelpingMessage
+									image={<Information fontSize="5rem" />}
+									actionButtons={[
+										{
+											children: "Mettre à jour avec Ara",
+											priority: "primary",
+											iconId: "fr-icon-upload-fill",
+											onClick: () => updateAuditFromAraActions.open?.(),
+										},
+									]}
+									params={{ flexDirection: "column" }}
+									message={
+										<span>
+											Renseignez le lien d’un nouvel audit Ara pour mettre à
+											jour la déclaration automatiquement, ou modifiez les
+											informations manuellement.
+										</span>
+									}
+								/>
+							),
+						}
 					: undefined)}
 			>
 				{!declaration?.audit ? (
