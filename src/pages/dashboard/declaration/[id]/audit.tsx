@@ -237,8 +237,14 @@ export default function AuditPage({
 				<UpdateAuditFromAraModal
 					actions={updateAuditFromAraActions}
 					onAraDataFetched={(data) => {
+						setReadOnly(false);
 						const mapped = mapAraDataToFormValues(data);
-						updateForm.reset(mapped as ZAuditFormSchema);
+						for (const [key, value] of Object.entries(mapped)) {
+							updateForm.setFieldValue(
+								key as keyof ZAuditFormSchema,
+								value as never,
+							);
+						}
 					}}
 				/>
 			)}
