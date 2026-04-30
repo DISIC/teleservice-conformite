@@ -1,26 +1,38 @@
-import Input from "@codegouvfr/react-dsfr/Input";
-import { useState } from "react";
-import Button from "@codegouvfr/react-dsfr/Button";
-import Tag from "@codegouvfr/react-dsfr/Tag";
 import { fr } from "@codegouvfr/react-dsfr";
+import Button from "@codegouvfr/react-dsfr/Button";
+import Input, { type InputProps } from "@codegouvfr/react-dsfr/Input";
+import Tag from "@codegouvfr/react-dsfr/Tag";
+import { useState } from "react";
 import { tss } from "tss-react";
-
 import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { ReadOnlyField } from "./ReadOnlyField";
 
-export function TagGroupField({
-	label,
-	description,
-	disabled,
-	className,
-	placeholder,
-	initialTags,
-}: DefaultFieldProps & { initialTags?: string[] }) {
+interface TagGroupFieldProps
+	extends DefaultFieldProps,
+		Omit<InputProps.Common, "state" | "stateRelatedMessage"> {
+	initialTags?: string[];
+	nativeInputProps?: InputProps.RegularInput["nativeInputProps"];
+}
+
+export function TagGroupField(props: TagGroupFieldProps) {
+	const {
+		readOnlyField,
+		required,
+		initialTags,
+		nativeInputProps,
+		...commonProps
+	} = props;
 	const { classes, cx } = useStyles();
 	const field = useFieldContext<string[]>();
 	const [tagInput, setTagInput] = useState<string>("");
 	const [tags, setTags] = useState<string[]>(
 		initialTags ?? field.state.value ?? [],
 	);
+
+	if (readOnlyField) {
+		const value = tags.filter((tag) => tag.trim() !== "").join(", ");
+		return <ReadOnlyField label={commonProps.label} value={value} />;
+	}
 
 	const addTags = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
@@ -38,22 +50,23 @@ export function TagGroupField({
 	};
 
 	return (
-		<div className={cx(classes.tagGroupContainer, className)}>
+		<div className={cx(classes.tagGroupContainer, commonProps.className)}>
 			<div className={classes.inputWrapper}>
 				<Input
-					label={label}
-					hintText={description}
-					disabled={disabled}
+					{...commonProps}
 					nativeInputProps={{
-						type: "text",
+						...nativeInputProps,
 						name: field.name,
 						value: tagInput,
 						onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
 							setTagInput(e.target.value),
-						placeholder,
 					}}
 				/>
-				<Button onClick={addTags} priority="secondary" disabled={disabled}>
+				<Button
+					onClick={addTags}
+					priority="secondary"
+					disabled={commonProps.disabled}
+				>
 					Ajouter
 				</Button>
 			</div>
@@ -86,7 +99,6 @@ const useStyles = tss.withName({ TagGroupField }).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("4v"),
-		marginBottom: fr.spacing("4w"),
 	},
 	inputWrapper: {
 		display: "flex",
@@ -104,5 +116,6 @@ const useStyles = tss.withName({ TagGroupField }).create({
 		display: "flex",
 		flexWrap: "wrap",
 		gap: fr.spacing("2v"),
+		marginBottom: fr.spacing("4v"),
 	},
 });

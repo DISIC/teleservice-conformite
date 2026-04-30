@@ -1,12 +1,12 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
 import Button from "@codegouvfr/react-dsfr/Button";
 import type {
 	FrIconClassName,
 	RiIconClassName,
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
+import { tss } from "tss-react";
 
-interface HelpingMessageProps {
+export interface HelpingMessageProps {
 	image: React.ReactNode;
 	message: string | React.ReactNode;
 	actionButtons?: {
@@ -49,12 +49,9 @@ export default function HelpingMessage({
 const useStyles = tss.withName(HelpingMessage.name).create({
 	helpingMessageContainer: {
 		display: "grid",
-
 		padding: fr.spacing("6v"),
-		marginBlock: fr.spacing("2w"),
 		gap: fr.spacing("6v"),
 		backgroundColor: fr.colors.decisions.background.contrast.blueFrance.default,
-
 		"@media (min-width: 830px)": {
 			gridTemplateColumns: "auto auto 1fr",
 		},
@@ -68,7 +65,7 @@ const useStyles = tss.withName(HelpingMessage.name).create({
 	},
 	buttonsContainer: {
 		display: "flex",
-		gap: fr.spacing("4w"),
+		gap: fr.spacing("4v"),
 		alignItems: "center",
 		justifyContent: "flex-end",
 	},

@@ -43,10 +43,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		setShowAlert(true);
 	};
 
-	if (firstDeclaration) {
-		return <AddFirstDeclaration />;
-	}
-
 	useEffect(() => {
 		if (!showAlert) return;
 
@@ -56,6 +52,10 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 
 		return () => clearTimeout(timer);
 	}, [showAlert]);
+
+	if (firstDeclaration) {
+		return <AddFirstDeclaration />;
+	}
 
 	return (
 		<div className={fr.cx("fr-container")}>
@@ -157,9 +157,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			trash: true,
 			depth: 3,
 			where: {
-				"created_by.id": {
-					equals: authSession?.user?.id,
-				},
+				"accessRights.user": { equals: authSession?.user?.id },
+				"accessRights.status": { equals: "approved" },
 			},
 		});
 

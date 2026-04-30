@@ -2,10 +2,18 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import config from "@payload-config";
-import type { GetServerSideProps } from "next";
+import type {
+	GetServerSideProps,
+	InferGetServerSidePropsType,
+	Redirect,
+} from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { tss } from "tss-react";
+import PublishedDeclarationTemplate, {
+	extractDeclarationContentToPublish,
+} from "~/components/declaration/PublishedDeclarationTemplate";
 import type {
 	ActionPlan,
 	Audit,
@@ -13,17 +21,13 @@ import type {
 	Entity,
 	User,
 } from "~/payload/payload-types";
-
-import Head from "next/head";
-import PublishedDeclarationTemplate, {
-	extractDeclarationContentToPublish,
-	type PublishedDeclaration,
-} from "~/components/declaration/PublishedDeclarationTemplate";
 import {
-	type PopulatedDeclaration,
 	getDeclarationById,
+	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
+import { auth } from "~/utils/auth";
+import type { PublishedDeclaration } from "~/utils/declaration-content";
 
 type RequiredPopulatedDeclaration = Omit<
 	PopulatedDeclaration,
@@ -38,8 +42,8 @@ type RequiredPopulatedDeclaration = Omit<
 
 export default function DeclarationPreviewPage({
 	declaration,
-}: { declaration: RequiredPopulatedDeclaration }) {
-	const { classes, cx } = useStyles();
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+	const { classes } = useStyles();
 	const router = useRouter();
 
 	const publishedDeclarationContent: PublishedDeclaration =
@@ -61,7 +65,7 @@ export default function DeclarationPreviewPage({
 				id: declaration.id,
 				content: JSON.stringify(publishedDeclarationContent),
 			});
-		} catch (error) {
+		} catch (_error) {
 			return;
 		}
 	};
@@ -156,46 +160,62 @@ interface Params extends ParsedUrlQuery {
 	id: string;
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = (async (context) => {
 	const { id } = context.params as Params;
 
+	const redirect: Redirect = {
+		destination: "/dashboard",
+		permanent: false,
+	};
+
 	if (!id || typeof id !== "string") {
-		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
+		return { redirect };
 	}
 
 	const payload = await getPayload({ config });
 
-	const declaration = await getDeclarationById(payload, Number.parseInt(id));
+	const session = await auth.api.getSession({
+		headers: context.req.headers as HeadersInit,
+	});
 
-	const { audit, contact, entity, actionPlan, created_by } = declaration || {};
+	if (!session) return { redirect };
 
-	if (!declaration) {
+	const declaration = await getDeclarationById(
+		payload,
+		session,
+		Number.parseInt(id, 10),
+	);
+
+	if (!declaration) return { redirect };
+
+	const { audit, contact, entity, actionPlan, created_by } = declaration;
+
+	const isDeclarationFull =
+		audit && contact && entity && actionPlan && created_by;
+
+	if (!isDeclarationFull) {
 		return {
-			props: {},
-			redirect: { destination: "/dashboard" },
-		};
-	}
-
-	if (!audit || !contact || !entity || !actionPlan || !created_by) {
-		return {
-			props: {},
-			redirect: { destination: `/dashboard/declaration/${declaration.id}` },
+			redirect: {
+				destination: `/dashboard/declaration/${declaration.id}`,
+				permanent: false,
+			},
 		};
 	}
 
 	if (declaration?.publishedContent && declaration.status === "published") {
 		return {
-			props: {},
-			redirect: { destination: `/dashboard/declaration/${declaration.id}` },
+			redirect: {
+				destination: `/dashboard/declaration/${declaration.id}`,
+				permanent: false,
+			},
 		};
 	}
 
 	return {
 		props: {
-			declaration,
+			declaration: declaration as RequiredPopulatedDeclaration,
 		},
 	};
-};
+}) satisfies GetServerSideProps<{
+	declaration: RequiredPopulatedDeclaration;
+}>;

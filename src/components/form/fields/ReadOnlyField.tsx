@@ -1,9 +1,12 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
 import type { DefaultFieldProps } from "~/utils/form/context";
 
 interface ReadOnlyFieldProps extends DefaultFieldProps {
+	label: ReactNode;
+	placeholder?: string;
 	value: string | string[];
 	textArea?: boolean;
 	addSectionBorder?: boolean;
@@ -14,7 +17,6 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 	const {
 		label,
 		placeholder = "Non",
-		className,
 		value,
 		textArea = false,
 		addSectionBorder = false,
@@ -32,7 +34,7 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 		<div className={classes.fieldContainer}>
 			<p className={classes.label}>{label} :</p>
 			{valueIsArray ? (
-				<ul className={classes.list}>
+				<ul>
 					{value.map((item, index) => (
 						<li key={index}>
 							<p className={classes.value}>{item}</p>
@@ -66,15 +68,9 @@ const useStyles = tss
 			...(addSectionBorder && {
 				borderTop: `10px solid ${fr.colors.decisions.border.default.grey.default}`,
 			}),
-			...(valueIsArray || textArea
-				? {
-						display: "flex",
-						flexDirection: "column",
-					}
-				: {
-						display: "inline-flex",
-					}),
-
+			flexDirection: valueIsArray || textArea ? "column" : undefined,
+			display: "flex",
+			flexWrap: "wrap",
 			"@media (max-width: 1024px)": {
 				flexDirection: "column",
 				gap: fr.spacing("2v"),
@@ -84,7 +80,6 @@ const useStyles = tss
 			fontWeight: 700,
 			color: fr.colors.decisions.text.label.grey.default,
 		},
-		list: {},
 		value: {
 			color: fr.colors.decisions.text.label.grey.default,
 			whiteSpace: "pre-wrap",

@@ -1,15 +1,24 @@
 import { TRPCError } from "@trpc/server";
-import z from "zod";
 import type { Payload } from "payload";
-
-import { declarationGeneral } from "~/utils/form/declaration/schema";
-import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { type rgaaVersionOptions, kindOptions, 	appKindOptions, declarationStatusOptions, sourceOptions } from "~/payload/selectOptions";
+import z from "zod";
 import {
-	isDeclarationOwner,
+	appKindOptions,
+	declarationStatusOptions,
+	kindOptions,
+	rgaaVersionOptions,
+	sourceOptions,
+	testEnvironmentOptions,
+	toolOptions,
+} from "~/payload/selectOptions";
+import {
 	getDefaultDeclarationName,
 	getPopulatedDeclaration,
+	hasAccessToDeclaration,
 } from "~/server/api/utils/payload-helper";
+import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
+import type { PublishedDeclaration } from "~/utils/declaration-content";
+import { declarationGeneral } from "~/utils/form/declaration/schema";
+import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 
 const statusValues = declarationStatusOptions.map((option) => option.value);
 
@@ -43,7 +52,10 @@ export const importedDeclarationDataSchema = z.object({
 		name: z.string().nullable(),
 		kind: z.string().nullable(),
 	}),
-	status: z.enum(sourceOptions.map(option => option.value)).optional().default("default"),
+	status: z
+		.enum(sourceOptions.map((option) => option.value))
+		.optional()
+		.default("manual"),
 });
 
 const createOrUpdateEntity = async (
@@ -110,7 +122,7 @@ export const declarationRouter = createTRPCRouter({
 				auditRealizedBy: araJson.context.auditorOrganisation,
 				responsibleEntity: araJson.procedureInitiator,
 				compliantElements: araJson.pageDistributions.map(
-					(page: any) => `${page?.name} (${page?.url})`,
+					(page: any) => page?.name,
 				),
 				testEnvironments: araJson.context.environments.map(
 					(env: any) => env?.assistiveTechnology,
@@ -149,8 +161,9 @@ export const declarationRouter = createTRPCRouter({
 				name ??
 				(await getDefaultDeclarationName(
 					ctx.payload,
-					Number(ctx.session?.user?.id) ?? null,
+					Number(ctx.session.user.id),
 				));
+
 			const newEntityId = await createOrUpdateEntity(
 				ctx.payload,
 				entityId ?? undefined,
@@ -158,15 +171,9 @@ export const declarationRouter = createTRPCRouter({
 				domain,
 			);
 
-			if (!ctx.session?.user?.id) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "User must be logged in to create a declaration",
-				});
-			}
-
 			const declaration = await ctx.payload.create({
 				collection: "declarations",
+				draft: true,
 				data: {
 					name: declarationName,
 					app_kind: kind,
@@ -174,6 +181,17 @@ export const declarationRouter = createTRPCRouter({
 					entity: newEntityId,
 					created_by: Number(ctx.session.user.id),
 					status: status ?? "unpublished",
+					fromSource: "manual",
+				},
+			});
+
+			await ctx.payload.create({
+				collection: "access-rights",
+				data: {
+					declaration: declaration.id,
+					user: Number(ctx.session.user.id),
+					role: "admin",
+					status: "approved",
 				},
 			});
 
@@ -184,10 +202,10 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id } = input;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			await ctx.payload.update({
@@ -212,10 +230,10 @@ export const declarationRouter = createTRPCRouter({
 			const { organisation, kind, url, domain, name, declarationId, entityId } =
 				input.general;
 
-			await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			await ctx.payload.update({
@@ -229,6 +247,12 @@ export const declarationRouter = createTRPCRouter({
 				},
 			});
 
+			const newStatus = await recalculateDeclarationStatus(
+				ctx.payload,
+				declarationId,
+				{ declarationFields: { name, app_kind: kind, url } },
+			);
+
 			const result = await ctx.payload.update({
 				collection: "declarations",
 				id: declarationId,
@@ -236,7 +260,7 @@ export const declarationRouter = createTRPCRouter({
 					name,
 					app_kind: kind,
 					url,
-					status: "unpublished",
+					...(newStatus ? { status: newStatus } : {}),
 				},
 			});
 
@@ -254,10 +278,10 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, name } = input;
 
-		  await isDeclarationOwner({
+			await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
 
 			const updatedDeclaration = await ctx.payload.update({
@@ -270,32 +294,7 @@ export const declarationRouter = createTRPCRouter({
 
 			return { data: updatedDeclaration };
 		}),
-	updateStatus: userProtectedProcedure
-		.input(
-			z.object({
-				id: z.number(),
-				status: z.enum(statusValues),
-			}),
-		)
-		.mutation(async ({ input, ctx }) => {
-			const { id, status } = input;
 
-			await isDeclarationOwner({
-				payload: ctx.payload,
-				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
-			});
-
-			const updatedDeclaration = await ctx.payload.update({
-				collection: "declarations",
-				id,
-				data: {
-					status,
-				},
-			});
-
-			return { data: updatedDeclaration };
-		}),
 	createFromUrl: userProtectedProcedure
 		.input(importedDeclarationDataSchema)
 		.mutation(async ({ input, ctx }) => {
@@ -305,7 +304,7 @@ export const declarationRouter = createTRPCRouter({
 				rgaaVersion,
 				auditRealizedBy,
 				publishedAt,
-				responsibleEntity,
+				// responsibleEntity,
 				compliantElements,
 				technologies,
 				testEnvironments,
@@ -316,7 +315,7 @@ export const declarationRouter = createTRPCRouter({
 				contact,
 				schema,
 				entity,
-				status = "default" as typeof sourceOptions[number]["value"],
+				status = "manual",
 			} = input;
 
 			const transactionID = await ctx.payload.db.beginTransaction();
@@ -325,13 +324,6 @@ export const declarationRouter = createTRPCRouter({
 				throw new TRPCError({
 					code: "INTERNAL_SERVER_ERROR",
 					message: "Failed to start database transaction",
-				});
-			}
-
-			if (!ctx.session?.user?.id) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "User must be logged in to create a declaration",
 				});
 			}
 
@@ -351,14 +343,17 @@ export const declarationRouter = createTRPCRouter({
 				const declaration = await ctx.payload.create({
 					collection: "declarations",
 					data: {
-						name: service?.name ? `Déclaration de ${service.name}` : declarationName,
+						name: service?.name
+							? `Déclaration de ${service.name}`
+							: declarationName,
 						url: service.url ?? "",
 						app_kind:
-							appKindOptions.find(option => option.value === service.type)?.value ??
-							"other",
+							appKindOptions.find((option) => option.value === service.type)
+								?.value ?? "other",
 						status: "unpublished",
 						entity: newEntityId,
 						created_by: Number(ctx.session.user.id),
+						fromSource: status,
 					},
 					req: { transactionID },
 					draft: true,
@@ -366,11 +361,11 @@ export const declarationRouter = createTRPCRouter({
 
 				const declarationId = Number(declaration?.id);
 
-				const relatedAudit = await ctx.payload.create({
+				await ctx.payload.create({
 					collection: "audits",
 					data: {
 						declaration: declarationId,
-						realisedBy: auditRealizedBy || "",
+						realisedBy: auditRealizedBy || "-",
 						rgaa_version: (rgaaVersion ??
 							"rgaa_4") as (typeof rgaaVersionOptions)[number]["value"],
 						rate: Number(taux?.replace("%", "")) || 0,
@@ -379,7 +374,7 @@ export const declarationRouter = createTRPCRouter({
 						technologies: technologies.map((tech) => ({ name: tech })),
 						compliantElements:
 							compliantElements.map((element) => `- ${element}`).join("\n") ||
-							"",
+							"N/A",
 						nonCompliantElements: nonCompliantElements || "",
 						disproportionnedCharge: disproportionnedCharge || "",
 						optionalElements: optionalElements || "",
@@ -387,42 +382,40 @@ export const declarationRouter = createTRPCRouter({
 							publishedAt && !Number.isNaN(Date.parse(publishedAt))
 								? new Date(publishedAt).toISOString().slice(0, 10)
 								: new Date().toISOString().slice(0, 10),
-						status,
+						toVerify: status !== "manual",
 					},
 					req: { transactionID },
 				});
 
-
-				const relatedContact = await ctx.payload.create({
+				await ctx.payload.create({
 					collection: "contacts",
 					data: {
 						declaration: declarationId,
-						email: contact.email || "",
-						url: contact.url || "",
-						status,
+						email: contact.email || undefined,
+						url: contact.url || undefined,
+						toVerify: status !== "manual",
 					},
 					req: { transactionID },
 				});
 
-
-				const relatedSchema = await ctx.payload.create({
+				await ctx.payload.create({
 					collection: "action-plans",
 					data: {
 						declaration: declarationId,
-						currentYearSchemaUrl: schema?.currentYearSchemaUrl ?? "",
-						previousYearsSchemaUrl: "",
-						status,
+						currentYearSchemaUrl: schema?.currentYearSchemaUrl ?? undefined,
+						previousYearsSchemaUrl: undefined,
+						toVerify: status !== "manual",
 					},
 					req: { transactionID },
 				});
 
-				await ctx.payload.update({
-					collection: "declarations",
-					id: declarationId,
+				await ctx.payload.create({
+					collection: "access-rights",
 					data: {
-						audit: relatedAudit.id,
-						contact: relatedContact.id,
-						actionPlan: relatedSchema.id,
+						declaration: declarationId,
+						user: Number(ctx.session.user.id),
+						role: "admin",
+						status: "approved",
 					},
 					req: { transactionID },
 				});
@@ -430,7 +423,7 @@ export const declarationRouter = createTRPCRouter({
 				await ctx.payload.db.commitTransaction(transactionID);
 
 				return { data: declarationId };
-			} catch (error) {
+			} catch (_error) {
 				await ctx.payload.db.rollbackTransaction(transactionID);
 
 				throw new TRPCError({
@@ -449,16 +442,17 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const { id, content } = input;
 
-			const isOwner = await isDeclarationOwner({
+			const isOwner = await hasAccessToDeclaration({
 				payload: ctx.payload,
 				declarationId: id,
-				userId: Number(ctx.session?.user?.id) ?? null,
+				userId: Number(ctx.session.user.id),
 			});
-			
+
 			if (!isOwner) {
 				throw new TRPCError({
 					code: "UNAUTHORIZED",
-					message: "Must be owner of the declaration to update its published content",
+					message:
+						"Must be owner of the declaration to update its published content",
 				});
 			}
 
@@ -473,5 +467,199 @@ export const declarationRouter = createTRPCRouter({
 			});
 
 			return { data: updatedDeclaration };
+		}),
+	getPreviousPublishedRate: userProtectedProcedure
+		.input(z.object({ id: z.number() }))
+		.query(async ({ input, ctx }) => {
+			const { id } = input;
+
+			await hasAccessToDeclaration({
+				payload: ctx.payload,
+				declarationId: id,
+				userId: Number(ctx.session.user.id),
+			});
+
+			const versions = await ctx.payload.findVersions({
+				collection: "declarations",
+				where: {
+					parent: { equals: id },
+					"version.status": { equals: "published" },
+				},
+				limit: 2,
+				sort: "-updatedAt",
+			});
+
+			const previousVersion = versions.docs[1];
+
+			if (!previousVersion?.version?.publishedContent) return null;
+
+			try {
+				const published = JSON.parse(
+					previousVersion.version.publishedContent as string,
+				) as PublishedDeclaration;
+				return published.audit.rate ?? null;
+			} catch {
+				return null;
+			}
+		}),
+
+	revertToPublished: userProtectedProcedure
+		.input(z.object({ id: z.number() }))
+		.mutation(async ({ input, ctx }) => {
+			const { id } = input;
+
+			await hasAccessToDeclaration({
+				payload: ctx.payload,
+				declarationId: id,
+				userId: Number(ctx.session.user.id),
+			});
+
+			const declaration = await ctx.payload.findByID({
+				collection: "declarations",
+				id,
+			});
+
+			if (!declaration?.publishedContent) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "No published content to revert to",
+				});
+			}
+
+			const published: PublishedDeclaration = JSON.parse(
+				declaration.publishedContent,
+			);
+
+			const transactionID = await ctx.payload.db.beginTransaction();
+
+			if (!transactionID) {
+				throw new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message: "Failed to start database transaction",
+				});
+			}
+
+			try {
+				const latestDeclarations = await ctx.payload.findVersions({
+					collection: "declarations",
+					where: {
+						parent: { equals: declaration.id },
+						"version.status": { equals: "published" },
+					},
+					limit: 1,
+					sort: "-updatedAt",
+					req: { transactionID },
+				});
+
+				const previousVersionId = latestDeclarations.docs[0]?.id;
+
+				if (!previousVersionId) {
+					throw new TRPCError({
+						code: "INTERNAL_SERVER_ERROR",
+						message: "Failed to find previous version of the declaration",
+					});
+				}
+
+				await ctx.payload.restoreVersion({
+					collection: "declarations",
+					id: previousVersionId,
+					req: { transactionID },
+				});
+
+				const audits = await ctx.payload.find({
+					collection: "audits",
+					where: { declaration: { equals: id } },
+					limit: 1,
+					req: { transactionID },
+				});
+
+				if (audits.docs[0]) {
+					const rgaaVersionValue = rgaaVersionOptions.find(
+						(o) => o.label === published.audit.rgaa_version,
+					)?.value;
+
+					await ctx.payload.update({
+						collection: "audits",
+						id: audits.docs[0].id,
+						context: { skipStatusRecalculation: true },
+						data: {
+							...(rgaaVersionValue ? { rgaa_version: rgaaVersionValue } : {}),
+							realisedBy: published.audit.realised_by,
+							rate: published.audit.rate,
+							compliantElements: published.audit.compliantElements,
+							nonCompliantElements:
+								published.audit.nonCompliantElements ?? undefined,
+							disproportionnedCharge:
+								published.audit.disproportionnedCharge ?? undefined,
+							optionalElements: published.audit.optionalElements ?? undefined,
+							technologies: published.audit.technologies,
+							testEnvironments: published.audit.testEnvironments.map(
+								(label) => ({
+									name:
+										testEnvironmentOptions.find((o) => o.label === label)
+											?.value ?? label,
+								}),
+							),
+							usedTools: published.audit.usedTools.map((label) => ({
+								name:
+									toolOptions.find((o) => o.label === label)?.value ?? label,
+							})),
+						},
+						req: { transactionID },
+					});
+				}
+
+				const contacts = await ctx.payload.find({
+					collection: "contacts",
+					where: { declaration: { equals: id } },
+					limit: 1,
+					req: { transactionID },
+				});
+
+				if (contacts.docs[0]) {
+					await ctx.payload.update({
+						collection: "contacts",
+						id: contacts.docs[0].id,
+						data: {
+							email: published.contact.email ?? undefined,
+							url: published.contact.url ?? undefined,
+						},
+						req: { transactionID },
+						context: { skipStatusRecalculation: true },
+					});
+				}
+
+				const actionPlans = await ctx.payload.find({
+					collection: "action-plans",
+					where: { declaration: { equals: id } },
+					limit: 1,
+					req: { transactionID },
+				});
+
+				if (actionPlans.docs[0]) {
+					await ctx.payload.update({
+						collection: "action-plans",
+						id: actionPlans.docs[0].id,
+						data: {
+							currentYearSchemaUrl: published.actionPlan.currentYearSchemaUrl,
+							previousYearsSchemaUrl:
+								published.actionPlan.previousYearsSchemaUrl,
+						},
+						req: { transactionID },
+						context: { skipStatusRecalculation: true },
+					});
+				}
+
+				await ctx.payload.db.commitTransaction(transactionID);
+
+				return { data: id };
+			} catch (_) {
+				await ctx.payload.db.rollbackTransaction(transactionID);
+
+				throw new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message: "Failed to revert declaration to published state",
+				});
+			}
 		}),
 });

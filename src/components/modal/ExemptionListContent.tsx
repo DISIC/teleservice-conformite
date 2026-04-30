@@ -1,5 +1,5 @@
-import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
+import { tss } from "tss-react";
 
 export default function ExemptionListModalContent() {
 	const { classes, cx } = useStyles();

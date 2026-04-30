@@ -1,11 +1,10 @@
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import React from "react";
-
+import { tss } from "tss-react";
 import { useStyles as useAppStyles } from "~/pages/_app";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import VerifyGeneratedInfoHelpingMessage from "./VerifyGeneratedInfoPopUpMessage";
 
 type DeclarationFormProps = {
@@ -13,10 +12,8 @@ type DeclarationFormProps = {
 	title: string;
 	breadcrumbLabel?: string;
 	isEditable?: boolean;
-	editMode?: boolean;
+	readOnly?: boolean;
 	onToggleEdit?: () => void;
-	showValidateButton?: boolean;
-	onValidate?: () => void;
 	children: React.ReactNode;
 	LayoutComponent?: React.ComponentType<{ children: React.ReactNode }>;
 	showLayoutComponent?: boolean;
@@ -29,10 +26,8 @@ export default function DeclarationForm({
 	title,
 	breadcrumbLabel,
 	isEditable,
-	editMode,
+	readOnly,
 	onToggleEdit,
-	showValidateButton,
-	onValidate,
 	children,
 	LayoutComponent,
 	showLayoutComponent = false,
@@ -64,9 +59,9 @@ export default function DeclarationForm({
 					<Button
 						priority="secondary"
 						onClick={onToggleEdit}
-						{...(!editMode && { iconId: "fr-icon-edit-line" })}
+						{...(readOnly && { iconId: "fr-icon-edit-line" })}
 					>
-						{!editMode ? "Modifier" : "Annuler"}
+						{readOnly ? "Modifier" : "Annuler"}
 					</Button>
 				)}
 			</div>
@@ -96,16 +91,10 @@ export default function DeclarationForm({
 						{breadcrumbLabel ?? ""} - {title}
 					</h1>
 				</div>
-				{
-					<Layout>
-						<Content />
-					</Layout>
-				}
-				{showValidateButton && onValidate && (
-					<div className={classes.validateButton}>
-						<Button onClick={onValidate}>Valider les informations</Button>
-					</div>
-				)}
+				{isAiGenerated && <VerifyGeneratedInfoHelpingMessage />}
+				<Layout>
+					<Content />
+				</Layout>
 			</div>
 		</section>
 	);

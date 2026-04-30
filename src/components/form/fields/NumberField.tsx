@@ -1,50 +1,41 @@
-import { Input } from "@codegouvfr/react-dsfr/Input";
-
-import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
+import { Input, type InputProps } from "@codegouvfr/react-dsfr/Input";
+import {
+	type DefaultFieldProps,
+	getFieldState,
+	useFieldContext,
+} from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
-interface NumberFieldProps extends DefaultFieldProps {
-	min?: number;
-	max?: number;
+interface NumberFieldProps
+	extends DefaultFieldProps,
+		Omit<InputProps.Common, "state" | "stateRelatedMessage"> {
+	nativeInputProps?: InputProps.RegularInput["nativeInputProps"];
 }
 
-export function NumberField({
-	label,
-	description,
-	readOnly = false,
-	disabled,
-	className,
-	placeholder,
-	required,
-	min,
-	max,
-}: NumberFieldProps) {
+export function NumberField(props: NumberFieldProps) {
+	const { readOnlyField, required, nativeInputProps, ...commonProps } = props;
 	const field = useFieldContext<number>();
 
-	return !readOnly ? (
+	if (readOnlyField) {
+		return (
+			<ReadOnlyField label={commonProps.label} value={`${field.state.value}`} />
+		);
+	}
+
+	return (
 		<Input
-			label={label}
-			hintText={description}
-			disabled={disabled}
-			className={className}
+			{...commonProps}
+			{...getFieldState(field.state.meta.errors)}
 			nativeInputProps={{
+				...nativeInputProps,
 				type: "number",
 				inputMode: "numeric",
 				pattern: "[0-9]*",
-				min: min ?? 0,
-				max,
 				name: field.name,
 				value: field.state.value,
+				required: nativeInputProps?.required ?? required,
 				onChange: (e) => field.setValue(e.target.valueAsNumber),
-				placeholder,
-				required,
 			}}
-			state={field.state.meta.errors.length > 0 ? "error" : "default"}
-			stateRelatedMessage={
-				field.state.meta.errors.map((error) => error.message).join(",") ?? ""
-			}
 		/>
-	) : (
-		<ReadOnlyField label={label} value={`${field.state.value}`} />
 	);
 }

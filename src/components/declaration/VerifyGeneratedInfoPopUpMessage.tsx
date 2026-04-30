@@ -1,5 +1,5 @@
-import HelpingMessage from "./HelpingMessage";
 import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
+import HelpingMessage from "./HelpingMessage";
 
 export default function VerifyGeneratedInfoHelpingMessage() {
 	return (
@@ -9,6 +9,7 @@ export default function VerifyGeneratedInfoHelpingMessage() {
 				<>
 					Cette déclaration a été pré-remplie automatiquement à l’aide d’une IA
 					souveraine.
+					<br />
 					<br />
 					Nous vous invitons à vérifier l’ensemble des informations renseignées
 					avant de publier.

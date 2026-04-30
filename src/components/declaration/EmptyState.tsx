@@ -1,7 +1,7 @@
-import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
+import { tss } from "tss-react";
 
 export default function EmptyState() {
 	const { classes } = useStyles();

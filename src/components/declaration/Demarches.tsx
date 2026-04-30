@@ -1,17 +1,18 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import Community from "@codegouvfr/react-dsfr/picto/Community";
 import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import Document from "@codegouvfr/react-dsfr/picto/Document";
 import Information from "@codegouvfr/react-dsfr/picto/Information";
 import Search from "@codegouvfr/react-dsfr/picto/Search";
+import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import { useRouter } from "next/router";
+import { useMemo } from "react";
 import { tss } from "tss-react";
-
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import HelpingMessage from "./HelpingMessage";
+import { api } from "~/utils/api";
+import HelpingMessage, { type HelpingMessageProps } from "./HelpingMessage";
 
 interface DemarchesProps {
 	declaration: PopulatedDeclaration;
@@ -21,18 +22,42 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const router = useRouter();
 	const { classes, cx } = useStyles();
 	const { rate } = declaration?.audit || {};
+
+	const { data: previousRate } =
+		api.declaration.getPreviousPublishedRate.useQuery(
+			{ id: declaration.id },
+			{ enabled: declaration.status === "published" },
+		);
+
+	const rateProgression = useMemo(() => {
+		if (!rate || !previousRate) return null;
+		const diff = rate - previousRate;
+		return diff === 0 ? null : diff;
+	}, [rate, previousRate]);
+
 	const linkToDeclarationPage = `/dashboard/declaration/${declaration.id}`;
+	const isModified =
+		declaration?.status === "unpublished" && declaration.publishedContent;
 
 	const declarationComplete =
 		declaration.status === "unpublished" &&
-		["default", "notRealised"].includes(declaration?.audit?.status ?? "") &&
-		declaration?.contact?.status === "default" &&
-		declaration?.actionPlan?.status === "default";
+		declaration.audit?.isRealised &&
+		declaration?.audit?.toVerify === false &&
+		declaration?.contact?.toVerify === false &&
+		declaration?.actionPlan?.toVerify === false;
+
+	const { mutateAsync: revertToPublished } =
+		api.declaration.revertToPublished.useMutation({
+			onSuccess: () => router.reload(),
+		});
 
 	const RedirectButton = ({
 		href,
 		label = "Renseigner les informations",
-	}: { href: string; label?: string }) => (
+	}: {
+		href: string;
+		label?: string;
+	}) => (
 		<Button
 			size="small"
 			linkProps={{
@@ -47,7 +72,10 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const StartBadges = ({
 		showToCompleteBadge,
 		showVerifyBadge,
-	}: { showToCompleteBadge: boolean; showVerifyBadge: boolean }) => {
+	}: {
+		showToCompleteBadge: boolean;
+		showVerifyBadge: boolean;
+	}) => {
 		const badges = [
 			{
 				show: showToCompleteBadge,
@@ -76,10 +104,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			| undefined,
 		href: string,
 	) => {
-		if (
-			section &&
-			["default", "notRealised"].includes(declaration?.audit?.status ?? "")
-		) {
+		if (section && !declaration?.audit?.isRealised) {
 			return (
 				<Button
 					iconId="fr-icon-arrow-right-line"
@@ -94,7 +119,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			return <RedirectButton href={href} />;
 		}
 
-		if (section.status === "fromAI" || section.status === "fromAra") {
+		if (section.toVerify) {
 			return <RedirectButton label="Vérifier les informations" href={href} />;
 		}
 
@@ -108,24 +133,18 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Document fontSize="small" />,
 			path: "/infos",
 			showToCompleteBadge: false,
-			showVerifyBadge: declaration.status === "unverified",
+			showVerifyBadge: false,
 			section: undefined,
-			customDetail:
-				declaration?.status === "unverified" ? (
-					<RedirectButton
-						label="Vérifier les informations"
-						href={`${linkToDeclarationPage}/infos`}
-					/>
-				) : (
-					<Button
-						iconId="fr-icon-arrow-right-line"
-						priority="tertiary no outline"
-						title="Label button"
-						linkProps={{
-							href: `${linkToDeclarationPage}/infos`,
-						}}
-					/>
-				),
+			customDetail: (
+				<Button
+					iconId="fr-icon-arrow-right-line"
+					priority="tertiary no outline"
+					title="Voir les informations"
+					linkProps={{
+						href: `${linkToDeclarationPage}/infos`,
+					}}
+				/>
+			),
 		},
 		{
 			title: "Contact",
@@ -133,9 +152,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Community />,
 			path: "/contact",
 			showToCompleteBadge: !declaration?.contact,
-			showVerifyBadge:
-				declaration?.contact?.status === "fromAI" ||
-				declaration?.contact?.status === "fromAra",
+			showVerifyBadge: declaration?.contact?.toVerify === true,
 			section: declaration?.contact,
 		},
 		{
@@ -144,9 +161,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Search />,
 			path: "/audit",
 			showToCompleteBadge: !declaration?.audit,
-			showVerifyBadge:
-				declaration?.audit?.status === "fromAI" ||
-				declaration?.audit?.status === "fromAra",
+			showVerifyBadge: declaration?.audit?.toVerify === true,
 			section: declaration?.audit,
 		},
 		{
@@ -155,12 +170,32 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			pictogram: <Conclusion fontSize="1rem" />,
 			path: "/schema",
 			showToCompleteBadge: !declaration?.actionPlan,
-			showVerifyBadge:
-				declaration?.actionPlan?.status === "fromAI" ||
-				declaration?.actionPlan?.status === "fromAra",
+			showVerifyBadge: declaration?.actionPlan?.toVerify === true,
 			section: declaration?.actionPlan,
 		},
 	];
+
+	const actionsButtons = useMemo(() => {
+		const buttons: HelpingMessageProps["actionButtons"] = [
+			{
+				label: "Prévisualiser et publier",
+				priority: "primary",
+				iconId: "fr-icon-upload-line",
+				onClick: () => router.push(`${declaration.id}/preview`),
+			},
+		];
+
+		if (isModified) {
+			buttons.unshift({
+				label: "Annuler les modifications",
+				priority: "secondary",
+				iconId: "fr-icon-arrow-go-back-line",
+				onClick: () => revertToPublished({ id: declaration.id }),
+			});
+		}
+
+		return buttons;
+	}, [isModified]);
 
 	return (
 		<section id="demarches-tab" className={classes.main}>
@@ -170,27 +205,38 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					message={
 						<strong>Votre déclaration est prête à être publiée !</strong>
 					}
-					actionButtons={[
-						{
-							label: "Prévisualiser et publier",
-							priority: "primary",
-							iconId: "fr-icon-upload-line",
-							onClick: () => router.push(`${declaration.id}/preview`),
-						},
-					]}
+					actionButtons={actionsButtons}
 				/>
 			)}
 			{declaration.status === "published" && (
 				<div className={classes.summaryCardsContainer}>
 					<div className={cx(classes.card, classes.summaryRateCard)}>
-						<p className={classes.cardLabel}>Taux de conformité</p>
-						<p className={cx(classes.cardValue, fr.cx("fr-text--lead"))}>
-							{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}
-						</p>
+						<p className={fr.cx("fr-mb-0")}>Taux de conformité</p>
+						<div className={classes.rateValueContainer}>
+							<p className={fr.cx("fr-mb-0", "fr-text--lead", "fr-text--bold")}>
+								{rate !== undefined && rate !== null ? `${rate}%` : "N/A"}
+							</p>
+							{rateProgression !== null && (
+								<div className={classes.rateValueProgressionContainer}>
+									<Badge
+										small
+										noIcon
+										severity={rateProgression > 0 ? "success" : "error"}
+									>
+										{`${rateProgression > 0 ? "+" : ""} ${rateProgression}%`}
+									</Badge>
+									<p
+										className={fr.cx("fr-mb-0", "fr-hint-text", "fr-text--xs")}
+									>
+										depuis la dernière mise à jour
+									</p>
+								</div>
+							)}
+						</div>
 					</div>
 					<div className={cx(classes.card, classes.summaryUpdateDateCard)}>
-						<p className={classes.cardLabel}>Dernière mise à jour</p>
-						<p className={cx(classes.cardValue, fr.cx("fr-text--lead"))}>
+						<p className={fr.cx("fr-mb-0")}>Dernière mise à jour</p>
+						<p className={fr.cx("fr-mb-0", "fr-text--lead", "fr-text--bold")}>
 							{declaration?.published_at
 								? new Date(declaration.published_at).toLocaleDateString("fr-FR")
 								: "N/A"}
@@ -243,11 +289,10 @@ const useStyles = tss.withName(Demarches.name).create({
 		display: "flex",
 		alignItems: "center",
 		flexDirection: "row",
-		gap: fr.spacing("3v"),
+		gap: fr.spacing("2v"),
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
 		paddingInline: fr.spacing("7v"),
 		paddingBlock: fr.spacing("10v"),
-		borderRadius: "0.375rem",
 	},
 	summaryRateCard: {
 		justifyContent: "space-between",
@@ -255,16 +300,19 @@ const useStyles = tss.withName(Demarches.name).create({
 	summaryUpdateDateCard: {
 		justifyContent: "flex-start",
 	},
-	cardLabel: {
-		margin: 0,
+	rateValueContainer: {
+		display: "flex",
+		alignItems: "baseline",
+		gap: fr.spacing("4v"),
 	},
-	cardValue: {
-		margin: 0,
+	rateValueProgressionContainer: {
+		display: "flex",
+		alignItems: "center",
+		gap: fr.spacing("1v"),
 	},
 	tilesContainer: {
 		display: "grid",
 		gap: fr.spacing("4v"),
-
 		"@media (min-width: 800px)": {
 			gridTemplateColumns: "1fr 1fr 1fr 1fr",
 		},

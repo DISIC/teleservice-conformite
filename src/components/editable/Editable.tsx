@@ -1,11 +1,14 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
-import { fr } from "@codegouvfr/react-dsfr";
 
 export default function Editable({
 	title,
 	onEditTitle,
-}: { title: string; onEditTitle: (newValue: string) => Promise<void> }) {
+}: {
+	title: string;
+	onEditTitle: (newValue: string) => Promise<void>;
+}) {
 	const measureRef = useRef<HTMLSpanElement>(null);
 	const { classes } = useStyles();
 	const [editableName, setEditableName] = useState<boolean>(true);

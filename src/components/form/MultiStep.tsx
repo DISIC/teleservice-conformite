@@ -1,5 +1,4 @@
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { tss } from "tss-react";
 
 type MultiStepProps = {
 	steps: Array<{
@@ -11,8 +10,6 @@ type MultiStepProps = {
 };
 
 export function MultiStep({ steps, currentStep, children }: MultiStepProps) {
-	const { classes } = useStyles();
-
 	const currentStepIndex = steps.findIndex((step) => step.slug === currentStep);
 
 	const step = steps[currentStepIndex] as MultiStepProps["steps"][number];
@@ -28,9 +25,3 @@ export function MultiStep({ steps, currentStep, children }: MultiStepProps) {
 		</div>
 	);
 }
-
-const useStyles = tss.withName(MultiStep.name).create(() => ({
-	container: {
-		marginTop: 20,
-	},
-}));

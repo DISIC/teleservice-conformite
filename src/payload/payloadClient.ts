@@ -1,5 +1,6 @@
-import { type Payload, getPayload } from "payload";
+import { getPayload, type Payload } from "payload";
 import config from "./payload.config";
+
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections growing exponentially
@@ -20,7 +21,7 @@ interface Args {
 	seed?: boolean;
 }
 
-export const getPayloadClient = async (args?: Args): Promise<Payload> => {
+export const getPayloadClient = async (_args?: Args): Promise<Payload> => {
 	if (cached.client) {
 		return cached.client;
 	}

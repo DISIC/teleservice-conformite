@@ -1,32 +1,46 @@
+import { fr } from "@codegouvfr/react-dsfr";
+import Information from "@codegouvfr/react-dsfr/picto/Information";
+import { tss } from "tss-react";
 import HelpingMessage from "~/components/declaration/HelpingMessage";
 import { withForm } from "../context";
 import { schemaFormOptions } from "./schema";
-import Information from "@codegouvfr/react-dsfr/picto/Information";
 
 export const SchemaForm = withForm({
 	...schemaFormOptions,
-	render: function Render({ form }) {
+	props: { readOnly: true },
+	render: function Render({ form, readOnly }) {
+		const { classes } = useStyles();
 		return (
 			<>
-				<form.AppField name="hasDoneCurrentYearSchema">
+				<form.AppField
+					name="hasDoneCurrentYearSchema"
+					listeners={{
+						onChange: ({ value }) =>
+							!value && form.resetField("currentYearSchemaUrl"),
+					}}
+				>
 					{(field) => (
 						<>
 							<field.RadioField
-								label="Avez-vous réalisé un plan d’action pour l’année en cours ?"
-								description="Le plan d’action, ou schéma annuel, détaille les actions prévues sur l’année pour améliorer l’accessibilité de vos services numériques."
+								legend={
+									readOnly
+										? "Réalisation d’un schéma annuel - année en cours"
+										: "Avez-vous réalisé un plan d’action pour l’année en cours ?"
+								}
+								hintText="Le plan d’action, ou schéma annuel, détaille les actions prévues sur l’année pour améliorer l’accessibilité de vos services numériques."
 								options={[
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
+								readOnlyField={readOnly}
 								required
 							/>
 							{field.state.value ? (
 								<form.AppField name="currentYearSchemaUrl">
 									{(field) => (
 										<field.TextField
-											kind="url"
-											label="Lien URL du schéma annuel à jour"
-											description={
+											label={`Lien ${!readOnly ? "URL" : ""} du schéma annuel ${!readOnly ? "à jour" : ""}`}
+											hintText={
 												<>
 													Si vous êtes en cours de création de ce schéma,
 													laissez le champ vide et revenez modifier votre
@@ -34,11 +48,13 @@ export const SchemaForm = withForm({
 													attendu : https://www.example.fr
 												</>
 											}
+											nativeInputProps={{ type: "url" }}
+											readOnlyField={readOnly}
 											required
 										/>
 									)}
 								</form.AppField>
-							) : (
+							) : !readOnly ? (
 								<HelpingMessage
 									image={<Information fontSize="6rem" />}
 									message={
@@ -49,29 +65,42 @@ export const SchemaForm = withForm({
 										</>
 									}
 								/>
-							)}
+							) : null}
 						</>
 					)}
 				</form.AppField>
-				<form.AppField name="hasDonePreviousYearsSchema">
+				{readOnly && <div className={classes.separator} />}
+				<form.AppField
+					name="hasDonePreviousYearsSchema"
+					listeners={{
+						onChange: ({ value }) =>
+							!value && form.resetField("previousYearsSchemaUrl"),
+					}}
+				>
 					{(field) => (
 						<>
 							<field.RadioField
-								label="Avez-vous réalisé un bilan des actions des années précédentes ?"
-								description="Le bilan des actions liste les actions réalisées pendant les années précédentes pour améliorer l’accessibilité de vos services numériques."
+								legend={
+									readOnly
+										? "Réalisation d’un bilan des actions - années précédentes"
+										: "Avez-vous réalisé un bilan des actions des années précédentes ?"
+								}
+								hintText="Le bilan des actions liste les actions réalisées pendant les années précédentes pour améliorer l’accessibilité de vos services numériques."
 								options={[
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
+								readOnlyField={readOnly}
 								required
 							/>
 							{field.state.value && (
 								<form.AppField name="previousYearsSchemaUrl">
 									{(field) => (
 										<field.TextField
-											kind="url"
-											label="Lien URL du bilan des actions"
-											description="Format attendu : https://www.example.fr"
+											label={`Lien ${!readOnly ? "URL" : ""} du bilan des actions`}
+											hintText="Format attendu : https://www.example.fr"
+											nativeInputProps={{ type: "url" }}
+											readOnlyField={readOnly}
 											required
 										/>
 									)}
@@ -82,5 +111,12 @@ export const SchemaForm = withForm({
 				</form.AppField>
 			</>
 		);
+	},
+});
+
+const useStyles = tss.withName(SchemaForm.name).create({
+	separator: {
+		height: "7px",
+		backgroundColor: fr.colors.decisions.border.default.grey.default,
 	},
 });
