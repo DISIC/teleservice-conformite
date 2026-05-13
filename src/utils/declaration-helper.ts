@@ -6,15 +6,17 @@ import {
 import type { RouterOutputs } from "~/utils/api";
 import type { ZAuditFormSchema } from "~/utils/form/audit/schema";
 
-export const getConformityStatus = (rate: number): string => {
+export const getConformityStatus = (
+	rate: number,
+): { label: string; severity: "success" | "warning" | "error" } => {
 	if (rate < 50) {
-		return "non conforme";
+		return { label: "Non conforme", severity: "error" };
 	}
 	if (rate >= 50 && rate <= 99) {
-		return "partiellement conforme";
+		return { label: "Partiellement conforme", severity: "success" };
 	}
 
-	return "conforme";
+	return { label: "Conforme", severity: "success" };
 };
 
 export const extractTechnologiesFromUrl = (

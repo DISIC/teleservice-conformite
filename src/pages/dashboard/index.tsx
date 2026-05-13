@@ -3,6 +3,7 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
+import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 import config from "@payload-config";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps } from "next";
@@ -16,7 +17,10 @@ import Table from "~/components/system/Table";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { auth } from "~/utils/auth";
-import { copyToClipboard } from "~/utils/declaration-helper";
+import {
+	copyToClipboard,
+	getConformityStatus,
+} from "~/utils/declaration-helper";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -65,14 +69,14 @@ const defaultColumns = [
 
 			if (rate === undefined || rate === null) return "-";
 
+			const conformityStatus = getConformityStatus(rate);
+
 			return (
-				<Badge
-					noIcon
-					small
-					severity={rate >= 90 ? "success" : rate >= 75 ? "warning" : "error"}
-				>
-					{`${rate}%`}
-				</Badge>
+				<Tooltip kind="hover" title={conformityStatus.label}>
+					<Badge noIcon small severity={conformityStatus.severity}>
+						{`${rate}%`}
+					</Badge>
+				</Tooltip>
 			);
 		},
 	}),
@@ -300,6 +304,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			.filter((doc) => !doc?.deletedAt)
 			.map((doc) => ({
 				...doc,
+				audit: doc.audit?.docs?.[0] || null,
 				updatedAtFormatted: new Date(doc.updatedAt).toLocaleDateString("fr-FR"),
 			}));
 

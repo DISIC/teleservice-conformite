@@ -128,7 +128,7 @@ export default function PublishedDeclarationTemplate({
 		`Cette déclaration d’accessibilité s’applique au ${declaration.appKindLabel} ${declaration.url}`,
 		"",
 		"### État de conformité",
-		`${declaration.entityName} ${declaration.url} est ${getConformityStatus(declaration.audit.rate)} avec le référentiel général d’amélioration de l’accessibilité  (RGAA), version ${declaration.audit.rgaa_version} en raison des non-conformités et des dérogations  énumérées ci-dessous.`,
+		`${declaration.entityName} ${declaration.url} est ${getConformityStatus(declaration.audit.rate).label.toLowerCase()} avec le référentiel général d’amélioration de l’accessibilité  (RGAA), version ${declaration.audit.rgaa_version} en raison des non-conformités et des dérogations  énumérées ci-dessous.`,
 		"",
 		"### Résultats des tests",
 		`L’audit de conformité réalisé par ${declaration.audit.realised_by} révèle que ${declaration.audit.rate}% des critères de la version ${declaration.audit.rgaa_version} sont respectés `,
