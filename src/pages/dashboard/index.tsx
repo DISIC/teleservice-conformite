@@ -57,7 +57,7 @@ const defaultColumns = [
 			return date.toLocaleDateString("fr-FR");
 		},
 	}),
-	columnHelper.accessor("audit.rate", {
+	columnHelper.accessor((row) => row.audit?.rate, {
 		header: "Taux d'accessibilité",
 		cell: (info) => {
 			const rate = info.getValue();
@@ -74,11 +74,6 @@ const defaultColumns = [
 				</Badge>
 			);
 		},
-		meta: {
-			isNumeric: true,
-		},
-		id: "audit.rate",
-		enableSorting: false,
 	}),
 	columnHelper.display({
 		id: "actions",
@@ -97,7 +92,7 @@ const defaultColumns = [
 ];
 
 export default function DeclarationsPage(props: DeclarationsPageProps) {
-	const { declarations, firstDeclaration = false } = props;
+	const { declarations } = props;
 	const { classes } = useStyles({
 		declarationLength: declarations.length || 0,
 	});
@@ -130,10 +125,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 
 		return () => clearTimeout(timer);
 	}, [showAlert]);
-
-	if (firstDeclaration) {
-		return <AddFirstDeclaration />;
-	}
 
 	return (
 		<div className={fr.cx("fr-container")}>
