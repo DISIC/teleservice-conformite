@@ -90,6 +90,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 const useStyles = tss.withName(Table.name).create(() => ({
 	table: {
 		marginTop: `${fr.spacing("6v")}!important`,
+		marginBottom: "0!important",
 		table: {
 			borderColor: "red!important",
 			display: "table",

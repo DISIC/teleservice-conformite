@@ -9,8 +9,8 @@ import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react";
-import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
 import EmptyState from "~/components/declaration/EmptyState";
+import InfoBlock from "~/components/organization/InfoBlock";
 import Table from "~/components/system/Table";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
@@ -166,6 +166,22 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 						}}
 					/>
 				)}
+				<div className={classes.infoBlocksContainer}>
+					<InfoBlock
+						organizationName="Nom organisation"
+						title="Documents partagés"
+					>
+						Retrouvez et gérez les schémas pluriannuels, plans d’actions et
+						contacts de votre organisation nécessaire à votre déclaration
+						d’accessibilité
+					</InfoBlock>
+					<InfoBlock
+						organizationName="Nom organisation"
+						title="Toutes les déclarations"
+					>
+						Visualisez toutes les déclarations créées dans votre organisation
+					</InfoBlock>
+				</div>
 			</section>
 		</div>
 	);
@@ -196,6 +212,11 @@ const useStyles = tss
 			display: "flex",
 			flexDirection: "column",
 			gap: fr.spacing("6v"),
+		},
+		infoBlocksContainer: {
+			display: "grid",
+			gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+			gap: fr.spacing("10v"),
 		},
 	}));
 
