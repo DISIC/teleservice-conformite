@@ -1,15 +1,18 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import Tag from "@codegouvfr/react-dsfr/Tag";
 import config from "@payload-config";
+import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps } from "next";
 import { getPayload } from "payload";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react";
-
 import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
-import DeclarationListItem from "~/components/declaration/DeclarationListItem";
 import EmptyState from "~/components/declaration/EmptyState";
+import Table from "~/components/system/Table";
+import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { auth } from "~/utils/auth";
 
@@ -18,9 +21,85 @@ interface DeclarationsPageProps {
 	firstDeclaration?: boolean;
 }
 
+const columnHelper = createColumnHelper<PopulatedDeclaration>();
+
+const defaultColumns = [
+	columnHelper.accessor("name", {
+		header: "Nom de la déclaration",
+	}),
+	columnHelper.accessor("app_kind", {
+		header: "Type",
+		cell: (info) => (
+			<Tag small>
+				{
+					appKindOptions.find((option) => option.value === info.getValue())
+						?.label
+				}
+			</Tag>
+		),
+	}),
+	columnHelper.accessor("status", {
+		header: "Statut",
+		cell: (info) => (
+			<Badge
+				noIcon
+				small
+				severity={info.getValue() === "published" ? "success" : undefined}
+			>
+				{info.getValue() === "published" ? "Publié" : "Brouillon"}
+			</Badge>
+		),
+	}),
+	columnHelper.accessor("updatedAt", {
+		header: "Dernière mise à jour",
+		cell: (info) => {
+			const date = new Date(info.getValue());
+			return date.toLocaleDateString("fr-FR");
+		},
+	}),
+	columnHelper.accessor("audit.rate", {
+		header: "Taux d'accessibilité",
+		cell: (info) => {
+			const rate = info.getValue();
+
+			if (rate === undefined || rate === null) return "-";
+
+			return (
+				<Badge
+					noIcon
+					small
+					severity={rate >= 90 ? "success" : rate >= 75 ? "warning" : "error"}
+				>
+					{`${rate}%`}
+				</Badge>
+			);
+		},
+		meta: {
+			isNumeric: true,
+		},
+		id: "audit.rate",
+		enableSorting: false,
+	}),
+	columnHelper.display({
+		id: "actions",
+		header: "Actions",
+		cell: (info) => (
+			<Button
+				linkProps={{ href: `/dashboard/${info.row.original.id}` }}
+				iconPosition="right"
+				iconId="fr-icon-arrow-right-line"
+				priority="secondary"
+				size="small"
+			>
+				Consulter
+			</Button>
+		),
+	}),
+];
+
 export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { declarations, firstDeclaration = false } = props;
-	const { classes, cx } = useStyles({
+	const { classes } = useStyles({
 		declarationLength: declarations.length || 0,
 	});
 	const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -60,7 +139,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	return (
 		<div className={fr.cx("fr-container")}>
 			<section id="declarations-page" className={classes.main}>
-				<h1>Vos déclarations d'accessibilité</h1>
+				<h1>Déclarations d'accessibilité</h1>
 				{showAlert && (
 					<div className={classes.alertWrapper}>
 						<Alert
@@ -74,37 +153,28 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 						/>
 					</div>
 				)}
-
-				{declarations.length ? (
-					<>
+				{!declarations.length ? (
+					<div>
 						<div className={classes.buttonWrapper}>
 							<Button
 								iconId="fr-icon-add-line"
-								priority="tertiary"
-								linkProps={{
-									href: "/dashboard/form",
-								}}
+								linkProps={{ href: "/dashboard/form" }}
 							>
 								Ajouter une déclaration
 							</Button>
 						</div>
-						<div className={cx(classes.declarationCardsContainer)}>
-							{declarations.map((declaration) => (
-								<DeclarationListItem
-									key={declaration.id}
-									declaration={declaration}
-									onCopySuccess={(declarationName) =>
-										showDeclarationAlert({
-											description: `Lien de la déclaration "${declarationName}" copié dans le presse-papier`,
-											severity: "success",
-										})
-									}
-								/>
-							))}
-						</div>
-					</>
+						<Table columns={defaultColumns} data={declarations} />
+					</div>
 				) : (
-					<EmptyState />
+					<EmptyState
+						title="Bienvenue !"
+						description="Ajoutez votre première déclaration d’accessibilité pour démarrer"
+						ctaProps={{
+							linkProps: { href: "/dashboard/form" },
+							children: "Ajouter une déclaration",
+							iconId: "fr-icon-add-line",
+						}}
+					/>
 				)}
 			</section>
 		</div>
@@ -118,7 +188,7 @@ const useStyles = tss
 		main: {
 			display: "flex",
 			flexDirection: "column",
-			gap: fr.spacing("8v"),
+			gap: fr.spacing("10v"),
 			paddingBlock: fr.spacing("12v"),
 		},
 		buttonWrapper: {
@@ -128,12 +198,10 @@ const useStyles = tss
 		alertWrapper: {
 			width: "100%",
 			display: "flex",
-
 			"& div": {
 				width: "100%",
 			},
 		},
-
 		declarationCardsContainer: {
 			display: "flex",
 			flexDirection: "column",
