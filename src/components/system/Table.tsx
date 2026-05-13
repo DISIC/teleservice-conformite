@@ -8,12 +8,19 @@ import {
 	flexRender,
 	getCoreRowModel,
 	getPaginationRowModel,
+	type RowData,
 	type TableOptions,
 	useReactTable,
 } from "@tanstack/react-table";
-import { type ReactNode, useState } from "react";
+import { type CSSProperties, type ReactNode, useState } from "react";
 import { tss } from "tss-react";
 import { Pagination } from "./Pagination";
+
+declare module "@tanstack/react-table" {
+	interface ColumnMeta<TData extends RowData, TValue> {
+		styles?: CSSProperties;
+	}
+}
 
 type Props<TData> = {
 	columns: ColumnDef<TData, any>[];
@@ -80,21 +87,32 @@ export const Table = <TData,>(props: Props<TData>) => {
 	const pageCount = enablePagination ? table.getPageCount() : 0;
 
 	const headers: ReactNode[] = table.getHeaderGroups().flatMap((group) =>
-		group.headers.map((header) =>
-			header.isPlaceholder ? null : (
-				<div key={header.id} className={classes.headerCell}>
+		group.headers.map((header) => {
+			if (header.isPlaceholder) return null;
+			return (
+				<div
+					key={header.id}
+					className={classes.headerCell}
+					style={{ ...header.column.columnDef.meta?.styles }}
+				>
 					{flexRender(header.column.columnDef.header, header.getContext())}
 				</div>
-			),
-		),
+			);
+		}),
 	);
 
 	const rows: ReactNode[][] = table.getRowModel().rows.map((row) =>
-		row.getVisibleCells().map((cell) => (
-			<div key={cell.id} className={classes.bodyCell}>
-				{flexRender(cell.column.columnDef.cell, cell.getContext())}
-			</div>
-		)),
+		row.getVisibleCells().map((cell) => {
+			return (
+				<div
+					key={cell.id}
+					className={classes.bodyCell}
+					style={{ ...cell.column.columnDef.meta?.styles }}
+				>
+					{flexRender(cell.column.columnDef.cell, cell.getContext())}
+				</div>
+			);
+		}),
 	);
 
 	return (

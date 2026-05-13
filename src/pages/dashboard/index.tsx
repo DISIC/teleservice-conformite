@@ -28,6 +28,7 @@ const columnHelper = createColumnHelper<PopulatedDeclaration>();
 const defaultColumns = [
 	columnHelper.accessor("name", {
 		header: "Nom de la déclaration",
+		meta: { styles: { maxWidth: 240 } },
 	}),
 	columnHelper.accessor("app_kind", {
 		header: "Type",
@@ -60,7 +61,7 @@ const defaultColumns = [
 		},
 	}),
 	columnHelper.accessor((row) => row.audit?.rate, {
-		header: "Taux d'accessibilité",
+		header: "Taux de conformité",
 		cell: (info) => {
 			const rate = info.getValue();
 
