@@ -10,7 +10,7 @@ import { getPayload } from "payload";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react";
 import EmptyState from "~/components/declaration/EmptyState";
-import InfoBlock from "~/components/organization/InfoBlock";
+import InfoBlock from "~/components/system/InfoBlock";
 import Table from "~/components/system/Table";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
@@ -106,7 +106,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		severity: "info" | "success" | "warning" | "error";
 	}>({ title: "", description: "", severity: "info" });
 
-	const showDeclarationAlert = ({
+	const _showDeclarationAlert = ({
 		title,
 		description,
 		severity,
