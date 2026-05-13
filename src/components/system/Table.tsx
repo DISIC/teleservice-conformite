@@ -7,11 +7,13 @@ import {
 	type ColumnDef,
 	flexRender,
 	getCoreRowModel,
+	getPaginationRowModel,
 	type TableOptions,
 	useReactTable,
 } from "@tanstack/react-table";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { tss } from "tss-react";
+import { Pagination } from "./Pagination";
 
 type Props<TData> = {
 	columns: ColumnDef<TData, any>[];
@@ -24,6 +26,7 @@ type Props<TData> = {
 	bottomCaption?: boolean;
 	colorVariant?: TableProps["colorVariant"];
 	className?: string;
+	numberPerPage: number;
 	tableOptions?: Partial<
 		Omit<TableOptions<TData>, "data" | "columns" | "getCoreRowModel">
 	>;
@@ -41,17 +44,40 @@ export const Table = <TData,>(props: Props<TData>) => {
 		bottomCaption,
 		colorVariant,
 		className,
+		numberPerPage,
 		tableOptions,
 	} = props;
 
 	const { classes, cx } = useStyles();
 
+	const enablePagination = data.length > numberPerPage;
+
+	const [pageIndex, setPageIndex] = useState(0);
+
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		...(enablePagination
+			? {
+					getPaginationRowModel: getPaginationRowModel(),
+					state: {
+						pagination: { pageIndex, pageSize: numberPerPage },
+						...tableOptions?.state,
+					},
+					onPaginationChange: (updater) => {
+						const next =
+							typeof updater === "function"
+								? updater({ pageIndex, pageSize: numberPerPage })
+								: updater;
+						setPageIndex(next.pageIndex);
+					},
+				}
+			: {}),
 		...tableOptions,
 	});
+
+	const pageCount = enablePagination ? table.getPageCount() : 0;
 
 	const headers: ReactNode[] = table.getHeaderGroups().flatMap((group) =>
 		group.headers.map((header) =>
@@ -72,18 +98,30 @@ export const Table = <TData,>(props: Props<TData>) => {
 	);
 
 	return (
-		<DsfrTable
-			headers={headers}
-			data={rows}
-			caption={caption}
-			noCaption={noCaption}
-			bordered={bordered}
-			fixed={fixed}
-			noScroll={noScroll}
-			bottomCaption={bottomCaption}
-			colorVariant={colorVariant}
-			className={cx(classes.table, className)}
-		/>
+		<>
+			<DsfrTable
+				headers={headers}
+				data={rows}
+				caption={caption}
+				noCaption={noCaption}
+				bordered={bordered}
+				fixed={fixed}
+				noScroll={noScroll}
+				bottomCaption={bottomCaption}
+				colorVariant={colorVariant}
+				className={cx(classes.table, className)}
+			/>
+			{enablePagination && (
+				<div className={classes.paginationWrapper}>
+					<Pagination
+						count={pageCount}
+						page={pageIndex + 1}
+						numberPerPage={numberPerPage}
+						onPageChange={(page) => setPageIndex(page - 1)}
+					/>
+				</div>
+			)}
+		</>
 	);
 };
 
@@ -109,6 +147,11 @@ const useStyles = tss.withName(Table.name).create(() => ({
 	bodyCell: {
 		display: "flex",
 		alignItems: "center",
+	},
+	paginationWrapper: {
+		display: "flex",
+		justifyContent: "center",
+		marginTop: fr.spacing("4v"),
 	},
 }));
 

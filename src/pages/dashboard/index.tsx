@@ -21,6 +21,8 @@ interface DeclarationsPageProps {
 	firstDeclaration?: boolean;
 }
 
+const NUMBER_PER_PAGE = 10;
+
 const columnHelper = createColumnHelper<PopulatedDeclaration>();
 
 const defaultColumns = [
@@ -153,7 +155,11 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 								Ajouter une déclaration
 							</Button>
 						</div>
-						<Table columns={defaultColumns} data={declarations} />
+						<Table
+							columns={defaultColumns}
+							data={declarations}
+							numberPerPage={NUMBER_PER_PAGE}
+						/>
 					</div>
 				) : (
 					<EmptyState
