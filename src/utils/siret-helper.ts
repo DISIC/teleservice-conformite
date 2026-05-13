@@ -35,9 +35,9 @@ export async function getEntityInfosFromSiret(siret: number): Promise<{
 		const nameCandidate =
 			unite?.denominationUniteLegale || unite?.nomUniteLegale;
 
-		const name =
-			`${nameCandidate} ${unite?.sigleUniteLegale ? `(${unite?.sigleUniteLegale})` : ""}` ||
-			`Entité ${siret}`;
+		const name = nameCandidate
+			? `${nameCandidate}${unite?.sigleUniteLegale ? ` (${unite?.sigleUniteLegale})` : ""}`
+			: `Entité ${siret}`;
 
 		const kind: (typeof kindOptions)[number]["value"] = "none";
 		return { name, siret, kind };

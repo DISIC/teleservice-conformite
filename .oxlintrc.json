@@ -1,0 +1,17 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": ["typescript", "react", "unicorn", "oxc", "jsx-a11y", "nextjs"],
+	"categories": {
+		"correctness": "error"
+	},
+	"rules": {
+		"react-hooks/exhaustive-deps": "off",
+		"react/no-array-index-key": "off",
+		"typescript/no-explicit-any": "off"
+	},
+	"ignorePatterns": [
+		"src/app/(payload)/*",
+		"src/payload/payload-types.ts",
+		"src/payload/migrations/*"
+	]
+}

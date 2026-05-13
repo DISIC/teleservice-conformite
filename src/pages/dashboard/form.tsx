@@ -191,7 +191,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					: (result?.data?.service?.type ?? "other"),
 				serviceUrl: result?.data?.service?.url ?? "",
 			};
-		} catch (_error) {
+		} catch {
 			return { serviceName: "", serviceType: "other", serviceUrl: "" };
 		}
 	};
@@ -212,7 +212,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					: (result?.data?.service?.type ?? "other"),
 				serviceUrl: result?.data?.service?.url ?? "",
 			};
-		} catch (_err) {
+		} catch {
 			return { serviceName: "", serviceType: "other", serviceUrl: "" };
 		}
 	};

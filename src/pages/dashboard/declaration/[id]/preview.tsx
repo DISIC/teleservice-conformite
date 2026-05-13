@@ -65,7 +65,7 @@ export default function DeclarationPreviewPage({
 				id: declaration.id,
 				content: JSON.stringify(publishedDeclarationContent),
 			});
-		} catch (_error) {
+		} catch {
 			return;
 		}
 	};

@@ -36,7 +36,7 @@ const genericOAuthPlugin = genericOAuth({
 
 				try {
 					data = JSON.parse(responseText);
-				} catch (_) {
+				} catch {
 					data =
 						(jwtDecode(responseText) as Record<string, string | number>) || {};
 				}

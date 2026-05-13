@@ -423,7 +423,7 @@ export const declarationRouter = createTRPCRouter({
 				await ctx.payload.db.commitTransaction(transactionID);
 
 				return { data: declarationId };
-			} catch (_error) {
+			} catch {
 				await ctx.payload.db.rollbackTransaction(transactionID);
 
 				throw new TRPCError({
@@ -653,7 +653,7 @@ export const declarationRouter = createTRPCRouter({
 				await ctx.payload.db.commitTransaction(transactionID);
 
 				return { data: id };
-			} catch (_) {
+			} catch {
 				await ctx.payload.db.rollbackTransaction(transactionID);
 
 				throw new TRPCError({
