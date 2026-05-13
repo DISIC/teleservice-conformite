@@ -82,7 +82,6 @@ const defaultColumns = [
 	}),
 	columnHelper.display({
 		id: "actions",
-		header: "Actions",
 		cell: (info) => (
 			<Button
 				linkProps={{ href: `/dashboard/${info.row.original.id}` }}
@@ -153,7 +152,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 						/>
 					</div>
 				)}
-				{!declarations.length ? (
+				{declarations.length ? (
 					<div>
 						<div className={classes.buttonWrapper}>
 							<Button
