@@ -6,8 +6,9 @@ import Tag from "@codegouvfr/react-dsfr/Tag";
 import config from "@payload-config";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps } from "next";
+import Link from "next/link";
 import { getPayload } from "payload";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import EmptyState from "~/components/declaration/EmptyState";
 import InfoBlock from "~/components/system/InfoBlock";
@@ -15,6 +16,7 @@ import Table from "~/components/system/Table";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { auth } from "~/utils/auth";
+import { copyToClipboard } from "~/utils/declaration-helper";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -26,10 +28,6 @@ const NUMBER_PER_PAGE = 10;
 const columnHelper = createColumnHelper<PopulatedDeclaration>();
 
 const defaultColumns = [
-	columnHelper.accessor("name", {
-		header: "Nom de la déclaration",
-		meta: { styles: { maxWidth: 240 } },
-	}),
 	columnHelper.accessor("app_kind", {
 		header: "Type",
 		cell: (info) => (
@@ -78,21 +76,42 @@ const defaultColumns = [
 			);
 		},
 	}),
+];
+
+const buildActionsColumn = (onCopySuccess: (declarationName: string) => void) =>
 	columnHelper.display({
 		id: "actions",
-		cell: (info) => (
-			<Button
-				linkProps={{ href: `/dashboard/declaration/${info.row.original.id}` }}
-				iconPosition="right"
-				iconId="fr-icon-arrow-right-line"
-				priority="secondary"
-				size="small"
-			>
-				Consulter
-			</Button>
-		),
-	}),
-];
+		cell: (info) => {
+			const declaration = info.row.original;
+			if (declaration.status !== "published") return null;
+			return (
+				<div style={{ display: "flex", justifyContent: "flex-end" }}>
+					<Button
+						iconId="fr-icon-share-line"
+						iconPosition="left"
+						priority="tertiary no outline"
+						size="small"
+						onClick={() =>
+							copyToClipboard(
+								`${process.env.NEXT_PUBLIC_FRONT_URL}/declaration/${declaration.id}/publish`,
+								() => onCopySuccess(declaration.name || ""),
+							)
+						}
+						nativeButtonProps={{
+							"aria-label": "Copier le lien web de la déclaration publiée",
+						}}
+					>
+						Partager le lien public
+					</Button>
+				</div>
+			);
+		},
+	});
+
+type AlertDetailsProps = {
+	description?: string;
+	severity: "info" | "success" | "warning" | "error";
+};
 
 export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { declarations } = props;
@@ -100,31 +119,52 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		declarationLength: declarations.length || 0,
 	});
 	const [showAlert, setShowAlert] = useState<boolean>(false);
-	const [alertDetails, setAlertDetails] = useState<{
-		title?: string;
-		description?: string;
-		severity: "info" | "success" | "warning" | "error";
-	}>({ title: "", description: "", severity: "info" });
+	const [alertDetails, setAlertDetails] = useState<AlertDetailsProps>({
+		description: "",
+		severity: "info",
+	});
 
-	const _showDeclarationAlert = ({
-		title,
-		description,
-		severity,
-	}: {
-		title?: string;
-		description?: string;
-		severity: "info" | "success" | "warning" | "error";
-	}) => {
-		setAlertDetails({ title, description, severity });
-		setShowAlert(true);
-	};
+	const showDeclarationAlert = useCallback(
+		({ description, severity }: AlertDetailsProps) => {
+			setAlertDetails({ description, severity });
+			setShowAlert(true);
+		},
+		[],
+	);
+
+	const onCopySuccess = useCallback(
+		(declarationName: string) =>
+			showDeclarationAlert({
+				description: `Lien de la déclaration ${declarationName} copié dans le presse-papier`,
+				severity: "success",
+			}),
+		[showDeclarationAlert],
+	);
+
+	const columns = useMemo(
+		() => [
+			columnHelper.accessor("name", {
+				header: "Nom de la déclaration",
+				meta: { styles: { maxWidth: 240 } },
+				cell: (info) => (
+					<Link
+						href={`/dashboard/declaration/${info.row.original.id}`}
+						className={classes.nameLink}
+					>
+						{info.getValue()}
+					</Link>
+				),
+			}),
+			...defaultColumns,
+			buildActionsColumn(onCopySuccess),
+		],
+		[onCopySuccess, classes.nameLink],
+	);
 
 	useEffect(() => {
 		if (!showAlert) return;
 
-		const timer = setTimeout(() => {
-			setShowAlert(false);
-		}, 5000);
+		const timer = setTimeout(() => setShowAlert(false), 5000);
 
 		return () => clearTimeout(timer);
 	}, [showAlert]);
@@ -136,9 +176,8 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 				{showAlert && (
 					<div className={classes.alertWrapper}>
 						<Alert
-							small={true}
+							small
 							severity={alertDetails.severity}
-							title={alertDetails?.title ?? ""}
 							description={alertDetails?.description ?? ""}
 							closable
 							isClosed={!showAlert}
@@ -157,7 +196,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 							</Button>
 						</div>
 						<Table
-							columns={defaultColumns}
+							columns={columns}
 							data={declarations}
 							numberPerPage={NUMBER_PER_PAGE}
 						/>
@@ -211,6 +250,8 @@ const useStyles = tss
 			"& div": {
 				width: "100%",
 			},
+			marginBottom: fr.spacing("6v"),
+			animation: "fadeIn 0.25s ease-in-out",
 		},
 		declarationCardsContainer: {
 			display: "flex",
@@ -222,6 +263,15 @@ const useStyles = tss
 			display: "grid",
 			gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
 			gap: fr.spacing("10v"),
+		},
+		nameLink: {
+			color: "inherit",
+			backgroundImage: "none",
+			fontWeight: 500,
+			transition: "color 0.15s ease",
+			"&:hover": {
+				color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+			},
 		},
 	}));
 
