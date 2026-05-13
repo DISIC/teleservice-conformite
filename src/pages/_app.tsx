@@ -116,10 +116,11 @@ function App({ Component, pageProps }: AppProps) {
 		<>
 			<Head>
 				<title>
-					{getTitleFromPathname(router.pathname)
-						? `${getTitleFromPathname(router.pathname)} - `
-						: ""}
-					Téléservice Conformité
+					{`${
+						getTitleFromPathname(router.pathname)
+							? `${getTitleFromPathname(router.pathname)} - `
+							: ""
+					}Téléservice Conformité`}
 				</title>
 			</Head>
 			<div className={classes.mainContainer}>
