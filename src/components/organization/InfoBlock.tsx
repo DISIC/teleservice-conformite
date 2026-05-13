@@ -82,7 +82,8 @@ const useStyles = tss.withName(InfoBlock.name).create({
 	tag: {
 		backgroundColor: fr.colors.options.blueEcume._975_75.active,
 		color: fr.colors.decisions.text.actionHigh.blueEcume.default,
-		textTransform: "uppercase",
+		fontSize: "0.675rem",
+		lineHeight: "1rem",
 	},
 	title: {
 		margin: 0,

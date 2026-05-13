@@ -79,7 +79,7 @@ const defaultColumns = [
 		id: "actions",
 		cell: (info) => (
 			<Button
-				linkProps={{ href: `/dashboard/${info.row.original.id}` }}
+				linkProps={{ href: `/dashboard/declaration/${info.row.original.id}` }}
 				iconPosition="right"
 				iconId="fr-icon-arrow-right-line"
 				priority="secondary"
@@ -192,9 +192,6 @@ const useStyles = tss
 	.withParams<{ declarationLength: number }>()
 	.create(({ declarationLength }) => ({
 		main: {
-			display: "flex",
-			flexDirection: "column",
-			gap: fr.spacing("10v"),
 			paddingBlock: fr.spacing("12v"),
 		},
 		buttonWrapper: {
@@ -214,6 +211,7 @@ const useStyles = tss
 			gap: fr.spacing("6v"),
 		},
 		infoBlocksContainer: {
+			marginTop: fr.spacing("12v"),
 			display: "grid",
 			gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
 			gap: fr.spacing("10v"),
