@@ -178,7 +178,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 	const actionsButtons = useMemo(() => {
 		const buttons: HelpingMessageProps["actionButtons"] = [
 			{
-				label: "Prévisualiser et publier",
+				children: "Prévisualiser et publier",
 				priority: "primary",
 				iconId: "fr-icon-upload-line",
 				onClick: () => router.push(`${declaration.id}/preview`),
@@ -187,7 +187,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 
 		if (isModified) {
 			buttons.unshift({
-				label: "Annuler les modifications",
+				children: "Annuler les modifications",
 				priority: "secondary",
 				iconId: "fr-icon-arrow-go-back-line",
 				onClick: () => revertToPublished({ id: declaration.id }),

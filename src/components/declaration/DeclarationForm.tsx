@@ -19,6 +19,7 @@ type DeclarationFormProps = {
 	showLayoutComponent?: boolean;
 	isAiGenerated?: boolean;
 	mentionText?: string;
+	headerAction?: React.ReactNode;
 };
 
 export default function DeclarationForm({
@@ -33,6 +34,7 @@ export default function DeclarationForm({
 	showLayoutComponent = false,
 	isAiGenerated = false,
 	mentionText,
+	headerAction,
 }: DeclarationFormProps) {
 	const { classes, cx } = useStyles();
 	const { classes: formClasses } = useAppStyles();
@@ -55,15 +57,17 @@ export default function DeclarationForm({
 						</>
 					)}
 				</p>
-				{isEditable && onToggleEdit && (
-					<Button
-						priority="secondary"
-						onClick={onToggleEdit}
-						{...(readOnly && { iconId: "fr-icon-edit-line" })}
-					>
-						{readOnly ? "Modifier" : "Annuler"}
-					</Button>
-				)}
+				<div className={classes.headerActionsWrapper}>
+					{isEditable && onToggleEdit && (
+						<Button
+							priority="secondary"
+							onClick={onToggleEdit}
+							{...(readOnly && { iconId: "fr-icon-edit-line" })}
+						>
+							{readOnly ? "Modifier" : "Annuler"}
+						</Button>
+					)}
+				</div>
 			</div>
 			{children}
 		</div>
@@ -90,6 +94,7 @@ export default function DeclarationForm({
 					<h1>
 						{breadcrumbLabel ?? ""} - {title}
 					</h1>
+					{headerAction}
 				</div>
 				{isAiGenerated && <VerifyGeneratedInfoHelpingMessage />}
 				<Layout>
@@ -108,6 +113,12 @@ const useStyles = tss.withName(DeclarationForm.name).create({
 	formWrapper: {
 		display: "flex",
 		flexDirection: "column",
+	},
+	headerActionsWrapper: {
+		display: "flex",
+		flexDirection: "row",
+		gap: fr.spacing("3v"),
+		alignItems: "center",
 	},
 	editButtonWrapper: {
 		display: "flex",
