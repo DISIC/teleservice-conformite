@@ -11,21 +11,27 @@ export default function PublishedDeclarationTemplate({
 	declaration: PublishedDeclaration;
 	mode?: "preview" | "published";
 }) {
-	const hasCurrentSchema =
-		declaration.actionPlan.currentYearSchemaUrl.trim().length > 0;
-	const hasPreviousSchema =
-		declaration.actionPlan.previousYearsSchemaUrl.trim().length > 0;
-	const showActionPlanLinks = hasCurrentSchema && hasPreviousSchema;
+	const hasSchemaUrl = declaration.schema.schemaUrl.trim().length > 0;
+	const actionPlanUrls = declaration.schema.actionPlanUrls.filter(
+		(item) => item.url.trim().length > 0,
+	);
+	const showSchemaLinks = hasSchemaUrl || actionPlanUrls.length > 0;
 
-	const actionPlanLinks = showActionPlanLinks
+	const actionPlanLinks = showSchemaLinks
 		? [
 				`À cette fin, ${declaration.entityName} met en œuvre la stratégie et les actions suivantes :`,
 				"",
-				`- Lien URL du schéma annuel à jour : ${declaration.actionPlan.currentYearSchemaUrl};`,
-				"",
-				`- Lien URL du bilan des actions : ${declaration.actionPlan.previousYearsSchemaUrl};`,
-				"",
-			]
+				...(hasSchemaUrl
+					? [
+							`- Lien URL du schéma pluriannuel : ${declaration.schema.schemaUrl};`,
+							"",
+						]
+					: []),
+				...actionPlanUrls.map(
+					(item) => `- Lien URL d'un plan d'actions : ${item.url};`,
+				),
+				actionPlanUrls.length > 0 ? "" : null,
+			].filter((line): line is string => line !== null)
 		: [];
 	const hasNonConformites =
 		!!declaration.audit.nonCompliantElements &&

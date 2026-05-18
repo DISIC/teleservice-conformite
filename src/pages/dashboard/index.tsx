@@ -217,14 +217,16 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 					/>
 				)}
 				<div className={classes.infoBlocksContainer}>
-					<InfoBlock
-						organizationName="Nom organisation"
-						title="Documents partagés"
-					>
-						Retrouvez et gérez les schémas pluriannuels, plans d’actions et
-						contacts de votre organisation nécessaire à votre déclaration
-						d’accessibilité
-					</InfoBlock>
+					<Link href="/dashboard/library" className={classes.infoBlockLink}>
+						<InfoBlock
+							organizationName="Nom organisation"
+							title="Documents partagés"
+						>
+							Retrouvez et gérez les schémas pluriannuels, plans d’actions et
+							contacts de votre organisation nécessaire à votre déclaration
+							d’accessibilité
+						</InfoBlock>
+					</Link>
 					<InfoBlock
 						organizationName="Nom organisation"
 						title="Toutes les déclarations"
@@ -261,6 +263,14 @@ const useStyles = tss
 			display: "flex",
 			flexDirection: "column",
 			gap: fr.spacing("6v"),
+		},
+		infoBlockLink: {
+			textDecoration: "none",
+			color: "inherit",
+			backgroundImage: "none",
+			"&:hover": {
+				filter: "brightness(0.97)",
+			},
 		},
 		infoBlocksContainer: {
 			marginTop: fr.spacing("12v"),

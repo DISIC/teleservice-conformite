@@ -387,10 +387,12 @@ export const declarationRouter = createTRPCRouter({
 					req: { transactionID },
 				});
 
-				await ctx.payload.create({
+				const createdContact = await ctx.payload.create({
 					collection: "contacts",
 					data: {
-						declaration: declarationId,
+						name: service?.name
+							? `Contact - ${service.name}`
+							: "Contact de la déclaration",
 						email: contact.email || undefined,
 						url: contact.url || undefined,
 						toVerify: status !== "manual",
@@ -398,13 +400,25 @@ export const declarationRouter = createTRPCRouter({
 					req: { transactionID },
 				});
 
-				await ctx.payload.create({
-					collection: "action-plans",
+				const createdSchema = await ctx.payload.create({
+					collection: "schemas",
 					data: {
-						declaration: declarationId,
-						currentYearSchemaUrl: schema?.currentYearSchemaUrl ?? undefined,
-						previousYearsSchemaUrl: undefined,
+						schemaName: service?.name
+							? `Schéma - ${service.name}`
+							: "Schéma pluriannuel",
+						schemaUrl: schema?.currentYearSchemaUrl ?? undefined,
+						actionPlanUrls: [],
 						toVerify: status !== "manual",
+					},
+					req: { transactionID },
+				});
+
+				await ctx.payload.update({
+					collection: "declarations",
+					id: declarationId,
+					data: {
+						contact: createdContact.id,
+						schema: createdSchema.id,
 					},
 					req: { transactionID },
 				});
@@ -609,17 +623,26 @@ export const declarationRouter = createTRPCRouter({
 					});
 				}
 
-				const contacts = await ctx.payload.find({
-					collection: "contacts",
-					where: { declaration: { equals: id } },
-					limit: 1,
+				const refreshedDeclaration = await ctx.payload.findByID({
+					collection: "declarations",
+					id,
+					depth: 0,
 					req: { transactionID },
 				});
 
-				if (contacts.docs[0]) {
+				const contactId =
+					typeof refreshedDeclaration.contact === "number"
+						? refreshedDeclaration.contact
+						: refreshedDeclaration.contact?.id;
+				const schemaIdFromDeclaration =
+					typeof refreshedDeclaration.schema === "number"
+						? refreshedDeclaration.schema
+						: refreshedDeclaration.schema?.id;
+
+				if (contactId) {
 					await ctx.payload.update({
 						collection: "contacts",
-						id: contacts.docs[0].id,
+						id: contactId,
 						data: {
 							email: published.contact.email ?? undefined,
 							url: published.contact.url ?? undefined,
@@ -629,21 +652,14 @@ export const declarationRouter = createTRPCRouter({
 					});
 				}
 
-				const actionPlans = await ctx.payload.find({
-					collection: "action-plans",
-					where: { declaration: { equals: id } },
-					limit: 1,
-					req: { transactionID },
-				});
-
-				if (actionPlans.docs[0]) {
+				if (schemaIdFromDeclaration) {
 					await ctx.payload.update({
-						collection: "action-plans",
-						id: actionPlans.docs[0].id,
+						collection: "schemas",
+						id: schemaIdFromDeclaration,
 						data: {
-							currentYearSchemaUrl: published.actionPlan.currentYearSchemaUrl,
-							previousYearsSchemaUrl:
-								published.actionPlan.previousYearsSchemaUrl,
+							schemaName: published.schema.schemaName,
+							schemaUrl: published.schema.schemaUrl,
+							actionPlanUrls: published.schema.actionPlanUrls,
 						},
 						req: { transactionID },
 						context: { skipStatusRecalculation: true },

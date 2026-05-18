@@ -9,9 +9,10 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 export type PublishedDeclaration = {
 	name: string;
 	entityName: string;
-	actionPlan: {
-		currentYearSchemaUrl: string;
-		previousYearsSchemaUrl: string;
+	schema: {
+		schemaName: string;
+		schemaUrl: string;
+		actionPlanUrls: { url: string }[];
 	};
 	appKindLabel: string;
 	url: string;
@@ -39,10 +40,12 @@ export const extractDeclarationContentToPublish = (
 	return {
 		name: declaration.name ?? "",
 		entityName: declaration.entity?.name ?? "",
-		actionPlan: {
-			currentYearSchemaUrl: declaration?.actionPlan?.currentYearSchemaUrl ?? "",
-			previousYearsSchemaUrl:
-				declaration?.actionPlan?.previousYearsSchemaUrl ?? "",
+		schema: {
+			schemaName: declaration?.schema?.schemaName ?? "",
+			schemaUrl: declaration?.schema?.schemaUrl ?? "",
+			actionPlanUrls: (declaration?.schema?.actionPlanUrls ?? []).map(
+				(item) => ({ url: item.url ?? "" }),
+			),
 		},
 		appKindLabel:
 			appKindOptions.find((kind) => kind.value === declaration.app_kind)

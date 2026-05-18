@@ -1,7 +1,4 @@
-import { fr } from "@codegouvfr/react-dsfr";
-import Information from "@codegouvfr/react-dsfr/picto/Information";
-import { tss } from "tss-react";
-import HelpingMessage from "~/components/declaration/HelpingMessage";
+import Button from "@codegouvfr/react-dsfr/Button";
 import { withForm } from "../context";
 import { schemaFormOptions } from "./schema";
 
@@ -9,114 +6,86 @@ export const SchemaForm = withForm({
 	...schemaFormOptions,
 	props: { readOnly: true },
 	render: function Render({ form, readOnly }) {
-		const { classes } = useStyles();
 		return (
 			<>
-				<form.AppField
-					name="hasDoneCurrentYearSchema"
-					listeners={{
-						onChange: ({ value }) =>
-							!value && form.resetField("currentYearSchemaUrl"),
-					}}
-				>
+				<form.AppField name="schemaName">
 					{(field) => (
-						<>
-							<field.RadioField
-								legend={
-									readOnly
-										? "Réalisation d’un schéma annuel - année en cours"
-										: "Avez-vous réalisé un plan d’action pour l’année en cours ?"
-								}
-								hintText="Le plan d’action, ou schéma annuel, détaille les actions prévues sur l’année pour améliorer l’accessibilité de vos services numériques."
-								options={[
-									{ label: "Oui", value: true },
-									{ label: "Non", value: false },
-								]}
-								readOnlyField={readOnly}
-								required
-							/>
-							{field.state.value ? (
-								<form.AppField name="currentYearSchemaUrl">
-									{(field) => (
-										<field.TextField
-											label={`Lien ${!readOnly ? "URL" : ""} du schéma annuel ${!readOnly ? "à jour" : ""}`}
-											hintText={
-												<>
-													Si vous êtes en cours de création de ce schéma,
-													laissez le champ vide et revenez modifier votre
-													déclaration une fois le schéma terminé. <br /> Format
-													attendu : https://www.example.fr
-												</>
-											}
-											nativeInputProps={{ type: "url" }}
-											readOnlyField={readOnly}
-											required
-										/>
-									)}
-								</form.AppField>
-							) : !readOnly ? (
-								<HelpingMessage
-									image={<Information fontSize="6rem" />}
-									message={
-										<>
-											L’objectif d’un plan d’action est de créer une démarche
-											d’amélioration continue de l’accessibilité. Sa création
-											est obligatoire.
-										</>
-									}
-								/>
-							) : null}
-						</>
+						<field.TextField
+							label="Nom du schéma pluriannuel"
+							hintText="Ce nom vous aidera à retrouver ce schéma (ex: « Schéma pluriannuel 2024-2026 »)"
+							readOnlyField={readOnly}
+							required
+						/>
 					)}
 				</form.AppField>
-				{readOnly && <div className={classes.separator} />}
-				<form.AppField
-					name="hasDonePreviousYearsSchema"
-					listeners={{
-						onChange: ({ value }) =>
-							!value && form.resetField("previousYearsSchemaUrl"),
-					}}
-				>
+				<form.AppField name="schemaUrl">
 					{(field) => (
-						<>
-							<field.RadioField
-								legend={
-									readOnly
-										? "Réalisation d’un bilan des actions - années précédentes"
-										: "Avez-vous réalisé un bilan des actions des années précédentes ?"
-								}
-								hintText="Le bilan des actions liste les actions réalisées pendant les années précédentes pour améliorer l’accessibilité de vos services numériques."
-								options={[
-									{ label: "Oui", value: true },
-									{ label: "Non", value: false },
-								]}
-								readOnlyField={readOnly}
-								required
-							/>
-							{field.state.value && (
-								<form.AppField name="previousYearsSchemaUrl">
-									{(field) => (
-										<field.TextField
-											label={`Lien ${!readOnly ? "URL" : ""} du bilan des actions`}
-											hintText="Format attendu : https://www.example.fr"
-											nativeInputProps={{ type: "url" }}
-											readOnlyField={readOnly}
-											required
+						<field.TextField
+							label="Lien du schéma pluriannuel"
+							hintText={
+								<>
+									Si vous êtes en cours de création de ce schéma, laissez le
+									champ vide et revenez modifier votre déclaration une fois le
+									schéma terminé. <br /> Format attendu : https://www.example.fr
+								</>
+							}
+							nativeInputProps={{ type: "url" }}
+							readOnlyField={readOnly}
+						/>
+					)}
+				</form.AppField>
+				<form.Field name="actionPlanUrls" mode="array">
+					{(arrayField) => (
+						<div>
+							<p className="fr-text--bold fr-mb-1w">Plans d'actions</p>
+							{arrayField.state.value.map((_, index) => (
+								<div
+									key={`action-plan-${index}`}
+									style={{
+										display: "flex",
+										alignItems: "flex-end",
+										gap: "0.5rem",
+									}}
+								>
+									<div style={{ flex: 1 }}>
+										<form.AppField name={`actionPlanUrls[${index}].url`}>
+											{(field) => (
+												<field.TextField
+													label={`Lien du plan d'actions ${index + 1}`}
+													hintText="Format attendu : https://www.example.fr"
+													nativeInputProps={{ type: "url" }}
+													readOnlyField={readOnly}
+													required
+												/>
+											)}
+										</form.AppField>
+									</div>
+									{!readOnly && (
+										<Button
+											type="button"
+											priority="tertiary no outline"
+											iconId="fr-icon-delete-line"
+											title="Supprimer ce plan d'actions"
+											onClick={() => arrayField.removeValue(index)}
 										/>
 									)}
-								</form.AppField>
+								</div>
+							))}
+							{!readOnly && (
+								<Button
+									type="button"
+									priority="secondary"
+									iconId="fr-icon-add-line"
+									iconPosition="left"
+									onClick={() => arrayField.pushValue({ url: "" })}
+								>
+									Ajouter un plan d'actions
+								</Button>
 							)}
-						</>
+						</div>
 					)}
-				</form.AppField>
+				</form.Field>
 			</>
 		);
-	},
-});
-
-const useStyles = tss.withName(SchemaForm.name).create({
-	separator: {
-		height: "7px",
-		backgroundColor: fr.colors.decisions.border.default.grey.default,
 	},
 });
