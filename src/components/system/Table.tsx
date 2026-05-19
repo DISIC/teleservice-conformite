@@ -34,6 +34,7 @@ type Props<TData> = {
 	colorVariant?: TableProps["colorVariant"];
 	className?: string;
 	numberPerPage: number;
+	hideHeaders?: boolean;
 	tableOptions?: Partial<
 		Omit<TableOptions<TData>, "data" | "columns" | "getCoreRowModel">
 	>;
@@ -52,6 +53,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 		colorVariant,
 		className,
 		numberPerPage,
+		hideHeaders,
 		tableOptions,
 	} = props;
 
@@ -86,20 +88,22 @@ export const Table = <TData,>(props: Props<TData>) => {
 
 	const pageCount = enablePagination ? table.getPageCount() : 0;
 
-	const headers: ReactNode[] = table.getHeaderGroups().flatMap((group) =>
-		group.headers.map((header) => {
-			if (header.isPlaceholder) return null;
-			return (
-				<div
-					key={header.id}
-					className={classes.headerCell}
-					style={{ ...header.column.columnDef.meta?.styles }}
-				>
-					{flexRender(header.column.columnDef.header, header.getContext())}
-				</div>
+	const headers: ReactNode[] | undefined = hideHeaders
+		? undefined
+		: table.getHeaderGroups().flatMap((group) =>
+				group.headers.map((header) => {
+					if (header.isPlaceholder) return null;
+					return (
+						<div
+							key={header.id}
+							className={classes.headerCell}
+							style={{ ...header.column.columnDef.meta?.styles }}
+						>
+							{flexRender(header.column.columnDef.header, header.getContext())}
+						</div>
+					);
+				}),
 			);
-		}),
-	);
 
 	const rows: ReactNode[][] = table.getRowModel().rows.map((row) =>
 		row.getVisibleCells().map((cell) => {
@@ -127,7 +131,11 @@ export const Table = <TData,>(props: Props<TData>) => {
 				noScroll={noScroll}
 				bottomCaption={bottomCaption}
 				colorVariant={colorVariant}
-				className={cx(classes.table, className)}
+				className={cx(
+					classes.table,
+					hideHeaders && classes.hiddenHeaders,
+					className,
+				)}
 			/>
 			{enablePagination && (
 				<div className={classes.paginationWrapper}>
@@ -165,6 +173,14 @@ const useStyles = tss.withName(Table.name).create(() => ({
 	bodyCell: {
 		display: "flex",
 		alignItems: "center",
+	},
+	hiddenHeaders: {
+		"tbody tr:first-of-type td": {
+			borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+		},
+		"tbody tr:last-of-type td": {
+			borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+		},
 	},
 	paginationWrapper: {
 		display: "flex",

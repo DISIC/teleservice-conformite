@@ -1,12 +1,15 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
+import Tag from "@codegouvfr/react-dsfr/Tag";
 import config from "@payload-config";
+import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { getPayload } from "payload";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { tss } from "tss-react";
-import type { Entity } from "~/payload/payload-types";
+import Table from "~/components/system/Table";
+import type { Contact, Entity, Schema } from "~/payload/payload-types";
 import { api } from "~/utils/api";
 import { authPages } from "~/utils/auth";
 import { ContactTypeForm } from "~/utils/form/contact/form";
@@ -72,6 +75,143 @@ export default function LibraryPage({
 			onError: (e) => alert(e.message),
 		});
 
+	const contactColumnHelper = createColumnHelper<Contact>();
+	const schemaColumnHelper = createColumnHelper<Schema>();
+
+	const contactColumns = useMemo(
+		() => [
+			contactColumnHelper.accessor("name", {
+				id: "name",
+				cell: (info) => <strong>{info.getValue()}</strong>,
+			}),
+			contactColumnHelper.display({
+				id: "kinds",
+				cell: (info) => {
+					const contact = info.row.original;
+					return (
+						<div className={classes.tags}>
+							{contact.email && <Tag small>Email</Tag>}
+							{contact.url && <Tag small>Formulaire</Tag>}
+						</div>
+					);
+				},
+			}),
+			contactColumnHelper.display({
+				id: "url",
+				cell: (info) => {
+					const url = info.row.original.url;
+					if (!url) return null;
+					return <span className={classes.hint}>{url}</span>;
+				},
+			}),
+			contactColumnHelper.display({
+				id: "email",
+				cell: (info) => {
+					const email = info.row.original.email;
+					if (!email) return null;
+					return <span className={classes.hint}>{email}</span>;
+				},
+			}),
+			contactColumnHelper.display({
+				id: "actions",
+				meta: { styles: { width: 96, justifyContent: "flex-end" } },
+				cell: (info) => {
+					const contact = info.row.original;
+					return (
+						<div className={classes.itemActions}>
+							<Button
+								priority="tertiary no outline"
+								iconId="fr-icon-edit-line"
+								title="Modifier"
+								onClick={() => {
+									setEditingContactId(contact.id);
+									setShowContactForm(true);
+								}}
+							/>
+							<Button
+								priority="tertiary no outline"
+								iconId="fr-icon-delete-line"
+								title="Supprimer"
+								onClick={() =>
+									deleteContact({ id: contact.id, entityId: entity.id })
+								}
+							/>
+						</div>
+					);
+				},
+			}),
+		],
+		[
+			classes.hint,
+			classes.itemActions,
+			classes.tags,
+			deleteContact,
+			entity.id,
+			contactColumnHelper,
+		],
+	);
+
+	const schemaColumns = useMemo(
+		() => [
+			schemaColumnHelper.accessor("schemaName", {
+				id: "name",
+				cell: (info) => <strong>{info.getValue()}</strong>,
+			}),
+			schemaColumnHelper.accessor("schemaUrl", {
+				id: "url",
+				cell: (info) => {
+					const url = info.getValue();
+					if (!url) return null;
+					return <span className={classes.hint}>{url}</span>;
+				},
+			}),
+			schemaColumnHelper.accessor("updatedAt", {
+				id: "updatedAt",
+				cell: (info) => (
+					<span className={classes.hint}>
+						Dernière mise à jour{" "}
+						{new Date(info.getValue()).toLocaleDateString("fr-FR")}
+					</span>
+				),
+			}),
+			schemaColumnHelper.display({
+				id: "actions",
+				meta: { styles: { width: 96, justifyContent: "flex-end" } },
+				cell: (info) => {
+					const schema = info.row.original;
+					return (
+						<div className={classes.itemActions}>
+							<Button
+								priority="tertiary no outline"
+								iconId="fr-icon-edit-line"
+								title="Modifier"
+								onClick={() => {
+									setEditingSchemaId(schema.id);
+									setShowSchemaForm(true);
+								}}
+							/>
+							<Button
+								priority="tertiary no outline"
+								iconId="fr-icon-delete-line"
+								title="Supprimer"
+								onClick={() =>
+									deleteSchema({ id: schema.id, entityId: entity.id })
+								}
+							/>
+						</div>
+					);
+				},
+			}),
+		],
+		[
+			classes.hint,
+			classes.itemActions,
+			deleteSchema,
+			entity.id,
+			schemaColumnHelper,
+		],
+	);
+
 	const editingContact = contacts.find((c) => c.id === editingContactId);
 	const editingSchema = schemas.find((s) => s.id === editingSchemaId);
 
@@ -126,92 +266,6 @@ export default function LibraryPage({
 						toutes les déclarations de cette administration. Toute modification
 						sera répercutée sur les déclarations liées.
 					</p>
-
-					<section className={classes.section}>
-						<div className={classes.sectionHeader}>
-							<h2>Contacts</h2>
-							{!showContactForm && (
-								<Button
-									iconId="fr-icon-add-line"
-									priority="secondary"
-									onClick={() => {
-										setEditingContactId(null);
-										setShowContactForm(true);
-									}}
-								>
-									Ajouter un contact
-								</Button>
-							)}
-						</div>
-
-						{showContactForm && (
-							<form
-								onSubmit={(e) => {
-									e.preventDefault();
-									contactForm.handleSubmit();
-								}}
-								onInvalid={() => contactForm.validate("submit")}
-								className={classes.formCard}
-							>
-								<ContactTypeForm form={contactForm} readOnly={false} />
-								<contactForm.AppForm>
-									<div className={classes.formActions}>
-										<contactForm.CancelButton
-											label="Annuler"
-											ariaLabel="Annuler"
-											onClick={() => {
-												setShowContactForm(false);
-												setEditingContactId(null);
-											}}
-											priority="tertiary"
-										/>
-										<contactForm.SubscribeButton
-											label="Enregistrer"
-											iconId="fr-icon-check-line"
-											iconPosition="right"
-										/>
-									</div>
-								</contactForm.AppForm>
-							</form>
-						)}
-
-						{contacts.length === 0 && !showContactForm && (
-							<p className={classes.empty}>Aucun contact enregistré.</p>
-						)}
-
-						<ul className={classes.list}>
-							{contacts.map((contact) => (
-								<li key={contact.id} className={classes.listItem}>
-									<div>
-										<strong>{contact.name}</strong>
-										<div className={classes.hint}>
-											{[contact.email, contact.url].filter(Boolean).join(" · ")}
-										</div>
-									</div>
-									<div className={classes.itemActions}>
-										<Button
-											priority="tertiary no outline"
-											iconId="fr-icon-edit-line"
-											title="Modifier"
-											onClick={() => {
-												setEditingContactId(contact.id);
-												setShowContactForm(true);
-											}}
-										/>
-										<Button
-											priority="tertiary no outline"
-											iconId="fr-icon-delete-line"
-											title="Supprimer"
-											onClick={() =>
-												deleteContact({ id: contact.id, entityId: entity.id })
-											}
-										/>
-									</div>
-								</li>
-							))}
-						</ul>
-					</section>
-
 					<section className={classes.section}>
 						<div className={classes.sectionHeader}>
 							<h2>Schémas et plans d'actions</h2>
@@ -228,7 +282,6 @@ export default function LibraryPage({
 								</Button>
 							)}
 						</div>
-
 						{showSchemaForm && (
 							<form
 								onSubmit={(e) => {
@@ -260,44 +313,77 @@ export default function LibraryPage({
 							</form>
 						)}
 
-						{schemas.length === 0 && !showSchemaForm && (
+						{schemas.length === 0 && !showSchemaForm ? (
 							<p className={classes.empty}>Aucun schéma enregistré.</p>
+						) : (
+							schemas.length > 0 && (
+								<Table
+									columns={schemaColumns}
+									data={schemas}
+									numberPerPage={10}
+									hideHeaders
+								/>
+							)
 						)}
-
-						<ul className={classes.list}>
-							{schemas.map((schema) => (
-								<li key={schema.id} className={classes.listItem}>
-									<div>
-										<strong>{schema.schemaName}</strong>
-										<div className={classes.hint}>
-											{schema.schemaUrl}
-											{schema.actionPlanUrls?.length
-												? ` · ${schema.actionPlanUrls.length} plan(s) d'actions`
-												: ""}
-										</div>
-									</div>
-									<div className={classes.itemActions}>
-										<Button
-											priority="tertiary no outline"
-											iconId="fr-icon-edit-line"
-											title="Modifier"
+					</section>
+					<section className={classes.section}>
+						<div className={classes.sectionHeader}>
+							<h2>Contacts</h2>
+							{!showContactForm && (
+								<Button
+									iconId="fr-icon-add-line"
+									priority="secondary"
+									onClick={() => {
+										setEditingContactId(null);
+										setShowContactForm(true);
+									}}
+								>
+									Ajouter un contact
+								</Button>
+							)}
+						</div>
+						{showContactForm && (
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									contactForm.handleSubmit();
+								}}
+								onInvalid={() => contactForm.validate("submit")}
+								className={classes.formCard}
+							>
+								<ContactTypeForm form={contactForm} readOnly={false} />
+								<contactForm.AppForm>
+									<div className={classes.formActions}>
+										<contactForm.CancelButton
+											label="Annuler"
+											ariaLabel="Annuler"
 											onClick={() => {
-												setEditingSchemaId(schema.id);
-												setShowSchemaForm(true);
+												setShowContactForm(false);
+												setEditingContactId(null);
 											}}
+											priority="tertiary"
 										/>
-										<Button
-											priority="tertiary no outline"
-											iconId="fr-icon-delete-line"
-											title="Supprimer"
-											onClick={() =>
-												deleteSchema({ id: schema.id, entityId: entity.id })
-											}
+										<contactForm.SubscribeButton
+											label="Enregistrer"
+											iconId="fr-icon-check-line"
+											iconPosition="right"
 										/>
 									</div>
-								</li>
-							))}
-						</ul>
+								</contactForm.AppForm>
+							</form>
+						)}
+						{contacts.length === 0 && !showContactForm ? (
+							<p className={classes.empty}>Aucun contact enregistré.</p>
+						) : (
+							contacts.length > 0 && (
+								<Table
+									columns={contactColumns}
+									data={contacts}
+									numberPerPage={10}
+									hideHeaders
+								/>
+							)
+						)}
 					</section>
 				</div>
 			</div>
@@ -334,25 +420,14 @@ const useStyles = tss.withName(LibraryPage.name).create({
 		justifyContent: "flex-end",
 		gap: fr.spacing("2v"),
 	},
-	list: {
-		listStyle: "none",
-		padding: 0,
-		margin: 0,
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("2v"),
-	},
-	listItem: {
-		display: "flex",
-		justifyContent: "space-between",
-		alignItems: "center",
-		padding: fr.spacing("4v"),
-		backgroundColor: fr.colors.decisions.background.default.grey.default,
-		border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-	},
 	itemActions: {
 		display: "flex",
 		gap: fr.spacing("1v"),
+	},
+	tags: {
+		display: "flex",
+		gap: fr.spacing("1v"),
+		flexWrap: "wrap",
 	},
 	hint: {
 		fontSize: "0.875rem",
