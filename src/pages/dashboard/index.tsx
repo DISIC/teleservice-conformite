@@ -251,6 +251,7 @@ const useStyles = tss
 		buttonWrapper: {
 			justifyContent: "flex-end",
 			display: declarationLength ? "flex" : "none",
+			marginBottom: fr.spacing("6v"),
 		},
 		alertWrapper: {
 			width: "100%",
