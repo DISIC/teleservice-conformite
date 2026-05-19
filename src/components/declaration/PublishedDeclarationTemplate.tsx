@@ -28,7 +28,8 @@ export default function PublishedDeclarationTemplate({
 						]
 					: []),
 				...actionPlanUrls.map(
-					(item) => `- Lien URL d'un plan d'actions : ${item.url};`,
+					(item) =>
+						`- Lien URL d'un plan d'actions${item.name ? ` (${item.name})` : ""} : ${item.url};`,
 				),
 				actionPlanUrls.length > 0 ? "" : null,
 			].filter((line): line is string => line !== null)

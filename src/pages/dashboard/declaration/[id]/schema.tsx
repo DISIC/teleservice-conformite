@@ -63,6 +63,7 @@ export default function SchemaPage({
 			schemaName: declaration.schema.schemaName ?? "",
 			schemaUrl: declaration.schema.schemaUrl ?? "",
 			actionPlanUrls: (declaration.schema.actionPlanUrls ?? []).map((item) => ({
+				name: item.name ?? "",
 				url: item.url ?? "",
 			})),
 		};

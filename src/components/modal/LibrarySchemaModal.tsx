@@ -48,6 +48,7 @@ export function LibrarySchemaModal({
 						schemaName: editing.schemaName,
 						schemaUrl: editing.schemaUrl ?? "",
 						actionPlanUrls: (editing.actionPlanUrls ?? []).map((i) => ({
+							name: i.name,
 							url: i.url,
 						})),
 					}

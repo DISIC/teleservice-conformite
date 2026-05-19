@@ -8,6 +8,7 @@ export const schemaForm = z.object({
 		.or(z.literal("")),
 	actionPlanUrls: z.array(
 		z.object({
+			name: z.string().min(1, "Le nom du plan d'actions est requis"),
 			url: z.url("Lien invalide (ex: https://www.example.fr)"),
 		}),
 	),

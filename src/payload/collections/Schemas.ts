@@ -33,6 +33,12 @@ export const Schemas: CollectionConfig = {
 			},
 			fields: [
 				{
+					name: "name",
+					type: "text",
+					label: { fr: "Nom du plan d'actions" },
+					required: true,
+				},
+				{
 					name: "url",
 					type: "text",
 					label: { fr: "Lien du plan d'actions" },

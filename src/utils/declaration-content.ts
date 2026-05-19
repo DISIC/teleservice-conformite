@@ -12,7 +12,7 @@ export type PublishedDeclaration = {
 	schema: {
 		schemaName: string;
 		schemaUrl: string;
-		actionPlanUrls: { url: string }[];
+		actionPlanUrls: { name: string; url: string }[];
 	};
 	appKindLabel: string;
 	url: string;
@@ -44,7 +44,7 @@ export const extractDeclarationContentToPublish = (
 			schemaName: declaration?.schema?.schemaName ?? "",
 			schemaUrl: declaration?.schema?.schemaUrl ?? "",
 			actionPlanUrls: (declaration?.schema?.actionPlanUrls ?? []).map(
-				(item) => ({ url: item.url ?? "" }),
+				(item) => ({ name: item.name ?? "", url: item.url ?? "" }),
 			),
 		},
 		appKindLabel:
