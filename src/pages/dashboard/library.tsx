@@ -266,7 +266,20 @@ export default function LibraryPage({
 						</Badge>
 					</div>
 					<section className={classes.section}>
-						<h2 className={fr.cx("fr-mb-0")}>Schémas et plans d'actions</h2>
+						<div className={classes.subHeaderWrapper}>
+							<h2 className={fr.cx("fr-mb-0", "fr-h4")}>
+								Schémas & plans d'actions
+							</h2>
+							{schemas.length > 0 && (
+								<Button
+									priority="secondary"
+									onClick={() => schemaModalActions.open?.()}
+									iconId="fr-icon-add-line"
+								>
+									Ajouter un schéma pluriannuel
+								</Button>
+							)}
+						</div>
 						{isLoadingSchemas || isFetchingSchemas ? (
 							<Loader />
 						) : schemas.length === 0 ? (
@@ -293,7 +306,18 @@ export default function LibraryPage({
 						)}
 					</section>
 					<section className={classes.section}>
-						<h2 className={fr.cx("fr-mb-0")}>Moyens de contact</h2>
+						<div className={classes.subHeaderWrapper}>
+							<h2 className={fr.cx("fr-mb-0", "fr-h4")}>Moyens de contact</h2>
+							{contacts.length > 0 && (
+								<Button
+									priority="secondary"
+									onClick={() => contactModalActions.open?.()}
+									iconId="fr-icon-add-line"
+								>
+									Ajouter un contact
+								</Button>
+							)}
+						</div>
 						{isLoadingContacts || isFetchingContacts ? (
 							<Loader />
 						) : contacts.length === 0 ? (
@@ -341,10 +365,15 @@ const useStyles = tss.withName(LibraryPage.name).create({
 		gap: fr.spacing("4v"),
 		flexWrap: "wrap",
 	},
+	subHeaderWrapper: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "space-between",
+	},
 	section: {
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("4v"),
+		gap: fr.spacing("6v"),
 	},
 	itemActions: {
 		display: "flex",
