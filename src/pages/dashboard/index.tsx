@@ -3,6 +3,7 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
+import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 import config from "@payload-config";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -209,6 +210,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 					<EmptyState
 						title="Bienvenue !"
 						description="Ajoutez votre première déclaration d’accessibilité pour démarrer"
+						pictogram={<Conclusion fontSize="3rem" />}
 						ctaProps={{
 							linkProps: { href: "/dashboard/form" },
 							children: "Ajouter une déclaration",
