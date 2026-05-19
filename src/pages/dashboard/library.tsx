@@ -3,7 +3,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import config from "@payload-config";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper, getExpandedRowModel } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -28,6 +28,29 @@ import { authPages } from "~/utils/auth";
 interface LibraryPageProps {
 	entity: Entity;
 }
+
+type SchemaRow = {
+	kind: "schema" | "plan";
+	name: string;
+	url?: string | null;
+	updatedAt: string;
+	schema?: Schema;
+	subRows?: SchemaRow[];
+};
+
+const toSchemaRow = (schema: Schema): SchemaRow => ({
+	kind: "schema",
+	name: schema.schemaName,
+	url: schema.schemaUrl,
+	updatedAt: schema.updatedAt,
+	schema,
+	subRows: (schema.actionPlanUrls ?? []).map((plan) => ({
+		kind: "plan",
+		name: plan.name,
+		url: plan.url,
+		updatedAt: schema.updatedAt,
+	})),
+});
 
 export default function LibraryPage({
 	entity,
@@ -71,8 +94,13 @@ export default function LibraryPage({
 			onError: (e) => alert(e.message),
 		});
 
+	const schemaRows = useMemo<SchemaRow[]>(
+		() => schemas.map(toSchemaRow),
+		[schemas],
+	);
+
 	const contactColumnHelper = createColumnHelper<Contact>();
-	const schemaColumnHelper = createColumnHelper<Schema>();
+	const schemaColumnHelper = createColumnHelper<SchemaRow>();
 
 	const contactColumns = useMemo(
 		() => [
@@ -147,11 +175,16 @@ export default function LibraryPage({
 
 	const schemaColumns = useMemo(
 		() => [
-			schemaColumnHelper.accessor("schemaName", {
+			schemaColumnHelper.accessor("name", {
 				id: "name",
-				cell: (info) => <strong>{info.getValue()}</strong>,
+				cell: (info) =>
+					info.row.original.kind === "schema" ? (
+						<strong>{info.getValue()}</strong>
+					) : (
+						<span>{info.getValue()}</span>
+					),
 			}),
-			schemaColumnHelper.accessor("schemaUrl", {
+			schemaColumnHelper.accessor("url", {
 				id: "url",
 				cell: (info) => {
 					const url = info.getValue();
@@ -164,7 +197,12 @@ export default function LibraryPage({
 				cell: (info) => (
 					<span className={classes.hint}>
 						Dernière mise à jour{" "}
-						{new Date(info.getValue()).toLocaleDateString("fr-FR")}
+						<Tag
+							small
+							linkProps={{ href: "#", style: { pointerEvents: "none" } }}
+						>
+							{new Date(info.getValue()).toLocaleDateString("fr-FR")}
+						</Tag>
 					</span>
 				),
 			}),
@@ -172,7 +210,9 @@ export default function LibraryPage({
 				id: "actions",
 				meta: { styles: { width: 96, justifyContent: "flex-end" } },
 				cell: (info) => {
-					const schema = info.row.original;
+					const row = info.row.original;
+					if (row.kind !== "schema" || !row.schema) return null;
+					const schema = row.schema;
 					return (
 						<div className={classes.itemActions}>
 							<Button
@@ -241,9 +281,14 @@ export default function LibraryPage({
 						) : (
 							<Table
 								columns={schemaColumns}
-								data={schemas}
+								data={schemaRows}
 								numberPerPage={10}
 								hideHeaders
+								tableOptions={{
+									getSubRows: (row) => row.subRows,
+									getExpandedRowModel: getExpandedRowModel(),
+									state: { expanded: true },
+								}}
 							/>
 						)}
 					</section>
@@ -313,6 +358,9 @@ const useStyles = tss.withName(LibraryPage.name).create({
 	hint: {
 		fontSize: "0.875rem",
 		color: fr.colors.decisions.text.mention.grey.default,
+		display: "flex",
+		alignItems: "center",
+		gap: fr.spacing("2v"),
 	},
 	empty: {
 		color: fr.colors.decisions.text.mention.grey.default,
