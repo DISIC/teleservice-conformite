@@ -4,11 +4,11 @@ import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import { tss } from "tss-react";
 
 type EmptyStateProps = {
-	title: string;
+	title?: string;
 	description: string;
 	ctaProps: ButtonProps.Common &
 		(ButtonProps.IconOnly | ButtonProps.WithIcon | ButtonProps.WithoutIcon) &
-		ButtonProps.AsAnchor;
+		(ButtonProps.AsAnchor | ButtonProps.AsButton);
 };
 
 export default function EmptyState(props: EmptyStateProps) {
@@ -18,7 +18,7 @@ export default function EmptyState(props: EmptyStateProps) {
 	return (
 		<div className={classes.emptyStateContainer}>
 			<Conclusion fontSize="3rem" />
-			<h2 className={classes.emptyStateTitle}>{title}</h2>
+			{title && <h2 className={classes.emptyStateTitle}>{title}</h2>}
 			<p className={classes.emptyStateDescription}>{description}</p>
 			<Button {...ctaProps} priority="primary">
 				{ctaProps.children}

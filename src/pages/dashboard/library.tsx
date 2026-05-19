@@ -1,13 +1,16 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import config from "@payload-config";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useMemo, useState } from "react";
 import { tss } from "tss-react";
+import EmptyState from "~/components/declaration/EmptyState";
 import {
 	LibraryContactModal,
 	type LibraryContactModalActions,
@@ -29,6 +32,7 @@ export default function LibraryPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
+	const router = useRouter();
 
 	const utils = api.useUtils();
 
@@ -198,25 +202,31 @@ export default function LibraryPage({
 			</Head>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
-					<h1>Documents partagés de {entity.name}</h1>
-					<p>
-						Les contacts et schémas enregistrés ici peuvent être réutilisés sur
-						toutes les déclarations de cette administration. Toute modification
-						sera répercutée sur les déclarations liées.
-					</p>
+					<Button
+						priority="secondary"
+						onClick={() => router.back()}
+						iconId="fr-icon-arrow-left-s-line"
+						size="small"
+					>
+						Retour sur la liste des déclarations
+					</Button>
+					<div className={classes.headerWrapper}>
+						<h1>Documents partagés</h1>
+						<Badge noIcon small>
+							éditable par tous les membres de l'organisation
+						</Badge>
+					</div>
 					<section className={classes.section}>
-						<div className={classes.sectionHeader}>
-							<h2>Schémas et plans d'actions</h2>
-							<Button
-								iconId="fr-icon-add-line"
-								priority="secondary"
-								onClick={() => schemaModalActions.open?.()}
-							>
-								Ajouter un schéma
-							</Button>
-						</div>
+						<h2 className={fr.cx("fr-mb-0")}>Schémas et plans d'actions</h2>
 						{schemas.length === 0 ? (
-							<p className={classes.empty}>Aucun schéma enregistré.</p>
+							<EmptyState
+								description="Ajoutez un schéma pluriannuel et les plans d’action associés"
+								ctaProps={{
+									children: "Ajouter un schéma pluriannuel",
+									onClick: () => schemaModalActions.open?.(),
+									iconId: "fr-icon-add-line",
+								}}
+							/>
 						) : (
 							<Table
 								columns={schemaColumns}
@@ -227,18 +237,16 @@ export default function LibraryPage({
 						)}
 					</section>
 					<section className={classes.section}>
-						<div className={classes.sectionHeader}>
-							<h2>Contacts</h2>
-							<Button
-								iconId="fr-icon-add-line"
-								priority="secondary"
-								onClick={() => contactModalActions.open?.()}
-							>
-								Ajouter un contact
-							</Button>
-						</div>
+						<h2 className={fr.cx("fr-mb-0")}>Moyens de contact</h2>
 						{contacts.length === 0 ? (
-							<p className={classes.empty}>Aucun contact enregistré.</p>
+							<EmptyState
+								description="Ajoutez un contact"
+								ctaProps={{
+									children: "Ajouter un contact",
+									onClick: () => contactModalActions.open?.(),
+									iconId: "fr-icon-add-line",
+								}}
+							/>
 						) : (
 							<Table
 								columns={contactColumns}
@@ -269,15 +277,16 @@ const useStyles = tss.withName(LibraryPage.name).create({
 		flexDirection: "column",
 		gap: fr.spacing("8v"),
 	},
+	headerWrapper: {
+		display: "flex",
+		alignItems: "center",
+		gap: fr.spacing("4v"),
+		flexWrap: "wrap",
+	},
 	section: {
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("4v"),
-	},
-	sectionHeader: {
-		display: "flex",
-		justifyContent: "space-between",
-		alignItems: "center",
 	},
 	itemActions: {
 		display: "flex",
