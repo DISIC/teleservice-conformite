@@ -19,6 +19,7 @@ import {
 	LibrarySchemaModal,
 	type LibrarySchemaModalActions,
 } from "~/components/modal/LibrarySchemaModal";
+import { Loader } from "~/components/system/Loader";
 import Table from "~/components/system/Table";
 import type { Contact, Entity, Schema } from "~/payload/payload-types";
 import { api } from "~/utils/api";
@@ -39,10 +40,18 @@ export default function LibraryPage({
 	const [contactModalActions] = useState<LibraryContactModalActions>({});
 	const [schemaModalActions] = useState<LibrarySchemaModalActions>({});
 
-	const { data: contacts = [] } = api.entityLibrary.listContacts.useQuery({
+	const {
+		data: contacts = [],
+		isLoading: isLoadingContacts,
+		isFetching: isFetchingContacts,
+	} = api.entityLibrary.listContacts.useQuery({
 		entityId: entity.id,
 	});
-	const { data: schemas = [] } = api.entityLibrary.listSchemas.useQuery({
+	const {
+		data: schemas = [],
+		isLoading: isLoadingSchemas,
+		isFetching: isFetchingSchemas,
+	} = api.entityLibrary.listSchemas.useQuery({
 		entityId: entity.id,
 	});
 
@@ -218,7 +227,9 @@ export default function LibraryPage({
 					</div>
 					<section className={classes.section}>
 						<h2 className={fr.cx("fr-mb-0")}>Schémas et plans d'actions</h2>
-						{schemas.length === 0 ? (
+						{isLoadingSchemas || isFetchingSchemas ? (
+							<Loader />
+						) : schemas.length === 0 ? (
 							<EmptyState
 								description="Ajoutez un schéma pluriannuel et les plans d’action associés"
 								ctaProps={{
@@ -238,7 +249,9 @@ export default function LibraryPage({
 					</section>
 					<section className={classes.section}>
 						<h2 className={fr.cx("fr-mb-0")}>Moyens de contact</h2>
-						{contacts.length === 0 ? (
+						{isLoadingContacts || isFetchingContacts ? (
+							<Loader />
+						) : contacts.length === 0 ? (
 							<EmptyState
 								description="Ajoutez un contact"
 								ctaProps={{
