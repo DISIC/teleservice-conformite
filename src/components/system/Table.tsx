@@ -67,12 +67,13 @@ export const Table = <TData,>(props: Props<TData>) => {
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		...tableOptions,
 		...(enablePagination
 			? {
 					getPaginationRowModel: getPaginationRowModel(),
 					state: {
-						pagination: { pageIndex, pageSize: numberPerPage },
 						...tableOptions?.state,
+						pagination: { pageIndex, pageSize: numberPerPage },
 					},
 					onPaginationChange: (updater) => {
 						const next =
@@ -83,7 +84,6 @@ export const Table = <TData,>(props: Props<TData>) => {
 					},
 				}
 			: {}),
-		...tableOptions,
 	});
 
 	const pageCount = enablePagination ? table.getPageCount() : 0;
