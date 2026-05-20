@@ -157,7 +157,6 @@ const useStyles = tss.withName(Table.name).create(() => ({
 		marginTop: "0!important",
 		marginBottom: "0!important",
 		table: {
-			borderColor: "red!important",
 			display: "table",
 		},
 		thead: {
