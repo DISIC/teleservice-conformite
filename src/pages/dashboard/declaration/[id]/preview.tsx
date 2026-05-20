@@ -44,7 +44,7 @@ export default function DeclarationPreviewPage({
 	declaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
-	const router = useRouter();
+	const { push, back } = useRouter();
 
 	const publishedDeclarationContent: PublishedDeclaration =
 		extractDeclarationContentToPublish(declaration);
@@ -52,7 +52,7 @@ export default function DeclarationPreviewPage({
 	const { mutateAsync: publishDeclaration } =
 		api.declaration.updatePublishedContent.useMutation({
 			onSuccess: () => {
-				router.push(`/dashboard/declaration/${declaration.id}?published=true`);
+				push(`/dashboard/declaration/${declaration.id}?published=true`);
 			},
 			onError: (error) => {
 				console.error("Error publishing declaration:", error);
@@ -95,7 +95,7 @@ export default function DeclarationPreviewPage({
 					<div className={classes.buttonsContainer}>
 						<Button
 							priority="tertiary"
-							onClick={() => router.back()}
+							onClick={() => back()}
 							nativeButtonProps={{
 								"aria-label": "Retour à l'étape précédente",
 							}}
@@ -172,11 +172,12 @@ export const getServerSideProps = (async (context) => {
 		return { redirect };
 	}
 
-	const payload = await getPayload({ config });
-
-	const session = await auth.api.getSession({
-		headers: context.req.headers as HeadersInit,
-	});
+	const [payload, session] = await Promise.all([
+		getPayload({ config }),
+		auth.api.getSession({
+			headers: context.req.headers as HeadersInit,
+		}),
+	]);
 
 	if (!session) return { redirect };
 

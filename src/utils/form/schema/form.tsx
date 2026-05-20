@@ -1,4 +1,5 @@
 import Button from "@codegouvfr/react-dsfr/Button";
+import { Fragment } from "react";
 import { withForm } from "../context";
 import { schemaFormOptions } from "./schema";
 import { fr } from "@codegouvfr/react-dsfr";
@@ -40,9 +41,8 @@ export const SchemaForm = withForm({
 						<div>
 							<p className="fr-text--bold fr-mb-1w">Plans d'actions</p>
 							{arrayField.state.value.map((_, index) => (
-								<>
+								<Fragment key={`action-plan-${index}`}>
 									<div
-										key={`action-plan-${index}`}
 										style={{
 											display: "flex",
 											alignItems: "flex-end",
@@ -93,7 +93,7 @@ export const SchemaForm = withForm({
 											}}
 										/>
 									)}
-								</>
+								</Fragment>
 							))}
 							{!readOnly && (
 								<Button

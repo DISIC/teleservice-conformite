@@ -37,12 +37,13 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { classes, cx } = useStyles();
 	const { classes: appClasses } = useAppStyles();
 	const { classes: commonClasses } = useCommonStyles();
-	const router = useRouter();
+	const { push, back } = useRouter();
 	const [errorGetInfos, setErrorGetInfos] = useState<{
 		from: "url" | "ara";
 	}>();
-	const [importedDeclarationData, setImportedDeclarationData] =
-		useState<ImportedDeclarationData | null>(null);
+	const importedDeclarationDataRef = useRef<ImportedDeclarationData | null>(
+		null,
+	);
 
 	const loadingStartTime = useRef<number | null>(null);
 	const [isMinimumDelayComplete, setIsMinimumDelayComplete] = useState(true);
@@ -75,7 +76,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 			},
 			onSuccess: (result) => {
 				const declarationInfos = result.data;
-				setImportedDeclarationData({
+				importedDeclarationDataRef.current = {
 					...declarationInfos,
 					testEnvironments: extractTechnologiesFromUrl(
 						declarationInfos?.testEnvironments ?? [],
@@ -94,7 +95,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						kind: entity?.kind ?? "none",
 					},
 					status: "ai",
-				});
+				};
 			},
 			onError: (error) => {
 				setErrorGetInfos({ from: "url" });
@@ -114,7 +115,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				setIsMinimumDelayComplete(false);
 			},
 			onSuccess: (result) => {
-				setImportedDeclarationData({
+				importedDeclarationDataRef.current = {
 					...result.data,
 					testEnvironments: extractTechnologiesFromUrl(
 						result.data?.testEnvironments ?? [],
@@ -130,7 +131,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						kind: entity?.kind ?? "none",
 					},
 					status: "ara",
-				});
+				};
 			},
 			onError: (error) => {
 				setErrorGetInfos({ from: "ara" });
@@ -146,7 +147,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { mutateAsync: createDeclarationFromUrl } =
 		api.declaration.createFromUrl.useMutation({
 			onSuccess: (result) => {
-				router.push(`/dashboard/declaration/${result.data}`);
+				push(`/dashboard/declaration/${result.data}`);
 			},
 			onError: (error) => {
 				console.error("Error adding declaration from URL:", error);
@@ -168,7 +169,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					entityId: entity?.id,
 				},
 			});
-			router.push(`/dashboard/declaration/${result.data}`);
+			push(`/dashboard/declaration/${result.data}`);
 		} catch (error) {
 			console.error("Error adding declaration:", error);
 		}
@@ -254,9 +255,11 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 				return;
 			}
 
-			if (importedDeclarationData) {
+			if (importedDeclarationDataRef.current) {
 				try {
-					await createDeclarationFromUrl({ ...importedDeclarationData });
+					await createDeclarationFromUrl({
+						...importedDeclarationDataRef.current,
+					});
 				} catch (error) {
 					console.error("Error adding declaration:", error);
 				}
@@ -273,7 +276,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		if (section === "general") {
 			scrollTo(0, 0);
 			form.setFieldValue("section", "initialDeclaration");
-		} else router.back();
+		} else back();
 	};
 
 	const isLoading =
@@ -355,10 +358,12 @@ const useStyles = tss.withName(FormPage.name).create({
 });
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-	const payload = await getPayload({ config });
-	const authSession = await auth.api.getSession({
-		headers: new Headers(context.req.headers as HeadersInit),
-	});
+	const [payload, authSession] = await Promise.all([
+		getPayload({ config }),
+		auth.api.getSession({
+			headers: new Headers(context.req.headers as HeadersInit),
+		}),
+	]);
 
 	if (!authSession) {
 		return { redirect: { destination: "/" }, props: {} };

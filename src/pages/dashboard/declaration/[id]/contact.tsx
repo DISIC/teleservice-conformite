@@ -21,7 +21,7 @@ export default function ContactPage({
 	declaration: PopulatedDeclaration;
 }) {
 	const { classes: commonClasses } = useCommonStyles();
-	const router = useRouter();
+	const { push, reload } = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [readOnly, setReadOnly] = useState(!!declaration?.contact);
@@ -42,7 +42,7 @@ export default function ContactPage({
 			refetchLibrary();
 			if (!declaration.contact) {
 				const isComplete = declaration.audit && declaration.schema;
-				router.push(
+				push(
 					`/dashboard/declaration/${declaration.id}${isComplete ? "/preview" : ""}`,
 				);
 			} else {
@@ -54,7 +54,7 @@ export default function ContactPage({
 	});
 
 	const { mutateAsync: linkExisting } = api.contact.linkExisting.useMutation({
-		onSuccess: async () => router.reload(),
+		onSuccess: async () => reload(),
 	});
 
 	const defaultValues: ZContactForm = useMemo(() => {
@@ -136,9 +136,7 @@ export default function ContactPage({
 							<form.CancelButton
 								label="Retour"
 								ariaLabel="Retour à la déclaration"
-								onClick={() =>
-									router.push(`/dashboard/declaration/${declaration.id}`)
-								}
+								onClick={() => push(`/dashboard/declaration/${declaration.id}`)}
 								priority="tertiary"
 							/>
 							{!readOnly && (

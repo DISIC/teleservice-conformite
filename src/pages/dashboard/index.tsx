@@ -293,10 +293,12 @@ const useStyles = tss
 	}));
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-	const payload = await getPayload({ config });
-	const authSession = await auth.api.getSession({
-		headers: new Headers(context.req.headers as HeadersInit),
-	});
+	const [payload, authSession] = await Promise.all([
+		getPayload({ config }),
+		auth.api.getSession({
+			headers: new Headers(context.req.headers as HeadersInit),
+		}),
+	]);
 
 	if (!authSession) {
 		return { redirect: { destination: "/" }, props: {} };
@@ -313,17 +315,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			},
 		});
 
-		const declarations = (result?.docs || [])
-			.filter((doc) => !doc?.deletedAt)
-			.map((doc) => ({
+		const allDocs = result?.docs || [];
+		const declarations: Array<
+			PopulatedDeclaration & { updatedAtFormatted: string }
+		> = [];
+		const deletedDeclarations: typeof allDocs = [];
+		for (const doc of allDocs) {
+			if (doc?.deletedAt) {
+				deletedDeclarations.push(doc);
+				continue;
+			}
+			declarations.push({
 				...doc,
 				audit: doc.audit?.docs?.[0] || null,
 				updatedAtFormatted: new Date(doc.updatedAt).toLocaleDateString("fr-FR"),
-			}));
-
-		const deletedDeclarations = (result?.docs || []).filter(
-			(doc) => doc?.deletedAt,
-		);
+			} as PopulatedDeclaration & { updatedAtFormatted: string });
+		}
 
 		if (!deletedDeclarations.length && declarations?.length === 0) {
 			return {

@@ -56,7 +56,7 @@ export default function LibraryPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
-	const router = useRouter();
+	const { back } = useRouter();
 
 	const utils = api.useUtils();
 
@@ -195,7 +195,7 @@ export default function LibraryPage({
 			schemaColumnHelper.accessor("updatedAt", {
 				id: "updatedAt",
 				cell: (info) => (
-					<span className={classes.hint}>
+					<span className={classes.hint} suppressHydrationWarning>
 						Dernière mise à jour{" "}
 						<Tag
 							small
@@ -253,7 +253,7 @@ export default function LibraryPage({
 				<div className={classes.main}>
 					<Button
 						priority="secondary"
-						onClick={() => router.back()}
+						onClick={() => back()}
 						iconId="fr-icon-arrow-left-s-line"
 						size="small"
 					>

@@ -16,7 +16,7 @@ export default function SchemaPage({
 	declaration: initialDeclaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes: commonClasses } = useCommonStyles();
-	const router = useRouter();
+	const { push, reload } = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const [readOnly, setReadOnly] = useState(!!declaration?.schema);
@@ -32,7 +32,7 @@ export default function SchemaPage({
 			refetchLibrary();
 			if (!declaration.schema) {
 				const isComplete = declaration.audit && declaration.contact;
-				router.push(
+				push(
 					`/dashboard/declaration/${declaration.id}${isComplete ? "/preview" : ""}`,
 				);
 			} else {
@@ -48,7 +48,7 @@ export default function SchemaPage({
 	});
 
 	const { mutateAsync: linkExisting } = api.schema.linkExisting.useMutation({
-		onSuccess: async () => router.reload(),
+		onSuccess: async () => reload(),
 	});
 
 	const onEditInfos = () => {
@@ -127,9 +127,7 @@ export default function SchemaPage({
 						<div className={commonClasses.actionButtonsContainer}>
 							<form.CancelButton
 								label="Retour"
-								onClick={() =>
-									router.push(`/dashboard/declaration/${declaration.id}`)
-								}
+								onClick={() => push(`/dashboard/declaration/${declaration.id}`)}
 								priority="tertiary"
 								ariaLabel="Retour à la déclaration"
 							/>
