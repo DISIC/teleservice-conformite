@@ -14,10 +14,6 @@ const config = {
 		"@codegouvfr/react-dsfr",
 		"tss-react", // This is for MUI or if you use htts://tss-react.dev
 	],
-	i18n: {
-		locales: ["en"],
-		defaultLocale: "en",
-	},
 	devIndicators: {
 		position: "bottom-right",
 	},
