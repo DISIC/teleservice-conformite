@@ -40,6 +40,7 @@ export const contactDefaultValues: ZContactForm = {
 export const contactFormOptions = formOptions({
 	defaultValues: contactDefaultValues,
 	validators: {
+		onChange: ({ formApi }) => formApi.parseValuesWithSchema(contactForm),
 		onSubmit: ({ formApi }) => formApi.parseValuesWithSchema(contactForm),
 	},
 });
