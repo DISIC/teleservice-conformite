@@ -1,5 +1,5 @@
 {
-  "id": "e8a7af0f-e336-404e-84c9-5108dae407ca",
+  "id": "c514ef45-0336-4e1d-9c0f-ad6f64f41612",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -344,137 +344,6 @@
             "id"
           ],
           "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.users_rels": {
-      "name": "users_rels",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "order": {
-          "name": "order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "parent_id": {
-          "name": "parent_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "path": {
-          "name": "path",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "access_rights_id": {
-          "name": "access_rights_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "users_rels_order_idx": {
-          "name": "users_rels_order_idx",
-          "columns": [
-            {
-              "expression": "order",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "users_rels_parent_idx": {
-          "name": "users_rels_parent_idx",
-          "columns": [
-            {
-              "expression": "parent_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "users_rels_path_idx": {
-          "name": "users_rels_path_idx",
-          "columns": [
-            {
-              "expression": "path",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "users_rels_access_rights_id_idx": {
-          "name": "users_rels_access_rights_id_idx",
-          "columns": [
-            {
-              "expression": "access_rights_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "users_rels_parent_fk": {
-          "name": "users_rels_parent_fk",
-          "tableFrom": "users_rels",
-          "tableTo": "users",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "users_rels_access_rights_fk": {
-          "name": "users_rels_access_rights_fk",
-          "tableFrom": "users_rels",
-          "tableTo": "access_rights",
-          "columnsFrom": [
-            "access_rights_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -1036,7 +905,7 @@
           "name": "name",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {
@@ -1118,7 +987,7 @@
           "name": "name",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {
@@ -1200,7 +1069,7 @@
           "name": "name",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {
@@ -1266,36 +1135,43 @@
           "primaryKey": true,
           "notNull": true
         },
+        "is_realised": {
+          "name": "is_realised",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "date": {
           "name": "date",
           "type": "timestamp(3) with time zone",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "rgaa_version": {
           "name": "rgaa_version",
           "type": "enum_audits_rgaa_version",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "realised_by": {
           "name": "realised_by",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "rate": {
           "name": "rate",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "compliant_elements": {
           "name": "compliant_elements",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "non_compliant_elements": {
           "name": "non_compliant_elements",
@@ -1327,13 +1203,12 @@
           "primaryKey": false,
           "notNull": true
         },
-        "status": {
-          "name": "status",
-          "type": "enum_audits_status",
-          "typeSchema": "public",
+        "to_verify": {
+          "name": "to_verify",
+          "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'default'"
+          "notNull": true,
+          "default": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -1488,14 +1363,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "audit_id": {
-          "name": "audit_id",
-          "type": "integer",
+        "published_content": {
+          "name": "published_content",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
-        "action_plan_id": {
-          "name": "action_plan_id",
+        "schema_id": {
+          "name": "schema_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -1506,11 +1381,12 @@
           "primaryKey": false,
           "notNull": false
         },
-        "published_content": {
-          "name": "published_content",
-          "type": "varchar",
+        "from_source": {
+          "name": "from_source",
+          "type": "enum_declarations_from_source",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "updated_at": {
           "name": "updated_at",
@@ -1564,26 +1440,11 @@
           "method": "btree",
           "with": {}
         },
-        "declarations_audit_idx": {
-          "name": "declarations_audit_idx",
+        "declarations_schema_idx": {
+          "name": "declarations_schema_idx",
           "columns": [
             {
-              "expression": "audit_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "declarations_action_plan_idx": {
-          "name": "declarations_action_plan_idx",
-          "columns": [
-            {
-              "expression": "action_plan_id",
+              "expression": "schema_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1682,25 +1543,12 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "declarations_audit_id_audits_id_fk": {
-          "name": "declarations_audit_id_audits_id_fk",
+        "declarations_schema_id_schemas_id_fk": {
+          "name": "declarations_schema_id_schemas_id_fk",
           "tableFrom": "declarations",
-          "tableTo": "audits",
+          "tableTo": "schemas",
           "columnsFrom": [
-            "audit_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "declarations_action_plan_id_action_plans_id_fk": {
-          "name": "declarations_action_plan_id_action_plans_id_fk",
-          "tableFrom": "declarations",
-          "tableTo": "action_plans",
-          "columnsFrom": [
-            "action_plan_id"
+            "schema_id"
           ],
           "columnsTo": [
             "id"
@@ -1789,14 +1637,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "version_audit_id": {
-          "name": "version_audit_id",
-          "type": "integer",
+        "version_published_content": {
+          "name": "version_published_content",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
-        "version_action_plan_id": {
-          "name": "version_action_plan_id",
+        "version_schema_id": {
+          "name": "version_schema_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -1807,11 +1655,12 @@
           "primaryKey": false,
           "notNull": false
         },
-        "version_published_content": {
-          "name": "version_published_content",
-          "type": "varchar",
+        "version_from_source": {
+          "name": "version_from_source",
+          "type": "enum__declarations_v_version_from_source",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "version_updated_at": {
           "name": "version_updated_at",
@@ -1892,26 +1741,11 @@
           "method": "btree",
           "with": {}
         },
-        "_declarations_v_version_version_audit_idx": {
-          "name": "_declarations_v_version_version_audit_idx",
+        "_declarations_v_version_version_schema_idx": {
+          "name": "_declarations_v_version_version_schema_idx",
           "columns": [
             {
-              "expression": "version_audit_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "_declarations_v_version_version_action_plan_idx": {
-          "name": "_declarations_v_version_version_action_plan_idx",
-          "columns": [
-            {
-              "expression": "version_action_plan_id",
+              "expression": "version_schema_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -2053,25 +1887,12 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "_declarations_v_version_audit_id_audits_id_fk": {
-          "name": "_declarations_v_version_audit_id_audits_id_fk",
+        "_declarations_v_version_schema_id_schemas_id_fk": {
+          "name": "_declarations_v_version_schema_id_schemas_id_fk",
           "tableFrom": "_declarations_v",
-          "tableTo": "audits",
+          "tableTo": "schemas",
           "columnsFrom": [
-            "version_audit_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "_declarations_v_version_action_plan_id_action_plans_id_fk": {
-          "name": "_declarations_v_version_action_plan_id_action_plans_id_fk",
-          "tableFrom": "_declarations_v",
-          "tableTo": "action_plans",
-          "columnsFrom": [
-            "version_action_plan_id"
+            "version_schema_id"
           ],
           "columnsTo": [
             "id"
@@ -2127,13 +1948,37 @@
           "name": "user_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "tmp_user_email": {
+          "name": "tmp_user_email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         },
         "declaration_id": {
           "name": "declaration_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "invited_by_id": {
+          "name": "invited_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "invite_expires_at": {
+          "name": "invite_expires_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "invite_token_hash": {
+          "name": "invite_token_hash",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -2171,6 +2016,21 @@
           "columns": [
             {
               "expression": "declaration_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "access_rights_invited_by_idx": {
+          "name": "access_rights_invited_by_idx",
+          "columns": [
+            {
+              "expression": "invited_by_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -2232,6 +2092,19 @@
           "tableTo": "declarations",
           "columnsFrom": [
             "declaration_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "access_rights_invited_by_id_users_id_fk": {
+          "name": "access_rights_invited_by_id_users_id_fk",
+          "tableFrom": "access_rights",
+          "tableTo": "users",
+          "columnsFrom": [
+            "invited_by_id"
           ],
           "columnsTo": [
             "id"
@@ -2400,8 +2273,96 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.action_plans": {
-      "name": "action_plans",
+    "public.schemas_action_plan_urls": {
+      "name": "schemas_action_plan_urls",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "schemas_action_plan_urls_order_idx": {
+          "name": "schemas_action_plan_urls_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "schemas_action_plan_urls_parent_id_idx": {
+          "name": "schemas_action_plan_urls_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "schemas_action_plan_urls_parent_id_fk": {
+          "name": "schemas_action_plan_urls_parent_id_fk",
+          "tableFrom": "schemas_action_plan_urls",
+          "tableTo": "schemas",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.schemas": {
+      "name": "schemas",
       "schema": "",
       "columns": {
         "id": {
@@ -2410,31 +2371,30 @@
           "primaryKey": true,
           "notNull": true
         },
-        "current_year_schema_url": {
-          "name": "current_year_schema_url",
+        "schema_name": {
+          "name": "schema_name",
           "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "previous_years_schema_url": {
-          "name": "previous_years_schema_url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "declaration_id": {
-          "name": "declaration_id",
-          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "status": {
-          "name": "status",
-          "type": "enum_action_plans_status",
-          "typeSchema": "public",
+        "schema_url": {
+          "name": "schema_url",
+          "type": "varchar",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'default'"
+          "notNull": false
+        },
+        "entity_id": {
+          "name": "entity_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "to_verify": {
+          "name": "to_verify",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -2452,11 +2412,11 @@
         }
       },
       "indexes": {
-        "action_plans_declaration_idx": {
-          "name": "action_plans_declaration_idx",
+        "schemas_entity_idx": {
+          "name": "schemas_entity_idx",
           "columns": [
             {
-              "expression": "declaration_id",
+              "expression": "entity_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -2467,8 +2427,8 @@
           "method": "btree",
           "with": {}
         },
-        "action_plans_updated_at_idx": {
-          "name": "action_plans_updated_at_idx",
+        "schemas_updated_at_idx": {
+          "name": "schemas_updated_at_idx",
           "columns": [
             {
               "expression": "updated_at",
@@ -2482,8 +2442,8 @@
           "method": "btree",
           "with": {}
         },
-        "action_plans_created_at_idx": {
-          "name": "action_plans_created_at_idx",
+        "schemas_created_at_idx": {
+          "name": "schemas_created_at_idx",
           "columns": [
             {
               "expression": "created_at",
@@ -2499,12 +2459,12 @@
         }
       },
       "foreignKeys": {
-        "action_plans_declaration_id_declarations_id_fk": {
-          "name": "action_plans_declaration_id_declarations_id_fk",
-          "tableFrom": "action_plans",
-          "tableTo": "declarations",
+        "schemas_entity_id_entities_id_fk": {
+          "name": "schemas_entity_id_entities_id_fk",
+          "tableFrom": "schemas",
+          "tableTo": "entities",
           "columnsFrom": [
-            "declaration_id"
+            "entity_id"
           ],
           "columnsTo": [
             "id"
@@ -2529,6 +2489,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
         "email": {
           "name": "email",
           "type": "varchar",
@@ -2541,19 +2507,18 @@
           "primaryKey": false,
           "notNull": false
         },
-        "declaration_id": {
-          "name": "declaration_id",
+        "entity_id": {
+          "name": "entity_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "status": {
-          "name": "status",
-          "type": "enum_contacts_status",
-          "typeSchema": "public",
+        "to_verify": {
+          "name": "to_verify",
+          "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'default'"
+          "notNull": true,
+          "default": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -2571,11 +2536,11 @@
         }
       },
       "indexes": {
-        "contacts_declaration_idx": {
-          "name": "contacts_declaration_idx",
+        "contacts_entity_idx": {
+          "name": "contacts_entity_idx",
           "columns": [
             {
-              "expression": "declaration_id",
+              "expression": "entity_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -2618,12 +2583,12 @@
         }
       },
       "foreignKeys": {
-        "contacts_declaration_id_declarations_id_fk": {
-          "name": "contacts_declaration_id_declarations_id_fk",
+        "contacts_entity_id_entities_id_fk": {
+          "name": "contacts_entity_id_entities_id_fk",
           "tableFrom": "contacts",
-          "tableTo": "declarations",
+          "tableTo": "entities",
           "columnsFrom": [
-            "declaration_id"
+            "entity_id"
           ],
           "columnsTo": [
             "id"
@@ -2817,8 +2782,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "action_plans_id": {
-          "name": "action_plans_id",
+        "schemas_id": {
+          "name": "schemas_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -3041,11 +3006,11 @@
           "method": "btree",
           "with": {}
         },
-        "payload_locked_documents_rels_action_plans_id_idx": {
-          "name": "payload_locked_documents_rels_action_plans_id_idx",
+        "payload_locked_documents_rels_schemas_id_idx": {
+          "name": "payload_locked_documents_rels_schemas_id_idx",
           "columns": [
             {
-              "expression": "action_plans_id",
+              "expression": "schemas_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -3229,12 +3194,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "payload_locked_documents_rels_action_plans_fk": {
-          "name": "payload_locked_documents_rels_action_plans_fk",
+        "payload_locked_documents_rels_schemas_fk": {
+          "name": "payload_locked_documents_rels_schemas_fk",
           "tableFrom": "payload_locked_documents_rels",
-          "tableTo": "action_plans",
+          "tableTo": "schemas",
           "columnsFrom": [
-            "action_plans_id"
+            "schemas_id"
           ],
           "columnsTo": [
             "id"
@@ -3591,22 +3556,12 @@
         "rgaa_5"
       ]
     },
-    "public.enum_audits_status": {
-      "name": "enum_audits_status",
-      "schema": "public",
-      "values": [
-        "default",
-        "fromAI",
-        "fromAra"
-      ]
-    },
     "public.enum_declarations_status": {
       "name": "enum_declarations_status",
       "schema": "public",
       "values": [
         "published",
-        "unpublished",
-        "unverified"
+        "unpublished"
       ]
     },
     "public.enum_declarations_app_kind": {
@@ -3619,13 +3574,21 @@
         "other"
       ]
     },
+    "public.enum_declarations_from_source": {
+      "name": "enum_declarations_from_source",
+      "schema": "public",
+      "values": [
+        "manual",
+        "ai",
+        "ara"
+      ]
+    },
     "public.enum__declarations_v_version_status": {
       "name": "enum__declarations_v_version_status",
       "schema": "public",
       "values": [
         "published",
-        "unpublished",
-        "unverified"
+        "unpublished"
       ]
     },
     "public.enum__declarations_v_version_app_kind": {
@@ -3636,6 +3599,15 @@
         "mobile_app_ios",
         "mobile_app_android",
         "other"
+      ]
+    },
+    "public.enum__declarations_v_version_from_source": {
+      "name": "enum__declarations_v_version_from_source",
+      "schema": "public",
+      "values": [
+        "manual",
+        "ai",
+        "ara"
       ]
     },
     "public.enum_access_rights_role": {
@@ -3652,24 +3624,6 @@
         "pending",
         "approved",
         "rejected"
-      ]
-    },
-    "public.enum_action_plans_status": {
-      "name": "enum_action_plans_status",
-      "schema": "public",
-      "values": [
-        "default",
-        "fromAI",
-        "fromAra"
-      ]
-    },
-    "public.enum_contacts_status": {
-      "name": "enum_contacts_status",
-      "schema": "public",
-      "values": [
-        "default",
-        "fromAI",
-        "fromAra"
       ]
     }
   },

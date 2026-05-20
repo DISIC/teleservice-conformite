@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "./utils/auth";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 
 	// Bypass middleware for admin and admin API routes
@@ -32,7 +32,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	runtime: "nodejs",
 	matcher: [
 		"/",
 		"/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:png|jpg|jpeg|svg|ico)).*)",

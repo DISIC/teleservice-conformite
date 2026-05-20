@@ -11,21 +11,28 @@ export default function PublishedDeclarationTemplate({
 	declaration: PublishedDeclaration;
 	mode?: "preview" | "published";
 }) {
-	const hasCurrentSchema =
-		declaration.actionPlan.currentYearSchemaUrl.trim().length > 0;
-	const hasPreviousSchema =
-		declaration.actionPlan.previousYearsSchemaUrl.trim().length > 0;
-	const showActionPlanLinks = hasCurrentSchema && hasPreviousSchema;
+	const hasSchemaUrl = declaration.schema.schemaUrl.trim().length > 0;
+	const actionPlanUrls = declaration.schema.actionPlanUrls.filter(
+		(item) => item.url.trim().length > 0,
+	);
+	const showSchemaLinks = hasSchemaUrl || actionPlanUrls.length > 0;
 
-	const actionPlanLinks = showActionPlanLinks
+	const actionPlanLinks = showSchemaLinks
 		? [
 				`À cette fin, ${declaration.entityName} met en œuvre la stratégie et les actions suivantes :`,
 				"",
-				`- Lien URL du schéma annuel à jour : ${declaration.actionPlan.currentYearSchemaUrl};`,
-				"",
-				`- Lien URL du bilan des actions : ${declaration.actionPlan.previousYearsSchemaUrl};`,
-				"",
-			]
+				...(hasSchemaUrl
+					? [
+							`- Lien URL du schéma pluriannuel : ${declaration.schema.schemaUrl};`,
+							"",
+						]
+					: []),
+				...actionPlanUrls.map(
+					(item) =>
+						`- Lien URL d'un plan d'actions${item.name ? ` (${item.name})` : ""} : ${item.url};`,
+				),
+				actionPlanUrls.length > 0 ? "" : null,
+			].filter((line): line is string => line !== null)
 		: [];
 	const hasNonConformites =
 		!!declaration.audit.nonCompliantElements &&
@@ -128,7 +135,7 @@ export default function PublishedDeclarationTemplate({
 		`Cette déclaration d’accessibilité s’applique au ${declaration.appKindLabel} ${declaration.url}`,
 		"",
 		"### État de conformité",
-		`${declaration.entityName} ${declaration.url} est ${getConformityStatus(declaration.audit.rate)} avec le référentiel général d’amélioration de l’accessibilité  (RGAA), version ${declaration.audit.rgaa_version} en raison des non-conformités et des dérogations  énumérées ci-dessous.`,
+		`${declaration.entityName} ${declaration.url} est ${getConformityStatus(declaration.audit.rate).label.toLowerCase()} avec le référentiel général d’amélioration de l’accessibilité  (RGAA), version ${declaration.audit.rgaa_version} en raison des non-conformités et des dérogations  énumérées ci-dessous.`,
 		"",
 		"### Résultats des tests",
 		`L’audit de conformité réalisé par ${declaration.audit.realised_by} révèle que ${declaration.audit.rate}% des critères de la version ${declaration.audit.rgaa_version} sont respectés `,

@@ -1,9 +1,9 @@
 import type { CollectionAfterChangeHook, Payload } from "payload";
 import type {
-	ActionPlan,
 	Audit,
 	Contact,
 	Declaration,
+	Schema,
 } from "~/payload/payload-types";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
 import { extractDeclarationContentToPublish } from "~/utils/declaration-content";
@@ -16,7 +16,7 @@ type DeclarationFieldOverrides = Partial<
 type DocOverrides = {
 	contact?: Contact;
 	audit?: Audit;
-	actionPlan?: ActionPlan;
+	schema?: Schema;
 	declarationFields?: DeclarationFieldOverrides;
 };
 
@@ -55,34 +55,44 @@ export async function recalculateDeclarationStatus(
 		declaration.publishedContent,
 	);
 
-	const findOne = async <T>(
-		override: T | undefined,
-		fetch: () => Promise<{ docs: T[] }>,
-	): Promise<T | null> =>
-		override !== undefined ? override : ((await fetch()).docs[0] ?? null);
+	const fetchById = async <
+		T extends keyof Payload["collections"] | "audits" | "contacts" | "schemas",
+	>(
+		collection: T,
+		id: number | null | undefined,
+	) => {
+		if (!id) return null;
+		return (await payload.findByID({
+			collection: collection as any,
+			id,
+		})) as any;
+	};
 
-	const [audit, contact, actionPlan, entity] = await Promise.all([
-		findOne(overrides.audit, () =>
-			payload.find({
-				collection: "audits",
-				where: { declaration: { equals: declarationId } },
-				limit: 1,
-			}),
-		),
-		findOne(overrides.contact, () =>
-			payload.find({
-				collection: "contacts",
-				where: { declaration: { equals: declarationId } },
-				limit: 1,
-			}),
-		),
-		findOne(overrides.actionPlan, () =>
-			payload.find({
-				collection: "action-plans",
-				where: { declaration: { equals: declarationId } },
-				limit: 1,
-			}),
-		),
+	const contactId =
+		typeof declaration.contact === "number"
+			? declaration.contact
+			: (declaration.contact?.id ?? null);
+	const schemaId =
+		typeof declaration.schema === "number"
+			? declaration.schema
+			: (declaration.schema?.id ?? null);
+
+	const [audit, contact, schema, entity] = await Promise.all([
+		overrides.audit !== undefined
+			? overrides.audit
+			: ((
+					await payload.find({
+						collection: "audits",
+						where: { declaration: { equals: declarationId } },
+						limit: 1,
+					})
+				).docs[0] ?? null),
+		overrides.contact !== undefined
+			? overrides.contact
+			: await fetchById("contacts", contactId),
+		overrides.schema !== undefined
+			? overrides.schema
+			: await fetchById("schemas", schemaId),
 		declaration.entity
 			? payload.findByID({
 					collection: "entities",
@@ -96,7 +106,7 @@ export async function recalculateDeclarationStatus(
 		...overrides.declarationFields,
 		audit,
 		contact,
-		actionPlan,
+		schema,
 		entity: entity ?? null,
 		created_by: null,
 	};

@@ -17,7 +17,7 @@ interface TagGroupFieldProps
 export function TagGroupField(props: TagGroupFieldProps) {
 	const {
 		readOnlyField,
-		required,
+		// required,
 		initialTags,
 		nativeInputProps,
 		...commonProps

@@ -5,9 +5,11 @@
 	"type": "module",
 	"scripts": {
 		"build": "next build",
-		"check": "biome check .",
-		"check:unsafe": "biome check --write --unsafe .",
-		"check:write": "biome check --write .",
+		"check": "oxlint && oxfmt --check",
+		"check:unsafe": "oxlint --fix-suggestions --fix-dangerously && oxfmt",
+		"check:write": "oxlint --fix && oxfmt",
+		"format": "oxfmt",
+		"lint": "oxlint",
 		"dev": "next dev --turbo",
 		"preview": "next build && next start",
 		"start": "next start",
@@ -28,9 +30,9 @@
 		"@payloadcms/richtext-lexical": "^3.61.1",
 		"@react-email/components": "^1.0.8",
 		"@react-email/render": "^2.0.4",
-		"@t3-oss/env-nextjs": "^0.12.0",
 		"@tanstack/react-form": "^1.25.0",
 		"@tanstack/react-query": "^5.69.0",
+		"@tanstack/react-table": "^8.21.3",
 		"@trpc/client": "^11.0.0",
 		"@trpc/next": "^11.0.0",
 		"@trpc/react-query": "^11.0.0",
@@ -39,7 +41,7 @@
 		"graphql": "^16.11.0",
 		"js-cookie": "^3.0.5",
 		"jwt-decode": "^4.0.0",
-		"next": "15.5.18",
+		"next": "16.2.6",
 		"payload": "^3.61.1",
 		"pg": "^8.16.3",
 		"react": "19.0.0",
@@ -53,16 +55,18 @@
 		"zod": "^4.0.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.4",
 		"@types/js-cookie": "^3.0.6",
 		"@types/node": "^20.14.10",
 		"@types/pg": "^8.15.5",
 		"@types/react": "19.0.0",
 		"@types/react-dom": "19.0.0",
+		"lefthook": "^2.1.6",
+		"oxfmt": "^0.49.0",
+		"oxlint": "^1.64.0",
 		"typescript": "^5.8.2"
 	},
+	"packageManager": "yarn@1.22.18",
 	"ct3aMetadata": {
 		"initVersion": "7.39.3"
-	},
-	"packageManager": "yarn@1.22.18"
+	}
 }

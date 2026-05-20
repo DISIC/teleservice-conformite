@@ -28,23 +28,42 @@ export const Declarations: CollectionConfig = {
 					},
 				});
 
-				await payload.delete({
-					collection: "action-plans",
-					where: {
-						declaration: {
-							equals: declarationId,
-						},
-					},
+				const declaration = await payload.findByID({
+					collection: "declarations",
+					id: declarationId,
+					depth: 0,
 				});
 
-				await payload.delete({
-					collection: "contacts",
-					where: {
-						declaration: {
-							equals: declarationId,
-						},
-					},
-				});
+				const contactId =
+					typeof declaration.contact === "number"
+						? declaration.contact
+						: declaration.contact?.id;
+				const schemaId =
+					typeof declaration.schema === "number"
+						? declaration.schema
+						: declaration.schema?.id;
+
+				if (contactId) {
+					const contact = await payload.findByID({
+						collection: "contacts",
+						id: contactId,
+						depth: 0,
+					});
+					if (contact && !contact.entity) {
+						await payload.delete({ collection: "contacts", id: contactId });
+					}
+				}
+
+				if (schemaId) {
+					const schema = await payload.findByID({
+						collection: "schemas",
+						id: schemaId,
+						depth: 0,
+					});
+					if (schema && !schema.entity) {
+						await payload.delete({ collection: "schemas", id: schemaId });
+					}
+				}
 			},
 		],
 	},
@@ -124,19 +143,19 @@ export const Declarations: CollectionConfig = {
 			label: { fr: "Audit associé" },
 		},
 		{
-			name: "actionPlan",
-			type: "join",
-			collection: "action-plans",
-			on: "declaration",
+			name: "schema",
+			type: "relationship",
+			relationTo: "schemas",
 			hasMany: false,
-			label: { fr: "Plan d'actions associé" },
+			required: false,
+			label: { fr: "Schéma et plan d'actions associé" },
 		},
 		{
 			name: "contact",
-			type: "join",
-			collection: "contacts",
-			on: "declaration",
+			type: "relationship",
+			relationTo: "contacts",
 			hasMany: false,
+			required: false,
 			label: { fr: "Contact associé" },
 		},
 		{

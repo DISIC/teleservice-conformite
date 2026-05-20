@@ -63,7 +63,7 @@ const steps: Steps<Section>[] = [
 export default function AuditPage({
 	declaration: initialDeclaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-	const router = useRouter();
+	const { push } = useRouter();
 	const { classes: commonClasses } = useCommonStyles();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
@@ -78,8 +78,8 @@ export default function AuditPage({
 
 	const { mutateAsync: createAudit } = api.audit.create.useMutation({
 		onSuccess: async () => {
-			const isComplete = declaration.contact && declaration.actionPlan;
-			router.push(
+			const isComplete = declaration.contact && declaration.schema;
+			push(
 				`/dashboard/declaration/${declaration.id}${isComplete ? "/preview" : ""}`,
 			);
 		},
@@ -201,7 +201,7 @@ export default function AuditPage({
 
 	const onClickCancel = () => {
 		if (section === "isAuditRealised") {
-			router.push(`/dashboard/declaration/${declaration?.id}`);
+			push(`/dashboard/declaration/${declaration?.id}`);
 			return;
 		}
 
@@ -358,7 +358,7 @@ export default function AuditPage({
 								<updateForm.CancelButton
 									label="Retour"
 									onClick={() =>
-										router.push(`/dashboard/declaration/${declaration.id}`)
+										push(`/dashboard/declaration/${declaration.id}`)
 									}
 									priority="tertiary"
 									ariaLabel="Retour à la déclaration"

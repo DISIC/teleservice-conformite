@@ -1,27 +1,28 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
+import { Button, type ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
-export default function EmptyState() {
+type EmptyStateProps = {
+	title?: string;
+	description: string;
+	pictogram?: ReactNode;
+	ctaProps: ButtonProps.Common &
+		(ButtonProps.IconOnly | ButtonProps.WithIcon | ButtonProps.WithoutIcon) &
+		(ButtonProps.AsAnchor | ButtonProps.AsButton);
+};
+
+export default function EmptyState(props: EmptyStateProps) {
 	const { classes } = useStyles();
+	const { title, description, ctaProps, pictogram } = props;
 
 	return (
 		<div className={classes.emptyStateContainer}>
-			<Conclusion fontSize="5.25rem" />
-			<h2 className={classes.emptyStateTitle}>
-				Créez votre déclaration d’accessibilité
-			</h2>
-			<p className={classes.emptyStateDescription}>
-				Publiez une déclaration conforme pour répondre aux obligations légales
-			</p>
-			<Button
-				linkProps={{
-					href: "/dashboard/form",
-				}}
-				priority="primary"
-			>
-				Créer une déclaration
+			{pictogram}
+			{title && <h2 className={classes.emptyStateTitle}>{title}</h2>}
+			<p className={classes.emptyStateDescription}>{description}</p>
+			<Button {...ctaProps} priority="primary">
+				{ctaProps.children}
 			</Button>
 		</div>
 	);
@@ -34,23 +35,21 @@ const useStyles = tss.withName(EmptyState.name).create({
 		justifyContent: "center",
 		alignItems: "center",
 		backgroundColor: fr.colors.decisions.background.contrast.blueFrance.default,
-		padding: `${fr.spacing("16v")} ${fr.spacing("20v")}`,
-		gap: fr.spacing("8v"),
+		padding: `${fr.spacing("10v")} 0`,
 	},
 	emptyStateTitle: {
 		fontFamily: "Marianne",
 		fontWeight: 700,
 		fontSize: fr.typography[1].style.fontSize,
 		lineHeight: fr.typography[1].style.lineHeight,
-		color: fr.colors.decisions.text.title.blueFrance.default,
-		margin: 0,
+		marginBottom: 0,
 	},
 	emptyStateDescription: {
 		fontFamily: "Marianne",
-		fontWeight: 400,
-		fontSize: "1.25rem",
+		fontWeight: 500,
 		lineHeight: "2rem",
-		color: fr.colors.decisions.text.mention.grey.default,
-		margin: 0,
+		color: fr.colors.decisions.text.default.grey.default,
+		marginTop: fr.spacing("4v"),
+		marginBottom: fr.spacing("8v"),
 	},
 });

@@ -18,8 +18,46 @@ interface DemarchesProps {
 	declaration: PopulatedDeclaration;
 }
 
+interface RedirectButtonProps {
+	href: string;
+	label?: string;
+	className?: string;
+}
+
+function RedirectButton({
+	href,
+	label = "Renseigner les informations",
+	className,
+}: RedirectButtonProps) {
+	return (
+		<Button size="small" linkProps={{ href }} className={className}>
+			{label}
+		</Button>
+	);
+}
+
+interface StartBadgesProps {
+	showToCompleteBadge: boolean;
+	showVerifyBadge: boolean;
+}
+
+function StartBadges({
+	showToCompleteBadge,
+	showVerifyBadge,
+}: StartBadgesProps) {
+	const badges: string[] = [];
+	if (showToCompleteBadge) badges.push("A Remplir");
+	if (showVerifyBadge) badges.push("À vérifier");
+
+	return badges.map((label) => (
+		<Badge key={label} noIcon severity="new" small>
+			{label}
+		</Badge>
+	));
+}
+
 export default function Demarches({ declaration }: DemarchesProps) {
-	const router = useRouter();
+	const { push, reload } = useRouter();
 	const { classes, cx } = useStyles();
 	const { rate } = declaration?.audit || {};
 
@@ -44,63 +82,18 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		declaration.audit?.isRealised &&
 		declaration?.audit?.toVerify === false &&
 		declaration?.contact?.toVerify === false &&
-		declaration?.actionPlan?.toVerify === false;
+		declaration?.schema?.toVerify === false;
 
 	const { mutateAsync: revertToPublished } =
 		api.declaration.revertToPublished.useMutation({
-			onSuccess: () => router.reload(),
+			onSuccess: () => reload(),
 		});
-
-	const RedirectButton = ({
-		href,
-		label = "Renseigner les informations",
-	}: {
-		href: string;
-		label?: string;
-	}) => (
-		<Button
-			size="small"
-			linkProps={{
-				href,
-			}}
-			className={classes.redirectButton}
-		>
-			{label}
-		</Button>
-	);
-
-	const StartBadges = ({
-		showToCompleteBadge,
-		showVerifyBadge,
-	}: {
-		showToCompleteBadge: boolean;
-		showVerifyBadge: boolean;
-	}) => {
-		const badges = [
-			{
-				show: showToCompleteBadge,
-				label: "A Remplir",
-			},
-			{
-				show: showVerifyBadge,
-				label: "À vérifier",
-			},
-		];
-
-		return badges
-			.filter((badge) => badge.show)
-			.map(({ label }) => (
-				<Badge key={label} noIcon severity="new" small>
-					{label}
-				</Badge>
-			));
-	};
 
 	const getDetailButton = (
 		section:
 			| typeof declaration.contact
 			| typeof declaration.audit
-			| typeof declaration.actionPlan
+			| typeof declaration.schema
 			| undefined,
 		href: string,
 	) => {
@@ -116,11 +109,17 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		}
 
 		if (!section) {
-			return <RedirectButton href={href} />;
+			return <RedirectButton href={href} className={classes.redirectButton} />;
 		}
 
 		if (section.toVerify) {
-			return <RedirectButton label="Vérifier les informations" href={href} />;
+			return (
+				<RedirectButton
+					label="Vérifier les informations"
+					href={href}
+					className={classes.redirectButton}
+				/>
+			);
 		}
 
 		return null;
@@ -169,9 +168,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			desc: "État des lieux et actions prévues pour améliorer l'accessibilité",
 			pictogram: <Conclusion fontSize="1rem" />,
 			path: "/schema",
-			showToCompleteBadge: !declaration?.actionPlan,
-			showVerifyBadge: declaration?.actionPlan?.toVerify === true,
-			section: declaration?.actionPlan,
+			showToCompleteBadge: !declaration?.schema,
+			showVerifyBadge: declaration?.schema?.toVerify === true,
+			section: declaration?.schema,
 		},
 	];
 
@@ -181,7 +180,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 				children: "Prévisualiser et publier",
 				priority: "primary",
 				iconId: "fr-icon-upload-line",
-				onClick: () => router.push(`${declaration.id}/preview`),
+				onClick: () => push(`${declaration.id}/preview`),
 			},
 		];
 
@@ -236,7 +235,10 @@ export default function Demarches({ declaration }: DemarchesProps) {
 					</div>
 					<div className={cx(classes.card, classes.summaryUpdateDateCard)}>
 						<p className={fr.cx("fr-mb-0")}>Dernière mise à jour</p>
-						<p className={fr.cx("fr-mb-0", "fr-text--lead", "fr-text--bold")}>
+						<p
+							className={fr.cx("fr-mb-0", "fr-text--lead", "fr-text--bold")}
+							suppressHydrationWarning
+						>
 							{declaration?.published_at
 								? new Date(declaration.published_at).toLocaleDateString("fr-FR")
 								: "N/A"}
