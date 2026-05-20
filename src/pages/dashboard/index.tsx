@@ -87,6 +87,7 @@ const defaultColumns = [
 const buildActionsColumn = (onCopySuccess: (declarationName: string) => void) =>
 	columnHelper.display({
 		id: "actions",
+		meta: { noRowLink: true },
 		cell: (info) => {
 			const declaration = info.row.original;
 			if (declaration.status !== "published") return null;
@@ -153,12 +154,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 				header: "Nom de la déclaration",
 				meta: { styles: { maxWidth: 240 } },
 				cell: (info) => (
-					<Link
-						href={`/dashboard/declaration/${info.row.original.id}`}
-						className={classes.nameLink}
-					>
-						{info.getValue()}
-					</Link>
+					<span className={classes.nameLink}>{info.getValue()}</span>
 				),
 			}),
 			...defaultColumns,
@@ -205,6 +201,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 							columns={columns}
 							data={declarations}
 							numberPerPage={NUMBER_PER_PAGE}
+							getRowHref={(row) => `/dashboard/declaration/${row.id}`}
 						/>
 					</div>
 				) : (
@@ -285,13 +282,7 @@ const useStyles = tss
 			gap: fr.spacing("10v"),
 		},
 		nameLink: {
-			color: "inherit",
-			backgroundImage: "none",
 			fontWeight: 500,
-			transition: "color 0.15s ease",
-			"&:hover": {
-				color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-			},
 		},
 	}));
 

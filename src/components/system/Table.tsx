@@ -12,6 +12,7 @@ import {
 	type TableOptions,
 	useReactTable,
 } from "@tanstack/react-table";
+import Link from "next/link";
 import { type CSSProperties, type ReactNode, useState } from "react";
 import { tss } from "tss-react";
 import { Pagination } from "./Pagination";
@@ -19,6 +20,7 @@ import { Pagination } from "./Pagination";
 declare module "@tanstack/react-table" {
 	interface ColumnMeta<TData extends RowData, TValue> {
 		styles?: CSSProperties;
+		noRowLink?: boolean;
 	}
 }
 
@@ -35,6 +37,7 @@ type Props<TData> = {
 	className?: string;
 	numberPerPage: number;
 	hideHeaders?: boolean;
+	getRowHref?: (row: TData) => string | undefined;
 	tableOptions?: Partial<
 		Omit<TableOptions<TData>, "data" | "columns" | "getCoreRowModel">
 	>;
@@ -55,6 +58,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 		numberPerPage,
 		hideHeaders,
 		tableOptions,
+		getRowHref,
 	} = props;
 
 	const { classes, cx } = useStyles();
@@ -105,20 +109,32 @@ export const Table = <TData,>(props: Props<TData>) => {
 				}),
 			);
 
-	const rows: ReactNode[][] = table.getRowModel().rows.map((row) =>
-		row.getVisibleCells().map((cell) => {
+	const rows: ReactNode[][] = table.getRowModel().rows.map((row) => {
+		const href = getRowHref?.(row.original);
+		return row.getVisibleCells().map((cell) => {
+			const cellNode = flexRender(
+				cell.column.columnDef.cell,
+				cell.getContext(),
+			);
+			const noRowLink = cell.column.columnDef.meta?.noRowLink;
 			return (
 				<div
 					key={cell.id}
-					className={classes.bodyCell}
+					className={cx(classes.bodyCell, href && classes.bodyCellLinked)}
 					style={{ ...cell.column.columnDef.meta?.styles }}
 					data-subrow={row.depth > 0 || undefined}
 				>
-					{flexRender(cell.column.columnDef.cell, cell.getContext())}
+					{href && !noRowLink ? (
+						<Link href={href} className={classes.rowLink}>
+							{cellNode}
+						</Link>
+					) : (
+						cellNode
+					)}
 				</div>
 			);
-		}),
-	);
+		});
+	});
 
 	return (
 		<>
@@ -135,6 +151,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 				className={cx(
 					classes.table,
 					hideHeaders && classes.hiddenHeaders,
+					getRowHref && classes.tableWithRowLink,
 					className,
 				)}
 			/>
@@ -183,6 +200,42 @@ const useStyles = tss.withName(Table.name).create(() => ({
 	bodyCell: {
 		display: "flex",
 		alignItems: "center",
+	},
+	bodyCellLinked: {
+		padding: "0 !important",
+		"& > a, & > div": {
+			width: "100%",
+		},
+	},
+	tableWithRowLink: {
+		"tbody tr": {
+			cursor: "pointer",
+		},
+		"tbody tr:hover > td": {
+			backgroundColor: `${fr.colors.decisions.background.default.grey.hover} !important`,
+			boxShadow: `inset 0 -1px 0 ${fr.colors.decisions.border.default.grey.default}`,
+		},
+		"tbody td:has(> div > a)": {
+			padding: "0 !important",
+		},
+		"tbody td a, tbody td a:hover, tbody td a:focus, tbody td a:active": {
+			backgroundColor: "transparent !important",
+		},
+	},
+	rowLink: {
+		display: "flex",
+		alignItems: "center",
+		width: "100%",
+		padding: `${fr.spacing("3v")} ${fr.spacing("4v")}`,
+		color: "inherit",
+		textDecoration: "none",
+		backgroundImage: "none",
+		backgroundColor: "transparent",
+		fontWeight: "inherit",
+		"&:hover, &:focus, &:active, &:focus-visible, &:focus-within": {
+			backgroundColor: "transparent",
+			backgroundImage: "none",
+		},
 	},
 	hiddenHeaders: {
 		"tbody tr:first-of-type td": {
