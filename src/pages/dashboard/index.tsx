@@ -26,6 +26,7 @@ import {
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
 	firstDeclaration?: boolean;
+	entityName: string;
 }
 
 const NUMBER_PER_PAGE = 10;
@@ -119,7 +120,7 @@ type AlertDetailsProps = {
 };
 
 export default function DeclarationsPage(props: DeclarationsPageProps) {
-	const { declarations } = props;
+	const { declarations, entityName } = props;
 	const { classes } = useStyles({
 		declarationLength: declarations.length || 0,
 	});
@@ -220,21 +221,23 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 				)}
 				<div className={classes.infoBlocksContainer}>
 					<Link href="/dashboard/library" className={classes.infoBlockLink}>
-						<InfoBlock
-							organizationName="Nom organisation"
-							title="Documents partagés"
-						>
+						<InfoBlock organizationName={entityName} title="Documents partagés">
 							Retrouvez et gérez les schémas pluriannuels, plans d’actions et
 							contacts de votre organisation nécessaire à votre déclaration
 							d’accessibilité
 						</InfoBlock>
 					</Link>
-					<InfoBlock
-						organizationName="Nom organisation"
-						title="Toutes les déclarations"
+					<Link
+						href="/dashboard/declarations"
+						className={classes.infoBlockLink}
 					>
-						Visualisez toutes les déclarations créées dans votre organisation
-					</InfoBlock>
+						<InfoBlock
+							organizationName={entityName}
+							title="Toutes les déclarations"
+						>
+							Visualisez toutes les déclarations créées dans votre organisation
+						</InfoBlock>
+					</Link>
 				</div>
 			</section>
 		</div>
@@ -305,6 +308,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	}
 
 	try {
+		const user = await payload.findByID({
+			collection: "users",
+			id: Number(authSession.user.id),
+			depth: 1,
+		});
+
+		const currentEntity =
+			user?.entity && typeof user.entity === "object" ? user.entity : null;
+
+		if (!currentEntity) {
+			return { redirect: { destination: "/dashboard", permanent: false } };
+		}
+
 		const result = await payload.find({
 			collection: "declarations",
 			trash: true,
@@ -337,6 +353,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 				props: {
 					firstDeclaration: true,
 					declarations: [],
+					entityName: currentEntity.name,
 				},
 			};
 		}
@@ -344,6 +361,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		return {
 			props: {
 				declarations,
+				entityName: currentEntity.name,
 			},
 		};
 	} catch (error) {
@@ -351,9 +369,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 		return {
 			redirect: { destination: "/" },
-			props: {
-				declarations: [],
-			},
 		};
 	}
 };
