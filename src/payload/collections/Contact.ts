@@ -1,23 +1,25 @@
 import type { CollectionConfig } from "payload";
-import { makeRecalculateAfterChangeHook } from "~/server/api/utils/publish-comparison";
 import { toVerifyField } from "../fields/common";
 
 export const Contacts: CollectionConfig = {
 	slug: "contacts",
 	admin: {
-		useAsTitle: "email",
+		useAsTitle: "name",
 	},
 	labels: {
 		singular: { fr: "Contact" },
 		plural: { fr: "Contacts" },
 	},
-	hooks: {
-		afterChange: [makeRecalculateAfterChangeHook("contact")],
-	},
 	fields: [
 		{
+			name: "name",
+			label: { fr: "Nom du contact" },
+			type: "text",
+			required: true,
+		},
+		{
 			name: "email",
-			label: { fr: "Email de contact email" },
+			label: { fr: "Email de contact" },
 			type: "email",
 		},
 		{
@@ -26,11 +28,16 @@ export const Contacts: CollectionConfig = {
 			type: "text",
 		},
 		{
-			name: "declaration",
-			label: { fr: "Déclaration associée" },
+			name: "entity",
+			label: { fr: "Administration associée" },
 			type: "relationship",
-			relationTo: "declarations",
-			required: true,
+			relationTo: "entities",
+			required: false,
+			admin: {
+				description: {
+					fr: "Si renseigné, ce contact est partagé au niveau de l'administration et peut être réutilisé sur plusieurs déclarations.",
+				},
+			},
 		},
 		toVerifyField,
 	],

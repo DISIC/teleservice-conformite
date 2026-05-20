@@ -78,7 +78,7 @@ export default function AuditPage({
 
 	const { mutateAsync: createAudit } = api.audit.create.useMutation({
 		onSuccess: async () => {
-			const isComplete = declaration.contact && declaration.actionPlan;
+			const isComplete = declaration.contact && declaration.schema;
 			router.push(
 				`/dashboard/declaration/${declaration.id}${isComplete ? "/preview" : ""}`,
 			);

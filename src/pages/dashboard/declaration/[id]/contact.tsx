@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
+import EntityLibraryPicker from "~/components/declaration/EntityLibraryPicker";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
@@ -30,10 +31,17 @@ export default function ContactPage({
 		setReadOnly((prev) => !prev);
 	};
 
+	const { data: libraryItems = [], refetch: refetchLibrary } =
+		api.entityLibrary.listContacts.useQuery(
+			{ entityId: Number(declaration.entity?.id) },
+			{ enabled: !!declaration.entity?.id },
+		);
+
 	const { mutateAsync: upsertContact } = api.contact.upsert.useMutation({
 		onSuccess: ({ data }) => {
+			refetchLibrary();
 			if (!declaration.contact) {
-				const isComplete = declaration.audit && declaration.actionPlan;
+				const isComplete = declaration.audit && declaration.schema;
 				router.push(
 					`/dashboard/declaration/${declaration.id}${isComplete ? "/preview" : ""}`,
 				);
@@ -45,17 +53,17 @@ export default function ContactPage({
 		onError: (error) => console.error("Error upserting contact:", error),
 	});
 
+	const { mutateAsync: linkExisting } = api.contact.linkExisting.useMutation({
+		onSuccess: async () => router.reload(),
+	});
+
 	const defaultValues: ZContactForm = useMemo(() => {
 		if (!declaration.contact) return contactFormOptions.defaultValues;
 
-		const contactType: ZContactForm["contactType"] = [];
-		if (declaration.contact.url) contactType.push("onlineForm");
-		if (declaration.contact.email) contactType.push("contactPoint");
-
 		return {
-			contactType,
-			url: declaration.contact.url || "",
-			email: declaration.contact.email || "",
+			name: declaration.contact.name ?? "",
+			url: declaration.contact.url ?? "",
+			email: declaration.contact.email ?? "",
 		};
 	}, [declaration.contact]);
 
@@ -64,11 +72,19 @@ export default function ContactPage({
 		defaultValues,
 		onSubmit: async ({ value }) =>
 			await upsertContact({
-				...value,
+				values: value,
 				id: declaration.contact?.id,
 				declarationId: declaration.id,
 			}),
 	});
+
+	const currentContactEntityId =
+		declaration.contact?.entity &&
+		typeof declaration.contact.entity === "object"
+			? declaration.contact.entity.id
+			: typeof declaration.contact?.entity === "number"
+				? declaration.contact.entity
+				: null;
 
 	return (
 		<>
@@ -88,6 +104,23 @@ export default function ContactPage({
 					declaration.contact?.toVerify && declaration.fromSource === "ai"
 				}
 			>
+				{!readOnly && libraryItems.length > 0 && (
+					<EntityLibraryPicker
+						label="Utiliser un contact existant de l'administration"
+						placeholder="Sélectionner un contact"
+						items={libraryItems.map((c) => ({
+							id: c.id,
+							label: c.name,
+							hint: c.email || c.url || "",
+						}))}
+						selectedId={
+							currentContactEntityId ? (declaration.contact?.id ?? null) : null
+						}
+						onSelect={(id) =>
+							linkExisting({ contactId: id, declarationId: declaration.id })
+						}
+					/>
+				)}
 				<form
 					onSubmit={(e) => {
 						e.preventDefault();

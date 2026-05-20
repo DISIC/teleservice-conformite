@@ -44,7 +44,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		declaration.audit?.isRealised &&
 		declaration?.audit?.toVerify === false &&
 		declaration?.contact?.toVerify === false &&
-		declaration?.actionPlan?.toVerify === false;
+		declaration?.schema?.toVerify === false;
 
 	const { mutateAsync: revertToPublished } =
 		api.declaration.revertToPublished.useMutation({
@@ -100,7 +100,7 @@ export default function Demarches({ declaration }: DemarchesProps) {
 		section:
 			| typeof declaration.contact
 			| typeof declaration.audit
-			| typeof declaration.actionPlan
+			| typeof declaration.schema
 			| undefined,
 		href: string,
 	) => {
@@ -169,9 +169,9 @@ export default function Demarches({ declaration }: DemarchesProps) {
 			desc: "État des lieux et actions prévues pour améliorer l'accessibilité",
 			pictogram: <Conclusion fontSize="1rem" />,
 			path: "/schema",
-			showToCompleteBadge: !declaration?.actionPlan,
-			showVerifyBadge: declaration?.actionPlan?.toVerify === true,
-			section: declaration?.actionPlan,
+			showToCompleteBadge: !declaration?.schema,
+			showVerifyBadge: declaration?.schema?.toVerify === true,
+			section: declaration?.schema,
 		},
 	];
 

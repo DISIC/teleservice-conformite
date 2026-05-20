@@ -34,6 +34,7 @@ type Props<TData> = {
 	colorVariant?: TableProps["colorVariant"];
 	className?: string;
 	numberPerPage: number;
+	hideHeaders?: boolean;
 	tableOptions?: Partial<
 		Omit<TableOptions<TData>, "data" | "columns" | "getCoreRowModel">
 	>;
@@ -52,6 +53,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 		colorVariant,
 		className,
 		numberPerPage,
+		hideHeaders,
 		tableOptions,
 	} = props;
 
@@ -86,20 +88,22 @@ export const Table = <TData,>(props: Props<TData>) => {
 
 	const pageCount = enablePagination ? table.getPageCount() : 0;
 
-	const headers: ReactNode[] = table.getHeaderGroups().flatMap((group) =>
-		group.headers.map((header) => {
-			if (header.isPlaceholder) return null;
-			return (
-				<div
-					key={header.id}
-					className={classes.headerCell}
-					style={{ ...header.column.columnDef.meta?.styles }}
-				>
-					{flexRender(header.column.columnDef.header, header.getContext())}
-				</div>
+	const headers: ReactNode[] | undefined = hideHeaders
+		? undefined
+		: table.getHeaderGroups().flatMap((group) =>
+				group.headers.map((header) => {
+					if (header.isPlaceholder) return null;
+					return (
+						<div
+							key={header.id}
+							className={classes.headerCell}
+							style={{ ...header.column.columnDef.meta?.styles }}
+						>
+							{flexRender(header.column.columnDef.header, header.getContext())}
+						</div>
+					);
+				}),
 			);
-		}),
-	);
 
 	const rows: ReactNode[][] = table.getRowModel().rows.map((row) =>
 		row.getVisibleCells().map((cell) => {
@@ -108,6 +112,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 					key={cell.id}
 					className={classes.bodyCell}
 					style={{ ...cell.column.columnDef.meta?.styles }}
+					data-subrow={row.depth > 0 || undefined}
 				>
 					{flexRender(cell.column.columnDef.cell, cell.getContext())}
 				</div>
@@ -127,7 +132,11 @@ export const Table = <TData,>(props: Props<TData>) => {
 				noScroll={noScroll}
 				bottomCaption={bottomCaption}
 				colorVariant={colorVariant}
-				className={cx(classes.table, className)}
+				className={cx(
+					classes.table,
+					hideHeaders && classes.hiddenHeaders,
+					className,
+				)}
 			/>
 			{enablePagination && (
 				<div className={classes.paginationWrapper}>
@@ -145,7 +154,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 
 const useStyles = tss.withName(Table.name).create(() => ({
 	table: {
-		marginTop: `${fr.spacing("6v")}!important`,
+		marginTop: "0!important",
 		marginBottom: "0!important",
 		table: {
 			borderColor: "red!important",
@@ -154,6 +163,16 @@ const useStyles = tss.withName(Table.name).create(() => ({
 		thead: {
 			backgroundColor: "white!important",
 			backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default})!important`,
+		},
+		"tbody tr:has([data-subrow]) > td": {
+			backgroundColor: fr.colors.decisions.background.default.grey.hover,
+			backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default})!important`,
+			backgroundSize: "100% 1px",
+			backgroundRepeat: "no-repeat",
+			backgroundPosition: "top",
+		},
+		"tbody tr:not(:has([data-subrow])) + tr:has([data-subrow]) > td": {
+			backgroundImage: "none!important",
 		},
 		"thead::after, tbody::after": {
 			backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default}), linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default}), linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default})!important`,
@@ -165,6 +184,14 @@ const useStyles = tss.withName(Table.name).create(() => ({
 	bodyCell: {
 		display: "flex",
 		alignItems: "center",
+	},
+	hiddenHeaders: {
+		"tbody tr:first-of-type td": {
+			borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+		},
+		"tbody tr:last-of-type td": {
+			borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+		},
 	},
 	paginationWrapper: {
 		display: "flex",

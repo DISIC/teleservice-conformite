@@ -15,10 +15,10 @@ import PublishedDeclarationTemplate, {
 	extractDeclarationContentToPublish,
 } from "~/components/declaration/PublishedDeclarationTemplate";
 import type {
-	ActionPlan,
 	Audit,
 	Contact,
 	Entity,
+	Schema,
 	User,
 } from "~/payload/payload-types";
 import {
@@ -31,12 +31,12 @@ import type { PublishedDeclaration } from "~/utils/declaration-content";
 
 type RequiredPopulatedDeclaration = Omit<
 	PopulatedDeclaration,
-	"audit" | "contact" | "entity" | "actionPlan" | "created_by"
+	"audit" | "contact" | "entity" | "schema" | "created_by"
 > & {
 	audit: Audit;
 	contact: Contact;
 	entity: Entity;
-	actionPlan: ActionPlan;
+	schema: Schema;
 	created_by: User;
 };
 
@@ -188,10 +188,9 @@ export const getServerSideProps = (async (context) => {
 
 	if (!declaration) return { redirect };
 
-	const { audit, contact, entity, actionPlan, created_by } = declaration;
+	const { audit, contact, entity, schema, created_by } = declaration;
 
-	const isDeclarationFull =
-		audit && contact && entity && actionPlan && created_by;
+	const isDeclarationFull = audit && contact && entity && schema && created_by;
 
 	if (!isDeclarationFull) {
 		return {

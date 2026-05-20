@@ -3,6 +3,7 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
+import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 import config from "@payload-config";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -209,6 +210,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 					<EmptyState
 						title="Bienvenue !"
 						description="Ajoutez votre première déclaration d’accessibilité pour démarrer"
+						pictogram={<Conclusion fontSize="3rem" />}
 						ctaProps={{
 							linkProps: { href: "/dashboard/form" },
 							children: "Ajouter une déclaration",
@@ -217,14 +219,16 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 					/>
 				)}
 				<div className={classes.infoBlocksContainer}>
-					<InfoBlock
-						organizationName="Nom organisation"
-						title="Documents partagés"
-					>
-						Retrouvez et gérez les schémas pluriannuels, plans d’actions et
-						contacts de votre organisation nécessaire à votre déclaration
-						d’accessibilité
-					</InfoBlock>
+					<Link href="/dashboard/library" className={classes.infoBlockLink}>
+						<InfoBlock
+							organizationName="Nom organisation"
+							title="Documents partagés"
+						>
+							Retrouvez et gérez les schémas pluriannuels, plans d’actions et
+							contacts de votre organisation nécessaire à votre déclaration
+							d’accessibilité
+						</InfoBlock>
+					</Link>
 					<InfoBlock
 						organizationName="Nom organisation"
 						title="Toutes les déclarations"
@@ -247,6 +251,7 @@ const useStyles = tss
 		buttonWrapper: {
 			justifyContent: "flex-end",
 			display: declarationLength ? "flex" : "none",
+			marginBottom: fr.spacing("6v"),
 		},
 		alertWrapper: {
 			width: "100%",
@@ -261,6 +266,14 @@ const useStyles = tss
 			display: "flex",
 			flexDirection: "column",
 			gap: fr.spacing("6v"),
+		},
+		infoBlockLink: {
+			textDecoration: "none",
+			color: "inherit",
+			backgroundImage: "none",
+			"&:hover": {
+				filter: "brightness(0.97)",
+			},
 		},
 		infoBlocksContainer: {
 			marginTop: fr.spacing("12v"),

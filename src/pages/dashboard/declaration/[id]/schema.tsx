@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import DeclarationForm from "~/components/declaration/DeclarationForm";
+import EntityLibraryPicker from "~/components/declaration/EntityLibraryPicker";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
@@ -18,17 +19,24 @@ export default function SchemaPage({
 	const router = useRouter();
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
-	const [readOnly, setReadOnly] = useState(!!declaration?.actionPlan);
+	const [readOnly, setReadOnly] = useState(!!declaration?.schema);
+
+	const { data: libraryItems = [], refetch: refetchLibrary } =
+		api.entityLibrary.listSchemas.useQuery(
+			{ entityId: Number(declaration.entity?.id) },
+			{ enabled: !!declaration.entity?.id },
+		);
 
 	const { mutateAsync: upsertSchema } = api.schema.upsert.useMutation({
-		onSuccess: async ({ data: actionPlan }) => {
-			if (!declaration.actionPlan) {
+		onSuccess: async ({ data: schema }) => {
+			refetchLibrary();
+			if (!declaration.schema) {
 				const isComplete = declaration.audit && declaration.contact;
 				router.push(
 					`/dashboard/declaration/${declaration.id}${isComplete ? "/preview" : ""}`,
 				);
 			} else {
-				setDeclaration((prev) => ({ ...prev, actionPlan }));
+				setDeclaration((prev) => ({ ...prev, schema }));
 				setReadOnly(true);
 			}
 		},
@@ -39,32 +47,35 @@ export default function SchemaPage({
 			),
 	});
 
+	const { mutateAsync: linkExisting } = api.schema.linkExisting.useMutation({
+		onSuccess: async () => router.reload(),
+	});
+
 	const onEditInfos = () => {
 		if (!readOnly) form.reset();
 		setReadOnly((prev) => !prev);
 	};
 
 	const defaultValues: ZSchema = useMemo(() => {
-		if (!declaration.actionPlan) return schemaFormOptions.defaultValues;
-
-		const { currentYearSchemaUrl, previousYearsSchemaUrl } =
-			declaration.actionPlan;
+		if (!declaration.schema) return schemaFormOptions.defaultValues;
 
 		return {
-			hasDoneCurrentYearSchema: !!currentYearSchemaUrl,
-			currentYearSchemaUrl: currentYearSchemaUrl ?? undefined,
-			hasDonePreviousYearsSchema: !!previousYearsSchemaUrl,
-			previousYearsSchemaUrl: previousYearsSchemaUrl ?? undefined,
+			schemaName: declaration.schema.schemaName ?? "",
+			schemaUrl: declaration.schema.schemaUrl ?? "",
+			actionPlanUrls: (declaration.schema.actionPlanUrls ?? []).map((item) => ({
+				name: item.name ?? "",
+				url: item.url ?? "",
+			})),
 		};
-	}, [declaration.actionPlan]);
+	}, [declaration.schema]);
 
 	const form = useAppForm({
 		...schemaFormOptions,
 		defaultValues,
 		onSubmit: async ({ value }) => {
 			await upsertSchema({
-				...value,
-				id: declaration.actionPlan?.id,
+				values: value,
+				id: declaration.schema?.id,
 				declarationId: declaration.id,
 			});
 		},
@@ -82,11 +93,26 @@ export default function SchemaPage({
 				declaration={declaration}
 				title="Schéma et plans d'actions"
 				breadcrumbLabel={declaration?.name ?? ""}
-				isEditable={!!declaration?.actionPlan}
+				isEditable={!!declaration?.schema}
 				onToggleEdit={onEditInfos}
 				readOnly={readOnly}
 				isAiGenerated={declaration?.fromSource === "ai"}
 			>
+				{!readOnly && libraryItems.length > 0 && (
+					<EntityLibraryPicker
+						label="Utiliser un schéma existant de l'administration"
+						placeholder="Sélectionner un schéma"
+						items={libraryItems.map((s) => ({
+							id: s.id,
+							label: s.schemaName,
+							hint: s.schemaUrl || "",
+						}))}
+						selectedId={declaration.schema?.id ?? null}
+						onSelect={(id) =>
+							linkExisting({ schemaId: id, declarationId: declaration.id })
+						}
+					/>
+				)}
 				<form
 					onSubmit={(e) => {
 						e.preventDefault();
@@ -110,7 +136,7 @@ export default function SchemaPage({
 							{!readOnly && (
 								<form.SubscribeButton
 									label={
-										declaration.actionPlan?.toVerify
+										declaration.schema?.toVerify
 											? "Valider les informations"
 											: "Valider"
 									}

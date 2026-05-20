@@ -1,24 +1,25 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button, type ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
+import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
 type EmptyStateProps = {
-	title: string;
+	title?: string;
 	description: string;
+	pictogram?: ReactNode;
 	ctaProps: ButtonProps.Common &
 		(ButtonProps.IconOnly | ButtonProps.WithIcon | ButtonProps.WithoutIcon) &
-		ButtonProps.AsAnchor;
+		(ButtonProps.AsAnchor | ButtonProps.AsButton);
 };
 
 export default function EmptyState(props: EmptyStateProps) {
 	const { classes } = useStyles();
-	const { title, description, ctaProps } = props;
+	const { title, description, ctaProps, pictogram } = props;
 
 	return (
 		<div className={classes.emptyStateContainer}>
-			<Conclusion fontSize="3rem" />
-			<h2 className={classes.emptyStateTitle}>{title}</h2>
+			{pictogram}
+			{title && <h2 className={classes.emptyStateTitle}>{title}</h2>}
 			<p className={classes.emptyStateDescription}>{description}</p>
 			<Button {...ctaProps} priority="primary">
 				{ctaProps.children}
