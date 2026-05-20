@@ -7,7 +7,7 @@ import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
 import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 import config from "@payload-config";
 import { createColumnHelper } from "@tanstack/react-table";
-import type { GetServerSideProps } from "next";
+import type { GetServerSideProps, Redirect } from "next";
 import Link from "next/link";
 import { getPayload } from "payload";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -295,7 +295,12 @@ const useStyles = tss
 		},
 	}));
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = (async (context) => {
+	const redirect: Redirect = {
+		destination: "/dashboard",
+		permanent: false,
+	};
+
 	const [payload, authSession] = await Promise.all([
 		getPayload({ config }),
 		auth.api.getSession({
@@ -303,9 +308,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		}),
 	]);
 
-	if (!authSession) {
-		return { redirect: { destination: "/" }, props: {} };
-	}
+	if (!authSession) return { redirect };
 
 	try {
 		const user = await payload.findByID({
@@ -348,18 +351,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			} as PopulatedDeclaration & { updatedAtFormatted: string });
 		}
 
-		if (!deletedDeclarations.length && declarations?.length === 0) {
-			return {
-				props: {
-					firstDeclaration: true,
-					declarations: [],
-					entityName: currentEntity.name,
-				},
-			};
-		}
-
 		return {
 			props: {
+				firstDeclaration: !declarations.length,
 				declarations,
 				entityName: currentEntity.name,
 			},
@@ -367,8 +361,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	} catch (error) {
 		console.error("Error fetching declaration:", error);
 
-		return {
-			redirect: { destination: "/" },
-		};
+		return { redirect };
 	}
-};
+}) satisfies GetServerSideProps<DeclarationsPageProps>;
