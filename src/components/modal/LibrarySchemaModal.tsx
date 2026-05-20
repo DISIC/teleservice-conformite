@@ -70,13 +70,10 @@ export function LibrarySchemaModal({
 		},
 	});
 
-	useEffect(() => {
-		actions.open = (schema) => {
-			setEditing(schema ?? null);
-			form.reset();
-			modal.open();
-		};
-	}, []);
+	actions.open = (schema) => {
+		setEditing(schema ?? null);
+		modal.open();
+	};
 
 	useEffect(() => {
 		form.reset();

@@ -70,13 +70,10 @@ export function LibraryContactModal({
 		},
 	});
 
-	useEffect(() => {
-		actions.open = (contact) => {
-			setEditing(contact ?? null);
-			form.reset();
-			modal.open();
-		};
-	}, []);
+	actions.open = (contact) => {
+		setEditing(contact ?? null);
+		modal.open();
+	};
 
 	useEffect(() => {
 		form.reset();
