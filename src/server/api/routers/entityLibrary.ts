@@ -28,6 +28,11 @@ export const entityLibraryRouter = createTRPCRouter({
 	listContacts: userProtectedProcedure
 		.input(z.object({ entityId: z.number() }))
 		.query(async ({ input, ctx }) => {
+			await assertUserEntityAccess({
+				payload: ctx.payload,
+				userId: Number(ctx.session.user.id),
+				entityId: input.entityId,
+			});
 			const result = await ctx.payload.find({
 				collection: "contacts",
 				where: { entity: { equals: input.entityId } },
@@ -39,6 +44,11 @@ export const entityLibraryRouter = createTRPCRouter({
 	listSchemas: userProtectedProcedure
 		.input(z.object({ entityId: z.number() }))
 		.query(async ({ input, ctx }) => {
+			await assertUserEntityAccess({
+				payload: ctx.payload,
+				userId: Number(ctx.session.user.id),
+				entityId: input.entityId,
+			});
 			const result = await ctx.payload.find({
 				collection: "schemas",
 				where: { entity: { equals: input.entityId } },
