@@ -2,7 +2,7 @@ import Head from "next/head";
 import { type ReactNode, useState } from "react";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { SectionShell } from "~/components/declaration/sections/SectionShell";
+import { SectionShell } from "~/components/declaration/sections/Shell";
 
 type UseSectionFormArgs = {
 	/** Section title — drives <Head> and SectionShell. */

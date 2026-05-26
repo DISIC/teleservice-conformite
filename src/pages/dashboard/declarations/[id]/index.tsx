@@ -14,7 +14,7 @@ import { DeclarationSideMenu } from "~/components/declaration/DeclarationSideMen
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import { DeclarationStatsCards } from "~/components/declaration/DeclarationStatsCards";
 import Membres from "~/components/declaration/Membres";
-import { SectionContent } from "~/components/declaration/sections/SectionContent";
+import { SectionContent } from "~/components/declaration/sections/Content";
 import VerifyGeneratedInfoHelpingMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
@@ -213,13 +213,13 @@ export default function DeclarationPage({
 							className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
 							role="presentation"
 						>
-							<aside className={fr.cx("fr-col-12", "fr-col-md-3")}>
+							<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
 								<DeclarationSideMenu
 									declaration={declaration}
 									currentSection={currentSection}
 								/>
 							</aside>
-							<div className={fr.cx("fr-col-12", "fr-col-md-9")}>
+							<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
 								<SectionContent
 									declaration={declaration}
 									currentSection={currentSection}

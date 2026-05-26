@@ -13,17 +13,90 @@ export const SECTION_SLUGS = [
 export type SectionSlug = (typeof SECTION_SLUGS)[number];
 export type AuditSubSectionSlug = Extract<SectionSlug, `audit-${string}`>;
 
+/**
+ * Virtual parents — currently only used to model Audit's SideMenu grouping.
+ * Not a slug in its own right (Audit is reached via `audit-realisation`).
+ */
+export type SectionParentKey = "audit";
+
 export const DEFAULT_SECTION: SectionSlug = "infos";
 
-export const SECTION_TITLES: Record<SectionSlug, string> = {
-	infos: "Informations générales",
-	"audit-realisation": "Réalisation de l'audit",
-	"audit-outils": "Outils et environnements",
-	"audit-contenus": "Contenus vérifiés",
-	"audit-non-conformites": "Non conformités & dérogations",
-	schema: "Schéma pluriannuel & plans d'action",
-	contact: "Contact",
+type SectionMeta = {
+	title: string;
+	parent?: SectionParentKey;
+	/** Whether the Section is currently navigable from SideMenu/footer. */
+	isVisible: (declaration: PopulatedDeclaration) => boolean;
+	/** "À compléter" — required data is missing. */
+	isToComplete: (declaration: PopulatedDeclaration) => boolean;
+	/** "À vérifier" — content is AI-generated and needs human review. */
+	isToVerify: (declaration: PopulatedDeclaration) => boolean;
 };
+
+const isAuditMissing = (d: PopulatedDeclaration) => !d.audit;
+const isAuditExpanded = (d: PopulatedDeclaration) =>
+	d.audit?.isRealised === true;
+
+/**
+ * Single source of truth for everything a SectionSlug carries: label, visibility,
+ * badge predicates, and SideMenu parent grouping. Add or rename a Section by
+ * editing this object — `SECTION_TITLES`, `getVisibleSections`,
+ * `isSectionToComplete`, and `isSectionToVerify` all derive from here.
+ */
+export const SECTIONS: Record<SectionSlug, SectionMeta> = {
+	infos: {
+		title: "Informations générales",
+		isVisible: () => true,
+		isToComplete: () => false,
+		isToVerify: () => false,
+	},
+	"audit-realisation": {
+		title: "Réalisation de l'audit",
+		parent: "audit",
+		// Always visible — it's the anchor sub-section, reachable even when
+		// no audit exists yet (the rest unlock once isRealised === true).
+		isVisible: () => true,
+		isToComplete: (d) => isAuditMissing(d) || d.audit?.date == null,
+		isToVerify: () => false,
+	},
+	"audit-outils": {
+		title: "Outils et environnements",
+		parent: "audit",
+		isVisible: isAuditExpanded,
+		isToComplete: (d) =>
+			isAuditMissing(d) || (d.audit?.usedTools?.length ?? 0) === 0,
+		isToVerify: () => false,
+	},
+	"audit-contenus": {
+		title: "Contenus vérifiés",
+		parent: "audit",
+		isVisible: isAuditExpanded,
+		isToComplete: (d) => isAuditMissing(d) || !d.audit?.compliantElements,
+		isToVerify: () => false,
+	},
+	"audit-non-conformites": {
+		title: "Non conformités & dérogations",
+		parent: "audit",
+		isVisible: isAuditExpanded,
+		isToComplete: (d) => isAuditMissing(d) || !d.audit?.nonCompliantElements,
+		isToVerify: () => false,
+	},
+	schema: {
+		title: "Schéma pluriannuel & plans d'action",
+		isVisible: () => true,
+		isToComplete: (d) => !d.schema,
+		isToVerify: (d) => d.schema?.toVerify === true,
+	},
+	contact: {
+		title: "Contact",
+		isVisible: () => true,
+		isToComplete: (d) => !d.contact,
+		isToVerify: (d) => d.contact?.toVerify === true,
+	},
+};
+
+export const SECTION_TITLES = Object.fromEntries(
+	SECTION_SLUGS.map((slug) => [slug, SECTIONS[slug].title]),
+) as Record<SectionSlug, string>;
 
 export function isAuditSubSection(
 	slug: SectionSlug,
@@ -42,18 +115,10 @@ export function parseSectionFromQuery(value: unknown): SectionSlug {
 	return isSectionSlug(value) ? value : DEFAULT_SECTION;
 }
 
-/**
- * Sections navigable for a given declaration, in walk order.
- * Audit Sub-sections beyond "Réalisation" only appear when isRealised === true.
- */
 export function getVisibleSections(
 	declaration: PopulatedDeclaration,
 ): SectionSlug[] {
-	const auditExpanded = declaration.audit?.isRealised === true;
-	return SECTION_SLUGS.filter(
-		(slug) =>
-			!isAuditSubSection(slug) || slug === "audit-realisation" || auditExpanded,
-	);
+	return SECTION_SLUGS.filter((slug) => SECTIONS[slug].isVisible(declaration));
 }
 
 export function getPrevNextSections(
@@ -75,42 +140,18 @@ export function sectionHref(
 	return `/dashboard/declarations/${declarationId}?section=${slug}`;
 }
 
-/** "À compléter" — section/sub-section is empty and needs to be filled. */
 export function isSectionToComplete(
 	declaration: PopulatedDeclaration,
 	slug: SectionSlug,
 ): boolean {
-	switch (slug) {
-		case "infos":
-			return false;
-		case "audit-realisation":
-			return !declaration.audit || declaration.audit.date == null;
-		case "audit-outils":
-			return (
-				!declaration.audit || (declaration.audit.usedTools?.length ?? 0) === 0
-			);
-		case "audit-contenus":
-			return !declaration.audit || !declaration.audit.compliantElements;
-		case "audit-non-conformites":
-			return !declaration.audit || !declaration.audit.nonCompliantElements;
-		case "schema":
-			return !declaration.schema;
-		case "contact":
-			return !declaration.contact;
-	}
+	return SECTIONS[slug].isToComplete(declaration);
 }
 
-/**
- * "À vérifier" — Section has AI-generated content needing human review.
- * Tracked at Section level only; not fanned out to Sub-sections.
- */
 export function isSectionToVerify(
 	declaration: PopulatedDeclaration,
 	slug: SectionSlug,
 ): boolean {
-	if (slug === "schema") return declaration.schema?.toVerify === true;
-	if (slug === "contact") return declaration.contact?.toVerify === true;
-	return false;
+	return SECTIONS[slug].isToVerify(declaration);
 }
 
 export function isAuditToVerify(declaration: PopulatedDeclaration): boolean {
