@@ -1,7 +1,4 @@
-import Head from "next/head";
-import { useMemo, useState } from "react";
-import { SectionShell } from "./SectionShell";
-import { useCommonStyles } from "~/components/style/commonStyles";
+import { useMemo } from "react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
@@ -11,6 +8,7 @@ import {
 	declarationMultiStepFormOptions,
 	type ZDeclarationMultiStepFormSchema,
 } from "~/utils/form/declaration/schema";
+import { useSectionForm } from "~/utils/declaration/useSectionForm";
 
 type InfosSectionProps = {
 	declaration: PopulatedDeclaration;
@@ -27,15 +25,10 @@ export function InfosSection({
 	prevHref,
 	nextHref,
 }: InfosSectionProps) {
-	const { classes: commonClasses } = useCommonStyles();
-	const [readOnly, setReadOnly] = useState(true);
-
 	const { mutateAsync: update, isPending } = api.declaration.update.useMutation(
 		{
-			onSuccess: ({ data }) => {
-				onDeclarationChange((prev) => ({ ...prev, ...data }));
-				setReadOnly(true);
-			},
+			onSuccess: ({ data }) =>
+				onDeclarationChange((prev) => ({ ...prev, ...data })),
 			onError: (error) =>
 				console.error(
 					`Error updating declaration with id ${declaration.id}:`,
@@ -43,6 +36,16 @@ export function InfosSection({
 				),
 		},
 	);
+
+	const { readOnly, exitEdit, Frame } = useSectionForm({
+		title: SECTION_TITLES.infos,
+		declaration,
+		isEditable: true,
+		initialReadOnly: true,
+		isSaving: isPending,
+		prevHref,
+		nextHref,
+	});
 
 	const defaultValues: ZDeclarationMultiStepFormSchema = useMemo(
 		() => ({
@@ -70,43 +73,13 @@ export function InfosSection({
 					entityId: declaration.entity?.id ?? -1,
 				},
 			});
+			exitEdit();
 		},
 	});
 
 	return (
-		<>
-			<Head>
-				<title>
-					{SECTION_TITLES.infos} - Déclaration de {declaration.name} -
-					Téléservice Conformité
-				</title>
-			</Head>
-			<SectionShell
-				title={SECTION_TITLES.infos}
-				isEditable
-				readOnly={readOnly}
-				onEnterEdit={() => setReadOnly(false)}
-				onCancelEdit={() => {
-					form.reset();
-					setReadOnly(true);
-				}}
-				onSave={() => form.handleSubmit()}
-				isSaving={isPending}
-				prevHref={prevHref}
-				nextHref={nextHref}
-			>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-					onInvalid={() => form.validate("submit")}
-				>
-					<div className={commonClasses.whiteBackground}>
-						<DeclarationGeneralForm form={form} readOnly={readOnly} />
-					</div>
-				</form>
-			</SectionShell>
-		</>
+		<Frame form={form}>
+			<DeclarationGeneralForm form={form} readOnly={readOnly} />
+		</Frame>
 	);
 }

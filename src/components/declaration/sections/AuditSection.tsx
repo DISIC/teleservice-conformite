@@ -1,8 +1,6 @@
 import { useStore } from "@tanstack/react-form";
-import Head from "next/head";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
-import { useCommonStyles } from "~/components/style/commonStyles";
+import { useMemo } from "react";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
@@ -29,7 +27,7 @@ import {
 	auditMultiStepFormOptions,
 	type ZAuditFormSchema,
 } from "~/utils/form/audit/schema";
-import { SectionShell } from "./SectionShell";
+import { useSectionForm } from "~/utils/declaration/useSectionForm";
 
 type AuditSectionProps = {
 	declaration: PopulatedDeclaration;
@@ -59,7 +57,6 @@ export function AuditSection({
 	prevHref,
 	nextHref,
 }: AuditSectionProps) {
-	const { classes: commonClasses } = useCommonStyles();
 	const router = useRouter();
 	const audit = declaration.audit;
 	const hasAudit = !!audit;
@@ -68,7 +65,6 @@ export function AuditSection({
 		currentSubSection,
 	);
 	const isEditable = hasAudit && !subSectionToComplete;
-	const [readOnly, setReadOnly] = useState(isEditable);
 
 	const { mutateAsync: createAudit, isPending: isCreating } =
 		api.audit.create.useMutation({
@@ -84,15 +80,23 @@ export function AuditSection({
 
 	const { mutateAsync: updateAudit, isPending: isUpdating } =
 		api.audit.update.useMutation({
-			onSuccess: ({ data: updatedAudit }) => {
-				onDeclarationChange((prev) => ({ ...prev, audit: updatedAudit }));
-				setReadOnly(true);
-			},
+			onSuccess: ({ data: updatedAudit }) =>
+				onDeclarationChange((prev) => ({ ...prev, audit: updatedAudit })),
 			onError: (error) =>
 				console.error(`Error updating audit with id ${audit?.id}:`, error),
 		});
 
 	const isPending = isCreating || isUpdating;
+
+	const { readOnly, exitEdit, Frame } = useSectionForm({
+		title: SECTION_TITLES[currentSubSection],
+		declaration,
+		isEditable,
+		initialReadOnly: isEditable,
+		isSaving: isPending,
+		prevHref,
+		nextHref,
+	});
 
 	const defaultValues: ZAuditFormSchema = useMemo(
 		() => ({
@@ -138,6 +142,7 @@ export function AuditSection({
 				} else {
 					await createAudit({ ...value, declarationId: declaration.id });
 				}
+				// onSuccess reloads the page, so no exitEdit() — the next render starts fresh.
 				return;
 			}
 
@@ -148,6 +153,7 @@ export function AuditSection({
 					...value,
 				},
 			});
+			exitEdit();
 		},
 	});
 
@@ -157,58 +163,27 @@ export function AuditSection({
 	);
 
 	return (
-		<>
-			<Head>
-				<title>
-					{SECTION_TITLES[currentSubSection]} - Déclaration de{" "}
-					{declaration.name} - Téléservice Conformité
-				</title>
-			</Head>
-			<SectionShell
-				title={SECTION_TITLES[currentSubSection]}
-				isEditable={isEditable}
-				readOnly={readOnly}
-				onEnterEdit={() => setReadOnly(false)}
-				onCancelEdit={() => {
-					form.reset();
-					setReadOnly(true);
-				}}
-				onSave={() => form.handleSubmit()}
-				isSaving={isPending}
-				prevHref={prevHref}
-				nextHref={nextHref}
-			>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-					onInvalid={() => form.validate("submit")}
-				>
-					<div className={commonClasses.whiteBackground}>
-						{currentSubSection === "audit-realisation" && (
-							<>
-								<AuditRealisedForm form={form} readOnly={readOnly} />
-								{isAuditRealisedValue === true && (
-									<>
-										<AuditDateForm form={form} readOnly={readOnly} />
-										<FilesForm form={form} readOnly={readOnly} />
-									</>
-								)}
-							</>
-						)}
-						{currentSubSection === "audit-outils" && (
-							<ToolsForm form={form} readOnly={readOnly} />
-						)}
-						{currentSubSection === "audit-contenus" && (
-							<CompliantElementsForm form={form} readOnly={readOnly} />
-						)}
-						{currentSubSection === "audit-non-conformites" && (
-							<NonCompliantElementsForm form={form} readOnly={readOnly} />
-						)}
-					</div>
-				</form>
-			</SectionShell>
-		</>
+		<Frame form={form}>
+			{currentSubSection === "audit-realisation" && (
+				<>
+					<AuditRealisedForm form={form} readOnly={readOnly} />
+					{isAuditRealisedValue === true && (
+						<>
+							<AuditDateForm form={form} readOnly={readOnly} />
+							<FilesForm form={form} readOnly={readOnly} />
+						</>
+					)}
+				</>
+			)}
+			{currentSubSection === "audit-outils" && (
+				<ToolsForm form={form} readOnly={readOnly} />
+			)}
+			{currentSubSection === "audit-contenus" && (
+				<CompliantElementsForm form={form} readOnly={readOnly} />
+			)}
+			{currentSubSection === "audit-non-conformites" && (
+				<NonCompliantElementsForm form={form} readOnly={readOnly} />
+			)}
+		</Frame>
 	);
 }

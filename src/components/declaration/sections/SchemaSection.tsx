@@ -1,15 +1,13 @@
-import Head from "next/head";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import EntityLibraryPicker from "~/components/declaration/EntityLibraryPicker";
-import { SectionShell } from "./SectionShell";
-import { useCommonStyles } from "~/components/style/commonStyles";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { useAppForm } from "~/utils/form/context";
 import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
 import { schemaFormOptions, type ZSchema } from "~/utils/form/schema/schema";
+import { useSectionForm } from "~/utils/declaration/useSectionForm";
 
 type SchemaSectionProps = {
 	declaration: PopulatedDeclaration;
@@ -26,10 +24,8 @@ export function SchemaSection({
 	prevHref,
 	nextHref,
 }: SchemaSectionProps) {
-	const { classes: commonClasses } = useCommonStyles();
 	const { reload } = useRouter();
 	const hasSchema = !!declaration.schema;
-	const [readOnly, setReadOnly] = useState(hasSchema);
 
 	const { data: libraryItems = [], refetch: refetchLibrary } =
 		api.entityLibrary.listSchemas.useQuery(
@@ -42,7 +38,6 @@ export function SchemaSection({
 			onSuccess: async ({ data: schema }) => {
 				refetchLibrary();
 				onDeclarationChange((prev) => ({ ...prev, schema }));
-				setReadOnly(true);
 			},
 			onError: (error) =>
 				console.error(
@@ -53,6 +48,15 @@ export function SchemaSection({
 
 	const { mutateAsync: linkExisting } = api.schema.linkExisting.useMutation({
 		onSuccess: async () => reload(),
+	});
+
+	const { readOnly, exitEdit, Frame } = useSectionForm({
+		title: SECTION_TITLES.schema,
+		declaration,
+		isEditable: hasSchema,
+		isSaving: isPending,
+		prevHref,
+		nextHref,
 	});
 
 	const defaultValues: ZSchema = useMemo(() => {
@@ -76,58 +80,29 @@ export function SchemaSection({
 				id: declaration.schema?.id,
 				declarationId: declaration.id,
 			});
+			exitEdit();
 		},
 	});
 
+	const libraryPicker = !readOnly && libraryItems.length > 0 && (
+		<EntityLibraryPicker
+			label="Utiliser un schéma existant de l'administration"
+			placeholder="Sélectionner un schéma"
+			items={libraryItems.map((s) => ({
+				id: s.id,
+				label: s.schemaName,
+				hint: s.schemaUrl || "",
+			}))}
+			selectedId={declaration.schema?.id ?? null}
+			onSelect={(id) =>
+				linkExisting({ schemaId: id, declarationId: declaration.id })
+			}
+		/>
+	);
+
 	return (
-		<>
-			<Head>
-				<title>
-					{SECTION_TITLES.schema} - Déclaration de {declaration.name} -
-					Téléservice Conformité
-				</title>
-			</Head>
-			<SectionShell
-				title={SECTION_TITLES.schema}
-				isEditable={hasSchema}
-				readOnly={readOnly}
-				onEnterEdit={() => setReadOnly(false)}
-				onCancelEdit={() => {
-					form.reset();
-					setReadOnly(true);
-				}}
-				onSave={() => form.handleSubmit()}
-				isSaving={isPending}
-				prevHref={prevHref}
-				nextHref={nextHref}
-			>
-				{!readOnly && libraryItems.length > 0 && (
-					<EntityLibraryPicker
-						label="Utiliser un schéma existant de l'administration"
-						placeholder="Sélectionner un schéma"
-						items={libraryItems.map((s) => ({
-							id: s.id,
-							label: s.schemaName,
-							hint: s.schemaUrl || "",
-						}))}
-						selectedId={declaration.schema?.id ?? null}
-						onSelect={(id) =>
-							linkExisting({ schemaId: id, declarationId: declaration.id })
-						}
-					/>
-				)}
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-					onInvalid={() => form.validate("submit")}
-				>
-					<div className={commonClasses.whiteBackground}>
-						<DeclarationSchemaForm form={form} readOnly={readOnly} />
-					</div>
-				</form>
-			</SectionShell>
-		</>
+		<Frame form={form} before={libraryPicker}>
+			<DeclarationSchemaForm form={form} readOnly={readOnly} />
+		</Frame>
 	);
 }

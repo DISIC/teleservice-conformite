@@ -1,8 +1,6 @@
-import Head from "next/head";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import EntityLibraryPicker from "~/components/declaration/EntityLibraryPicker";
-import { useCommonStyles } from "~/components/style/commonStyles";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
@@ -12,7 +10,7 @@ import {
 	contactFormOptions,
 	type ZContactForm,
 } from "~/utils/form/contact/schema";
-import { SectionShell } from "./SectionShell";
+import { useSectionForm } from "~/utils/declaration/useSectionForm";
 
 type ContactSectionProps = {
 	declaration: PopulatedDeclaration;
@@ -29,10 +27,8 @@ export function ContactSection({
 	prevHref,
 	nextHref,
 }: ContactSectionProps) {
-	const { classes: commonClasses } = useCommonStyles();
 	const { reload } = useRouter();
 	const hasContact = !!declaration.contact;
-	const [readOnly, setReadOnly] = useState(hasContact);
 
 	const { data: libraryItems = [], refetch: refetchLibrary } =
 		api.entityLibrary.listContacts.useQuery(
@@ -45,7 +41,6 @@ export function ContactSection({
 			onSuccess: ({ data: contact }) => {
 				refetchLibrary();
 				onDeclarationChange((prev) => ({ ...prev, contact }));
-				setReadOnly(true);
 			},
 			onError: (error) =>
 				console.error(
@@ -56,6 +51,15 @@ export function ContactSection({
 
 	const { mutateAsync: linkExisting } = api.contact.linkExisting.useMutation({
 		onSuccess: async () => reload(),
+	});
+
+	const { readOnly, exitEdit, Frame } = useSectionForm({
+		title: SECTION_TITLES.contact,
+		declaration,
+		isEditable: hasContact,
+		isSaving: isPending,
+		prevHref,
+		nextHref,
 	});
 
 	const defaultValues: ZContactForm = useMemo(() => {
@@ -70,12 +74,14 @@ export function ContactSection({
 	const form = useAppForm({
 		...contactFormOptions,
 		defaultValues,
-		onSubmit: async ({ value }) =>
+		onSubmit: async ({ value }) => {
 			await upsertContact({
 				values: value,
 				id: declaration.contact?.id,
 				declarationId: declaration.id,
-			}),
+			});
+			exitEdit();
+		},
 	});
 
 	const currentContactEntityId =
@@ -86,57 +92,27 @@ export function ContactSection({
 				? declaration.contact.entity
 				: null;
 
+	const libraryPicker = !readOnly && libraryItems.length > 0 && (
+		<EntityLibraryPicker
+			label="Utiliser un contact existant de l'administration"
+			placeholder="Sélectionner un contact"
+			items={libraryItems.map((c) => ({
+				id: c.id,
+				label: c.name,
+				hint: c.email || c.url || "",
+			}))}
+			selectedId={
+				currentContactEntityId ? (declaration.contact?.id ?? null) : null
+			}
+			onSelect={(id) =>
+				linkExisting({ contactId: id, declarationId: declaration.id })
+			}
+		/>
+	);
+
 	return (
-		<>
-			<Head>
-				<title>
-					{SECTION_TITLES.contact} - Déclaration de {declaration.name} -
-					Téléservice Conformité
-				</title>
-			</Head>
-			<SectionShell
-				title={SECTION_TITLES.contact}
-				isEditable={hasContact}
-				readOnly={readOnly}
-				onEnterEdit={() => setReadOnly(false)}
-				onCancelEdit={() => {
-					form.reset();
-					setReadOnly(true);
-				}}
-				onSave={() => form.handleSubmit()}
-				isSaving={isPending}
-				prevHref={prevHref}
-				nextHref={nextHref}
-			>
-				{!readOnly && libraryItems.length > 0 && (
-					<EntityLibraryPicker
-						label="Utiliser un contact existant de l'administration"
-						placeholder="Sélectionner un contact"
-						items={libraryItems.map((c) => ({
-							id: c.id,
-							label: c.name,
-							hint: c.email || c.url || "",
-						}))}
-						selectedId={
-							currentContactEntityId ? (declaration.contact?.id ?? null) : null
-						}
-						onSelect={(id) =>
-							linkExisting({ contactId: id, declarationId: declaration.id })
-						}
-					/>
-				)}
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-					onInvalid={() => form.validate("submit")}
-				>
-					<div className={commonClasses.whiteBackground}>
-						<ContactTypeForm form={form} readOnly={readOnly} />
-					</div>
-				</form>
-			</SectionShell>
-		</>
+		<Frame form={form} before={libraryPicker}>
+			<ContactTypeForm form={form} readOnly={readOnly} />
+		</Frame>
 	);
 }
