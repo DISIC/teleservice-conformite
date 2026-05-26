@@ -10,12 +10,15 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react";
+import { DeclarationSideMenu } from "~/components/declaration/DeclarationSideMenu";
 import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
-import Demarches from "~/components/declaration/Demarches";
+import { DeclarationStatsCards } from "~/components/declaration/DeclarationStatsCards";
 import Membres from "~/components/declaration/Membres";
+import { SectionContent } from "~/components/declaration/sections/SectionContent";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { copyToClipboard } from "~/utils/declaration-helper";
+import { parseSectionFromQuery } from "~/utils/declaration/sections";
 import { guardDeclaration } from "~/utils/server-guards";
 
 const deleteModal = createModal({
@@ -23,30 +26,32 @@ const deleteModal = createModal({
 	isOpenedByDefault: false,
 });
 
+type TabId = "declaration" | "members";
+
 export default function DeclarationPage({
 	declaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
-	const { published } = router.query;
+	const { published, section: sectionQuery } = router.query;
+	const currentSection = parseSectionFromQuery(sectionQuery);
 	const hasPublishedDeclaration = !!declaration?.publishedContent;
-	const [selectedTabId, setSelectedTabId] = useState<string>("demarches");
+	const [selectedTabId, setSelectedTabId] = useState<TabId>("declaration");
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertDetails, setAlertDetails] = useState<{
 		title?: string;
 		description?: string;
 		severity: "info" | "success" | "warning" | "error";
 	}>({ title: "", description: "", severity: "info" });
-	const [declarationName, _setDeclarationName] = useState<string>(
-		declaration?.name ?? "",
-	);
 	const { classes } = useStyles();
 
 	const isModified =
 		declaration?.status === "unpublished" && hasPublishedDeclaration;
+	const isDraft =
+		declaration?.status !== "published" && !hasPublishedDeclaration;
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
-			onSuccess: async (_result) => {
+			onSuccess: async () => {
 				router.push("/dashboard");
 			},
 			onError: (error) => {
@@ -54,22 +59,6 @@ export default function DeclarationPage({
 			},
 		},
 	);
-
-	const onDelete = async () => {
-		deleteModal.open();
-	};
-
-	const TabContent = ({ selectedTabId }: { selectedTabId: string }) => {
-		if (selectedTabId === "demarches") {
-			return <Demarches declaration={declaration} />;
-		}
-
-		if (selectedTabId === "members") {
-			return <Membres declaration={declaration} />;
-		}
-
-		return null;
-	};
 
 	const showDeclarationAlert = ({
 		title,
@@ -110,26 +99,25 @@ export default function DeclarationPage({
 	return (
 		<>
 			<Head>
-				<title>Déclaration de {declarationName} - Téléservice Conformité</title>
+				<title>
+					Déclaration de {declaration.name} - Téléservice Conformité
+				</title>
 			</Head>
 			<section id="declaration-page" className={fr.cx("fr-container")}>
 				<Breadcrumb
-					homeLinkProps={{
-						href: "/dashboard",
-					}}
+					homeLinkProps={{ href: "/dashboard" }}
 					segments={[]}
-					currentPageLabel={declarationName}
+					currentPageLabel={declaration.name ?? ""}
 					className={fr.cx("fr-mb-3w")}
 				/>
-				<section id="header" className={classes.headerSection}>
+
+				<header className={classes.headerSection}>
 					<span className={classes.header}>
-						<h1>{declarationName} </h1>
+						<h1>{declaration.name}</h1>
 						<StatusBadge
 							isPublished={declaration?.status === "published"}
 							isModified={isModified}
-							isDraft={
-								declaration?.status !== "published" && !hasPublishedDeclaration
-							}
+							isDraft={isDraft}
 						/>
 					</span>
 					<div className={classes.buttonsContainer}>
@@ -174,7 +162,7 @@ export default function DeclarationPage({
 						<Button
 							iconId="fr-icon-delete-fill"
 							priority="tertiary"
-							onClick={onDelete}
+							onClick={() => deleteModal.open()}
 							size="small"
 							nativeButtonProps={{
 								"aria-label": "Supprimer la déclaration",
@@ -186,7 +174,7 @@ export default function DeclarationPage({
 					{showAlert && (
 						<div className={classes.alertWrapper}>
 							<Alert
-								small={true}
+								small
 								severity={alertDetails.severity}
 								title={alertDetails?.title ?? ""}
 								description={alertDetails?.description ?? ""}
@@ -196,19 +184,44 @@ export default function DeclarationPage({
 							/>
 						</div>
 					)}
-				</section>
+				</header>
+
+				<div className={classes.statsWrapper}>
+					<DeclarationStatsCards declaration={declaration} />
+				</div>
+
 				<Tabs
 					selectedTabId={selectedTabId}
 					tabs={[
-						{ tabId: "demarches", label: "Démarche" },
+						{ tabId: "declaration", label: "Déclaration" },
 						{ tabId: "members", label: "Membres" },
 					]}
-					onTabChange={setSelectedTabId}
+					onTabChange={(id) => setSelectedTabId(id as TabId)}
 					className={classes.tabs}
 				>
-					<TabContent selectedTabId={selectedTabId} />
+					{selectedTabId === "declaration" && (
+						<div
+							className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
+							role="presentation"
+						>
+							<aside className={fr.cx("fr-col-12", "fr-col-md-3")}>
+								<DeclarationSideMenu
+									declaration={declaration}
+									currentSection={currentSection}
+								/>
+							</aside>
+							<div className={fr.cx("fr-col-12", "fr-col-md-9")}>
+								<SectionContent
+									declaration={declaration}
+									currentSection={currentSection}
+								/>
+							</div>
+						</div>
+					)}
+					{selectedTabId === "members" && <Membres declaration={declaration} />}
 				</Tabs>
 			</section>
+
 			<deleteModal.Component
 				title="Supprimer la déclaration"
 				buttons={[
@@ -228,14 +241,12 @@ export default function DeclarationPage({
 							"aria-label": "Confirmer la suppression de la déclaration",
 						},
 						className: classes.dialogActionButton,
-
 						onClick: async () => {
 							try {
 								await deleteDeclaration({ id: declaration?.id });
 							} catch (error) {
 								console.error("Error deleting declaration:", error);
 							}
-
 							deleteModal.close();
 						},
 					},
@@ -255,7 +266,8 @@ export default function DeclarationPage({
 						</p>
 						<p>
 							Si votre déclaration arrive en fin de validité, vous pouvez la
-							mettre à jour depuis l’onglet “Démarche” de votre déclaration.
+							mettre à jour depuis l'onglet « Déclaration » de votre
+							déclaration.
 						</p>
 					</div>
 				</div>
@@ -274,19 +286,23 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		marginBottom: fr.spacing("6v"),
 	},
 	header: {
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "flex-start",
+		flexWrap: "wrap",
+		gap: fr.spacing("3v"),
 		"& > h1": {
 			margin: 0,
-			display: "inline",
 		},
 	},
 	buttonsContainer: {
 		display: "flex",
 		flexDirection: "row",
+		flexWrap: "wrap",
 		gap: fr.spacing("4v"),
-
-		"@media (max-width: 1024px)": {
-			flexDirection: "column",
-		},
+	},
+	statsWrapper: {
+		marginBottom: fr.spacing("8v"),
 	},
 	emptyStateContainer: {
 		display: "flex",
@@ -336,12 +352,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		"&::before": {
 			boxShadow: "none",
 		},
-	},
-	editableNameInput: {
-		outline: "none",
-		border: "none",
-		fontSize: "2.5rem",
-		fontWeight: fr.typography[5].style.fontWeight,
 	},
 	alertWrapper: {
 		width: "100%",
