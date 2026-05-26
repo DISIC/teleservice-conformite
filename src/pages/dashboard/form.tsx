@@ -306,13 +306,10 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					onInvalid={() => form.validate("submit")}
 				>
 					<div className={classes.formWrapper}>
-						<div className={commonClasses.whiteBackground}>
-							<p
-								className={cx(
-									classes.description,
-									fr.cx("fr-text--sm", "fr-mt-10v"),
-								)}
-							>
+						<div
+							className={cx(commonClasses.whiteBackground, fr.cx("fr-p-8v"))}
+						>
+							<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
 								Tous les champs sont obligatoires sauf précision contraire
 							</p>
 							{section === "initialDeclaration" && <ContextForm form={form} />}
@@ -347,7 +344,6 @@ const useStyles = tss.withName(FormPage.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("3w"),
-		marginBottom: fr.spacing("6w"),
 	},
 	description: {
 		color: fr.colors.decisions.text.mention.grey.default,

@@ -4,7 +4,6 @@ import { tss } from "tss-react";
 export const useCommonStyles = tss.create({
 	whiteBackground: {
 		backgroundColor: fr.colors.decisions.background.raised.grey.default,
-		marginBottom: fr.spacing("6v"),
 		width: "100%",
 		display: "flex",
 		flexDirection: "column",
