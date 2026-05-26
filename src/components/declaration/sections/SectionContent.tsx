@@ -10,6 +10,7 @@ import {
 	sectionHref,
 } from "~/utils/declaration/sections";
 import { InfosSection } from "./InfosSection";
+import { SchemaSection } from "./SchemaSection";
 
 export type DeclarationChangeFn = (
 	updater: (prev: PopulatedDeclaration) => PopulatedDeclaration,
@@ -39,6 +40,15 @@ export function SectionContent({
 		case "infos":
 			return (
 				<InfosSection
+					declaration={declaration}
+					onDeclarationChange={onDeclarationChange}
+					prevHref={prevHref}
+					nextHref={nextHref}
+				/>
+			);
+		case "schema":
+			return (
+				<SchemaSection
 					declaration={declaration}
 					onDeclarationChange={onDeclarationChange}
 					prevHref={prevHref}

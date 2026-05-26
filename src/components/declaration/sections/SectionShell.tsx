@@ -43,9 +43,9 @@ export function SectionShell({
 	nextIcon = "fr-icon-arrow-right-s-line",
 	children,
 }: SectionShellProps) {
-	const { classes } = useStyles();
 	const isEditing = !readOnly;
 	const navDisabled = isEditing;
+	const { classes } = useStyles({ readOnly });
 
 	return (
 		<section className={classes.root}>
@@ -137,42 +137,48 @@ export function SectionShell({
 	);
 }
 
-const useStyles = tss.withName(SectionShell.name).create({
-	root: {
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("6v"),
-		width: "100%",
-	},
-	header: {
-		display: "flex",
-		flexWrap: "wrap",
-		alignItems: "center",
-		justifyContent: "space-between",
-		gap: fr.spacing("3v"),
-		paddingBottom: fr.spacing("4v"),
-		borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-	},
-	title: {
-		margin: 0,
-	},
-	headerActions: {
-		display: "flex",
-		flexDirection: "row",
-		gap: fr.spacing("3v"),
-		alignItems: "center",
-	},
-	body: {
-		display: "flex",
-		flexDirection: "column",
-	},
-	footer: {
-		display: "flex",
-		justifyContent: "space-between",
-		alignItems: "center",
-		marginTop: fr.spacing("8v"),
-	},
-	footerSide: {
-		display: "flex",
-	},
-});
+const useStyles = tss
+	.withName(SectionShell.name)
+	.withParams<{ readOnly: boolean }>()
+	.create(({ readOnly }) => ({
+		root: {
+			display: "flex",
+			flexDirection: "column",
+			gap: fr.spacing("6v"),
+			width: "100%",
+		},
+		header: {
+			display: "flex",
+			flexWrap: "wrap",
+			alignItems: "center",
+			justifyContent: "space-between",
+			gap: fr.spacing("3v"),
+		},
+		title: {
+			margin: 0,
+		},
+		headerActions: {
+			display: "flex",
+			flexDirection: "row",
+			gap: fr.spacing("3v"),
+			alignItems: "center",
+		},
+		body: {
+			display: "flex",
+			flexDirection: "column",
+			border: readOnly
+				? `1px solid ${fr.colors.decisions.border.default.grey.default}`
+				: "none",
+			paddingBlock: readOnly ? fr.spacing("4v") : 0,
+			paddingInline: readOnly ? fr.spacing("8v") : 0,
+		},
+		footer: {
+			display: "flex",
+			justifyContent: "space-between",
+			alignItems: "center",
+			marginTop: fr.spacing("8v"),
+		},
+		footerSide: {
+			display: "flex",
+		},
+	}));

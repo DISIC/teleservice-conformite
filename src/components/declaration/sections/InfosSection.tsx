@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useMemo, useState } from "react";
-import { SectionShell } from "~/components/declaration/SectionShell";
+import { SectionShell } from "./SectionShell";
 import { useCommonStyles } from "~/components/style/commonStyles";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
