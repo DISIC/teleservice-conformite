@@ -176,7 +176,6 @@ const useStyles = tss
 			display: "flex",
 			justifyContent: "space-between",
 			alignItems: "center",
-			marginTop: fr.spacing("8v"),
 		},
 		footerSide: {
 			display: "flex",

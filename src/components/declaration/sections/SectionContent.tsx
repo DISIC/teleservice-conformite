@@ -9,6 +9,7 @@ import {
 	type SectionSlug,
 	sectionHref,
 } from "~/utils/declaration/sections";
+import { ContactSection } from "./ContactSection";
 import { InfosSection } from "./InfosSection";
 import { SchemaSection } from "./SchemaSection";
 
@@ -49,6 +50,15 @@ export function SectionContent({
 		case "schema":
 			return (
 				<SchemaSection
+					declaration={declaration}
+					onDeclarationChange={onDeclarationChange}
+					prevHref={prevHref}
+					nextHref={nextHref}
+				/>
+			);
+		case "contact":
+			return (
+				<ContactSection
 					declaration={declaration}
 					onDeclarationChange={onDeclarationChange}
 					prevHref={prevHref}
