@@ -13,7 +13,8 @@ export type UpdateAuditFromAraModalActions = {
 	open?: () => void;
 };
 
-export type AraFetchedData = RouterOutputs["declaration"]["getInfoFromAra"]["data"];
+export type AraFetchedData =
+	RouterOutputs["declaration"]["getInfoFromAra"]["data"];
 
 const updateAuditFromAraFormSchema = z.object({
 	araUrl: z.string().min(1, { message: "L'URL de l'audit Ara est requise" }),

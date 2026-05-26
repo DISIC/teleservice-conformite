@@ -10,7 +10,8 @@ import {
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface TextFieldProps
-	extends DefaultFieldProps,
+	extends
+		DefaultFieldProps,
 		Omit<InputProps.Common, "state" | "stateRelatedMessage"> {
 	textArea?: boolean;
 	nativeInputProps?: InputProps.RegularInput["nativeInputProps"];

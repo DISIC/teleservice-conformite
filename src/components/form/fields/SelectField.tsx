@@ -5,8 +5,7 @@ import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface SelectFieldProps
-	extends DefaultFieldProps,
-		SelectProps<SelectProps.Option[]> {
+	extends DefaultFieldProps, SelectProps<SelectProps.Option[]> {
 	infoStateMessage?: string | React.ReactNode;
 }
 

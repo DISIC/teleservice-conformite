@@ -13,7 +13,8 @@ import { ReadOnlyField } from "./ReadOnlyField";
 type TValue = string | boolean;
 
 interface RadioFieldProps
-	extends DefaultFieldProps,
+	extends
+		DefaultFieldProps,
 		Omit<RadioButtonsProps, "state" | "stateRelatedMessage" | "options"> {
 	options: (Omit<RadioButtonsProps["options"][number], "nativeInputProps"> & {
 		value: TValue;

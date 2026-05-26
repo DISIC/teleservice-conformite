@@ -9,7 +9,8 @@ import {
 type TValue = string | boolean;
 
 interface CheckboxFieldProps
-	extends DefaultFieldProps,
+	extends
+		DefaultFieldProps,
 		Omit<CheckboxProps, "state" | "stateRelatedMessage" | "options"> {
 	options: (Omit<CheckboxProps["options"][number], "nativeInputProps"> & {
 		value: TValue;

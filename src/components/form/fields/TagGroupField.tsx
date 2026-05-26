@@ -8,7 +8,8 @@ import { type DefaultFieldProps, useFieldContext } from "~/utils/form/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface TagGroupFieldProps
-	extends DefaultFieldProps,
+	extends
+		DefaultFieldProps,
 		Omit<InputProps.Common, "state" | "stateRelatedMessage"> {
 	initialTags?: string[];
 	nativeInputProps?: InputProps.RegularInput["nativeInputProps"];
