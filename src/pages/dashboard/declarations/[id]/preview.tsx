@@ -52,7 +52,7 @@ export default function DeclarationPreviewPage({
 	const { mutateAsync: publishDeclaration } =
 		api.declaration.updatePublishedContent.useMutation({
 			onSuccess: () => {
-				push(`/dashboard/declaration/${declaration.id}?published=true`);
+				push(`/dashboard/declarations/${declaration.id}?published=true`);
 			},
 			onError: (error) => {
 				console.error("Error publishing declaration:", error);
@@ -106,7 +106,7 @@ export default function DeclarationPreviewPage({
 							priority="secondary"
 							title="Retour à la page de la déclaration sans publication"
 							linkProps={{
-								href: `/dashboard/declaration/${declaration.id}`,
+								href: `/dashboard/declarations/${declaration.id}`,
 							}}
 						>
 							Continuer sans publier
@@ -196,7 +196,7 @@ export const getServerSideProps = (async (context) => {
 	if (!isDeclarationFull) {
 		return {
 			redirect: {
-				destination: `/dashboard/declaration/${declaration.id}`,
+				destination: `/dashboard/declarations/${declaration.id}`,
 				permanent: false,
 			},
 		};
@@ -205,7 +205,7 @@ export const getServerSideProps = (async (context) => {
 	if (declaration?.publishedContent && declaration.status === "published") {
 		return {
 			redirect: {
-				destination: `/dashboard/declaration/${declaration.id}`,
+				destination: `/dashboard/declarations/${declaration.id}`,
 				permanent: false,
 			},
 		};

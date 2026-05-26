@@ -15,6 +15,7 @@ import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
 import { DeclarationStatsCards } from "~/components/declaration/DeclarationStatsCards";
 import Membres from "~/components/declaration/Membres";
 import { SectionContent } from "~/components/declaration/sections/SectionContent";
+import VerifyGeneratedInfoHelpingMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import { copyToClipboard } from "~/utils/declaration-helper";
@@ -92,7 +93,7 @@ export default function DeclarationPage({
 				severity: "success",
 			});
 
-			router.replace(`/dashboard/declaration/${declaration.id}`, undefined, {
+			router.replace(`/dashboard/declarations/${declaration.id}`, undefined, {
 				shallow: true,
 			});
 		}
@@ -191,6 +192,12 @@ export default function DeclarationPage({
 				<div className={classes.statsWrapper}>
 					<DeclarationStatsCards declaration={declaration} />
 				</div>
+
+				{declaration.fromSource === "ai" && (
+					<div className={classes.aiBannerWrapper}>
+						<VerifyGeneratedInfoHelpingMessage />
+					</div>
+				)}
 
 				<Tabs
 					selectedTabId={selectedTabId}
@@ -306,6 +313,9 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 	},
 	statsWrapper: {
 		marginBottom: fr.spacing("8v"),
+	},
+	aiBannerWrapper: {
+		marginBottom: fr.spacing("6v"),
 	},
 	emptyStateContainer: {
 		display: "flex",

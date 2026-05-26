@@ -147,7 +147,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	const { mutateAsync: createDeclarationFromUrl } =
 		api.declaration.createFromUrl.useMutation({
 			onSuccess: (result) => {
-				push(`/dashboard/declaration/${result.data}`);
+				push(`/dashboard/declarations/${result.data}`);
 			},
 			onError: (error) => {
 				console.error("Error adding declaration from URL:", error);
@@ -169,7 +169,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 					entityId: entity?.id,
 				},
 			});
-			push(`/dashboard/declaration/${result.data}`);
+			push(`/dashboard/declarations/${result.data}`);
 		} catch (error) {
 			console.error("Error adding declaration:", error);
 		}

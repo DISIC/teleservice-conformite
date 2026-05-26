@@ -72,7 +72,7 @@ export function sectionHref(
 	declarationId: PopulatedDeclaration["id"],
 	slug: SectionSlug,
 ): string {
-	return `/dashboard/declaration/${declarationId}?section=${slug}`;
+	return `/dashboard/declarations/${declarationId}?section=${slug}`;
 }
 
 /** "À compléter" — section/sub-section is empty and needs to be filled. */

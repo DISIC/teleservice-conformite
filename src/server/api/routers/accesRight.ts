@@ -245,7 +245,7 @@ export const accessRightRouter = createTRPCRouter({
 				},
 			});
 
-			const declarationListLink = `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/dashboard/declaration`;
+			const declarationListLink = `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/dashboard/declarations`;
 
 			await ctx.payload.sendEmail({
 				to: invite.invitedBy.email,

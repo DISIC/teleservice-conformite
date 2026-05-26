@@ -201,7 +201,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 							columns={columns}
 							data={declarations}
 							numberPerPage={NUMBER_PER_PAGE}
-							getRowHref={(row) => `/dashboard/declaration/${row.id}`}
+							getRowHref={(row) => `/dashboard/declarations/${row.id}`}
 						/>
 					</div>
 				) : (

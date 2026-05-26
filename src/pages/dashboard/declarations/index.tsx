@@ -58,7 +58,7 @@ export default function EntityDeclarationsPage({
 				meta: { styles: { maxWidth: 240 } },
 				cell: (info) => (
 					<Link
-						href={`/dashboard/declaration/${info.row.original.id}`}
+						href={`/dashboard/declarations/${info.row.original.id}`}
 						className={classes.nameLink}
 					>
 						{info.getValue()}
