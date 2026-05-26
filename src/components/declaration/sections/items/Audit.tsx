@@ -9,10 +9,10 @@ import {
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
 import {
+	AUDIT_SUB_SECTIONS,
 	type AuditSubSectionSlug,
-	isSectionToComplete,
-	SECTION_TITLES,
-} from "~/utils/declaration/sections";
+} from "~/utils/declaration/auditSubSections";
+import { isSectionToComplete } from "~/utils/declaration/sections";
 import { useAppForm } from "~/utils/form/context";
 import {
 	AuditDateForm,
@@ -23,7 +23,6 @@ import {
 	ToolsForm,
 } from "~/utils/form/audit/form";
 import {
-	type AuditFormSection,
 	auditMultiStepFormOptions,
 	type ZAuditFormSchema,
 } from "~/utils/form/audit/schema";
@@ -37,17 +36,6 @@ type AuditSectionProps = {
 	currentSubSection: AuditSubSectionSlug;
 	prevHref: string | null;
 	nextHref: string | null;
-};
-
-/**
- * The audit form's `section` field gates which zod sub-schema runs at submit.
- * Pick the validator that matches the user's current sub-section.
- */
-const SUB_SECTION_VALIDATOR: Record<AuditSubSectionSlug, AuditFormSection> = {
-	"audit-realisation": "isAuditRealised",
-	"audit-outils": "tools",
-	"audit-contenus": "compliantElements",
-	"audit-non-conformites": "nonCompliantElements",
 };
 
 export function AuditSection({
@@ -89,7 +77,7 @@ export function AuditSection({
 	const isPending = isCreating || isUpdating;
 
 	const { readOnly, exitEdit, Frame } = useSectionForm({
-		title: SECTION_TITLES[currentSubSection],
+		title: AUDIT_SUB_SECTIONS[currentSubSection].title,
 		declaration,
 		isEditable,
 		initialReadOnly: isEditable,
@@ -100,7 +88,7 @@ export function AuditSection({
 
 	const defaultValues: ZAuditFormSchema = useMemo(
 		() => ({
-			section: SUB_SECTION_VALIDATOR[currentSubSection],
+			section: AUDIT_SUB_SECTIONS[currentSubSection].validator,
 			isAuditRealised: audit?.isRealised ?? undefined,
 			date: audit?.date ? new Date(audit.date).toLocaleDateString("en-CA") : "",
 			rgaa_version:

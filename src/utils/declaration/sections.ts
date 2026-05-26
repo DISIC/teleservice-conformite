@@ -1,17 +1,20 @@
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import {
+	AUDIT_SUB_SECTION_SLUGS,
+	AUDIT_SUB_SECTIONS,
+	type AuditSubSectionSlug,
+} from "./auditSubSections";
+
+export type { AuditSubSectionSlug };
 
 export const SECTION_SLUGS = [
 	"infos",
-	"audit-realisation",
-	"audit-outils",
-	"audit-contenus",
-	"audit-non-conformites",
+	...AUDIT_SUB_SECTION_SLUGS,
 	"schema",
 	"contact",
 ] as const;
 
 export type SectionSlug = (typeof SECTION_SLUGS)[number];
-export type AuditSubSectionSlug = Extract<SectionSlug, `audit-${string}`>;
 
 /**
  * Virtual parents — currently only used to model Audit's SideMenu grouping.
@@ -32,15 +35,27 @@ type SectionMeta = {
 	isToVerify: (declaration: PopulatedDeclaration) => boolean;
 };
 
-const isAuditMissing = (d: PopulatedDeclaration) => !d.audit;
-const isAuditExpanded = (d: PopulatedDeclaration) =>
-	d.audit?.isRealised === true;
+const auditSubSectionEntries = Object.fromEntries(
+	AUDIT_SUB_SECTION_SLUGS.map((slug) => [
+		slug,
+		{
+			title: AUDIT_SUB_SECTIONS[slug].title,
+			parent: "audit" as const,
+			isVisible: AUDIT_SUB_SECTIONS[slug].isVisible,
+			isToComplete: AUDIT_SUB_SECTIONS[slug].isToComplete,
+			isToVerify: () => false,
+		} satisfies SectionMeta,
+	]),
+) as unknown as Record<AuditSubSectionSlug, SectionMeta>;
 
 /**
  * Single source of truth for everything a SectionSlug carries: label, visibility,
  * badge predicates, and SideMenu parent grouping. Add or rename a Section by
  * editing this object — `SECTION_TITLES`, `getVisibleSections`,
  * `isSectionToComplete`, and `isSectionToVerify` all derive from here.
+ *
+ * Audit Sub-sections are pulled in from `auditSubSections.ts` (their metadata
+ * is shared with the AuditSection component).
  */
 export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 	infos: {
@@ -49,37 +64,7 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 		isToComplete: () => false,
 		isToVerify: () => false,
 	},
-	"audit-realisation": {
-		title: "Réalisation de l'audit",
-		parent: "audit",
-		// Always visible — it's the anchor sub-section, reachable even when
-		// no audit exists yet (the rest unlock once isRealised === true).
-		isVisible: () => true,
-		isToComplete: (d) => isAuditMissing(d) || d.audit?.date == null,
-		isToVerify: () => false,
-	},
-	"audit-outils": {
-		title: "Outils et environnements",
-		parent: "audit",
-		isVisible: isAuditExpanded,
-		isToComplete: (d) =>
-			isAuditMissing(d) || (d.audit?.usedTools?.length ?? 0) === 0,
-		isToVerify: () => false,
-	},
-	"audit-contenus": {
-		title: "Contenus vérifiés",
-		parent: "audit",
-		isVisible: isAuditExpanded,
-		isToComplete: (d) => isAuditMissing(d) || !d.audit?.compliantElements,
-		isToVerify: () => false,
-	},
-	"audit-non-conformites": {
-		title: "Non conformités & dérogations",
-		parent: "audit",
-		isVisible: isAuditExpanded,
-		isToComplete: (d) => isAuditMissing(d) || !d.audit?.nonCompliantElements,
-		isToVerify: () => false,
-	},
+	...auditSubSectionEntries,
 	schema: {
 		title: "Schéma pluriannuel & plans d'action",
 		isVisible: () => true,
