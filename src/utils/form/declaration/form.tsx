@@ -112,7 +112,7 @@ export const ContextForm = withForm({
 			<div className={classes.contextFormContainer}>
 				<form.AppField name="initialDeclaration.newDeclarationKind">
 					{(field) => (
-						<field.SelectCardField
+						<field.RichRadioField
 							label="Quelle est votre situation pour ce service ?"
 							required
 							options={[
@@ -120,24 +120,23 @@ export const ContextForm = withForm({
 									value: "fromUrl",
 									label:
 										"J'ai une déclaration en ligne, sans avoir utilisé Ara",
-									description:
+									hintText:
 										"La nouvelle déclaration pourra être pré-remplie grâce à une IA souveraine; des erreurs peuvent survenir",
-									image: <Internet fontSize="3rem" />,
+									illustration: <Internet fontSize="3rem" />,
 								},
 								{
 									value: "fromAra",
 									label:
 										"J'ai une déclaration en ligne réalisée avec l’outil Ara",
-									description:
+									hintText:
 										"La nouvelle déclaration pourra être pré-remplie automatiquement",
-									image: <System fontSize="3rem" />,
+									illustration: <System fontSize="3rem" />,
 								},
 								{
 									value: "fromScratch",
 									label: "Je n’ai pas de déclaration d’accessibilité",
-									description:
-										"La nouvelle déclaration sera à créer manuellement",
-									image: <DocumentSearch fontSize="3rem" />,
+									hintText: "La nouvelle déclaration sera à créer manuellement",
+									illustration: <DocumentSearch fontSize="3rem" />,
 								},
 							]}
 							onOptionChange={(value) => {
