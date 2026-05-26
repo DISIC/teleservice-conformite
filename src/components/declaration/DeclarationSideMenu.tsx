@@ -55,7 +55,11 @@ export function DeclarationSideMenu({
 			toComplete: isSectionToComplete(declaration, slug),
 			toVerify: isSectionToVerify(declaration, slug),
 		}),
-		linkProps: { href: sectionHref(declarationId, slug) },
+		linkProps: {
+			href: sectionHref(declarationId, slug),
+			scroll: false,
+			shallow: true,
+		},
 		isActive: currentSection === slug,
 	});
 
@@ -66,7 +70,11 @@ export function DeclarationSideMenu({
 				toComplete: auditMissing,
 				toVerify: isAuditToVerify(declaration),
 			}),
-			linkProps: { href: sectionHref(declarationId, "audit-realisation") },
+			linkProps: {
+				href: sectionHref(declarationId, "audit-realisation"),
+				scroll: false,
+				shallow: true,
+			},
 			isActive: isAuditCurrent,
 			items: visibleAuditSubSections.map(sectionItem),
 		},

@@ -29,11 +29,13 @@ const deleteModal = createModal({
 type TabId = "declaration" | "members";
 
 export default function DeclarationPage({
-	declaration,
+	declaration: initialDeclaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
 	const { published, section: sectionQuery } = router.query;
 	const currentSection = parseSectionFromQuery(sectionQuery);
+	const [declaration, setDeclaration] =
+		useState<PopulatedDeclaration>(initialDeclaration);
 	const hasPublishedDeclaration = !!declaration?.publishedContent;
 	const [selectedTabId, setSelectedTabId] = useState<TabId>("declaration");
 	const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -214,6 +216,7 @@ export default function DeclarationPage({
 								<SectionContent
 									declaration={declaration}
 									currentSection={currentSection}
+									onDeclarationChange={setDeclaration}
 								/>
 							</div>
 						</div>

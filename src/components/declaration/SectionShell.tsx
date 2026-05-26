@@ -96,7 +96,11 @@ export function SectionShell({
 							<Button
 								priority="tertiary"
 								iconId="fr-icon-arrow-left-s-line"
-								linkProps={{ href: prevHref }}
+								linkProps={{
+									href: prevHref,
+									scroll: false,
+									shallow: true,
+								}}
 							>
 								Retour
 							</Button>
@@ -118,7 +122,11 @@ export function SectionShell({
 								priority="primary"
 								iconId={nextIcon}
 								iconPosition="right"
-								linkProps={{ href: nextHref }}
+								linkProps={{
+									href: nextHref,
+									scroll: false,
+									shallow: true,
+								}}
 							>
 								{nextLabel}
 							</Button>
