@@ -76,6 +76,7 @@ export function DeclarationSideMenu({
 				shallow: true,
 			},
 			isActive: isAuditCurrent,
+			expandedByDefault: isAuditCurrent,
 			items: visibleAuditSubSections.map(sectionItem),
 		},
 		sectionItem("schema"),
