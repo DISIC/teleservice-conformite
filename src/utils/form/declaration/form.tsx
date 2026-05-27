@@ -6,7 +6,7 @@ import System from "@codegouvfr/react-dsfr/picto/System";
 import { useState } from "react";
 import { tss } from "tss-react";
 
-import HelpingMessage from "~/components/declaration/HelpingMessage";
+import HelpingMessage from "~/components/ui/HelpingMessage";
 import { appKindOptions, kindOptions } from "~/payload/selectOptions";
 import { withForm } from "../context";
 import {

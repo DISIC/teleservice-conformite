@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useMemo, useState } from "react";
 import { tss } from "tss-react";
-import EmptyState from "~/components/declaration/EmptyState";
+import EmptyState from "~/components/ui/EmptyState";
 import {
 	LibraryContactModal,
 	type LibraryContactModalActions,
@@ -19,8 +19,8 @@ import {
 	LibrarySchemaModal,
 	type LibrarySchemaModalActions,
 } from "~/components/modal/LibrarySchemaModal";
-import { Loader } from "~/components/system/Loader";
-import Table from "~/components/system/Table";
+import { Loader } from "~/components/ui/Loader";
+import Table from "~/components/ui/Table";
 import type { Contact, Entity, Schema } from "~/payload/payload-types";
 import { api } from "~/utils/api";
 import { authPages } from "~/utils/auth";

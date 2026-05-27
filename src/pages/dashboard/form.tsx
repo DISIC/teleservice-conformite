@@ -9,7 +9,7 @@ import { tss } from "tss-react";
 import type { z } from "zod";
 import DeclarationLoader from "~/components/declaration/DeclarationLoader";
 import DeclarationUrlError from "~/components/declaration/DeclarationUrlError";
-import { useCommonStyles } from "~/components/style/commonStyles";
+import { useCommonStyles } from "~/components/ui/commonStyles";
 import { useStyles as useAppStyles } from "~/pages/_app";
 import type { Entity } from "~/payload/payload-types";
 import {

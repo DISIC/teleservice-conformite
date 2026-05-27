@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react";
-import Table from "~/components/system/Table";
+import Table from "~/components/ui/Table";
 import type { Entity } from "~/payload/payload-types";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";

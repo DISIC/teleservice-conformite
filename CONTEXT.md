@@ -80,6 +80,29 @@ Two status badges shown on `SideMenu` items (and historically on the Démarche p
 
 **Avoid:** "À remplir" — older copy, replaced by "À compléter."
 
+### Surfaces
+
+A Declaration is reached through two distinct route trees, kept separate on purpose:
+
+- **Dashboard editor** — `/dashboard/declarations/[id]` (authenticated). The editing surface: SideMenu, [[section]]s, status actions, Membres.
+- **Public published view** — `/declarations/[id]/publish` (no auth). Read-only render of `publishedContent` via `PublishedDeclarationTemplate`.
+
+Both trees use the **plural** `declarations/` segment. Singular `declaration/` is not used as a route segment.
+
+## Code structure & naming
+
+Layered, not feature-foldered. One predictable layer per concern:
+
+- `components/ui/` — generic, domain-free UI (primitives + cross-cutting pieces like EmptyState, HelpingMessage).
+- `components/declaration/` — declaration-specific UI only (e.g. the `sections/` tree).
+- `domain/declaration/` — framework-free declaration logic + its colocated hooks.
+- `lib/` — infrastructure glue (api/tRPC client, auth, server guards).
+- `hooks/` — generic, cross-cutting hooks only; domain hooks colocate in `domain/`.
+- `forms/` — TanStack form definitions + Zod schemas (cross-cutting layer).
+- `server/api/` — tRPC routers; `pages/` — Next.js routes; `emails/` — React Email templates.
+
+**Naming convention:** the folder is the namespace; files drop the redundant prefix (`sections/Shell.tsx`, not `DeclarationSectionShell.tsx`). Keep a prefix only when a bare name would collide or be ambiguous across folders (e.g. greppable `auditSchema.ts` rather than a fourth `schema.ts`). _Avoid_: "utils" as a catch-all bucket — every file belongs to a named layer above.
+
 ## Invariants
 
 - A Declaration's visible status is a pure function of `status` + `publishedContent`. Don't introduce a third source of truth.

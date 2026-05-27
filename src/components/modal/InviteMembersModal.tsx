@@ -8,7 +8,7 @@ import { tss } from "tss-react";
 import z from "zod";
 import { api } from "~/utils/api";
 import { useAppForm } from "~/utils/form/context";
-import HelpingMessage from "../declaration/HelpingMessage";
+import HelpingMessage from "../ui/HelpingMessage";
 
 export type InviteMembersModalActions = {
 	open?: () => void;

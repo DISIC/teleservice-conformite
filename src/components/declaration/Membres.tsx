@@ -12,7 +12,7 @@ import {
 	RemoveAccessRightModal,
 	type RemoveAccessRightModalActions,
 } from "~/components/modal/RemoveAccessRightModal";
-import { Loader } from "~/components/system/Loader";
+import { Loader } from "~/components/ui/Loader";
 import type { AccessRight } from "~/payload/payload-types";
 import type { AccesRightAugmented } from "~/server/api/routers/accesRight";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
