@@ -1,8 +1,8 @@
-import { useRouter } from "next/router";
 import { useMemo } from "react";
 import EntityLibraryPicker from "~/components/declaration/EntityLibraryPicker";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
+import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { useAppForm } from "~/utils/form/context";
 import { ContactTypeForm } from "~/utils/form/contact/form";
@@ -27,19 +27,14 @@ export function ContactSection({
 	prevHref,
 	nextHref,
 }: ContactSectionProps) {
-	const { reload } = useRouter();
 	const hasContact = !!declaration.contact;
 
-	const { data: libraryItems = [], refetch: refetchLibrary } =
-		api.entityLibrary.listContacts.useQuery(
-			{ entityId: Number(declaration.entity?.id) },
-			{ enabled: !!declaration.entity?.id },
-		);
+	const libraryLink = useEntityLibraryLink({ kind: "contacts", declaration });
 
 	const { mutateAsync: upsertContact, isPending } =
 		api.contact.upsert.useMutation({
 			onSuccess: ({ data: contact }) => {
-				refetchLibrary();
+				libraryLink.refetch();
 				onDeclarationChange((prev) => ({ ...prev, contact }));
 			},
 			onError: (error) =>
@@ -48,10 +43,6 @@ export function ContactSection({
 					error,
 				),
 		});
-
-	const { mutateAsync: linkExisting } = api.contact.linkExisting.useMutation({
-		onSuccess: async () => reload(),
-	});
 
 	const { readOnly, exitEdit, Frame } = useSectionForm({
 		title: SECTION_TITLES.contact,
@@ -84,29 +75,13 @@ export function ContactSection({
 		},
 	});
 
-	const currentContactEntityId =
-		declaration.contact?.entity &&
-		typeof declaration.contact.entity === "object"
-			? declaration.contact.entity.id
-			: typeof declaration.contact?.entity === "number"
-				? declaration.contact.entity
-				: null;
-
-	const libraryPicker = !readOnly && libraryItems.length > 0 && (
+	const libraryPicker = !readOnly && libraryLink.items.length > 0 && (
 		<EntityLibraryPicker
-			label="Utiliser un contact existant de l'administration"
-			placeholder="Sélectionner un contact"
-			items={libraryItems.map((c) => ({
-				id: c.id,
-				label: c.name,
-				hint: c.email || c.url || "",
-			}))}
-			selectedId={
-				currentContactEntityId ? (declaration.contact?.id ?? null) : null
-			}
-			onSelect={(id) =>
-				linkExisting({ contactId: id, declarationId: declaration.id })
-			}
+			label={libraryLink.label}
+			placeholder={libraryLink.placeholder}
+			items={libraryLink.items}
+			selectedId={libraryLink.selectedId}
+			onSelect={libraryLink.onSelect}
 		/>
 	);
 

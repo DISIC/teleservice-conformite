@@ -1,8 +1,8 @@
-import { useRouter } from "next/router";
 import { useMemo } from "react";
 import EntityLibraryPicker from "~/components/declaration/EntityLibraryPicker";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/utils/api";
+import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { useAppForm } from "~/utils/form/context";
 import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
@@ -24,19 +24,14 @@ export function SchemaSection({
 	prevHref,
 	nextHref,
 }: SchemaSectionProps) {
-	const { reload } = useRouter();
 	const hasSchema = !!declaration.schema;
 
-	const { data: libraryItems = [], refetch: refetchLibrary } =
-		api.entityLibrary.listSchemas.useQuery(
-			{ entityId: Number(declaration.entity?.id) },
-			{ enabled: !!declaration.entity?.id },
-		);
+	const libraryLink = useEntityLibraryLink({ kind: "schemas", declaration });
 
 	const { mutateAsync: upsertSchema, isPending } =
 		api.schema.upsert.useMutation({
 			onSuccess: async ({ data: schema }) => {
-				refetchLibrary();
+				libraryLink.refetch();
 				onDeclarationChange((prev) => ({ ...prev, schema }));
 			},
 			onError: (error) =>
@@ -45,10 +40,6 @@ export function SchemaSection({
 					error,
 				),
 		});
-
-	const { mutateAsync: linkExisting } = api.schema.linkExisting.useMutation({
-		onSuccess: async () => reload(),
-	});
 
 	const { readOnly, exitEdit, Frame } = useSectionForm({
 		title: SECTION_TITLES.schema,
@@ -84,19 +75,13 @@ export function SchemaSection({
 		},
 	});
 
-	const libraryPicker = !readOnly && libraryItems.length > 0 && (
+	const libraryPicker = !readOnly && libraryLink.items.length > 0 && (
 		<EntityLibraryPicker
-			label="Utiliser un schéma existant de l'administration"
-			placeholder="Sélectionner un schéma"
-			items={libraryItems.map((s) => ({
-				id: s.id,
-				label: s.schemaName,
-				hint: s.schemaUrl || "",
-			}))}
-			selectedId={declaration.schema?.id ?? null}
-			onSelect={(id) =>
-				linkExisting({ schemaId: id, declarationId: declaration.id })
-			}
+			label={libraryLink.label}
+			placeholder={libraryLink.placeholder}
+			items={libraryLink.items}
+			selectedId={libraryLink.selectedId}
+			onSelect={libraryLink.onSelect}
 		/>
 	);
 
