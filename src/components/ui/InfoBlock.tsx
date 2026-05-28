@@ -1,6 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
-import Book from "@codegouvfr/react-dsfr/picto/Book";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
@@ -8,7 +7,7 @@ type InfoBlockProps = {
 	organizationName: string;
 	title: string;
 	children: ReactNode;
-	picto?: ReactNode;
+	picto: ReactNode;
 };
 
 const InfoBlock = ({
@@ -23,9 +22,7 @@ const InfoBlock = ({
 		<div className={classes.container}>
 			<div className={classes.pictoWrapper}>
 				<span className={classes.pictoAccent} aria-hidden="true" />
-				<span className={classes.pictoCircle}>
-					{picto ?? <Book fontSize="3rem" />}
-				</span>
+				<span className={classes.pictoCircle}>{picto}</span>
 			</div>
 			<div className={classes.content}>
 				<Badge small className={classes.tag}>

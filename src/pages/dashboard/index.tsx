@@ -22,6 +22,8 @@ import {
 	copyToClipboard,
 	getConformityStatus,
 } from "~/utils/declaration-helper";
+import Document from "@codegouvfr/react-dsfr/picto/Document";
+import Book from "@codegouvfr/react-dsfr/picto/Book";
 
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
@@ -218,7 +220,11 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 				)}
 				<div className={classes.infoBlocksContainer}>
 					<Link href="/dashboard/library" className={classes.infoBlockLink}>
-						<InfoBlock organizationName={entityName} title="Documents partagés">
+						<InfoBlock
+							organizationName={entityName}
+							title="Documents partagés"
+							picto={<Book fontSize="3rem" />}
+						>
 							Retrouvez et gérez les schémas pluriannuels, plans d’actions et
 							contacts de votre organisation nécessaire à votre déclaration
 							d’accessibilité
@@ -231,6 +237,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 						<InfoBlock
 							organizationName={entityName}
 							title="Toutes les déclarations"
+							picto={<Document fontSize="3rem" />}
 						>
 							Visualisez toutes les déclarations créées dans votre organisation
 						</InfoBlock>
