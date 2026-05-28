@@ -11,7 +11,7 @@ import type {
 import {
 	getInvitationUserEmailHtml,
 	getInviteAcceptRecapEmailHtml,
-} from "~/utils/emails";
+} from "~/emails";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import {
 	fetchOrReturnRealValue,

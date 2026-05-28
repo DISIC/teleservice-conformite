@@ -2,8 +2,8 @@ import { render } from "@react-email/render";
 import {
 	ConfirmationEmail,
 	type ConfirmationEmailProps,
-} from "~/utils/emails/ConfirmationEmail";
-import { InviteEmail, type InviteEmailProps } from "~/utils/emails/InviteEmail";
+} from "./ConfirmationEmail";
+import { InviteEmail, type InviteEmailProps } from "./InviteEmail";
 
 const logoUrl = process.env.NEXT_PUBLIC_BETTER_AUTH_URL
 	? `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/republique_francaise_rvb.png`
