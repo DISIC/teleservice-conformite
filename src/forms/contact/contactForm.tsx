@@ -1,5 +1,5 @@
 import { withForm } from "../context";
-import { contactFormOptions } from "./schema";
+import { contactFormOptions } from "./contactSchema";
 
 export const ContactTypeForm = withForm({
 	...contactFormOptions,

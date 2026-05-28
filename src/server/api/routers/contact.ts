@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import type { Contact } from "~/payload/payload-types";
-import { contact } from "~/utils/form/contact/schema";
+import { contact } from "~/forms/contact/contactSchema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { hasAccessToDeclaration } from "../utils/payload-helper";
 

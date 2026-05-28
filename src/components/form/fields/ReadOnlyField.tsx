@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
-import type { DefaultFieldProps } from "~/utils/form/context";
+import type { DefaultFieldProps } from "~/forms/context";
 
 interface ReadOnlyFieldProps extends DefaultFieldProps {
 	label: ReactNode;

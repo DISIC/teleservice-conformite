@@ -1,5 +1,5 @@
 import z from "zod";
-import { auditFormSchema } from "~/utils/form/audit/schema";
+import { auditFormSchema } from "~/forms/audit/auditSchema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { hasAccessToDeclaration } from "../utils/payload-helper";
 

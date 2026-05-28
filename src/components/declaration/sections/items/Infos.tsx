@@ -2,12 +2,12 @@ import { useMemo } from "react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
-import { useAppForm } from "~/utils/form/context";
-import { DeclarationGeneralForm } from "~/utils/form/declaration/form";
+import { useAppForm } from "~/forms/context";
+import { DeclarationGeneralForm } from "~/forms/declaration/declarationForm";
 import {
 	declarationMultiStepFormOptions,
 	type ZDeclarationMultiStepFormSchema,
-} from "~/utils/form/declaration/schema";
+} from "~/forms/declaration/declarationSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 
 type InfosSectionProps = {

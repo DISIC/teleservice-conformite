@@ -12,7 +12,7 @@ import { withForm } from "../context";
 import {
 	declarationMultiStepFormOptions,
 	type ZInitialDeclaration,
-} from "./schema";
+} from "./declarationSchema";
 
 type DeclarationKind =
 	ZInitialDeclaration["initialDeclaration"]["newDeclarationKind"];

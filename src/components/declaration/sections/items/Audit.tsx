@@ -13,7 +13,7 @@ import {
 	type AuditSubSectionSlug,
 } from "~/utils/declaration/auditSubSections";
 import { isSectionToComplete } from "~/utils/declaration/sections";
-import { useAppForm } from "~/utils/form/context";
+import { useAppForm } from "~/forms/context";
 import {
 	AuditDateForm,
 	AuditRealisedForm,
@@ -21,11 +21,11 @@ import {
 	FilesForm,
 	NonCompliantElementsForm,
 	ToolsForm,
-} from "~/utils/form/audit/form";
+} from "~/forms/audit/auditForm";
 import {
 	auditMultiStepFormOptions,
 	type ZAuditFormSchema,
-} from "~/utils/form/audit/schema";
+} from "~/forms/audit/auditSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 
 type AuditSectionProps = {

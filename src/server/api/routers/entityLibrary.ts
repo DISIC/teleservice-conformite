@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
-import { contact as contactSchema } from "~/utils/form/contact/schema";
-import { schemaForm } from "~/utils/form/schema/schema";
+import { contact as contactSchema } from "~/forms/contact/contactSchema";
+import { schemaForm } from "~/forms/schema/schemaSchema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 
 async function assertUserEntityAccess({

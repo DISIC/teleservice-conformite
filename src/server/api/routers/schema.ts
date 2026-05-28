@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import type { Schema } from "~/payload/payload-types";
-import { schemaForm } from "~/utils/form/schema/schema";
+import { schemaForm } from "~/forms/schema/schemaSchema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { hasAccessToDeclaration } from "../utils/payload-helper";
 

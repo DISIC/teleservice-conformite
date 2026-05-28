@@ -4,12 +4,12 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
-import { useAppForm } from "~/utils/form/context";
-import { ContactTypeForm } from "~/utils/form/contact/form";
+import { useAppForm } from "~/forms/context";
+import { ContactTypeForm } from "~/forms/contact/contactForm";
 import {
 	contactFormOptions,
 	type ZContactForm,
-} from "~/utils/form/contact/schema";
+} from "~/forms/contact/contactSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 
 type ContactSectionProps = {

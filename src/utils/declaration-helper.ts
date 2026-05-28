@@ -4,7 +4,7 @@ import {
 	toolOptions,
 } from "~/payload/selectOptions";
 import type { RouterOutputs } from "~/lib/api";
-import type { ZAuditFormSchema } from "~/utils/form/audit/schema";
+import type { ZAuditFormSchema } from "~/forms/audit/auditSchema";
 
 export const getConformityStatus = (
 	rate: number,

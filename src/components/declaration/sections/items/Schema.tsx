@@ -4,9 +4,9 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
-import { useAppForm } from "~/utils/form/context";
-import { SchemaForm as DeclarationSchemaForm } from "~/utils/form/schema/form";
-import { schemaFormOptions, type ZSchema } from "~/utils/form/schema/schema";
+import { useAppForm } from "~/forms/context";
+import { SchemaForm as DeclarationSchemaForm } from "~/forms/schema/schemaForm";
+import { schemaFormOptions, type ZSchema } from "~/forms/schema/schemaSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 
 type SchemaSectionProps = {

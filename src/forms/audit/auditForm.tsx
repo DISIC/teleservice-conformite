@@ -10,7 +10,7 @@ import {
 	toolOptions,
 } from "~/payload/selectOptions";
 import { withForm } from "../context";
-import { auditMultiStepFormOptions } from "./schema";
+import { auditMultiStepFormOptions } from "./auditSchema";
 
 export const AuditRealisedForm = withForm({
 	...auditMultiStepFormOptions,

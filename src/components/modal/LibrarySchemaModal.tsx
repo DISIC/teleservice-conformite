@@ -5,9 +5,9 @@ import { useEffect, useId, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import type { Schema } from "~/payload/payload-types";
 import { api } from "~/lib/api";
-import { useAppForm } from "~/utils/form/context";
-import { SchemaForm as EntitySchemaForm } from "~/utils/form/schema/form";
-import { schemaFormOptions, type ZSchema } from "~/utils/form/schema/schema";
+import { useAppForm } from "~/forms/context";
+import { SchemaForm as EntitySchemaForm } from "~/forms/schema/schemaForm";
+import { schemaFormOptions, type ZSchema } from "~/forms/schema/schemaSchema";
 
 export type LibrarySchemaModalActions = {
 	open?: (schema?: Schema | null) => void;

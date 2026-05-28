@@ -5,12 +5,12 @@ import { useEffect, useId, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import type { Contact } from "~/payload/payload-types";
 import { api } from "~/lib/api";
-import { ContactTypeForm } from "~/utils/form/contact/form";
+import { ContactTypeForm } from "~/forms/contact/contactForm";
 import {
 	contactFormOptions,
 	type ZContactForm,
-} from "~/utils/form/contact/schema";
-import { useAppForm } from "~/utils/form/context";
+} from "~/forms/contact/contactSchema";
+import { useAppForm } from "~/forms/context";
 
 export type LibraryContactModalActions = {
 	open?: (contact?: Contact | null) => void;

@@ -17,7 +17,7 @@ import {
 } from "~/server/api/utils/payload-helper";
 import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
-import { declarationGeneral } from "~/utils/form/declaration/schema";
+import { declarationGeneral } from "~/forms/declaration/declarationSchema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 
 const statusValues = declarationStatusOptions.map((option) => option.value);

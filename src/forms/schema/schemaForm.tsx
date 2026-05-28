@@ -1,7 +1,7 @@
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Fragment } from "react";
 import { withForm } from "../context";
-import { schemaFormOptions } from "./schema";
+import { schemaFormOptions } from "./schemaSchema";
 import { fr } from "@codegouvfr/react-dsfr";
 
 export const SchemaForm = withForm({

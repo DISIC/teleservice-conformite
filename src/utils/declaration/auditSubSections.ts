@@ -1,5 +1,5 @@
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import type { AuditFormSection } from "~/utils/form/audit/schema";
+import type { AuditFormSection } from "~/forms/audit/auditSchema";
 
 /**
  * Audit Sub-section registry. Single source of truth for the four UI slices

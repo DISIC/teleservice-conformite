@@ -22,12 +22,12 @@ import type { importedDeclarationDataSchema } from "~/server/api/routers/declara
 import { api } from "~/lib/api";
 import { auth } from "~/lib/auth";
 import { extractTechnologiesFromUrl } from "~/utils/declaration-helper";
-import { useAppForm } from "~/utils/form/context";
+import { useAppForm } from "~/forms/context";
 import {
 	ContextForm,
 	DeclarationGeneralForm,
-} from "~/utils/form/declaration/form";
-import { declarationMultiStepFormOptions } from "~/utils/form/declaration/schema";
+} from "~/forms/declaration/declarationForm";
+import { declarationMultiStepFormOptions } from "~/forms/declaration/declarationSchema";
 
 export type ImportedDeclarationData = z.infer<
 	typeof importedDeclarationDataSchema

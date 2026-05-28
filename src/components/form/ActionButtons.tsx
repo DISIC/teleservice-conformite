@@ -4,7 +4,7 @@ import type {
 	RiIconClassName,
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import { tss } from "tss-react";
-import { useFormContext } from "~/utils/form/context";
+import { useFormContext } from "~/forms/context";
 
 export function SubscribeButton({
 	label,
