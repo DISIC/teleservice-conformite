@@ -288,7 +288,7 @@ const useStyles = tss
 
 export const getServerSideProps = (async (context) => {
 	const redirect: Redirect = {
-		destination: "/dashboard",
+		destination: "/",
 		permanent: false,
 	};
 
@@ -312,7 +312,7 @@ export const getServerSideProps = (async (context) => {
 			user?.entity && typeof user.entity === "object" ? user.entity : null;
 
 		if (!currentEntity) {
-			return { redirect: { destination: "/dashboard", permanent: false } };
+			return { redirect: { destination: "/", permanent: false } };
 		}
 
 		const result = await payload.find({
