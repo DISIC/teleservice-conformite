@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useCallback, useState } from "react";
 import { useCommonStyles } from "~/components/ui/commonStyles";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { SectionShell } from "~/components/declaration/sections/Shell";
@@ -57,39 +57,51 @@ export function useSectionForm({
 	const enterEdit = () => setReadOnly(false);
 	const exitEdit = () => setReadOnly(true);
 
-	const Frame = ({ form, children, before }: FrameProps) => (
-		<>
-			<Head>
-				<title>
-					{title} - Déclaration de {declaration.name} - Téléservice Conformité
-				</title>
-			</Head>
-			<SectionShell
-				title={title}
-				isEditable={isEditable}
-				readOnly={readOnly}
-				onEnterEdit={enterEdit}
-				onCancelEdit={() => {
-					form.reset();
-					exitEdit();
-				}}
-				onSave={() => form.handleSubmit()}
-				isSaving={isSaving}
-				prevHref={prevHref}
-				nextHref={nextHref}
-			>
-				{before}
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
+	const Frame = useCallback(
+		({ form, children, before }: FrameProps) => (
+			<>
+				<Head>
+					<title>
+						{title} - Déclaration de {declaration.name} - Téléservice Conformité
+					</title>
+				</Head>
+				<SectionShell
+					title={title}
+					isEditable={isEditable}
+					readOnly={readOnly}
+					onEnterEdit={enterEdit}
+					onCancelEdit={() => {
+						form.reset();
+						exitEdit();
 					}}
-					onInvalid={() => form.validate("submit")}
+					onSave={() => form.handleSubmit()}
+					isSaving={isSaving}
+					prevHref={prevHref}
+					nextHref={nextHref}
 				>
-					<div className={commonClasses.whiteBackground}>{children}</div>
-				</form>
-			</SectionShell>
-		</>
+					{before}
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							form.handleSubmit();
+						}}
+						onInvalid={() => form.validate("submit")}
+					>
+						<div className={commonClasses.whiteBackground}>{children}</div>
+					</form>
+				</SectionShell>
+			</>
+		),
+		[
+			title,
+			declaration.name,
+			isEditable,
+			readOnly,
+			isSaving,
+			prevHref,
+			nextHref,
+			commonClasses.whiteBackground,
+		],
 	);
 
 	return { readOnly, enterEdit, exitEdit, Frame };
