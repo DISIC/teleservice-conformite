@@ -50,7 +50,7 @@ const sendEmailToInviteUserDeclaration = async ({
 	});
 };
 
-export interface AccesRightAugmented extends AccessRight {
+export interface AccessRightAugmented extends AccessRight {
 	user: User | null;
 }
 

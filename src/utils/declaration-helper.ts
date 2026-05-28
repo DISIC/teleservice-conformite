@@ -3,7 +3,7 @@ import {
 	testEnvironmentOptions,
 	toolOptions,
 } from "~/payload/selectOptions";
-import type { RouterOutputs } from "~/utils/api";
+import type { RouterOutputs } from "~/lib/api";
 import type { ZAuditFormSchema } from "~/utils/form/audit/schema";
 
 export const getConformityStatus = (

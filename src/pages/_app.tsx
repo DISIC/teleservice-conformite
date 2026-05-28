@@ -14,8 +14,8 @@ import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 
 import { AlertHost } from "~/components/alert/AlertHost";
 import "~/styles/keyframes.css";
-import { api } from "~/utils/api";
-import { authClient } from "~/utils/auth-client";
+import { api } from "~/lib/api";
+import { authClient } from "~/lib/auth-client";
 
 // Only in TypeScript projects
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {

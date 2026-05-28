@@ -11,7 +11,7 @@ import Notification from "@codegouvfr/react-dsfr/picto/Notification";
 import Cookies from "js-cookie";
 import { tss } from "tss-react";
 
-import { authClient } from "~/utils/auth-client";
+import { authClient } from "~/lib/auth-client";
 
 const ToolAdvantages = () => {
 	const { classes } = useStyles();

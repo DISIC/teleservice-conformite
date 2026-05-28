@@ -4,7 +4,7 @@ import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { useEffect, useId, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import type { Schema } from "~/payload/payload-types";
-import { api } from "~/utils/api";
+import { api } from "~/lib/api";
 import { useAppForm } from "~/utils/form/context";
 import { SchemaForm as EntitySchemaForm } from "~/utils/form/schema/form";
 import { schemaFormOptions, type ZSchema } from "~/utils/form/schema/schema";

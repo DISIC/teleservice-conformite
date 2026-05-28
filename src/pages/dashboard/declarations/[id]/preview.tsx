@@ -25,8 +25,8 @@ import {
 	getDeclarationById,
 	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
-import { api } from "~/utils/api";
-import { auth } from "~/utils/auth";
+import { api } from "~/lib/api";
+import { auth } from "~/lib/auth";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
 
 type RequiredPopulatedDeclaration = Omit<

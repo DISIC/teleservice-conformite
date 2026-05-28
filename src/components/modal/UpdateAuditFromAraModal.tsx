@@ -6,7 +6,7 @@ import { useStore } from "@tanstack/react-form";
 import { useEffect, useId, useState } from "react";
 import { tss } from "tss-react";
 import z from "zod";
-import { api, type RouterOutputs } from "~/utils/api";
+import { api, type RouterOutputs } from "~/lib/api";
 import { useAppForm } from "~/utils/form/context";
 
 export type UpdateAuditFromAraModalActions = {

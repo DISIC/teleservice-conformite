@@ -1,5 +1,5 @@
 import { createTRPCRouter } from "~/server/api/trpc";
-import { accessRightRouter } from "./routers/accesRight";
+import { accessRightRouter } from "./routers/accessRight";
 import { albertRouter } from "./routers/albert";
 import { auditRouter } from "./routers/audit";
 import { contactRouter } from "./routers/contact";

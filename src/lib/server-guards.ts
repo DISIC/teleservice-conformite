@@ -4,7 +4,7 @@ import type { GetServerSidePropsContext, Redirect } from "next";
 import { getPayload } from "payload";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { getDeclarationById } from "~/server/api/utils/payload-helper";
-import { authPages } from "~/utils/auth";
+import { authPages } from "~/lib/auth";
 
 export interface DeclarationParams extends ParsedUrlQuery {
 	id: string;

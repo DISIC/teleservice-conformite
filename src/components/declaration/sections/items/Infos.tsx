@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { api } from "~/utils/api";
+import { api } from "~/lib/api";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { useAppForm } from "~/utils/form/context";
 import { DeclarationGeneralForm } from "~/utils/form/declaration/form";

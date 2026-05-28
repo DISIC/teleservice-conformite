@@ -7,7 +7,7 @@ import {
 	toolOptions,
 } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { api } from "~/utils/api";
+import { api } from "~/lib/api";
 import {
 	AUDIT_SUB_SECTIONS,
 	type AuditSubSectionSlug,

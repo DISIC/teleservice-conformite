@@ -8,7 +8,7 @@ import { tss } from "tss-react";
 import ErrorPage from "~/components/declaration/ErrorPage";
 import PublishedTemplate from "~/components/declaration/PublishedTemplate";
 import { getDeclarationById } from "~/server/api/utils/payload-helper";
-import { auth } from "~/utils/auth";
+import { auth } from "~/lib/auth";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
 
 export default function PublishPage({

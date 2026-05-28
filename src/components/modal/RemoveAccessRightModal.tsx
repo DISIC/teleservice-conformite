@@ -1,7 +1,7 @@
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { useEffect, useId, useState } from "react";
-import { api } from "~/utils/api";
+import { api } from "~/lib/api";
 
 export type RemoveAccessRightModalParams = {
 	accessRightId: number;

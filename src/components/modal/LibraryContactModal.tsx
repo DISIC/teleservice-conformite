@@ -4,7 +4,7 @@ import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { useEffect, useId, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import type { Contact } from "~/payload/payload-types";
-import { api } from "~/utils/api";
+import { api } from "~/lib/api";
 import { ContactTypeForm } from "~/utils/form/contact/form";
 import {
 	contactFormOptions,

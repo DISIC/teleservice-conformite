@@ -3,7 +3,7 @@ import type { GetServerSideProps, NextApiRequest, Redirect } from "next";
 import getPayloadClient from "~/payload/payloadClient";
 import { appRouter } from "~/server/api/root";
 import { createTRPCCallerFactory } from "~/server/api/trpc";
-import { authPages } from "~/utils/auth";
+import { authPages } from "~/lib/auth";
 
 interface Params extends ParsedUrlQuery {
 	token: string;

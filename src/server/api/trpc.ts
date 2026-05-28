@@ -10,7 +10,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { auth } from "~/utils/auth";
+import { auth } from "~/lib/auth";
 import getPayloadClient from "../../payload/payloadClient";
 
 export type BetterAuthSession = Awaited<ReturnType<typeof auth.api.getSession>>;

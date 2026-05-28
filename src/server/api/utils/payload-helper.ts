@@ -10,7 +10,7 @@ import type {
 	Schema,
 	User,
 } from "~/payload/payload-types";
-import type { Session } from "~/utils/auth-client";
+import type { Session } from "~/lib/auth-client";
 
 export type PopulatedDeclaration = Omit<
 	Declaration,

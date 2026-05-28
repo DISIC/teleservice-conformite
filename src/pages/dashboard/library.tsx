@@ -22,8 +22,8 @@ import {
 import { Loader } from "~/components/ui/Loader";
 import Table from "~/components/ui/Table";
 import type { Contact, Entity, Schema } from "~/payload/payload-types";
-import { api } from "~/utils/api";
-import { authPages } from "~/utils/auth";
+import { api } from "~/lib/api";
+import { authPages } from "~/lib/auth";
 
 interface LibraryPageProps {
 	entity: Entity;

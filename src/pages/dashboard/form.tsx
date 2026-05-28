@@ -19,8 +19,8 @@ import {
 	toolOptions,
 } from "~/payload/selectOptions";
 import type { importedDeclarationDataSchema } from "~/server/api/routers/declaration";
-import { api } from "~/utils/api";
-import { auth } from "~/utils/auth";
+import { api } from "~/lib/api";
+import { auth } from "~/lib/auth";
 import { extractTechnologiesFromUrl } from "~/utils/declaration-helper";
 import { useAppForm } from "~/utils/form/context";
 import {

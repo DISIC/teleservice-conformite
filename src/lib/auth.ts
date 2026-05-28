@@ -3,7 +3,7 @@ import { nextCookies } from "better-auth/next-js";
 import { genericOAuth } from "better-auth/plugins";
 import { jwtDecode } from "jwt-decode";
 import { Pool } from "pg";
-import { upsertEntityToUser } from "./auth-hooks";
+import { upsertEntityToUser } from "~/utils/auth-hooks";
 
 const pool = new Pool({
 	connectionString: process.env.POSTGRESQL_ADDON_URI,

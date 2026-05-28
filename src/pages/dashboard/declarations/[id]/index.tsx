@@ -17,10 +17,10 @@ import Membres from "~/components/declaration/Membres";
 import { SectionContent } from "~/components/declaration/sections/Content";
 import VerifyGeneratedInfoHelpingMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { api } from "~/utils/api";
+import { api } from "~/lib/api";
 import { copyToClipboard } from "~/utils/declaration-helper";
 import { parseSectionFromQuery } from "~/utils/declaration/sections";
-import { guardDeclaration } from "~/utils/server-guards";
+import { guardDeclaration } from "~/lib/server-guards";
 
 const deleteModal = createModal({
 	id: "delete-modal",

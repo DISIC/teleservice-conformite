@@ -17,7 +17,7 @@ import InfoBlock from "~/components/ui/InfoBlock";
 import Table from "~/components/ui/Table";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { auth } from "~/utils/auth";
+import { auth } from "~/lib/auth";
 import {
 	copyToClipboard,
 	getConformityStatus,
