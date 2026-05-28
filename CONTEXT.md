@@ -96,7 +96,7 @@ Layered, not feature-foldered. One predictable layer per concern:
 - `components/ui/` — generic, domain-free UI (primitives + cross-cutting pieces like EmptyState, HelpingMessage).
 - `components/declaration/` — declaration-specific UI only (e.g. the `sections/` tree).
 - `lib/` — infrastructure glue (api/tRPC client, auth, server guards).
-- `hooks/` — generic, cross-cutting hooks only; domain hooks colocate in `domain/`.
+- `hooks/` — generic, cross-cutting hooks only.
 - `forms/` — TanStack form definitions + Zod schemas (cross-cutting layer).
 - `server/api/` — tRPC routers; `pages/` — Next.js routes; `emails/` — React Email templates.
 
