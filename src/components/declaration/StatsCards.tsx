@@ -1,7 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import Application from "@codegouvfr/react-dsfr/picto/Application";
-import Search from "@codegouvfr/react-dsfr/picto/Search";
 import { tss } from "tss-react";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
@@ -20,17 +18,8 @@ function formatRate(rate: number): string {
 	return `${rate.toString().replace(".", ",")} %`;
 }
 
-function getAppKindLabel(value: PopulatedDeclaration["app_kind"]): string {
-	return appKindOptions.find((o) => o.value === value)?.label ?? "—";
-}
-
-function getAppKindPictogram(
-	value: PopulatedDeclaration["app_kind"],
-): React.ReactNode {
-	if (value === "website") {
-		return <Search style={{ fontSize: "3.5rem" }} />;
-	}
-	return <Application style={{ fontSize: "3.5rem" }} />;
+function getAppKindOption(value: PopulatedDeclaration["app_kind"]) {
+	return appKindOptions.find((o) => o.value === value);
 }
 
 export function StatsCards({ declaration }: StatsCardsProps) {
@@ -38,6 +27,8 @@ export function StatsCards({ declaration }: StatsCardsProps) {
 
 	const rate = declaration.audit?.rate;
 	const conformity = rate != null ? getConformityStatus(rate) : null;
+	const appKindOption = getAppKindOption(declaration.app_kind);
+	const Pictogram = appKindOption?.pictogram;
 
 	return (
 		<div className={classes.grid}>
@@ -45,10 +36,10 @@ export function StatsCards({ declaration }: StatsCardsProps) {
 				<div className={classes.textBlock}>
 					<p className={fr.cx("fr-mb-0", "fr-text--sm")}>Type de service</p>
 					<p className={fr.cx("fr-mb-0", "fr-text--bold")}>
-						{getAppKindLabel(declaration.app_kind)}
+						{appKindOption?.label ?? "—"}
 					</p>
 				</div>
-				{getAppKindPictogram(declaration.app_kind)}
+				{Pictogram && <Pictogram style={{ fontSize: "3.5rem" }} />}
 			</div>
 
 			<div className={classes.card}>

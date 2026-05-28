@@ -35,10 +35,15 @@ export const DeclarationGeneralForm = withForm({
 				</form.AppField>
 				<form.AppField name="general.kind">
 					{(field) => (
-						<field.RadioField
-							legend="Type de service"
-							options={[...appKindOptions]}
+						<field.RichRadioField
+							label="Type de service"
 							readOnlyField={readOnly}
+							options={appKindOptions.map(
+								({ pictogram: Pictogram, ...option }) => ({
+									...option,
+									illustration: <Pictogram fontSize="3rem" />,
+								}),
+							)}
 							onOptionChange={() => form.setFieldValue("general.url", "")}
 							required
 						/>
