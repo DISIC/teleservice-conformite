@@ -102,7 +102,7 @@ export default function EntityDeclarationsPage({
 								size="small"
 								onClick={() =>
 									copyToClipboard(
-										`${process.env.NEXT_PUBLIC_FRONT_URL}/declaration/${declaration.id}/publish`,
+										`${process.env.NEXT_PUBLIC_FRONT_URL}/declarations/${declaration.id}/publish`,
 										() => onCopySuccess(declaration.name || ""),
 									)
 								}

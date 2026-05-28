@@ -95,7 +95,6 @@ Layered, not feature-foldered. One predictable layer per concern:
 
 - `components/ui/` — generic, domain-free UI (primitives + cross-cutting pieces like EmptyState, HelpingMessage).
 - `components/declaration/` — declaration-specific UI only (e.g. the `sections/` tree).
-- `domain/declaration/` — framework-free declaration logic + its colocated hooks.
 - `lib/` — infrastructure glue (api/tRPC client, auth, server guards).
 - `hooks/` — generic, cross-cutting hooks only; domain hooks colocate in `domain/`.
 - `forms/` — TanStack form definitions + Zod schemas (cross-cutting layer).

@@ -130,7 +130,7 @@ export default function DeclarationPage({
 									priority="tertiary"
 									size="small"
 									linkProps={{
-										href: `/declaration/${declaration.id}/publish`,
+										href: `/declarations/${declaration.id}/publish`,
 										target: "_blank",
 										rel: "noopener noreferrer",
 										title: `Voir la déclaration ${declaration.name}, nouvelle fenêtre`,
@@ -148,7 +148,7 @@ export default function DeclarationPage({
 									}}
 									onClick={() =>
 										copyToClipboard(
-											`${process.env.NEXT_PUBLIC_FRONT_URL}/declaration/${declaration.id}/publish`,
+											`${process.env.NEXT_PUBLIC_FRONT_URL}/declarations/${declaration.id}/publish`,
 											() =>
 												showDeclarationAlert({
 													description:
