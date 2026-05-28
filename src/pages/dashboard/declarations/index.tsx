@@ -7,10 +7,10 @@ import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react";
+import { BackButton } from "~/components/ui/BackButton";
 import Table from "~/components/ui/Table";
 import type { Entity } from "~/payload/payload-types";
 import { appKindOptions } from "~/payload/selectOptions";
@@ -33,7 +33,6 @@ export default function EntityDeclarationsPage({
 	declarations,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
-	const { back } = useRouter();
 
 	const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
@@ -127,14 +126,7 @@ export default function EntityDeclarationsPage({
 			</Head>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
-					<Button
-						priority="secondary"
-						onClick={() => back()}
-						iconId="fr-icon-arrow-left-s-line"
-						size="small"
-					>
-						Retour sur la liste des déclarations
-					</Button>
+					<BackButton>Retour sur la liste des déclarations</BackButton>
 					<div className={classes.headerWrapper}>
 						<h1>Toutes les déclarations</h1>
 						<Badge noIcon small>

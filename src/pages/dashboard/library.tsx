@@ -6,10 +6,10 @@ import config from "@payload-config";
 import { createColumnHelper, getExpandedRowModel } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { useMemo, useState } from "react";
 import { tss } from "tss-react";
+import { BackButton } from "~/components/ui/BackButton";
 import EmptyState from "~/components/ui/EmptyState";
 import {
 	LibraryContactModal,
@@ -56,7 +56,6 @@ export default function LibraryPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
-	const { back } = useRouter();
 
 	const utils = api.useUtils();
 
@@ -251,14 +250,7 @@ export default function LibraryPage({
 			</Head>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
-					<Button
-						priority="secondary"
-						onClick={() => back()}
-						iconId="fr-icon-arrow-left-s-line"
-						size="small"
-					>
-						Retour sur la liste des déclarations
-					</Button>
+					<BackButton>Retour sur la liste des déclarations</BackButton>
 					<div className={classes.headerWrapper}>
 						<h1>Documents partagés</h1>
 						<Badge noIcon small>

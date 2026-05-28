@@ -1,6 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
@@ -10,6 +9,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react";
+import { BackButton } from "~/components/ui/BackButton";
 import { SideMenu } from "~/components/declaration/SideMenu";
 import { StatusBadge } from "~/components/declaration/StatusBadge";
 import { StatsCards } from "~/components/declaration/StatsCards";
@@ -106,14 +106,13 @@ export default function DeclarationPage({
 					Déclaration de {declaration.name} - Téléservice Conformité
 				</title>
 			</Head>
-			<section id="declaration-page" className={fr.cx("fr-container")}>
-				<Breadcrumb
-					homeLinkProps={{ href: "/dashboard" }}
-					segments={[]}
-					currentPageLabel={declaration.name ?? ""}
-					className={fr.cx("fr-mb-3w")}
-				/>
-
+			<section
+				id="declaration-page"
+				className={fr.cx("fr-container", "fr-mt-10v")}
+			>
+				<BackButton href="/dashboard" className={fr.cx("fr-mb-6v")}>
+					Retour à la liste des déclarations
+				</BackButton>
 				<header className={classes.headerSection}>
 					<span className={classes.header}>
 						<h1>{declaration.name}</h1>
