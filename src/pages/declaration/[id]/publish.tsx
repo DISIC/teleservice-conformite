@@ -6,7 +6,7 @@ import Head from "next/head";
 import { getPayload } from "payload";
 import { tss } from "tss-react";
 import ErrorPage from "~/components/declaration/ErrorPage";
-import PublishedDeclarationTemplate from "~/components/declaration/PublishedDeclarationTemplate";
+import PublishedTemplate from "~/components/declaration/PublishedTemplate";
 import { getDeclarationById } from "~/server/api/utils/payload-helper";
 import { auth } from "~/utils/auth";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
@@ -36,7 +36,7 @@ export default function PublishPage({
 				className={fr.cx("fr-container")}
 			>
 				<div className={classes.publishedDeclarationContainer}>
-					<PublishedDeclarationTemplate declaration={publishedContent} />
+					<PublishedTemplate declaration={publishedContent} />
 				</div>
 			</section>
 		</>

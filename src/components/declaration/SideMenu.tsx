@@ -1,6 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import { SideMenu, type SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
+import {
+	SideMenu as DsfrSideMenu,
+	type SideMenuProps as DsfrSideMenuProps,
+} from "@codegouvfr/react-dsfr/SideMenu";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
@@ -15,15 +18,12 @@ import {
 	sectionHref,
 } from "~/utils/declaration/sections";
 
-type DeclarationSideMenuProps = {
+type SideMenuProps = {
 	declaration: PopulatedDeclaration;
 	currentSection: SectionSlug;
 };
 
-export function DeclarationSideMenu({
-	declaration,
-	currentSection,
-}: DeclarationSideMenuProps) {
+export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	const { classes } = useStyles();
 	const declarationId = declaration.id;
 	const auditMissing = !declaration.audit;
@@ -50,7 +50,7 @@ export function DeclarationSideMenu({
 		</span>
 	);
 
-	const sectionItem = (slug: SectionSlug): SideMenuProps.Item.Link => ({
+	const sectionItem = (slug: SectionSlug): DsfrSideMenuProps.Item.Link => ({
 		text: renderLabel(SECTION_TITLES[slug], {
 			toComplete: isSectionToComplete(declaration, slug),
 			toVerify: isSectionToVerify(declaration, slug),
@@ -63,7 +63,7 @@ export function DeclarationSideMenu({
 		isActive: currentSection === slug,
 	});
 
-	const items: SideMenuProps.Item[] = [
+	const items: DsfrSideMenuProps.Item[] = [
 		sectionItem("infos"),
 		{
 			text: renderLabel("Audit", {
@@ -84,7 +84,7 @@ export function DeclarationSideMenu({
 	];
 
 	return (
-		<SideMenu
+		<DsfrSideMenu
 			align="left"
 			burgerMenuButtonText="Sections de la déclaration"
 			items={items}
@@ -93,7 +93,7 @@ export function DeclarationSideMenu({
 	);
 }
 
-const useStyles = tss.withName(DeclarationSideMenu.name).create({
+const useStyles = tss.withName(SideMenu.name).create({
 	root: {
 		marginTop: 0,
 	},

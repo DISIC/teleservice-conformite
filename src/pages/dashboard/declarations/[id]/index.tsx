@@ -10,9 +10,9 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react";
-import { DeclarationSideMenu } from "~/components/declaration/DeclarationSideMenu";
-import { StatusBadge } from "~/components/declaration/DeclarationStatusBadge";
-import { DeclarationStatsCards } from "~/components/declaration/DeclarationStatsCards";
+import { SideMenu } from "~/components/declaration/SideMenu";
+import { StatusBadge } from "~/components/declaration/StatusBadge";
+import { StatsCards } from "~/components/declaration/StatsCards";
 import Membres from "~/components/declaration/Membres";
 import { SectionContent } from "~/components/declaration/sections/Content";
 import VerifyGeneratedInfoHelpingMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
@@ -190,7 +190,7 @@ export default function DeclarationPage({
 				</header>
 
 				<div className={classes.statsWrapper}>
-					<DeclarationStatsCards declaration={declaration} />
+					<StatsCards declaration={declaration} />
 				</div>
 
 				{declaration.fromSource === "ai" && (
@@ -214,7 +214,7 @@ export default function DeclarationPage({
 							role="presentation"
 						>
 							<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
-								<DeclarationSideMenu
+								<SideMenu
 									declaration={declaration}
 									currentSection={currentSection}
 								/>

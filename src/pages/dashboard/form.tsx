@@ -8,7 +8,7 @@ import { useRef, useState } from "react";
 import { tss } from "tss-react";
 import type { z } from "zod";
 import DeclarationLoader from "~/components/declaration/DeclarationLoader";
-import DeclarationUrlError from "~/components/declaration/DeclarationUrlError";
+import UrlError from "~/components/declaration/UrlError";
 import { useCommonStyles } from "~/components/ui/commonStyles";
 import { useStyles as useAppStyles } from "~/pages/_app";
 import type { Entity } from "~/payload/payload-types";
@@ -283,9 +283,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 		isAnalyzingUrl || isGettingInfoFromAra || !isMinimumDelayComplete;
 
 	if (errorGetInfos)
-		return (
-			<DeclarationUrlError onRetry={onErrorRetry} onForward={onErrorForward} />
-		);
+		return <UrlError onRetry={onErrorRetry} onForward={onErrorForward} />;
 
 	if (isLoading)
 		return <DeclarationLoader duration={isAnalyzingUrl ? 15000 : 2000} />;

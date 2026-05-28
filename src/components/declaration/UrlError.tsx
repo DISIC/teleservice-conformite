@@ -3,15 +3,12 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import ConnectionLost from "@codegouvfr/react-dsfr/picto/ConnectionLost";
 import { tss } from "tss-react";
 
-type DeclarationLoaderProps = {
+type UrlErrorProps = {
 	onRetry: () => void;
 	onForward: () => void;
 };
 
-export default function DeclarationUrlError({
-	onRetry,
-	onForward,
-}: DeclarationLoaderProps) {
+export default function UrlError({ onRetry, onForward }: UrlErrorProps) {
 	const { classes, cx } = useStyles();
 
 	return (
@@ -46,7 +43,7 @@ export default function DeclarationUrlError({
 	);
 }
 
-const useStyles = tss.withName(DeclarationUrlError.name).create({
+const useStyles = tss.withName(UrlError.name).create({
 	container: {
 		background: fr.colors.decisions.background.default.grey.default,
 		display: "grid",

@@ -11,9 +11,9 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
 import { tss } from "tss-react";
-import PublishedDeclarationTemplate, {
+import PublishedTemplate, {
 	extractDeclarationContentToPublish,
-} from "~/components/declaration/PublishedDeclarationTemplate";
+} from "~/components/declaration/PublishedTemplate";
 import type {
 	Audit,
 	Contact,
@@ -87,7 +87,7 @@ export default function DeclarationPreviewPage({
 						déclaration”.
 					</p>
 					<div className={classes.declarationPreview}>
-						<PublishedDeclarationTemplate
+						<PublishedTemplate
 							declaration={publishedDeclarationContent}
 							mode="preview"
 						/>

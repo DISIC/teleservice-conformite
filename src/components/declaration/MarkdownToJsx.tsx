@@ -4,7 +4,7 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { tss } from "tss-react";
 
-export default function DeclarationMarkdownToJsx({
+export default function MarkdownToJsx({
 	content,
 	mode = "published",
 }: {
@@ -67,7 +67,7 @@ export default function DeclarationMarkdownToJsx({
 	);
 }
 
-const useStyles = tss.withName(DeclarationMarkdownToJsx.name).create({
+const useStyles = tss.withName(MarkdownToJsx.name).create({
 	link: {
 		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},

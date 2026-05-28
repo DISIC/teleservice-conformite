@@ -1,10 +1,10 @@
-import DeclarationMarkdownToJsx from "~/components/declaration/DeclarationMarkdownToJsx";
+import MarkdownToJsx from "~/components/declaration/MarkdownToJsx";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
 import { getConformityStatus } from "~/utils/declaration-helper";
 
 export { extractDeclarationContentToPublish } from "~/utils/declaration-content";
 
-export default function PublishedDeclarationTemplate({
+export default function PublishedTemplate({
 	declaration,
 	mode = "published",
 }: {
@@ -162,5 +162,5 @@ export default function PublishedDeclarationTemplate({
 		"- Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre):<br/>Défenseur des droits<br/>Libre réponse 71120<br/>75342 Paris CEDEX 07",
 	].join("\n");
 
-	return <DeclarationMarkdownToJsx content={previewMd} mode={mode} />;
+	return <MarkdownToJsx content={previewMd} mode={mode} />;
 }

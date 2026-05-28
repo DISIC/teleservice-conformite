@@ -3,7 +3,7 @@ import { tss } from "tss-react";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
-type DeclarationStatsCardsProps = {
+type StatsCardsProps = {
 	declaration: PopulatedDeclaration;
 };
 
@@ -21,9 +21,7 @@ function getAppKindLabel(value: PopulatedDeclaration["app_kind"]): string {
 	return appKindOptions.find((o) => o.value === value)?.label ?? "—";
 }
 
-export function DeclarationStatsCards({
-	declaration,
-}: DeclarationStatsCardsProps) {
+export function StatsCards({ declaration }: StatsCardsProps) {
 	const { classes } = useStyles();
 
 	const cards = [
@@ -49,7 +47,7 @@ export function DeclarationStatsCards({
 	);
 }
 
-const useStyles = tss.withName(DeclarationStatsCards.name).create({
+const useStyles = tss.withName(StatsCards.name).create({
 	grid: {
 		display: "grid",
 		gap: fr.spacing("4v"),
