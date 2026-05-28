@@ -5,8 +5,7 @@ import type {
 	Declaration,
 	Schema,
 } from "~/payload/payload-types";
-import type { PublishedDeclaration } from "~/utils/declaration-content";
-import { extractDeclarationContentToPublish } from "~/utils/declaration-content";
+import { hasContentChangedSincePublish } from "~/utils/declaration/status";
 import type { PopulatedDeclaration } from "./payload-helper";
 
 type DeclarationFieldOverrides = Partial<
@@ -50,10 +49,6 @@ export async function recalculateDeclarationStatus(
 	});
 
 	if (!declaration?.publishedContent) return null;
-
-	const published: PublishedDeclaration = JSON.parse(
-		declaration.publishedContent,
-	);
 
 	const fetchById = async <
 		T extends keyof Payload["collections"] | "audits" | "contacts" | "schemas",
@@ -111,8 +106,7 @@ export async function recalculateDeclarationStatus(
 		created_by: null,
 	};
 
-	const current = extractDeclarationContentToPublish(populatedDeclaration);
-	const isModified = JSON.stringify(current) !== JSON.stringify(published);
+	const isModified = hasContentChangedSincePublish(populatedDeclaration);
 	const newStatus = isModified ? "unpublished" : "published";
 
 	if (!overrides.declarationFields && declaration.status !== newStatus) {

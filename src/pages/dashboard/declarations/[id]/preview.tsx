@@ -28,6 +28,7 @@ import {
 import { api } from "~/lib/api";
 import { auth } from "~/lib/auth";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
+import { getDeclarationStatus } from "~/utils/declaration/status";
 
 type RequiredPopulatedDeclaration = Omit<
 	PopulatedDeclaration,
@@ -202,7 +203,7 @@ export const getServerSideProps = (async (context) => {
 		};
 	}
 
-	if (declaration?.publishedContent && declaration.status === "published") {
+	if (getDeclarationStatus(declaration) === "published") {
 		return {
 			redirect: {
 				destination: `/dashboard/declarations/${declaration.id}`,

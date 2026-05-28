@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
@@ -11,7 +12,10 @@ import { useEffect, useState } from "react";
 import { tss } from "tss-react";
 import { BackButton } from "~/components/ui/BackButton";
 import { SideMenu } from "~/components/declaration/SideMenu";
-import { StatusBadge } from "~/components/declaration/StatusBadge";
+import {
+	getDeclarationStatus,
+	STATUS_PRESENTATION,
+} from "~/utils/declaration/status";
 import { StatsCards } from "~/components/declaration/StatsCards";
 import Membres from "~/components/declaration/Membres";
 import { SectionContent } from "~/components/declaration/sections/Content";
@@ -47,10 +51,8 @@ export default function DeclarationPage({
 	}>({ title: "", description: "", severity: "info" });
 	const { classes } = useStyles();
 
-	const isModified =
-		declaration?.status === "unpublished" && hasPublishedDeclaration;
-	const isDraft =
-		declaration?.status !== "published" && !hasPublishedDeclaration;
+	const status = getDeclarationStatus(declaration);
+	const statusBadge = STATUS_PRESENTATION[status];
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
@@ -116,11 +118,9 @@ export default function DeclarationPage({
 				<header className={classes.headerSection}>
 					<span className={classes.header}>
 						<h1>{declaration.name}</h1>
-						<StatusBadge
-							isPublished={declaration?.status === "published"}
-							isModified={isModified}
-							isDraft={isDraft}
-						/>
+						<Badge noIcon small severity={statusBadge.severity}>
+							{statusBadge.label}
+						</Badge>
 					</span>
 					<div className={classes.buttonsContainer}>
 						{hasPublishedDeclaration && (
