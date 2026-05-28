@@ -122,7 +122,6 @@ export const Table = <TData,>(props: Props<TData>) => {
 					key={cell.id}
 					className={cx(classes.bodyCell, href && classes.bodyCellLinked)}
 					style={{ ...cell.column.columnDef.meta?.styles }}
-					data-subrow={row.depth > 0 || undefined}
 				>
 					{href && !noRowLink ? (
 						<Link href={href} className={classes.rowLink}>
@@ -179,16 +178,6 @@ const useStyles = tss.withName(Table.name).create(() => ({
 		thead: {
 			backgroundColor: "white!important",
 			backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default})!important`,
-		},
-		"tbody tr:has([data-subrow]) > td": {
-			backgroundColor: fr.colors.decisions.background.default.grey.hover,
-			backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default})!important`,
-			backgroundSize: "100% 1px",
-			backgroundRepeat: "no-repeat",
-			backgroundPosition: "top",
-		},
-		"tbody tr:not(:has([data-subrow])) + tr:has([data-subrow]) > td": {
-			backgroundImage: "none!important",
 		},
 		"thead::after, tbody::after": {
 			backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default}), linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default}), linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default})!important`,

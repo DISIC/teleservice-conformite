@@ -3,7 +3,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import config from "@payload-config";
-import { createColumnHelper, getExpandedRowModel } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { getPayload } from "payload";
@@ -21,7 +21,7 @@ import {
 } from "~/components/modal/LibrarySchemaModal";
 import { Loader } from "~/components/ui/Loader";
 import Table from "~/components/ui/Table";
-import type { Contact, Entity, Schema } from "~/payload/payload-types";
+import type { Contact, Entity } from "~/payload/payload-types";
 import { api } from "~/lib/api";
 import { authPages } from "~/lib/auth";
 
@@ -29,33 +29,39 @@ interface LibraryPageProps {
 	entity: Entity;
 }
 
-type SchemaRow = {
-	kind: "schema" | "plan";
-	name: string;
-	url?: string | null;
-	updatedAt: string;
-	schema?: Schema;
-	subRows?: SchemaRow[];
-};
+const contactColumnHelper = createColumnHelper<Contact>();
 
-const toSchemaRow = (schema: Schema): SchemaRow => ({
-	kind: "schema",
-	name: schema.schemaName,
-	url: schema.schemaUrl,
-	updatedAt: schema.updatedAt,
-	schema,
-	subRows: (schema.actionPlanUrls ?? []).map((plan) => ({
-		kind: "plan",
-		name: plan.name,
-		url: plan.url,
-		updatedAt: schema.updatedAt,
-	})),
-});
+const ItemActions = ({
+	onEdit,
+	onDelete,
+	className,
+}: {
+	onEdit: () => void;
+	onDelete: () => void;
+	className?: string;
+}) => (
+	<div className={className}>
+		<Button
+			priority="tertiary"
+			iconId="fr-icon-edit-line"
+			title="Modifier"
+			size="small"
+			onClick={onEdit}
+		/>
+		<Button
+			priority="tertiary"
+			iconId="fr-icon-delete-line"
+			title="Supprimer"
+			size="small"
+			onClick={onDelete}
+		/>
+	</div>
+);
 
 export default function LibraryPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 
 	const utils = api.useUtils();
 
@@ -93,14 +99,6 @@ export default function LibraryPage({
 			onError: (e) => alert(e.message),
 		});
 
-	const schemaRows = useMemo<SchemaRow[]>(
-		() => schemas.map(toSchemaRow),
-		[schemas],
-	);
-
-	const contactColumnHelper = createColumnHelper<Contact>();
-	const schemaColumnHelper = createColumnHelper<SchemaRow>();
-
 	const contactColumns = useMemo(
 		() => [
 			contactColumnHelper.accessor("name", {
@@ -137,26 +135,17 @@ export default function LibraryPage({
 			}),
 			contactColumnHelper.display({
 				id: "actions",
-				meta: { styles: { width: 96, justifyContent: "flex-end" } },
+				meta: { styles: { justifyContent: "flex-end" } },
 				cell: (info) => {
 					const contact = info.row.original;
 					return (
-						<div className={classes.itemActions}>
-							<Button
-								priority="tertiary no outline"
-								iconId="fr-icon-edit-line"
-								title="Modifier"
-								onClick={() => contactModalActions.open?.(contact)}
-							/>
-							<Button
-								priority="tertiary no outline"
-								iconId="fr-icon-delete-line"
-								title="Supprimer"
-								onClick={() =>
-									deleteContact({ id: contact.id, entityId: entity.id })
-								}
-							/>
-						</div>
+						<ItemActions
+							className={classes.itemActions}
+							onEdit={() => contactModalActions.open?.(contact)}
+							onDelete={() =>
+								deleteContact({ id: contact.id, entityId: entity.id })
+							}
+						/>
 					);
 				},
 			}),
@@ -167,79 +156,7 @@ export default function LibraryPage({
 			classes.tags,
 			deleteContact,
 			entity.id,
-			contactColumnHelper,
 			contactModalActions,
-		],
-	);
-
-	const schemaColumns = useMemo(
-		() => [
-			schemaColumnHelper.accessor("name", {
-				id: "name",
-				cell: (info) =>
-					info.row.original.kind === "schema" ? (
-						<strong>{info.getValue()}</strong>
-					) : (
-						<span>{info.getValue()}</span>
-					),
-			}),
-			schemaColumnHelper.accessor("url", {
-				id: "url",
-				cell: (info) => {
-					const url = info.getValue();
-					if (!url) return null;
-					return <span className={classes.hint}>{url}</span>;
-				},
-			}),
-			schemaColumnHelper.accessor("updatedAt", {
-				id: "updatedAt",
-				cell: (info) => (
-					<span className={classes.hint} suppressHydrationWarning>
-						Dernière mise à jour{" "}
-						<Tag
-							small
-							linkProps={{ href: "#", style: { pointerEvents: "none" } }}
-						>
-							{new Date(info.getValue()).toLocaleDateString("fr-FR")}
-						</Tag>
-					</span>
-				),
-			}),
-			schemaColumnHelper.display({
-				id: "actions",
-				meta: { styles: { width: 96, justifyContent: "flex-end" } },
-				cell: (info) => {
-					const row = info.row.original;
-					if (row.kind !== "schema" || !row.schema) return null;
-					const schema = row.schema;
-					return (
-						<div className={classes.itemActions}>
-							<Button
-								priority="tertiary no outline"
-								iconId="fr-icon-edit-line"
-								title="Modifier"
-								onClick={() => schemaModalActions.open?.(schema)}
-							/>
-							<Button
-								priority="tertiary no outline"
-								iconId="fr-icon-delete-line"
-								title="Supprimer"
-								onClick={() =>
-									deleteSchema({ id: schema.id, entityId: entity.id })
-								}
-							/>
-						</div>
-					);
-				},
-			}),
-		],
-		[
-			classes.hint,
-			classes.itemActions,
-			deleteSchema,
-			entity.id,
-			schemaColumnHelper,
-			schemaModalActions,
 		],
 	);
 
@@ -284,17 +201,51 @@ export default function LibraryPage({
 								}}
 							/>
 						) : (
-							<Table
-								columns={schemaColumns}
-								data={schemaRows}
-								numberPerPage={10}
-								hideHeaders
-								tableOptions={{
-									getSubRows: (row) => row.subRows,
-									getExpandedRowModel: getExpandedRowModel(),
-									state: { expanded: true },
-								}}
-							/>
+							<ul className={classes.schemaList}>
+								{schemas.map((schema) => (
+									<li key={schema.id} className={classes.schemaCard}>
+										<div
+											className={cx(classes.schemaRow, classes.schemaHeaderRow)}
+										>
+											<strong>{schema.schemaName}</strong>
+											<span className={classes.hint}>{schema.schemaUrl}</span>
+											<span className={classes.hint} suppressHydrationWarning>
+												Dernière mise à jour{" "}
+												<Tag
+													small
+													linkProps={{
+														href: "#",
+														style: { pointerEvents: "none" },
+													}}
+												>
+													{new Date(schema.updatedAt).toLocaleDateString(
+														"fr-FR",
+													)}
+												</Tag>
+											</span>
+											<ItemActions
+												className={classes.itemActions}
+												onEdit={() => schemaModalActions.open?.(schema)}
+												onDelete={() =>
+													deleteSchema({
+														id: schema.id,
+														entityId: entity.id,
+													})
+												}
+											/>
+										</div>
+										{(schema.actionPlanUrls ?? []).map((plan) => (
+											<div
+												key={plan.id ?? plan.url}
+												className={cx(classes.schemaRow, classes.schemaPlanRow)}
+											>
+												<span>{plan.name}</span>
+												<span className={classes.hint}>{plan.url}</span>
+											</div>
+										))}
+									</li>
+								))}
+							</ul>
 						)}
 					</section>
 					<section className={classes.section}>
@@ -367,9 +318,45 @@ const useStyles = tss.withName(LibraryPage.name).create({
 		flexDirection: "column",
 		gap: fr.spacing("6v"),
 	},
+	schemaList: {
+		listStyle: "none",
+		padding: 0,
+		margin: 0,
+		display: "grid",
+		gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+		gap: fr.spacing("6v"),
+		"& > li": {
+			margin: 0,
+			padding: 0,
+		},
+	},
+	schemaCard: {
+		gridColumn: "1 / -1",
+		display: "grid",
+		gridTemplateColumns: "subgrid",
+		border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+		borderRadius: 4,
+		overflow: "hidden",
+	},
+	schemaRow: {
+		gridColumn: "1 / -1",
+		display: "grid",
+		gridTemplateColumns: "subgrid",
+		alignItems: "center",
+		gap: fr.spacing("4v"),
+		padding: `${fr.spacing("3v")} ${fr.spacing("4v")}`,
+	},
+	schemaHeaderRow: {
+		backgroundColor: fr.colors.decisions.background.default.grey.default,
+	},
+	schemaPlanRow: {
+		backgroundColor: fr.colors.decisions.background.alt.grey.default,
+		borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+	},
 	itemActions: {
 		display: "flex",
-		gap: fr.spacing("1v"),
+		gap: fr.spacing("4v"),
+		justifySelf: "end",
 	},
 	tags: {
 		display: "flex",
@@ -382,10 +369,6 @@ const useStyles = tss.withName(LibraryPage.name).create({
 		display: "flex",
 		alignItems: "center",
 		gap: fr.spacing("2v"),
-	},
-	empty: {
-		color: fr.colors.decisions.text.mention.grey.default,
-		fontStyle: "italic",
 	},
 });
 
