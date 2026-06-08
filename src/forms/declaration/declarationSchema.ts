@@ -51,6 +51,14 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 	},
 };
 
+export const declarationGeneralFormOptions = formOptions({
+	defaultValues: declarationGeneralDefaultValues,
+	validators: {
+		onSubmit: ({ formApi }) =>
+			formApi.parseValuesWithSchema(declarationGeneralRefined),
+	},
+});
+
 export const declarationKindOptions = [
 	"fromUrl",
 	"fromAra",
@@ -64,6 +72,7 @@ export const initialDeclaration = z
 			publishedDate: z.iso.date().optional(),
 			araUrl: z.string().optional(),
 			declarationUrl: z.string().optional(),
+			declarationName: z.string().optional(),
 		}),
 	})
 	.superRefine((data, ctx) => {
@@ -87,6 +96,16 @@ export const initialDeclaration = z
 				path: ["initialDeclaration", "declarationUrl"],
 			});
 		}
+		if (
+			data.initialDeclaration.newDeclarationKind === "fromScratch" &&
+			!data.initialDeclaration.declarationName?.trim()
+		) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Le nom du service numérique est requis",
+				path: ["initialDeclaration", "declarationName"],
+			});
+		}
 	});
 
 export type ZInitialDeclaration = z.infer<typeof initialDeclaration>;
@@ -97,40 +116,14 @@ export const initialDeclarationDefaultValues: ZInitialDeclaration = {
 		publishedDate: undefined,
 		araUrl: undefined,
 		declarationUrl: undefined,
+		declarationName: "",
 	},
 };
 
-export const declarationMultiStepFormSchema = z.object({
-	section: z.enum(["general", "initialDeclaration"]),
-	...declarationGeneral.shape,
-	...initialDeclaration.shape,
-});
-
-export type ZDeclarationMultiStepFormSchema = z.infer<
-	typeof declarationMultiStepFormSchema
->;
-
-const defaultValues: ZDeclarationMultiStepFormSchema = {
-	section: "general",
-	...declarationGeneralDefaultValues,
-	...initialDeclarationDefaultValues,
-};
-
-export const declarationMultiStepFormOptions = formOptions({
-	defaultValues,
+export const initialDeclarationFormOptions = formOptions({
+	defaultValues: initialDeclarationDefaultValues,
 	validators: {
-		onSubmit: ({ value, formApi }) => {
-			if (value.section === "general") {
-				return formApi.parseValuesWithSchema(
-					declarationGeneralRefined as unknown as typeof declarationMultiStepFormSchema,
-				);
-			}
-
-			if (value.section === "initialDeclaration") {
-				return formApi.parseValuesWithSchema(
-					initialDeclaration as typeof declarationMultiStepFormSchema,
-				);
-			}
-		},
+		onSubmit: ({ formApi }) =>
+			formApi.parseValuesWithSchema(initialDeclaration),
 	},
 });

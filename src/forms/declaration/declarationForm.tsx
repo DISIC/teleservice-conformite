@@ -3,7 +3,6 @@ import Accessibility from "@codegouvfr/react-dsfr/picto/Accessibility";
 import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
 import Internet from "@codegouvfr/react-dsfr/picto/Internet";
 import System from "@codegouvfr/react-dsfr/picto/System";
-import { useState } from "react";
 import { tss } from "tss-react";
 
 import { FieldsLayout } from "~/components/form/FieldsLayout";
@@ -15,15 +14,12 @@ import {
 } from "~/payload/selectOptions";
 import { withForm } from "../context";
 import {
-	declarationMultiStepFormOptions,
-	type ZInitialDeclaration,
+	declarationGeneralFormOptions,
+	initialDeclarationFormOptions,
 } from "./declarationSchema";
 
-type DeclarationKind =
-	ZInitialDeclaration["initialDeclaration"]["newDeclarationKind"];
-
 export const DeclarationGeneralForm = withForm({
-	...declarationMultiStepFormOptions,
+	...declarationGeneralFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
@@ -126,11 +122,9 @@ export const DeclarationGeneralForm = withForm({
 });
 
 export const ContextForm = withForm({
-	...declarationMultiStepFormOptions,
+	...initialDeclarationFormOptions,
 	render: function Render({ form }) {
 		const { classes } = useStyles();
-		const [newDeclarationKind, setNewDeclarationKind] =
-			useState<DeclarationKind>(undefined);
 
 		return (
 			<div className={classes.contextFormContainer}>
@@ -163,23 +157,23 @@ export const ContextForm = withForm({
 									illustration: <DocumentSearch fontSize="3rem" />,
 								},
 							]}
-							onOptionChange={(value) => {
+							onOptionChange={() => {
 								form.resetField("initialDeclaration.declarationUrl");
 								form.resetField("initialDeclaration.araUrl");
-								setNewDeclarationKind(value as DeclarationKind);
+								form.resetField("initialDeclaration.declarationName");
 							}}
 						/>
 					)}
 				</form.AppField>
-				{newDeclarationKind !== "fromScratch" && (
-					<form.Subscribe
-						selector={(store) =>
-							store.values.initialDeclaration?.newDeclarationKind
-						}
-					>
-						{(newDeclarationKind) => (
-							<div>
-								{newDeclarationKind === "fromUrl" && (
+				<form.Subscribe
+					selector={(store) =>
+						store.values.initialDeclaration?.newDeclarationKind
+					}
+				>
+					{(newDeclarationKind) => {
+						switch (newDeclarationKind) {
+							case "fromUrl":
+								return (
 									<form.AppField name="initialDeclaration.declarationUrl">
 										{(field) => (
 											<field.TextField
@@ -190,8 +184,9 @@ export const ContextForm = withForm({
 											/>
 										)}
 									</form.AppField>
-								)}
-								{newDeclarationKind === "fromAra" && (
+								);
+							case "fromAra":
+								return (
 									<form.AppField name="initialDeclaration.araUrl">
 										{(field) => (
 											<field.TextField
@@ -202,8 +197,29 @@ export const ContextForm = withForm({
 											/>
 										)}
 									</form.AppField>
-								)}
-								{!newDeclarationKind && (
+								);
+							case "fromScratch":
+								return (
+									<form.AppField name="initialDeclaration.declarationName">
+										{(field) => (
+											<field.TextField
+												label="Nom du service numérique concerné"
+												hintText={
+													<>
+														Nous vous conseillons d’utiliser le nom du service
+														numérique.
+														<br />
+														Exemples : Demande de logement social, Service
+														public.fr, Outil de gestion des congés
+													</>
+												}
+												required
+											/>
+										)}
+									</form.AppField>
+								);
+							default:
+								return (
 									<HelpingMessage
 										image={<Accessibility fontSize="6rem" />}
 										message={
@@ -223,11 +239,10 @@ export const ContextForm = withForm({
 											</span>
 										}
 									/>
-								)}
-							</div>
-						)}
-					</form.Subscribe>
-				)}
+								);
+						}
+					}}
+				</form.Subscribe>
 			</div>
 		);
 	},

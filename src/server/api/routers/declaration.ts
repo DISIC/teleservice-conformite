@@ -3,7 +3,6 @@ import type { Payload } from "payload";
 import z from "zod";
 import {
 	appKindOptions,
-	declarationStatusOptions,
 	kindOptions,
 	rgaaVersionOptions,
 	sourceOptions,
@@ -19,8 +18,6 @@ import { recalculateDeclarationStatus } from "~/server/api/utils/publish-compari
 import type { PublishedDeclaration } from "~/utils/declaration-content";
 import { declarationGeneral } from "~/forms/declaration/declarationSchema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-
-const statusValues = declarationStatusOptions.map((option) => option.value);
 
 export const importedDeclarationDataSchema = z.object({
 	service: z.object({
@@ -143,53 +140,39 @@ export const declarationRouter = createTRPCRouter({
 
 			return { data: declarationInfos };
 		}),
-	create: userProtectedProcedure
+	// Manual creation now collects only the declaration name; the rest of the
+	// general info (type, URL, domain) is filled afterwards on the declaration's
+	// general Section. The entity is linked as-is (not overwritten) when the user
+	// already has one, otherwise a placeholder entity is created.
+	createManual: userProtectedProcedure
 		.input(
-			declarationGeneral.extend({
-				general: declarationGeneral.shape.general.omit({ name: true }).extend({
-					name: z.string().optional(),
-					entityId: z.number().optional(),
-					status: z.enum(statusValues).optional(),
-				}),
+			z.object({
+				name: z.string().min(1),
+				entityId: z.number().optional(),
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const {
-				organisation,
-				kind,
-				mobilePlatform,
-				url,
-				domain,
-				name,
-				entityId,
-				status,
-			} = input.general;
+			const { name, entityId } = input;
 
-			const declarationName =
-				name ??
-				(await getDefaultDeclarationName(
-					ctx.payload,
-					Number(ctx.session.user.id),
-				));
-
-			const newEntityId = await createOrUpdateEntity(
-				ctx.payload,
-				entityId ?? undefined,
-				organisation,
-				domain,
-			);
+			const declarationEntityId =
+				entityId ??
+				(
+					await ctx.payload.create({
+						collection: "entities",
+						draft: true,
+						data: { name, kind: "none" },
+					})
+				).id;
 
 			const declaration = await ctx.payload.create({
 				collection: "declarations",
 				draft: true,
 				data: {
-					name: declarationName,
-					app_kind: kind,
-					mobile_platform: kind === "mobile_app" ? mobilePlatform : null,
-					url,
-					entity: newEntityId,
+					name,
+					app_kind: "website",
+					entity: declarationEntityId,
 					created_by: Number(ctx.session.user.id),
-					status: status ?? "unpublished",
+					status: "unpublished",
 					fromSource: "manual",
 				},
 			});

@@ -5,8 +5,8 @@ import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { useAppForm } from "~/forms/context";
 import { DeclarationGeneralForm } from "~/forms/declaration/declarationForm";
 import {
-	declarationMultiStepFormOptions,
-	type ZDeclarationMultiStepFormSchema,
+	declarationGeneralFormOptions,
+	type ZDeclarationGeneral,
 } from "~/forms/declaration/declarationSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 
@@ -47,10 +47,8 @@ export function InfosSection({
 		nextHref,
 	});
 
-	const defaultValues: ZDeclarationMultiStepFormSchema = useMemo(
+	const defaultValues: ZDeclarationGeneral = useMemo(
 		() => ({
-			section: "general",
-			initialDeclaration: {},
 			general: {
 				organisation: declaration.entity?.name ?? "",
 				kind: declaration.app_kind,
@@ -64,7 +62,7 @@ export function InfosSection({
 	);
 
 	const form = useAppForm({
-		...declarationMultiStepFormOptions,
+		...declarationGeneralFormOptions,
 		defaultValues,
 		onSubmit: async ({ value }) => {
 			await update({

@@ -1,6 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import config from "@payload-config";
-import { useStore } from "@tanstack/react-form";
 import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
@@ -13,7 +12,6 @@ import { useCommonStyles } from "~/components/ui/commonStyles";
 import { useStyles as useAppStyles } from "~/pages/_app";
 import type { Entity } from "~/payload/payload-types";
 import {
-	appKindOptions,
 	type rgaaVersionOptions,
 	testEnvironmentOptions,
 	toolOptions,
@@ -23,11 +21,8 @@ import { api } from "~/lib/api";
 import { auth } from "~/lib/auth";
 import { extractTechnologiesFromUrl } from "~/utils/declaration-helper";
 import { useAppForm } from "~/forms/context";
-import {
-	ContextForm,
-	DeclarationGeneralForm,
-} from "~/forms/declaration/declarationForm";
-import { declarationMultiStepFormOptions } from "~/forms/declaration/declarationSchema";
+import { ContextForm } from "~/forms/declaration/declarationForm";
+import { initialDeclarationFormOptions } from "~/forms/declaration/declarationSchema";
 
 export type ImportedDeclarationData = z.infer<
 	typeof importedDeclarationDataSchema
@@ -54,19 +49,19 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	};
 
 	const onErrorForward = () => {
-		form.reset();
 		form.setFieldValue("initialDeclaration.newDeclarationKind", "fromScratch");
-		form.setFieldValue("section", "general");
 		setErrorGetInfos(undefined);
 	};
 
-	const { mutateAsync: createDeclaration } = api.declaration.create.useMutation(
-		{
-			onError: (error) => {
-				console.error("Error adding declaration:", error);
+	const { mutateAsync: createManualDeclaration } =
+		api.declaration.createManual.useMutation({
+			onSuccess: (result) => {
+				push(`/dashboard/declarations/${result.data}`);
 			},
-		},
-	);
+			onError: (error) => {
+				console.error("Error creating declaration:", error);
+			},
+		});
 
 	const { mutateAsync: analyzeUrl, isPending: isAnalyzingUrl } =
 		api.albert.analyzeUrl.useMutation({
@@ -154,106 +149,46 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 			},
 		});
 
-	const addDeclaration = async (generalData: {
-		name?: string;
-		url?: string;
-		organisation: string;
-		kind: (typeof appKindOptions)[number]["value"];
-		domain: string;
-	}) => {
-		try {
-			const result = await createDeclaration({
-				general: {
-					...generalData,
-					url: generalData.url ?? "",
-					entityId: entity?.id,
-				},
-			});
-			push(`/dashboard/declarations/${result.data}`);
-		} catch (error) {
-			console.error("Error adding declaration:", error);
-		}
-	};
-
-	const getDeclarationInfoFromAra = async (
-		url: string,
-	): Promise<{
-		serviceName: string;
-		serviceType: string;
-		serviceUrl: string;
-	}> => {
+	// Fetch the imported declaration data into `importedDeclarationDataRef` via
+	// the mutation's onSuccess. Errors are swallowed here so `errorGetInfos`
+	// (set in onError) drives the UrlError screen instead of throwing.
+	const fetchInfoFromAra = async (url: string) => {
 		const araId = url.slice(url.lastIndexOf("/") + 1);
 		try {
-			const result = await getInfoFromAra({ id: araId });
-			return {
-				serviceName: result?.data?.service?.name ?? "",
-				serviceType: result?.data?.service?.url
-					? "website"
-					: (result?.data?.service?.type ?? "other"),
-				serviceUrl: result?.data?.service?.url ?? "",
-			};
+			await getInfoFromAra({ id: araId });
 		} catch {
-			return { serviceName: "", serviceType: "other", serviceUrl: "" };
+			/* errorGetInfos handles the failure */
 		}
 	};
 
-	const analyzeDeclarationUrl = async (
-		url: string,
-	): Promise<{
-		serviceName: string;
-		serviceType: string;
-		serviceUrl: string;
-	}> => {
+	const fetchInfoFromUrl = async (url: string) => {
 		try {
-			const result = await analyzeUrl({ url });
-			return {
-				serviceName: result?.data?.service?.name ?? "",
-				serviceType: result?.data?.service?.url
-					? "website"
-					: (result?.data?.service?.type ?? "other"),
-				serviceUrl: result?.data?.service?.url ?? "",
-			};
+			await analyzeUrl({ url });
 		} catch {
-			return { serviceName: "", serviceType: "other", serviceUrl: "" };
+			/* errorGetInfos handles the failure */
 		}
 	};
 
 	const form = useAppForm({
-		...declarationMultiStepFormOptions,
-		defaultValues: {
-			...declarationMultiStepFormOptions.defaultValues,
-			section:
-				"initialDeclaration" as typeof declarationMultiStepFormOptions.defaultValues.section,
-			general: {
-				...declarationMultiStepFormOptions.defaultValues.general,
-				organisation: entity?.name || "",
-			},
-		},
-		onSubmit: async ({ value, formApi }) => {
+		...initialDeclarationFormOptions,
+		onSubmit: async ({ value }) => {
 			scrollTo(0, 0);
 
-			if (value.section === "initialDeclaration") {
-				const url =
-					value.initialDeclaration.declarationUrl ??
-					value.initialDeclaration.araUrl;
+			const { newDeclarationKind, declarationUrl, araUrl, declarationName } =
+				value.initialDeclaration;
 
-				if (url) {
-					const fetcher = value.initialDeclaration.declarationUrl
-						? analyzeDeclarationUrl
-						: getDeclarationInfoFromAra;
-					const { serviceName, serviceType, serviceUrl } = await fetcher(url);
-					formApi.setFieldValue(
-						"general.kind",
-						appKindOptions.find((option) => option.value === serviceType)
-							?.value ?? "other",
-					);
-					formApi.setFieldValue("general.name", serviceName);
-					formApi.setFieldValue("general.url", serviceUrl);
-				}
-
-				formApi.setFieldValue("section", "general");
+			if (newDeclarationKind === "fromScratch") {
+				await createManualDeclaration({
+					name: declarationName ?? "",
+					entityId: entity?.id ?? undefined,
+				});
 				return;
 			}
+
+			const url = declarationUrl ?? araUrl;
+			if (!url) return;
+
+			await (declarationUrl ? fetchInfoFromUrl(url) : fetchInfoFromAra(url));
 
 			if (importedDeclarationDataRef.current) {
 				try {
@@ -261,23 +196,13 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 						...importedDeclarationDataRef.current,
 					});
 				} catch (error) {
-					console.error("Error adding declaration:", error);
+					console.error("Error creating declaration from URL:", error);
 				}
-				return;
 			}
-
-			await addDeclaration(value.general);
 		},
 	});
 
-	const section = useStore(form.store, (state) => state.values.section);
-
-	const onClickCancel = () => {
-		if (section === "general") {
-			scrollTo(0, 0);
-			form.setFieldValue("section", "initialDeclaration");
-		} else back();
-	};
+	const onClickCancel = () => back();
 
 	const isLoading =
 		isAnalyzingUrl || isGettingInfoFromAra || !isMinimumDelayComplete;
@@ -291,11 +216,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 	return (
 		<section className={fr.cx("fr-container")}>
 			<div className={appClasses.formContainer}>
-				<h1>
-					{section === "initialDeclaration"
-						? "Créer une déclaration"
-						: "Informations générales"}
-				</h1>
+				<h1>Créer une déclaration</h1>
 				<form
 					onSubmit={(e) => {
 						e.preventDefault();
@@ -310,10 +231,7 @@ export default function FormPage({ entity }: { entity: Entity | null }) {
 							<p className={cx(classes.description, fr.cx("fr-text--sm"))}>
 								Tous les champs sont obligatoires sauf précision contraire
 							</p>
-							{section === "initialDeclaration" && <ContextForm form={form} />}
-							{section === "general" && (
-								<DeclarationGeneralForm form={form} readOnly={false} />
-							)}
+							<ContextForm form={form} />
 						</div>
 						<form.AppForm>
 							<div className={commonClasses.actionButtonsContainer}>
