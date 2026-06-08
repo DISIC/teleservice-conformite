@@ -53,6 +53,7 @@ export const AuditDateForm = withForm({
 						{(field) => (
 							<field.TextField
 								label={`Date de réalisation de l'audit ${!readOnly ? "(facultatif)" : ""}`}
+								hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
 								nativeInputProps={{
 									type: "date",
 									max: new Date().toISOString().split("T")[0],
@@ -93,10 +94,17 @@ export const AuditDateForm = withForm({
 						<field.NumberField
 							label={
 								readOnly
-									? "Résultats"
-									: "Pourcentage de critères du RGAA respectés"
+									? "Pourcentage de critères du RGAA respectés"
+									: "Taux de conformité"
 							}
-							hintText="Format attendu : le nombre seul, sans le signe pourcentage. Exemple : “83”"
+							hintText={
+								<>
+									Indiquez le pourcentage de critères du RGAA respectés
+									<br />
+									Format attendu : le nombre seul, sans le signe pourcentage.
+									Exemple : “83” ou “83,45”.
+								</>
+							}
 							nativeInputProps={{ min: 0, max: 100 }}
 							readOnlyField={readOnly}
 							required
@@ -336,76 +344,12 @@ export const useStyles = tss.withName(NonCompliantElementsForm.name).create({
 	},
 });
 
-export const FilesForm = withForm({
-	...auditMultiStepFormOptions,
-	props: { readOnly: false },
-	render: function Render({ form, readOnly }) {
-		return (
-			<FieldsLayout readOnly={readOnly}>
-				<form.AppField name="report">
-					{(field) => (
-						<field.TextField
-							label={`Rapport d’audit ${!readOnly ? "(facultatif)" : ""}`}
-							hintText="Format attendu: https://www.example.fr"
-							nativeInputProps={{ type: "url" }}
-							readOnlyField={readOnly}
-						/>
-					)}
-				</form.AppField>
-			</FieldsLayout>
-		);
-	},
-});
-
-export const AuditFlatForm = withForm({
-	...auditMultiStepFormOptions,
-	props: { readOnly: false },
-	render: function Render({ form, readOnly }) {
-		const { classes } = useAuditFormStyles({ readOnly });
-		return (
-			<>
-				<AuditRealisedForm form={form} readOnly={readOnly} />
-				<form.Subscribe selector={(store) => store.values.isAuditRealised}>
-					{(isAuditRealised) =>
-						isAuditRealised && (
-							<div className={classes.wrapperSections}>
-								<div className={classes.section}>
-									<AuditDateForm form={form} readOnly={readOnly} />
-								</div>
-								<div className={classes.section}>
-									<ToolsForm form={form} readOnly={readOnly} />
-								</div>
-								<div className={classes.section}>
-									<CompliantElementsForm form={form} readOnly={readOnly} />
-								</div>
-								<div className={classes.section}>
-									<NonCompliantElementsForm form={form} readOnly={readOnly} />
-								</div>
-								<div className={classes.section}>
-									<FilesForm form={form} readOnly={readOnly} />
-								</div>
-							</div>
-						)
-					}
-				</form.Subscribe>
-			</>
-		);
-	},
-});
-
 export const useAuditFormStyles = tss
-	.withName(AuditFlatForm.name)
+	.withName("AuditForm")
 	.withParams<{ readOnly: boolean }>()
-	.create(({ readOnly }) => ({
+	.create(() => ({
 		wrapperSections: {
 			display: "flex",
 			flexDirection: "column",
-		},
-		section: {
-			marginTop: !readOnly ? fr.spacing("6v") : undefined,
-			paddingTop: !readOnly ? fr.spacing("6v") : undefined,
-			borderTopWidth: "7px",
-			borderTopStyle: "solid",
-			borderTopColor: fr.colors.decisions.border.default.grey.default,
 		},
 	}));

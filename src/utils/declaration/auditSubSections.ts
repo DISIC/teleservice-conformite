@@ -25,17 +25,15 @@ type AuditSubSectionMeta = {
 	title: string;
 	/** Audit form's `section` field — gates which zod sub-schema runs at submit. */
 	validator: AuditFormSection;
-	/** Whether the Sub-section is navigable. Only "audit-realisation" is
-	 *  visible before `isRealised === true` — it's the anchor entry that gates
-	 *  the rest. */
+	/** Whether the Sub-section is navigable. All sub-sections stay visible;
+	 *  the ones that depend on the audit being realised show a notice instead
+	 *  of their form until then. */
 	isVisible: (declaration: PopulatedDeclaration) => boolean;
 	/** "À compléter" — Sub-section's slice of the audit row is missing data. */
 	isToComplete: (declaration: PopulatedDeclaration) => boolean;
 };
 
 const isAuditMissing = (d: PopulatedDeclaration) => !d.audit;
-const isAuditExpanded = (d: PopulatedDeclaration) =>
-	d.audit?.isRealised === true;
 
 export const AUDIT_SUB_SECTIONS: Record<
 	AuditSubSectionSlug,
@@ -50,20 +48,20 @@ export const AUDIT_SUB_SECTIONS: Record<
 	"audit-outils": {
 		title: "Outils et environnements",
 		validator: "tools",
-		isVisible: isAuditExpanded,
+		isVisible: () => true,
 		isToComplete: (d) =>
 			isAuditMissing(d) || (d.audit?.usedTools?.length ?? 0) === 0,
 	},
 	"audit-contenus": {
 		title: "Contenus vérifiés",
 		validator: "compliantElements",
-		isVisible: isAuditExpanded,
+		isVisible: () => true,
 		isToComplete: (d) => isAuditMissing(d) || !d.audit?.compliantElements,
 	},
 	"audit-non-conformites": {
 		title: "Non conformités & dérogations",
 		validator: "nonCompliantElements",
-		isVisible: isAuditExpanded,
+		isVisible: () => true,
 		isToComplete: (d) => isAuditMissing(d) || !d.audit?.nonCompliantElements,
 	},
 };

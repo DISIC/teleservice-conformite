@@ -26,6 +26,13 @@ export type SectionShellProps = {
 	/** Override the "Suivant" label (e.g. "Prévisualiser et publier" on the last section). */
 	nextLabel?: string;
 	nextIcon?: FrIconClassName | RiIconClassName;
+	/**
+	 * Hide the top-right action buttons (Modifier/Annuler/Enregistrer) and keep
+	 * footer navigation enabled — for purely informational sections that have
+	 * nothing to save (e.g. an audit sub-section shown before the audit is
+	 * declared as realised).
+	 */
+	hideActions?: boolean;
 	children: ReactNode;
 };
 
@@ -41,10 +48,11 @@ export function SectionShell({
 	nextHref,
 	nextLabel = "Suivant",
 	nextIcon = "fr-icon-arrow-right-s-line",
+	hideActions = false,
 	children,
 }: SectionShellProps) {
 	const isEditing = !readOnly;
-	const navDisabled = isEditing;
+	const navDisabled = isEditing && !hideActions;
 	const { classes, cx } = useStyles({ readOnly });
 
 	return (
@@ -52,7 +60,7 @@ export function SectionShell({
 			<header className={classes.header}>
 				<h2 className={cx(classes.title, fr.cx("fr-h3"))}>{title}</h2>
 				<div className={classes.headerActions}>
-					{isEditable && readOnly && (
+					{!hideActions && isEditable && readOnly && (
 						<Button
 							priority="secondary"
 							iconId="fr-icon-edit-line"
@@ -62,12 +70,12 @@ export function SectionShell({
 							Modifier
 						</Button>
 					)}
-					{isEditable && isEditing && (
+					{!hideActions && isEditable && isEditing && (
 						<Button priority="tertiary" onClick={onCancelEdit} size="small">
 							Annuler
 						</Button>
 					)}
-					{isEditing && (
+					{!hideActions && isEditing && (
 						<Button
 							priority="primary"
 							iconId="fr-icon-check-line"

@@ -1,6 +1,10 @@
+import { fr } from "@codegouvfr/react-dsfr";
+import { Notice } from "@codegouvfr/react-dsfr/Notice";
+import Error from "@codegouvfr/react-dsfr/picto/Error";
 import { useStore } from "@tanstack/react-form";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
+import { type ReactNode, useMemo } from "react";
+import { tss } from "tss-react";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
@@ -18,15 +22,57 @@ import {
 	AuditDateForm,
 	AuditRealisedForm,
 	CompliantElementsForm,
-	FilesForm,
 	NonCompliantElementsForm,
 	ToolsForm,
 } from "~/forms/audit/auditForm";
 import {
+	auditDate,
 	auditMultiStepFormOptions,
+	auditRealised,
+	compliantElements,
+	disproportionnedCharge,
+	nonCompliantElements,
+	optionalElements,
+	tools,
 	type ZAuditFormSchema,
 } from "~/forms/audit/auditSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
+
+/**
+ * The form instance carries every audit field, but each sub-section only edits
+ * its own slice. This maps a sub-section to the fields it owns (derived from the
+ * per-section zod sub-schemas, so it stays in sync) so a submit sends only those
+ * — leaving the other sub-sections' fields absent rather than as empty
+ * placeholders the server's partial schema would reject.
+ */
+const SUB_SECTION_FIELDS: Record<
+	AuditSubSectionSlug,
+	readonly (keyof ZAuditFormSchema)[]
+> = {
+	"audit-realisation": [
+		...Object.keys(auditRealised.shape),
+		...Object.keys(auditDate.shape),
+	] as (keyof ZAuditFormSchema)[],
+	"audit-outils": Object.keys(tools.shape) as (keyof ZAuditFormSchema)[],
+	"audit-contenus": Object.keys(
+		compliantElements.shape,
+	) as (keyof ZAuditFormSchema)[],
+	"audit-non-conformites": [
+		...Object.keys(nonCompliantElements.shape),
+		...Object.keys(optionalElements.shape),
+		...Object.keys(disproportionnedCharge.shape),
+	] as (keyof ZAuditFormSchema)[],
+};
+
+function pickSubSectionFields(
+	value: ZAuditFormSchema,
+	subSection: AuditSubSectionSlug,
+): Partial<ZAuditFormSchema> {
+	const fields = new Set<string>(SUB_SECTION_FIELDS[subSection]);
+	return Object.fromEntries(
+		Object.entries(value).filter(([key]) => fields.has(key)),
+	) as Partial<ZAuditFormSchema>;
+}
 
 type AuditSectionProps = {
 	declaration: PopulatedDeclaration;
@@ -46,6 +92,7 @@ export function AuditSection({
 	nextHref,
 }: AuditSectionProps) {
 	const router = useRouter();
+	const { classes } = useStyles();
 	const audit = declaration.audit;
 	const hasAudit = !!audit;
 	const subSectionToComplete = isSectionToComplete(
@@ -53,6 +100,13 @@ export function AuditSection({
 		currentSubSection,
 	);
 	const isEditable = hasAudit && !subSectionToComplete;
+
+	// The sub-sections below audit-realisation can only be completed once the
+	// audit has been declared as realised. Until then they stay visible in the
+	// SideMenu but show a notice instead of their form — with no action buttons.
+	const auditRealised = audit?.isRealised === true;
+	const showNotice =
+		currentSubSection !== "audit-realisation" && !auditRealised;
 
 	const { mutateAsync: createAudit, isPending: isCreating } =
 		api.audit.create.useMutation({
@@ -84,6 +138,7 @@ export function AuditSection({
 		isSaving: isPending,
 		prevHref,
 		nextHref,
+		hideActions: showNotice,
 	});
 
 	const defaultValues: ZAuditFormSchema = useMemo(
@@ -119,18 +174,20 @@ export function AuditSection({
 		...auditMultiStepFormOptions,
 		defaultValues,
 		onSubmit: async ({ value }) => {
+			// Only submit the fields the current sub-section owns; the rest stay at
+			// their untouched defaults and must not reach the server's partial schema.
+			const payload = pickSubSectionFields(value, currentSubSection);
 			if (!hasAudit) {
-				// First-time creation can only happen from audit-realisation
-				// (the other sub-sections are hidden in the SideMenu until audit exists).
+				// First-time creation only happens from audit-realisation. When the
+				// audit was not realised, none of the auditDate fields apply.
 				if (value.isAuditRealised === false) {
 					await createAudit({
 						declarationId: declaration.id,
 						isAuditRealised: false,
 					});
 				} else {
-					await createAudit({ ...value, declarationId: declaration.id });
+					await createAudit({ ...payload, declarationId: declaration.id });
 				}
-				// onSuccess reloads the page, so no exitEdit() — the next render starts fresh.
 				return;
 			}
 
@@ -138,7 +195,7 @@ export function AuditSection({
 				audit: {
 					id: audit.id,
 					declarationId: declaration.id,
-					...value,
+					...payload,
 				},
 			});
 			exitEdit();
@@ -150,28 +207,79 @@ export function AuditSection({
 		(state) => state.values.isAuditRealised,
 	);
 
+	const notRealisedNotice = (
+		<Notice
+			iconDisplayed={false}
+			title={
+				<span className={classes.noticeTitle}>
+					<Error className={classes.noticePictogram} />
+					<span className={classes.noticeContent}>
+						<span className={classes.noticeHeading}>
+							Aucun audit n’a été réalisé.
+						</span>
+						<span>
+							En l’absence d’audit de conformité, cette rubrique n’est pas
+							applicable. S’il n’existe aucun résultat d’audit en cours de
+							validité permettant de mesurer le respect des critères, le service
+							est réputé non conforme.
+						</span>
+						<a
+							href="https://www.numerique.gouv.fr/publications/rgaa-accessibilite/conformite/#audit"
+							target="_blank"
+							rel="noopener noreferrer"
+							title="Lien vers le texte de loi, nouvelle fenêtre"
+							style={{ width: "fit-content" }}
+						>
+							Lien vers le texte de loi ↗️
+						</a>
+					</span>
+				</span>
+			}
+		/>
+	);
+
+	const subSectionForm: Record<AuditSubSectionSlug, ReactNode> = {
+		"audit-realisation": (
+			<>
+				<AuditRealisedForm form={form} readOnly={readOnly} />
+				{isAuditRealisedValue === true && (
+					<AuditDateForm form={form} readOnly={readOnly} />
+				)}
+			</>
+		),
+		"audit-outils": <ToolsForm form={form} readOnly={readOnly} />,
+		"audit-contenus": <CompliantElementsForm form={form} readOnly={readOnly} />,
+		"audit-non-conformites": (
+			<NonCompliantElementsForm form={form} readOnly={readOnly} />
+		),
+	};
+
 	return (
 		<Frame form={form}>
-			{currentSubSection === "audit-realisation" && (
-				<>
-					<AuditRealisedForm form={form} readOnly={readOnly} />
-					{isAuditRealisedValue === true && (
-						<>
-							<AuditDateForm form={form} readOnly={readOnly} />
-							<FilesForm form={form} readOnly={readOnly} />
-						</>
-					)}
-				</>
-			)}
-			{currentSubSection === "audit-outils" && (
-				<ToolsForm form={form} readOnly={readOnly} />
-			)}
-			{currentSubSection === "audit-contenus" && (
-				<CompliantElementsForm form={form} readOnly={readOnly} />
-			)}
-			{currentSubSection === "audit-non-conformites" && (
-				<NonCompliantElementsForm form={form} readOnly={readOnly} />
-			)}
+			{showNotice ? notRealisedNotice : subSectionForm[currentSubSection]}
 		</Frame>
 	);
 }
+
+const useStyles = tss.withName(AuditSection.name).create({
+	noticeTitle: {
+		display: "flex",
+		alignItems: "center",
+		gap: fr.spacing("4v"),
+		color: fr.colors.decisions.text.default.grey.default,
+	},
+	noticePictogram: {
+		flexShrink: 0,
+		width: "3.5rem",
+		height: "3.5rem",
+	},
+	noticeContent: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("2v"),
+		fontWeight: "normal",
+	},
+	noticeHeading: {
+		fontWeight: 700,
+	},
+});

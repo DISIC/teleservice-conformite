@@ -66,15 +66,9 @@ export const auditRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const {
-				id,
-				declarationId,
-				technologies = [],
-				date,
-				...rest
-			} = input.audit;
-
-			const normalizedDate = date && date !== "" ? date : undefined;
+			const { id, declarationId, technologies, date, usedTools, ...rest } =
+				input.audit;
+			const { testEnvironments, ...scalarFields } = rest;
 
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
@@ -82,24 +76,40 @@ export const auditRouter = createTRPCRouter({
 				userId: Number(ctx.session.user.id),
 			});
 
-			const hasMinimumFields =
-				Boolean(rest.rgaa_version) &&
-				Boolean(rest.realisedBy?.trim()) &&
-				typeof rest.rate === "number" &&
-				rest.rate > 0 &&
-				Boolean(rest.compliantElements?.trim());
+			// Each save carries only the sub-section being edited, so only touch
+			// `isRealised` when the "Réalisation de l'audit" fields are present —
+			// other sub-sections must leave it untouched. `compliantElements` lives
+			// in its own sub-section and no longer gates the realised state.
+			const touchesRealisation =
+				scalarFields.rgaa_version !== undefined ||
+				scalarFields.realisedBy !== undefined ||
+				scalarFields.rate !== undefined;
+
+			const isRealised =
+				Boolean(scalarFields.rgaa_version) &&
+				Boolean(scalarFields.realisedBy?.trim()) &&
+				typeof scalarFields.rate === "number" &&
+				scalarFields.rate > 0;
 
 			const updatedAudit = await ctx.payload.update({
 				collection: "audits",
 				id,
 				data: {
-					...rest,
-					date: normalizedDate,
-					usedTools: rest.usedTools?.map((tech) => ({ name: tech })) ?? [],
-					testEnvironments:
-						rest?.testEnvironments?.map((tech) => ({ name: tech })) ?? [],
-					technologies: technologies?.map((tech) => ({ name: tech })) ?? [],
-					isRealised: hasMinimumFields,
+					...scalarFields,
+					// Only overwrite fields the submitted sub-section actually owns.
+					...(date !== undefined && {
+						date: date && date !== "" ? date : null,
+					}),
+					...(usedTools !== undefined && {
+						usedTools: usedTools.map((tech) => ({ name: tech })),
+					}),
+					...(testEnvironments !== undefined && {
+						testEnvironments: testEnvironments.map((tech) => ({ name: tech })),
+					}),
+					...(technologies !== undefined && {
+						technologies: technologies.map((tech) => ({ name: tech })),
+					}),
+					...(touchesRealisation && { isRealised }),
 					toVerify: false,
 				},
 			});

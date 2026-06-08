@@ -15,6 +15,8 @@ type UseSectionFormArgs = {
 	isSaving: boolean;
 	prevHref: string | null;
 	nextHref: string | null;
+	/** Hide the top-right action buttons for informational, nothing-to-save sections. */
+	hideActions?: boolean;
 };
 
 /**
@@ -50,6 +52,7 @@ export function useSectionForm({
 	isSaving,
 	prevHref,
 	nextHref,
+	hideActions,
 }: UseSectionFormArgs) {
 	const { classes: commonClasses } = useCommonStyles();
 	const [readOnly, setReadOnly] = useState(initialReadOnly ?? isEditable);
@@ -78,6 +81,7 @@ export function useSectionForm({
 					isSaving={isSaving}
 					prevHref={prevHref}
 					nextHref={nextHref}
+					hideActions={hideActions}
 				>
 					{before}
 					<form
@@ -100,6 +104,7 @@ export function useSectionForm({
 			isSaving,
 			prevHref,
 			nextHref,
+			hideActions,
 			commonClasses.whiteBackground,
 		],
 	);

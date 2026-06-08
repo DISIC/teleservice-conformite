@@ -30,7 +30,7 @@
 		"@payloadcms/richtext-lexical": "^3.61.1",
 		"@react-email/components": "^1.0.8",
 		"@react-email/render": "^2.0.4",
-		"@tanstack/react-form": "^1.25.0",
+		"@tanstack/react-form": "^1.33.0",
 		"@tanstack/react-query": "^5.69.0",
 		"@tanstack/react-table": "^8.21.3",
 		"@trpc/client": "^11.0.0",
