@@ -32,7 +32,7 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 
 	return (
 		<div className={classes.fieldContainer}>
-			<p className={classes.label}>{label} :</p>
+			<p className={classes.label}>{label}</p>
 			{valueIsArray ? (
 				<ul>
 					{value.map((item, index) => (
@@ -57,18 +57,18 @@ const useStyles = tss
 		textArea: boolean;
 		addSectionBorder: boolean;
 	}>()
-	.create(({ valueIsArray, textArea, addSectionBorder }) => ({
+	.create(({ addSectionBorder }) => ({
 		fieldContainer: {
 			gap: fr.spacing("1v"),
-			paddingBlock: fr.spacing("3w"),
-			borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+			// paddingBlock: fr.spacing("3w"),
+			// borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
 			"& p": {
 				margin: 0,
 			},
 			...(addSectionBorder && {
 				borderTop: `10px solid ${fr.colors.decisions.border.default.grey.default}`,
 			}),
-			flexDirection: valueIsArray || textArea ? "column" : undefined,
+			flexDirection: "column",
 			display: "flex",
 			flexWrap: "wrap",
 			"@media (max-width: 1024px)": {

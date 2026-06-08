@@ -6,6 +6,7 @@ import System from "@codegouvfr/react-dsfr/picto/System";
 import { useState } from "react";
 import { tss } from "tss-react";
 
+import { FieldsLayout } from "~/components/form/FieldsLayout";
 import HelpingMessage from "~/components/ui/HelpingMessage";
 import {
 	appKindOptions,
@@ -26,13 +27,20 @@ export const DeclarationGeneralForm = withForm({
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
-			<div>
-				<form.AppField name="general.organisation">
+			<FieldsLayout readOnly={readOnly} title="Service numérique concerné">
+				<form.AppField name="general.name">
 					{(field) => (
 						<field.TextField
-							label="Organisation"
+							label="Nom du service numérique concerné"
 							readOnlyField={readOnly}
-							nativeInputProps={{ readOnly: true }}
+							hintText={
+								<>
+									Nous vous conseillons d’utiliser le nom du service numérique.
+									<br />
+									Exemples : Demande de logement social, Service public.fr,
+									Outil de gestion des congés
+								</>
+							}
 							required
 						/>
 					)}
@@ -57,67 +65,54 @@ export const DeclarationGeneralForm = withForm({
 					)}
 				</form.AppField>
 				<form.Subscribe selector={(store) => store.values.general?.kind}>
-					{(kind) =>
-						kind === "mobile_app" ? (
-							<form.AppField name="general.mobilePlatform">
-								{(field) => (
-									<field.SelectField
-										label="Plateforme mobile"
-										placeholder="Sélectionnez une plateforme"
-										readOnlyField={readOnly}
-										options={[...mobilePlatformOptions]}
-										required
-									/>
-								)}
-							</form.AppField>
-						) : null
-					}
-				</form.Subscribe>
-				<form.AppField name="general.name">
-					{(field) => (
-						<field.TextField
-							label="Nom de la déclaration"
-							readOnlyField={readOnly}
-							hintText={
-								<>
-									Nous vous conseillons d’utiliser le nom du service numérique.
-									<br />
-									Exemples : Demande de logement social, Service public.fr,
-									Outil de gestion des congés
-								</>
-							}
-							required
-						/>
-					)}
-				</form.AppField>
-				<form.Subscribe selector={(store) => store.values.general?.kind}>
-					{(kind) =>
-						kind === "website" ? (
-							<form.AppField name="general.url">
-								{(field) => (
-									<field.TextField
-										label="URL du service (facultatif)"
-										nativeInputProps={{ type: "url " }}
-										hintText={
-											<>
-												Pour un site web public, renseignez l’adresse accessible
-												par les usagers.
-												<br />
-												Format attendu : https://www.monservice.gouv.fr
-											</>
-										}
-										readOnlyField={readOnly}
-									/>
-								)}
-							</form.AppField>
-						) : null
-					}
+					{(kind) => {
+						switch (kind) {
+							case "mobile_app":
+								return (
+									<form.AppField name="general.mobilePlatform">
+										{(field) => (
+											<field.SelectField
+												label="Plateforme mobile"
+												placeholder="Sélectionnez une plateforme"
+												readOnlyField={readOnly}
+												options={[...mobilePlatformOptions]}
+												required
+											/>
+										)}
+									</form.AppField>
+								);
+							case "website":
+								return (
+									<form.AppField name="general.url">
+										{(field) => (
+											<field.TextField
+												label="URL de la page d’accueil du site audité"
+												nativeInputProps={{ type: "url " }}
+												hintText={
+													<>
+														Pour un site web public, renseignez l’adresse
+														accessible par les usagers.
+														<br />
+														Format attendu : https://www.monservice.gouv.fr
+													</>
+												}
+												readOnlyField={readOnly}
+												required
+											/>
+										)}
+									</form.AppField>
+								);
+							default:
+								return null;
+						}
+					}}
 				</form.Subscribe>
 				<form.AppField name="general.domain">
 					{(field) => (
 						<field.SelectField
-							label="Secteur d’activité de l’organisation"
+							label="Secteur d’activité du service concerné"
 							placeholder="Sélectionnez un secteur"
+							hint="Cette donnée sera utilisée à des fins de statistiques."
 							infoStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
 							readOnlyField={readOnly}
 							options={[...kindOptions]}
@@ -125,7 +120,7 @@ export const DeclarationGeneralForm = withForm({
 						/>
 					)}
 				</form.AppField>
-			</div>
+			</FieldsLayout>
 		);
 	},
 });

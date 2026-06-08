@@ -12,4 +12,13 @@ export const useCommonStyles = tss.create({
 		display: "flex",
 		justifyContent: "space-between",
 	},
+	shellFormWrapper: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6v"),
+	},
+	classicGrid: {
+		display: "grid",
+		gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+	},
 });

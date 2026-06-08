@@ -1,3 +1,4 @@
+import { FieldsLayout } from "~/components/form/FieldsLayout";
 import { withForm } from "../context";
 import { contactFormOptions } from "./contactSchema";
 
@@ -6,7 +7,7 @@ export const ContactTypeForm = withForm({
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
-			<>
+			<FieldsLayout readOnly={readOnly}>
 				<form.AppField name="name">
 					{(field) => (
 						<field.TextField
@@ -37,7 +38,7 @@ export const ContactTypeForm = withForm({
 						/>
 					)}
 				</form.AppField>
-			</>
+			</FieldsLayout>
 		);
 	},
 });

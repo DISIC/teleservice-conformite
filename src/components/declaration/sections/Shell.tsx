@@ -45,24 +45,25 @@ export function SectionShell({
 }: SectionShellProps) {
 	const isEditing = !readOnly;
 	const navDisabled = isEditing;
-	const { classes } = useStyles({ readOnly });
+	const { classes, cx } = useStyles({ readOnly });
 
 	return (
 		<section className={classes.root}>
 			<header className={classes.header}>
-				<h2 className={classes.title}>{title}</h2>
+				<h2 className={cx(classes.title, fr.cx("fr-h3"))}>{title}</h2>
 				<div className={classes.headerActions}>
 					{isEditable && readOnly && (
 						<Button
 							priority="secondary"
 							iconId="fr-icon-edit-line"
 							onClick={onEnterEdit}
+							size="small"
 						>
 							Modifier
 						</Button>
 					)}
 					{isEditable && isEditing && (
-						<Button priority="tertiary" onClick={onCancelEdit}>
+						<Button priority="tertiary" onClick={onCancelEdit} size="small">
 							Annuler
 						</Button>
 					)}
@@ -72,15 +73,14 @@ export function SectionShell({
 							iconId="fr-icon-check-line"
 							onClick={onSave}
 							disabled={isSaving}
+							size="small"
 						>
 							Enregistrer
 						</Button>
 					)}
 				</div>
 			</header>
-
 			<div className={classes.body}>{children}</div>
-
 			<footer className={classes.footer}>
 				<div className={classes.footerSide}>
 					{prevHref &&
@@ -169,8 +169,7 @@ const useStyles = tss
 			border: readOnly
 				? `1px solid ${fr.colors.decisions.border.default.grey.default}`
 				: "none",
-			paddingBlock: readOnly ? fr.spacing("4v") : 0,
-			paddingInline: readOnly ? fr.spacing("8v") : 0,
+			padding: readOnly ? fr.spacing("6v") : 0,
 		},
 		footer: {
 			display: "flex",
