@@ -56,6 +56,7 @@ export const contactRouter = createTRPCRouter({
 
 			return { data: upsertedContact };
 		}),
+
 	linkExisting: userProtectedProcedure
 		.input(
 			z.object({

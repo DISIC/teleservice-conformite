@@ -33,14 +33,14 @@ Each Section corresponds to its own Payload collection (`audits`, `schemas`, `co
 
 One of the four children of the **Audit** Section, surfaced as nested items in the `SideMenu`:
 
-- **Réalisation de l'audit** (slug `audit-realisation`) — `isAuditRealised`, date, RGAA version, realisedBy, rate, audit report file
+- **Réalisation de l'audit** (slug `audit-general`) — `isAuditRealised`, date, RGAA version, realisedBy, rate
 - **Outils et environnements** (slug `audit-outils`) — usedTools + testEnvironments
 - **Contenus vérifiés** (slug `audit-contenus`) — compliantElements
 - **Non conformités & dérogations** (slug `audit-non-conformites`) — nonCompliantElements, disproportionnedCharge, optionalElements
 
 All four Sub-sections persist into the single `audits` row for the Declaration. The slice-to-database mapping is a UI grouping, not a data split.
 
-When `audit.isRealised === false`, only "Réalisation" is meaningful; the other three Sub-sections are hidden from the SideMenu and from Suivant/Retour navigation.
+When `audit.isRealised === false`, only "Réalisation de l'audit" is meaningful; the other three Sub-sections stay visible in the `SideMenu` but display a notice instead of their form (no editable fields or actions) until the audit is marked realised.
 
 **See also:** [[section]], [[audit-realise]].
 
