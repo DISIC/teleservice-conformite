@@ -154,8 +154,16 @@ export const declarationRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const { organisation, kind, url, domain, name, entityId, status } =
-				input.general;
+			const {
+				organisation,
+				kind,
+				mobilePlatform,
+				url,
+				domain,
+				name,
+				entityId,
+				status,
+			} = input.general;
 
 			const declarationName =
 				name ??
@@ -177,6 +185,7 @@ export const declarationRouter = createTRPCRouter({
 				data: {
 					name: declarationName,
 					app_kind: kind,
+					mobile_platform: kind === "mobile_app" ? mobilePlatform : null,
 					url,
 					entity: newEntityId,
 					created_by: Number(ctx.session.user.id),
@@ -227,8 +236,16 @@ export const declarationRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const { organisation, kind, url, domain, name, declarationId, entityId } =
-				input.general;
+			const {
+				organisation,
+				kind,
+				mobilePlatform,
+				url,
+				domain,
+				name,
+				declarationId,
+				entityId,
+			} = input.general;
 
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
@@ -259,6 +276,7 @@ export const declarationRouter = createTRPCRouter({
 				data: {
 					name,
 					app_kind: kind,
+					mobile_platform: kind === "mobile_app" ? mobilePlatform : null,
 					url,
 					...(newStatus ? { status: newStatus } : {}),
 				},

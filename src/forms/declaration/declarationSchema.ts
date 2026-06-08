@@ -1,6 +1,6 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
-import { appKindOptions } from "~/payload/selectOptions";
+import { appKindOptions, mobilePlatformOptions } from "~/payload/selectOptions";
 
 export const declarationGeneral = z.object({
 	general: z.object({
@@ -9,6 +9,9 @@ export const declarationGeneral = z.object({
 			.meta({ kind: "select" })
 			.min(1, { message: "Le nom de l'organisation est requis" }),
 		kind: z.enum(appKindOptions.map((option) => option.value)),
+		mobilePlatform: z
+			.enum(mobilePlatformOptions.map((option) => option.value))
+			.optional(),
 		name: z.string().min(1, { message: "Le nom de l'application est requis" }),
 		url: z
 			.url("Lien invalide (ex: https://www.example.fr)")
@@ -23,10 +26,25 @@ export const declarationGeneral = z.object({
 
 export type ZDeclarationGeneral = z.infer<typeof declarationGeneral>;
 
+// Refined variant used for form validation only. We keep `declarationGeneral`
+// as a plain ZodObject so the router can still rely on `.shape`/`.extend`/`.omit`.
+export const declarationGeneralRefined = declarationGeneral.superRefine(
+	(data, ctx) => {
+		if (data.general.kind === "mobile_app" && !data.general.mobilePlatform) {
+			ctx.addIssue({
+				code: "custom",
+				message: "La plateforme mobile est requise",
+				path: ["general", "mobilePlatform"],
+			});
+		}
+	},
+);
+
 export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 	general: {
 		organisation: "",
 		kind: "website",
+		mobilePlatform: undefined,
 		name: "",
 		url: undefined,
 		domain: "",
@@ -104,7 +122,7 @@ export const declarationMultiStepFormOptions = formOptions({
 		onSubmit: ({ value, formApi }) => {
 			if (value.section === "general") {
 				return formApi.parseValuesWithSchema(
-					declarationGeneral as typeof declarationMultiStepFormSchema,
+					declarationGeneralRefined as unknown as typeof declarationMultiStepFormSchema,
 				);
 			}
 

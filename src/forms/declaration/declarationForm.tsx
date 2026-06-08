@@ -7,7 +7,11 @@ import { useState } from "react";
 import { tss } from "tss-react";
 
 import HelpingMessage from "~/components/ui/HelpingMessage";
-import { appKindOptions, kindOptions } from "~/payload/selectOptions";
+import {
+	appKindOptions,
+	kindOptions,
+	mobilePlatformOptions,
+} from "~/payload/selectOptions";
 import { withForm } from "../context";
 import {
 	declarationMultiStepFormOptions,
@@ -44,11 +48,31 @@ export const DeclarationGeneralForm = withForm({
 									illustration: <Pictogram fontSize="3rem" />,
 								}),
 							)}
-							onOptionChange={() => form.setFieldValue("general.url", "")}
+							onOptionChange={() => {
+								form.setFieldValue("general.url", "");
+								form.setFieldValue("general.mobilePlatform", undefined);
+							}}
 							required
 						/>
 					)}
 				</form.AppField>
+				<form.Subscribe selector={(store) => store.values.general?.kind}>
+					{(kind) =>
+						kind === "mobile_app" ? (
+							<form.AppField name="general.mobilePlatform">
+								{(field) => (
+									<field.SelectField
+										label="Plateforme mobile"
+										placeholder="Sélectionnez une plateforme"
+										readOnlyField={readOnly}
+										options={[...mobilePlatformOptions]}
+										required
+									/>
+								)}
+							</form.AppField>
+						) : null
+					}
+				</form.Subscribe>
 				<form.AppField name="general.name">
 					{(field) => (
 						<field.TextField

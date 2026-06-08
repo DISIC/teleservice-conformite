@@ -3,6 +3,7 @@ import type { CollectionConfig } from "payload";
 import {
 	appKindOptions,
 	declarationStatusOptions,
+	mobilePlatformOptions,
 	sourceOptions,
 } from "../selectOptions";
 
@@ -120,8 +121,17 @@ export const Declarations: CollectionConfig = {
 			name: "app_kind",
 			type: "select",
 			label: { fr: "Type de produit numérique" },
-			options: [...appKindOptions],
+			options: appKindOptions.map(({ label, value }) => ({ label, value })),
 			required: true,
+		},
+		{
+			name: "mobile_platform",
+			type: "select",
+			label: { fr: "Plateforme mobile" },
+			options: [...mobilePlatformOptions],
+			admin: {
+				condition: (data) => data?.app_kind === "mobile_app",
+			},
 		},
 		{
 			name: "url",

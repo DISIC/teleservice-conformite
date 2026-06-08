@@ -48,13 +48,8 @@ export const appKindOptions = [
 		pictogram: Search,
 	},
 	{
-		label: "Application mobile iOs",
-		value: "mobile_app_ios",
-		pictogram: Application,
-	},
-	{
-		label: "Application mobile Android",
-		value: "mobile_app_android",
+		label: "Application mobile",
+		value: "mobile_app",
 		pictogram: Application,
 	},
 	{
@@ -62,6 +57,11 @@ export const appKindOptions = [
 		value: "other",
 		pictogram: Compass,
 	},
+] as const;
+
+export const mobilePlatformOptions = [
+	{ label: "iOS", value: "ios" },
+	{ label: "Android", value: "android" },
 ] as const;
 
 export const declarationStatusOptions = [

@@ -54,6 +54,7 @@ export function InfosSection({
 			general: {
 				organisation: declaration.entity?.name ?? "",
 				kind: declaration.app_kind,
+				mobilePlatform: declaration.mobile_platform ?? undefined,
 				name: declaration.name ?? "",
 				url: declaration.url ?? "",
 				domain: declaration.entity?.kind ?? "",
