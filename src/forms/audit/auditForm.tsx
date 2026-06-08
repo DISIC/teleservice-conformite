@@ -11,10 +11,15 @@ import {
 	toolOptions,
 } from "~/payload/selectOptions";
 import { withForm } from "../context";
-import { auditMultiStepFormOptions } from "./auditSchema";
+import {
+	auditGeneralFormOptions,
+	auditContentsFormOptions,
+	auditNonConformitiesFormOptions,
+	auditToolsFormOptions,
+} from "./auditSchema";
 
-export const AuditRealisedForm = withForm({
-	...auditMultiStepFormOptions,
+export const AuditGeneralForm = withForm({
+	...auditGeneralFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
@@ -37,87 +42,84 @@ export const AuditRealisedForm = withForm({
 						/>
 					)}
 				</form.AppField>
-			</FieldsLayout>
-		);
-	},
-});
-
-export const AuditDateForm = withForm({
-	...auditMultiStepFormOptions,
-	props: { readOnly: false },
-	render: function Render({ form, readOnly }) {
-		return (
-			<FieldsLayout readOnly={readOnly}>
-				{!readOnly && (
-					<form.AppField name="date">
-						{(field) => (
-							<field.TextField
-								label={`Date de réalisation de l'audit ${!readOnly ? "(facultatif)" : ""}`}
-								hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
-								nativeInputProps={{
-									type: "date",
-									max: new Date().toISOString().split("T")[0],
-								}}
-							/>
-						)}
-					</form.AppField>
-				)}
-				<form.AppField name="realisedBy">
-					{(field) => (
-						<field.TextField
-							label="Entité ou personne ayant réalisé l’audit"
-							hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
-							readOnlyField={readOnly}
-							required
-						/>
-					)}
-				</form.AppField>
-				<form.AppField name="rgaa_version">
-					{(field) => (
-						<field.RadioField
-							legend={
-								readOnly
-									? "Référentiel RGAA utilisé"
-									: "Version du référentiel RGAA utilisée"
-							}
-							options={rgaaVersionOptions.map((option) => ({
-								label: option.label,
-								value: option.value,
-							}))}
-							readOnlyField={readOnly}
-							required
-						/>
-					)}
-				</form.AppField>
-				<form.AppField name="rate">
-					{(field) => (
-						<field.NumberField
-							label={
-								readOnly
-									? "Pourcentage de critères du RGAA respectés"
-									: "Taux de conformité"
-							}
-							hintText={
-								<>
-									Indiquez le pourcentage de critères du RGAA respectés
-									<br />
-									Format attendu : le nombre seul, sans le signe pourcentage.
-									Exemple : “83” ou “83,45”.
-								</>
-							}
-							nativeInputProps={{ min: 0, max: 100 }}
-							readOnlyField={readOnly}
-							required
-						/>
-					)}
-				</form.AppField>
+				<form.Subscribe selector={(state) => state.values.isAuditRealised}>
+					{(isAuditRealised) =>
+						isAuditRealised === true && (
+							<>
+								{!readOnly && (
+									<form.AppField name="date">
+										{(field) => (
+											<field.TextField
+												label="Date de réalisation de l'audit (facultatif)"
+												hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
+												nativeInputProps={{
+													type: "date",
+													max: new Date().toISOString().split("T")[0],
+												}}
+											/>
+										)}
+									</form.AppField>
+								)}
+								<form.AppField name="realisedBy">
+									{(field) => (
+										<field.TextField
+											label="Entité ou personne ayant réalisé l’audit"
+											hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
+											readOnlyField={readOnly}
+											required
+										/>
+									)}
+								</form.AppField>
+								<form.AppField name="rgaa_version">
+									{(field) => (
+										<field.RadioField
+											legend={
+												readOnly
+													? "Référentiel RGAA utilisé"
+													: "Version du référentiel RGAA utilisée"
+											}
+											options={rgaaVersionOptions.map((option) => ({
+												label: option.label,
+												value: option.value,
+											}))}
+											readOnlyField={readOnly}
+											required
+										/>
+									)}
+								</form.AppField>
+								<form.AppField name="rate">
+									{(field) => (
+										<field.NumberField
+											label={
+												readOnly
+													? "Pourcentage de critères du RGAA respectés"
+													: "Taux de conformité"
+											}
+											hintText={
+												<>
+													Indiquez le pourcentage de critères du RGAA respectés
+													<br />
+													Format attendu : le nombre seul, sans le signe
+													pourcentage. Exemple : “83” ou “83,45”.
+												</>
+											}
+											nativeInputProps={{ min: 0, max: 100 }}
+											readOnlyField={readOnly}
+											required
+										/>
+									)}
+								</form.AppField>
+							</>
+						)
+					}
+				</form.Subscribe>
 			</FieldsLayout>
 		);
 	},
 });
 
 export const ToolsForm = withForm({
-	...auditMultiStepFormOptions,
+	...auditToolsFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		const { classes } = useAuditFormStyles({ readOnly });
@@ -184,7 +186,7 @@ export const ToolsForm = withForm({
 });
 
 export const CompliantElementsForm = withForm({
-	...auditMultiStepFormOptions,
+	...auditContentsFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
@@ -226,7 +228,7 @@ const disproportionnedChargeModal = createModal({
 });
 
 export const NonCompliantElementsForm = withForm({
-	...auditMultiStepFormOptions,
+	...auditNonConformitiesFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		const { classes } = useStyles();

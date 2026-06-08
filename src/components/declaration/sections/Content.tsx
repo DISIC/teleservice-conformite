@@ -6,7 +6,12 @@ import {
 	type SectionSlug,
 	sectionHref,
 } from "~/utils/declaration/sections";
-import { AuditSection } from "./items/Audit";
+import {
+	AuditContenusSection,
+	AuditGeneralSection,
+	AuditNonConformitesSection,
+	AuditOutilsSection,
+} from "./items/Audit";
 import { ContactSection } from "./items/Contact";
 import { InfosSection } from "./items/Infos";
 import { SchemaSection } from "./items/Schema";
@@ -25,24 +30,16 @@ type SectionRenderProps = {
 type SectionRenderer = (props: SectionRenderProps) => ReactNode;
 
 /**
- * Maps each SectionSlug to its rendered component. Audit sub-sections all
- * point at `AuditSection`, each binding its sub-section slug at definition
- * time so the dispatch stays a pure lookup.
+ * Maps each SectionSlug to its rendered component. Each audit Sub-section is
+ * its own self-contained form component (ADR-0002), so the dispatch stays a
+ * pure lookup.
  */
 const SECTION_RENDERERS: Record<SectionSlug, SectionRenderer> = {
 	infos: (props) => <InfosSection {...props} />,
-	"audit-realisation": (props) => (
-		<AuditSection {...props} currentSubSection="audit-realisation" />
-	),
-	"audit-outils": (props) => (
-		<AuditSection {...props} currentSubSection="audit-outils" />
-	),
-	"audit-contenus": (props) => (
-		<AuditSection {...props} currentSubSection="audit-contenus" />
-	),
-	"audit-non-conformites": (props) => (
-		<AuditSection {...props} currentSubSection="audit-non-conformites" />
-	),
+	"audit-general": (props) => <AuditGeneralSection {...props} />,
+	"audit-outils": (props) => <AuditOutilsSection {...props} />,
+	"audit-contenus": (props) => <AuditContenusSection {...props} />,
+	"audit-non-conformites": (props) => <AuditNonConformitesSection {...props} />,
 	schema: (props) => <SchemaSection {...props} />,
 	contact: (props) => <ContactSection {...props} />,
 };

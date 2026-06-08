@@ -4,7 +4,12 @@ import {
 	toolOptions,
 } from "~/payload/selectOptions";
 import type { RouterOutputs } from "~/lib/api";
-import type { ZAuditFormSchema } from "~/forms/audit/auditSchema";
+import type {
+	ZAuditContents,
+	ZAuditGeneral,
+	ZAuditNonConformities,
+	ZAuditTools,
+} from "~/forms/audit/auditSchema";
 
 export const getConformityStatus = (
 	rate: number,
@@ -48,9 +53,15 @@ export const extractTechnologiesFromUrl = (
 	];
 };
 
+/**
+ * Maps ARA-imported audit data into the audit form values. Spans all four
+ * audit Sub-section forms (ADR-0002), so the return type is the intersection
+ * of their value types. Currently unused — the ARA import path was unwired for
+ * the redesign and needs re-connecting.
+ */
 export const mapAraDataToFormValues = (
 	data: RouterOutputs["declaration"]["getInfoFromAra"]["data"],
-): Partial<ZAuditFormSchema> => {
+): ZAuditGeneral & ZAuditTools & ZAuditContents & ZAuditNonConformities => {
 	const rateRaw = parseFloat(data.taux?.replace("%", "") ?? "0");
 	return {
 		isAuditRealised: true,
@@ -71,7 +82,6 @@ export const mapAraDataToFormValues = (
 		nonCompliantElements: data.nonCompliantElements ?? "",
 		disproportionnedCharge: data.disproportionnedCharge ?? "",
 		optionalElements: data.optionalElements ?? "",
-		report: data.schema.currentYearSchemaUrl ?? "",
 	};
 };
 

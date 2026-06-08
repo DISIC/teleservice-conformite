@@ -18,7 +18,7 @@ export type SectionSlug = (typeof SECTION_SLUGS)[number];
 
 /**
  * Virtual parents — currently only used to model Audit's SideMenu grouping.
- * Not a slug in its own right (Audit is reached via `audit-realisation`).
+ * Not a slug in its own right (Audit is reached via `audit-general`).
  */
 export type SectionParentKey = "audit";
 

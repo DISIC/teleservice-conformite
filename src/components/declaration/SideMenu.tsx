@@ -71,7 +71,7 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 				toVerify: isAuditToVerify(declaration),
 			}),
 			linkProps: {
-				href: sectionHref(declarationId, "audit-realisation"),
+				href: sectionHref(declarationId, "audit-general"),
 				scroll: false,
 				shallow: true,
 			},
