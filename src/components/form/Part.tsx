@@ -19,8 +19,9 @@ interface PartProps {
  * A titled grouping of related fields inside a Sub-section's body. In read-only
  * mode it renders as a self-contained card (border + padding + raised
  * background) and, by default, lays the uniform ReadOnlyFields out in a
- * 2-column grid. In edit mode it is a plain borderless column so the fields
- * flow naturally while editing. The optional title renders in both modes.
+ * 2-column grid. In edit mode it is a plain borderless column, with a top rule
+ * separating it from a preceding Part so multi-Part bodies read as distinct
+ * groups while editing. The optional title renders in both modes.
  */
 export function Part({ readOnly, title, grid = true, children }: PartProps) {
 	const { classes, cx } = useStyles({ readOnly, grid });
@@ -38,16 +39,27 @@ const useStyles = tss
 	.withParams<{ readOnly: boolean; grid: boolean }>()
 	.create(({ readOnly, grid }) => ({
 		root: !readOnly
-			? { display: "flex", flexDirection: "column" }
+			? {
+					display: "flex",
+					flexDirection: "column",
+					// Separate consecutive Parts with a rule while editing (read-only
+					// Parts are self-contained cards and need none). `:first-child` is
+					// resolved against the partStack container, so this targets every
+					// Part after the first regardless of which form rendered it.
+					"&:not(:first-child)": {
+						borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+						paddingTop: fr.spacing("6v"),
+					},
+				}
 			: {
 					border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
 					padding: fr.spacing("6v"),
+					gap: fr.spacing("6v"),
 					backgroundColor: fr.colors.decisions.background.raised.grey.default,
 					...(grid
 						? {
 								display: "grid",
 								gridTemplateColumns: "repeat(2, 1fr)",
-								gap: fr.spacing("4v"),
 								"@media (max-width: 1024px)": {
 									gridTemplateColumns: "1fr",
 								},

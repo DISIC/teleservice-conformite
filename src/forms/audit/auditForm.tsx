@@ -133,7 +133,7 @@ export const ToolsForm = withForm({
 									<field.CheckboxGroupField
 										legend={
 											!readOnly
-												? "Outils utilisés pour évaluer l’accessibilité"
+												? "Liste des outils utilisés pour évaluer l’accessibilité"
 												: undefined
 										}
 										options={[...toolOptions]}
@@ -162,7 +162,11 @@ export const ToolsForm = withForm({
 							return (
 								<>
 									<field.CheckboxGroupField
-										legend={!readOnly ? "Environnement de tests" : undefined}
+										legend={
+											!readOnly
+												? "Liste des environnements utilisés pour évaluer l’accessibilité *"
+												: undefined
+										}
 										options={[...testEnvironmentOptions]}
 										readOnlyField={readOnly}
 									/>
@@ -244,7 +248,9 @@ export const NonCompliantElementsForm = withForm({
 					<form.AppField name="nonCompliantElements">
 						{(field) => (
 							<field.TextField
-								label="Éléments non conformes (facultatif)"
+								label={
+									!readOnly ? "Éléments non conformes (facultatif)" : undefined
+								}
 								textArea
 								hintText={
 									<>
@@ -270,7 +276,11 @@ export const NonCompliantElementsForm = withForm({
 					<form.AppField name="optionalElements">
 						{(field) => (
 							<field.TextField
-								label="Éléments non soumis à l’obligation d’accessibilité (facultatif)"
+								label={
+									!readOnly
+										? "Éléments non soumis à l’obligation d’accessibilité (facultatif)"
+										: "Dérogations pour charge disproportionnée"
+								}
 								textArea
 								hintText={
 									<>
@@ -299,7 +309,11 @@ export const NonCompliantElementsForm = withForm({
 					<form.AppField name="disproportionnedCharge">
 						{(field) => (
 							<field.TextField
-								label="Éléments avec dérogation pour charge disproportionnée (facultatif)"
+								label={
+									!readOnly
+										? "Éléments avec dérogation pour charge disproportionnée (facultatif)"
+										: "Contenus non soumis à l’obligation d’accessibilité"
+								}
 								hintText={
 									<>
 										<Button

@@ -32,7 +32,7 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 
 	return (
 		<div className={classes.fieldContainer}>
-			<p className={classes.label}>{label}</p>
+			{label && <p className={classes.label}>{label}</p>}
 			{valueIsArray ? (
 				<ul className={fr.cx("fr-ml-3v")}>
 					{value.map((item, index) => (
