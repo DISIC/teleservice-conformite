@@ -1,8 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import Error from "@codegouvfr/react-dsfr/picto/Error";
 import { tss } from "tss-react";
 import { Part } from "~/components/form/Part";
+import { AuditNotice } from "~/components/ui/AuditNotice";
 import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
 import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
 import {
@@ -17,6 +19,33 @@ import {
 	auditNonConformitiesFormOptions,
 	auditToolsFormOptions,
 } from "./auditSchema";
+
+/**
+ * Shown in place of a `requiresRealised` Sub-section's fields when the audit
+ * has not been declared as realised. The Sub-section stays visible in the
+ * SideMenu but has nothing to fill — `useAuditSubSection` also hides its action
+ * buttons via `hideActions`.
+ */
+function AuditNotRealisedNotice() {
+	return (
+		<AuditNotice Pictogram={Error} heading="Aucun audit n’a été réalisé.">
+			<span>
+				En l’absence d’audit de conformité, cette rubrique n’est pas applicable.
+				S’il n’existe aucun résultat d’audit en cours de validité permettant de
+				mesurer le respect des critères, le service est réputé non conforme.
+			</span>
+			<a
+				href="https://www.numerique.gouv.fr/publications/rgaa-accessibilite/conformite/#audit"
+				target="_blank"
+				rel="noopener noreferrer"
+				title="Lien vers le texte de loi, nouvelle fenêtre"
+				style={{ width: "fit-content" }}
+			>
+				Lien vers le texte de loi ↗️
+			</a>
+		</AuditNotice>
+	);
+}
 
 export const AuditGeneralForm = withForm({
 	...auditGeneralFormOptions,
@@ -115,8 +144,9 @@ export const AuditGeneralForm = withForm({
 
 export const ToolsForm = withForm({
 	...auditToolsFormOptions,
-	props: { readOnly: false },
-	render: function Render({ form, readOnly }) {
+	props: { readOnly: false, showNotice: false },
+	render: function Render({ form, readOnly, showNotice }) {
+		if (showNotice) return <AuditNotRealisedNotice />;
 		return (
 			<>
 				<Part readOnly={readOnly} title="Outils d'assistances" grid={false}>
@@ -188,8 +218,9 @@ export const ToolsForm = withForm({
 
 export const CompliantElementsForm = withForm({
 	...auditContentsFormOptions,
-	props: { readOnly: false },
-	render: function Render({ form, readOnly }) {
+	props: { readOnly: false, showNotice: false },
+	render: function Render({ form, readOnly, showNotice }) {
+		if (showNotice) return <AuditNotRealisedNotice />;
 		return (
 			<Part
 				readOnly={readOnly}
@@ -238,10 +269,11 @@ const disproportionnedChargeModal = createModal({
 
 export const NonCompliantElementsForm = withForm({
 	...auditNonConformitiesFormOptions,
-	props: { readOnly: false },
-	render: function Render({ form, readOnly }) {
+	props: { readOnly: false, showNotice: false },
+	render: function Render({ form, readOnly, showNotice }) {
 		const { classes } = useStyles();
 
+		if (showNotice) return <AuditNotRealisedNotice />;
 		return (
 			<>
 				<Part readOnly={readOnly} title="Non conformités" grid={false}>

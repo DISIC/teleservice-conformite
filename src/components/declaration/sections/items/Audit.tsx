@@ -1,6 +1,4 @@
-import Error from "@codegouvfr/react-dsfr/picto/Error";
-import { type ReactNode, useMemo } from "react";
-import { AuditNotice } from "~/components/ui/AuditNotice";
+import { useMemo } from "react";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
@@ -101,25 +99,6 @@ function useAuditSubSection({
 		hideActions: showNotice,
 	});
 
-	const notice: ReactNode = (
-		<AuditNotice Pictogram={Error} heading="Aucun audit n’a été réalisé.">
-			<span>
-				En l’absence d’audit de conformité, cette rubrique n’est pas applicable.
-				S’il n’existe aucun résultat d’audit en cours de validité permettant de
-				mesurer le respect des critères, le service est réputé non conforme.
-			</span>
-			<a
-				href="https://www.numerique.gouv.fr/publications/rgaa-accessibilite/conformite/#audit"
-				target="_blank"
-				rel="noopener noreferrer"
-				title="Lien vers le texte de loi, nouvelle fenêtre"
-				style={{ width: "fit-content" }}
-			>
-				Lien vers le texte de loi ↗️
-			</a>
-		</AuditNotice>
-	);
-
 	return {
 		audit,
 		hasAudit,
@@ -127,7 +106,6 @@ function useAuditSubSection({
 		exitEdit,
 		Frame,
 		showNotice,
-		notice,
 		upsert,
 	};
 }
@@ -182,7 +160,7 @@ export function AuditGeneralSection(props: AuditSectionProps) {
 
 export function AuditOutilsSection(props: AuditSectionProps) {
 	const { declaration } = props;
-	const { audit, readOnly, exitEdit, Frame, showNotice, notice, upsert } =
+	const { audit, readOnly, exitEdit, Frame, showNotice, upsert } =
 		useAuditSubSection({
 			...props,
 			currentSubSection: "audit-outils",
@@ -224,14 +202,14 @@ export function AuditOutilsSection(props: AuditSectionProps) {
 
 	return (
 		<Frame form={form}>
-			{showNotice ? notice : <ToolsForm form={form} readOnly={readOnly} />}
+			<ToolsForm form={form} readOnly={readOnly} showNotice={showNotice} />
 		</Frame>
 	);
 }
 
 export function AuditContenusSection(props: AuditSectionProps) {
 	const { declaration } = props;
-	const { audit, readOnly, exitEdit, Frame, showNotice, notice, upsert } =
+	const { audit, readOnly, exitEdit, Frame, showNotice, upsert } =
 		useAuditSubSection({
 			...props,
 			currentSubSection: "audit-contenus",
@@ -261,18 +239,18 @@ export function AuditContenusSection(props: AuditSectionProps) {
 
 	return (
 		<Frame form={form}>
-			{showNotice ? (
-				notice
-			) : (
-				<CompliantElementsForm form={form} readOnly={readOnly} />
-			)}
+			<CompliantElementsForm
+				form={form}
+				readOnly={readOnly}
+				showNotice={showNotice}
+			/>
 		</Frame>
 	);
 }
 
 export function AuditNonConformitesSection(props: AuditSectionProps) {
 	const { declaration } = props;
-	const { audit, readOnly, exitEdit, Frame, showNotice, notice, upsert } =
+	const { audit, readOnly, exitEdit, Frame, showNotice, upsert } =
 		useAuditSubSection({
 			...props,
 			currentSubSection: "audit-non-conformites",
@@ -308,11 +286,11 @@ export function AuditNonConformitesSection(props: AuditSectionProps) {
 
 	return (
 		<Frame form={form}>
-			{showNotice ? (
-				notice
-			) : (
-				<NonCompliantElementsForm form={form} readOnly={readOnly} />
-			)}
+			<NonCompliantElementsForm
+				form={form}
+				readOnly={readOnly}
+				showNotice={showNotice}
+			/>
 		</Frame>
 	);
 }
