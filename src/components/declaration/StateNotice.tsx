@@ -109,9 +109,7 @@ export function StateNotice({
 const useStyles = tss.withName(StateNotice.name).create({
 	card: {
 		display: "flex",
-		flexWrap: "wrap",
 		alignItems: "center",
-		justifyContent: "space-between",
 		gap: fr.spacing("6v"),
 		padding: fr.spacing("6v"),
 	},
@@ -120,6 +118,8 @@ const useStyles = tss.withName(StateNotice.name).create({
 		flexDirection: "column",
 		alignItems: "flex-start",
 		gap: fr.spacing("1v"),
+		flex: 1,
+		minWidth: 0,
 	},
 	badge: {
 		marginBottom: fr.spacing("1v"),
@@ -129,8 +129,7 @@ const useStyles = tss.withName(StateNotice.name).create({
 	},
 	actions: {
 		display: "flex",
-		flexWrap: "wrap",
 		gap: fr.spacing("3v"),
-		marginLeft: "auto",
+		flexShrink: 0,
 	},
 });
