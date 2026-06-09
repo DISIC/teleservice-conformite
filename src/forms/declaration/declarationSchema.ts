@@ -1,5 +1,5 @@
-import { formOptions } from "@tanstack/react-form";
 import z from "zod";
+import { submitFormOptions } from "~/forms/formOptions";
 import { appKindOptions, mobilePlatformOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
@@ -52,13 +52,10 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 	},
 };
 
-export const declarationGeneralFormOptions = formOptions({
-	defaultValues: declarationGeneralDefaultValues,
-	validators: {
-		onSubmit: ({ formApi }) =>
-			formApi.parseValuesWithSchema(declarationGeneralRefined),
-	},
-});
+export const declarationGeneralFormOptions = submitFormOptions(
+	declarationGeneralDefaultValues,
+	declarationGeneralRefined,
+);
 
 /** Maps a persisted declaration to this form's values. Keep in sync with the
  *  schema above so the publish gate validates the exact shape the form feeds. */
@@ -138,10 +135,7 @@ export const initialDeclarationDefaultValues: ZInitialDeclaration = {
 	},
 };
 
-export const initialDeclarationFormOptions = formOptions({
-	defaultValues: initialDeclarationDefaultValues,
-	validators: {
-		onSubmit: ({ formApi }) =>
-			formApi.parseValuesWithSchema(initialDeclaration),
-	},
-});
+export const initialDeclarationFormOptions = submitFormOptions(
+	initialDeclarationDefaultValues,
+	initialDeclaration,
+);

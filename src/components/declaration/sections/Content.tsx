@@ -21,7 +21,8 @@ export type DeclarationChangeFn = (
 	updater: (prev: PopulatedDeclaration) => PopulatedDeclaration,
 ) => void;
 
-type SectionRenderProps = {
+/** Props every Section component receives from {@link SectionContent}. */
+export type SectionRenderProps = {
 	declaration: PopulatedDeclaration;
 	onDeclarationChange: DeclarationChangeFn;
 	prevHref: string | null;
@@ -60,9 +61,8 @@ type SectionContentProps = {
 
 /**
  * Dispatches to the right Section component based on `currentSection`. The
- * keyed Fragment forces a fresh mount per slug — by design, since Q7 blocks
- * navigation in edit mode and switching while read-only should always land
- * in read-only.
+ * keyed Fragment forces a fresh mount per slug, so a Section never carries edit
+ * state across a navigation — switching always lands in read-only.
  */
 export function SectionContent({
 	declaration,

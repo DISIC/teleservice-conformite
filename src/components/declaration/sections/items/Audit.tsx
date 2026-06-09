@@ -1,12 +1,10 @@
 import { useMemo } from "react";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import {
 	AUDIT_SUB_SECTIONS,
 	type AuditSubSectionSlug,
 } from "~/utils/declaration/auditSubSections";
 import { isSectionToComplete } from "~/utils/declaration/sections";
-import type { EditingMode } from "~/utils/declaration/status";
 import { useAppForm } from "~/forms/context";
 import {
 	AuditGeneralForm,
@@ -29,18 +27,10 @@ import {
 	type ZAuditTools,
 } from "~/forms/audit/auditSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
+import { logMutationError } from "~/utils/declaration-helper";
+import type { SectionRenderProps } from "../Content";
 
-export type AuditSectionProps = {
-	declaration: PopulatedDeclaration;
-	onDeclarationChange: (
-		updater: (prev: PopulatedDeclaration) => PopulatedDeclaration,
-	) => void;
-	prevHref: string | null;
-	nextHref: string | null;
-	mode: EditingMode;
-};
-
-type UseAuditSubSectionArgs = AuditSectionProps & {
+type UseAuditSubSectionArgs = SectionRenderProps & {
 	currentSubSection: AuditSubSectionSlug;
 	/** The slice is only meaningful once the audit is realised; otherwise a
 	 *  notice replaces the form and the action buttons are hidden. */
@@ -84,11 +74,7 @@ function useAuditSubSection({
 	const { mutateAsync: upsert, isPending } = api.audit.upsert.useMutation({
 		onSuccess: ({ data }) =>
 			onDeclarationChange((prev) => ({ ...prev, audit: data })),
-		onError: (error) =>
-			console.error(
-				`Error saving audit for declaration ${declaration.id}:`,
-				error,
-			),
+		onError: logMutationError("saving audit", declaration.id),
 	});
 
 	const { readOnly, afterSave, Frame } = useSectionForm({
@@ -113,7 +99,7 @@ function useAuditSubSection({
 	};
 }
 
-export function AuditGeneralSection(props: AuditSectionProps) {
+export function AuditGeneralSection(props: SectionRenderProps) {
 	const { declaration } = props;
 	const { audit, readOnly, afterSave, Frame, upsert } = useAuditSubSection({
 		...props,
@@ -153,7 +139,7 @@ export function AuditGeneralSection(props: AuditSectionProps) {
 	);
 }
 
-export function AuditOutilsSection(props: AuditSectionProps) {
+export function AuditOutilsSection(props: SectionRenderProps) {
 	const { declaration } = props;
 	const { audit, readOnly, afterSave, Frame, showNotice, upsert } =
 		useAuditSubSection({
@@ -191,7 +177,7 @@ export function AuditOutilsSection(props: AuditSectionProps) {
 	);
 }
 
-export function AuditContenusSection(props: AuditSectionProps) {
+export function AuditContenusSection(props: SectionRenderProps) {
 	const { declaration } = props;
 	const { audit, readOnly, afterSave, Frame, showNotice, upsert } =
 		useAuditSubSection({
@@ -230,7 +216,7 @@ export function AuditContenusSection(props: AuditSectionProps) {
 	);
 }
 
-export function AuditNonConformitesSection(props: AuditSectionProps) {
+export function AuditNonConformitesSection(props: SectionRenderProps) {
 	const { declaration } = props;
 	const { audit, readOnly, afterSave, Frame, showNotice, upsert } =
 		useAuditSubSection({

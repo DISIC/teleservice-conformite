@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { tss } from "tss-react";
+import type { EntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
 
 interface EntityLibraryPickerProps {
 	label: string;
@@ -43,6 +44,31 @@ export default function EntityLibraryPicker({
 				))}
 			</Select>
 		</div>
+	);
+}
+
+/**
+ * Renders the picker only when there are sibling-administration entries to pick
+ * from and the Section is being edited — otherwise nothing. Lets a Section pass
+ * `before={<EntityLibraryPickerSlot link={…} readOnly={…} />}` without repeating
+ * the visibility guard and prop spread.
+ */
+export function EntityLibraryPickerSlot({
+	link,
+	readOnly,
+}: {
+	link: EntityLibraryLink;
+	readOnly: boolean;
+}) {
+	if (readOnly || link.items.length === 0) return null;
+	return (
+		<EntityLibraryPicker
+			label={link.label}
+			placeholder={link.placeholder}
+			items={link.items}
+			selectedId={link.selectedId}
+			onSelect={link.onSelect}
+		/>
 	);
 }
 

@@ -1,5 +1,5 @@
-import { formOptions } from "@tanstack/react-form";
 import z from "zod";
+import { submitFormOptions } from "~/forms/formOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 export const schemaForm = z.object({
@@ -23,12 +23,10 @@ export const schemaDefaultValues: ZSchema = {
 	actionPlanUrls: [],
 };
 
-export const schemaFormOptions = formOptions({
-	defaultValues: schemaDefaultValues,
-	validators: {
-		onSubmit: ({ formApi }) => formApi.parseValuesWithSchema(schemaForm),
-	},
-});
+export const schemaFormOptions = submitFormOptions(
+	schemaDefaultValues,
+	schemaForm,
+);
 
 /** Maps a persisted declaration to this form's values. Keep in sync with the
  *  schema above so the publish gate validates the exact shape the form feeds. */

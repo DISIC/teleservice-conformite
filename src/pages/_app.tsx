@@ -49,11 +49,7 @@ export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
 const getBackgroundColor = (pathname: string) => {
 	const page = pathname.split("/").pop() || "";
 
-	if (["infos", "audit", "schema", "contact", "form"].includes(page)) {
-		return fr.colors.decisions.background.alt.blueFrance.default;
-	}
-
-	if (["preview"].includes(page)) {
+	if (["form", "preview"].includes(page)) {
 		return fr.colors.decisions.background.alt.blueFrance.default;
 	}
 

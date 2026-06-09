@@ -1,10 +1,8 @@
 import { useMemo } from "react";
-import EntityLibraryPicker from "~/components/declaration/EntityLibraryPicker";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { EntityLibraryPickerSlot } from "~/components/declaration/EntityLibraryPicker";
 import { api } from "~/lib/api";
 import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
-import type { EditingMode } from "~/utils/declaration/status";
 import { useAppForm } from "~/forms/context";
 import { SchemaForm as DeclarationSchemaForm } from "~/forms/schema/schemaForm";
 import {
@@ -13,16 +11,8 @@ import {
 	type ZSchema,
 } from "~/forms/schema/schemaSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
-
-type SchemaSectionProps = {
-	declaration: PopulatedDeclaration;
-	onDeclarationChange: (
-		updater: (prev: PopulatedDeclaration) => PopulatedDeclaration,
-	) => void;
-	prevHref: string | null;
-	nextHref: string | null;
-	mode: EditingMode;
-};
+import { logMutationError } from "~/utils/declaration-helper";
+import type { SectionRenderProps } from "../Content";
 
 export function SchemaSection({
 	declaration,
@@ -30,7 +20,7 @@ export function SchemaSection({
 	prevHref,
 	nextHref,
 	mode,
-}: SchemaSectionProps) {
+}: SectionRenderProps) {
 	const hasSchema = !!declaration.schema;
 
 	const libraryLink = useEntityLibraryLink({ kind: "schemas", declaration });
@@ -41,11 +31,7 @@ export function SchemaSection({
 				libraryLink.refetch();
 				onDeclarationChange((prev) => ({ ...prev, schema }));
 			},
-			onError: (error) =>
-				console.error(
-					`Error upserting schema for declaration ${declaration.id}:`,
-					error,
-				),
+			onError: logMutationError("upserting schema", declaration.id),
 		});
 
 	const { readOnly, afterSave, Frame } = useSectionForm({
@@ -76,18 +62,13 @@ export function SchemaSection({
 		},
 	});
 
-	const libraryPicker = !readOnly && libraryLink.items.length > 0 && (
-		<EntityLibraryPicker
-			label={libraryLink.label}
-			placeholder={libraryLink.placeholder}
-			items={libraryLink.items}
-			selectedId={libraryLink.selectedId}
-			onSelect={libraryLink.onSelect}
-		/>
-	);
-
 	return (
-		<Frame form={form} before={libraryPicker}>
+		<Frame
+			form={form}
+			before={
+				<EntityLibraryPickerSlot link={libraryLink} readOnly={readOnly} />
+			}
+		>
 			<DeclarationSchemaForm form={form} readOnly={readOnly} />
 		</Frame>
 	);

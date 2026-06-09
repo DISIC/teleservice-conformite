@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 
-type EntityLibraryLink = {
+export type EntityLibraryLink = {
 	label: string;
 	placeholder: string;
 	items: { id: number; label: string; hint?: string }[];

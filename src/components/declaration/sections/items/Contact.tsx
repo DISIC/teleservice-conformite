@@ -1,11 +1,9 @@
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import EntityLibraryPicker from "~/components/declaration/EntityLibraryPicker";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { EntityLibraryPickerSlot } from "~/components/declaration/EntityLibraryPicker";
 import { api } from "~/lib/api";
 import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
 import { SECTION_TITLES, sectionHref } from "~/utils/declaration/sections";
-import type { EditingMode } from "~/utils/declaration/status";
 import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
 import { useAppForm } from "~/forms/context";
 import { ContactTypeForm } from "~/forms/contact/contactForm";
@@ -15,15 +13,10 @@ import {
 	type ZContactForm,
 } from "~/forms/contact/contactSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
+import { logMutationError } from "~/utils/declaration-helper";
+import type { SectionRenderProps } from "../Content";
 
-type ContactSectionProps = {
-	declaration: PopulatedDeclaration;
-	onDeclarationChange: (
-		updater: (prev: PopulatedDeclaration) => PopulatedDeclaration,
-	) => void;
-	prevHref: string | null;
-	nextHref: string | null;
-	mode: EditingMode;
+type ContactSectionProps = SectionRenderProps & {
 	/** Flips the page's "publish attempted" flag (terminal Section only). */
 	onPublishAttempt: () => void;
 };
@@ -47,11 +40,7 @@ export function ContactSection({
 				libraryLink.refetch();
 				onDeclarationChange((prev) => ({ ...prev, contact }));
 			},
-			onError: (error) =>
-				console.error(
-					`Error upserting contact for declaration ${declaration.id}:`,
-					error,
-				),
+			onError: logMutationError("upserting contact", declaration.id),
 		});
 
 	const { readOnly, afterSave, Frame } = useSectionForm({
@@ -100,18 +89,13 @@ export function ContactSection({
 		},
 	});
 
-	const libraryPicker = !readOnly && libraryLink.items.length > 0 && (
-		<EntityLibraryPicker
-			label={libraryLink.label}
-			placeholder={libraryLink.placeholder}
-			items={libraryLink.items}
-			selectedId={libraryLink.selectedId}
-			onSelect={libraryLink.onSelect}
-		/>
-	);
-
 	return (
-		<Frame form={form} before={libraryPicker}>
+		<Frame
+			form={form}
+			before={
+				<EntityLibraryPickerSlot link={libraryLink} readOnly={readOnly} />
+			}
+		>
 			<ContactTypeForm form={form} readOnly={readOnly} />
 		</Frame>
 	);

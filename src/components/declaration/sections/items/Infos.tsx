@@ -1,8 +1,6 @@
 import { useMemo } from "react";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
-import type { EditingMode } from "~/utils/declaration/status";
 import { useAppForm } from "~/forms/context";
 import { DeclarationGeneralForm } from "~/forms/declaration/declarationForm";
 import {
@@ -11,16 +9,8 @@ import {
 	type ZDeclarationGeneral,
 } from "~/forms/declaration/declarationSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
-
-type InfosSectionProps = {
-	declaration: PopulatedDeclaration;
-	onDeclarationChange: (
-		updater: (prev: PopulatedDeclaration) => PopulatedDeclaration,
-	) => void;
-	prevHref: string | null;
-	nextHref: string | null;
-	mode: EditingMode;
-};
+import { logMutationError } from "~/utils/declaration-helper";
+import type { SectionRenderProps } from "../Content";
 
 export function InfosSection({
 	declaration,
@@ -28,16 +18,12 @@ export function InfosSection({
 	prevHref,
 	nextHref,
 	mode,
-}: InfosSectionProps) {
+}: SectionRenderProps) {
 	const { mutateAsync: update, isPending } = api.declaration.update.useMutation(
 		{
 			onSuccess: ({ data }) =>
 				onDeclarationChange((prev) => ({ ...prev, ...data })),
-			onError: (error) =>
-				console.error(
-					`Error updating declaration with id ${declaration.id}:`,
-					error,
-				),
+			onError: logMutationError("updating declaration", declaration.id),
 		},
 	);
 

@@ -1,6 +1,6 @@
-import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
+import { submitFormOptions } from "~/forms/formOptions";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
@@ -69,12 +69,10 @@ export const auditGeneralDefaultValues: ZAuditGeneral = {
 	rate: 0,
 };
 
-export const auditGeneralFormOptions = formOptions({
-	defaultValues: auditGeneralDefaultValues,
-	validators: {
-		onSubmit: ({ formApi }) => formApi.parseValuesWithSchema(auditGeneral),
-	},
-});
+export const auditGeneralFormOptions = submitFormOptions(
+	auditGeneralDefaultValues,
+	auditGeneral,
+);
 
 export function auditToGeneralValues(audit: Audit): ZAuditGeneral {
 	return {
@@ -101,12 +99,10 @@ export const auditToolsDefaultValues: ZAuditTools = {
 	testEnvironments: [],
 };
 
-export const auditToolsFormOptions = formOptions({
-	defaultValues: auditToolsDefaultValues,
-	validators: {
-		onSubmit: ({ formApi }) => formApi.parseValuesWithSchema(auditTools),
-	},
-});
+export const auditToolsFormOptions = submitFormOptions(
+	auditToolsDefaultValues,
+	auditTools,
+);
 
 export function auditToToolsValues(audit: Audit): ZAuditTools {
 	return {
@@ -135,12 +131,10 @@ export const auditContentsDefaultValues: ZAuditContents = {
 	compliantElements: "",
 };
 
-export const auditContentsFormOptions = formOptions({
-	defaultValues: auditContentsDefaultValues,
-	validators: {
-		onSubmit: ({ formApi }) => formApi.parseValuesWithSchema(auditContents),
-	},
-});
+export const auditContentsFormOptions = submitFormOptions(
+	auditContentsDefaultValues,
+	auditContents,
+);
 
 export function auditToContentsValues(audit: Audit): ZAuditContents {
 	return {
@@ -163,13 +157,10 @@ export const auditNonConformitiesDefaultValues: ZAuditNonConformities = {
 	disproportionnedCharge: "",
 };
 
-export const auditNonConformitiesFormOptions = formOptions({
-	defaultValues: auditNonConformitiesDefaultValues,
-	validators: {
-		onSubmit: ({ formApi }) =>
-			formApi.parseValuesWithSchema(auditNonConformities),
-	},
-});
+export const auditNonConformitiesFormOptions = submitFormOptions(
+	auditNonConformitiesDefaultValues,
+	auditNonConformities,
+);
 
 export function auditToNonConformitiesValues(
 	audit: Audit,
