@@ -98,7 +98,7 @@ export function SectionShell({
 								iconId="fr-icon-arrow-left-s-line"
 								nativeButtonProps={{ disabled: true, "aria-disabled": true }}
 							>
-								Retour
+								Précédent
 							</Button>
 						) : (
 							<Button
@@ -110,7 +110,7 @@ export function SectionShell({
 									shallow: true,
 								}}
 							>
-								Retour
+								Précédent
 							</Button>
 						))}
 				</div>

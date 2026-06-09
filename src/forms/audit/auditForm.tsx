@@ -23,43 +23,42 @@ export const AuditGeneralForm = withForm({
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
-			<FieldsLayout readOnly={readOnly}>
-				<form.AppField name="isAuditRealised">
-					{(field) => (
-						<field.RadioField
-							legend={
-								readOnly
-									? "Audit réalisé"
-									: "Avez-vous réalisé un audit d’accessibilité de votre service numérique ?"
-							}
-							hintText="Un audit d’accessibilité évalue votre service numérique selon le RGAA afin d’identifier les non-conformités et les points à améliorer. Il peut être réalisé par un prestataire externe."
-							options={[
-								{ label: "Oui", value: true },
-								{ label: "Non", value: false },
-							]}
-							readOnlyField={readOnly}
-							required
-						/>
-					)}
-				</form.AppField>
+			<FieldsLayout
+				readOnly={readOnly}
+				title="Audit d’accessibilité du service numérique"
+			>
+				{!readOnly && (
+					<form.AppField name="isAuditRealised">
+						{(field) => (
+							<field.RadioField
+								legend="Avez-vous réalisé un audit d’accessibilité de votre service numérique ?"
+								hintText="Un audit d’accessibilité évalue votre service numérique selon le RGAA afin d’identifier les non-conformités et les points à améliorer. Il peut être réalisé par un prestataire externe."
+								options={[
+									{ label: "Oui", value: true },
+									{ label: "Non", value: false },
+								]}
+								required
+							/>
+						)}
+					</form.AppField>
+				)}
 				<form.Subscribe selector={(state) => state.values.isAuditRealised}>
 					{(isAuditRealised) =>
 						isAuditRealised === true && (
 							<>
-								{!readOnly && (
-									<form.AppField name="date">
-										{(field) => (
-											<field.TextField
-												label="Date de réalisation de l'audit (facultatif)"
-												hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
-												nativeInputProps={{
-													type: "date",
-													max: new Date().toISOString().split("T")[0],
-												}}
-											/>
-										)}
-									</form.AppField>
-								)}
+								<form.AppField name="date">
+									{(field) => (
+										<field.TextField
+											label={`Date de réalisation de l'audit ${!readOnly ? "(facultatif)" : ""}`}
+											hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
+											nativeInputProps={{
+												type: "date",
+												max: new Date().toISOString().split("T")[0],
+											}}
+											readOnlyField={readOnly}
+										/>
+									)}
+								</form.AppField>
 								<form.AppField name="realisedBy">
 									{(field) => (
 										<field.TextField
@@ -73,11 +72,7 @@ export const AuditGeneralForm = withForm({
 								<form.AppField name="rgaa_version">
 									{(field) => (
 										<field.RadioField
-											legend={
-												readOnly
-													? "Référentiel RGAA utilisé"
-													: "Version du référentiel RGAA utilisée"
-											}
+											legend="Version du référentiel RGAA utilisée"
 											options={rgaaVersionOptions.map((option) => ({
 												label: option.label,
 												value: option.value,
@@ -139,8 +134,13 @@ export const ToolsForm = withForm({
 							);
 							return (
 								<div>
+									<h3 className={fr.cx("fr-h6")}>Outils d'assistances</h3>
 									<field.CheckboxGroupField
-										legend={`Outils utilisés pour évaluer l’accessibilité ${readOnly ? "" : "(facultatif)"}`}
+										legend={
+											!readOnly
+												? "Outils utilisés pour évaluer l’accessibilité"
+												: undefined
+										}
 										options={[...toolOptions]}
 										readOnlyField={readOnly}
 									/>
@@ -154,6 +154,7 @@ export const ToolsForm = withForm({
 							);
 						}}
 					</form.AppField>
+					<hr className={fr.cx("fr-pb-1v")} />
 					<form.AppField name="testEnvironments">
 						{(field) => {
 							const extraTestEnvironments = (field.state.value || []).filter(
@@ -164,8 +165,9 @@ export const ToolsForm = withForm({
 							);
 							return (
 								<div>
+									<h3 className={fr.cx("fr-h6")}>Environnements de tests</h3>
 									<field.CheckboxGroupField
-										legend="Environnement de tests"
+										legend={!readOnly ? "Environnement de tests" : undefined}
 										options={[...testEnvironmentOptions]}
 										readOnlyField={readOnly}
 									/>
@@ -190,11 +192,19 @@ export const CompliantElementsForm = withForm({
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
-			<FieldsLayout readOnly={readOnly}>
+			<FieldsLayout
+				readOnly={readOnly}
+				title="Éléments ayant fait l’objet de la vérification de conformité"
+				grid={false}
+			>
 				<form.AppField name="compliantElements">
 					{(field) => (
 						<field.TextField
-							label="Éléments ayant fait l’objet de la vérification de conformité"
+							label={
+								!readOnly
+									? "Éléments ayant fait l’objet de la vérification de conformité"
+									: undefined
+							}
 							textArea
 							hintText={
 								<>
@@ -234,7 +244,8 @@ export const NonCompliantElementsForm = withForm({
 		const { classes } = useStyles();
 
 		return (
-			<FieldsLayout readOnly={readOnly}>
+			<FieldsLayout readOnly={readOnly} grid={false}>
+				<h3 className={fr.cx("fr-h6")}>Non conformités</h3>
 				<form.AppField name="nonCompliantElements">
 					{(field) => (
 						<field.TextField
@@ -259,6 +270,8 @@ export const NonCompliantElementsForm = withForm({
 						/>
 					)}
 				</form.AppField>
+				<hr />
+				<h3 className={fr.cx("fr-h6")}>Dérogations</h3>
 				<form.AppField name="optionalElements">
 					{(field) => (
 						<field.TextField

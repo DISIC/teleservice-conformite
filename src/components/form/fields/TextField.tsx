@@ -31,10 +31,17 @@ export function TextField(props: TextFieldProps) {
 	const { classes } = useStyles();
 
 	if (readOnlyField) {
+		let value: string | string[] = field.state.value || "";
+
+		// specific handling for compliantElements to display them as a list in read-only mode
+		if (field.name == "compliantElements") {
+			value = value.split("\n").filter((line) => line.trim() !== "");
+		}
+
 		return (
 			<ReadOnlyField
 				label={commonProps.label}
-				value={String(field.state.value)}
+				value={value}
 				textArea={textArea}
 			/>
 		);
