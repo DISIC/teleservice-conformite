@@ -19,7 +19,7 @@ A Declaration aggregates four pieces of content (its [[section]]s) plus identity
 One of the four top-level content areas of a Declaration, surfaced as items in the declaration details page's `SideMenu`:
 
 - **Informations générales** — meta-info about the service (slug `infos`)
-- **Audit** — audit results (slug `audit`, has [[sub-section]]s)
+- **Audit** — audit results; has no slug of its own — it is a menu-only virtual parent (`SectionParentKey`) reached via its first [[sub-section]] (`audit-general`)
 - **Schéma et plans d'action** — multi-year accessibility plan (slug `schema`)
 - **Contact** — contact method for accessibility issues (slug `contact`)
 
@@ -38,11 +38,15 @@ One of the four children of the **Audit** Section, surfaced as nested items in t
 - **Contenus vérifiés** (slug `audit-contenus`) — compliantElements
 - **Non conformités & dérogations** (slug `audit-non-conformites`) — nonCompliantElements, disproportionnedCharge, optionalElements
 
-All four Sub-sections persist into the single `audits` row for the Declaration. The slice-to-database mapping is a UI grouping, not a data split.
+A Sub-section is a **URL-addressable, independently-saved slice** of the Audit Section: each has its own `?section=<slug>` destination, its own self-contained form, and saves on its own (ADR-0002). It is _not_ a top-level [[section]] — "Audit" is a menu-only **virtual parent** (`SectionParentKey`), reached via `audit-general`; the four Sub-sections are its nested `SideMenu` children, treated in code as ordinary `SectionMeta` carrying `parent: "audit"`.
+
+What makes a Sub-section distinct from a Section is the **data asymmetry**: all four Sub-sections persist into the **single** `audits` row for the Declaration — they are UI slices over one row, never separate rows (see Invariants). The other Sections (Infos/Schéma/Contact) each map to their own entity.
+
+Note: the Sub-section _level_ is the navigational + data grouping described here; it is independent of how the forms are built. ADR-0002 retired the single multi-step audit form in favour of four independent forms — that changed the **form**, not the existence of the Sub-section level. Each Sub-section's body is laid out as one or more [[part]]s.
 
 When `audit.isRealised === false`, only "Réalisation de l'audit" is meaningful; the other three Sub-sections stay visible in the `SideMenu` but display a notice instead of their form (no editable fields or actions) until the audit is marked realised.
 
-**See also:** [[section]], [[audit-realise]], [[part]].
+**See also:** [[section]], [[part]], [[audit-realise]].
 
 ### Part
 
