@@ -53,7 +53,7 @@ export function InviteMembersModal({
 	const form = useAppForm({
 		defaultValues: { email: "" } as z.infer<typeof inviteMemberFormSchema>,
 		validators: { onSubmit: inviteMemberFormSchema },
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			try {
 				await createAccessRight({
 					declarationId,
@@ -64,9 +64,11 @@ export function InviteMembersModal({
 				form.reset();
 			} catch (e) {
 				if (e instanceof TRPCClientError && e.data?.code === "CONFLICT") {
-					formApi.fieldInfo.email.instance?.setErrorMap({
-						onSubmit: { message: e.message },
-					});
+					return {
+						fields: {
+							email: e.message,
+						},
+					};
 				}
 			}
 		},
