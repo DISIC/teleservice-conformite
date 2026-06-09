@@ -1,10 +1,12 @@
+import { useRouter } from "next/router";
 import { useMemo } from "react";
 import EntityLibraryPicker from "~/components/declaration/EntityLibraryPicker";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
-import { SECTION_TITLES } from "~/utils/declaration/sections";
+import { SECTION_TITLES, sectionHref } from "~/utils/declaration/sections";
 import type { EditingMode } from "~/utils/declaration/status";
+import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
 import { useAppForm } from "~/forms/context";
 import { ContactTypeForm } from "~/forms/contact/contactForm";
 import {
@@ -22,6 +24,8 @@ type ContactSectionProps = {
 	prevHref: string | null;
 	nextHref: string | null;
 	mode: EditingMode;
+	/** Flips the page's "publish attempted" flag (terminal Section only). */
+	onPublishAttempt: () => void;
 };
 
 export function ContactSection({
@@ -30,7 +34,9 @@ export function ContactSection({
 	prevHref,
 	nextHref,
 	mode,
+	onPublishAttempt,
 }: ContactSectionProps) {
+	const router = useRouter();
 	const hasContact = !!declaration.contact;
 
 	const libraryLink = useEntityLibraryLink({ kind: "contacts", declaration });
@@ -67,12 +73,30 @@ export function ContactSection({
 		...contactFormOptions,
 		defaultValues,
 		onSubmit: async ({ value }) => {
-			await upsertContact({
+			const { data: contact } = await upsertContact({
 				values: value,
 				id: declaration.contact?.id,
 				declarationId: declaration.id,
 			});
-			afterSave();
+
+			// Standalone: just exit edit mode. Sequential: Contact is the terminal
+			// Section, so its save runs the declaration-wide publish gate.
+			if (mode !== "sequential") {
+				afterSave();
+				return;
+			}
+
+			onPublishAttempt();
+			const [firstError] = validateDeclaration({ ...declaration, contact });
+			if (!firstError) {
+				router.push(`/dashboard/declarations/${declaration.id}/preview`);
+				return;
+			}
+			router.push(
+				sectionHref(declaration.id, firstError.section, firstError.field),
+				undefined,
+				{ shallow: true, scroll: false },
+			);
 		},
 	});
 

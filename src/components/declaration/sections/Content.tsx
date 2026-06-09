@@ -32,18 +32,21 @@ type SectionRenderProps = {
 type SectionRenderer = (props: SectionRenderProps) => ReactNode;
 
 /**
- * Maps each SectionSlug to its rendered component. Each audit Sub-section is
- * its own self-contained form component (ADR-0002), so the dispatch stays a
- * pure lookup.
+ * Maps each non-terminal SectionSlug to its rendered component. Each audit
+ * Sub-section is its own self-contained form component (ADR-0002), so the
+ * dispatch stays a pure lookup. `contact` is the terminal Section and is
+ * rendered separately because it alone needs `onPublishAttempt`.
  */
-const SECTION_RENDERERS: Record<SectionSlug, SectionRenderer> = {
+const SECTION_RENDERERS: Record<
+	Exclude<SectionSlug, "contact">,
+	SectionRenderer
+> = {
 	infos: (props) => <InfosSection {...props} />,
 	"audit-general": (props) => <AuditGeneralSection {...props} />,
 	"audit-outils": (props) => <AuditOutilsSection {...props} />,
 	"audit-contenus": (props) => <AuditContenusSection {...props} />,
 	"audit-non-conformites": (props) => <AuditNonConformitesSection {...props} />,
 	schema: (props) => <SchemaSection {...props} />,
-	contact: (props) => <ContactSection {...props} />,
 };
 
 type SectionContentProps = {
@@ -51,6 +54,8 @@ type SectionContentProps = {
 	currentSection: SectionSlug;
 	onDeclarationChange: DeclarationChangeFn;
 	mode: EditingMode;
+	/** Flips the page's "publish attempted" flag so the error summary appears. */
+	onPublishAttempt: () => void;
 };
 
 /**
@@ -64,21 +69,27 @@ export function SectionContent({
 	currentSection,
 	onDeclarationChange,
 	mode,
+	onPublishAttempt,
 }: SectionContentProps) {
 	const visible = getVisibleSections(declaration);
 	const { prev, next } = getPrevNextSections(currentSection, visible);
 	const prevHref = prev ? sectionHref(declaration.id, prev) : null;
 	const nextHref = next ? sectionHref(declaration.id, next) : null;
+	const renderProps = {
+		declaration,
+		onDeclarationChange,
+		prevHref,
+		nextHref,
+		mode,
+	};
 
 	return (
 		<Fragment key={currentSection}>
-			{SECTION_RENDERERS[currentSection]({
-				declaration,
-				onDeclarationChange,
-				prevHref,
-				nextHref,
-				mode,
-			})}
+			{currentSection === "contact" ? (
+				<ContactSection {...renderProps} onPublishAttempt={onPublishAttempt} />
+			) : (
+				SECTION_RENDERERS[currentSection](renderProps)
+			)}
 		</Fragment>
 	);
 }

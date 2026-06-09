@@ -121,8 +121,11 @@ export function getPrevNextSections(
 export function sectionHref(
 	declarationId: PopulatedDeclaration["id"],
 	slug: SectionSlug,
+	/** Field path (e.g. `general.name`) to focus once the Section mounts. */
+	field?: string,
 ): string {
-	return `/dashboard/declarations/${declarationId}?section=${slug}`;
+	const base = `/dashboard/declarations/${declarationId}?section=${slug}`;
+	return field ? `${base}&field=${encodeURIComponent(field)}` : base;
 }
 
 export function isSectionToComplete(

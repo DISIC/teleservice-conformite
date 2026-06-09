@@ -8,9 +8,10 @@ import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import { BackButton } from "~/components/ui/BackButton";
+import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
 import {
 	getDeclarationStatus,
@@ -25,6 +26,7 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { copyToClipboard } from "~/utils/declaration-helper";
 import { parseSectionFromQuery } from "~/utils/declaration/sections";
+import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
 import { guardDeclaration } from "~/lib/server-guards";
 
 const deleteModal = createModal({
@@ -38,7 +40,7 @@ export default function DeclarationPage({
 	declaration: initialDeclaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
-	const { published, section: sectionQuery } = router.query;
+	const { published, section: sectionQuery, field: fieldQuery } = router.query;
 	const currentSection = parseSectionFromQuery(sectionQuery);
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
@@ -55,6 +57,16 @@ export default function DeclarationPage({
 	const status = getDeclarationStatus(declaration);
 	const statusBadge = STATUS_PRESENTATION[status];
 	const editingMode = getEditingMode(status);
+
+	// Declaration-wide publish gate (ADR-0003). Armed by the terminal Section's
+	// "Prévisualiser et publier"; once armed, the summary re-derives from the
+	// declaration on every save, shrinking as Sections are fixed and clearing
+	// at zero.
+	const [publishAttempted, setPublishAttempted] = useState(false);
+	const declarationErrors = useMemo(
+		() => (publishAttempted ? validateDeclaration(declaration) : []),
+		[publishAttempted, declaration],
+	);
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
@@ -89,6 +101,22 @@ export default function DeclarationPage({
 
 		return () => clearTimeout(timer);
 	}, [showAlert]);
+
+	// When the publish gate routes to an errored Section (via `&field=`), move
+	// focus to that field once the Section has mounted, then drop the param so it
+	// neither lingers in the URL nor re-fires on later re-renders (ADR-0003).
+	useEffect(() => {
+		if (typeof fieldQuery !== "string") return;
+
+		const input = document.querySelector<HTMLElement>(`[name="${fieldQuery}"]`);
+		if (input) {
+			input.focus({ preventScroll: true });
+			input.scrollIntoView({ behavior: "smooth", block: "center" });
+		}
+
+		const { field: _field, ...query } = router.query;
+		router.replace({ query }, undefined, { shallow: true, scroll: false });
+	}, [fieldQuery, currentSection, router]);
 
 	useEffect(() => {
 		if (published === "true") {
@@ -210,25 +238,36 @@ export default function DeclarationPage({
 					className={classes.tabs}
 				>
 					{selectedTabId === "declaration" && (
-						<div
-							className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
-							role="presentation"
-						>
-							<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
-								<SideMenu
-									declaration={declaration}
-									currentSection={currentSection}
-								/>
-							</aside>
-							<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
-								<SectionContent
-									declaration={declaration}
-									currentSection={currentSection}
-									onDeclarationChange={setDeclaration}
-									mode={editingMode}
-								/>
+						<>
+							{declarationErrors.length > 0 && (
+								<div className={classes.errorSummaryWrapper}>
+									<ErrorSummary
+										declarationId={declaration.id}
+										errors={declarationErrors}
+									/>
+								</div>
+							)}
+							<div
+								className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
+								role="presentation"
+							>
+								<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
+									<SideMenu
+										declaration={declaration}
+										currentSection={currentSection}
+									/>
+								</aside>
+								<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
+									<SectionContent
+										declaration={declaration}
+										currentSection={currentSection}
+										onDeclarationChange={setDeclaration}
+										mode={editingMode}
+										onPublishAttempt={() => setPublishAttempted(true)}
+									/>
+								</div>
 							</div>
-						</div>
+						</>
 					)}
 					{selectedTabId === "members" && <Membres declaration={declaration} />}
 				</Tabs>
@@ -315,6 +354,9 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 	},
 	statsWrapper: {
 		marginBottom: fr.spacing("8v"),
+	},
+	errorSummaryWrapper: {
+		marginBottom: fr.spacing("6v"),
 	},
 	aiBannerWrapper: {
 		marginBottom: fr.spacing("6v"),

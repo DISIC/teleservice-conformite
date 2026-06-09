@@ -67,6 +67,11 @@ export function SectionShell({
 	// to a plain "Suivant" link (nothing to commit).
 	const sequentialSave = isSequential && !hideActions;
 	const navDisabled = !isSequential && isEditing && !hideActions;
+	// The last Section of the walkthrough (no `nextHref`) ends with the
+	// declaration-wide publish gate instead of a "next" link. `onSave` runs the
+	// section's submit, whose success path validates the whole declaration and
+	// either routes to preview or back to the first errored Section (ADR-0003).
+	const isTerminal = isSequential && !hideActions && !nextHref;
 	const { classes, cx } = useStyles();
 
 	return (
@@ -129,8 +134,18 @@ export function SectionShell({
 						))}
 				</div>
 				<div className={classes.footerSide}>
-					{nextHref &&
-						(sequentialSave ? (
+					{isTerminal ? (
+						<Button
+							priority="primary"
+							iconId="fr-icon-eye-line"
+							iconPosition="right"
+							onClick={onSave}
+							disabled={isSaving}
+						>
+							Prévisualiser et publier
+						</Button>
+					) : nextHref ? (
+						sequentialSave ? (
 							<Button
 								priority="primary"
 								iconId={nextIcon}
@@ -162,7 +177,8 @@ export function SectionShell({
 							>
 								{nextLabel}
 							</Button>
-						))}
+						)
+					) : null}
 				</div>
 			</footer>
 		</section>
