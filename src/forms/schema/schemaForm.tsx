@@ -1,6 +1,6 @@
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Fragment } from "react";
-import { FieldsLayout } from "~/components/form/FieldsLayout";
+import { Part } from "~/components/form/Part";
 import { withForm } from "../context";
 import { schemaFormOptions } from "./schemaSchema";
 import { fr } from "@codegouvfr/react-dsfr";
@@ -10,7 +10,7 @@ export const SchemaForm = withForm({
 	props: { readOnly: true },
 	render: function Render({ form, readOnly }) {
 		return (
-			<FieldsLayout readOnly={readOnly} grid={false}>
+			<Part readOnly={readOnly} grid={false}>
 				<form.AppField name="schemaUrl">
 					{(field) => (
 						<field.TextField
@@ -116,7 +116,7 @@ export const SchemaForm = withForm({
 						</div>
 					)}
 				</form.Field>
-			</FieldsLayout>
+			</Part>
 		);
 	},
 });

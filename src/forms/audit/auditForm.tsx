@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { tss } from "tss-react";
-import { FieldsLayout } from "~/components/form/FieldsLayout";
+import { Part } from "~/components/form/Part";
 import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
 import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
 import {
@@ -23,7 +23,7 @@ export const AuditGeneralForm = withForm({
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
-			<FieldsLayout
+			<Part
 				readOnly={readOnly}
 				title="Audit d’accessibilité du service numérique"
 			>
@@ -108,7 +108,7 @@ export const AuditGeneralForm = withForm({
 						)
 					}
 				</form.Subscribe>
-			</FieldsLayout>
+			</Part>
 		);
 	},
 });
@@ -117,13 +117,9 @@ export const ToolsForm = withForm({
 	...auditToolsFormOptions,
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
-		const { classes } = useAuditFormStyles({ readOnly });
 		return (
-			<FieldsLayout readOnly={readOnly} grid={false}>
-				<div
-					className={classes.wrapperSections}
-					style={{ gap: fr.spacing("8v") }}
-				>
+			<>
+				<Part readOnly={readOnly} title="Outils d'assistances" grid={false}>
 					<form.AppField name="usedTools">
 						{(field) => {
 							const extraTools = (field.state.value || []).filter(
@@ -133,8 +129,7 @@ export const ToolsForm = withForm({
 										.includes(tag),
 							);
 							return (
-								<div>
-									<h3 className={fr.cx("fr-h6")}>Outils d'assistances</h3>
+								<>
 									<field.CheckboxGroupField
 										legend={
 											!readOnly
@@ -150,11 +145,12 @@ export const ToolsForm = withForm({
 											initialTags={extraTools}
 										/>
 									)}
-								</div>
+								</>
 							);
 						}}
 					</form.AppField>
-					<hr className={fr.cx("fr-pb-1v")} />
+				</Part>
+				<Part readOnly={readOnly} title="Environnements de tests" grid={false}>
 					<form.AppField name="testEnvironments">
 						{(field) => {
 							const extraTestEnvironments = (field.state.value || []).filter(
@@ -164,8 +160,7 @@ export const ToolsForm = withForm({
 										.includes(tag),
 							);
 							return (
-								<div>
-									<h3 className={fr.cx("fr-h6")}>Environnements de tests</h3>
+								<>
 									<field.CheckboxGroupField
 										legend={!readOnly ? "Environnement de tests" : undefined}
 										options={[...testEnvironmentOptions]}
@@ -177,12 +172,12 @@ export const ToolsForm = withForm({
 											initialTags={extraTestEnvironments}
 										/>
 									)}
-								</div>
+								</>
 							);
 						}}
 					</form.AppField>
-				</div>
-			</FieldsLayout>
+				</Part>
+			</>
 		);
 	},
 });
@@ -192,7 +187,7 @@ export const CompliantElementsForm = withForm({
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
-			<FieldsLayout
+			<Part
 				readOnly={readOnly}
 				title="Éléments ayant fait l’objet de la vérification de conformité"
 				grid={false}
@@ -222,7 +217,7 @@ export const CompliantElementsForm = withForm({
 						/>
 					)}
 				</form.AppField>
-			</FieldsLayout>
+			</Part>
 		);
 	},
 });
@@ -244,95 +239,97 @@ export const NonCompliantElementsForm = withForm({
 		const { classes } = useStyles();
 
 		return (
-			<FieldsLayout readOnly={readOnly} grid={false}>
-				<h3 className={fr.cx("fr-h6")}>Non conformités</h3>
-				<form.AppField name="nonCompliantElements">
-					{(field) => (
-						<field.TextField
-							label="Éléments non conformes (facultatif)"
-							textArea
-							hintText={
-								<>
-									Exemples : Vidéo sans transcription, navigation au clavier
-									impossible, ...
-									<br />
-									Précisez les points non conformes et leur volume en utilisant
-									les mentions “quelques / la plupart des / aucun(e)”. Vous
-									pouvez trouver ces informations dans votre déclaration
-									existante ou votre audit.
-									<br />
-									Exemples :
-									<br />- Aucune image n’a de texte équivalent
-									<br />- Quelques vidéos n’ont pas de sous-titres
-								</>
-							}
-							readOnlyField={readOnly}
-						/>
-					)}
-				</form.AppField>
-				<hr />
-				<h3 className={fr.cx("fr-h6")}>Dérogations</h3>
-				<form.AppField name="optionalElements">
-					{(field) => (
-						<field.TextField
-							label="Éléments non soumis à l’obligation d’accessibilité (facultatif)"
-							textArea
-							hintText={
-								<>
-									<Button
-										onClick={(e) => {
-											e.preventDefault();
-											exemptionListmodal.open();
-										}}
-										className={classes.dialogActionButton}
-									>
-										Liste des contenus non soumis à l’obligation d’accessibilité
-									</Button>
-									<exemptionListmodal.Component title="">
-										<ExemptionListModalContent />
-									</exemptionListmodal.Component>
-									<br />
-									Format attendu : Listez les éléments exemptés les uns à la
-									suite des autres
-								</>
-							}
-							readOnlyField={readOnly}
-						/>
-					)}
-				</form.AppField>
-				<form.AppField name="disproportionnedCharge">
-					{(field) => (
-						<field.TextField
-							label="Éléments avec dérogation pour charge disproportionnée (facultatif)"
-							hintText={
-								<>
-									<Button
-										onClick={(e) => {
-											e.preventDefault();
-											disproportionnedChargeModal.open();
-										}}
-										className={classes.dialogActionButton}
-									>
-										Qu’est-ce qu’une charge disproportionnée ?
-									</Button>
-									<disproportionnedChargeModal.Component title="">
-										<DisproportionnedChargeContent />
-									</disproportionnedChargeModal.Component>
-									<br />
-									Renseigner, pour chaque élément, son nom, la raison de la
-									dérogation et l’alternative accessible proposée.
-									<br />
-									Exemple : “- Carte IGN de la région, trop complexe et couteux
-									à rendre accessible. Alternative : Application mobile avec
-									lecture du relief”
-								</>
-							}
-							textArea
-							readOnlyField={readOnly}
-						/>
-					)}
-				</form.AppField>
-			</FieldsLayout>
+			<>
+				<Part readOnly={readOnly} title="Non conformités" grid={false}>
+					<form.AppField name="nonCompliantElements">
+						{(field) => (
+							<field.TextField
+								label="Éléments non conformes (facultatif)"
+								textArea
+								hintText={
+									<>
+										Exemples : Vidéo sans transcription, navigation au clavier
+										impossible, ...
+										<br />
+										Précisez les points non conformes et leur volume en
+										utilisant les mentions “quelques / la plupart des /
+										aucun(e)”. Vous pouvez trouver ces informations dans votre
+										déclaration existante ou votre audit.
+										<br />
+										Exemples :
+										<br />- Aucune image n’a de texte équivalent
+										<br />- Quelques vidéos n’ont pas de sous-titres
+									</>
+								}
+								readOnlyField={readOnly}
+							/>
+						)}
+					</form.AppField>
+				</Part>
+				<Part readOnly={readOnly} title="Dérogations" grid={false}>
+					<form.AppField name="optionalElements">
+						{(field) => (
+							<field.TextField
+								label="Éléments non soumis à l’obligation d’accessibilité (facultatif)"
+								textArea
+								hintText={
+									<>
+										<Button
+											onClick={(e) => {
+												e.preventDefault();
+												exemptionListmodal.open();
+											}}
+											className={classes.dialogActionButton}
+										>
+											Liste des contenus non soumis à l’obligation
+											d’accessibilité
+										</Button>
+										<exemptionListmodal.Component title="">
+											<ExemptionListModalContent />
+										</exemptionListmodal.Component>
+										<br />
+										Format attendu : Listez les éléments exemptés les uns à la
+										suite des autres
+									</>
+								}
+								readOnlyField={readOnly}
+							/>
+						)}
+					</form.AppField>
+					<form.AppField name="disproportionnedCharge">
+						{(field) => (
+							<field.TextField
+								label="Éléments avec dérogation pour charge disproportionnée (facultatif)"
+								hintText={
+									<>
+										<Button
+											onClick={(e) => {
+												e.preventDefault();
+												disproportionnedChargeModal.open();
+											}}
+											className={classes.dialogActionButton}
+										>
+											Qu’est-ce qu’une charge disproportionnée ?
+										</Button>
+										<disproportionnedChargeModal.Component title="">
+											<DisproportionnedChargeContent />
+										</disproportionnedChargeModal.Component>
+										<br />
+										Renseigner, pour chaque élément, son nom, la raison de la
+										dérogation et l’alternative accessible proposée.
+										<br />
+										Exemple : “- Carte IGN de la région, trop complexe et
+										couteux à rendre accessible. Alternative : Application
+										mobile avec lecture du relief”
+									</>
+								}
+								textArea
+								readOnlyField={readOnly}
+							/>
+						)}
+					</form.AppField>
+				</Part>
+			</>
 		);
 	},
 });
@@ -358,13 +355,3 @@ export const useStyles = tss.withName(NonCompliantElementsForm.name).create({
 		},
 	},
 });
-
-export const useAuditFormStyles = tss
-	.withName("AuditForm")
-	.withParams<{ readOnly: boolean }>()
-	.create(() => ({
-		wrapperSections: {
-			display: "flex",
-			flexDirection: "column",
-		},
-	}));

@@ -8,6 +8,13 @@ export const useCommonStyles = tss.create({
 		display: "flex",
 		flexDirection: "column",
 	},
+	/** Vertical stack of Part cards inside a Sub-section body. */
+	partStack: {
+		width: "100%",
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6v"),
+	},
 	actionButtonsContainer: {
 		display: "flex",
 		justifyContent: "space-between",

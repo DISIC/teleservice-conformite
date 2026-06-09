@@ -91,7 +91,7 @@ export function useSectionForm({
 						}}
 						onInvalid={() => form.validate("submit")}
 					>
-						<div className={commonClasses.whiteBackground}>{children}</div>
+						<div className={commonClasses.partStack}>{children}</div>
 					</form>
 				</SectionShell>
 			</>
@@ -105,7 +105,7 @@ export function useSectionForm({
 			prevHref,
 			nextHref,
 			hideActions,
-			commonClasses.whiteBackground,
+			commonClasses.partStack,
 		],
 	);
 

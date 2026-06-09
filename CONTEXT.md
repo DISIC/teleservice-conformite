@@ -42,7 +42,17 @@ All four Sub-sections persist into the single `audits` row for the Declaration. 
 
 When `audit.isRealised === false`, only "Réalisation de l'audit" is meaningful; the other three Sub-sections stay visible in the `SideMenu` but display a notice instead of their form (no editable fields or actions) until the audit is marked realised.
 
-**See also:** [[section]], [[audit-realise]].
+**See also:** [[section]], [[audit-realise]], [[part]].
+
+### Part
+
+A titled grouping of one or more related fields **inside** a [[sub-section]]'s body. A Sub-section contains one or more Parts; each Part has its own heading and is visually a self-contained bordered card.
+
+Examples: the **Outils et environnements** Sub-section has two Parts — "Outils d'assistances" (`usedTools`) and "Environnements de tests" (`testEnvironments`). **Non conformités & dérogations** has two Parts — "Non conformités" (`nonCompliantElements`) and "Dérogations" (`optionalElements` + `disproportionnedCharge`). Single-Part Sub-sections (e.g. **Contenus vérifiés**) have exactly one Part.
+
+**Avoid:** "block" (conversational only, see Out of scope), "section/sub-section" (reserved for the two higher levels).
+
+**See also:** [[sub-section]].
 
 ### Status
 

@@ -5,7 +5,7 @@ import Internet from "@codegouvfr/react-dsfr/picto/Internet";
 import System from "@codegouvfr/react-dsfr/picto/System";
 import { tss } from "tss-react";
 
-import { FieldsLayout } from "~/components/form/FieldsLayout";
+import { Part } from "~/components/form/Part";
 import HelpingMessage from "~/components/ui/HelpingMessage";
 import {
 	appKindOptions,
@@ -23,7 +23,7 @@ export const DeclarationGeneralForm = withForm({
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
-			<FieldsLayout readOnly={readOnly} title="Service numérique concerné">
+			<Part readOnly={readOnly} title="Service numérique concerné">
 				<form.AppField name="general.name">
 					{(field) => (
 						<field.TextField
@@ -116,7 +116,7 @@ export const DeclarationGeneralForm = withForm({
 						/>
 					)}
 				</form.AppField>
-			</FieldsLayout>
+			</Part>
 		);
 	},
 });

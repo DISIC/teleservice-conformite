@@ -53,7 +53,7 @@ export function SectionShell({
 }: SectionShellProps) {
 	const isEditing = !readOnly;
 	const navDisabled = isEditing && !hideActions;
-	const { classes, cx } = useStyles({ readOnly });
+	const { classes, cx } = useStyles();
 
 	return (
 		<section className={classes.root}>
@@ -145,46 +145,39 @@ export function SectionShell({
 	);
 }
 
-const useStyles = tss
-	.withName(SectionShell.name)
-	.withParams<{ readOnly: boolean }>()
-	.create(({ readOnly }) => ({
-		root: {
-			display: "flex",
-			flexDirection: "column",
-			gap: fr.spacing("6v"),
-			width: "100%",
-		},
-		header: {
-			display: "flex",
-			flexWrap: "wrap",
-			alignItems: "center",
-			justifyContent: "space-between",
-			gap: fr.spacing("3v"),
-		},
-		title: {
-			margin: 0,
-		},
-		headerActions: {
-			display: "flex",
-			flexDirection: "row",
-			gap: fr.spacing("3v"),
-			alignItems: "center",
-		},
-		body: {
-			display: "flex",
-			flexDirection: "column",
-			border: readOnly
-				? `1px solid ${fr.colors.decisions.border.default.grey.default}`
-				: "none",
-			padding: readOnly ? fr.spacing("6v") : 0,
-		},
-		footer: {
-			display: "flex",
-			justifyContent: "space-between",
-			alignItems: "center",
-		},
-		footerSide: {
-			display: "flex",
-		},
-	}));
+const useStyles = tss.withName(SectionShell.name).create({
+	root: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6v"),
+		width: "100%",
+	},
+	header: {
+		display: "flex",
+		flexWrap: "wrap",
+		alignItems: "center",
+		justifyContent: "space-between",
+		gap: fr.spacing("3v"),
+	},
+	title: {
+		margin: 0,
+	},
+	headerActions: {
+		display: "flex",
+		flexDirection: "row",
+		gap: fr.spacing("3v"),
+		alignItems: "center",
+	},
+	body: {
+		display: "flex",
+		flexDirection: "column",
+	},
+	footer: {
+		display: "flex",
+		justifyContent: "space-between",
+		alignItems: "center",
+	},
+	footerSide: {
+		display: "flex",
+	},
+});
