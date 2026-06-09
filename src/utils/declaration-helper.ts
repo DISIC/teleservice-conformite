@@ -54,10 +54,15 @@ export const extractTechnologiesFromUrl = (
 };
 
 /**
- * Maps ARA-imported audit data into the audit form values. Spans all four
- * audit Sub-section forms (ADR-0002), so the return type is the intersection
- * of their value types. Currently unused — the ARA import path was unwired for
- * the redesign and needs re-connecting.
+ * Maps ARA-imported audit data into the audit form values.
+ *
+ * Parked, not dead: the "update an existing audit from ARA" feature
+ * (UpdateAuditFromAraModal) was unwired by the redesign and is slated to
+ * return. Before re-use it must be reworked for ADR-0002 — this returns the
+ * intersection of all four Sub-section value types as one object, which
+ * assumes the old combined audit form. The four forms now upsert
+ * independently, so re-wiring means fanning this out across them, not
+ * re-mounting the modal as-is.
  */
 export const mapAraDataToFormValues = (
 	data: RouterOutputs["declaration"]["getInfoFromAra"]["data"],
