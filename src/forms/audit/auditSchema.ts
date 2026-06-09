@@ -1,14 +1,24 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
-import { rgaaVersionOptions } from "~/payload/selectOptions";
+import {
+	rgaaVersionOptions,
+	testEnvironmentOptions,
+	toolOptions,
+} from "~/payload/selectOptions";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 /**
  * Four independent audit forms — one per Sub-section, each a self-contained
  * route (ADR-0002). No `section` discriminator, no shared multi-step options:
  * every schema validates only the fields its Sub-section owns, so the
  * create-time empty-placeholder bug is structurally impossible.
+ *
+ * Each `auditTo*Values` mapper sits next to its schema/defaults so the publish
+ * gate validates the exact shape its form feeds — keep them in sync.
  */
+
+type Audit = PopulatedDeclaration["audit"];
 
 // ── Réalisation de l'audit (slug `audit-general`) ───────────────────────────
 // `isAuditRealised` is always required. When the audit was realised, the date
@@ -66,6 +76,18 @@ export const auditGeneralFormOptions = formOptions({
 	},
 });
 
+export function auditToGeneralValues(audit: Audit): ZAuditGeneral {
+	return {
+		isAuditRealised: audit?.isRealised ?? undefined,
+		date: audit?.date ? new Date(audit.date).toLocaleDateString("en-CA") : "",
+		realisedBy: audit?.realisedBy ?? "",
+		rgaa_version:
+			rgaaVersionOptions.find((opt) => opt.value === audit?.rgaa_version)
+				?.value ?? "rgaa_4",
+		rate: audit?.rate ?? 0,
+	};
+}
+
 // ── Outils et environnements (slug `audit-outils`) ──────────────────────────
 export const auditTools = z.object({
 	usedTools: z.array(z.string()).optional(),
@@ -86,6 +108,20 @@ export const auditToolsFormOptions = formOptions({
 	},
 });
 
+export function auditToToolsValues(audit: Audit): ZAuditTools {
+	return {
+		usedTools: (audit?.usedTools ?? []).map(
+			(tool) =>
+				toolOptions.find((opt) => opt.value === tool.name)?.value ?? tool.name,
+		),
+		testEnvironments: (audit?.testEnvironments ?? []).map(
+			(env) =>
+				testEnvironmentOptions.find((opt) => opt.value === env.name)?.value ??
+				env.name,
+		),
+	};
+}
+
 // ── Contenus vérifiés (slug `audit-contenus`) ───────────────────────────────
 export const auditContents = z.object({
 	compliantElements: z
@@ -105,6 +141,12 @@ export const auditContentsFormOptions = formOptions({
 		onSubmit: ({ formApi }) => formApi.parseValuesWithSchema(auditContents),
 	},
 });
+
+export function auditToContentsValues(audit: Audit): ZAuditContents {
+	return {
+		compliantElements: audit?.compliantElements ?? "",
+	};
+}
 
 // ── Non conformités & dérogations (slug `audit-non-conformites`) ────────────
 export const auditNonConformities = z.object({
@@ -128,3 +170,13 @@ export const auditNonConformitiesFormOptions = formOptions({
 			formApi.parseValuesWithSchema(auditNonConformities),
 	},
 });
+
+export function auditToNonConformitiesValues(
+	audit: Audit,
+): ZAuditNonConformities {
+	return {
+		nonCompliantElements: audit?.nonCompliantElements ?? "",
+		optionalElements: audit?.optionalElements ?? "",
+		disproportionnedCharge: audit?.disproportionnedCharge ?? "",
+	};
+}

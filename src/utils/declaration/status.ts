@@ -7,6 +7,18 @@ import type { PublishedDeclaration } from "~/utils/declaration-content";
 /** Three visual states derived from `status` + `publishedContent`. See CONTEXT.md. */
 export type Status = "draft" | "modified" | "published";
 
+/**
+ * How the declaration details page presents its Sections for editing. Derived
+ * from {@link Status} but a distinct concept — it describes interaction, not
+ * lifecycle. See the "Editing mode" glossary entry in CONTEXT.md and ADR-0003.
+ */
+export type EditingMode = "sequential" | "standalone";
+
+/** `sequential` for a never-published Brouillon, `standalone` afterwards. */
+export function getEditingMode(status: Status): EditingMode {
+	return status === "draft" ? "sequential" : "standalone";
+}
+
 export function getDeclarationStatus(
 	declaration: Pick<Declaration, "status" | "publishedContent">,
 ): Status {

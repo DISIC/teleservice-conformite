@@ -4,10 +4,12 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
+import type { EditingMode } from "~/utils/declaration/status";
 import { useAppForm } from "~/forms/context";
 import { ContactTypeForm } from "~/forms/contact/contactForm";
 import {
 	contactFormOptions,
+	declarationToContactValues,
 	type ZContactForm,
 } from "~/forms/contact/contactSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
@@ -19,6 +21,7 @@ type ContactSectionProps = {
 	) => void;
 	prevHref: string | null;
 	nextHref: string | null;
+	mode: EditingMode;
 };
 
 export function ContactSection({
@@ -26,6 +29,7 @@ export function ContactSection({
 	onDeclarationChange,
 	prevHref,
 	nextHref,
+	mode,
 }: ContactSectionProps) {
 	const hasContact = !!declaration.contact;
 
@@ -44,23 +48,20 @@ export function ContactSection({
 				),
 		});
 
-	const { readOnly, exitEdit, Frame } = useSectionForm({
+	const { readOnly, afterSave, Frame } = useSectionForm({
 		title: SECTION_TITLES.contact,
 		declaration,
 		isEditable: hasContact,
 		isSaving: isPending,
 		prevHref,
 		nextHref,
+		mode,
 	});
 
-	const defaultValues: ZContactForm = useMemo(() => {
-		if (!declaration.contact) return contactFormOptions.defaultValues;
-		return {
-			name: declaration.contact.name ?? "",
-			url: declaration.contact.url ?? "",
-			email: declaration.contact.email ?? "",
-		};
-	}, [declaration.contact]);
+	const defaultValues: ZContactForm = useMemo(
+		() => declarationToContactValues(declaration),
+		[declaration],
+	);
 
 	const form = useAppForm({
 		...contactFormOptions,
@@ -71,7 +72,7 @@ export function ContactSection({
 				id: declaration.contact?.id,
 				declarationId: declaration.id,
 			});
-			exitEdit();
+			afterSave();
 		},
 	});
 

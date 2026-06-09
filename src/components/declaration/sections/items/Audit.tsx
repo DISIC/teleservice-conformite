@@ -1,9 +1,4 @@
 import { useMemo } from "react";
-import {
-	rgaaVersionOptions,
-	testEnvironmentOptions,
-	toolOptions,
-} from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import {
@@ -11,6 +6,7 @@ import {
 	type AuditSubSectionSlug,
 } from "~/utils/declaration/auditSubSections";
 import { isSectionToComplete } from "~/utils/declaration/sections";
+import type { EditingMode } from "~/utils/declaration/status";
 import { useAppForm } from "~/forms/context";
 import {
 	AuditGeneralForm,
@@ -22,7 +18,11 @@ import {
 	auditContentsFormOptions,
 	auditGeneralFormOptions,
 	auditNonConformitiesFormOptions,
+	auditToContentsValues,
+	auditToGeneralValues,
+	auditToNonConformitiesValues,
 	auditToolsFormOptions,
+	auditToToolsValues,
 	type ZAuditContents,
 	type ZAuditGeneral,
 	type ZAuditNonConformities,
@@ -37,6 +37,7 @@ export type AuditSectionProps = {
 	) => void;
 	prevHref: string | null;
 	nextHref: string | null;
+	mode: EditingMode;
 };
 
 type UseAuditSubSectionArgs = AuditSectionProps & {
@@ -63,6 +64,7 @@ function useAuditSubSection({
 	nextHref,
 	requiresRealised,
 	alwaysEditable,
+	mode,
 }: UseAuditSubSectionArgs) {
 	const audit = declaration.audit;
 	const hasAudit = !!audit;
@@ -89,7 +91,7 @@ function useAuditSubSection({
 			),
 	});
 
-	const { readOnly, exitEdit, Frame } = useSectionForm({
+	const { readOnly, afterSave, Frame } = useSectionForm({
 		title: AUDIT_SUB_SECTIONS[currentSubSection].title,
 		declaration,
 		isEditable,
@@ -97,13 +99,14 @@ function useAuditSubSection({
 		prevHref,
 		nextHref,
 		hideActions: showNotice,
+		mode,
 	});
 
 	return {
 		audit,
 		hasAudit,
 		readOnly,
-		exitEdit,
+		afterSave,
 		Frame,
 		showNotice,
 		upsert,
@@ -112,7 +115,7 @@ function useAuditSubSection({
 
 export function AuditGeneralSection(props: AuditSectionProps) {
 	const { declaration } = props;
-	const { audit, readOnly, exitEdit, Frame, upsert } = useAuditSubSection({
+	const { audit, readOnly, afterSave, Frame, upsert } = useAuditSubSection({
 		...props,
 		currentSubSection: "audit-general",
 		requiresRealised: false,
@@ -120,15 +123,7 @@ export function AuditGeneralSection(props: AuditSectionProps) {
 	});
 
 	const defaultValues = useMemo(
-		(): ZAuditGeneral => ({
-			isAuditRealised: audit?.isRealised ?? undefined,
-			date: audit?.date ? new Date(audit.date).toLocaleDateString("en-CA") : "",
-			realisedBy: audit?.realisedBy ?? "",
-			rgaa_version:
-				rgaaVersionOptions.find((opt) => opt.value === audit?.rgaa_version)
-					?.value ?? "rgaa_4",
-			rate: audit?.rate ?? 0,
-		}),
+		(): ZAuditGeneral => auditToGeneralValues(audit),
 		[audit],
 	);
 
@@ -147,7 +142,7 @@ export function AuditGeneralSection(props: AuditSectionProps) {
 							rate: value.rate,
 						};
 			await upsert({ values, id: audit?.id, declarationId: declaration.id });
-			exitEdit();
+			afterSave();
 		},
 	});
 
@@ -160,7 +155,7 @@ export function AuditGeneralSection(props: AuditSectionProps) {
 
 export function AuditOutilsSection(props: AuditSectionProps) {
 	const { declaration } = props;
-	const { audit, readOnly, exitEdit, Frame, showNotice, upsert } =
+	const { audit, readOnly, afterSave, Frame, showNotice, upsert } =
 		useAuditSubSection({
 			...props,
 			currentSubSection: "audit-outils",
@@ -169,18 +164,7 @@ export function AuditOutilsSection(props: AuditSectionProps) {
 		});
 
 	const defaultValues = useMemo(
-		(): ZAuditTools => ({
-			usedTools: (audit?.usedTools ?? []).map(
-				(tool) =>
-					toolOptions.find((opt) => opt.value === tool.name)?.value ??
-					tool.name,
-			),
-			testEnvironments: (audit?.testEnvironments ?? []).map(
-				(env) =>
-					testEnvironmentOptions.find((opt) => opt.value === env.name)?.value ??
-					env.name,
-			),
-		}),
+		(): ZAuditTools => auditToToolsValues(audit),
 		[audit],
 	);
 
@@ -196,7 +180,7 @@ export function AuditOutilsSection(props: AuditSectionProps) {
 				id: audit?.id,
 				declarationId: declaration.id,
 			});
-			exitEdit();
+			afterSave();
 		},
 	});
 
@@ -209,7 +193,7 @@ export function AuditOutilsSection(props: AuditSectionProps) {
 
 export function AuditContenusSection(props: AuditSectionProps) {
 	const { declaration } = props;
-	const { audit, readOnly, exitEdit, Frame, showNotice, upsert } =
+	const { audit, readOnly, afterSave, Frame, showNotice, upsert } =
 		useAuditSubSection({
 			...props,
 			currentSubSection: "audit-contenus",
@@ -218,9 +202,7 @@ export function AuditContenusSection(props: AuditSectionProps) {
 		});
 
 	const defaultValues = useMemo(
-		(): ZAuditContents => ({
-			compliantElements: audit?.compliantElements ?? "",
-		}),
+		(): ZAuditContents => auditToContentsValues(audit),
 		[audit],
 	);
 
@@ -233,7 +215,7 @@ export function AuditContenusSection(props: AuditSectionProps) {
 				id: audit?.id,
 				declarationId: declaration.id,
 			});
-			exitEdit();
+			afterSave();
 		},
 	});
 
@@ -250,7 +232,7 @@ export function AuditContenusSection(props: AuditSectionProps) {
 
 export function AuditNonConformitesSection(props: AuditSectionProps) {
 	const { declaration } = props;
-	const { audit, readOnly, exitEdit, Frame, showNotice, upsert } =
+	const { audit, readOnly, afterSave, Frame, showNotice, upsert } =
 		useAuditSubSection({
 			...props,
 			currentSubSection: "audit-non-conformites",
@@ -259,11 +241,7 @@ export function AuditNonConformitesSection(props: AuditSectionProps) {
 		});
 
 	const defaultValues = useMemo(
-		(): ZAuditNonConformities => ({
-			nonCompliantElements: audit?.nonCompliantElements ?? "",
-			optionalElements: audit?.optionalElements ?? "",
-			disproportionnedCharge: audit?.disproportionnedCharge ?? "",
-		}),
+		(): ZAuditNonConformities => auditToNonConformitiesValues(audit),
 		[audit],
 	);
 
@@ -280,7 +258,7 @@ export function AuditNonConformitesSection(props: AuditSectionProps) {
 				id: audit?.id,
 				declarationId: declaration.id,
 			});
-			exitEdit();
+			afterSave();
 		},
 	});
 

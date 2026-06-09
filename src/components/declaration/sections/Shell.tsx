@@ -6,6 +6,7 @@ import type {
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
+import type { EditingMode } from "~/utils/declaration/status";
 
 export type SectionShellProps = {
 	title: string;
@@ -33,6 +34,13 @@ export type SectionShellProps = {
 	 * declared as realised).
 	 */
 	hideActions?: boolean;
+	/**
+	 * Sequential (Brouillon walkthrough) hides the top-right actions, keeps the
+	 * section permanently editable, and turns the footer "Suivant" into an action
+	 * button — "Enregistrer et suivant" — that commits the section then advances.
+	 * Standalone (default) is the per-section edit/read-only toggle. See ADR-0003.
+	 */
+	mode?: EditingMode;
 	children: ReactNode;
 };
 
@@ -49,10 +57,16 @@ export function SectionShell({
 	nextLabel = "Suivant",
 	nextIcon = "fr-icon-arrow-right-s-line",
 	hideActions = false,
+	mode = "standalone",
 	children,
 }: SectionShellProps) {
 	const isEditing = !readOnly;
-	const navDisabled = isEditing && !hideActions;
+	const isSequential = mode === "sequential";
+	// In sequential mode the footer drives the save, so it stays enabled and
+	// "Précédent" is always plain navigation. A nothing-to-save section degrades
+	// to a plain "Suivant" link (nothing to commit).
+	const sequentialSave = isSequential && !hideActions;
+	const navDisabled = !isSequential && isEditing && !hideActions;
 	const { classes, cx } = useStyles();
 
 	return (
@@ -60,7 +74,7 @@ export function SectionShell({
 			<header className={classes.header}>
 				<h2 className={cx(classes.title, fr.cx("fr-h3"))}>{title}</h2>
 				<div className={classes.headerActions}>
-					{!hideActions && isEditable && readOnly && (
+					{!isSequential && !hideActions && isEditable && readOnly && (
 						<Button
 							priority="secondary"
 							iconId="fr-icon-edit-line"
@@ -70,12 +84,12 @@ export function SectionShell({
 							Modifier
 						</Button>
 					)}
-					{!hideActions && isEditable && isEditing && (
+					{!isSequential && !hideActions && isEditable && isEditing && (
 						<Button priority="tertiary" onClick={onCancelEdit} size="small">
 							Annuler
 						</Button>
 					)}
-					{!hideActions && isEditing && (
+					{!isSequential && !hideActions && isEditing && (
 						<Button
 							priority="primary"
 							iconId="fr-icon-check-line"
@@ -116,7 +130,17 @@ export function SectionShell({
 				</div>
 				<div className={classes.footerSide}>
 					{nextHref &&
-						(navDisabled ? (
+						(sequentialSave ? (
+							<Button
+								priority="primary"
+								iconId={nextIcon}
+								iconPosition="right"
+								onClick={onSave}
+								disabled={isSaving}
+							>
+								Enregistrer et suivant
+							</Button>
+						) : navDisabled ? (
 							<Button
 								priority="primary"
 								iconId={nextIcon}

@@ -6,6 +6,7 @@ import {
 	type SectionSlug,
 	sectionHref,
 } from "~/utils/declaration/sections";
+import type { EditingMode } from "~/utils/declaration/status";
 import {
 	AuditContenusSection,
 	AuditGeneralSection,
@@ -25,6 +26,7 @@ type SectionRenderProps = {
 	onDeclarationChange: DeclarationChangeFn;
 	prevHref: string | null;
 	nextHref: string | null;
+	mode: EditingMode;
 };
 
 type SectionRenderer = (props: SectionRenderProps) => ReactNode;
@@ -48,6 +50,7 @@ type SectionContentProps = {
 	declaration: PopulatedDeclaration;
 	currentSection: SectionSlug;
 	onDeclarationChange: DeclarationChangeFn;
+	mode: EditingMode;
 };
 
 /**
@@ -60,6 +63,7 @@ export function SectionContent({
 	declaration,
 	currentSection,
 	onDeclarationChange,
+	mode,
 }: SectionContentProps) {
 	const visible = getVisibleSections(declaration);
 	const { prev, next } = getPrevNextSections(currentSection, visible);
@@ -73,6 +77,7 @@ export function SectionContent({
 				onDeclarationChange,
 				prevHref,
 				nextHref,
+				mode,
 			})}
 		</Fragment>
 	);

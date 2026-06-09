@@ -14,6 +14,7 @@ import { BackButton } from "~/components/ui/BackButton";
 import { SideMenu } from "~/components/declaration/SideMenu";
 import {
 	getDeclarationStatus,
+	getEditingMode,
 	STATUS_PRESENTATION,
 } from "~/utils/declaration/status";
 import { StatsCards } from "~/components/declaration/StatsCards";
@@ -53,6 +54,7 @@ export default function DeclarationPage({
 
 	const status = getDeclarationStatus(declaration);
 	const statusBadge = STATUS_PRESENTATION[status];
+	const editingMode = getEditingMode(status);
 
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
@@ -223,6 +225,7 @@ export default function DeclarationPage({
 									declaration={declaration}
 									currentSection={currentSection}
 									onDeclarationChange={setDeclaration}
+									mode={editingMode}
 								/>
 							</div>
 						</div>

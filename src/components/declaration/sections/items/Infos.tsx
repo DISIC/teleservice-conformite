@@ -2,10 +2,12 @@ import { useMemo } from "react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
+import type { EditingMode } from "~/utils/declaration/status";
 import { useAppForm } from "~/forms/context";
 import { DeclarationGeneralForm } from "~/forms/declaration/declarationForm";
 import {
 	declarationGeneralFormOptions,
+	declarationToGeneralValues,
 	type ZDeclarationGeneral,
 } from "~/forms/declaration/declarationSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
@@ -17,6 +19,7 @@ type InfosSectionProps = {
 	) => void;
 	prevHref: string | null;
 	nextHref: string | null;
+	mode: EditingMode;
 };
 
 export function InfosSection({
@@ -24,6 +27,7 @@ export function InfosSection({
 	onDeclarationChange,
 	prevHref,
 	nextHref,
+	mode,
 }: InfosSectionProps) {
 	const { mutateAsync: update, isPending } = api.declaration.update.useMutation(
 		{
@@ -37,7 +41,7 @@ export function InfosSection({
 		},
 	);
 
-	const { readOnly, exitEdit, Frame } = useSectionForm({
+	const { readOnly, afterSave, Frame } = useSectionForm({
 		title: SECTION_TITLES.infos,
 		declaration,
 		isEditable: true,
@@ -45,19 +49,11 @@ export function InfosSection({
 		isSaving: isPending,
 		prevHref,
 		nextHref,
+		mode,
 	});
 
 	const defaultValues: ZDeclarationGeneral = useMemo(
-		() => ({
-			general: {
-				organisation: declaration.entity?.name ?? "",
-				kind: declaration.app_kind,
-				mobilePlatform: declaration.mobile_platform ?? undefined,
-				name: declaration.name ?? "",
-				url: declaration.url ?? "",
-				domain: declaration.entity?.kind ?? "",
-			},
-		}),
+		() => declarationToGeneralValues(declaration),
 		[declaration],
 	);
 
@@ -72,7 +68,7 @@ export function InfosSection({
 					entityId: declaration.entity?.id ?? -1,
 				},
 			});
-			exitEdit();
+			afterSave();
 		},
 	});
 

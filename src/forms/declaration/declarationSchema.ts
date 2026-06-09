@@ -1,6 +1,7 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 import { appKindOptions, mobilePlatformOptions } from "~/payload/selectOptions";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 export const declarationGeneral = z.object({
 	general: z.object({
@@ -58,6 +59,23 @@ export const declarationGeneralFormOptions = formOptions({
 			formApi.parseValuesWithSchema(declarationGeneralRefined),
 	},
 });
+
+/** Maps a persisted declaration to this form's values. Keep in sync with the
+ *  schema above so the publish gate validates the exact shape the form feeds. */
+export function declarationToGeneralValues(
+	declaration: PopulatedDeclaration,
+): ZDeclarationGeneral {
+	return {
+		general: {
+			organisation: declaration.entity?.name ?? "",
+			kind: declaration.app_kind,
+			mobilePlatform: declaration.mobile_platform ?? undefined,
+			name: declaration.name ?? "",
+			url: declaration.url ?? "",
+			domain: declaration.entity?.kind ?? "",
+		},
+	};
+}
 
 export const declarationKindOptions = [
 	"fromUrl",

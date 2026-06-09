@@ -1,8 +1,10 @@
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { type ReactNode, useCallback, useState } from "react";
 import { useCommonStyles } from "~/components/ui/commonStyles";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { SectionShell } from "~/components/declaration/sections/Shell";
+import type { EditingMode } from "~/utils/declaration/status";
 
 type UseSectionFormArgs = {
 	/** Section title — drives <Head> and SectionShell. */
@@ -17,6 +19,8 @@ type UseSectionFormArgs = {
 	nextHref: string | null;
 	/** Hide the top-right action buttons for informational, nothing-to-save sections. */
 	hideActions?: boolean;
+	/** Sequential (Brouillon walkthrough) vs standalone editing. See ADR-0003. */
+	mode?: EditingMode;
 };
 
 /**
@@ -42,7 +46,8 @@ type FrameProps = {
  * the white-background body) and the readOnly state machine. The caller still
  * owns `useAppForm` and the mutation hook — tanstack's inferred form type does
  * not survive being threaded through a generic hook. After a successful save,
- * call `exitEdit()` from the form's `onSubmit`.
+ * call `afterSave()` from the form's `onSubmit` — in standalone it exits edit
+ * mode, in sequential it advances to the next Section.
  */
 export function useSectionForm({
 	title,
@@ -53,12 +58,31 @@ export function useSectionForm({
 	prevHref,
 	nextHref,
 	hideActions,
+	mode = "standalone",
 }: UseSectionFormArgs) {
 	const { classes: commonClasses } = useCommonStyles();
-	const [readOnly, setReadOnly] = useState(initialReadOnly ?? isEditable);
+	const router = useRouter();
+	const isSequential = mode === "sequential";
+	// Sequential mode keeps every Section permanently editable (no toggle).
+	const [readOnly, setReadOnly] = useState(
+		isSequential ? false : (initialReadOnly ?? isEditable),
+	);
 
 	const enterEdit = () => setReadOnly(false);
 	const exitEdit = () => setReadOnly(true);
+
+	// Called from the form's `onSubmit` success path: in sequential mode this
+	// advances to the next Section (navigation is gated behind a clean save);
+	// in standalone it returns the Section to read-only.
+	const afterSave = useCallback(() => {
+		if (isSequential) {
+			if (nextHref) {
+				router.push(nextHref, undefined, { shallow: true, scroll: false });
+			}
+			return;
+		}
+		setReadOnly(true);
+	}, [isSequential, nextHref, router]);
 
 	const Frame = useCallback(
 		({ form, children, before }: FrameProps) => (
@@ -82,6 +106,7 @@ export function useSectionForm({
 					prevHref={prevHref}
 					nextHref={nextHref}
 					hideActions={hideActions}
+					mode={mode}
 				>
 					{before}
 					<form
@@ -105,9 +130,10 @@ export function useSectionForm({
 			prevHref,
 			nextHref,
 			hideActions,
+			mode,
 			commonClasses.partStack,
 		],
 	);
 
-	return { readOnly, enterEdit, exitEdit, Frame };
+	return { readOnly, enterEdit, exitEdit, afterSave, Frame };
 }

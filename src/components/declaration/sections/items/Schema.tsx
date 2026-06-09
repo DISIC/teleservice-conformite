@@ -4,9 +4,14 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
+import type { EditingMode } from "~/utils/declaration/status";
 import { useAppForm } from "~/forms/context";
 import { SchemaForm as DeclarationSchemaForm } from "~/forms/schema/schemaForm";
-import { schemaFormOptions, type ZSchema } from "~/forms/schema/schemaSchema";
+import {
+	declarationToSchemaValues,
+	schemaFormOptions,
+	type ZSchema,
+} from "~/forms/schema/schemaSchema";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 
 type SchemaSectionProps = {
@@ -16,6 +21,7 @@ type SchemaSectionProps = {
 	) => void;
 	prevHref: string | null;
 	nextHref: string | null;
+	mode: EditingMode;
 };
 
 export function SchemaSection({
@@ -23,6 +29,7 @@ export function SchemaSection({
 	onDeclarationChange,
 	prevHref,
 	nextHref,
+	mode,
 }: SchemaSectionProps) {
 	const hasSchema = !!declaration.schema;
 
@@ -41,26 +48,20 @@ export function SchemaSection({
 				),
 		});
 
-	const { readOnly, exitEdit, Frame } = useSectionForm({
+	const { readOnly, afterSave, Frame } = useSectionForm({
 		title: SECTION_TITLES.schema,
 		declaration,
 		isEditable: hasSchema,
 		isSaving: isPending,
 		prevHref,
 		nextHref,
+		mode,
 	});
 
-	const defaultValues: ZSchema = useMemo(() => {
-		if (!declaration.schema) return schemaFormOptions.defaultValues;
-		return {
-			schemaName: declaration.schema.schemaName ?? "",
-			schemaUrl: declaration.schema.schemaUrl ?? "",
-			actionPlanUrls: (declaration.schema.actionPlanUrls ?? []).map((item) => ({
-				name: item.name ?? "",
-				url: item.url ?? "",
-			})),
-		};
-	}, [declaration.schema]);
+	const defaultValues: ZSchema = useMemo(
+		() => declarationToSchemaValues(declaration),
+		[declaration],
+	);
 
 	const form = useAppForm({
 		...schemaFormOptions,
@@ -71,7 +72,7 @@ export function SchemaSection({
 				id: declaration.schema?.id,
 				declarationId: declaration.id,
 			});
-			exitEdit();
+			afterSave();
 		},
 	});
 

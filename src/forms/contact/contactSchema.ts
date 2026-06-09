@@ -1,6 +1,7 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 import type { Contact } from "~/payload/payload-types";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 export const contact = z
 	.object({
@@ -44,3 +45,16 @@ export const contactFormOptions = formOptions({
 		onSubmit: ({ formApi }) => formApi.parseValuesWithSchema(contactForm),
 	},
 });
+
+/** Maps a persisted declaration to this form's values. Keep in sync with the
+ *  schema above so the publish gate validates the exact shape the form feeds. */
+export function declarationToContactValues(
+	declaration: PopulatedDeclaration,
+): ZContactForm {
+	if (!declaration.contact) return contactDefaultValues;
+	return {
+		name: declaration.contact.name ?? "",
+		url: declaration.contact.url ?? "",
+		email: declaration.contact.email ?? "",
+	};
+}
