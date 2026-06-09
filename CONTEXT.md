@@ -107,6 +107,30 @@ Two status badges shown on `SideMenu` items (and historically on the Démarche p
 
 **Avoid:** "À remplir" — older copy, replaced by "À compléter."
 
+### Declaration state
+
+A **derived, presentation-facing** state answering _"what should the declarant do next?"_, surfaced as a single notice card at the top of the [[dashboard editor|Surfaces]]. Distinct from [[status]]: where `Status` is the pure 3-state lifecycle (two DB columns), `DeclarationState` is a **richer** value that folds completeness and AI-verification on top of the lifecycle. The two are not the same axis and must not be conflated.
+
+Computed by `getDeclarationState(declaration)` as a switch on [[status]], with the **draft** branch sub-split:
+
+| `DeclarationState`   | Reached when                                            | Maps to [[status]] |
+| -------------------- | ------------------------------------------------------- | ------------------ |
+| `incomplete`         | draft **and** `validateDeclaration()` returns errors    | Brouillon          |
+| `to-verify`          | draft, complete, has unverified AI content (`toVerify`) | Brouillon          |
+| `ready`              | draft, complete, no AI flag                             | Brouillon          |
+| `published-modified` | modified (was published, content changed since)         | Modifiée           |
+| `null` (no notice)   | clean published, unchanged                              | Publiée            |
+
+**Key rule:** `incomplete` is **Brouillon-only**. A published declaration can never fall back to `incomplete` — once published it is necessarily complete, and any later edit moves it to `published-modified`, regardless of whether an edit re-broke a required field. So there is no cross-axis precedence conflict: the lifecycle decides first, completeness/AI only sub-split the draft branch.
+
+`to-verify` is **defined but dormant in v1** (AI/Albert prefill not yet wired) — `getDeclarationState` may never return it until that lands.
+
+Does **not** violate the "visible status is a pure function of two columns" Invariant: that invariant governs `Status`, which is unchanged. `DeclarationState` is a separate concept layered above it.
+
+**Avoid:** "StateDeclaration" (reversed word order), "Readiness" (rejected name), reusing "Status" for this — they are different concepts.
+
+**See also:** [[status]], [[à-compléter-à-vérifier|À compléter / À vérifier]].
+
 ### Surfaces
 
 A Declaration is reached through two distinct route trees, kept separate on purpose:
@@ -135,6 +159,7 @@ Layered, not feature-foldered. One predictable layer per concern:
 - The Audit collection has at most one row per Declaration. The four Audit [[sub-section]]s are UI groupings over that single row; they never produce separate rows.
 - When `audit.isRealised === false`, fields belonging to the three non-Réalisation Sub-sections are not required and should not be surfaced for editing.
 - `toVerify` is per-Section, not per-Sub-section.
+- A `published-modified` Declaration is **always publishable**: standalone per-section saves are schema-gated, so no edit can leave a published Declaration invalid. The `published-modified` publish CTA therefore navigates straight to `/preview` with no validation guard. Only the **sequential** (Brouillon → `ready`) publish CTA can surface validation errors. See [[declaration-state|Declaration state]].
 
 ## Out of scope
 

@@ -137,8 +137,8 @@ export function SectionShell({
 					{isTerminal ? (
 						<Button
 							priority="primary"
-							iconId="fr-icon-eye-line"
-							iconPosition="right"
+							iconId="fr-icon-upload-fill"
+							iconPosition="left"
 							onClick={onSave}
 							disabled={isSaving}
 						>

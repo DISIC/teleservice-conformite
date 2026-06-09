@@ -1,10 +1,9 @@
-import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { EntityLibraryPickerSlot } from "~/components/declaration/EntityLibraryPicker";
 import { api } from "~/lib/api";
 import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
-import { SECTION_TITLES, sectionHref } from "~/utils/declaration/sections";
-import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
+import { SECTION_TITLES } from "~/utils/declaration/sections";
+import { usePublishAttempt } from "~/utils/declaration/usePublishAttempt";
 import { useAppForm } from "~/forms/context";
 import { ContactTypeForm } from "~/forms/contact/contactForm";
 import {
@@ -29,10 +28,14 @@ export function ContactSection({
 	mode,
 	onPublishAttempt,
 }: ContactSectionProps) {
-	const router = useRouter();
 	const hasContact = !!declaration.contact;
 
 	const libraryLink = useEntityLibraryLink({ kind: "contacts", declaration });
+
+	const { attemptPublish } = usePublishAttempt({
+		declaration,
+		onPublishAttempt,
+	});
 
 	const { mutateAsync: upsertContact, isPending } =
 		api.contact.upsert.useMutation({
@@ -69,23 +72,14 @@ export function ContactSection({
 			});
 
 			// Standalone: just exit edit mode. Sequential: Contact is the terminal
-			// Section, so its save runs the declaration-wide publish gate.
+			// Section, so its save runs the declaration-wide publish gate against
+			// the freshly-upserted contact.
 			if (mode !== "sequential") {
 				afterSave();
 				return;
 			}
 
-			onPublishAttempt();
-			const [firstError] = validateDeclaration({ ...declaration, contact });
-			if (!firstError) {
-				router.push(`/dashboard/declarations/${declaration.id}/preview`);
-				return;
-			}
-			router.push(
-				sectionHref(declaration.id, firstError.section, firstError.field),
-				undefined,
-				{ shallow: true, scroll: false },
-			);
+			attemptPublish({ contact });
 		},
 	});
 

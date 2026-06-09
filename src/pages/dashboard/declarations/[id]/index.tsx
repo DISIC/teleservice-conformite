@@ -13,6 +13,7 @@ import { tss } from "tss-react";
 import { BackButton } from "~/components/ui/BackButton";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
+import { StateNotice } from "~/components/declaration/StateNotice";
 import {
 	getDeclarationStatus,
 	getEditingMode,
@@ -218,6 +219,14 @@ export default function DeclarationPage({
 					)}
 				</header>
 
+				<div className={classes.stateNoticeWrapper}>
+					<StateNotice
+						declaration={declaration}
+						onPublishAttempt={() => setPublishAttempted(true)}
+						onReverted={() => router.reload()}
+					/>
+				</div>
+
 				<div className={classes.statsWrapper}>
 					<StatsCards declaration={declaration} />
 				</div>
@@ -354,6 +363,9 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 	},
 	statsWrapper: {
 		marginBottom: fr.spacing("8v"),
+	},
+	stateNoticeWrapper: {
+		marginBottom: fr.spacing("6v"),
 	},
 	errorSummaryWrapper: {
 		marginBottom: fr.spacing("6v"),
