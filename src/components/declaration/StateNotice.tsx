@@ -80,6 +80,8 @@ export function StateNotice({
 							<Button
 								priority="secondary"
 								onClick={() => revertActions.open?.()}
+								iconId="fr-icon-arrow-go-back-fill"
+								iconPosition="left"
 							>
 								Annuler les modifications
 							</Button>

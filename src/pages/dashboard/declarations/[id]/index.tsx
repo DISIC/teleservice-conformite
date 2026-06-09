@@ -145,9 +145,9 @@ export default function DeclarationPage({
 						<Badge
 							noIcon
 							small
-							severity={status === "published" ? "success" : undefined}
+							severity={status !== "draft" ? "success" : undefined}
 						>
-							{status === "published" ? "Publié" : "Brouillon"}
+							{status !== "draft" ? "Publié" : "Brouillon"}
 						</Badge>
 					</span>
 					<div className={classes.buttonsContainer}>
