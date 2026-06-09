@@ -28,7 +28,13 @@ export function Part({ readOnly, title, grid = true, children }: PartProps) {
 
 	return (
 		<div className={classes.root}>
-			{title && <h3 className={cx(classes.title, fr.cx("fr-h6"))}>{title}</h3>}
+			{title && (
+				<h3
+					className={cx(classes.title, fr.cx("fr-h6", !readOnly && "fr-pb-6v"))}
+				>
+					{title}
+				</h3>
+			)}
 			{children}
 		</div>
 	);

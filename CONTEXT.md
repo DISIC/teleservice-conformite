@@ -79,6 +79,19 @@ Transitions:
 
 **Avoid:** "Draft" (use "Brouillon"), "Dirty" (use "Modifiée"). UI badge labels live in `DeclarationStatusBadge`.
 
+### Editing mode (sequential / standalone)
+
+How the declaration details page presents its [[section]]s for editing. Derived from [[status]], but a distinct concept — it describes _interaction_, not lifecycle.
+
+- **Sequential** — used while the Declaration is **Brouillon** (never published). The [[section]]s are chained into one guided walkthrough: every section renders permanently editable (no read-only toggle, no per-section Modifier/Annuler/Enregistrer), and the footer commits the current section and advances — "Enregistrer et suivant". The final section (Contact) ends the walkthrough with a completeness gate ("Prévisualiser et publier") that validates _all_ sections against their schemas and surfaces a single, live, page-level error summary.
+- **Standalone** — used once the Declaration has been published (**Modifiée** or **Publiée**). Each [[section]] is edited on its own via its top-right Modifier → Annuler/Enregistrer toggle, independent of the others (the ADR-0002 model). Footer navigation is plain section-to-section movement.
+
+The two modes select different behaviors of the same `sections/Shell`; the active mode is decided once per page load from `status === "Brouillon"`.
+
+**Distinct from the "nothing to save" signal:** mode answers "how does the whole declaration get edited"; the per-section `hideActions` flag is an orthogonal signal for "this particular section has nothing to save" (e.g. an audit notice when the audit isn't realised). The two compose — a nothing-to-save section in sequential mode still just advances.
+
+**Avoid:** "Wizard" — collides with the retired `MultiStep` audit flow (see Out of scope). "Fill mode" — superseded by "sequential".
+
 ### Audit réalisé
 
 The `isAuditRealised` boolean on `audits`. When `false`, the audit row exists but the declarant has stated no audit was actually performed — the rest of the audit fields are not collected. When `true`, the four Audit [[sub-section]]s become applicable.
