@@ -4,7 +4,6 @@ import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -19,7 +18,6 @@ import {
 	getEditingMode,
 } from "~/utils/declaration/status";
 import { StatsCards } from "~/components/declaration/StatsCards";
-import Membres from "~/components/declaration/Membres";
 import { SectionContent } from "~/components/declaration/sections/Content";
 import VerifyGeneratedInfoHelpingMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
@@ -34,8 +32,6 @@ const deleteModal = createModal({
 	isOpenedByDefault: false,
 });
 
-type TabId = "declaration" | "members";
-
 export default function DeclarationPage({
 	declaration: initialDeclaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -45,7 +41,6 @@ export default function DeclarationPage({
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
 	const hasPublishedDeclaration = !!declaration?.publishedContent;
-	const [selectedTabId, setSelectedTabId] = useState<TabId>("declaration");
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertDetails, setAlertDetails] = useState<{
 		title?: string;
@@ -239,49 +234,36 @@ export default function DeclarationPage({
 					</div>
 				)}
 
-				<Tabs
-					selectedTabId={selectedTabId}
-					tabs={[
-						{ tabId: "declaration", label: "Déclaration" },
-						{ tabId: "members", label: "Membres" },
-					]}
-					onTabChange={(id) => setSelectedTabId(id as TabId)}
-					className={classes.tabs}
-				>
-					{selectedTabId === "declaration" && (
-						<>
-							{declarationErrors.length > 0 && (
-								<div className={classes.errorSummaryWrapper}>
-									<ErrorSummary
-										declarationId={declaration.id}
-										errors={declarationErrors}
-									/>
-								</div>
-							)}
-							<div
-								className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
-								role="presentation"
-							>
-								<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
-									<SideMenu
-										declaration={declaration}
-										currentSection={currentSection}
-									/>
-								</aside>
-								<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
-									<SectionContent
-										declaration={declaration}
-										currentSection={currentSection}
-										onDeclarationChange={setDeclaration}
-										mode={editingMode}
-										onPublishAttempt={() => setPublishAttempted(true)}
-									/>
-								</div>
-							</div>
-						</>
+				<div className={classes.tabContent}>
+					{declarationErrors.length > 0 && (
+						<div className={classes.errorSummaryWrapper}>
+							<ErrorSummary
+								declarationId={declaration.id}
+								errors={declarationErrors}
+							/>
+						</div>
 					)}
-					{selectedTabId === "members" && <Membres declaration={declaration} />}
-				</Tabs>
+					<div
+						className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
+						role="presentation"
+					>
+						<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
+							<SideMenu
+								declaration={declaration}
+								currentSection={currentSection}
+							/>
+						</aside>
+						<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
+							<SectionContent
+								declaration={declaration}
+								currentSection={currentSection}
+								onDeclarationChange={setDeclaration}
+								mode={editingMode}
+								onPublishAttempt={() => setPublishAttempted(true)}
+							/>
+						</div>
+					</div>
+				</div>
 			</section>
 
 			<deleteModal.Component
@@ -393,36 +375,9 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			fr.colors.decisions.background.actionHigh.redMarianne.default,
 		color: fr.colors.decisions.text.inverted.info.default,
 	},
-	tabs: {
-		boxShadow: "none",
-		"& > ul": {
-			padding: 0,
-			margin: 0,
-			boxShadow: `0 -1px 0 0 ${fr.colors.decisions.border.default.grey.default} inset`,
-			gap: fr.spacing("8v"),
-		},
-		"& > ul > li > button": {
-			border: "none !important",
-			backgroundColor: "inherit !important",
-			backgroundImage: "none !important",
-			paddingLeft: 0,
-			paddingRight: 0,
-			margin: 0,
-			borderBottom: "3px solid transparent !important",
-			"&[aria-selected='true']": {
-				borderColor: `${fr.colors.decisions.border.actionHigh.blueFrance.default} !important`,
-				borderTop: "none !important",
-			},
-		},
-		"& > div": {
-			paddingTop: fr.spacing("6v"),
-			paddingRight: 0,
-			paddingLeft: 0,
-			paddingBottom: fr.spacing("16v"),
-		},
-		"&::before": {
-			boxShadow: "none",
-		},
+	tabContent: {
+		paddingTop: fr.spacing("6v"),
+		paddingBottom: fr.spacing("16v"),
 	},
 	alertWrapper: {
 		width: "100%",
