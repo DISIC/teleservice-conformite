@@ -1,4 +1,3 @@
-import type { BadgeProps } from "@codegouvfr/react-dsfr/Badge";
 import type { Declaration } from "~/payload/payload-types";
 import { extractDeclarationContentToPublish } from "~/utils/declaration-content";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
@@ -25,15 +24,6 @@ export function getDeclarationStatus(
 	if (declaration.status === "published") return "published";
 	return declaration.publishedContent ? "modified" : "draft";
 }
-
-export const STATUS_PRESENTATION: Record<
-	Status,
-	{ label: string; severity: BadgeProps["severity"] }
-> = {
-	draft: { label: "Brouillon", severity: undefined },
-	modified: { label: "Modifiée", severity: "warning" },
-	published: { label: "Publiée", severity: "success" },
-};
 
 /** Returns `false` when no snapshot exists — a draft has nothing to differ from. */
 export function hasContentChangedSincePublish(

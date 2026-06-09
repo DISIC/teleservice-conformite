@@ -17,7 +17,6 @@ import { StateNotice } from "~/components/declaration/StateNotice";
 import {
 	getDeclarationStatus,
 	getEditingMode,
-	STATUS_PRESENTATION,
 } from "~/utils/declaration/status";
 import { StatsCards } from "~/components/declaration/StatsCards";
 import Membres from "~/components/declaration/Membres";
@@ -56,7 +55,6 @@ export default function DeclarationPage({
 	const { classes } = useStyles();
 
 	const status = getDeclarationStatus(declaration);
-	const statusBadge = STATUS_PRESENTATION[status];
 	const editingMode = getEditingMode(status);
 
 	// Declaration-wide publish gate (ADR-0003). Armed by the terminal Section's
@@ -149,8 +147,12 @@ export default function DeclarationPage({
 				<header className={classes.headerSection}>
 					<span className={classes.header}>
 						<h1>{declaration.name}</h1>
-						<Badge noIcon small severity={statusBadge.severity}>
-							{statusBadge.label}
+						<Badge
+							noIcon
+							small
+							severity={status === "published" ? "success" : undefined}
+						>
+							{status === "published" ? "Publié" : "Brouillon"}
 						</Badge>
 					</span>
 					<div className={classes.buttonsContainer}>
