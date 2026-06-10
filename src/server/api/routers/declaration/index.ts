@@ -2,11 +2,6 @@ import z from "zod";
 import { declarationGeneral } from "~/forms/declaration/declarationSchema";
 import { createTRPCRouter, userProtectedProcedure } from "../../trpc";
 import * as service from "./service";
-import { importedDeclarationDataSchema } from "./utils";
-
-// Temporary re-export so the legacy `form.tsx` import keeps resolving; removed
-// with that file in the client-split slice.
-export { importedDeclarationDataSchema } from "./utils";
 
 export const declarationRouter = createTRPCRouter({
 	// Fetch-only ARA preview (no declaration created). Kept for the parked
@@ -37,7 +32,7 @@ export const declarationRouter = createTRPCRouter({
 			),
 		})),
 	createFromUrlAnalysis: userProtectedProcedure
-		.input(z.object({ url: z.string().url() }))
+		.input(z.object({ url: z.url() }))
 		.mutation(async ({ input, ctx }) => ({
 			data: await service.createDeclarationFromUrlAnalysis(
 				ctx.payload,
@@ -74,15 +69,6 @@ export const declarationRouter = createTRPCRouter({
 		.input(z.object({ id: z.number(), name: z.string() }))
 		.mutation(async ({ input, ctx }) => ({
 			data: await service.updateDeclarationName(
-				ctx.payload,
-				Number(ctx.session.user.id),
-				input,
-			),
-		})),
-	createFromUrl: userProtectedProcedure
-		.input(importedDeclarationDataSchema)
-		.mutation(async ({ input, ctx }) => ({
-			data: await service.createDeclarationFromUrl(
 				ctx.payload,
 				Number(ctx.session.user.id),
 				input,

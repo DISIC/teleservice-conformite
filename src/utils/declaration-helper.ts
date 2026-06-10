@@ -1,15 +1,4 @@
-import {
-	rgaaVersionOptions,
-	testEnvironmentOptions,
-	toolOptions,
-} from "~/payload/selectOptions";
-import type { RouterOutputs } from "~/lib/api";
-import type {
-	ZAuditContents,
-	ZAuditGeneral,
-	ZAuditNonConformities,
-	ZAuditTools,
-} from "~/forms/audit/auditSchema";
+import { testEnvironmentOptions, toolOptions } from "~/payload/selectOptions";
 
 export const getConformityStatus = (
 	rate: number,
@@ -51,43 +40,6 @@ export const extractTechnologiesFromUrl = (
 			}, []),
 		),
 	];
-};
-
-/**
- * Maps ARA-imported audit data into the audit form values.
- *
- * Parked, not dead: the "update an existing audit from ARA" feature
- * (UpdateAuditFromAraModal) was unwired by the redesign and is slated to
- * return. Before re-use it must be reworked for ADR-0002 — this returns the
- * intersection of all four Sub-section value types as one object, which
- * assumes the old combined audit form. The four forms now upsert
- * independently, so re-wiring means fanning this out across them, not
- * re-mounting the modal as-is.
- */
-export const mapAraDataToFormValues = (
-	data: RouterOutputs["declaration"]["getInfoFromAra"]["data"],
-): ZAuditGeneral & ZAuditTools & ZAuditContents & ZAuditNonConformities => {
-	const rateRaw = parseFloat(data.taux?.replace("%", "") ?? "0");
-	return {
-		isAuditRealised: true,
-		realisedBy: data.auditRealizedBy ?? "",
-		rgaa_version:
-			rgaaVersionOptions.find((o) => o.value === data.rgaaVersion)?.value ??
-			"rgaa_4",
-		date: data.publishedAt
-			? new Date(data.publishedAt).toLocaleDateString("en-CA")
-			: "",
-		rate: Number.isNaN(rateRaw) ? 0 : rateRaw,
-		compliantElements: data.compliantElements.join("\n"),
-		testEnvironments: extractTechnologiesFromUrl(
-			data.testEnvironments,
-			testEnvironmentOptions,
-		),
-		usedTools: extractTechnologiesFromUrl(data.usedTools, toolOptions),
-		nonCompliantElements: data.nonCompliantElements ?? "",
-		disproportionnedCharge: data.disproportionnedCharge ?? "",
-		optionalElements: data.optionalElements ?? "",
-	};
 };
 
 /**

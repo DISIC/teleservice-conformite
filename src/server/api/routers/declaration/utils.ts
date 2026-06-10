@@ -3,7 +3,6 @@ import type { Payload } from "payload";
 import z from "zod";
 import {
 	kindOptions,
-	sourceOptions,
 	testEnvironmentOptions,
 	toolOptions,
 } from "~/payload/selectOptions";
@@ -35,15 +34,6 @@ export const importedDeclarationDataSchema = z.object({
 	schema: z.object({
 		currentYearSchemaUrl: z.string().nullable(),
 	}),
-	entity: z.object({
-		id: z.number().nullable(),
-		name: z.string().nullable(),
-		kind: z.string().nullable(),
-	}),
-	status: z
-		.enum(sourceOptions.map((option) => option.value))
-		.optional()
-		.default("manual"),
 });
 
 /**
@@ -51,15 +41,9 @@ export const importedDeclarationDataSchema = z.object({
  * before we build collection rows. One target buys one create path and one
  * place to guard against ARA API drift / Albert hallucinations; the future
  * "update from ARA" flow reuses these same normalizers.
- *
- * Derived from {@link importedDeclarationDataSchema} minus `entity`/`status`,
- * which only the legacy client-side `createFromUrl` input carries (those are
- * resolved server-side now). When `createFromUrl` is removed this collapses to
- * a plain `z.infer`.
  */
-export type ImportedDeclarationData = Omit<
-	z.infer<typeof importedDeclarationDataSchema>,
-	"entity" | "status"
+export type ImportedDeclarationData = z.infer<
+	typeof importedDeclarationDataSchema
 >;
 
 export const createOrUpdateEntity = async (
