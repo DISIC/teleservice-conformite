@@ -1,28 +1,6 @@
-import type { ZodType } from "zod";
+import type { z } from "zod";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import {
-	auditContents,
-	auditGeneral,
-	auditNonConformities,
-	auditTools,
-	auditToContentsValues,
-	auditToGeneralValues,
-	auditToNonConformitiesValues,
-	auditToToolsValues,
-} from "~/forms/audit/auditSchema";
-import {
-	contactForm,
-	declarationToContactValues,
-} from "~/forms/contact/contactSchema";
-import {
-	declarationGeneralRefined,
-	declarationToGeneralValues,
-} from "~/forms/declaration/declarationSchema";
-import {
-	declarationToSchemaValues,
-	schemaForm,
-} from "~/forms/schema/schemaSchema";
-import { getVisibleSections, type SectionSlug } from "./sections";
+import { getVisibleSections, SECTIONS, type SectionSlug } from "./sections";
 
 /** A single field-level completeness error, carrying its Section for routing. */
 export type DeclarationError = {
@@ -38,7 +16,7 @@ export type DeclarationError = {
  */
 function runSchema(
 	section: SectionSlug,
-	schema: ZodType,
+	schema: z.ZodType,
 	values: unknown,
 ): DeclarationError[] {
 	const result = schema.safeParse(values);
@@ -50,62 +28,17 @@ function runSchema(
 	}));
 }
 
-/** The three non-Réalisation audit Sub-sections are only collected once the
- *  audit is declared as realised (see CONTEXT.md Invariants). */
-function isAuditRealised(declaration: PopulatedDeclaration): boolean {
-	return declaration.audit?.isRealised === true;
-}
-
 function validateSection(
 	declaration: PopulatedDeclaration,
 	slug: SectionSlug,
 ): DeclarationError[] {
-	switch (slug) {
-		case "infos":
-			return runSchema(
-				slug,
-				declarationGeneralRefined,
-				declarationToGeneralValues(declaration),
-			);
-		case "schema":
-			return runSchema(
-				slug,
-				schemaForm,
-				declarationToSchemaValues(declaration),
-			);
-		case "contact":
-			return runSchema(
-				slug,
-				contactForm,
-				declarationToContactValues(declaration),
-			);
-		case "audit-general":
-			return runSchema(
-				slug,
-				auditGeneral,
-				auditToGeneralValues(declaration.audit),
-			);
-		case "audit-outils":
-			return isAuditRealised(declaration)
-				? runSchema(slug, auditTools, auditToToolsValues(declaration.audit))
-				: [];
-		case "audit-contenus":
-			return isAuditRealised(declaration)
-				? runSchema(
-						slug,
-						auditContents,
-						auditToContentsValues(declaration.audit),
-					)
-				: [];
-		case "audit-non-conformites":
-			return isAuditRealised(declaration)
-				? runSchema(
-						slug,
-						auditNonConformities,
-						auditToNonConformitiesValues(declaration.audit),
-					)
-				: [];
-	}
+	const { validation } = SECTIONS[slug];
+	if (validation.isApplicable?.(declaration) === false) return [];
+	return runSchema(
+		slug,
+		validation.schema,
+		validation.fromDeclaration(declaration),
+	);
 }
 
 /**

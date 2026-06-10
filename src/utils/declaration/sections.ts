@@ -1,4 +1,20 @@
+import {
+	contactForm,
+	declarationToContactValues,
+} from "~/forms/contact/contactSchema";
+import {
+	declarationGeneralRefined,
+	declarationToGeneralValues,
+} from "~/forms/declaration/declarationSchema";
+import {
+	declarationToSchemaValues,
+	schemaForm,
+} from "~/forms/schema/schemaSchema";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import {
+	defineSectionValidation,
+	type SectionValidation,
+} from "./sectionValidation";
 import {
 	AUDIT_SUB_SECTION_SLUGS,
 	AUDIT_SUB_SECTIONS,
@@ -33,6 +49,7 @@ type SectionMeta = {
 	isToComplete: (declaration: PopulatedDeclaration) => boolean;
 	/** "À vérifier" — content is AI-generated and needs human review. */
 	isToVerify: (declaration: PopulatedDeclaration) => boolean;
+	validation: SectionValidation;
 };
 
 const auditSubSectionEntries = Object.fromEntries(
@@ -44,6 +61,7 @@ const auditSubSectionEntries = Object.fromEntries(
 			isVisible: AUDIT_SUB_SECTIONS[slug].isVisible,
 			isToComplete: AUDIT_SUB_SECTIONS[slug].isToComplete,
 			isToVerify: () => false,
+			validation: AUDIT_SUB_SECTIONS[slug].validation,
 		} satisfies SectionMeta,
 	]),
 ) as unknown as Record<AuditSubSectionSlug, SectionMeta>;
@@ -63,6 +81,10 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 		isVisible: () => true,
 		isToComplete: () => false,
 		isToVerify: () => false,
+		validation: defineSectionValidation({
+			schema: declarationGeneralRefined,
+			fromDeclaration: declarationToGeneralValues,
+		}),
 	},
 	...auditSubSectionEntries,
 	schema: {
@@ -70,12 +92,20 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 		isVisible: () => true,
 		isToComplete: (d) => !d.schema,
 		isToVerify: (d) => d.schema?.toVerify === true,
+		validation: defineSectionValidation({
+			schema: schemaForm,
+			fromDeclaration: declarationToSchemaValues,
+		}),
 	},
 	contact: {
 		title: "Contact",
 		isVisible: () => true,
 		isToComplete: (d) => !d.contact,
 		isToVerify: (d) => d.contact?.toVerify === true,
+		validation: defineSectionValidation({
+			schema: contactForm,
+			fromDeclaration: declarationToContactValues,
+		}),
 	},
 };
 

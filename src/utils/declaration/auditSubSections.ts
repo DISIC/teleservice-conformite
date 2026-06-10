@@ -1,4 +1,15 @@
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import {
+	auditContents,
+	auditGeneral,
+	auditNonConformities,
+	auditTools,
+	auditToContentsValues,
+	auditToGeneralValues,
+	auditToNonConformitiesValues,
+	auditToToolsValues,
+} from "~/forms/audit/auditSchema";
+import { defineSectionValidation } from "./sectionValidation";
 
 /**
  * Audit Sub-section registry. Single source of truth for the four UI slices
@@ -28,6 +39,7 @@ type AuditSubSectionMeta = {
 	isVisible: (declaration: PopulatedDeclaration) => boolean;
 	/** "À compléter" — Sub-section's slice of the audit row is missing data. */
 	isToComplete: (declaration: PopulatedDeclaration) => boolean;
+	validation: ReturnType<typeof defineSectionValidation>;
 };
 
 const isAuditMissing = (d: PopulatedDeclaration) => !d.audit;
@@ -42,21 +54,40 @@ export const AUDIT_SUB_SECTIONS: Record<
 		// Complete once the audit question is answered (the row exists); the date
 		// itself is optional and does not gate completeness.
 		isToComplete: (d) => isAuditMissing(d),
+		validation: defineSectionValidation({
+			schema: auditGeneral,
+			fromDeclaration: (d) => auditToGeneralValues(d.audit),
+		}),
 	},
 	"audit-outils": {
 		title: "Outils et environnements",
 		isVisible: () => true,
 		isToComplete: (d) =>
 			isAuditMissing(d) || (d.audit?.usedTools?.length ?? 0) === 0,
+		validation: defineSectionValidation({
+			schema: auditTools,
+			fromDeclaration: (d) => auditToToolsValues(d.audit),
+			isApplicable: (d) => d.audit?.isRealised === true,
+		}),
 	},
 	"audit-contenus": {
 		title: "Contenus vérifiés",
 		isVisible: () => true,
 		isToComplete: (d) => isAuditMissing(d) || !d.audit?.compliantElements,
+		validation: defineSectionValidation({
+			schema: auditContents,
+			fromDeclaration: (d) => auditToContentsValues(d.audit),
+			isApplicable: (d) => d.audit?.isRealised === true,
+		}),
 	},
 	"audit-non-conformites": {
 		title: "Non conformités & dérogations",
 		isVisible: () => true,
 		isToComplete: (d) => isAuditMissing(d) || !d.audit?.nonCompliantElements,
+		validation: defineSectionValidation({
+			schema: auditNonConformities,
+			fromDeclaration: (d) => auditToNonConformitiesValues(d.audit),
+			isApplicable: (d) => d.audit?.isRealised === true,
+		}),
 	},
 };
