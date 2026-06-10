@@ -7,6 +7,7 @@ import {
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { SECTION_BADGE } from "~/utils/declaration/state";
 import {
 	getVisibleSections,
 	isAuditSubSection,
@@ -38,13 +39,27 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 		<span className={classes.itemLabel}>
 			<span>{label}</span>
 			{opts.toComplete && (
-				<Badge severity="new" small noIcon>
-					À compléter
+				<Badge
+					small
+					noIcon
+					style={{
+						color: SECTION_BADGE["to-complete"].color,
+						backgroundColor: SECTION_BADGE["to-complete"].bgColor,
+					}}
+				>
+					{SECTION_BADGE["to-complete"].label}
 				</Badge>
 			)}
 			{opts.toVerify && (
-				<Badge severity="new" small noIcon>
-					À vérifier
+				<Badge
+					small
+					noIcon
+					style={{
+						color: SECTION_BADGE["to-verify"].color,
+						backgroundColor: SECTION_BADGE["to-verify"].bgColor,
+					}}
+				>
+					{SECTION_BADGE["to-verify"].label}
 				</Badge>
 			)}
 		</span>

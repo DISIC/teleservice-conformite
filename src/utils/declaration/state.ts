@@ -20,6 +20,9 @@ export type DeclarationState =
 /** Actions a notice may expose, in render order. Handlers are wired by the component. */
 export type StateAction = "revert" | "publish";
 
+/** Badge variants surfaced on `SideMenu` items. `modified` is not rendered yet. */
+export type BadgeVariant = "to-complete" | "to-verify" | "modified";
+
 type StatePresentation = {
 	/** Card background — a `background.alt.<family>.default` decision token. */
 	bgColor: string;
@@ -115,4 +118,14 @@ export const STATE_PRESENTATION: Record<DeclarationState, StatePresentation> = {
 		body: "Des modifications ont été réalisées depuis la dernière publication. Vous pouvez prévisualiser et publier pour mettre à jour.",
 		actions: ["revert", "publish"],
 	},
+};
+
+/** Per-Section badge presentation, reusing the matching state's badge. */
+export const SECTION_BADGE: Record<
+	BadgeVariant,
+	NonNullable<StatePresentation["badge"]>
+> = {
+	"to-complete": STATE_PRESENTATION.incomplete.badge!,
+	"to-verify": STATE_PRESENTATION["to-verify"].badge!,
+	modified: STATE_PRESENTATION["published-modified"].badge!,
 };

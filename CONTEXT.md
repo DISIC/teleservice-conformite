@@ -100,10 +100,13 @@ The `isAuditRealised` boolean on `audits`. When `false`, the audit row exists bu
 
 ### À compléter / À vérifier
 
-Two status badges shown on `SideMenu` items (and historically on the Démarche page tiles):
+Status badges shown on `SideMenu` items (and historically on the Démarche page tiles):
 
 - **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit Sub-sections, computed per-slice (e.g. `audit.usedTools?.length === 0` for Outils).
 - **À vérifier** — the Section's `toVerify` flag is `true`, set when content was AI-generated and needs human review. Tracked at Section level only; not fanned out to Sub-sections.
+- **Modifié** — _(future)_ a Section changed since the last publish. The badge **variant** exists in `SECTION_BADGE` but the per-section diff against `publishedContent` is not yet implemented; only [[declaration-state|Declaration state]] currently surfaces "Modifié", at the declaration level.
+
+**Single source of presentation:** which sections get a badge is decided by the per-section checks (`isSectionToComplete` / `isSectionToVerify`), but the badge **label + colours** are not defined here. They come from `SECTION_BADGE` in `state.ts` — a subset of `STATE_PRESENTATION` that references the existing `.badge` objects of the matching [[declaration-state|Declaration state]] (`to-complete`→`incomplete`, `to-verify`→`to-verify`, `modified`→`published-modified`). This keeps the SideMenu badges and the StateNotice card visually identical (same decision-token colours, same copy) with one source of truth. The per-section badge presentation is _not_ the same axis as `DeclarationState` itself (which is one declaration-wide value); only the presentation triple is shared.
 
 **Avoid:** "À remplir" — older copy, replaced by "À compléter."
 
