@@ -60,8 +60,9 @@ export function getDeclarationState(
 		case "modified":
 			return "published-modified";
 		case "draft":
+			if (hasUnverifiedAiContent(declaration)) return "to-verify";
 			if (validateDeclaration(declaration).length > 0) return "incomplete";
-			return hasUnverifiedAiContent(declaration) ? "to-verify" : "ready";
+			return "ready";
 	}
 }
 
