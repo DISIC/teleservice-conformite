@@ -141,7 +141,14 @@ export default function DeclarationPage({
 				</BackButton>
 				<header className={classes.headerSection}>
 					<span className={classes.header}>
-						<h1>{declaration.name}</h1>
+						<span className={classes.titleWithOrg}>
+							<h1>{declaration.name}</h1>
+							{declaration.entity?.name && (
+								<span className={classes.organisationName}>
+									{declaration.entity.name}
+								</span>
+							)}
+						</span>
 						<Badge
 							noIcon
 							small
@@ -338,6 +345,18 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		"& > h1": {
 			margin: 0,
 		},
+	},
+	titleWithOrg: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("2v"),
+		"& > h1": {
+			margin: 0,
+		},
+	},
+	organisationName: {
+		color: fr.colors.decisions.text.mention.grey.default,
+		fontSize: "14px",
 	},
 	buttonsContainer: {
 		display: "flex",
