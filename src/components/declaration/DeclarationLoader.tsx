@@ -44,11 +44,14 @@ export default function DeclarationLoader({
 
 const useStyles = tss.withName(DeclarationLoader.name).create({
 	loaderContainer: {
+		position: "fixed",
+		inset: 0,
+		zIndex: 1000,
 		background: fr.colors.decisions.background.default.grey.default,
 		display: "flex",
 		width: "100%",
-		flex: 1,
 		"& > .fr-container": {
+			height: "100%",
 			display: "flex",
 			flexDirection: "column",
 			alignItems: "center",

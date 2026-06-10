@@ -1,22 +1,11 @@
-import { fr } from "@codegouvfr/react-dsfr";
-import Accessibility from "@codegouvfr/react-dsfr/picto/Accessibility";
-import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
-import Internet from "@codegouvfr/react-dsfr/picto/Internet";
-import System from "@codegouvfr/react-dsfr/picto/System";
-import { tss } from "tss-react";
-
 import { Part } from "~/components/form/Part";
-import HelpingMessage from "~/components/ui/HelpingMessage";
 import {
 	appKindOptions,
 	kindOptions,
 	mobilePlatformOptions,
 } from "~/payload/selectOptions";
 import { withForm } from "../context";
-import {
-	declarationGeneralFormOptions,
-	initialDeclarationFormOptions,
-} from "./declarationSchema";
+import { declarationGeneralFormOptions } from "./declarationSchema";
 
 export const DeclarationGeneralForm = withForm({
 	...declarationGeneralFormOptions,
@@ -118,140 +107,5 @@ export const DeclarationGeneralForm = withForm({
 				</form.AppField>
 			</Part>
 		);
-	},
-});
-
-export const ContextForm = withForm({
-	...initialDeclarationFormOptions,
-	render: function Render({ form }) {
-		const { classes } = useStyles();
-
-		return (
-			<div className={classes.contextFormContainer}>
-				<form.AppField name="initialDeclaration.newDeclarationKind">
-					{(field) => (
-						<field.RichRadioField
-							label="Quelle est votre situation pour ce service ?"
-							required
-							options={[
-								{
-									value: "fromUrl",
-									label:
-										"J'ai une déclaration en ligne, sans avoir utilisé Ara",
-									hintText:
-										"La nouvelle déclaration pourra être pré-remplie grâce à une IA souveraine; des erreurs peuvent survenir",
-									illustration: <Internet fontSize="3rem" />,
-								},
-								{
-									value: "fromAra",
-									label:
-										"J'ai une déclaration en ligne réalisée avec l’outil Ara",
-									hintText:
-										"La nouvelle déclaration pourra être pré-remplie automatiquement",
-									illustration: <System fontSize="3rem" />,
-								},
-								{
-									value: "fromScratch",
-									label: "Je n’ai pas de déclaration d’accessibilité",
-									hintText: "La nouvelle déclaration sera à créer manuellement",
-									illustration: <DocumentSearch fontSize="3rem" />,
-								},
-							]}
-							onOptionChange={() => {
-								form.resetField("initialDeclaration.declarationUrl");
-								form.resetField("initialDeclaration.araUrl");
-								form.resetField("initialDeclaration.declarationName");
-							}}
-						/>
-					)}
-				</form.AppField>
-				<form.Subscribe
-					selector={(store) =>
-						store.values.initialDeclaration?.newDeclarationKind
-					}
-				>
-					{(newDeclarationKind) => {
-						switch (newDeclarationKind) {
-							case "fromUrl":
-								return (
-									<form.AppField name="initialDeclaration.declarationUrl">
-										{(field) => (
-											<field.TextField
-												label="Lien URL de la déclaration en ligne "
-												nativeInputProps={{ type: "url" }}
-												hintText="Format attendu : https://www.example.fr"
-												required
-											/>
-										)}
-									</form.AppField>
-								);
-							case "fromAra":
-								return (
-									<form.AppField name="initialDeclaration.araUrl">
-										{(field) => (
-											<field.TextField
-												label="URL de l’audit Ara"
-												nativeInputProps={{ type: "url" }}
-												hintText="Format attendu : https://ara.numerique.gouv.fr/declaration/xxxxxxx"
-												required
-											/>
-										)}
-									</form.AppField>
-								);
-							case "fromScratch":
-								return (
-									<form.AppField name="initialDeclaration.declarationName">
-										{(field) => (
-											<field.TextField
-												label="Nom du service numérique concerné"
-												hintText={
-													<>
-														Nous vous conseillons d’utiliser le nom du service
-														numérique.
-														<br />
-														Exemples : Demande de logement social, Service
-														public.fr, Outil de gestion des congés
-													</>
-												}
-												required
-											/>
-										)}
-									</form.AppField>
-								);
-							default:
-								return (
-									<HelpingMessage
-										image={<Accessibility fontSize="6rem" />}
-										message={
-											<span>
-												<a
-													href="https://ara.numerique.gouv.fr/"
-													className={fr.cx("fr-link")}
-													target="_blank"
-													rel="noreferrer"
-													title="Ara, nouvelle fenêtre"
-												>
-													Ara
-												</a>{" "}
-												est un outil destiné aux auditeurs qui permet de
-												réaliser un rapport d’audit complet et de générer
-												automatiquement une déclaration d’accessibilité.
-											</span>
-										}
-									/>
-								);
-						}
-					}}
-				</form.Subscribe>
-			</div>
-		);
-	},
-});
-
-const useStyles = tss.withName(ContextForm.name).create({
-	contextFormContainer: {
-		display: "flex",
-		flexDirection: "column",
-		gap: "2rem",
 	},
 });
