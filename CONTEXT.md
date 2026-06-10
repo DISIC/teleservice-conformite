@@ -123,11 +123,27 @@ Computed by `getDeclarationState(declaration)` as a switch on [[status]], with t
 
 **Key rule:** `incomplete` is **Brouillon-only**. A published declaration can never fall back to `incomplete` — once published it is necessarily complete, and any later edit moves it to `published-modified`, regardless of whether an edit re-broke a required field. So there is no cross-axis precedence conflict: the lifecycle decides first, completeness/AI only sub-split the draft branch.
 
-`to-verify` is **defined but dormant in v1** (AI/Albert prefill not yet wired) — `getDeclarationState` may never return it until that lands.
+`to-verify` becomes reachable once the import [[creation-path|Creation paths]] (ARA / IA) land — they create Declarations with `toVerify` Sections.
 
 Does **not** violate the "visible status is a pure function of two columns" Invariant: that invariant governs `Status`, which is unchanged. `DeclarationState` is a separate concept layered above it.
 
 **Avoid:** "StateDeclaration" (reversed word order), "Readiness" (rejected name), reusing "Status" for this — they are different concepts.
+
+**See also:** [[status]], [[à-compléter-à-vérifier|À compléter / À vérifier]].
+
+### Creation path
+
+One of the three ways a Declaration comes into existence, chosen by the declarant on the creation page (`/dashboard/form`):
+
+- **Manuel** (`fromSource: "manual"`) — declarant supplies only a name; a skeleton Declaration is created and completed via the **sequential** [[editing mode|Editing mode]].
+- **Import ARA** (`fromSource: "ara"`) — declarant supplies the URL of an ARA report; its data is fetched from ARA's API and the Declaration is created pre-filled.
+- **Import IA** (`fromSource: "ai"`) — declarant supplies the URL of an already-published accessibility declaration page; an LLM (Albert) extracts its content and the Declaration is created pre-filled.
+
+The two **import paths** share one contract: both sources normalize into a single imported-data shape, the Declaration is created entirely server-side in one mutation, and the imported Sections are flagged **À vérifier** ([[à-compléter-à-vérifier|À compléter / À vérifier]]). On failure nothing is created; the declarant is offered the Manuel path as fallback. The imported name falls back to the submitted URL's hostname when the source provides none — a Declaration is never created nameless.
+
+The ARA import is intended to be reusable later as an **update** of an existing (published) Declaration's audit from a fresh ARA report — same fetch + normalize + transform, update instead of create.
+
+**Avoid:** "contextForm" — legacy name for the creation page's form, retired with the per-path split.
 
 **See also:** [[status]], [[à-compléter-à-vérifier|À compléter / À vérifier]].
 
