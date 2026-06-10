@@ -19,7 +19,6 @@ import {
 } from "~/utils/declaration/status";
 import { StatsCards } from "~/components/declaration/StatsCards";
 import { SectionContent } from "~/components/declaration/sections/Content";
-import VerifyGeneratedInfoHelpingMessage from "~/components/declaration/VerifyGeneratedInfoPopUpMessage";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { copyToClipboard } from "~/utils/declaration-helper";
@@ -234,12 +233,6 @@ export default function DeclarationPage({
 				<div className={classes.statsWrapper}>
 					<StatsCards declaration={declaration} />
 				</div>
-
-				{declaration.fromSource === "ai" && (
-					<div className={classes.aiBannerWrapper}>
-						<VerifyGeneratedInfoHelpingMessage />
-					</div>
-				)}
 
 				<div className={classes.tabContent}>
 					{declarationErrors.length > 0 && (
