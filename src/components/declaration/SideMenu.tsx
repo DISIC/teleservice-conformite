@@ -9,11 +9,11 @@ import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { SECTION_BADGE } from "~/utils/declaration/state";
 import {
-	getVisibleSections,
 	isAuditSubSection,
 	isAuditToVerify,
 	isSectionToComplete,
 	isSectionToVerify,
+	SECTION_SLUGS,
 	SECTION_TITLES,
 	type SectionSlug,
 	sectionHref,
@@ -29,8 +29,7 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	const declarationId = declaration.id;
 	const auditMissing = !declaration.audit;
 	const isAuditCurrent = isAuditSubSection(currentSection);
-	const visibleAuditSubSections =
-		getVisibleSections(declaration).filter(isAuditSubSection);
+	const visibleAuditSubSections = SECTION_SLUGS.filter(isAuditSubSection);
 
 	const renderLabel = (
 		label: string,

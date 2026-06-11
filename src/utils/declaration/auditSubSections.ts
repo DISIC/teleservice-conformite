@@ -33,10 +33,6 @@ export type AuditSubSectionSlug = (typeof AUDIT_SUB_SECTION_SLUGS)[number];
 
 type AuditSubSectionMeta = {
 	title: string;
-	/** Whether the Sub-section is navigable. All sub-sections stay visible;
-	 *  the ones that depend on the audit being realised show a notice instead
-	 *  of their form until then. */
-	isVisible: (declaration: PopulatedDeclaration) => boolean;
 	/** "À compléter" — Sub-section's slice of the audit row is missing data. */
 	isToComplete: (declaration: PopulatedDeclaration) => boolean;
 	validation: ReturnType<typeof defineSectionValidation>;
@@ -50,7 +46,6 @@ export const AUDIT_SUB_SECTIONS: Record<
 > = {
 	"audit-general": {
 		title: "Réalisation de l'audit",
-		isVisible: () => true,
 		// Complete once the audit question is answered (the row exists); the date
 		// itself is optional and does not gate completeness.
 		isToComplete: (d) => isAuditMissing(d),
@@ -61,7 +56,6 @@ export const AUDIT_SUB_SECTIONS: Record<
 	},
 	"audit-outils": {
 		title: "Outils et environnements",
-		isVisible: () => true,
 		isToComplete: (d) =>
 			isAuditMissing(d) || (d.audit?.usedTools?.length ?? 0) === 0,
 		validation: defineSectionValidation({
@@ -72,7 +66,6 @@ export const AUDIT_SUB_SECTIONS: Record<
 	},
 	"audit-contenus": {
 		title: "Contenus vérifiés",
-		isVisible: () => true,
 		isToComplete: (d) => isAuditMissing(d) || !d.audit?.compliantElements,
 		validation: defineSectionValidation({
 			schema: auditContents,
@@ -82,7 +75,6 @@ export const AUDIT_SUB_SECTIONS: Record<
 	},
 	"audit-non-conformites": {
 		title: "Non conformités & dérogations",
-		isVisible: () => true,
 		isToComplete: (d) => isAuditMissing(d) || !d.audit?.nonCompliantElements,
 		validation: defineSectionValidation({
 			schema: auditNonConformities,

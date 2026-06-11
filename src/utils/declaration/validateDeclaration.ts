@@ -1,6 +1,6 @@
 import type { z } from "zod";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { getVisibleSections, SECTIONS, type SectionSlug } from "./sections";
+import { SECTION_SLUGS, SECTIONS, type SectionSlug } from "./sections";
 
 /** A single field-level completeness error, carrying its Section for routing. */
 export type DeclarationError = {
@@ -52,7 +52,5 @@ function validateSection(
 export function validateDeclaration(
 	declaration: PopulatedDeclaration,
 ): DeclarationError[] {
-	return getVisibleSections(declaration).flatMap((slug) =>
-		validateSection(declaration, slug),
-	);
+	return SECTION_SLUGS.flatMap((slug) => validateSection(declaration, slug));
 }

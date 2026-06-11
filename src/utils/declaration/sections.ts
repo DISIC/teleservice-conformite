@@ -43,8 +43,6 @@ export const DEFAULT_SECTION: SectionSlug = "infos";
 type SectionMeta = {
 	title: string;
 	parent?: SectionParentKey;
-	/** Whether the Section is currently navigable from SideMenu/footer. */
-	isVisible: (declaration: PopulatedDeclaration) => boolean;
 	/** "À compléter" — required data is missing. */
 	isToComplete: (declaration: PopulatedDeclaration) => boolean;
 	/** "À vérifier" — content is AI-generated and needs human review. */
@@ -58,7 +56,6 @@ const auditSubSectionEntries = Object.fromEntries(
 		{
 			title: AUDIT_SUB_SECTIONS[slug].title,
 			parent: "audit" as const,
-			isVisible: AUDIT_SUB_SECTIONS[slug].isVisible,
 			isToComplete: AUDIT_SUB_SECTIONS[slug].isToComplete,
 			isToVerify: () => false,
 			validation: AUDIT_SUB_SECTIONS[slug].validation,
@@ -67,10 +64,10 @@ const auditSubSectionEntries = Object.fromEntries(
 ) as unknown as Record<AuditSubSectionSlug, SectionMeta>;
 
 /**
- * Single source of truth for everything a SectionSlug carries: label, visibility,
+ * Single source of truth for everything a SectionSlug carries: label,
  * badge predicates, and SideMenu parent grouping. Add or rename a Section by
- * editing this object — `SECTION_TITLES`, `getVisibleSections`,
- * `isSectionToComplete`, and `isSectionToVerify` all derive from here.
+ * editing this object — `SECTION_TITLES`, `isSectionToComplete`, and
+ * `isSectionToVerify` all derive from here.
  *
  * Audit Sub-sections are pulled in from `auditSubSections.ts` (their metadata
  * is shared with the AuditSection component).
@@ -78,7 +75,6 @@ const auditSubSectionEntries = Object.fromEntries(
 export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 	infos: {
 		title: "Informations générales",
-		isVisible: () => true,
 		isToComplete: () => false,
 		isToVerify: () => false,
 		validation: defineSectionValidation({
@@ -89,7 +85,6 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 	...auditSubSectionEntries,
 	schema: {
 		title: "Schéma pluriannuel & plans d'action",
-		isVisible: () => true,
 		isToComplete: (d) => !d.schema,
 		isToVerify: (d) => d.schema?.toVerify === true,
 		validation: defineSectionValidation({
@@ -99,7 +94,6 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 	},
 	contact: {
 		title: "Contact",
-		isVisible: () => true,
 		isToComplete: (d) => !d.contact,
 		isToVerify: (d) => d.contact?.toVerify === true,
 		validation: defineSectionValidation({
@@ -130,15 +124,9 @@ export function parseSectionFromQuery(value: unknown): SectionSlug {
 	return isSectionSlug(value) ? value : DEFAULT_SECTION;
 }
 
-export function getVisibleSections(
-	declaration: PopulatedDeclaration,
-): SectionSlug[] {
-	return SECTION_SLUGS.filter((slug) => SECTIONS[slug].isVisible(declaration));
-}
-
 export function getPrevNextSections(
 	current: SectionSlug,
-	visible: SectionSlug[],
+	visible: readonly SectionSlug[],
 ): { prev: SectionSlug | null; next: SectionSlug | null } {
 	const i = visible.indexOf(current);
 	if (i === -1) return { prev: null, next: null };

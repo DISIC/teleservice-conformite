@@ -2,7 +2,7 @@ import { Fragment, type ReactNode } from "react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import {
 	getPrevNextSections,
-	getVisibleSections,
+	SECTION_SLUGS,
 	type SectionSlug,
 	sectionHref,
 } from "~/utils/declaration/sections";
@@ -71,8 +71,7 @@ export function SectionContent({
 	mode,
 	onPublishAttempt,
 }: SectionContentProps) {
-	const visible = getVisibleSections(declaration);
-	const { prev, next } = getPrevNextSections(currentSection, visible);
+	const { prev, next } = getPrevNextSections(currentSection, SECTION_SLUGS);
 	const prevHref = prev ? sectionHref(declaration.id, prev) : null;
 	const nextHref = next ? sectionHref(declaration.id, next) : null;
 	const renderProps = {
