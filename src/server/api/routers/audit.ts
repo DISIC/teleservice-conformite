@@ -24,7 +24,7 @@ const auditUpsertValues = z.object({
 });
 
 export const auditRouter = createTRPCRouter({
-	upsert: userProtectedProcedure
+	update: userProtectedProcedure
 		.input(
 			z.object({
 				values: auditUpsertValues,

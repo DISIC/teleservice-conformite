@@ -71,7 +71,7 @@ function useAuditSubSection({
 	// a notice instead of their form — with no action buttons.
 	const showNotice = requiresRealised && audit?.isRealised !== true;
 
-	const { mutateAsync: upsert, isPending } = api.audit.upsert.useMutation({
+	const { mutateAsync: upsert, isPending } = api.audit.update.useMutation({
 		onSuccess: ({ data }) =>
 			onDeclarationChange((prev) => ({ ...prev, audit: data })),
 		onError: logMutationError("saving audit", declaration.id),
