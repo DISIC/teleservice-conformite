@@ -10,7 +10,6 @@ import sharp from "sharp";
 import { AccessRights } from "./collections/AccessRight";
 import { Accounts } from "./collections/Account";
 import { Admins } from "./collections/Admin";
-import { Audits } from "./collections/Audit";
 import { Contacts } from "./collections/Contact";
 import { Declarations } from "./collections/Declaration";
 import { Domains } from "./collections/Domain";
@@ -45,7 +44,6 @@ export default buildConfig({
 		Verifications,
 		Domains,
 		Entities,
-		Audits,
 		Declarations,
 		AccessRights,
 		Media,
