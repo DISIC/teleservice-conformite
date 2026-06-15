@@ -353,7 +353,6 @@ export const getServerSideProps = (async (context) => {
 		return { redirect: { destination: "/", permanent: false } };
 	}
 
-	// The Library is per-user (ADR-0004); ownership is resolved from the session
-	// inside the tRPC procedures, so no props need fetching here.
+	// Library ownership is resolved from the session inside tRPC; no props to fetch.
 	return { props: {} };
 }) satisfies GetServerSideProps;

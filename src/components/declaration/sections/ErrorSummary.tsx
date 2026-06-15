@@ -16,11 +16,9 @@ type ErrorSummaryProps = {
 };
 
 /**
- * Live, page-level summary of the declaration-wide publish gate (ADR-0003).
- * Rendered only after a publish attempt and only while `errors` is non-empty —
- * it re-derives from the declaration on every save, so it shrinks as Sections
- * are fixed and disappears at zero. Shows the first {@link COLLAPSED_ROWS}
- * errors with a "Voir plus" toggle; each row routes to its Section.
+ * Live, page-level summary of the declaration-wide publish gate. Rendered only
+ * after a publish attempt; it re-derives from the declaration on every save, so
+ * it shrinks as Sections are fixed and disappears at zero.
  */
 export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
 	const router = useRouter();

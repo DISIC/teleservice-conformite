@@ -76,8 +76,7 @@ const createDeclarationFromImportedData = async (
 				entity: newEntityId,
 				created_by: userId,
 				fromSource: source,
-				// Imported sources carry a realised audit; fold its content directly
-				// into the row's groups, all flagged `toVerify` for human review.
+				// Imported sources carry a realised audit; flag every group `toVerify`.
 				audit: {
 					isRealised: true,
 					realisedBy: data.auditRealizedBy || "-",
@@ -389,10 +388,8 @@ export const revertToPublished = async (
 		});
 	}
 
-	// Since ADR-0004 the audit/contact/schema content lives in groups on the row,
-	// so it is captured by the declaration's own version history. Restoring the
-	// last published version restores the whole declaration in one step — no
-	// per-section rows to re-apply from the JSON snapshot.
+	// Groups are captured by the declaration's own version history, so restoring
+	// the last published version restores the whole declaration in one step.
 	const latestPublished = await payload.findVersions({
 		collection: "declarations",
 		where: {

@@ -2,9 +2,7 @@ import type { CollectionConfig } from "payload";
 
 /**
  * Library ("Schémas et Contacts") parent — a user's reusable schéma et plan
- * d'actions (ADR-0004). Owned per-user via `user`; symmetric with Contacts.
- * Fields renamed to `name`/`url` (was `schemaName`/`schemaUrl`) so a Declaration's
- * `schema` group is a field-for-field copy for propagation.
+ * d'actions. Owned per-user via `user`; symmetric with Contacts.
  */
 export const Schemas: CollectionConfig = {
 	slug: "schemas",

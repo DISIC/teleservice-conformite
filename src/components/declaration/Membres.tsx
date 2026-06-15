@@ -203,8 +203,5 @@ const useStyles = tss.withName(Membres.name).create({
 	},
 	tableHeader: {
 		minWidth: "max-content",
-		// display: "flex",
-		// alignItems: "center",
-		// gap: fr.spacing("2v"),
 	},
 });

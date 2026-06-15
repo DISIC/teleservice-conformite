@@ -4,8 +4,7 @@ import { createTRPCRouter, userProtectedProcedure } from "../../trpc";
 import * as service from "./service";
 
 export const declarationRouter = createTRPCRouter({
-	// Fetch-only ARA preview (no declaration created). Kept for the parked
-	// "update an existing audit from ARA" flow (UpdateAuditFromAraModal).
+	// Fetch-only ARA preview consumed by UpdateAuditFromAraModal.
 	getInfoFromAra: userProtectedProcedure
 		.input(z.object({ id: z.string() }))
 		.mutation(async ({ input }) => ({

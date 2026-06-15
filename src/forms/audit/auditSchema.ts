@@ -9,10 +9,8 @@ import {
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 /**
- * Four independent audit forms — one per Sub-section, each a self-contained
- * route (ADR-0002). No `section` discriminator, no shared multi-step options:
- * every schema validates only the fields its Sub-section owns, so the
- * create-time empty-placeholder bug is structurally impossible.
+ * Four independent audit forms — one per Sub-section. Every schema validates
+ * only the fields its Sub-section owns.
  *
  * Each `auditTo*Values` mapper sits next to its schema/defaults so the publish
  * gate validates the exact shape its form feeds — keep them in sync.
@@ -21,9 +19,8 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 type Audit = PopulatedDeclaration["audit"];
 
 // ── Réalisation de l'audit (slug `audit-general`) ───────────────────────────
-// `isAuditRealised` is always required. When the audit was realised, the date
-// fields (realisedBy / rgaa_version / rate) become required too; when it was
-// not, they are irrelevant and left untouched.
+// When the audit is realised, the date fields become required; otherwise they
+// are irrelevant and left untouched.
 export const auditGeneral = z
 	.object({
 		isAuditRealised: z.boolean().optional(),

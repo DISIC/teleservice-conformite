@@ -45,10 +45,9 @@ export async function findPopulated<
 }
 
 /**
- * A declaration with its two remaining relations resolved to objects. Since
- * ADR-0004 the audit/contact/schema content lives in groups on the row itself,
- * so only `entity` and `created_by` still need hydrating — the join/relation
- * unions of the old four-collection shape are gone.
+ * A declaration with its two remaining relations resolved to objects. Only
+ * `entity` and `created_by` still need hydrating; audit/contact/schema content
+ * lives in groups on the row itself.
  */
 export type PopulatedDeclaration = Omit<
 	Declaration,

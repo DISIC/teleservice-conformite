@@ -5,8 +5,6 @@ import config from "./payload.config";
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections growing exponentially
  * during API Route usage.
- *
- * Source: https://github.com/vercel/next.js/blob/canary/examples/with-mongodb-mongoose/lib/dbConnect.js
  */
 let cached: {
 	client: Payload | null;

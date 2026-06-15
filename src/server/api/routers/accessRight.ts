@@ -139,8 +139,7 @@ export const accessRightRouter = createTRPCRouter({
 				limit: 1,
 			});
 
-			// To handle the case user doesn't exist, we create an access right with a null user and the email in tmpUserEmail.
-			// When the user will sign up with this email, we will link the access right to the user and send them a notification email.
+			// Pending invitees are stored by email and linked to their user on first signup.
 			let user = null;
 
 			if (users.totalDocs === 1) user = users.docs[0] as User;

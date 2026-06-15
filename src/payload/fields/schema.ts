@@ -3,9 +3,8 @@ import type { Field } from "payload";
 import { toVerifyField } from "./common";
 
 /**
- * Schéma et plan d'actions content, folded onto the declaration row as a group
- * (ADR-0004). Symmetric with the contact group; `parent` links to a Library
- * schema. Fields renamed to `name`/`url` (was `schemaName`/`schemaUrl`).
+ * Schéma et plan d'actions content folded onto the declaration row as a group.
+ * Symmetric with the contact group; `parent` links to a Library schema.
  */
 export const schemaGroup: Field = {
 	name: "schema",

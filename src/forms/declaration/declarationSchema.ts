@@ -27,8 +27,6 @@ export const declarationGeneral = z.object({
 
 export type ZDeclarationGeneral = z.infer<typeof declarationGeneral>;
 
-// Refined variant used for form validation only. We keep `declarationGeneral`
-// as a plain ZodObject so the router can still rely on `.shape`/`.extend`/`.omit`.
 export const declarationGeneralRefined = declarationGeneral.superRefine(
 	(data, ctx) => {
 		if (data.general.kind === "mobile_app" && !data.general.mobilePlatform) {

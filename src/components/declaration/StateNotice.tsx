@@ -24,10 +24,7 @@ type StateNoticeProps = {
 
 /**
  * Top-of-page status notice telling the declarant what to do next, plus its
- * action CTAs. A bespoke tss-styled card (not a DSFR `<Notice>`); content and
- * colours come from `STATE_PRESENTATION`, handlers are wired here per state.
- * Renders nothing for a clean published declaration (`getDeclarationState` →
- * `null`). See CONTEXT.md "Declaration state".
+ * action CTAs. Renders nothing for a clean published declaration.
  */
 export function StateNotice({
 	declaration,
@@ -48,7 +45,7 @@ export function StateNotice({
 
 	const { bgColor, badge, heading, body, actions } = STATE_PRESENTATION[state];
 	// Publish always validates: the CTA runs the full declaration validation gate
-	// in every state — there is no fast path (CONTEXT.md Invariants).
+	// in every state — there is no fast path.
 	const onPublish = () => attemptPublish();
 
 	return (

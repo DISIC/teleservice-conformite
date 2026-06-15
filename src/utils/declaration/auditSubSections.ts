@@ -12,14 +12,8 @@ import {
 import { defineSectionValidation } from "./sectionValidation";
 
 /**
- * Audit Sub-section registry. Single source of truth for the four UI slices
- * that the SideMenu renders as nested entries under "Audit" and that the
- * `?section=audit-...` URL addresses individually.
- *
- * The four Sub-sections persist into the single `audit` group on the Declaration
- * row (ADR-0004) — the slice is a UI grouping, not a data split (CONTEXT.md).
- * Adding a Sub-section means editing this file and adding a render branch
- * in `components/declaration/sections/items/Audit.tsx`.
+ * Audit Sub-section registry. The four Sub-sections persist into the single
+ * `audit` group on the Declaration row — the slice is a UI grouping, not a data split.
  */
 
 export const AUDIT_SUB_SECTION_SLUGS = [
@@ -38,9 +32,7 @@ type AuditSubSectionMeta = {
 	validation: ReturnType<typeof defineSectionValidation>;
 };
 
-// The audit group always exists on the row (ADR-0004); "missing" now means the
-// realised question has not been answered yet — `isRealised` is null until the
-// declarant picks an answer (the field has no default).
+// `isRealised` has no default: `null` means the declarant has not answered yet.
 const isAuditMissing = (d: PopulatedDeclaration) => d.audit?.isRealised == null;
 
 export const AUDIT_SUB_SECTIONS: Record<

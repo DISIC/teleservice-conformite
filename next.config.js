@@ -4,10 +4,7 @@ import { withPayload } from "@payloadcms/next/withPayload";
 const config = {
 	reactStrictMode: true,
 	turbopack: {},
-	transpilePackages: [
-		"@codegouvfr/react-dsfr",
-		"tss-react", // This is for MUI or if you use htts://tss-react.dev
-	],
+	transpilePackages: ["@codegouvfr/react-dsfr", "tss-react"],
 	devIndicators: {
 		position: "bottom-right",
 	},

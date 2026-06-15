@@ -5,11 +5,8 @@ import { tss } from "tss-react";
 import type { LibraryLink } from "~/utils/declaration/useLibraryLink";
 
 /**
- * Section Library control (ADR-0004). Two faces:
- *  - linked mode (`linkedParentId` set): a notice that the content mirrors a
- *    Library parent and is read-only here, plus a "Détacher" button to convert
- *    it to an editable custom copy.
- *  - custom mode (editing): a dropdown of the user's Library parents to link one.
+ * Section Library control. Linked mode shows a read-only notice plus "Détacher";
+ * custom mode shows a dropdown to pick a Library parent.
  */
 export function LibraryPickerSlot({
 	link,

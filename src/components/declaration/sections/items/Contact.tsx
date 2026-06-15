@@ -70,8 +70,7 @@ export function ContactSection({
 		defaultValues,
 		onSubmit: async ({ value }) => {
 			// Linked content is read-only and kept in sync from the Library; never
-			// re-save it here (the upsert detaches the parent). Pass straight through
-			// to navigation/publish against the already-current linked contact.
+			// re-save it here (the upsert detaches the parent).
 			if (isLinked) {
 				if (mode !== "sequential") {
 					afterSave();
@@ -86,9 +85,7 @@ export function ContactSection({
 				declarationId: declaration.id,
 			});
 
-			// Standalone: just exit edit mode. Sequential: Contact is the terminal
-			// Section, so its save runs the declaration-wide publish gate against
-			// the freshly-upserted contact.
+			// Sequential Contact save runs the declaration-wide publish gate.
 			if (mode !== "sequential") {
 				afterSave();
 				return;

@@ -23,10 +23,9 @@ const requiredWhenRealised = (
 };
 
 /**
- * Audit content, folded onto the declaration row as a 1:1 group (ADR-0004).
- * Replaces the deleted `audits` collection; the four Audit Sub-section forms
- * (ADR-0002) patch this group. Conditions read `siblingData` — i.e. the audit
- * group object itself — so `isRealised` gates the realised-only fields.
+ * Audit content folded onto the declaration row as a 1:1 group. Conditions read
+ * `siblingData` from the audit group itself, so `isRealised` gates the
+ * realised-only fields.
  */
 export const auditGroup: Field = {
 	name: "audit",
@@ -34,8 +33,7 @@ export const auditGroup: Field = {
 	label: { fr: "Audit" },
 	fields: [
 		{
-			// No default: `null` means the declarant has not answered the realised
-			// question yet (drives "À compléter"); `true`/`false` are real answers.
+			// No default: `null` means "not answered yet", `true`/`false` are real answers.
 			name: "isRealised",
 			type: "checkbox",
 			label: { fr: "Audit réalisé" },

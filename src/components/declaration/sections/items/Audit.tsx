@@ -42,9 +42,8 @@ type UseAuditSubSectionArgs = SectionRenderProps & {
 
 /**
  * Cross-cutting plumbing shared by the four audit Sub-section components: the
- * single `audit.upsert` mutation (refreshing `declaration.audit` in place), the
- * `useSectionForm` frame, and the not-realised notice. The form itself — the one
- * thing that differs per Sub-section — stays in each component (ADR-0002).
+ * single `audit.upsert` mutation, the `useSectionForm` frame, and the
+ * not-realised notice. The form itself stays in each component.
  */
 function useAuditSubSection({
 	declaration,
@@ -66,9 +65,8 @@ function useAuditSubSection({
 		? hasAudit
 		: hasAudit && !subSectionToComplete;
 
-	// The non-general Sub-sections can only be completed once the audit has been
-	// declared as realised. Until then they stay visible in the SideMenu but show
-	// a notice instead of their form — with no action buttons.
+	// Non-general Sub-sections show a notice (no form, no actions) until the
+	// audit is declared as realised.
 	const showNotice = requiresRealised && audit?.isRealised !== true;
 
 	const { mutateAsync: upsert, isPending } = api.audit.update.useMutation({

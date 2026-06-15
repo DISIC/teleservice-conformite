@@ -17,7 +17,6 @@ import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
 import { authClient } from "~/lib/auth-client";
 
-// Only in TypeScript projects
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
 	interface RegisterLink {
 		Link: typeof Link;
@@ -30,18 +29,7 @@ const { augmentDocumentWithEmotionCache, withAppEmotionCache } =
 const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
 	defaultColorScheme: "system",
 	Link,
-	preloadFonts: [
-		//"Marianne-Light",
-		//"Marianne-Light_Italic",
-		"Marianne-Regular",
-		//"Marianne-Regular_Italic",
-		"Marianne-Medium",
-		//"Marianne-Medium_Italic",
-		"Marianne-Bold",
-		//"Marianne-Bold_Italic",
-		//"Spectral-Regular",
-		//"Spectral-ExtraBold"
-	],
+	preloadFonts: ["Marianne-Regular", "Marianne-Medium", "Marianne-Bold"],
 });
 
 export { augmentDocumentWithEmotionCache, dsfrDocumentApi };

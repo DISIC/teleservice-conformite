@@ -48,10 +48,7 @@ const useStyles = tss
 			? {
 					display: "flex",
 					flexDirection: "column",
-					// Separate consecutive Parts with a rule while editing (read-only
-					// Parts are self-contained cards and need none). `:first-child` is
-					// resolved against the partStack container, so this targets every
-					// Part after the first regardless of which form rendered it.
+					// Separate consecutive editable Parts with a top rule.
 					"&:not(:first-child)": {
 						borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
 						paddingTop: fr.spacing("6v"),

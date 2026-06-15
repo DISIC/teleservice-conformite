@@ -7,26 +7,16 @@ import { SectionShell } from "~/components/declaration/sections/Shell";
 import type { EditingMode } from "~/utils/declaration/status";
 
 type UseSectionFormArgs = {
-	/** Section title — drives <Head> and SectionShell. */
 	title: string;
 	declaration: PopulatedDeclaration;
-	/** The underlying data already exists; edit/cancel is offered. */
 	isEditable: boolean;
-	/** Override the initial readOnly state. Defaults to `isEditable`. */
 	initialReadOnly?: boolean;
-	/**
-	 * Pin the Section read-only even in sequential mode (which otherwise keeps
-	 * every Section editable). Used for Library-linked groups: their content is
-	 * owned by the parent and edited from the Library, so it must never be
-	 * editable inline. See ADR-0004.
-	 */
+	/** Pin read-only even in sequential mode; used for Library-linked groups. */
 	locked?: boolean;
 	isSaving: boolean;
 	prevHref: string | null;
 	nextHref: string | null;
-	/** Hide the top-right action buttons for informational, nothing-to-save sections. */
 	hideActions?: boolean;
-	/** Sequential (Brouillon walkthrough) vs standalone editing. See ADR-0003. */
 	mode?: EditingMode;
 };
 
@@ -44,7 +34,6 @@ type FrameForm = {
 type FrameProps = {
 	form: FrameForm;
 	children: ReactNode;
-	/** Rendered above the form in edit mode (e.g. EntityLibraryPicker). */
 	before?: ReactNode;
 };
 
@@ -80,9 +69,7 @@ export function useSectionForm({
 	const enterEdit = () => setReadOnly(false);
 	const exitEdit = () => setReadOnly(true);
 
-	// Called from the form's `onSubmit` success path: in sequential mode this
-	// advances to the next Section (navigation is gated behind a clean save);
-	// in standalone it returns the Section to read-only.
+	// Sequential mode advances on a clean save; standalone returns to read-only.
 	const afterSave = useCallback(() => {
 		if (isSequential) {
 			if (nextHref) {

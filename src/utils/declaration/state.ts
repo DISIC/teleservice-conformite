@@ -4,12 +4,9 @@ import { getDeclarationStatus } from "./status";
 import { validateDeclaration } from "./validateDeclaration";
 
 /**
- * A derived, presentation-facing state answering "what should the declarant do
- * next?", surfaced as the top-of-page notice card. Distinct from {@link Status}:
- * `DeclarationState` folds completeness and AI-verification on top of the pure
- * lifecycle. See the "Declaration state" glossary entry in CONTEXT.md.
- *
- * `null` (clean Publiée, unchanged) renders no notice.
+ * Derived state answering "what should the declarant do next?". Distinct from
+ * {@link Status}: it folds completeness and AI-verification on top of the pure
+ * lifecycle. `null` renders no notice.
  */
 export type DeclarationState =
 	| "incomplete"
@@ -38,7 +35,7 @@ type StatePresentation = {
 	actions: StateAction[];
 };
 
-/** True when any Section carries the AI `toVerify` flag (per-Section, see CONTEXT.md). */
+/** True when any Section carries the AI `toVerify` flag. */
 function hasUnverifiedAiContent(declaration: PopulatedDeclaration): boolean {
 	return (
 		declaration.audit?.toVerify === true ||
@@ -50,12 +47,8 @@ function hasUnverifiedAiContent(declaration: PopulatedDeclaration): boolean {
 /**
  * Derives the {@link DeclarationState} as a switch on {@link Status}, sub-splitting
  * the editable branches (draft / modified) on completeness then AI-verification.
- * Returns `null` for a clean published declaration (no notice). See CONTEXT.md
- * "Declaration state".
- *
- * Since ADR-0004 the modified branch can be incomplete too: removing a Contact or
- * Schema from a published declaration yields `published-incomplete`, and the
- * publish gate runs on every publish (no fast path).
+ * The modified branch can be incomplete too: removing a Contact or Schema from a
+ * published declaration yields `published-incomplete`.
  */
 export function getDeclarationState(
 	declaration: PopulatedDeclaration,

@@ -34,9 +34,9 @@ type SectionRenderer = (props: SectionRenderProps) => ReactNode;
 
 /**
  * Maps each non-terminal SectionSlug to its rendered component. Each audit
- * Sub-section is its own self-contained form component (ADR-0002), so the
- * dispatch stays a pure lookup. `contact` is the terminal Section and is
- * rendered separately because it alone needs `onPublishAttempt`.
+ * Sub-section is its own self-contained form component, so the dispatch stays a
+ * pure lookup. `contact` is rendered separately because it alone needs
+ * `onPublishAttempt`.
  */
 const SECTION_RENDERERS: Record<
 	Exclude<SectionSlug, "contact">,

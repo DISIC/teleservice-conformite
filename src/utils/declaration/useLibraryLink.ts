@@ -8,11 +8,8 @@ export type LibraryLink = {
 	label: string;
 	placeholder: string;
 	items: { id: number; label: string; hint?: string }[];
-	/** The linked Library parent id (linked mode), or null (custom mode). */
 	linkedParentId: number | null;
-	/** Link the declaration to a Library parent (enters linked mode). */
 	onSelect: (id: number) => void;
-	/** Detach from the parent, keeping the current content as a custom copy. */
 	onUnlink: () => void;
 	refetch: () => void;
 };
@@ -32,10 +29,9 @@ function parentId(parent: unknown): number | null {
 }
 
 /**
- * Wires a Section's Library picker to the per-user Library (ADR-0004): lists the
- * user's parents, links the declaration to one (copy + `parent`, linked mode), or
- * detaches it back to a custom copy. Linking/unlinking reloads so the section
- * re-renders read-only (linked) or editable (custom).
+ * Wires a Section's Library picker to the per-user Library: lists parents, links
+ * the declaration to one, or detaches it to a custom copy. Linking/unlinking
+ * reloads so the section re-renders read-only (linked) or editable (custom).
  */
 export function useLibraryLink({
 	kind,

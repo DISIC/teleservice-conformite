@@ -3,13 +3,12 @@ import { extractDeclarationContentToPublish } from "~/utils/declaration-content"
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
 
-/** Three visual states derived from `status` + `publishedContent`. See CONTEXT.md. */
+/** Three visual states derived from `status` + `publishedContent`. */
 export type Status = "draft" | "modified" | "published";
 
 /**
  * How the declaration details page presents its Sections for editing. Derived
- * from {@link Status} but a distinct concept — it describes interaction, not
- * lifecycle. See the "Editing mode" glossary entry in CONTEXT.md and ADR-0003.
+ * from {@link Status} but a distinct concept — it describes interaction, not lifecycle.
  */
 export type EditingMode = "sequential" | "standalone";
 
