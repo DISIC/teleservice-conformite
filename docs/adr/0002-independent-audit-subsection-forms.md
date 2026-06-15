@@ -1,7 +1,9 @@
 # ADR-0002: Independent per-Sub-section audit forms
 
-- **Status:** Accepted
+- **Status:** Accepted — amended by ADR-0004
 - **Date:** 2026-06-08
+
+> **Amendment (ADR-0004, 2026-06-10):** the `audits` collection is deleted; audit fields live as a group on `declarations`. The four-independent-forms decision stands unchanged — `audit.upsert` now patches the `audit` group on the declaration row instead of upserting an `audits` row, and the "strictly 1:1" rule is structural rather than service-enforced.
 
 ## Context
 

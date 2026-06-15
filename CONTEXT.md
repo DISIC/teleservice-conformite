@@ -23,7 +23,7 @@ One of the four top-level content areas of a Declaration, surfaced as items in t
 - **Schéma et plans d'action** — multi-year accessibility plan (slug `schema`)
 - **Contact** — contact method for accessibility issues (slug `contact`)
 
-Each Section corresponds to its own Payload collection (`audits`, `schemas`, `contacts`) or, for Infos, to fields on `declarations` itself. The URL of the details page encodes the active Section as `?section=<slug>` — see ADR-0001.
+Every Section's content lives on the `declarations` row itself: Infos as top-level fields, Audit/Schéma/Contact as group fields (ADR-0004). Contact and Schéma may additionally reference a [[library|Library]] parent. The URL of the details page encodes the active Section as `?section=<slug>` — see ADR-0001.
 
 **Avoid:** "block" — used colloquially in conversation but not in code. "Tab" — current code uses `Tabs` for Démarche/Membres at the parent level, which is unrelated to Section navigation.
 
@@ -94,7 +94,7 @@ The two modes select different behaviors of the same `sections/Shell`; the activ
 
 ### Audit réalisé
 
-The `isAuditRealised` boolean on `audits`. When `false`, the audit row exists but the declarant has stated no audit was actually performed — the rest of the audit fields are not collected. When `true`, the four Audit [[sub-section]]s become applicable.
+The `isAuditRealised` boolean on the Declaration's `audit` group. When `false`, the declarant has stated no audit was actually performed — the rest of the audit fields are not collected. When `true`, the four Audit [[sub-section]]s become applicable.
 
 **See also:** [[sub-section]].
 
@@ -114,17 +114,18 @@ Status badges shown on `SideMenu` items (and historically on the Démarche page 
 
 A **derived, presentation-facing** state answering _"what should the declarant do next?"_, surfaced as a single notice card at the top of the [[dashboard editor|Surfaces]]. Distinct from [[status]]: where `Status` is the pure 3-state lifecycle (two DB columns), `DeclarationState` is a **richer** value that folds completeness and AI-verification on top of the lifecycle. The two are not the same axis and must not be conflated.
 
-Computed by `getDeclarationState(declaration)` as a switch on [[status]], with the **draft** branch sub-split:
+Computed by `getDeclarationState(declaration)` as a switch on [[status]], with the editable branches sub-split by completeness:
 
-| `DeclarationState`   | Reached when                                            | Maps to [[status]] |
-| -------------------- | ------------------------------------------------------- | ------------------ |
-| `incomplete`         | draft **and** `validateDeclaration()` returns errors    | Brouillon          |
-| `to-verify`          | draft, complete, has unverified AI content (`toVerify`) | Brouillon          |
-| `ready`              | draft, complete, no AI flag                             | Brouillon          |
-| `published-modified` | modified (was published, content changed since)         | Modifiée           |
-| `null` (no notice)   | clean published, unchanged                              | Publiée            |
+| `DeclarationState`     | Reached when                                            | Maps to [[status]] |
+| ---------------------- | ------------------------------------------------------- | ------------------ |
+| `incomplete`           | draft **and** `validateDeclaration()` returns errors    | Brouillon          |
+| `to-verify`            | draft, complete, has unverified AI content (`toVerify`) | Brouillon          |
+| `ready`                | draft, complete, no AI flag                             | Brouillon          |
+| `published-incomplete` | modified **and** `validateDeclaration()` returns errors | Modifiée           |
+| `published-modified`   | modified, complete                                      | Modifiée           |
+| `null` (no notice)     | clean published, unchanged                              | Publiée            |
 
-**Key rule:** `incomplete` is **Brouillon-only**. A published declaration can never fall back to `incomplete` — once published it is necessarily complete, and any later edit moves it to `published-modified`, regardless of whether an edit re-broke a required field. So there is no cross-axis precedence conflict: the lifecycle decides first, completeness/AI only sub-split the draft branch.
+**Key rule (v2):** the lifecycle decides first (Brouillon / Modifiée / Publiée), then completeness and AI-verification sub-split the editable branches **symmetrically**. A published Declaration **can** become incomplete — removing its Contact or Schema moves it to Modifiée with that Section flagged À compléter (`published-incomplete`), and publishing is blocked until completed. The public snapshot is unaffected. _(Supersedes the retired v1 rule "incomplete is Brouillon-only".)_
 
 `to-verify` becomes reachable once the import [[creation-path|Creation paths]] (ARA / IA) land — they create Declarations with `toVerify` Sections.
 
@@ -149,6 +150,26 @@ The ARA import is intended to be reusable later as an **update** of an existing 
 **Avoid:** "contextForm" — legacy name for the creation page's form, retired with the per-path split.
 
 **See also:** [[status]], [[à-compléter-à-vérifier|À compléter / À vérifier]].
+
+### Library ("Schémas et Contacts")
+
+A user's personal pool of Contacts and Schemas, reusable across their Declarations. Ownership is **per-user**, not per-entity/organization (organization-level sharing is out of scope).
+
+A Declaration's contact/schema is sourced in one of **two modes**:
+
+- **Linked** — the Declaration references a Library parent (an object created/managed in the "Schémas et Contacts" area). It holds its **own copy** of the parent's content, but the copy mirrors the parent: while linked, the data renders **read-only** in the Declaration form, and editing the parent (only possible from the Library area) **auto-propagates** to every linked copy. If propagation touches published Declarations, a warning modal lists them before saving (they move to Modifiée and need republishing — the public snapshot never moves on its own).
+- **Custom** — the declarant flips the custom switch and writes the object inline. It belongs to that Declaration alone: editable in place, no parent, no propagation in or out.
+
+The section-form dropdown offers **both**: Library parents _and_ custom objects from the user's other Declarations. Selecting a parent establishes a **link**; selecting another Declaration's custom object only **pre-fills** a new custom copy — later changes to the source flow nowhere.
+
+Lifecycle rules:
+
+- **Deleting** a Library parent never affects Declarations — their copies survive, detached (they become custom). Published content is immutable to Library operations.
+- Removing a contact or schema **from a published Declaration itself** moves it to Modifiée with that section flagged À compléter; the public snapshot is unchanged.
+
+**Avoid:** "shared documents" / entity-level sharing — the retired model where Contacts/Schemas were linked to an `entity`. "Pre-fill" for the linked mode — pre-fill is the copy-without-link gesture, linking is more than pre-fill.
+
+**See also:** [[section]], [[status]].
 
 ### Surfaces
 
@@ -175,12 +196,15 @@ Layered, not feature-foldered. One predictable layer per concern:
 ## Invariants
 
 - A Declaration's visible status is a pure function of `status` + `publishedContent`. Don't introduce a third source of truth.
-- The Audit collection has at most one row per Declaration. The four Audit [[sub-section]]s are UI groupings over that single row; they never produce separate rows.
+- A Declaration has exactly one audit — the `audit` group on its row (structural since ADR-0004; v1's "at most one `audits` row" invariant is subsumed). The four Audit [[sub-section]]s are UI groupings over that single group.
 - When `audit.isRealised === false`, fields belonging to the three non-Réalisation Sub-sections are not required and should not be surfaced for editing.
 - `toVerify` is per-Section, not per-Sub-section.
-- A `published-modified` Declaration is **always publishable**: standalone per-section saves are schema-gated, so no edit can leave a published Declaration invalid. The `published-modified` publish CTA therefore navigates straight to `/preview` with no validation guard. Only the **sequential** (Brouillon → `ready`) publish CTA can surface validation errors. See [[declaration-state|Declaration state]].
+- A **linked** contact/schema copy is written only by the Library propagation procedure — never directly by a Declaration save. Custom copies are written only by their own Declaration.
+- **Publish always validates.** The publish CTA runs full declaration validation regardless of lifecycle state — there is no fast path. (Supersedes the retired v1 invariant "published-modified is always publishable": removing a Contact/Schema from a published Declaration can make it incomplete, so completeness is no longer guaranteed by per-section save gating. See [[declaration-state|Declaration state]].)
+- Contact and Schema are **symmetric** in flows and business logic: anything defined for one (Library behaviour, removal from a Declaration, À compléter flagging) applies identically to the other.
 
 ## Out of scope
 
 - **"Block"** — conversational synonym for Section. Never used as a code identifier.
 - **"Wizard step" / `MultiStep`** — the audit's previous step-by-step entry flow. Retired with ADR-0001; the `MultiStep` component may still exist for legacy reasons but is no longer referenced by the audit Section.
+- **Entity-level sharing of Contacts/Schemas** — retired in the v2 redesign in favour of the per-user [[library|Library]]. The `entity` link on `contacts`/`schemas` no longer carries sharing semantics.
