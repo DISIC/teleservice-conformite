@@ -17,14 +17,10 @@ export type LibraryContactModalActions = {
 };
 
 interface LibraryContactModalProps {
-	entityId: number;
 	actions: LibraryContactModalActions;
 }
 
-export function LibraryContactModal({
-	entityId,
-	actions,
-}: LibraryContactModalProps) {
+export function LibraryContactModal({ actions }: LibraryContactModalProps) {
 	const { classes } = useStyles();
 	const id = useId();
 
@@ -39,10 +35,9 @@ export function LibraryContactModal({
 
 	const apiUtils = api.useUtils();
 
-	const { mutateAsync: upsertContact } =
-		api.entityLibrary.upsertContact.useMutation({
-			onSuccess: () => apiUtils.entityLibrary.listContacts.invalidate(),
-		});
+	const { mutateAsync: upsertContact } = api.library.upsertContact.useMutation({
+		onSuccess: () => apiUtils.library.listContacts.invalidate(),
+	});
 
 	const defaultValues = useMemo<ZContactForm>(
 		() =>
@@ -63,7 +58,6 @@ export function LibraryContactModal({
 			await upsertContact({
 				values: value,
 				id: editing?.id,
-				entityId,
 			});
 			modal.close();
 			setEditing(null);

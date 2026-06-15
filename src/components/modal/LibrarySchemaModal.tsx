@@ -14,14 +14,10 @@ export type LibrarySchemaModalActions = {
 };
 
 interface LibrarySchemaModalProps {
-	entityId: number;
 	actions: LibrarySchemaModalActions;
 }
 
-export function LibrarySchemaModal({
-	entityId,
-	actions,
-}: LibrarySchemaModalProps) {
+export function LibrarySchemaModal({ actions }: LibrarySchemaModalProps) {
 	const { classes } = useStyles();
 	const id = useId();
 
@@ -36,17 +32,16 @@ export function LibrarySchemaModal({
 
 	const apiUtils = api.useUtils();
 
-	const { mutateAsync: upsertSchema } =
-		api.entityLibrary.upsertSchema.useMutation({
-			onSuccess: () => apiUtils.entityLibrary.listSchemas.invalidate(),
-		});
+	const { mutateAsync: upsertSchema } = api.library.upsertSchema.useMutation({
+		onSuccess: () => apiUtils.library.listSchemas.invalidate(),
+	});
 
 	const defaultValues = useMemo<ZSchema>(
 		() =>
 			editing
 				? {
-						schemaName: editing.schemaName,
-						schemaUrl: editing.schemaUrl ?? "",
+						name: editing.name,
+						url: editing.url ?? "",
 						actionPlanUrls: (editing.actionPlanUrls ?? []).map((i) => ({
 							name: i.name,
 							url: i.url,
@@ -63,7 +58,6 @@ export function LibrarySchemaModal({
 			await upsertSchema({
 				values: value,
 				id: editing?.id,
-				entityId,
 			});
 			modal.close();
 			setEditing(null);

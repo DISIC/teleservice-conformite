@@ -344,7 +344,6 @@ export const getServerSideProps = (async (context) => {
 			}
 			declarations.push({
 				...doc,
-				audit: doc.audit?.docs?.[0] || null,
 				updatedAtFormatted: new Date(doc.updatedAt).toLocaleDateString("fr-FR"),
 			} as PopulatedDeclaration & { updatedAtFormatted: string });
 		}

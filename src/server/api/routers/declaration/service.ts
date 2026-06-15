@@ -88,8 +88,9 @@ const createDeclarationFromImportedData = async (
 					usedTools: data.usedTools.map((name) => ({ name })),
 					technologies: data.technologies.map((name) => ({ name })),
 					compliantElements:
-						data.compliantElements.map((element) => `- ${element}`).join("\n") ||
-						"N/A",
+						data.compliantElements
+							.map((element) => `- ${element}`)
+							.join("\n") || "N/A",
 					nonCompliantElements: data.nonCompliantElements || "",
 					disproportionnedCharge: data.disproportionnedCharge || "",
 					optionalElements: data.optionalElements || "",

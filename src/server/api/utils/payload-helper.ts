@@ -1,7 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import { getPayload, type Payload } from "payload";
 import payloadConfig from "~/payload/payload.config";
-import type { Config, Declaration, Entity, User } from "~/payload/payload-types";
+import type {
+	Config,
+	Declaration,
+	Entity,
+	User,
+} from "~/payload/payload-types";
 import type { Session } from "~/lib/auth-client";
 
 /**

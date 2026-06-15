@@ -11,7 +11,7 @@ export const SchemaForm = withForm({
 	render: function Render({ form, readOnly }) {
 		return (
 			<Part readOnly={readOnly} grid={false}>
-				<form.AppField name="schemaUrl">
+				<form.AppField name="url">
 					{(field) => (
 						<field.TextField
 							label="Lien du schéma pluriannuel"
@@ -27,7 +27,7 @@ export const SchemaForm = withForm({
 						/>
 					)}
 				</form.AppField>
-				<form.AppField name="schemaName">
+				<form.AppField name="name">
 					{(field) => (
 						<field.TextField
 							label="Nom du schéma pluriannuel"
