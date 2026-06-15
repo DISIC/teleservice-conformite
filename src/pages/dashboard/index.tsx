@@ -28,7 +28,6 @@ import Book from "@codegouvfr/react-dsfr/picto/Book";
 interface DeclarationsPageProps {
 	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
 	firstDeclaration?: boolean;
-	entityName: string;
 }
 
 const NUMBER_PER_PAGE = 10;
@@ -123,7 +122,7 @@ type AlertDetailsProps = {
 };
 
 export default function DeclarationsPage(props: DeclarationsPageProps) {
-	const { declarations, entityName } = props;
+	const { declarations } = props;
 	const { classes } = useStyles({
 		declarationLength: declarations.length || 0,
 	});
@@ -221,7 +220,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 				<div className={classes.infoBlocksContainer}>
 					<Link href="/dashboard/library" className={classes.infoBlockLink}>
 						<InfoBlock
-							organizationName={entityName}
 							title="Documents partagés"
 							picto={<Book fontSize="3rem" />}
 						>
@@ -235,7 +233,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 						className={classes.infoBlockLink}
 					>
 						<InfoBlock
-							organizationName={entityName}
 							title="Toutes les déclarations"
 							picto={<Document fontSize="3rem" />}
 						>
@@ -352,7 +349,6 @@ export const getServerSideProps = (async (context) => {
 			props: {
 				firstDeclaration: !declarations.length,
 				declarations,
-				entityName: currentEntity.name,
 			},
 		};
 	} catch (error) {
