@@ -2,6 +2,7 @@ import type { ParsedUrlQuery } from "node:querystring";
 import config from "@payload-config";
 import type { GetServerSidePropsContext, Redirect } from "next";
 import { getPayload } from "payload";
+import type { Contact, Schema } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { getDeclarationById } from "~/server/api/utils/payload-helper";
 import { authPages } from "~/lib/auth";
@@ -14,14 +15,24 @@ export interface DeclarationProps {
 	declaration: PopulatedDeclaration;
 }
 
+export interface LibraryProps {
+	libraryContacts: Contact[];
+	librarySchemas: Schema[];
+}
+
 export async function guardDeclaration(
 	context: GetServerSidePropsContext,
 	options?: {
 		redirectUrl?: string;
 		trash?: boolean;
+		includeLibrary?: boolean;
 	},
 ) {
-	const { redirectUrl = "/dashboard", trash = false } = options ?? {};
+	const {
+		redirectUrl = "/dashboard",
+		trash = false,
+		includeLibrary = false,
+	} = options ?? {};
 	const { id } = (context.params ?? {}) as DeclarationParams;
 
 	const redirect: Redirect = {
@@ -48,9 +59,27 @@ export async function guardDeclaration(
 
 	if (!declaration) return { redirect };
 
-	return {
-		props: {
-			declaration,
-		} as DeclarationProps,
-	};
+	const props: DeclarationProps & Partial<LibraryProps> = { declaration };
+
+	if (includeLibrary) {
+		const userId = Number(session.user.id);
+		const [contacts, schemas] = await Promise.all([
+			payload.find({
+				collection: "contacts",
+				where: { user: { equals: userId } },
+				limit: 100,
+				depth: 0,
+			}),
+			payload.find({
+				collection: "schemas",
+				where: { user: { equals: userId } },
+				limit: 100,
+				depth: 0,
+			}),
+		]);
+		props.libraryContacts = contacts.docs;
+		props.librarySchemas = schemas.docs;
+	}
+
+	return { props };
 }

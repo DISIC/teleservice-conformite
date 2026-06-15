@@ -24,7 +24,11 @@ import { api } from "~/lib/api";
 import { copyToClipboard } from "~/utils/declaration-helper";
 import { parseSectionFromQuery } from "~/utils/declaration/sections";
 import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
-import { guardDeclaration } from "~/lib/server-guards";
+import {
+	type DeclarationProps,
+	guardDeclaration,
+	type LibraryProps,
+} from "~/lib/server-guards";
 
 const deleteModal = createModal({
 	id: "delete-modal",
@@ -33,8 +37,17 @@ const deleteModal = createModal({
 
 export default function DeclarationPage({
 	declaration: initialDeclaration,
+	libraryContacts,
+	librarySchemas,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
+	const apiUtils = api.useUtils();
+	// Seed the SSR-fetched Library lists into the query cache before the sections
+	// render, so the source-mode radio knows Library availability at first paint.
+	useState(() => {
+		apiUtils.library.listContacts.setData(undefined, libraryContacts ?? []);
+		apiUtils.library.listSchemas.setData(undefined, librarySchemas ?? []);
+	});
 	const { published, section: sectionQuery, field: fieldQuery } = router.query;
 	const currentSection = parseSectionFromQuery(sectionQuery);
 	const [declaration, setDeclaration] =
@@ -408,6 +421,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 });
 
 export const getServerSideProps = (async (context) =>
-	guardDeclaration(context)) satisfies GetServerSideProps<{
-	declaration: PopulatedDeclaration;
-}>;
+	guardDeclaration(context, {
+		includeLibrary: true,
+	})) satisfies GetServerSideProps<DeclarationProps & Partial<LibraryProps>>;
