@@ -59,7 +59,7 @@ export function useSourceMode({
 	);
 
 	const select = (value: SourceModeValue) => {
-		// Detaching from a linked parent persists immediately (reload-driven).
+		// Detaching from a linked parent is a persisted write, not a local mode flip.
 		if (value === "custom" && derived === "linked") {
 			libraryLink.onUnlink();
 			return;

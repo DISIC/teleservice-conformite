@@ -32,8 +32,8 @@ function parentId(parent: unknown): number | null {
 /**
  * Wires a Section's Library picker to the per-user Library: lists parents, links
  * the declaration to one, or detaches it to a custom copy. Linking/unlinking
- * folds the returned group and recomputed status back into local state so the
- * section re-renders without a full page reload.
+ * folds the returned group and recomputed status into local state, re-rendering
+ * the section in place.
  */
 export function useLibraryLink({
 	kind,
