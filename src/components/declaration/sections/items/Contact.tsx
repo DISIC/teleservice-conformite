@@ -25,13 +25,13 @@ const CONTACT_OPTIONS: SourceModeOption[] = [
 		value: "linked",
 		label: "Utiliser un contact de ma bibliothèque",
 		hintText: "Réutilise un contact enregistré, mis à jour automatiquement.",
-		illustration: <DocumentSearch />,
+		illustration: <DocumentSearch fontSize="3rem" />,
 	},
 	{
 		value: "custom",
 		label: "Définir un contact pour cette déclaration",
 		hintText: "Renseignez un contact propre à cette déclaration.",
-		illustration: <Avatar />,
+		illustration: <Avatar fontSize="3rem" />,
 	},
 ];
 

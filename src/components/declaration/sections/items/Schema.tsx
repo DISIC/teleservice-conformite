@@ -21,20 +21,20 @@ const SCHEMA_OPTIONS: SourceModeOption[] = [
 		value: "linked",
 		label: "Utiliser un schéma de ma bibliothèque",
 		hintText: "Réutilise un schéma enregistré, mis à jour automatiquement.",
-		illustration: <DocumentSearch />,
+		illustration: <DocumentSearch fontSize="3rem" />,
 	},
 	{
 		value: "custom",
 		label: "Définir un schéma pour cette déclaration",
 		hintText: "Renseignez un schéma propre à cette déclaration.",
-		illustration: <Calendar />,
+		illustration: <Calendar fontSize="3rem" />,
 	},
 	{
 		value: "skipped",
 		label: "Aucun schéma pour le moment",
 		hintText:
 			"Vous pourrez en ajouter un plus tard sans bloquer la publication.",
-		illustration: <Error />,
+		illustration: <Error fontSize="3rem" />,
 	},
 ];
 
