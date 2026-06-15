@@ -41,7 +41,7 @@ export function SchemaSection({
 		title: SECTION_TITLES.schema,
 		declaration,
 		isEditable: hasSchema && !isLinked,
-		initialReadOnly: isLinked ? true : undefined,
+		locked: isLinked,
 		isSaving: isPending,
 		prevHref,
 		nextHref,
@@ -57,6 +57,13 @@ export function SchemaSection({
 		...schemaFormOptions,
 		defaultValues,
 		onSubmit: async ({ value }) => {
+			// Linked content is read-only and kept in sync from the Library; never
+			// re-save it here (the upsert detaches the parent). Just advance.
+			if (isLinked) {
+				afterSave();
+				return;
+			}
+
 			await upsertSchema({
 				values: value,
 				declarationId: declaration.id,

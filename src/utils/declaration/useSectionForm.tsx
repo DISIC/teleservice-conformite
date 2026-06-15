@@ -61,6 +61,7 @@ export function useSectionForm({
 	declaration,
 	isEditable,
 	initialReadOnly,
+	locked,
 	isSaving,
 	prevHref,
 	nextHref,
@@ -70,9 +71,10 @@ export function useSectionForm({
 	const { classes: commonClasses } = useCommonStyles();
 	const router = useRouter();
 	const isSequential = mode === "sequential";
-	// Sequential mode keeps every Section permanently editable (no toggle).
+	// A locked Section stays read-only everywhere (overrides sequential). Otherwise
+	// sequential mode keeps every Section permanently editable (no toggle).
 	const [readOnly, setReadOnly] = useState(
-		isSequential ? false : (initialReadOnly ?? isEditable),
+		locked ? true : isSequential ? false : (initialReadOnly ?? isEditable),
 	);
 
 	const enterEdit = () => setReadOnly(false);

@@ -53,7 +53,7 @@ export function ContactSection({
 		title: SECTION_TITLES.contact,
 		declaration,
 		isEditable: hasContact && !isLinked,
-		initialReadOnly: isLinked ? true : undefined,
+		locked: isLinked,
 		isSaving: isPending,
 		prevHref,
 		nextHref,
@@ -69,6 +69,18 @@ export function ContactSection({
 		...contactFormOptions,
 		defaultValues,
 		onSubmit: async ({ value }) => {
+			// Linked content is read-only and kept in sync from the Library; never
+			// re-save it here (the upsert detaches the parent). Pass straight through
+			// to navigation/publish against the already-current linked contact.
+			if (isLinked) {
+				if (mode !== "sequential") {
+					afterSave();
+					return;
+				}
+				attemptPublish();
+				return;
+			}
+
 			const { data: contact } = await upsertContact({
 				values: value,
 				declarationId: declaration.id,
