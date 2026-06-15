@@ -120,27 +120,34 @@ export function SourceModeSection<TValues, TForm>({
 	const showRadio = visibleOptions.length >= 2;
 	const bodyMode = showRadio ? effectiveMode : "custom";
 
-	const linkedReadOnly = bodyMode === "linked" && isLinked;
-
-	const body =
-		bodyMode === "custom" ? (
-			renderForm({ form: form as unknown as TForm, readOnly })
-		) : linkedReadOnly ? (
-			<div className={classes.linkedWrapper}>
-				{linkedCount !== undefined && (
-					<Tag small className={classes.count}>
-						{linkedCount > 1
-							? `Utilisé par ${linkedCount} déclarations`
-							: "Utilisé par cette déclaration"}
-					</Tag>
-				)}
-				{renderForm({ form: form as unknown as TForm, readOnly: true })}
-			</div>
-		) : bodyMode === "skipped" ? (
-			<p className={fr.cx("fr-mb-0")}>
-				Vous avez indiqué ne pas avoir de schéma pour cette déclaration.
-			</p>
-		) : null;
+	const body = (() => {
+		switch (bodyMode) {
+			case "custom":
+				return renderForm({ form: form as unknown as TForm, readOnly });
+			case "linked":
+				if (!isLinked) return null;
+				return (
+					<div className={classes.linkedWrapper}>
+						{linkedCount !== undefined && (
+							<Tag small className={classes.count}>
+								{linkedCount > 1
+									? `Utilisé par ${linkedCount} déclarations`
+									: "Utilisé par cette déclaration"}
+							</Tag>
+						)}
+						{renderForm({ form: form as unknown as TForm, readOnly: true })}
+					</div>
+				);
+			case "skipped":
+				return (
+					<p className={fr.cx("fr-mb-0")}>
+						Vous avez indiqué ne pas avoir de schéma pour cette déclaration.
+					</p>
+				);
+			default:
+				return null;
+		}
+	})();
 
 	return (
 		<Frame
