@@ -9,6 +9,41 @@ import type {
 } from "~/payload/payload-types";
 import type { Session } from "~/lib/auth-client";
 
+type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+export type Populated<T, D extends number = 1> = [D] extends [0]
+	? T
+	: T extends (infer Item)[]
+		? Populated<Item, D>[]
+		: T extends object
+			? { [K in keyof T]: Populated<Exclude<T[K], number>, Prev[D]> }
+			: T;
+
+export async function findByIdPopulated<
+	S extends keyof Config["collections"],
+	D extends number = 1,
+>(
+	payload: Payload,
+	collection: S,
+	id: number,
+	depth: D = 1 as D,
+): Promise<Populated<Config["collections"][S], D> | null> {
+	return (await payload.findByID({ collection, id, depth })) as never;
+}
+
+export async function findPopulated<
+	S extends keyof Config["collections"],
+	D extends number = 1,
+>(
+	payload: Payload,
+	args: { collection: S; depth?: D } & Record<string, unknown>,
+): Promise<{
+	docs: Populated<Config["collections"][S], D>[];
+	totalDocs: number;
+}> {
+	return (await payload.find({ depth: 1, ...args })) as never;
+}
+
 /**
  * A declaration with its two remaining relations resolved to objects. Since
  * ADR-0004 the audit/contact/schema content lives in groups on the row itself,

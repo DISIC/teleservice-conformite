@@ -14,6 +14,13 @@ type UseSectionFormArgs = {
 	isEditable: boolean;
 	/** Override the initial readOnly state. Defaults to `isEditable`. */
 	initialReadOnly?: boolean;
+	/**
+	 * Pin the Section read-only even in sequential mode (which otherwise keeps
+	 * every Section editable). Used for Library-linked groups: their content is
+	 * owned by the parent and edited from the Library, so it must never be
+	 * editable inline. See ADR-0004.
+	 */
+	locked?: boolean;
 	isSaving: boolean;
 	prevHref: string | null;
 	nextHref: string | null;

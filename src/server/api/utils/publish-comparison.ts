@@ -1,7 +1,7 @@
 import type { Payload } from "payload";
 import type { Declaration } from "~/payload/payload-types";
 import { hasContentChangedSincePublish } from "~/utils/declaration/status";
-import type { PopulatedDeclaration } from "./payload-helper";
+import { findByIdPopulated, type PopulatedDeclaration } from "./payload-helper";
 
 type DeclarationFieldOverrides = Partial<
 	Pick<Declaration, "name" | "app_kind" | "url">
@@ -28,25 +28,18 @@ export async function recalculateDeclarationStatus(
 	declarationId: number,
 	overrides: RecalculateOverrides = {},
 ): Promise<"published" | "unpublished" | null> {
-	const declaration = await payload.findByID({
-		collection: "declarations",
-		id: declarationId,
-		depth: 0,
-	});
+	const declaration = await findByIdPopulated(
+		payload,
+		"declarations",
+		declarationId,
+		1,
+	);
 
 	if (!declaration?.publishedContent) return null;
 
-	const entity = declaration.entity
-		? await payload.findByID({
-				collection: "entities",
-				id: declaration.entity as number,
-			})
-		: null;
-
 	const populatedDeclaration: PopulatedDeclaration = {
-		...(declaration as PopulatedDeclaration),
+		...declaration,
 		...overrides.declarationFields,
-		entity: entity ?? null,
 		created_by: null,
 	};
 
