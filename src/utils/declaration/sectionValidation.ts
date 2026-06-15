@@ -10,6 +10,16 @@ export type SectionValidation<TSchema extends z.ZodType = z.ZodType> = {
 	 * but their fields are not applicable yet.
 	 */
 	isApplicable?: (declaration: PopulatedDeclaration) => boolean;
+	/**
+	 * Source-mode sections (contact/schema) require an explicit choice before
+	 * their field schema runs; while undecided the gate targets the radio
+	 * instead of emitting per-field errors.
+	 */
+	sourceMode?: {
+		field: string;
+		isUndecided: (declaration: PopulatedDeclaration) => boolean;
+		message: string;
+	};
 };
 
 export function defineSectionValidation<TSchema extends z.ZodType>(

@@ -299,6 +299,7 @@ export const libraryRouter = createTRPCRouter({
 							url: plan.url,
 						})),
 						parent: input.schemaId,
+						skipped: false,
 						toVerify: false,
 					},
 				},

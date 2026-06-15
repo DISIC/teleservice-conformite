@@ -60,6 +60,14 @@ export const schemaGroup: Field = {
 			hasMany: false,
 			label: { fr: "Schéma de la bibliothèque" },
 		},
+		{
+			// Schema is optional; declarant explicitly opts out rather than leaving it blank.
+			name: "skipped",
+			type: "checkbox",
+			label: { fr: "Aucun schéma" },
+			defaultValue: false,
+			required: true,
+		},
 		toVerifyField,
 	],
 };

@@ -111,6 +111,7 @@ const createDeclarationFromImportedData = async (
 						: "Schéma pluriannuel",
 					url: data.schema.currentYearSchemaUrl ?? undefined,
 					actionPlanUrls: [],
+					skipped: false,
 					toVerify: source === "ai",
 				},
 			},

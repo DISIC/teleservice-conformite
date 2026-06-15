@@ -15,6 +15,7 @@ import {
 	defineSectionValidation,
 	type SectionValidation,
 } from "./sectionValidation";
+import { isSourceModeUndecided, SOURCE_MODE_FIELD } from "./sourceMode";
 import {
 	AUDIT_SUB_SECTION_SLUGS,
 	AUDIT_SUB_SECTIONS,
@@ -90,6 +91,12 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 		validation: defineSectionValidation({
 			schema: schemaForm,
 			fromDeclaration: declarationToSchemaValues,
+			isApplicable: (d) => d.schema?.skipped !== true,
+			sourceMode: {
+				field: SOURCE_MODE_FIELD.schema,
+				isUndecided: (d) => isSourceModeUndecided("schema", d),
+				message: "Sélectionnez une option pour le schéma pluriannuel",
+			},
 		}),
 	},
 	contact: {
@@ -99,6 +106,11 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 		validation: defineSectionValidation({
 			schema: contactForm,
 			fromDeclaration: declarationToContactValues,
+			sourceMode: {
+				field: SOURCE_MODE_FIELD.contact,
+				isUndecided: (d) => isSourceModeUndecided("contact", d),
+				message: "Sélectionnez une option pour le contact",
+			},
 		}),
 	},
 };

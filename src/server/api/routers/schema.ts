@@ -29,7 +29,44 @@ export const schemaRouter = createTRPCRouter({
 			const updated = await ctx.payload.update({
 				collection: "declarations",
 				id: declarationId,
-				data: { schema: { ...values, parent: null, toVerify: false } },
+				data: {
+					schema: { ...values, parent: null, skipped: false, toVerify: false },
+				},
+			});
+
+			await recalculateDeclarationStatus(ctx.payload, declarationId);
+
+			return { data: updated.schema };
+		}),
+
+	/**
+	 * Skip mode: record the declarant's deliberate "no schema" choice. Clears any
+	 * content and Library link so the schema section is empty and not-applicable.
+	 */
+	skip: userProtectedProcedure
+		.input(z.object({ declarationId: z.number() }))
+		.mutation(async ({ input, ctx }) => {
+			const { declarationId } = input;
+
+			await hasAccessToDeclaration({
+				payload: ctx.payload,
+				declarationId,
+				userId: Number(ctx.session.user.id),
+			});
+
+			const updated = await ctx.payload.update({
+				collection: "declarations",
+				id: declarationId,
+				data: {
+					schema: {
+						name: "",
+						url: "",
+						actionPlanUrls: [],
+						parent: null,
+						skipped: true,
+						toVerify: false,
+					},
+				},
 			});
 
 			await recalculateDeclarationStatus(ctx.payload, declarationId);

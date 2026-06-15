@@ -34,6 +34,15 @@ function validateSection(
 ): DeclarationError[] {
 	const { validation } = SECTIONS[slug];
 	if (validation.isApplicable?.(declaration) === false) return [];
+	if (validation.sourceMode?.isUndecided(declaration)) {
+		return [
+			{
+				section: slug,
+				field: validation.sourceMode.field,
+				message: validation.sourceMode.message,
+			},
+		];
+	}
 	return runSchema(
 		slug,
 		validation.schema,
