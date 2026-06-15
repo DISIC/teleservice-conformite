@@ -26,6 +26,7 @@ export function AuditNotice({
 	return (
 		<Notice
 			iconDisplayed={false}
+			classes={{ title: classes.noticeCustomTitle }}
 			title={
 				<span className={classes.noticeTitle}>
 					<Pictogram className={classes.noticePictogram} />
@@ -40,6 +41,9 @@ export function AuditNotice({
 }
 
 const useStyles = tss.withName(AuditNotice.name).create({
+	noticeCustomTitle: {
+		display: "block!important",
+	},
 	noticeTitle: {
 		display: "flex",
 		alignItems: "center",
