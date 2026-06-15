@@ -23,7 +23,7 @@ export const contact = z
 			});
 		}
 	}) satisfies z.ZodType<
-	Omit<Contact, "id" | "entity" | "toVerify" | "createdAt" | "updatedAt">
+	Omit<Contact, "id" | "user" | "createdAt" | "updatedAt">
 >;
 
 export type ZContact = z.infer<typeof contact>;

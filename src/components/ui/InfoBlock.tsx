@@ -1,21 +1,14 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import Badge from "@codegouvfr/react-dsfr/Badge";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
 type InfoBlockProps = {
-	organizationName: string;
 	title: string;
 	children: ReactNode;
 	picto: ReactNode;
 };
 
-const InfoBlock = ({
-	organizationName,
-	title,
-	children,
-	picto,
-}: InfoBlockProps) => {
+const InfoBlock = ({ title, children, picto }: InfoBlockProps) => {
 	const { classes } = useStyles();
 
 	return (
@@ -25,9 +18,6 @@ const InfoBlock = ({
 				<span className={classes.pictoCircle}>{picto}</span>
 			</div>
 			<div className={classes.content}>
-				<Badge small className={classes.tag}>
-					{organizationName}
-				</Badge>
 				<h2 className={classes.title}>{title}</h2>
 				<p className={classes.description}>{children}</p>
 			</div>
@@ -75,12 +65,6 @@ const useStyles = tss.withName(InfoBlock.name).create({
 		alignItems: "flex-start",
 		gap: fr.spacing("2v"),
 		flex: 1,
-	},
-	tag: {
-		backgroundColor: fr.colors.options.blueEcume._975_75.active,
-		color: fr.colors.decisions.text.actionHigh.blueEcume.default,
-		fontSize: "0.675rem",
-		lineHeight: "1rem",
 	},
 	title: {
 		margin: 0,

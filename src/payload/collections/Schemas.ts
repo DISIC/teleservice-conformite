@@ -1,10 +1,15 @@
 import type { CollectionConfig } from "payload";
-import { toVerifyField } from "../fields/common";
 
+/**
+ * Library ("Schémas et Contacts") parent — a user's reusable schéma et plan
+ * d'actions (ADR-0004). Owned per-user via `user`; symmetric with Contacts.
+ * Fields renamed to `name`/`url` (was `schemaName`/`schemaUrl`) so a Declaration's
+ * `schema` group is a field-for-field copy for propagation.
+ */
 export const Schemas: CollectionConfig = {
 	slug: "schemas",
 	admin: {
-		useAsTitle: "schemaName",
+		useAsTitle: "name",
 	},
 	labels: {
 		singular: { fr: "Schéma et plan d'actions" },
@@ -12,13 +17,13 @@ export const Schemas: CollectionConfig = {
 	},
 	fields: [
 		{
-			name: "schemaName",
+			name: "name",
 			type: "text",
 			label: { fr: "Nom du schéma pluriannuel" },
 			required: true,
 		},
 		{
-			name: "schemaUrl",
+			name: "url",
 			type: "text",
 			label: { fr: "Lien du schéma pluriannuel" },
 			required: false,
@@ -47,17 +52,11 @@ export const Schemas: CollectionConfig = {
 			],
 		},
 		{
-			name: "entity",
-			label: { fr: "Administration associée" },
+			name: "user",
+			label: { fr: "Propriétaire" },
 			type: "relationship",
-			relationTo: "entities",
-			required: false,
-			admin: {
-				description: {
-					fr: "Si renseigné, ce schéma est partagé au niveau de l'administration et peut être réutilisé sur plusieurs déclarations.",
-				},
-			},
+			relationTo: "users",
+			required: true,
 		},
-		toVerifyField,
 	],
 };

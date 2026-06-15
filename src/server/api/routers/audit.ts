@@ -1,6 +1,7 @@
 import z from "zod";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { hasAccessToDeclaration } from "../utils/payload-helper";
+import { recalculateDeclarationStatus } from "../utils/publish-comparison";
 
 /**
  * Lenient all-optional partial: any one Sub-section slice may arrive on its
@@ -23,16 +24,15 @@ const auditUpsertValues = z.object({
 });
 
 export const auditRouter = createTRPCRouter({
-	upsert: userProtectedProcedure
+	update: userProtectedProcedure
 		.input(
 			z.object({
 				values: auditUpsertValues,
-				id: z.number().optional(),
 				declarationId: z.number(),
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const { id, declarationId, values } = input;
+			const { declarationId, values } = input;
 
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
@@ -40,12 +40,19 @@ export const auditRouter = createTRPCRouter({
 				userId: Number(ctx.session.user.id),
 			});
 
+			const declaration = await ctx.payload.findByID({
+				collection: "declarations",
+				id: declarationId,
+				depth: 0,
+			});
+
 			const { usedTools, testEnvironments, technologies, date, ...scalars } =
 				values;
 
-			// Only touch the relation/array fields the submitted slice actually
-			// carries — every audit field is optional in the partial schema.
-			const data = {
+			// Merge the submitted slice onto the existing audit group — every audit
+			// field is optional, so only the Sub-section's own fields are touched.
+			const audit = {
+				...declaration.audit,
 				...scalars,
 				...(date !== undefined && {
 					date: date && date !== "" ? date : null,
@@ -62,14 +69,14 @@ export const auditRouter = createTRPCRouter({
 				toVerify: false,
 			};
 
-			const audit = id
-				? await ctx.payload.update({ collection: "audits", id, data })
-				: await ctx.payload.create({
-						collection: "audits",
-						draft: true,
-						data: { ...data, declaration: declarationId },
-					});
+			const updated = await ctx.payload.update({
+				collection: "declarations",
+				id: declarationId,
+				data: { audit },
+			});
 
-			return { data: audit };
+			await recalculateDeclarationStatus(ctx.payload, declarationId);
+
+			return { data: updated.audit };
 		}),
 });

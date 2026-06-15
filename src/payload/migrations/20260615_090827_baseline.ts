@@ -1,14 +1,17 @@
-import { type MigrateUpArgs, type MigrateDownArgs, sql } from '@payloadcms/db-postgres'
+import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    CREATE TYPE "public"."enum_entities_kind" AS ENUM('Protection sociale', 'Santé', 'Transport', 'Enseignement', 'Emploi', 'Fiscalité', 'Protection de l''environnement', 'Loisirs - culture', 'Logement - équipements collectifs', 'Ordre et sécurité publics', 'État civil - Identité - Citoyenneté', 'Justice', 'Agriculture', 'Vie / séjour à l''étranger', 'none');
-  CREATE TYPE "public"."enum_audits_rgaa_version" AS ENUM('rgaa_4', 'rgaa_5');
   CREATE TYPE "public"."enum_declarations_status" AS ENUM('published', 'unpublished');
-  CREATE TYPE "public"."enum_declarations_app_kind" AS ENUM('website', 'mobile_app_ios', 'mobile_app_android', 'other');
+  CREATE TYPE "public"."enum_declarations_app_kind" AS ENUM('website', 'mobile_app', 'other');
+  CREATE TYPE "public"."enum_declarations_mobile_platform" AS ENUM('ios', 'android');
+  CREATE TYPE "public"."enum_declarations_audit_rgaa_version" AS ENUM('rgaa_4', 'rgaa_5');
   CREATE TYPE "public"."enum_declarations_from_source" AS ENUM('manual', 'ai', 'ara');
   CREATE TYPE "public"."enum__declarations_v_version_status" AS ENUM('published', 'unpublished');
-  CREATE TYPE "public"."enum__declarations_v_version_app_kind" AS ENUM('website', 'mobile_app_ios', 'mobile_app_android', 'other');
+  CREATE TYPE "public"."enum__declarations_v_version_app_kind" AS ENUM('website', 'mobile_app', 'other');
+  CREATE TYPE "public"."enum__declarations_v_version_mobile_platform" AS ENUM('ios', 'android');
+  CREATE TYPE "public"."enum__declarations_v_version_audit_rgaa_version" AS ENUM('rgaa_4', 'rgaa_5');
   CREATE TYPE "public"."enum__declarations_v_version_from_source" AS ENUM('manual', 'ai', 'ara');
   CREATE TYPE "public"."enum_access_rights_role" AS ENUM('admin');
   CREATE TYPE "public"."enum_access_rights_status" AS ENUM('pending', 'approved', 'rejected');
@@ -96,43 +99,33 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
-  CREATE TABLE "audits_used_tools" (
+  CREATE TABLE "declarations_audit_used_tools" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"name" varchar
   );
   
-  CREATE TABLE "audits_test_environments" (
+  CREATE TABLE "declarations_audit_test_environments" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"name" varchar
   );
   
-  CREATE TABLE "audits_technologies" (
+  CREATE TABLE "declarations_audit_technologies" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"name" varchar
   );
   
-  CREATE TABLE "audits" (
-  	"id" serial PRIMARY KEY NOT NULL,
-  	"is_realised" boolean DEFAULT false,
-  	"date" timestamp(3) with time zone,
-  	"rgaa_version" "enum_audits_rgaa_version",
-  	"realised_by" varchar,
-  	"rate" numeric,
-  	"compliant_elements" varchar,
-  	"non_compliant_elements" varchar,
-  	"disproportionned_charge" varchar,
-  	"optional_elements" varchar,
-  	"audit_report" varchar,
-  	"declaration_id" integer NOT NULL,
-  	"to_verify" boolean DEFAULT false NOT NULL,
-  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
-  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+  CREATE TABLE "declarations_schema_action_plan_urls" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"name" varchar NOT NULL,
+  	"url" varchar NOT NULL
   );
   
   CREATE TABLE "declarations" (
@@ -143,14 +136,66 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"created_by_id" integer NOT NULL,
   	"entity_id" integer NOT NULL,
   	"app_kind" "enum_declarations_app_kind" NOT NULL,
+  	"mobile_platform" "enum_declarations_mobile_platform",
   	"url" varchar,
   	"published_content" varchar,
-  	"schema_id" integer,
-  	"contact_id" integer,
+  	"audit_is_realised" boolean DEFAULT false,
+  	"audit_date" timestamp(3) with time zone,
+  	"audit_rgaa_version" "enum_declarations_audit_rgaa_version",
+  	"audit_realised_by" varchar,
+  	"audit_rate" numeric,
+  	"audit_compliant_elements" varchar,
+  	"audit_non_compliant_elements" varchar,
+  	"audit_disproportionned_charge" varchar,
+  	"audit_optional_elements" varchar,
+  	"audit_audit_report" varchar,
+  	"audit_to_verify" boolean DEFAULT false NOT NULL,
+  	"schema_name" varchar,
+  	"schema_url" varchar,
+  	"schema_parent_id" integer,
+  	"schema_to_verify" boolean DEFAULT false NOT NULL,
+  	"contact_name" varchar,
+  	"contact_email" varchar,
+  	"contact_url" varchar,
+  	"contact_parent_id" integer,
+  	"contact_to_verify" boolean DEFAULT false NOT NULL,
   	"from_source" "enum_declarations_from_source" NOT NULL,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"deleted_at" timestamp(3) with time zone
+  );
+  
+  CREATE TABLE "_declarations_v_version_audit_used_tools" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"name" varchar,
+  	"_uuid" varchar
+  );
+  
+  CREATE TABLE "_declarations_v_version_audit_test_environments" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"name" varchar,
+  	"_uuid" varchar
+  );
+  
+  CREATE TABLE "_declarations_v_version_audit_technologies" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"name" varchar,
+  	"_uuid" varchar
+  );
+  
+  CREATE TABLE "_declarations_v_version_schema_action_plan_urls" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"name" varchar NOT NULL,
+  	"url" varchar NOT NULL,
+  	"_uuid" varchar
   );
   
   CREATE TABLE "_declarations_v" (
@@ -162,10 +207,29 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"version_created_by_id" integer NOT NULL,
   	"version_entity_id" integer NOT NULL,
   	"version_app_kind" "enum__declarations_v_version_app_kind" NOT NULL,
+  	"version_mobile_platform" "enum__declarations_v_version_mobile_platform",
   	"version_url" varchar,
   	"version_published_content" varchar,
-  	"version_schema_id" integer,
-  	"version_contact_id" integer,
+  	"version_audit_is_realised" boolean DEFAULT false,
+  	"version_audit_date" timestamp(3) with time zone,
+  	"version_audit_rgaa_version" "enum__declarations_v_version_audit_rgaa_version",
+  	"version_audit_realised_by" varchar,
+  	"version_audit_rate" numeric,
+  	"version_audit_compliant_elements" varchar,
+  	"version_audit_non_compliant_elements" varchar,
+  	"version_audit_disproportionned_charge" varchar,
+  	"version_audit_optional_elements" varchar,
+  	"version_audit_audit_report" varchar,
+  	"version_audit_to_verify" boolean DEFAULT false NOT NULL,
+  	"version_schema_name" varchar,
+  	"version_schema_url" varchar,
+  	"version_schema_parent_id" integer,
+  	"version_schema_to_verify" boolean DEFAULT false NOT NULL,
+  	"version_contact_name" varchar,
+  	"version_contact_email" varchar,
+  	"version_contact_url" varchar,
+  	"version_contact_parent_id" integer,
+  	"version_contact_to_verify" boolean DEFAULT false NOT NULL,
   	"version_from_source" "enum__declarations_v_version_from_source" NOT NULL,
   	"version_updated_at" timestamp(3) with time zone,
   	"version_created_at" timestamp(3) with time zone,
@@ -214,10 +278,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   
   CREATE TABLE "schemas" (
   	"id" serial PRIMARY KEY NOT NULL,
-  	"schema_name" varchar NOT NULL,
-  	"schema_url" varchar,
-  	"entity_id" integer,
-  	"to_verify" boolean DEFAULT false NOT NULL,
+  	"name" varchar NOT NULL,
+  	"url" varchar,
+  	"user_id" integer NOT NULL,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
@@ -227,8 +290,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"name" varchar NOT NULL,
   	"email" varchar,
   	"url" varchar,
-  	"entity_id" integer,
-  	"to_verify" boolean DEFAULT false NOT NULL,
+  	"user_id" integer NOT NULL,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
@@ -252,7 +314,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"verifications_id" integer,
   	"domains_id" integer,
   	"entities_id" integer,
-  	"audits_id" integer,
   	"declarations_id" integer,
   	"access_rights_id" integer,
   	"media_id" integer,
@@ -288,25 +349,29 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "users" ADD CONSTRAINT "users_entity_id_entities_id_fk" FOREIGN KEY ("entity_id") REFERENCES "public"."entities"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "audits_used_tools" ADD CONSTRAINT "audits_used_tools_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."audits"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "audits_test_environments" ADD CONSTRAINT "audits_test_environments_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."audits"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "audits_technologies" ADD CONSTRAINT "audits_technologies_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."audits"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "audits" ADD CONSTRAINT "audits_declaration_id_declarations_id_fk" FOREIGN KEY ("declaration_id") REFERENCES "public"."declarations"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "declarations_audit_used_tools" ADD CONSTRAINT "declarations_audit_used_tools_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."declarations"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "declarations_audit_test_environments" ADD CONSTRAINT "declarations_audit_test_environments_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."declarations"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "declarations_audit_technologies" ADD CONSTRAINT "declarations_audit_technologies_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."declarations"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "declarations_schema_action_plan_urls" ADD CONSTRAINT "declarations_schema_action_plan_urls_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."declarations"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "declarations" ADD CONSTRAINT "declarations_created_by_id_users_id_fk" FOREIGN KEY ("created_by_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "declarations" ADD CONSTRAINT "declarations_entity_id_entities_id_fk" FOREIGN KEY ("entity_id") REFERENCES "public"."entities"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "declarations" ADD CONSTRAINT "declarations_schema_id_schemas_id_fk" FOREIGN KEY ("schema_id") REFERENCES "public"."schemas"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "declarations" ADD CONSTRAINT "declarations_contact_id_contacts_id_fk" FOREIGN KEY ("contact_id") REFERENCES "public"."contacts"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "declarations" ADD CONSTRAINT "declarations_schema_parent_id_schemas_id_fk" FOREIGN KEY ("schema_parent_id") REFERENCES "public"."schemas"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "declarations" ADD CONSTRAINT "declarations_contact_parent_id_contacts_id_fk" FOREIGN KEY ("contact_parent_id") REFERENCES "public"."contacts"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "_declarations_v_version_audit_used_tools" ADD CONSTRAINT "_declarations_v_version_audit_used_tools_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_declarations_v"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "_declarations_v_version_audit_test_environments" ADD CONSTRAINT "_declarations_v_version_audit_test_environments_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_declarations_v"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "_declarations_v_version_audit_technologies" ADD CONSTRAINT "_declarations_v_version_audit_technologies_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_declarations_v"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "_declarations_v_version_schema_action_plan_urls" ADD CONSTRAINT "_declarations_v_version_schema_action_plan_urls_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_declarations_v"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "_declarations_v" ADD CONSTRAINT "_declarations_v_parent_id_declarations_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."declarations"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "_declarations_v" ADD CONSTRAINT "_declarations_v_version_created_by_id_users_id_fk" FOREIGN KEY ("version_created_by_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "_declarations_v" ADD CONSTRAINT "_declarations_v_version_entity_id_entities_id_fk" FOREIGN KEY ("version_entity_id") REFERENCES "public"."entities"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "_declarations_v" ADD CONSTRAINT "_declarations_v_version_schema_id_schemas_id_fk" FOREIGN KEY ("version_schema_id") REFERENCES "public"."schemas"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "_declarations_v" ADD CONSTRAINT "_declarations_v_version_contact_id_contacts_id_fk" FOREIGN KEY ("version_contact_id") REFERENCES "public"."contacts"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "_declarations_v" ADD CONSTRAINT "_declarations_v_version_schema_parent_id_schemas_id_fk" FOREIGN KEY ("version_schema_parent_id") REFERENCES "public"."schemas"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "_declarations_v" ADD CONSTRAINT "_declarations_v_version_contact_parent_id_contacts_id_fk" FOREIGN KEY ("version_contact_parent_id") REFERENCES "public"."contacts"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "access_rights" ADD CONSTRAINT "access_rights_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "access_rights" ADD CONSTRAINT "access_rights_declaration_id_declarations_id_fk" FOREIGN KEY ("declaration_id") REFERENCES "public"."declarations"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "access_rights" ADD CONSTRAINT "access_rights_invited_by_id_users_id_fk" FOREIGN KEY ("invited_by_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "schemas_action_plan_urls" ADD CONSTRAINT "schemas_action_plan_urls_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."schemas"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "schemas" ADD CONSTRAINT "schemas_entity_id_entities_id_fk" FOREIGN KEY ("entity_id") REFERENCES "public"."entities"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "contacts" ADD CONSTRAINT "contacts_entity_id_entities_id_fk" FOREIGN KEY ("entity_id") REFERENCES "public"."entities"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "schemas" ADD CONSTRAINT "schemas_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "contacts" ADD CONSTRAINT "contacts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."payload_locked_documents"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_admins_fk" FOREIGN KEY ("admins_id") REFERENCES "public"."admins"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_users_fk" FOREIGN KEY ("users_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
@@ -315,7 +380,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_verifications_fk" FOREIGN KEY ("verifications_id") REFERENCES "public"."verifications"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_domains_fk" FOREIGN KEY ("domains_id") REFERENCES "public"."domains"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_entities_fk" FOREIGN KEY ("entities_id") REFERENCES "public"."entities"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_audits_fk" FOREIGN KEY ("audits_id") REFERENCES "public"."audits"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_declarations_fk" FOREIGN KEY ("declarations_id") REFERENCES "public"."declarations"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_access_rights_fk" FOREIGN KEY ("access_rights_id") REFERENCES "public"."access_rights"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_media_fk" FOREIGN KEY ("media_id") REFERENCES "public"."media"("id") ON DELETE cascade ON UPDATE no action;
@@ -345,28 +409,36 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "domains_created_at_idx" ON "domains" USING btree ("created_at");
   CREATE INDEX "entities_updated_at_idx" ON "entities" USING btree ("updated_at");
   CREATE INDEX "entities_created_at_idx" ON "entities" USING btree ("created_at");
-  CREATE INDEX "audits_used_tools_order_idx" ON "audits_used_tools" USING btree ("_order");
-  CREATE INDEX "audits_used_tools_parent_id_idx" ON "audits_used_tools" USING btree ("_parent_id");
-  CREATE INDEX "audits_test_environments_order_idx" ON "audits_test_environments" USING btree ("_order");
-  CREATE INDEX "audits_test_environments_parent_id_idx" ON "audits_test_environments" USING btree ("_parent_id");
-  CREATE INDEX "audits_technologies_order_idx" ON "audits_technologies" USING btree ("_order");
-  CREATE INDEX "audits_technologies_parent_id_idx" ON "audits_technologies" USING btree ("_parent_id");
-  CREATE INDEX "audits_rgaa_version_idx" ON "audits" USING btree ("rgaa_version");
-  CREATE INDEX "audits_declaration_idx" ON "audits" USING btree ("declaration_id");
-  CREATE INDEX "audits_updated_at_idx" ON "audits" USING btree ("updated_at");
-  CREATE INDEX "audits_created_at_idx" ON "audits" USING btree ("created_at");
+  CREATE INDEX "declarations_audit_used_tools_order_idx" ON "declarations_audit_used_tools" USING btree ("_order");
+  CREATE INDEX "declarations_audit_used_tools_parent_id_idx" ON "declarations_audit_used_tools" USING btree ("_parent_id");
+  CREATE INDEX "declarations_audit_test_environments_order_idx" ON "declarations_audit_test_environments" USING btree ("_order");
+  CREATE INDEX "declarations_audit_test_environments_parent_id_idx" ON "declarations_audit_test_environments" USING btree ("_parent_id");
+  CREATE INDEX "declarations_audit_technologies_order_idx" ON "declarations_audit_technologies" USING btree ("_order");
+  CREATE INDEX "declarations_audit_technologies_parent_id_idx" ON "declarations_audit_technologies" USING btree ("_parent_id");
+  CREATE INDEX "declarations_schema_action_plan_urls_order_idx" ON "declarations_schema_action_plan_urls" USING btree ("_order");
+  CREATE INDEX "declarations_schema_action_plan_urls_parent_id_idx" ON "declarations_schema_action_plan_urls" USING btree ("_parent_id");
   CREATE INDEX "declarations_created_by_idx" ON "declarations" USING btree ("created_by_id");
   CREATE INDEX "declarations_entity_idx" ON "declarations" USING btree ("entity_id");
-  CREATE INDEX "declarations_schema_idx" ON "declarations" USING btree ("schema_id");
-  CREATE INDEX "declarations_contact_idx" ON "declarations" USING btree ("contact_id");
+  CREATE INDEX "declarations_audit_audit_rgaa_version_idx" ON "declarations" USING btree ("audit_rgaa_version");
+  CREATE INDEX "declarations_schema_schema_parent_idx" ON "declarations" USING btree ("schema_parent_id");
+  CREATE INDEX "declarations_contact_contact_parent_idx" ON "declarations" USING btree ("contact_parent_id");
   CREATE INDEX "declarations_updated_at_idx" ON "declarations" USING btree ("updated_at");
   CREATE INDEX "declarations_created_at_idx" ON "declarations" USING btree ("created_at");
   CREATE INDEX "declarations_deleted_at_idx" ON "declarations" USING btree ("deleted_at");
+  CREATE INDEX "_declarations_v_version_audit_used_tools_order_idx" ON "_declarations_v_version_audit_used_tools" USING btree ("_order");
+  CREATE INDEX "_declarations_v_version_audit_used_tools_parent_id_idx" ON "_declarations_v_version_audit_used_tools" USING btree ("_parent_id");
+  CREATE INDEX "_declarations_v_version_audit_test_environments_order_idx" ON "_declarations_v_version_audit_test_environments" USING btree ("_order");
+  CREATE INDEX "_declarations_v_version_audit_test_environments_parent_id_idx" ON "_declarations_v_version_audit_test_environments" USING btree ("_parent_id");
+  CREATE INDEX "_declarations_v_version_audit_technologies_order_idx" ON "_declarations_v_version_audit_technologies" USING btree ("_order");
+  CREATE INDEX "_declarations_v_version_audit_technologies_parent_id_idx" ON "_declarations_v_version_audit_technologies" USING btree ("_parent_id");
+  CREATE INDEX "_declarations_v_version_schema_action_plan_urls_order_idx" ON "_declarations_v_version_schema_action_plan_urls" USING btree ("_order");
+  CREATE INDEX "_declarations_v_version_schema_action_plan_urls_parent_id_idx" ON "_declarations_v_version_schema_action_plan_urls" USING btree ("_parent_id");
   CREATE INDEX "_declarations_v_parent_idx" ON "_declarations_v" USING btree ("parent_id");
   CREATE INDEX "_declarations_v_version_version_created_by_idx" ON "_declarations_v" USING btree ("version_created_by_id");
   CREATE INDEX "_declarations_v_version_version_entity_idx" ON "_declarations_v" USING btree ("version_entity_id");
-  CREATE INDEX "_declarations_v_version_version_schema_idx" ON "_declarations_v" USING btree ("version_schema_id");
-  CREATE INDEX "_declarations_v_version_version_contact_idx" ON "_declarations_v" USING btree ("version_contact_id");
+  CREATE INDEX "_declarations_v_version_audit_version_audit_rgaa_version_idx" ON "_declarations_v" USING btree ("version_audit_rgaa_version");
+  CREATE INDEX "_declarations_v_version_schema_version_schema_parent_idx" ON "_declarations_v" USING btree ("version_schema_parent_id");
+  CREATE INDEX "_declarations_v_version_contact_version_contact_parent_idx" ON "_declarations_v" USING btree ("version_contact_parent_id");
   CREATE INDEX "_declarations_v_version_version_updated_at_idx" ON "_declarations_v" USING btree ("version_updated_at");
   CREATE INDEX "_declarations_v_version_version_created_at_idx" ON "_declarations_v" USING btree ("version_created_at");
   CREATE INDEX "_declarations_v_version_version_deleted_at_idx" ON "_declarations_v" USING btree ("version_deleted_at");
@@ -383,10 +455,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE UNIQUE INDEX "media_filename_idx" ON "media" USING btree ("filename");
   CREATE INDEX "schemas_action_plan_urls_order_idx" ON "schemas_action_plan_urls" USING btree ("_order");
   CREATE INDEX "schemas_action_plan_urls_parent_id_idx" ON "schemas_action_plan_urls" USING btree ("_parent_id");
-  CREATE INDEX "schemas_entity_idx" ON "schemas" USING btree ("entity_id");
+  CREATE INDEX "schemas_user_idx" ON "schemas" USING btree ("user_id");
   CREATE INDEX "schemas_updated_at_idx" ON "schemas" USING btree ("updated_at");
   CREATE INDEX "schemas_created_at_idx" ON "schemas" USING btree ("created_at");
-  CREATE INDEX "contacts_entity_idx" ON "contacts" USING btree ("entity_id");
+  CREATE INDEX "contacts_user_idx" ON "contacts" USING btree ("user_id");
   CREATE INDEX "contacts_updated_at_idx" ON "contacts" USING btree ("updated_at");
   CREATE INDEX "contacts_created_at_idx" ON "contacts" USING btree ("created_at");
   CREATE INDEX "payload_locked_documents_global_slug_idx" ON "payload_locked_documents" USING btree ("global_slug");
@@ -402,7 +474,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "payload_locked_documents_rels_verifications_id_idx" ON "payload_locked_documents_rels" USING btree ("verifications_id");
   CREATE INDEX "payload_locked_documents_rels_domains_id_idx" ON "payload_locked_documents_rels" USING btree ("domains_id");
   CREATE INDEX "payload_locked_documents_rels_entities_id_idx" ON "payload_locked_documents_rels" USING btree ("entities_id");
-  CREATE INDEX "payload_locked_documents_rels_audits_id_idx" ON "payload_locked_documents_rels" USING btree ("audits_id");
   CREATE INDEX "payload_locked_documents_rels_declarations_id_idx" ON "payload_locked_documents_rels" USING btree ("declarations_id");
   CREATE INDEX "payload_locked_documents_rels_access_rights_id_idx" ON "payload_locked_documents_rels" USING btree ("access_rights_id");
   CREATE INDEX "payload_locked_documents_rels_media_id_idx" ON "payload_locked_documents_rels" USING btree ("media_id");
@@ -429,11 +500,15 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "verifications" CASCADE;
   DROP TABLE "domains" CASCADE;
   DROP TABLE "entities" CASCADE;
-  DROP TABLE "audits_used_tools" CASCADE;
-  DROP TABLE "audits_test_environments" CASCADE;
-  DROP TABLE "audits_technologies" CASCADE;
-  DROP TABLE "audits" CASCADE;
+  DROP TABLE "declarations_audit_used_tools" CASCADE;
+  DROP TABLE "declarations_audit_test_environments" CASCADE;
+  DROP TABLE "declarations_audit_technologies" CASCADE;
+  DROP TABLE "declarations_schema_action_plan_urls" CASCADE;
   DROP TABLE "declarations" CASCADE;
+  DROP TABLE "_declarations_v_version_audit_used_tools" CASCADE;
+  DROP TABLE "_declarations_v_version_audit_test_environments" CASCADE;
+  DROP TABLE "_declarations_v_version_audit_technologies" CASCADE;
+  DROP TABLE "_declarations_v_version_schema_action_plan_urls" CASCADE;
   DROP TABLE "_declarations_v" CASCADE;
   DROP TABLE "access_rights" CASCADE;
   DROP TABLE "media" CASCADE;
@@ -446,12 +521,15 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "payload_preferences_rels" CASCADE;
   DROP TABLE "payload_migrations" CASCADE;
   DROP TYPE "public"."enum_entities_kind";
-  DROP TYPE "public"."enum_audits_rgaa_version";
   DROP TYPE "public"."enum_declarations_status";
   DROP TYPE "public"."enum_declarations_app_kind";
+  DROP TYPE "public"."enum_declarations_mobile_platform";
+  DROP TYPE "public"."enum_declarations_audit_rgaa_version";
   DROP TYPE "public"."enum_declarations_from_source";
   DROP TYPE "public"."enum__declarations_v_version_status";
   DROP TYPE "public"."enum__declarations_v_version_app_kind";
+  DROP TYPE "public"."enum__declarations_v_version_mobile_platform";
+  DROP TYPE "public"."enum__declarations_v_version_audit_rgaa_version";
   DROP TYPE "public"."enum__declarations_v_version_from_source";
   DROP TYPE "public"."enum_access_rights_role";
   DROP TYPE "public"."enum_access_rights_status";`)

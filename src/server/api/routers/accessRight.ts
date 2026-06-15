@@ -15,6 +15,8 @@ import {
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import {
 	fetchOrReturnRealValue,
+	findByIdPopulated,
+	findPopulated,
 	hasAccessToDeclaration,
 } from "../utils/payload-helper";
 
@@ -97,15 +99,17 @@ export const accessRightRouter = createTRPCRouter({
 				userId: Number(ctx.session.user.id),
 			});
 
-			const tmpDeclaration = await ctx.payload.findByID({
-				collection: "declarations",
-				id: declarationId,
-			});
-
-			const declaration = {
-				...tmpDeclaration,
-				entity: await fetchOrReturnRealValue(tmpDeclaration.entity, "entities"),
-			};
+			const declaration = await findByIdPopulated(
+				ctx.payload,
+				"declarations",
+				declarationId,
+				1,
+			);
+			if (!declaration)
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Declaration not found",
+				});
 
 			const isAccessRightExist = await ctx.payload.find({
 				collection: "access-rights",
@@ -168,7 +172,7 @@ export const accessRightRouter = createTRPCRouter({
 				declaration,
 				invitedBy: ctx.session.user,
 				token,
-				entity: declaration?.entity as Entity,
+				entity: declaration.entity,
 			});
 
 			return accessRight;
@@ -192,7 +196,7 @@ export const accessRightRouter = createTRPCRouter({
 
 			const currentUser = userExists.docs[0] as User;
 
-			const invites = await ctx.payload.find({
+			const invites = await findPopulated(ctx.payload, {
 				collection: "access-rights",
 				where: {
 					inviteTokenHash: { equals: tokenHash },
@@ -202,26 +206,11 @@ export const accessRightRouter = createTRPCRouter({
 				depth: 2,
 			});
 
-			const tmpInvite = invites.docs[0];
-			if (!tmpInvite || !tmpInvite.inviteExpiresAt || !tmpInvite.invitedBy)
+			const invite = invites.docs[0];
+			if (!invite || !invite.inviteExpiresAt || !invite.invitedBy)
 				throw new TRPCError({ code: "NOT_FOUND" });
 
-			const invite = {
-				...tmpInvite,
-				user: tmpInvite.user
-					? await fetchOrReturnRealValue(tmpInvite.user, "users")
-					: null,
-				declaration: await fetchOrReturnRealValue(
-					tmpInvite.declaration,
-					"declarations",
-				),
-				invitedBy: await fetchOrReturnRealValue(tmpInvite.invitedBy, "users"),
-			};
-
-			const currentEntity = await fetchOrReturnRealValue(
-				invite.declaration.entity,
-				"entities",
-			);
+			const currentEntity = invite.declaration.entity;
 
 			if (
 				(invite.user && invite.user.id !== currentUser.id) ||
@@ -266,28 +255,18 @@ export const accessRightRouter = createTRPCRouter({
 	resendInviteMail: userProtectedProcedure
 		.input(z.number())
 		.mutation(async ({ input: id, ctx }) => {
-			const tmpAccessRight = await ctx.payload.findByID({
-				collection: "access-rights",
+			const accessRight = await findByIdPopulated(
+				ctx.payload,
+				"access-rights",
 				id,
-				depth: 2,
-			});
+				2,
+			);
 
-			if (!tmpAccessRight)
+			if (!accessRight)
 				throw new TRPCError({
 					code: "NOT_FOUND",
 					message: "Access right not found",
 				});
-
-			const accessRight = {
-				...tmpAccessRight,
-				declaration: await fetchOrReturnRealValue(
-					tmpAccessRight.declaration,
-					"declarations",
-				),
-				user: tmpAccessRight.user
-					? await fetchOrReturnRealValue(tmpAccessRight.user, "users")
-					: null,
-			};
 
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
@@ -295,10 +274,7 @@ export const accessRightRouter = createTRPCRouter({
 				userId: Number(ctx.session.user.id),
 			});
 
-			const currentEntity = await fetchOrReturnRealValue(
-				accessRight.declaration.entity,
-				"entities",
-			);
+			const currentEntity = accessRight.declaration.entity;
 
 			if (accessRight.status !== "pending")
 				throw new TRPCError({

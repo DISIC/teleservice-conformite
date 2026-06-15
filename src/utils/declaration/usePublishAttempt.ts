@@ -14,13 +14,11 @@ type UsePublishAttemptArgs = {
  * The shared "publish" navigation used by both the terminal Contact footer CTA
  * and the top-of-page StateNotice CTA, so the two can't drift.
  *
- * - `goToPreview` — navigate straight to `/preview` with no validation guard.
- *   Used by the standalone (`published-modified`) notice CTA: a published
- *   declaration is always publishable (CONTEXT.md Invariants).
- * - `attemptPublish` — the sequential (Brouillon) gate: arm the error summary,
- *   validate the whole declaration, then either go to `/preview` or route to the
- *   first errored Section's field. `override` lets the Contact save validate
- *   against its freshly-upserted value before page state has caught up.
+ * `attemptPublish` is the single publish gate (CONTEXT.md Invariants — publish
+ * always validates, in every state): arm the error summary, validate the whole
+ * declaration, then either go to `/preview` or route to the first errored
+ * Section's field. `override` lets the Contact save validate against its
+ * freshly-upserted value before page state has caught up.
  */
 export function usePublishAttempt({
 	declaration,
@@ -49,5 +47,5 @@ export function usePublishAttempt({
 		[declaration, onPublishAttempt, goToPreview, router],
 	);
 
-	return { goToPreview, attemptPublish };
+	return { attemptPublish };
 }

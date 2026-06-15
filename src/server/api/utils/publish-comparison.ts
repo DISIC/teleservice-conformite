@@ -1,108 +1,45 @@
-import type { CollectionAfterChangeHook, Payload } from "payload";
-import type {
-	Audit,
-	Contact,
-	Declaration,
-	Schema,
-} from "~/payload/payload-types";
+import type { Payload } from "payload";
+import type { Declaration } from "~/payload/payload-types";
 import { hasContentChangedSincePublish } from "~/utils/declaration/status";
-import type { PopulatedDeclaration } from "./payload-helper";
+import { findByIdPopulated, type PopulatedDeclaration } from "./payload-helper";
 
 type DeclarationFieldOverrides = Partial<
 	Pick<Declaration, "name" | "app_kind" | "url">
 >;
 
-type DocOverrides = {
-	contact?: Contact;
-	audit?: Audit;
-	schema?: Schema;
+type RecalculateOverrides = {
+	/**
+	 * Pending general-info fields a caller is about to write, used to preview the
+	 * resulting status without a read-then-write race. When set, this function
+	 * computes the status but leaves the write to the caller (which folds it into
+	 * the same `declarations` update).
+	 */
 	declarationFields?: DeclarationFieldOverrides;
 };
 
-export function makeRecalculateAfterChangeHook(
-	overrideKey: keyof Omit<DocOverrides, "declarationFields">,
-): CollectionAfterChangeHook {
-	return async ({ req, doc, previousDoc, operation, context }) => {
-		if (operation !== "update" || previousDoc.toVerify) return;
-		if (context?.skipStatusRecalculation) return;
-
-		const declaration = doc.declaration;
-		if (!declaration) return;
-
-		await recalculateDeclarationStatus(
-			req.payload,
-			typeof declaration === "number" ? declaration : Number(declaration.id),
-			{ [overrideKey]: doc } as DocOverrides,
-		);
-	};
-}
-
+/**
+ * Recomputes Modifiée/Publiée for a declaration whose content may have drifted
+ * from its published snapshot. Since ADR-0004 the audit/contact/schema content
+ * is read straight off the declaration row — no per-section rows to hydrate.
+ * No-op for drafts (no `publishedContent` to compare against).
+ */
 export async function recalculateDeclarationStatus(
 	payload: Payload,
 	declarationId: number,
-	overrides: DocOverrides = {},
+	overrides: RecalculateOverrides = {},
 ): Promise<"published" | "unpublished" | null> {
-	const declaration = await payload.findByID({
-		collection: "declarations",
-		id: declarationId,
-		depth: 0,
-	});
+	const declaration = await findByIdPopulated(
+		payload,
+		"declarations",
+		declarationId,
+		1,
+	);
 
 	if (!declaration?.publishedContent) return null;
 
-	const fetchById = async <
-		T extends keyof Payload["collections"] | "audits" | "contacts" | "schemas",
-	>(
-		collection: T,
-		id: number | null | undefined,
-	) => {
-		if (!id) return null;
-		return (await payload.findByID({
-			collection: collection as any,
-			id,
-		})) as any;
-	};
-
-	const contactId =
-		typeof declaration.contact === "number"
-			? declaration.contact
-			: (declaration.contact?.id ?? null);
-	const schemaId =
-		typeof declaration.schema === "number"
-			? declaration.schema
-			: (declaration.schema?.id ?? null);
-
-	const [audit, contact, schema, entity] = await Promise.all([
-		overrides.audit !== undefined
-			? overrides.audit
-			: ((
-					await payload.find({
-						collection: "audits",
-						where: { declaration: { equals: declarationId } },
-						limit: 1,
-					})
-				).docs[0] ?? null),
-		overrides.contact !== undefined
-			? overrides.contact
-			: await fetchById("contacts", contactId),
-		overrides.schema !== undefined
-			? overrides.schema
-			: await fetchById("schemas", schemaId),
-		declaration.entity
-			? payload.findByID({
-					collection: "entities",
-					id: declaration.entity as number,
-				})
-			: null,
-	]);
-
 	const populatedDeclaration: PopulatedDeclaration = {
-		...(declaration as PopulatedDeclaration),
+		...declaration,
 		...overrides.declarationFields,
-		audit,
-		contact,
-		schema,
-		entity: entity ?? null,
 		created_by: null,
 	};
 

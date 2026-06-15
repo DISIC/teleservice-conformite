@@ -71,7 +71,7 @@ function useAuditSubSection({
 	// a notice instead of their form — with no action buttons.
 	const showNotice = requiresRealised && audit?.isRealised !== true;
 
-	const { mutateAsync: upsert, isPending } = api.audit.upsert.useMutation({
+	const { mutateAsync: upsert, isPending } = api.audit.update.useMutation({
 		onSuccess: ({ data }) =>
 			onDeclarationChange((prev) => ({ ...prev, audit: data })),
 		onError: logMutationError("saving audit", declaration.id),
@@ -127,7 +127,7 @@ export function AuditGeneralSection(props: SectionRenderProps) {
 							rgaa_version: value.rgaa_version,
 							rate: value.rate,
 						};
-			await upsert({ values, id: audit?.id, declarationId: declaration.id });
+			await upsert({ values, declarationId: declaration.id });
 			afterSave();
 		},
 	});
@@ -163,7 +163,6 @@ export function AuditOutilsSection(props: SectionRenderProps) {
 					usedTools: value.usedTools,
 					testEnvironments: value.testEnvironments,
 				},
-				id: audit?.id,
 				declarationId: declaration.id,
 			});
 			afterSave();
@@ -198,7 +197,6 @@ export function AuditContenusSection(props: SectionRenderProps) {
 		onSubmit: async ({ value }) => {
 			await upsert({
 				values: { compliantElements: value.compliantElements },
-				id: audit?.id,
 				declarationId: declaration.id,
 			});
 			afterSave();
@@ -241,7 +239,6 @@ export function AuditNonConformitesSection(props: SectionRenderProps) {
 					optionalElements: value.optionalElements,
 					disproportionnedCharge: value.disproportionnedCharge,
 				},
-				id: audit?.id,
 				declarationId: declaration.id,
 			});
 			afterSave();

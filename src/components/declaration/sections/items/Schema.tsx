@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { EntityLibraryPickerSlot } from "~/components/declaration/EntityLibraryPicker";
+import { LibraryPickerSlot } from "~/components/declaration/LibraryPicker";
 import { api } from "~/lib/api";
-import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
+import { useLibraryLink } from "~/utils/declaration/useLibraryLink";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { useAppForm } from "~/forms/context";
 import { SchemaForm as DeclarationSchemaForm } from "~/forms/schema/schemaForm";
@@ -21,9 +21,10 @@ export function SchemaSection({
 	nextHref,
 	mode,
 }: SectionRenderProps) {
-	const hasSchema = !!declaration.schema;
+	const hasSchema = !!declaration.schema?.name;
+	const isLinked = declaration.schema?.parent != null;
 
-	const libraryLink = useEntityLibraryLink({ kind: "schemas", declaration });
+	const libraryLink = useLibraryLink({ kind: "schema", declaration });
 
 	const { mutateAsync: upsertSchema, isPending } =
 		api.schema.upsert.useMutation({
@@ -34,10 +35,13 @@ export function SchemaSection({
 			onError: logMutationError("upserting schema", declaration.id),
 		});
 
+	// Linked mode is read-only here (edits happen in the Library, then propagate);
+	// the picker slot offers "Détacher" to switch to an editable custom copy.
 	const { readOnly, afterSave, Frame } = useSectionForm({
 		title: SECTION_TITLES.schema,
 		declaration,
-		isEditable: hasSchema,
+		isEditable: hasSchema && !isLinked,
+		locked: isLinked,
 		isSaving: isPending,
 		prevHref,
 		nextHref,
@@ -53,9 +57,15 @@ export function SchemaSection({
 		...schemaFormOptions,
 		defaultValues,
 		onSubmit: async ({ value }) => {
+			// Linked content is read-only and kept in sync from the Library; never
+			// re-save it here (the upsert detaches the parent). Just advance.
+			if (isLinked) {
+				afterSave();
+				return;
+			}
+
 			await upsertSchema({
 				values: value,
-				id: declaration.schema?.id,
 				declarationId: declaration.id,
 			});
 			afterSave();
@@ -65,9 +75,7 @@ export function SchemaSection({
 	return (
 		<Frame
 			form={form}
-			before={
-				<EntityLibraryPickerSlot link={libraryLink} readOnly={readOnly} />
-			}
+			before={<LibraryPickerSlot link={libraryLink} readOnly={readOnly} />}
 		>
 			<DeclarationSchemaForm form={form} readOnly={readOnly} />
 		</Frame>

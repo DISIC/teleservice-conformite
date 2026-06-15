@@ -1,0 +1,57 @@
+import type { Field } from "payload";
+
+import { toVerifyField } from "./common";
+
+/**
+ * Schéma et plan d'actions content, folded onto the declaration row as a group
+ * (ADR-0004). Symmetric with the contact group; `parent` links to a Library
+ * schema. Fields renamed to `name`/`url` (was `schemaName`/`schemaUrl`).
+ */
+export const schemaGroup: Field = {
+	name: "schema",
+	type: "group",
+	label: { fr: "Schéma et plan d'actions" },
+	fields: [
+		{
+			name: "name",
+			type: "text",
+			label: { fr: "Nom du schéma pluriannuel" },
+		},
+		{
+			name: "url",
+			type: "text",
+			label: { fr: "Lien du schéma pluriannuel" },
+		},
+		{
+			name: "actionPlanUrls",
+			type: "array",
+			label: { fr: "Liens des plans d'actions" },
+			labels: {
+				singular: { fr: "Plan d'actions" },
+				plural: { fr: "Plans d'actions" },
+			},
+			fields: [
+				{
+					name: "name",
+					type: "text",
+					label: { fr: "Nom du plan d'actions" },
+					required: true,
+				},
+				{
+					name: "url",
+					type: "text",
+					label: { fr: "Lien du plan d'actions" },
+					required: true,
+				},
+			],
+		},
+		{
+			name: "parent",
+			type: "relationship",
+			relationTo: "schemas",
+			hasMany: false,
+			label: { fr: "Schéma de la bibliothèque" },
+		},
+		toVerifyField,
+	],
+};

@@ -1,7 +1,9 @@
 # ADR-0003: Sequential completion mode + declaration-wide validation gate
 
-- **Status:** Accepted
+- **Status:** Accepted — amended by ADR-0004
 - **Date:** 2026-06-09
+
+> **Amendment (ADR-0004, 2026-06-10):** the gate is now universal — `validateDeclaration` runs on **every** publish, including from Modifiée. The v1 assumption "published-modified is always publishable" no longer holds: removing a contact/schema from a published Declaration leaves it incomplete (`published-incomplete`). The sequential/standalone mode split is unaffected.
 
 ## Context
 

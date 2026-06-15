@@ -1,6 +1,10 @@
 import type { CollectionConfig } from "payload";
-import { toVerifyField } from "../fields/common";
 
+/**
+ * Library ("Schémas et Contacts") parent — a user's reusable contact (ADR-0004).
+ * Owned per-user via `user`; entity-level sharing is retired. Declarations hold
+ * their own copy in the `contact` group and may link to one of these parents.
+ */
 export const Contacts: CollectionConfig = {
 	slug: "contacts",
 	admin: {
@@ -28,17 +32,11 @@ export const Contacts: CollectionConfig = {
 			type: "text",
 		},
 		{
-			name: "entity",
-			label: { fr: "Administration associée" },
+			name: "user",
+			label: { fr: "Propriétaire" },
 			type: "relationship",
-			relationTo: "entities",
-			required: false,
-			admin: {
-				description: {
-					fr: "Si renseigné, ce contact est partagé au niveau de l'administration et peut être réutilisé sur plusieurs déclarations.",
-				},
-			},
+			relationTo: "users",
+			required: true,
 		},
-		toVerifyField,
 	],
 };

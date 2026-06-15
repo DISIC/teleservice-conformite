@@ -14,6 +14,13 @@ type UseSectionFormArgs = {
 	isEditable: boolean;
 	/** Override the initial readOnly state. Defaults to `isEditable`. */
 	initialReadOnly?: boolean;
+	/**
+	 * Pin the Section read-only even in sequential mode (which otherwise keeps
+	 * every Section editable). Used for Library-linked groups: their content is
+	 * owned by the parent and edited from the Library, so it must never be
+	 * editable inline. See ADR-0004.
+	 */
+	locked?: boolean;
 	isSaving: boolean;
 	prevHref: string | null;
 	nextHref: string | null;
@@ -54,6 +61,7 @@ export function useSectionForm({
 	declaration,
 	isEditable,
 	initialReadOnly,
+	locked,
 	isSaving,
 	prevHref,
 	nextHref,
@@ -63,9 +71,10 @@ export function useSectionForm({
 	const { classes: commonClasses } = useCommonStyles();
 	const router = useRouter();
 	const isSequential = mode === "sequential";
-	// Sequential mode keeps every Section permanently editable (no toggle).
+	// A locked Section stays read-only everywhere (overrides sequential). Otherwise
+	// sequential mode keeps every Section permanently editable (no toggle).
 	const [readOnly, setReadOnly] = useState(
-		isSequential ? false : (initialReadOnly ?? isEditable),
+		locked ? true : isSequential ? false : (initialReadOnly ?? isEditable),
 	);
 
 	const enterEdit = () => setReadOnly(false);

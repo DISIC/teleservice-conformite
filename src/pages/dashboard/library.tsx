@@ -2,11 +2,9 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import config from "@payload-config";
 import { createColumnHelper } from "@tanstack/react-table";
-import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
-import { getPayload } from "payload";
 import { useMemo, useState } from "react";
 import { tss } from "tss-react";
 import { BackButton } from "~/components/ui/BackButton";
@@ -21,13 +19,9 @@ import {
 } from "~/components/modal/LibrarySchemaModal";
 import { Loader } from "~/components/ui/Loader";
 import Table from "~/components/ui/Table";
-import type { Contact, Entity } from "~/payload/payload-types";
+import type { Contact } from "~/payload/payload-types";
 import { api } from "~/lib/api";
 import { authPages } from "~/lib/auth";
-
-interface LibraryPageProps {
-	entity: Entity;
-}
 
 const contactColumnHelper = createColumnHelper<Contact>();
 
@@ -58,9 +52,7 @@ const ItemActions = ({
 	</div>
 );
 
-export default function LibraryPage({
-	entity,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function LibraryPage() {
 	const { classes, cx } = useStyles();
 
 	const utils = api.useUtils();
@@ -72,32 +64,26 @@ export default function LibraryPage({
 		data: contacts = [],
 		isLoading: isLoadingContacts,
 		isFetching: isFetchingContacts,
-	} = api.entityLibrary.listContacts.useQuery({
-		entityId: entity.id,
-	});
+	} = api.library.listContacts.useQuery();
 	const {
 		data: schemas = [],
 		isLoading: isLoadingSchemas,
 		isFetching: isFetchingSchemas,
-	} = api.entityLibrary.listSchemas.useQuery({
-		entityId: entity.id,
-	});
+	} = api.library.listSchemas.useQuery();
 
 	const refresh = () => {
-		utils.entityLibrary.listContacts.invalidate();
-		utils.entityLibrary.listSchemas.invalidate();
+		utils.library.listContacts.invalidate();
+		utils.library.listSchemas.invalidate();
 	};
 
-	const { mutateAsync: deleteContact } =
-		api.entityLibrary.deleteContact.useMutation({
-			onSuccess: refresh,
-			onError: (e) => alert(e.message),
-		});
-	const { mutateAsync: deleteSchema } =
-		api.entityLibrary.deleteSchema.useMutation({
-			onSuccess: refresh,
-			onError: (e) => alert(e.message),
-		});
+	const { mutateAsync: deleteContact } = api.library.deleteContact.useMutation({
+		onSuccess: refresh,
+		onError: (e) => alert(e.message),
+	});
+	const { mutateAsync: deleteSchema } = api.library.deleteSchema.useMutation({
+		onSuccess: refresh,
+		onError: (e) => alert(e.message),
+	});
 
 	const contactColumns = useMemo(
 		() => [
@@ -142,9 +128,7 @@ export default function LibraryPage({
 						<ItemActions
 							className={classes.itemActions}
 							onEdit={() => contactModalActions.open?.(contact)}
-							onDelete={() =>
-								deleteContact({ id: contact.id, entityId: entity.id })
-							}
+							onDelete={() => deleteContact({ id: contact.id })}
 						/>
 					);
 				},
@@ -155,7 +139,6 @@ export default function LibraryPage({
 			classes.itemActions,
 			classes.tags,
 			deleteContact,
-			entity.id,
 			contactModalActions,
 		],
 	);
@@ -163,15 +146,15 @@ export default function LibraryPage({
 	return (
 		<>
 			<Head>
-				<title>Documents partagés - Téléservice Conformité</title>
+				<title>Ma bibliothèque - Téléservice Conformité</title>
 			</Head>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
 					<BackButton>Retour sur la liste des déclarations</BackButton>
 					<div className={classes.headerWrapper}>
-						<h1>Documents partagés</h1>
+						<h1>Schémas et Contacts</h1>
 						<Badge noIcon small>
-							éditable par tous les membres de l'organisation
+							réutilisable dans vos déclarations
 						</Badge>
 					</div>
 					<section className={classes.section}>
@@ -207,8 +190,8 @@ export default function LibraryPage({
 										<div
 											className={cx(classes.schemaRow, classes.schemaHeaderRow)}
 										>
-											<strong>{schema.schemaName}</strong>
-											<span className={classes.hint}>{schema.schemaUrl}</span>
+											<strong>{schema.name}</strong>
+											<span className={classes.hint}>{schema.url}</span>
 											<span className={classes.hint} suppressHydrationWarning>
 												Dernière mise à jour{" "}
 												<Tag
@@ -226,12 +209,7 @@ export default function LibraryPage({
 											<ItemActions
 												className={classes.itemActions}
 												onEdit={() => schemaModalActions.open?.(schema)}
-												onDelete={() =>
-													deleteSchema({
-														id: schema.id,
-														entityId: entity.id,
-													})
-												}
+												onDelete={() => deleteSchema({ id: schema.id })}
 											/>
 										</div>
 										{(schema.actionPlanUrls ?? []).map((plan) => (
@@ -281,14 +259,8 @@ export default function LibraryPage({
 							/>
 						)}
 					</section>
-					<LibrarySchemaModal
-						entityId={entity.id}
-						actions={schemaModalActions}
-					/>
-					<LibraryContactModal
-						entityId={entity.id}
-						actions={contactModalActions}
-					/>
+					<LibrarySchemaModal actions={schemaModalActions} />
+					<LibraryContactModal actions={contactModalActions} />
 				</div>
 			</div>
 		</>
@@ -381,19 +353,7 @@ export const getServerSideProps = (async (context) => {
 		return { redirect: { destination: "/", permanent: false } };
 	}
 
-	const payload = await getPayload({ config });
-	const user = await payload.findByID({
-		collection: "users",
-		id: Number(session.user.id),
-		depth: 1,
-	});
-
-	const entity =
-		user?.entity && typeof user.entity === "object" ? user.entity : null;
-
-	if (!entity) {
-		return { redirect: { destination: "/dashboard", permanent: false } };
-	}
-
-	return { props: { entity } };
-}) satisfies GetServerSideProps<LibraryPageProps>;
+	// The Library is per-user (ADR-0004); ownership is resolved from the session
+	// inside the tRPC procedures, so no props need fetching here.
+	return { props: {} };
+}) satisfies GetServerSideProps;

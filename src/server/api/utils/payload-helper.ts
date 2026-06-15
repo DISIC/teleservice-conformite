@@ -2,23 +2,58 @@ import { TRPCError } from "@trpc/server";
 import { getPayload, type Payload } from "payload";
 import payloadConfig from "~/payload/payload.config";
 import type {
-	Audit,
 	Config,
-	Contact,
 	Declaration,
 	Entity,
-	Schema,
 	User,
 } from "~/payload/payload-types";
 import type { Session } from "~/lib/auth-client";
 
+type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+export type Populated<T, D extends number = 1> = [D] extends [0]
+	? T
+	: T extends (infer Item)[]
+		? Populated<Item, D>[]
+		: T extends object
+			? { [K in keyof T]: Populated<Exclude<T[K], number>, Prev[D]> }
+			: T;
+
+export async function findByIdPopulated<
+	S extends keyof Config["collections"],
+	D extends number = 1,
+>(
+	payload: Payload,
+	collection: S,
+	id: number,
+	depth: D = 1 as D,
+): Promise<Populated<Config["collections"][S], D> | null> {
+	return (await payload.findByID({ collection, id, depth })) as never;
+}
+
+export async function findPopulated<
+	S extends keyof Config["collections"],
+	D extends number = 1,
+>(
+	payload: Payload,
+	args: { collection: S; depth?: D } & Record<string, unknown>,
+): Promise<{
+	docs: Populated<Config["collections"][S], D>[];
+	totalDocs: number;
+}> {
+	return (await payload.find({ depth: 1, ...args })) as never;
+}
+
+/**
+ * A declaration with its two remaining relations resolved to objects. Since
+ * ADR-0004 the audit/contact/schema content lives in groups on the row itself,
+ * so only `entity` and `created_by` still need hydrating — the join/relation
+ * unions of the old four-collection shape are gone.
+ */
 export type PopulatedDeclaration = Omit<
 	Declaration,
-	"audit" | "contact" | "entity" | "schema" | "created_by"
+	"entity" | "created_by"
 > & {
-	audit: Audit | null;
-	contact: Contact | null;
-	schema: Schema | null;
 	created_by: User | null;
 	entity: Entity | null;
 };
@@ -44,19 +79,7 @@ export async function fetchOrReturnRealValue<
 export async function getPopulatedDeclaration(
 	declaration: Declaration,
 ): Promise<PopulatedDeclaration> {
-	const { audit, contact, schema, created_by, entity } = declaration;
-
-	const sanitizedAudit = audit?.docs?.[0]
-		? await fetchOrReturnRealValue(audit.docs[0], "audits")
-		: null;
-
-	const sanitizedContact = contact
-		? await fetchOrReturnRealValue(contact, "contacts")
-		: null;
-
-	const sanitizedSchema = schema
-		? await fetchOrReturnRealValue(schema, "schemas")
-		: null;
+	const { created_by, entity } = declaration;
 
 	const sanitizedEntity = entity
 		? await fetchOrReturnRealValue(entity, "entities")
@@ -68,9 +91,6 @@ export async function getPopulatedDeclaration(
 
 	return {
 		...declaration,
-		audit: sanitizedAudit,
-		contact: sanitizedContact,
-		schema: sanitizedSchema,
 		created_by: sanitizedUser,
 		entity: sanitizedEntity,
 	};

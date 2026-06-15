@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { EntityLibraryPickerSlot } from "~/components/declaration/EntityLibraryPicker";
+import { LibraryPickerSlot } from "~/components/declaration/LibraryPicker";
 import { api } from "~/lib/api";
-import { useEntityLibraryLink } from "~/utils/declaration/useEntityLibraryLink";
+import { useLibraryLink } from "~/utils/declaration/useLibraryLink";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { usePublishAttempt } from "~/utils/declaration/usePublishAttempt";
 import { useAppForm } from "~/forms/context";
@@ -28,9 +28,10 @@ export function ContactSection({
 	mode,
 	onPublishAttempt,
 }: ContactSectionProps) {
-	const hasContact = !!declaration.contact;
+	const hasContact = !!declaration.contact?.name;
+	const isLinked = declaration.contact?.parent != null;
 
-	const libraryLink = useEntityLibraryLink({ kind: "contacts", declaration });
+	const libraryLink = useLibraryLink({ kind: "contact", declaration });
 
 	const { attemptPublish } = usePublishAttempt({
 		declaration,
@@ -46,10 +47,13 @@ export function ContactSection({
 			onError: logMutationError("upserting contact", declaration.id),
 		});
 
+	// Linked mode is read-only here (edits happen in the Library, then propagate);
+	// the picker slot offers "Détacher" to switch to an editable custom copy.
 	const { readOnly, afterSave, Frame } = useSectionForm({
 		title: SECTION_TITLES.contact,
 		declaration,
-		isEditable: hasContact,
+		isEditable: hasContact && !isLinked,
+		locked: isLinked,
 		isSaving: isPending,
 		prevHref,
 		nextHref,
@@ -65,9 +69,20 @@ export function ContactSection({
 		...contactFormOptions,
 		defaultValues,
 		onSubmit: async ({ value }) => {
+			// Linked content is read-only and kept in sync from the Library; never
+			// re-save it here (the upsert detaches the parent). Pass straight through
+			// to navigation/publish against the already-current linked contact.
+			if (isLinked) {
+				if (mode !== "sequential") {
+					afterSave();
+					return;
+				}
+				attemptPublish();
+				return;
+			}
+
 			const { data: contact } = await upsertContact({
 				values: value,
-				id: declaration.contact?.id,
 				declarationId: declaration.id,
 			});
 
@@ -86,9 +101,7 @@ export function ContactSection({
 	return (
 		<Frame
 			form={form}
-			before={
-				<EntityLibraryPickerSlot link={libraryLink} readOnly={readOnly} />
-			}
+			before={<LibraryPickerSlot link={libraryLink} readOnly={readOnly} />}
 		>
 			<ContactTypeForm form={form} readOnly={readOnly} />
 		</Frame>

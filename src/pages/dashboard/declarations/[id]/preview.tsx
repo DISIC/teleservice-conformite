@@ -14,13 +14,7 @@ import { tss } from "tss-react";
 import PublishedTemplate, {
 	extractDeclarationContentToPublish,
 } from "~/components/declaration/PublishedTemplate";
-import type {
-	Audit,
-	Contact,
-	Entity,
-	Schema,
-	User,
-} from "~/payload/payload-types";
+import type { Entity, User } from "~/payload/payload-types";
 import {
 	getDeclarationById,
 	type PopulatedDeclaration,
@@ -30,14 +24,13 @@ import { auth } from "~/lib/auth";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
 import { getDeclarationStatus } from "~/utils/declaration/status";
 
+// Since ADR-0004 audit/contact/schema are always-present groups on the row; only
+// the two remaining relations still need asserting non-null for the preview.
 type RequiredPopulatedDeclaration = Omit<
 	PopulatedDeclaration,
-	"audit" | "contact" | "entity" | "schema" | "created_by"
+	"entity" | "created_by"
 > & {
-	audit: Audit;
-	contact: Contact;
 	entity: Entity;
-	schema: Schema;
 	created_by: User;
 };
 
@@ -190,11 +183,9 @@ export const getServerSideProps = (async (context) => {
 
 	if (!declaration) return { redirect };
 
-	const { audit, contact, entity, schema, created_by } = declaration;
+	const { entity, created_by } = declaration;
 
-	const isDeclarationFull = audit && contact && entity && schema && created_by;
-
-	if (!isDeclarationFull) {
+	if (!entity || !created_by) {
 		return {
 			redirect: {
 				destination: `/dashboard/declarations/${declaration.id}`,
