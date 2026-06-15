@@ -37,7 +37,7 @@ export function StateNotice({
 	// `getDeclarationState` runs the full declaration validation; memoize so it
 	// re-derives only when the declaration changes, not on every render.
 	const state = useMemo(() => getDeclarationState(declaration), [declaration]);
-	const { goToPreview, attemptPublish } = usePublishAttempt({
+	const { attemptPublish } = usePublishAttempt({
 		declaration,
 		onPublishAttempt,
 	});
@@ -47,11 +47,9 @@ export function StateNotice({
 	if (!state) return null;
 
 	const { bgColor, badge, heading, body, actions } = STATE_PRESENTATION[state];
-	// `published-modified` is the only standalone state: always publishable, so
-	// its publish CTA navigates straight to preview with no validation guard
-	// (CONTEXT.md Invariants). Sequential states run the validation gate first.
-	const onPublish =
-		state === "published-modified" ? goToPreview : () => attemptPublish();
+	// Publish always validates: the CTA runs the full declaration validation gate
+	// in every state — there is no fast path (CONTEXT.md Invariants).
+	const onPublish = () => attemptPublish();
 
 	return (
 		<>
