@@ -174,7 +174,9 @@ export function SourceModeSection<TValues, TForm>({
 			form={form}
 			before={
 				showRadio ? (
-					<div className={classes.picker}>
+					<div
+						className={effectiveMode === "linked" ? classes.picker : undefined}
+					>
 						<RadioButtons
 							legend={libraryLink.label}
 							disabled={readOnly}
@@ -223,7 +225,7 @@ export function SourceModeSection<TValues, TForm>({
 
 const useStyles = tss.withName("SourceModeSection").create({
 	picker: {
-		marginBottom: fr.spacing("4v"),
+		paddingBottom: fr.spacing("4v"),
 	},
 	linkedWrapper: {
 		position: "relative",
