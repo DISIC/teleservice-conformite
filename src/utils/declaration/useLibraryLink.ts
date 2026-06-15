@@ -1,7 +1,7 @@
-import { useRouter } from "next/router";
 import { declarationToContactValues } from "~/forms/contact/contactSchema";
 import { declarationToSchemaValues } from "~/forms/schema/schemaSchema";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import type { DeclarationChangeFn } from "~/components/declaration/sections/Content";
 import { api } from "~/lib/api";
 
 export type LibraryLink = {
@@ -17,6 +17,7 @@ export type LibraryLink = {
 type UseLibraryLinkArgs = {
 	kind: "schema" | "contact";
 	declaration: PopulatedDeclaration;
+	onDeclarationChange: DeclarationChangeFn;
 };
 
 /** Reads the group's `parent` id (depth 0 → a number; defensive for objects). */
@@ -31,14 +32,14 @@ function parentId(parent: unknown): number | null {
 /**
  * Wires a Section's Library picker to the per-user Library: lists parents, links
  * the declaration to one, or detaches it to a custom copy. Linking/unlinking
- * reloads so the section re-renders read-only (linked) or editable (custom).
+ * folds the returned group and recomputed status back into local state so the
+ * section re-renders without a full page reload.
  */
 export function useLibraryLink({
 	kind,
 	declaration,
+	onDeclarationChange,
 }: UseLibraryLinkArgs): LibraryLink {
-	const { reload } = useRouter();
-
 	const schemasQuery = api.library.listSchemas.useQuery(undefined, {
 		enabled: kind === "schema",
 	});
@@ -46,17 +47,37 @@ export function useLibraryLink({
 		enabled: kind === "contact",
 	});
 
+	const applySchema = (result: {
+		data: PopulatedDeclaration["schema"];
+		status: "published" | "unpublished" | null;
+	}) =>
+		onDeclarationChange((prev) => ({
+			...prev,
+			schema: result.data,
+			status: result.status ?? prev.status,
+		}));
+
+	const applyContact = (result: {
+		data: PopulatedDeclaration["contact"];
+		status: "published" | "unpublished" | null;
+	}) =>
+		onDeclarationChange((prev) => ({
+			...prev,
+			contact: result.data,
+			status: result.status ?? prev.status,
+		}));
+
 	const linkSchema = api.library.linkSchema.useMutation({
-		onSuccess: async () => reload(),
+		onSuccess: applySchema,
 	});
 	const linkContact = api.library.linkContact.useMutation({
-		onSuccess: async () => reload(),
+		onSuccess: applyContact,
 	});
 	const unlinkSchema = api.schema.upsert.useMutation({
-		onSuccess: async () => reload(),
+		onSuccess: applySchema,
 	});
 	const unlinkContact = api.contact.upsert.useMutation({
-		onSuccess: async () => reload(),
+		onSuccess: applyContact,
 	});
 
 	if (kind === "schema") {

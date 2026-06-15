@@ -34,9 +34,12 @@ export const schemaRouter = createTRPCRouter({
 				},
 			});
 
-			await recalculateDeclarationStatus(ctx.payload, declarationId);
+			const status = await recalculateDeclarationStatus(
+				ctx.payload,
+				declarationId,
+			);
 
-			return { data: updated.schema };
+			return { data: updated.schema, status };
 		}),
 
 	/**
@@ -69,8 +72,11 @@ export const schemaRouter = createTRPCRouter({
 				},
 			});
 
-			await recalculateDeclarationStatus(ctx.payload, declarationId);
+			const status = await recalculateDeclarationStatus(
+				ctx.payload,
+				declarationId,
+			);
 
-			return { data: updated.schema };
+			return { data: updated.schema, status };
 		}),
 });

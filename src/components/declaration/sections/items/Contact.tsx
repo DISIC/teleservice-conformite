@@ -1,24 +1,39 @@
-import { useMemo } from "react";
-import { LibraryPickerSlot } from "~/components/declaration/LibraryPicker";
+import type { ComponentProps } from "react";
 import { api } from "~/lib/api";
-import { useLibraryLink } from "~/utils/declaration/useLibraryLink";
-import { SECTION_TITLES } from "~/utils/declaration/sections";
-import { usePublishAttempt } from "~/utils/declaration/usePublishAttempt";
-import { useAppForm } from "~/forms/context";
 import { ContactTypeForm } from "~/forms/contact/contactForm";
 import {
 	contactFormOptions,
 	declarationToContactValues,
 	type ZContactForm,
 } from "~/forms/contact/contactSchema";
-import { useSectionForm } from "~/utils/declaration/useSectionForm";
+import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
+import { SourceModeSection, type SourceModeOption } from "../SourceModeSection";
+import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
+import Avatar from "@codegouvfr/react-dsfr/picto/Avatar";
 
 type ContactSectionProps = SectionRenderProps & {
 	/** Flips the page's "publish attempted" flag (terminal Section only). */
 	onPublishAttempt: () => void;
 };
+
+type ContactFormApi = ComponentProps<typeof ContactTypeForm>["form"];
+
+const CONTACT_OPTIONS: SourceModeOption[] = [
+	{
+		value: "linked",
+		label: "Utiliser un contact de ma bibliothèque",
+		hintText: "Réutilise un contact enregistré, mis à jour automatiquement.",
+		illustration: <DocumentSearch />,
+	},
+	{
+		value: "custom",
+		label: "Définir un contact pour cette déclaration",
+		hintText: "Renseignez un contact propre à cette déclaration.",
+		illustration: <Avatar />,
+	},
+];
 
 export function ContactSection({
 	declaration,
@@ -28,79 +43,40 @@ export function ContactSection({
 	mode,
 	onPublishAttempt,
 }: ContactSectionProps) {
-	const hasContact = !!declaration.contact?.name;
-	const isLinked = declaration.contact?.parent != null;
-
-	const libraryLink = useLibraryLink({ kind: "contact", declaration });
-
-	const { attemptPublish } = usePublishAttempt({
-		declaration,
-		onPublishAttempt,
-	});
-
 	const { mutateAsync: upsertContact, isPending } =
 		api.contact.upsert.useMutation({
-			onSuccess: ({ data: contact }) => {
-				libraryLink.refetch();
-				onDeclarationChange((prev) => ({ ...prev, contact }));
-			},
 			onError: logMutationError("upserting contact", declaration.id),
 		});
 
-	// Linked mode is read-only here (edits happen in the Library, then propagate);
-	// the picker slot offers "Détacher" to switch to an editable custom copy.
-	const { readOnly, afterSave, Frame } = useSectionForm({
-		title: SECTION_TITLES.contact,
-		declaration,
-		isEditable: hasContact && !isLinked,
-		locked: isLinked,
-		isSaving: isPending,
-		prevHref,
-		nextHref,
-		mode,
-	});
-
-	const defaultValues: ZContactForm = useMemo(
-		() => declarationToContactValues(declaration),
-		[declaration],
-	);
-
-	const form = useAppForm({
-		...contactFormOptions,
-		defaultValues,
-		onSubmit: async ({ value }) => {
-			// Linked content is read-only and kept in sync from the Library; never
-			// re-save it here (the upsert detaches the parent).
-			if (isLinked) {
-				if (mode !== "sequential") {
-					afterSave();
-					return;
-				}
-				attemptPublish();
-				return;
-			}
-
-			const { data: contact } = await upsertContact({
-				values: value,
-				declarationId: declaration.id,
-			});
-
-			// Sequential Contact save runs the declaration-wide publish gate.
-			if (mode !== "sequential") {
-				afterSave();
-				return;
-			}
-
-			attemptPublish({ contact });
-		},
-	});
-
 	return (
-		<Frame
-			form={form}
-			before={<LibraryPickerSlot link={libraryLink} readOnly={readOnly} />}
-		>
-			<ContactTypeForm form={form} readOnly={readOnly} />
-		</Frame>
+		<SourceModeSection<ZContactForm, ContactFormApi>
+			kind="contact"
+			title={SECTION_TITLES.contact}
+			declaration={declaration}
+			onDeclarationChange={onDeclarationChange}
+			mode={mode}
+			prevHref={prevHref}
+			nextHref={nextHref}
+			formOptions={contactFormOptions}
+			toValues={declarationToContactValues}
+			commit={async (values) => {
+				const { data: contact, status } = await upsertContact({
+					values,
+					declarationId: declaration.id,
+				});
+				onDeclarationChange((prev) => ({
+					...prev,
+					contact,
+					status: status ?? prev.status,
+				}));
+				return { contact };
+			}}
+			isSaving={isPending}
+			options={CONTACT_OPTIONS}
+			renderForm={({ form, readOnly }) => (
+				<ContactTypeForm form={form} readOnly={readOnly} />
+			)}
+			onPublishAttempt={onPublishAttempt}
+		/>
 	);
 }

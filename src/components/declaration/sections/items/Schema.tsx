@@ -1,18 +1,42 @@
-import { useMemo } from "react";
-import { LibraryPickerSlot } from "~/components/declaration/LibraryPicker";
+import type { ComponentProps } from "react";
 import { api } from "~/lib/api";
-import { useLibraryLink } from "~/utils/declaration/useLibraryLink";
-import { SECTION_TITLES } from "~/utils/declaration/sections";
-import { useAppForm } from "~/forms/context";
 import { SchemaForm as DeclarationSchemaForm } from "~/forms/schema/schemaForm";
 import {
 	declarationToSchemaValues,
 	schemaFormOptions,
 	type ZSchema,
 } from "~/forms/schema/schemaSchema";
-import { useSectionForm } from "~/utils/declaration/useSectionForm";
+import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
+import { SourceModeSection, type SourceModeOption } from "../SourceModeSection";
+import Calendar from "@codegouvfr/react-dsfr/picto/Calendar";
+import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
+import Error from "@codegouvfr/react-dsfr/picto/Error";
+
+type SchemaFormApi = ComponentProps<typeof DeclarationSchemaForm>["form"];
+
+const SCHEMA_OPTIONS: SourceModeOption[] = [
+	{
+		value: "linked",
+		label: "Utiliser un schéma de ma bibliothèque",
+		hintText: "Réutilise un schéma enregistré, mis à jour automatiquement.",
+		illustration: <DocumentSearch />,
+	},
+	{
+		value: "custom",
+		label: "Définir un schéma pour cette déclaration",
+		hintText: "Renseignez un schéma propre à cette déclaration.",
+		illustration: <Calendar />,
+	},
+	{
+		value: "skipped",
+		label: "Aucun schéma pour le moment",
+		hintText:
+			"Vous pourrez en ajouter un plus tard sans bloquer la publication.",
+		illustration: <Error />,
+	},
+];
 
 export function SchemaSection({
 	declaration,
@@ -21,63 +45,39 @@ export function SchemaSection({
 	nextHref,
 	mode,
 }: SectionRenderProps) {
-	const hasSchema = !!declaration.schema?.name;
-	const isLinked = declaration.schema?.parent != null;
-
-	const libraryLink = useLibraryLink({ kind: "schema", declaration });
-
 	const { mutateAsync: upsertSchema, isPending } =
 		api.schema.upsert.useMutation({
-			onSuccess: async ({ data: schema }) => {
-				libraryLink.refetch();
-				onDeclarationChange((prev) => ({ ...prev, schema }));
-			},
 			onError: logMutationError("upserting schema", declaration.id),
 		});
 
-	// Linked mode is read-only here (edits happen in the Library, then propagate);
-	// the picker slot offers "Détacher" to switch to an editable custom copy.
-	const { readOnly, afterSave, Frame } = useSectionForm({
-		title: SECTION_TITLES.schema,
-		declaration,
-		isEditable: hasSchema && !isLinked,
-		locked: isLinked,
-		isSaving: isPending,
-		prevHref,
-		nextHref,
-		mode,
-	});
-
-	const defaultValues: ZSchema = useMemo(
-		() => declarationToSchemaValues(declaration),
-		[declaration],
-	);
-
-	const form = useAppForm({
-		...schemaFormOptions,
-		defaultValues,
-		onSubmit: async ({ value }) => {
-			// Linked content is read-only and kept in sync from the Library; never
-			// re-save it here (the upsert detaches the parent). Just advance.
-			if (isLinked) {
-				afterSave();
-				return;
-			}
-
-			await upsertSchema({
-				values: value,
-				declarationId: declaration.id,
-			});
-			afterSave();
-		},
-	});
-
 	return (
-		<Frame
-			form={form}
-			before={<LibraryPickerSlot link={libraryLink} readOnly={readOnly} />}
-		>
-			<DeclarationSchemaForm form={form} readOnly={readOnly} />
-		</Frame>
+		<SourceModeSection<ZSchema, SchemaFormApi>
+			kind="schema"
+			title={SECTION_TITLES.schema}
+			declaration={declaration}
+			onDeclarationChange={onDeclarationChange}
+			mode={mode}
+			prevHref={prevHref}
+			nextHref={nextHref}
+			formOptions={schemaFormOptions}
+			toValues={declarationToSchemaValues}
+			commit={async (values) => {
+				const { data: schema, status } = await upsertSchema({
+					values,
+					declarationId: declaration.id,
+				});
+				onDeclarationChange((prev) => ({
+					...prev,
+					schema,
+					status: status ?? prev.status,
+				}));
+				return { schema };
+			}}
+			isSaving={isPending}
+			options={SCHEMA_OPTIONS}
+			renderForm={({ form, readOnly }) => (
+				<DeclarationSchemaForm form={form} readOnly={readOnly} />
+			)}
+		/>
 	);
 }

@@ -244,7 +244,7 @@ export const libraryRouter = createTRPCRouter({
 				depth: 0,
 			});
 
-			await ctx.payload.update({
+			const updated = await ctx.payload.update({
 				collection: "declarations",
 				id: input.declarationId,
 				data: {
@@ -259,8 +259,11 @@ export const libraryRouter = createTRPCRouter({
 				},
 			});
 
-			await recalculateDeclarationStatus(ctx.payload, input.declarationId);
-			return { id: input.declarationId };
+			const status = await recalculateDeclarationStatus(
+				ctx.payload,
+				input.declarationId,
+			);
+			return { data: updated.contact, status };
 		}),
 
 	linkSchema: userProtectedProcedure
@@ -286,7 +289,7 @@ export const libraryRouter = createTRPCRouter({
 				depth: 0,
 			});
 
-			await ctx.payload.update({
+			const updated = await ctx.payload.update({
 				collection: "declarations",
 				id: input.declarationId,
 				data: {
@@ -305,8 +308,11 @@ export const libraryRouter = createTRPCRouter({
 				},
 			});
 
-			await recalculateDeclarationStatus(ctx.payload, input.declarationId);
-			return { id: input.declarationId };
+			const status = await recalculateDeclarationStatus(
+				ctx.payload,
+				input.declarationId,
+			);
+			return { data: updated.schema, status };
 		}),
 
 	/**

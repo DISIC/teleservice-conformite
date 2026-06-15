@@ -32,8 +32,11 @@ export const contactRouter = createTRPCRouter({
 				data: { contact: { ...values, parent: null, toVerify: false } },
 			});
 
-			await recalculateDeclarationStatus(ctx.payload, declarationId);
+			const status = await recalculateDeclarationStatus(
+				ctx.payload,
+				declarationId,
+			);
 
-			return { data: updated.contact };
+			return { data: updated.contact, status };
 		}),
 });
