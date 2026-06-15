@@ -3,10 +3,8 @@ import { submitFormOptions } from "~/forms/formOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 export const schemaForm = z.object({
-	schemaName: z.string().min(1, "Le nom du schéma est requis"),
-	schemaUrl: z
-		.url("Lien invalide (ex: https://www.example.fr)")
-		.or(z.literal("")),
+	name: z.string().min(1, "Le nom du schéma est requis"),
+	url: z.url("Lien invalide (ex: https://www.example.fr)").or(z.literal("")),
 	actionPlanUrls: z.array(
 		z.object({
 			name: z.string().min(1, "Le nom du plan d'actions est requis"),
@@ -18,8 +16,8 @@ export const schemaForm = z.object({
 export type ZSchema = z.infer<typeof schemaForm>;
 
 export const schemaDefaultValues: ZSchema = {
-	schemaName: "",
-	schemaUrl: "",
+	name: "",
+	url: "",
 	actionPlanUrls: [],
 };
 
@@ -33,10 +31,10 @@ export const schemaFormOptions = submitFormOptions(
 export function declarationToSchemaValues(
 	declaration: PopulatedDeclaration,
 ): ZSchema {
-	if (!declaration.schema) return schemaDefaultValues;
+	if (!declaration.schema?.name) return schemaDefaultValues;
 	return {
-		schemaName: declaration.schema.schemaName ?? "",
-		schemaUrl: declaration.schema.schemaUrl ?? "",
+		name: declaration.schema.name ?? "",
+		url: declaration.schema.url ?? "",
 		actionPlanUrls: (declaration.schema.actionPlanUrls ?? []).map((item) => ({
 			name: item.name ?? "",
 			url: item.url ?? "",

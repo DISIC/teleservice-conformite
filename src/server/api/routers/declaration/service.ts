@@ -5,8 +5,6 @@ import {
 	appKindOptions,
 	kindOptions,
 	rgaaVersionOptions,
-	testEnvironmentOptions,
-	toolOptions,
 } from "~/payload/selectOptions";
 import {
 	getDefaultDeclarationName,
@@ -78,71 +76,51 @@ const createDeclarationFromImportedData = async (
 				entity: newEntityId,
 				created_by: userId,
 				fromSource: source,
+				// Imported sources carry a realised audit; fold its content directly
+				// into the row's groups, all flagged `toVerify` for human review.
+				audit: {
+					isRealised: true,
+					realisedBy: data.auditRealizedBy || "-",
+					rgaa_version: (data.rgaaVersion ??
+						"rgaa_4") as (typeof rgaaVersionOptions)[number]["value"],
+					rate: Number(data.taux?.replace("%", "")) || 0,
+					testEnvironments: data.testEnvironments.map((name) => ({ name })),
+					usedTools: data.usedTools.map((name) => ({ name })),
+					technologies: data.technologies.map((name) => ({ name })),
+					compliantElements:
+						data.compliantElements.map((element) => `- ${element}`).join("\n") ||
+						"N/A",
+					nonCompliantElements: data.nonCompliantElements || "",
+					disproportionnedCharge: data.disproportionnedCharge || "",
+					optionalElements: data.optionalElements || "",
+					date:
+						data.publishedAt && !Number.isNaN(Date.parse(data.publishedAt))
+							? new Date(data.publishedAt).toISOString().slice(0, 10)
+							: new Date().toISOString().slice(0, 10),
+					toVerify: true,
+				},
+				contact: {
+					name: data.service.name
+						? `Contact - ${data.service.name}`
+						: "Contact de la déclaration",
+					email: data.contact.email || undefined,
+					url: data.contact.url || undefined,
+					toVerify: true,
+				},
+				schema: {
+					name: data.service.name
+						? `Schéma - ${data.service.name}`
+						: "Schéma pluriannuel",
+					url: data.schema.currentYearSchemaUrl ?? undefined,
+					actionPlanUrls: [],
+					toVerify: true,
+				},
 			},
 			req: { transactionID },
 			draft: true,
 		});
 
 		const declarationId = Number(declaration.id);
-
-		await payload.create({
-			collection: "audits",
-			data: {
-				declaration: declarationId,
-				realisedBy: data.auditRealizedBy || "-",
-				rgaa_version: (data.rgaaVersion ??
-					"rgaa_4") as (typeof rgaaVersionOptions)[number]["value"],
-				rate: Number(data.taux?.replace("%", "")) || 0,
-				testEnvironments: data.testEnvironments.map((name) => ({ name })),
-				usedTools: data.usedTools.map((name) => ({ name })),
-				technologies: data.technologies.map((name) => ({ name })),
-				compliantElements:
-					data.compliantElements.map((element) => `- ${element}`).join("\n") ||
-					"N/A",
-				nonCompliantElements: data.nonCompliantElements || "",
-				disproportionnedCharge: data.disproportionnedCharge || "",
-				optionalElements: data.optionalElements || "",
-				date:
-					data.publishedAt && !Number.isNaN(Date.parse(data.publishedAt))
-						? new Date(data.publishedAt).toISOString().slice(0, 10)
-						: new Date().toISOString().slice(0, 10),
-				toVerify: true,
-			},
-			req: { transactionID },
-		});
-
-		const createdContact = await payload.create({
-			collection: "contacts",
-			data: {
-				name: data.service.name
-					? `Contact - ${data.service.name}`
-					: "Contact de la déclaration",
-				email: data.contact.email || undefined,
-				url: data.contact.url || undefined,
-				toVerify: true,
-			},
-			req: { transactionID },
-		});
-
-		const createdSchema = await payload.create({
-			collection: "schemas",
-			data: {
-				schemaName: data.service.name
-					? `Schéma - ${data.service.name}`
-					: "Schéma pluriannuel",
-				schemaUrl: data.schema.currentYearSchemaUrl ?? undefined,
-				actionPlanUrls: [],
-				toVerify: true,
-			},
-			req: { transactionID },
-		});
-
-		await payload.update({
-			collection: "declarations",
-			id: declarationId,
-			data: { contact: createdContact.id, schema: createdSchema.id },
-			req: { transactionID },
-		});
 
 		await payload.create({
 			collection: "access-rights",
@@ -410,138 +388,33 @@ export const revertToPublished = async (
 		});
 	}
 
-	const published: PublishedDeclaration = JSON.parse(
-		declaration.publishedContent,
-	);
+	// Since ADR-0004 the audit/contact/schema content lives in groups on the row,
+	// so it is captured by the declaration's own version history. Restoring the
+	// last published version restores the whole declaration in one step — no
+	// per-section rows to re-apply from the JSON snapshot.
+	const latestPublished = await payload.findVersions({
+		collection: "declarations",
+		where: {
+			parent: { equals: declaration.id },
+			"version.status": { equals: "published" },
+		},
+		limit: 1,
+		sort: "-updatedAt",
+	});
 
-	const transactionID = await payload.db.beginTransaction();
+	const previousVersionId = latestPublished.docs[0]?.id;
 
-	if (!transactionID) {
+	if (!previousVersionId) {
 		throw new TRPCError({
 			code: "INTERNAL_SERVER_ERROR",
-			message: "Failed to start database transaction",
+			message: "Failed to find previous version of the declaration",
 		});
 	}
 
-	try {
-		const latestDeclarations = await payload.findVersions({
-			collection: "declarations",
-			where: {
-				parent: { equals: declaration.id },
-				"version.status": { equals: "published" },
-			},
-			limit: 1,
-			sort: "-updatedAt",
-			req: { transactionID },
-		});
+	await payload.restoreVersion({
+		collection: "declarations",
+		id: previousVersionId,
+	});
 
-		const previousVersionId = latestDeclarations.docs[0]?.id;
-
-		if (!previousVersionId) {
-			throw new TRPCError({
-				code: "INTERNAL_SERVER_ERROR",
-				message: "Failed to find previous version of the declaration",
-			});
-		}
-
-		await payload.restoreVersion({
-			collection: "declarations",
-			id: previousVersionId,
-			req: { transactionID },
-		});
-
-		const audits = await payload.find({
-			collection: "audits",
-			where: { declaration: { equals: id } },
-			limit: 1,
-			req: { transactionID },
-		});
-
-		if (audits.docs[0]) {
-			const rgaaVersionValue = rgaaVersionOptions.find(
-				(o) => o.label === published.audit.rgaa_version,
-			)?.value;
-
-			await payload.update({
-				collection: "audits",
-				id: audits.docs[0].id,
-				context: { skipStatusRecalculation: true },
-				data: {
-					...(rgaaVersionValue ? { rgaa_version: rgaaVersionValue } : {}),
-					realisedBy: published.audit.realised_by,
-					rate: published.audit.rate,
-					compliantElements: published.audit.compliantElements,
-					nonCompliantElements:
-						published.audit.nonCompliantElements ?? undefined,
-					disproportionnedCharge:
-						published.audit.disproportionnedCharge ?? undefined,
-					optionalElements: published.audit.optionalElements ?? undefined,
-					technologies: published.audit.technologies,
-					testEnvironments: published.audit.testEnvironments.map((label) => ({
-						name:
-							testEnvironmentOptions.find((o) => o.label === label)?.value ??
-							label,
-					})),
-					usedTools: published.audit.usedTools.map((label) => ({
-						name: toolOptions.find((o) => o.label === label)?.value ?? label,
-					})),
-				},
-				req: { transactionID },
-			});
-		}
-
-		const refreshedDeclaration = await payload.findByID({
-			collection: "declarations",
-			id,
-			depth: 0,
-			req: { transactionID },
-		});
-
-		const contactId =
-			typeof refreshedDeclaration.contact === "number"
-				? refreshedDeclaration.contact
-				: refreshedDeclaration.contact?.id;
-		const schemaIdFromDeclaration =
-			typeof refreshedDeclaration.schema === "number"
-				? refreshedDeclaration.schema
-				: refreshedDeclaration.schema?.id;
-
-		if (contactId) {
-			await payload.update({
-				collection: "contacts",
-				id: contactId,
-				data: {
-					email: published.contact.email ?? undefined,
-					url: published.contact.url ?? undefined,
-				},
-				req: { transactionID },
-				context: { skipStatusRecalculation: true },
-			});
-		}
-
-		if (schemaIdFromDeclaration) {
-			await payload.update({
-				collection: "schemas",
-				id: schemaIdFromDeclaration,
-				data: {
-					schemaName: published.schema.schemaName,
-					schemaUrl: published.schema.schemaUrl,
-					actionPlanUrls: published.schema.actionPlanUrls,
-				},
-				req: { transactionID },
-				context: { skipStatusRecalculation: true },
-			});
-		}
-
-		await payload.db.commitTransaction(transactionID);
-
-		return id;
-	} catch {
-		await payload.db.rollbackTransaction(transactionID);
-
-		throw new TRPCError({
-			code: "INTERNAL_SERVER_ERROR",
-			message: "Failed to revert declaration to published state",
-		});
-	}
+	return id;
 };

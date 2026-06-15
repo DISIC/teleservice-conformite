@@ -4,7 +4,6 @@ import { albertRouter } from "./routers/albert";
 import { auditRouter } from "./routers/audit";
 import { contactRouter } from "./routers/contact";
 import { declarationRouter } from "./routers/declaration";
-import { entityLibraryRouter } from "./routers/entityLibrary";
 import { schemaRouter } from "./routers/schema";
 
 /**
@@ -17,7 +16,6 @@ export const appRouter = createTRPCRouter({
 	audit: auditRouter,
 	contact: contactRouter,
 	schema: schemaRouter,
-	entityLibrary: entityLibraryRouter,
 	albert: albertRouter,
 	accessRight: accessRightRouter,
 });

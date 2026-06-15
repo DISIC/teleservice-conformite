@@ -15,6 +15,7 @@ export type DeclarationState =
 	| "incomplete"
 	| "to-verify"
 	| "ready"
+	| "published-incomplete"
 	| "published-modified";
 
 /** Actions a notice may expose, in render order. Handlers are wired by the component. */
@@ -48,11 +49,13 @@ function hasUnverifiedAiContent(declaration: PopulatedDeclaration): boolean {
 
 /**
  * Derives the {@link DeclarationState} as a switch on {@link Status}, sub-splitting
- * the draft branch on completeness then AI-verification. Returns `null` for a
- * clean published declaration (no notice). See CONTEXT.md "Declaration state".
+ * the editable branches (draft / modified) on completeness then AI-verification.
+ * Returns `null` for a clean published declaration (no notice). See CONTEXT.md
+ * "Declaration state".
  *
- * `to-verify` is defined but dormant in v1 — it can only be reached once AI
- * prefill sets a `toVerify` flag on a complete draft.
+ * Since ADR-0004 the modified branch can be incomplete too: removing a Contact or
+ * Schema from a published declaration yields `published-incomplete`, and the
+ * publish gate runs on every publish (no fast path).
  */
 export function getDeclarationState(
 	declaration: PopulatedDeclaration,
@@ -61,6 +64,8 @@ export function getDeclarationState(
 		case "published":
 			return null;
 		case "modified":
+			if (validateDeclaration(declaration).length > 0)
+				return "published-incomplete";
 			return "published-modified";
 		case "draft":
 			if (hasUnverifiedAiContent(declaration)) return "to-verify";
@@ -105,6 +110,17 @@ export const STATE_PRESENTATION: Record<DeclarationState, StatePresentation> = {
 		heading: "Votre déclaration a été pré-remplie automatiquement.",
 		body: "Nous vous invitons à vérifier l'ensemble des informations renseignées ci-dessous avant de publier.",
 		actions: ["publish"],
+	},
+	"published-incomplete": {
+		bgColor: fr.colors.decisions.background.alt.purpleGlycine.default,
+		badge: {
+			label: "À compléter",
+			color: fr.colors.decisions.text.label.purpleGlycine.default,
+			bgColor: fr.colors.decisions.background.contrast.purpleGlycine.default,
+		},
+		heading: "Votre déclaration est publiée mais incomplète.",
+		body: 'Une information nécessaire à la publication a été retirée. Veuillez renseigner les champs marqués "À compléter" pour pouvoir republier, ou revenir à la dernière version publiée.',
+		actions: ["revert"],
 	},
 	"published-modified": {
 		bgColor: fr.colors.decisions.background.alt.orangeTerreBattue.default,

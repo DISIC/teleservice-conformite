@@ -16,8 +16,8 @@ import { defineSectionValidation } from "./sectionValidation";
  * that the SideMenu renders as nested entries under "Audit" and that the
  * `?section=audit-...` URL addresses individually.
  *
- * The four Sub-sections persist into the single `audits` row for the
- * Declaration — the slice is a UI grouping, not a data split (CONTEXT.md).
+ * The four Sub-sections persist into the single `audit` group on the Declaration
+ * row (ADR-0004) — the slice is a UI grouping, not a data split (CONTEXT.md).
  * Adding a Sub-section means editing this file and adding a render branch
  * in `components/declaration/sections/items/Audit.tsx`.
  */
@@ -38,7 +38,10 @@ type AuditSubSectionMeta = {
 	validation: ReturnType<typeof defineSectionValidation>;
 };
 
-const isAuditMissing = (d: PopulatedDeclaration) => !d.audit;
+// The audit group always exists on the row (ADR-0004); "missing" now means the
+// realised question has not been answered yet — `isRealised` is null until the
+// declarant picks an answer (the field has no default).
+const isAuditMissing = (d: PopulatedDeclaration) => d.audit?.isRealised == null;
 
 export const AUDIT_SUB_SECTIONS: Record<
 	AuditSubSectionSlug,
@@ -46,8 +49,8 @@ export const AUDIT_SUB_SECTIONS: Record<
 > = {
 	"audit-general": {
 		title: "Réalisation de l'audit",
-		// Complete once the audit question is answered (the row exists); the date
-		// itself is optional and does not gate completeness.
+		// Complete once the audit question is answered; the date itself is optional
+		// and does not gate completeness.
 		isToComplete: (d) => isAuditMissing(d),
 		validation: defineSectionValidation({
 			schema: auditGeneral,

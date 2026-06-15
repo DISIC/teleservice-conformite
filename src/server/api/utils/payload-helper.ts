@@ -1,24 +1,19 @@
 import { TRPCError } from "@trpc/server";
 import { getPayload, type Payload } from "payload";
 import payloadConfig from "~/payload/payload.config";
-import type {
-	Audit,
-	Config,
-	Contact,
-	Declaration,
-	Entity,
-	Schema,
-	User,
-} from "~/payload/payload-types";
+import type { Config, Declaration, Entity, User } from "~/payload/payload-types";
 import type { Session } from "~/lib/auth-client";
 
+/**
+ * A declaration with its two remaining relations resolved to objects. Since
+ * ADR-0004 the audit/contact/schema content lives in groups on the row itself,
+ * so only `entity` and `created_by` still need hydrating — the join/relation
+ * unions of the old four-collection shape are gone.
+ */
 export type PopulatedDeclaration = Omit<
 	Declaration,
-	"audit" | "contact" | "entity" | "schema" | "created_by"
+	"entity" | "created_by"
 > & {
-	audit: Audit | null;
-	contact: Contact | null;
-	schema: Schema | null;
 	created_by: User | null;
 	entity: Entity | null;
 };
@@ -44,19 +39,7 @@ export async function fetchOrReturnRealValue<
 export async function getPopulatedDeclaration(
 	declaration: Declaration,
 ): Promise<PopulatedDeclaration> {
-	const { audit, contact, schema, created_by, entity } = declaration;
-
-	const sanitizedAudit = audit?.docs?.[0]
-		? await fetchOrReturnRealValue(audit.docs[0], "audits")
-		: null;
-
-	const sanitizedContact = contact
-		? await fetchOrReturnRealValue(contact, "contacts")
-		: null;
-
-	const sanitizedSchema = schema
-		? await fetchOrReturnRealValue(schema, "schemas")
-		: null;
+	const { created_by, entity } = declaration;
 
 	const sanitizedEntity = entity
 		? await fetchOrReturnRealValue(entity, "entities")
@@ -68,9 +51,6 @@ export async function getPopulatedDeclaration(
 
 	return {
 		...declaration,
-		audit: sanitizedAudit,
-		contact: sanitizedContact,
-		schema: sanitizedSchema,
 		created_by: sanitizedUser,
 		entity: sanitizedEntity,
 	};

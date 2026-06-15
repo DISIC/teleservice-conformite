@@ -34,10 +34,11 @@ export const auditGroup: Field = {
 	label: { fr: "Audit" },
 	fields: [
 		{
+			// No default: `null` means the declarant has not answered the realised
+			// question yet (drives "À compléter"); `true`/`false` are real answers.
 			name: "isRealised",
 			type: "checkbox",
 			label: { fr: "Audit réalisé" },
-			defaultValue: false,
 		},
 		{
 			name: "date",

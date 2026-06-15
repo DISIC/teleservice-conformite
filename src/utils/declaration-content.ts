@@ -41,8 +41,8 @@ export const extractDeclarationContentToPublish = (
 		name: declaration.name ?? "",
 		entityName: declaration.entity?.name ?? "",
 		schema: {
-			schemaName: declaration?.schema?.schemaName ?? "",
-			schemaUrl: declaration?.schema?.schemaUrl ?? "",
+			schemaName: declaration?.schema?.name ?? "",
+			schemaUrl: declaration?.schema?.url ?? "",
 			actionPlanUrls: (declaration?.schema?.actionPlanUrls ?? []).map(
 				(item) => ({ name: item.name ?? "", url: item.url ?? "" }),
 			),
