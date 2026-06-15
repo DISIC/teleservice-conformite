@@ -127,7 +127,7 @@ Computed by `getDeclarationState(declaration)` as a switch on [[status]], with t
 
 **Key rule (v2):** the lifecycle decides first (Brouillon / Modifiée / Publiée), then completeness and AI-verification sub-split the editable branches **symmetrically**. A published Declaration **can** become incomplete — removing its Contact or Schema moves it to Modifiée with that Section flagged À compléter (`published-incomplete`), and publishing is blocked until completed. The public snapshot is unaffected. _(Supersedes the retired v1 rule "incomplete is Brouillon-only".)_
 
-`to-verify` becomes reachable once the import [[creation-path|Creation paths]] (ARA / IA) land — they create Declarations with `toVerify` Sections.
+`to-verify` becomes reachable once the IA import [[creation-path|Creation path]] lands — it creates Declarations with `toVerify` Sections. ARA imports are structured data and are not flagged.
 
 Does **not** violate the "visible status is a pure function of two columns" Invariant: that invariant governs `Status`, which is unchanged. `DeclarationState` is a separate concept layered above it.
 
@@ -143,7 +143,7 @@ One of the three ways a Declaration comes into existence, chosen by the declaran
 - **Import ARA** (`fromSource: "ara"`) — declarant supplies the URL of an ARA report; its data is fetched from ARA's API and the Declaration is created pre-filled.
 - **Import IA** (`fromSource: "ai"`) — declarant supplies the URL of an already-published accessibility declaration page; an LLM (Albert) extracts its content and the Declaration is created pre-filled.
 
-The two **import paths** share one contract: both sources normalize into a single imported-data shape, the Declaration is created entirely server-side in one mutation, and the imported Sections are flagged **À vérifier** ([[à-compléter-à-vérifier|À compléter / À vérifier]]). On failure nothing is created; the declarant is offered the Manuel path as fallback. The imported name falls back to the submitted URL's hostname when the source provides none — a Declaration is never created nameless.
+The two **import paths** share one contract: both sources normalize into a single imported-data shape, the Declaration is created entirely server-side in one mutation, and only the IA path's Sections are flagged **À vérifier** ([[à-compléter-à-vérifier|À compléter / À vérifier]]) because its content is AI-generated. ARA data is structured and trusted, so it is not flagged. On failure nothing is created; the declarant is offered the Manuel path as fallback. The imported name falls back to the submitted URL's hostname when the source provides none — a Declaration is never created nameless.
 
 The ARA import is intended to be reusable later as an **update** of an existing (published) Declaration's audit from a fresh ARA report — same fetch + normalize + transform, update instead of create.
 

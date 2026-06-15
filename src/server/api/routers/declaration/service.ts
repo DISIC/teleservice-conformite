@@ -27,10 +27,8 @@ import {
 } from "./utils";
 
 /**
- * Shared create path for imported declarations (ARA / IA). Runs in one
- * transaction: links the user's entity, creates the declaration plus its audit,
- * contact and schema rows (all flagged `toVerify` so they surface "À vérifier"),
- * and grants the creator admin access. Returns the new declaration id.
+ * Creates a declaration from imported ARA or AI data. AI sections are flagged
+ * `toVerify`; ARA structured data is trusted. Grants the creator admin access.
  */
 const createDeclarationFromImportedData = async (
 	payload: Payload,
@@ -76,7 +74,7 @@ const createDeclarationFromImportedData = async (
 				entity: newEntityId,
 				created_by: userId,
 				fromSource: source,
-				// Imported sources carry a realised audit; flag every group `toVerify`.
+				// AI-generated content needs review; ARA structured data does not.
 				audit: {
 					isRealised: true,
 					realisedBy: data.auditRealizedBy || "-",
@@ -97,7 +95,7 @@ const createDeclarationFromImportedData = async (
 						data.publishedAt && !Number.isNaN(Date.parse(data.publishedAt))
 							? new Date(data.publishedAt).toISOString().slice(0, 10)
 							: new Date().toISOString().slice(0, 10),
-					toVerify: true,
+					toVerify: source === "ai",
 				},
 				contact: {
 					name: data.service.name
@@ -105,7 +103,7 @@ const createDeclarationFromImportedData = async (
 						: "Contact de la déclaration",
 					email: data.contact.email || undefined,
 					url: data.contact.url || undefined,
-					toVerify: true,
+					toVerify: source === "ai",
 				},
 				schema: {
 					name: data.service.name
@@ -113,7 +111,7 @@ const createDeclarationFromImportedData = async (
 						: "Schéma pluriannuel",
 					url: data.schema.currentYearSchemaUrl ?? undefined,
 					actionPlanUrls: [],
-					toVerify: true,
+					toVerify: source === "ai",
 				},
 			},
 			req: { transactionID },
@@ -197,7 +195,7 @@ export const createManualDeclaration = async (
 	return Number(declaration.id);
 };
 
-/** Import path — ARA: fetch the structured report, then create (À vérifier). */
+/** Import path — ARA: fetch the structured report, then create. */
 export const createDeclarationFromAra = async (
 	payload: Payload,
 	userId: number,
