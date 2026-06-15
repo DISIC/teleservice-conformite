@@ -35,6 +35,12 @@ type AuditSubSectionMeta = {
 // `isRealised` has no default: `null` means the declarant has not answered yet.
 const isAuditMissing = (d: PopulatedDeclaration) => d.audit?.isRealised == null;
 
+// A non-realised audit has no slice to complete: these Sub-sections are inert.
+const realisedSubSectionToComplete =
+	(hasData: (d: PopulatedDeclaration) => boolean) =>
+	(d: PopulatedDeclaration) =>
+		d.audit?.isRealised !== false && (isAuditMissing(d) || !hasData(d));
+
 export const AUDIT_SUB_SECTIONS: Record<
 	AuditSubSectionSlug,
 	AuditSubSectionMeta
@@ -51,8 +57,9 @@ export const AUDIT_SUB_SECTIONS: Record<
 	},
 	"audit-outils": {
 		title: "Outils et environnements",
-		isToComplete: (d) =>
-			isAuditMissing(d) || (d.audit?.usedTools?.length ?? 0) === 0,
+		isToComplete: realisedSubSectionToComplete(
+			(d) => (d.audit?.usedTools?.length ?? 0) > 0,
+		),
 		validation: defineSectionValidation({
 			schema: auditTools,
 			fromDeclaration: (d) => auditToToolsValues(d.audit),
@@ -61,7 +68,9 @@ export const AUDIT_SUB_SECTIONS: Record<
 	},
 	"audit-contenus": {
 		title: "Contenus vérifiés",
-		isToComplete: (d) => isAuditMissing(d) || !d.audit?.compliantElements,
+		isToComplete: realisedSubSectionToComplete(
+			(d) => !!d.audit?.compliantElements,
+		),
 		validation: defineSectionValidation({
 			schema: auditContents,
 			fromDeclaration: (d) => auditToContentsValues(d.audit),
@@ -70,7 +79,9 @@ export const AUDIT_SUB_SECTIONS: Record<
 	},
 	"audit-non-conformites": {
 		title: "Non conformités & dérogations",
-		isToComplete: (d) => isAuditMissing(d) || !d.audit?.nonCompliantElements,
+		isToComplete: realisedSubSectionToComplete(
+			(d) => !!d.audit?.nonCompliantElements,
+		),
 		validation: defineSectionValidation({
 			schema: auditNonConformities,
 			fromDeclaration: (d) => auditToNonConformitiesValues(d.audit),
