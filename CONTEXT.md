@@ -155,10 +155,11 @@ The ARA import is intended to be reusable later as an **update** of an existing 
 
 A user's personal pool of Contacts and Schemas, reusable across their Declarations. Ownership is **per-user**, not per-entity/organization (organization-level sharing is out of scope).
 
-A Declaration's contact/schema is sourced in one of **two modes**:
+A Declaration's contact/schema is sourced in one of these **modes**, chosen explicitly via a [[source mode]] radio in the section form:
 
 - **Linked** — the Declaration references a Library parent (an object created/managed in the "Schémas et Contacts" area). It holds its **own copy** of the parent's content, but the copy mirrors the parent: while linked, the data renders **read-only** in the Declaration form, and editing the parent (only possible from the Library area) **auto-propagates** to every linked copy. If propagation touches published Declarations, a warning modal lists them before saving (they move to Modifiée and need republishing — the public snapshot never moves on its own).
 - **Custom** — the declarant flips the custom switch and writes the object inline. It belongs to that Declaration alone: editable in place, no parent, no propagation in or out.
+- **Skipped** _(schema only)_ — the declarant declares "no schema" deliberately. Contact has no Skipped mode; a Contact is always required to publish.
 
 The section-form dropdown offers **both**: Library parents _and_ custom objects from the user's other Declarations. Selecting a parent establishes a **link**; selecting another Declaration's custom object only **pre-fills** a new custom copy — later changes to the source flow nowhere.
 
@@ -169,7 +170,19 @@ Lifecycle rules:
 
 **Avoid:** "shared documents" / entity-level sharing — the retired model where Contacts/Schemas were linked to an `entity`. "Pre-fill" for the linked mode — pre-fill is the copy-without-link gesture, linking is more than pre-fill.
 
-**See also:** [[section]], [[status]].
+**See also:** [[section]], [[status]], [[source mode]].
+
+### Source mode
+
+The declarant's explicit choice, per Contact/Schema [[section]], of where that section's content comes from — surfaced as a `RichRadioField` (the same control as `app_kind`). Options: **Linked** / **Custom** for both; **Skipped** for schema only (see [[library|Library]]).
+
+The selected option is **derived from persisted state**, not stored as its own field: `parent` set → Linked; content present, no parent → Custom; (schema) `skipped` flag → Skipped; everything empty and no parent → **Undecided** (no option pre-selected). The radio is hidden entirely when the user's Library holds no item of that kind — the section collapses to a bare editable Custom form.
+
+**Undecided blocks publish.** [[à-compléter-à-vérifier|Completeness]] is no longer the only schema gate: choosing a Source mode is itself required. While Undecided, `validateDeclaration` emits one error targeting the radio ("select an option"), so the [[à-compléter-à-vérifier|error summary]] pushes the declarant to decide — including the deliberate Skipped choice for schema. Once content exists (Custom intent), the usual field-level validation takes over.
+
+**Avoid:** "toggle"/"switch" — the retired two-state custom switch; this is an N-way radio. "skip" as a verb on contact — contact cannot be skipped.
+
+**See also:** [[library|Library]], [[à-compléter-à-vérifier|À compléter / À vérifier]].
 
 ### Surfaces
 

@@ -1,13 +1,13 @@
 # ADR-0002: Independent per-Sub-section audit forms
 
-- **Status:** Accepted — amended by ADR-0004
-- **Date:** 2026-06-08
+- **Status:** Accepted
+- **Date:** 2026-06-08 (persistence target updated 2026-06-10, ADR-0004)
 
-> **Amendment (ADR-0004, 2026-06-10):** the `audits` collection is deleted; audit fields live as a group on `declarations`. The four-independent-forms decision stands unchanged — `audit.upsert` now patches the `audit` group on the declaration row instead of upserting an `audits` row, and the "strictly 1:1" rule is structural rather than service-enforced.
+> This ADR's decision — **four independent forms, one per audit Sub-section** — is current and unchanged. Only the _persistence target_ moved: ADR-0004 deleted the `audits` collection, so the audit now lives as a group on the `declarations` row and `audit.upsert` patches that group. The body below describes the current shape directly; "1:1 with its Declaration" is now structural (a group), not service-enforced.
 
 ## Context
 
-The audit Section is split into four [[sub-section]]s, each a URL-addressable destination on its own (ADR-0001): `audit-general` (formerly `audit-realisation`), `audit-outils`, `audit-contenus`, `audit-non-conformites`. All four persist into the **single** `audits` row for the Declaration — the slice is a UI grouping, not a data split.
+The audit Section is split into four [[sub-section]]s, each a URL-addressable destination on its own (ADR-0001): `audit-general` (formerly `audit-realisation`), `audit-outils`, `audit-contenus`, `audit-non-conformites`. All four persist into the **single** `audit` group on the Declaration's row — the slice is a UI grouping, not a data split.
 
 The first implementation modelled the audit as **one** TanStack form carrying _every_ audit field, with a `section` discriminator. A single `auditMultiStepFormOptions.onSubmit` switched on `value.section` and validated only the active sub-schema via `parseValuesWithSchema`; a `pickSubSectionFields(value, subSection)` helper then re-derived which fields to send so the server's partial schema wouldn't reject untouched empty placeholders. This is the same `section`-discriminator shape the `declaration` form uses.
 
@@ -25,7 +25,7 @@ TanStack Form 1.33 ships two grouping primitives, so the natural question was wh
 - Four independent zod schemas + `formOptions` in `auditSchema.ts`: `auditGeneral` (with a `.refine` — `isAuditRealised` required; if `true`, then `realisedBy`/`rgaa_version`/`rate` required), `auditTools`, `auditContents`, `auditNonConformities`. Each carries only its own fields.
 - Four sibling section components (`AuditGeneralSection`, …), each owning one `useAppForm` + its schema as the `onSubmit` validator, mirroring `InfosSection`. `Content.tsx` routes each Sub-section to its own component.
 - A shared `useAuditSubSection` hook owns the cross-cutting bits: the `api.audit.upsert` mutation (`onSuccess → onDeclarationChange`, no `router.reload`), the `useSectionForm` frame, and the not-realised notice (`showNotice = requiresRealised && !audit?.isRealised`). The form itself — the one thing that differs per Sub-section — stays in the component.
-- Server collapses `create` + `update` into a single `audit.upsert({ values, id?, declarationId })` (the contact/schema convention): no `id` → create + `declaration: declarationId`; `id` → merge the slice. Relation transforms stay keyed on field presence. `isRealised` is passed **explicitly** by the general form; the previous server-side inference is dropped. No `linkExisting` — audit is strictly 1:1 with its Declaration.
+- Server exposes a single `audit.upsert({ values, declarationId })` that patches the `audit` group on the `declarations` row (the contact/schema convention): each call merges its slice into the group. Relation transforms stay keyed on field presence. `isRealised` is passed **explicitly** by the general form; the previous server-side inference is dropped. No `linkExisting` — the audit is strictly 1:1 with its Declaration, now structurally (it is a group on the row, not a separate collection).
 
 The `audit-realisation` slug is renamed to `audit-general` as part of this redesign (no live URLs to break).
 

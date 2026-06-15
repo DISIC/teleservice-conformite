@@ -1,9 +1,14 @@
 # ADR-0003: Sequential completion mode + declaration-wide validation gate
 
-- **Status:** Accepted — amended by ADR-0004
-- **Date:** 2026-06-09
+- **Status:** Accepted
+- **Date:** 2026-06-09 (gate scope widened 2026-06-10, ADR-0004; gate predicate extended 2026-06-14, ADR-0005)
 
-> **Amendment (ADR-0004, 2026-06-10):** the gate is now universal — `validateDeclaration` runs on **every** publish, including from Modifiée. The v1 assumption "published-modified is always publishable" no longer holds: removing a contact/schema from a published Declaration leaves it incomplete (`published-incomplete`). The sequential/standalone mode split is unaffected.
+> Two later refinements are folded into the body below so it reads as the current gate:
+>
+> - **Scope (ADR-0004):** the gate is **universal** — `validateDeclaration` runs on every publish, including from Modifiée. There is no "published-modified is always publishable" fast path: removing a contact/schema from a published Declaration leaves it incomplete (`published-incomplete`).
+> - **Predicate (ADR-0005):** "complete" is no longer only "every section's Zod schema passes." For the Contact/Schema [[section|sections]] the declarant must also have **chosen a [[source mode]]** (Linked / Custom / Skipped); an Undecided section emits a gate error targeting the radio. This error is produced **outside** the per-field `runSchema` path.
+>
+> The sequential/standalone mode split is unaffected by either.
 
 ## Context
 
