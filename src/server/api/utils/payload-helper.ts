@@ -2,23 +2,23 @@ import { TRPCError } from "@trpc/server";
 import { getPayload, type Payload } from "payload";
 import payloadConfig from "~/payload/payload.config";
 import type {
-	ActionPlan,
 	Audit,
 	Config,
 	Contact,
 	Declaration,
 	Entity,
+	Schema,
 	User,
 } from "~/payload/payload-types";
-import type { Session } from "~/utils/auth-client";
+import type { Session } from "~/lib/auth-client";
 
 export type PopulatedDeclaration = Omit<
 	Declaration,
-	"audit" | "contact" | "entity" | "actionPlan" | "created_by"
+	"audit" | "contact" | "entity" | "schema" | "created_by"
 > & {
 	audit: Audit | null;
 	contact: Contact | null;
-	actionPlan: ActionPlan | null;
+	schema: Schema | null;
 	created_by: User | null;
 	entity: Entity | null;
 };
@@ -44,18 +44,18 @@ export async function fetchOrReturnRealValue<
 export async function getPopulatedDeclaration(
 	declaration: Declaration,
 ): Promise<PopulatedDeclaration> {
-	const { audit, contact, actionPlan, created_by, entity } = declaration;
+	const { audit, contact, schema, created_by, entity } = declaration;
 
 	const sanitizedAudit = audit?.docs?.[0]
 		? await fetchOrReturnRealValue(audit.docs[0], "audits")
 		: null;
 
-	const sanitizedContact = contact?.docs?.[0]
-		? await fetchOrReturnRealValue(contact.docs[0], "contacts")
+	const sanitizedContact = contact
+		? await fetchOrReturnRealValue(contact, "contacts")
 		: null;
 
-	const sanitizedActionPlan = actionPlan?.docs?.[0]
-		? await fetchOrReturnRealValue(actionPlan.docs[0], "action-plans")
+	const sanitizedSchema = schema
+		? await fetchOrReturnRealValue(schema, "schemas")
 		: null;
 
 	const sanitizedEntity = entity
@@ -70,7 +70,7 @@ export async function getPopulatedDeclaration(
 		...declaration,
 		audit: sanitizedAudit,
 		contact: sanitizedContact,
-		actionPlan: sanitizedActionPlan,
+		schema: sanitizedSchema,
 		created_by: sanitizedUser,
 		entity: sanitizedEntity,
 	};

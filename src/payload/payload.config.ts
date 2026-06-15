@@ -9,7 +9,6 @@ import sharp from "sharp";
 
 import { AccessRights } from "./collections/AccessRight";
 import { Accounts } from "./collections/Account";
-import { ActionPlans } from "./collections/ActionPlans";
 import { Admins } from "./collections/Admin";
 import { Audits } from "./collections/Audit";
 import { Contacts } from "./collections/Contact";
@@ -17,6 +16,7 @@ import { Declarations } from "./collections/Declaration";
 import { Domains } from "./collections/Domain";
 import { Entities } from "./collections/Entity";
 import { Media } from "./collections/Media";
+import { Schemas } from "./collections/Schemas";
 import { Sessions } from "./collections/Session";
 import { Users } from "./collections/User";
 import { Verifications } from "./collections/Verification";
@@ -26,8 +26,8 @@ const dirname = path.dirname(filename);
 
 const hasNodemailerCreds = Boolean(
 	process.env.NODEMAILER_HOST &&
-		process.env.NODEMAILER_PORT &&
-		process.env.NODEMAILER_FROM,
+	process.env.NODEMAILER_PORT &&
+	process.env.NODEMAILER_FROM,
 );
 
 const user = process.env.NODEMAILER_USER || process.env.MAILPACE_API_KEY;
@@ -49,7 +49,7 @@ export default buildConfig({
 		Declarations,
 		AccessRights,
 		Media,
-		ActionPlans,
+		Schemas,
 		Contacts,
 	],
 	secret: process.env.PAYLOAD_SECRET || "",

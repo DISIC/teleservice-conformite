@@ -2,7 +2,6 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { Header, type HeaderProps } from "@codegouvfr/react-dsfr/Header";
-import type { MainNavigationProps } from "@codegouvfr/react-dsfr/MainNavigation";
 import { createNextDsfrIntegrationApi } from "@codegouvfr/react-dsfr/next-pagesdir";
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
 import type { AppProps } from "next/app";
@@ -14,8 +13,9 @@ import { tss } from "tss-react";
 import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 
 import { AlertHost } from "~/components/alert/AlertHost";
-import { api } from "~/utils/api";
-import { authClient } from "~/utils/auth-client";
+import "~/styles/keyframes.css";
+import { api } from "~/lib/api";
+import { authClient } from "~/lib/auth-client";
 
 // Only in TypeScript projects
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
@@ -46,20 +46,10 @@ const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
 
 export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
 
-const userNavigationItems: MainNavigationProps.Item[] = [
-	{ text: "Accueil", linkProps: { href: "/dashboard" } },
-	{ text: "Test - Ara", linkProps: { href: "/dashboard/ara" } },
-	{ text: "Test - Déclaration", linkProps: { href: "/dashboard/declaration" } },
-];
-
 const getBackgroundColor = (pathname: string) => {
 	const page = pathname.split("/").pop() || "";
 
-	if (["infos", "audit", "schema", "contact", "form"].includes(page)) {
-		return fr.colors.decisions.background.alt.blueFrance.default;
-	}
-
-	if (["preview"].includes(page)) {
+	if (["form", "preview"].includes(page)) {
 		return fr.colors.decisions.background.alt.blueFrance.default;
 	}
 
@@ -81,32 +71,32 @@ function App({ Component, pageProps }: AppProps) {
 		if (pathname === "/dashboard/form") return "Ajouter une déclaration";
 	};
 
-	const _navigationItems =
-		isAuthenticated || router.pathname.startsWith("/dashboard")
-			? userNavigationItems.map((item) => ({
-					...item,
-					isActive: router.asPath === item?.linkProps?.href,
-				}))
-			: [];
-
 	const quickAccessItems = useMemo(() => {
 		const items = [] as HeaderProps.QuickAccessItem[];
 
 		if (isPendingAuth) return [];
 
 		if (isAuthenticated) {
-			items.push({
-				iconId: "ri-logout-box-line",
-				text: "Se déconnecter",
-				buttonProps: {
-					onClick: async () => {
-						await authClient.signOut({
-							fetchOptions: { onSuccess: () => router.reload()},
-						});
+			items.push(
+				{
+					iconId: "ri-account-circle-fill",
+					text: "Paramètres / Compte",
+					linkProps: {
+						href: "/dashboard",
 					},
-					style: { color: fr.colors.decisions.text.default.error.default },
 				},
-			});
+				{
+					iconId: "ri-menu-2-line",
+					text: "Déconnexion",
+					buttonProps: {
+						onClick: async () => {
+							await authClient.signOut({
+								fetchOptions: { onSuccess: () => router.reload() },
+							});
+						},
+					},
+				},
+			);
 		}
 
 		return items;
@@ -116,10 +106,11 @@ function App({ Component, pageProps }: AppProps) {
 		<>
 			<Head>
 				<title>
-					{getTitleFromPathname(router.pathname)
-						? `${getTitleFromPathname(router.pathname)} - `
-						: ""}
-					Téléservice Conformité
+					{`${
+						getTitleFromPathname(router.pathname)
+							? `${getTitleFromPathname(router.pathname)} - `
+							: ""
+					}Téléservice Conformité`}
 				</title>
 			</Head>
 			<div className={classes.mainContainer}>
@@ -148,7 +139,6 @@ function App({ Component, pageProps }: AppProps) {
 						href: "/",
 						title: "Accueil Téléservice Conformité",
 					}}
-					// navigation={navigationItems}
 					quickAccessItems={quickAccessItems}
 					serviceTitle="Téléservice Conformité"
 				/>

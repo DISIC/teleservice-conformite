@@ -125,16 +125,6 @@ export const Audits: CollectionConfig = {
 			admin: {
 				condition: (_, siblingData) => siblingData?.isRealised,
 			},
-			validate: (
-				value: string | null | undefined,
-				{ siblingData }: { siblingData?: { isRealised?: boolean } },
-			) => {
-				if (siblingData?.isRealised && !value) {
-					return "Ce champ est obligatoire";
-				}
-
-				return true;
-			},
 		},
 		{
 			name: "nonCompliantElements",

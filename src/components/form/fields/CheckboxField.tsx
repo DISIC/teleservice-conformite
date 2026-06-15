@@ -4,12 +4,13 @@ import {
 	type DefaultFieldProps,
 	getFieldState,
 	useFieldContext,
-} from "~/utils/form/context";
+} from "~/forms/context";
 
 type TValue = string | boolean;
 
 interface CheckboxFieldProps
-	extends DefaultFieldProps,
+	extends
+		DefaultFieldProps,
 		Omit<CheckboxProps, "state" | "stateRelatedMessage" | "options"> {
 	options: (Omit<CheckboxProps["options"][number], "nativeInputProps"> & {
 		value: TValue;

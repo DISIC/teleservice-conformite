@@ -3,11 +3,12 @@ import {
 	type DefaultFieldProps,
 	getFieldState,
 	useFieldContext,
-} from "~/utils/form/context";
+} from "~/forms/context";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface CheckboxGroupFieldProps
-	extends DefaultFieldProps,
+	extends
+		DefaultFieldProps,
 		Omit<CheckboxProps, "state" | "stateRelatedMessage" | "options"> {
 	options: (Omit<CheckboxProps["options"][number], "nativeInputProps"> & {
 		value: string;

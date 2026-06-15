@@ -1,3 +1,7 @@
+import Application from "@codegouvfr/react-dsfr/picto/Application";
+import Search from "@codegouvfr/react-dsfr/picto/Search";
+import Compass from "@codegouvfr/react-dsfr/picto/Compass";
+
 export const sourceOptions = [
 	{ label: "Manuel", value: "manual" },
 	{ label: "IA", value: "ai" },
@@ -36,35 +40,28 @@ export const testEnvironmentOptions = [
 	},
 ] as const;
 
-export const contactMeanOptions = [
-	{
-		label: "Formulaire en ligne",
-		value: "form_url",
-	},
-	{
-		label: "Point de contact",
-		value: "email",
-	},
-] as const;
-
 export const appKindOptions = [
 	{
 		label: "Site web",
 		value: "website",
 		hintText: "Site internet, intranet, extranet, application métier, ...",
+		pictogram: Search,
 	},
 	{
-		label: "Application mobile iOs",
-		value: "mobile_app_ios",
-	},
-	{
-		label: "Application mobile Android",
-		value: "mobile_app_android",
+		label: "Application mobile",
+		value: "mobile_app",
+		pictogram: Application,
 	},
 	{
 		label: "Autre",
 		value: "other",
+		pictogram: Compass,
 	},
+] as const;
+
+export const mobilePlatformOptions = [
+	{ label: "iOS", value: "ios" },
+	{ label: "Android", value: "android" },
 ] as const;
 
 export const declarationStatusOptions = [

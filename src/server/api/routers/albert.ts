@@ -164,25 +164,32 @@ function parseAlbertResponse(response: any): AlbertResponse | null {
 	}
 }
 
+/**
+ * Fetches the declaration page, asks Albert to extract its accessibility info,
+ * and parses the response into the {@link AlbertResponse} shape. Throws on
+ * fetch / API / parse failure. Shared by the `analyzeUrl` procedure (debug page)
+ * and `declaration.createFromUrlAnalysis`.
+ */
+export async function analyzeUrlWithAlbert(
+	url: string,
+): Promise<AlbertResponse> {
+	const htmlContent = await downloadHtmlWithPlaywright(url);
+	const albertResponse = await extractAccessibilityRateWithAlbert(htmlContent);
+	const parsedResult = parseAlbertResponse(albertResponse);
+
+	if (parsedResult === null) {
+		throw new Error("Failed to parse Albert response");
+	}
+
+	return parsedResult;
+}
+
 export const albertRouter = createTRPCRouter({
 	analyzeUrl: publicProcedure
 		.input(z.object({ url: z.string().url() }))
 		.mutation(async ({ input }) => {
-			const { url } = input;
-
 			try {
-				const htmlContent = await downloadHtmlWithPlaywright(url);
-				const albertResponse =
-					await extractAccessibilityRateWithAlbert(htmlContent);
-				const parsedResult = parseAlbertResponse(albertResponse);
-
-				if (parsedResult === null) {
-					throw new Error("Failed to parse Albert response");
-				}
-
-				return {
-					data: parsedResult,
-				};
+				return { data: await analyzeUrlWithAlbert(input.url) };
 			} catch (error) {
 				throw new TRPCError({
 					code: "INTERNAL_SERVER_ERROR",

@@ -3,7 +3,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { useState } from "react";
 import { tss } from "tss-react";
-import { api } from "~/utils/api";
+import { api } from "~/lib/api";
 
 export default function TestAlbert() {
 	const { classes } = useStyles();

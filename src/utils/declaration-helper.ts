@@ -1,20 +1,16 @@
-import {
-	rgaaVersionOptions,
-	testEnvironmentOptions,
-	toolOptions,
-} from "~/payload/selectOptions";
-import type { RouterOutputs } from "~/utils/api";
-import type { ZAuditFormSchema } from "~/utils/form/audit/schema";
+import { testEnvironmentOptions, toolOptions } from "~/payload/selectOptions";
 
-export const getConformityStatus = (rate: number): string => {
+export const getConformityStatus = (
+	rate: number,
+): { label: string; severity: "success" | "warning" | "error" } => {
 	if (rate < 50) {
-		return "non conforme";
+		return { label: "Non conforme", severity: "error" };
 	}
 	if (rate >= 50 && rate <= 99) {
-		return "partiellement conforme";
+		return { label: "Partiellement conforme", severity: "success" };
 	}
 
-	return "conforme";
+	return { label: "Conforme", severity: "success" };
 };
 
 export const extractTechnologiesFromUrl = (
@@ -46,32 +42,13 @@ export const extractTechnologiesFromUrl = (
 	];
 };
 
-export const mapAraDataToFormValues = (
-	data: RouterOutputs["declaration"]["getInfoFromAra"]["data"],
-): Partial<ZAuditFormSchema> => {
-	const rateRaw = parseFloat(data.taux?.replace("%", "") ?? "0");
-	return {
-		isAuditRealised: true,
-		realisedBy: data.auditRealizedBy ?? "",
-		rgaa_version:
-			rgaaVersionOptions.find((o) => o.value === data.rgaaVersion)?.value ??
-			"rgaa_4",
-		date: data.publishedAt
-			? new Date(data.publishedAt).toLocaleDateString("en-CA")
-			: "",
-		rate: Number.isNaN(rateRaw) ? 0 : rateRaw,
-		compliantElements: data.compliantElements.join("\n"),
-		testEnvironments: extractTechnologiesFromUrl(
-			data.testEnvironments,
-			testEnvironmentOptions,
-		),
-		usedTools: extractTechnologiesFromUrl(data.usedTools, toolOptions),
-		nonCompliantElements: data.nonCompliantElements ?? "",
-		disproportionnedCharge: data.disproportionnedCharge ?? "",
-		optionalElements: data.optionalElements ?? "",
-		report: data.schema.currentYearSchemaUrl ?? "",
-	};
-};
+/**
+ * Standard `onError` for the per-Section save mutations: logs the failed action
+ * against its declaration. `subject` is the action phrase, e.g. "saving audit".
+ */
+export const logMutationError =
+	(subject: string, declarationId: number | string) => (error: unknown) =>
+		console.error(`Error ${subject} (declaration ${declarationId}):`, error);
 
 export const copyToClipboard = (textToCopy: string, fn: () => void) => {
 	navigator.clipboard

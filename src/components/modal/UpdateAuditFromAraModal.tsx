@@ -6,14 +6,15 @@ import { useStore } from "@tanstack/react-form";
 import { useEffect, useId, useState } from "react";
 import { tss } from "tss-react";
 import z from "zod";
-import { api, type RouterOutputs } from "~/utils/api";
-import { useAppForm } from "~/utils/form/context";
+import { api, type RouterOutputs } from "~/lib/api";
+import { useAppForm } from "~/forms/context";
 
 export type UpdateAuditFromAraModalActions = {
 	open?: () => void;
 };
 
-export type AraFetchedData = RouterOutputs["declaration"]["getInfoFromAra"]["data"];
+export type AraFetchedData =
+	RouterOutputs["declaration"]["getInfoFromAra"]["data"];
 
 const updateAuditFromAraFormSchema = z.object({
 	araUrl: z.string().min(1, { message: "L'URL de l'audit Ara est requise" }),

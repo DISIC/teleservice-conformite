@@ -6,9 +6,9 @@ import { TRPCClientError } from "@trpc/client";
 import { useEffect, useId, useState } from "react";
 import { tss } from "tss-react";
 import z from "zod";
-import { api } from "~/utils/api";
-import { useAppForm } from "~/utils/form/context";
-import HelpingMessage from "../declaration/HelpingMessage";
+import { api } from "~/lib/api";
+import { useAppForm } from "~/forms/context";
+import HelpingMessage from "../ui/HelpingMessage";
 
 export type InviteMembersModalActions = {
 	open?: () => void;
@@ -53,7 +53,7 @@ export function InviteMembersModal({
 	const form = useAppForm({
 		defaultValues: { email: "" } as z.infer<typeof inviteMemberFormSchema>,
 		validators: { onSubmit: inviteMemberFormSchema },
-		onSubmit: async ({ value, formApi }) => {
+		onSubmit: async ({ value }) => {
 			try {
 				await createAccessRight({
 					declarationId,
@@ -64,9 +64,11 @@ export function InviteMembersModal({
 				form.reset();
 			} catch (e) {
 				if (e instanceof TRPCClientError && e.data?.code === "CONFLICT") {
-					formApi.fieldInfo.email.instance?.setErrorMap({
-						onSubmit: { message: e.message },
-					});
+					return {
+						fields: {
+							email: e.message,
+						},
+					};
 				}
 			}
 		},

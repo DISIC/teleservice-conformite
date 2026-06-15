@@ -1,80 +1,38 @@
 import z from "zod";
-import { auditFormSchema } from "~/utils/form/audit/schema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { hasAccessToDeclaration } from "../utils/payload-helper";
 
-const optionalAuditFormSchema = auditFormSchema
-	.partial()
-	.omit({
-		usedTools: true,
-		testEnvironments: true,
-	})
-	.extend({
-		declarationId: z.number(),
-		technologies: z.array(z.string()).optional().default([]),
-		usedTools: z.array(z.string()).optional().default([]),
-		testEnvironments: z.array(z.string()).optional().default([]),
-	});
+/**
+ * Lenient all-optional partial: any one Sub-section slice may arrive on its
+ * own (ADR-0002). `isRealised` is supplied explicitly by the general form —
+ * never inferred from the presence of unrelated fields.
+ */
+const auditUpsertValues = z.object({
+	isRealised: z.boolean().optional(),
+	date: z.iso.date().optional().or(z.literal("")),
+	realisedBy: z.string().optional(),
+	rgaa_version: z.enum(["rgaa_4", "rgaa_5"]).optional(),
+	rate: z.number().optional(),
+	compliantElements: z.string().optional(),
+	nonCompliantElements: z.string().optional(),
+	disproportionnedCharge: z.string().optional(),
+	optionalElements: z.string().optional(),
+	usedTools: z.array(z.string()).optional(),
+	testEnvironments: z.array(z.string()).optional(),
+	technologies: z.array(z.string()).optional(),
+});
 
 export const auditRouter = createTRPCRouter({
-	create: userProtectedProcedure
-		.input(optionalAuditFormSchema)
-		.mutation(async ({ input, ctx }) => {
-			const {
-				isAuditRealised,
-				declarationId,
-				usedTools = [],
-				testEnvironments = [],
-				technologies = [],
-				date,
-				...rest
-			} = input;
-
-			await hasAccessToDeclaration({
-				payload: ctx.payload,
-				declarationId,
-				userId: Number(ctx.session.user.id),
-			});
-
-			const audit = await ctx.payload.create({
-				collection: "audits",
-				draft: true,
-				data: {
-					...rest,
-					isRealised: isAuditRealised,
-					date: date && date !== "" ? date : undefined,
-					testEnvironments: testEnvironments.map((tech) => ({ name: tech })),
-					usedTools: usedTools.map((tech) => ({ name: tech })),
-					technologies: technologies.map((tech) => ({ name: tech })),
-					declaration: declarationId,
-				},
-			});
-
-			return { data: audit.id };
-		}),
-	update: userProtectedProcedure
+	upsert: userProtectedProcedure
 		.input(
 			z.object({
-				audit: auditFormSchema
-					.partial()
-					.omit({ section: true, isAuditRealised: true })
-					.extend({
-						id: z.number(),
-						declarationId: z.number(),
-						technologies: z.array(z.string()).optional(),
-					}),
+				values: auditUpsertValues,
+				id: z.number().optional(),
+				declarationId: z.number(),
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const {
-				id,
-				declarationId,
-				technologies = [],
-				date,
-				...rest
-			} = input.audit;
-
-			const normalizedDate = date && date !== "" ? date : undefined;
+			const { id, declarationId, values } = input;
 
 			await hasAccessToDeclaration({
 				payload: ctx.payload,
@@ -82,28 +40,36 @@ export const auditRouter = createTRPCRouter({
 				userId: Number(ctx.session.user.id),
 			});
 
-			const hasMinimumFields =
-				Boolean(rest.rgaa_version) &&
-				Boolean(rest.realisedBy?.trim()) &&
-				typeof rest.rate === "number" &&
-				rest.rate > 0 &&
-				Boolean(rest.compliantElements?.trim());
+			const { usedTools, testEnvironments, technologies, date, ...scalars } =
+				values;
 
-			const updatedAudit = await ctx.payload.update({
-				collection: "audits",
-				id,
-				data: {
-					...rest,
-					date: normalizedDate,
-					usedTools: rest.usedTools?.map((tech) => ({ name: tech })) ?? [],
-					testEnvironments:
-						rest?.testEnvironments?.map((tech) => ({ name: tech })) ?? [],
-					technologies: technologies?.map((tech) => ({ name: tech })) ?? [],
-					isRealised: hasMinimumFields,
-					toVerify: false,
-				},
-			});
+			// Only touch the relation/array fields the submitted slice actually
+			// carries — every audit field is optional in the partial schema.
+			const data = {
+				...scalars,
+				...(date !== undefined && {
+					date: date && date !== "" ? date : null,
+				}),
+				...(usedTools !== undefined && {
+					usedTools: usedTools.map((name) => ({ name })),
+				}),
+				...(testEnvironments !== undefined && {
+					testEnvironments: testEnvironments.map((name) => ({ name })),
+				}),
+				...(technologies !== undefined && {
+					technologies: technologies.map((name) => ({ name })),
+				}),
+				toVerify: false,
+			};
 
-			return { data: updatedAudit };
+			const audit = id
+				? await ctx.payload.update({ collection: "audits", id, data })
+				: await ctx.payload.create({
+						collection: "audits",
+						draft: true,
+						data: { ...data, declaration: declarationId },
+					});
+
+			return { data: audit };
 		}),
 });

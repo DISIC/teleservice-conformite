@@ -4,8 +4,8 @@ import TechnicalError from "@codegouvfr/react-dsfr/picto/TechnicalError";
 import Image from "next/image";
 import { tss } from "tss-react";
 
-import blob from "~/../assets/blob.svg";
-import { authClient } from "~/utils/auth-client";
+import blob from "~/assets/blob.svg";
+import { authClient } from "~/lib/auth-client";
 
 export default function ErrorPage({ deleted }: { deleted?: boolean }) {
 	const { classes } = useStyles();

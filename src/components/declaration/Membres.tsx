@@ -12,12 +12,12 @@ import {
 	RemoveAccessRightModal,
 	type RemoveAccessRightModalActions,
 } from "~/components/modal/RemoveAccessRightModal";
-import { Loader } from "~/components/system/Loader";
+import { Loader } from "~/components/ui/Loader";
 import type { AccessRight } from "~/payload/payload-types";
-import type { AccesRightAugmented } from "~/server/api/routers/accesRight";
+import type { AccessRightAugmented } from "~/server/api/routers/accessRight";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { api } from "~/utils/api";
-import { authClient, type Session } from "~/utils/auth-client";
+import { api } from "~/lib/api";
+import { authClient, type Session } from "~/lib/auth-client";
 
 interface MembresProps {
 	declaration: PopulatedDeclaration;
@@ -63,7 +63,7 @@ export default function Membres({ declaration }: MembresProps) {
 		accessRight,
 		session,
 	}: {
-		accessRight: AccesRightAugmented;
+		accessRight: AccessRightAugmented;
 		session: Session | null;
 	}) => {
 		if (Number(session?.user.id) === accessRight?.user?.id) return;

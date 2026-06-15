@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
-import type { DefaultFieldProps } from "~/utils/form/context";
+import type { DefaultFieldProps } from "~/forms/context";
 
 interface ReadOnlyFieldProps extends DefaultFieldProps {
 	label: ReactNode;
@@ -32,12 +32,12 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 
 	return (
 		<div className={classes.fieldContainer}>
-			<p className={classes.label}>{label} :</p>
+			{label && <p className={classes.label}>{label}</p>}
 			{valueIsArray ? (
-				<ul>
+				<ul className={fr.cx("fr-ml-3v")}>
 					{value.map((item, index) => (
 						<li key={index}>
-							<p className={classes.value}>{item}</p>
+							<span className={classes.value}>{item}</span>
 						</li>
 					))}
 				</ul>
@@ -57,18 +57,16 @@ const useStyles = tss
 		textArea: boolean;
 		addSectionBorder: boolean;
 	}>()
-	.create(({ valueIsArray, textArea, addSectionBorder }) => ({
+	.create(({ addSectionBorder, valueIsArray }) => ({
 		fieldContainer: {
-			gap: fr.spacing("1v"),
-			paddingBlock: fr.spacing("3w"),
-			borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+			gap: valueIsArray ? undefined : fr.spacing("2v"),
 			"& p": {
 				margin: 0,
 			},
 			...(addSectionBorder && {
 				borderTop: `10px solid ${fr.colors.decisions.border.default.grey.default}`,
 			}),
-			flexDirection: valueIsArray || textArea ? "column" : undefined,
+			flexDirection: "column",
 			display: "flex",
 			flexWrap: "wrap",
 			"@media (max-width: 1024px)": {
@@ -83,7 +81,6 @@ const useStyles = tss
 		value: {
 			color: fr.colors.decisions.text.label.grey.default,
 			whiteSpace: "pre-wrap",
-
 			"& a": {
 				color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 			},
