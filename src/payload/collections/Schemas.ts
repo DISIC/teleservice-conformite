@@ -56,5 +56,16 @@ export const Schemas: CollectionConfig = {
 			relationTo: "users",
 			required: true,
 		},
+		{
+			name: "declarations",
+			label: { fr: "Déclarations liées" },
+			type: "join",
+			collection: "declarations",
+			on: "schema.parent",
+			hasMany: true,
+			admin: {
+				allowCreate: false,
+			},
+		},
 	],
 };

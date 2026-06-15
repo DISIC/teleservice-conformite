@@ -38,5 +38,16 @@ export const Contacts: CollectionConfig = {
 			relationTo: "users",
 			required: true,
 		},
+		{
+			name: "declarations",
+			label: { fr: "Déclarations liées" },
+			type: "join",
+			collection: "declarations",
+			on: "contact.parent",
+			hasMany: true,
+			admin: {
+				allowCreate: false,
+			},
+		},
 	],
 };

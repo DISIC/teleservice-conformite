@@ -1,6 +1,6 @@
 import type { Field } from "payload";
 
-import { toVerifyField } from "./common";
+import { readOnlyWhenLibraryParentSet, toVerifyField } from "./common";
 
 /**
  * Schéma et plan d'actions content folded onto the declaration row as a group.
@@ -15,11 +15,17 @@ export const schemaGroup: Field = {
 			name: "name",
 			type: "text",
 			label: { fr: "Nom du schéma pluriannuel" },
+			access: {
+				update: readOnlyWhenLibraryParentSet("schema"),
+			},
 		},
 		{
 			name: "url",
 			type: "text",
 			label: { fr: "Lien du schéma pluriannuel" },
+			access: {
+				update: readOnlyWhenLibraryParentSet("schema"),
+			},
 		},
 		{
 			name: "actionPlanUrls",
@@ -28,6 +34,9 @@ export const schemaGroup: Field = {
 			labels: {
 				singular: { fr: "Plan d'actions" },
 				plural: { fr: "Plans d'actions" },
+			},
+			access: {
+				update: readOnlyWhenLibraryParentSet("schema"),
 			},
 			fields: [
 				{

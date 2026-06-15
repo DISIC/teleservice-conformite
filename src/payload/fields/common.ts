@@ -1,4 +1,4 @@
-import type { Field } from "payload";
+import type { Field, FieldAccess } from "payload";
 
 export const toVerifyField: Field = {
 	name: "toVerify",
@@ -6,4 +6,13 @@ export const toVerifyField: Field = {
 	label: { fr: "À vérifier" },
 	defaultValue: false,
 	required: true,
+};
+
+export const readOnlyWhenLibraryParentSet = (
+	groupName: "contact" | "schema",
+): FieldAccess => {
+	return ({ data, doc }) => {
+		const group = data?.[groupName] ?? doc?.[groupName];
+		return !group?.parent;
+	};
 };

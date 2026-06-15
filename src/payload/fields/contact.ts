@@ -1,6 +1,6 @@
 import type { Field } from "payload";
 
-import { toVerifyField } from "./common";
+import { readOnlyWhenLibraryParentSet, toVerifyField } from "./common";
 
 /**
  * Contact content folded onto the declaration row as a group. `parent` set =
@@ -16,16 +16,25 @@ export const contactGroup: Field = {
 			name: "name",
 			type: "text",
 			label: { fr: "Nom du contact" },
+			access: {
+				update: readOnlyWhenLibraryParentSet("contact"),
+			},
 		},
 		{
 			name: "email",
 			type: "email",
 			label: { fr: "Email de contact" },
+			access: {
+				update: readOnlyWhenLibraryParentSet("contact"),
+			},
 		},
 		{
 			name: "url",
 			type: "text",
 			label: { fr: "Lien URL du formulaire" },
+			access: {
+				update: readOnlyWhenLibraryParentSet("contact"),
+			},
 		},
 		{
 			name: "parent",
