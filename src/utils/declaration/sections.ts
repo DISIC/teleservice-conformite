@@ -85,7 +85,7 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 	...auditSubSectionEntries,
 	schema: {
 		title: "Schéma pluriannuel & plans d'action",
-		isToComplete: (d) => !d.schema?.name,
+		isToComplete: () => false,
 		isToVerify: (d) => d.schema?.toVerify === true,
 		validation: defineSectionValidation({
 			schema: schemaForm,
