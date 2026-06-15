@@ -1,7 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import Error from "@codegouvfr/react-dsfr/picto/Error";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
+import { AuditNotice } from "~/components/ui/AuditNotice";
 import { type ReactNode, useEffect, useMemo } from "react";
 import { tss } from "tss-react";
 import { useAppForm } from "~/forms/context";
@@ -140,9 +142,27 @@ export function SourceModeSection<TValues, TForm>({
 				);
 			case "skipped":
 				return (
-					<p className={fr.cx("fr-mb-0")}>
-						Vous avez indiqué ne pas avoir de schéma pour cette déclaration.
-					</p>
+					<AuditNotice
+						Pictogram={Error}
+						heading="Aucun schéma pluriannuel n’a été renseigné."
+					>
+						<span>
+							Vous pouvez publier votre déclaration d’accessibilité, néanmoins
+							la loi fait obligation de publier un schéma pluriannuel d’une
+							durée de trois ans dans l’objectif d’informer le public des moyens
+							et actions mises en place pour rendre les sites et applications
+							accessibles à tous.
+						</span>
+						<a
+							href="https://accessibilite.numerique.gouv.fr/obligations/schema-pluriannuel/"
+							target="_blank"
+							rel="noopener noreferrer"
+							title="En savoir plus sur le schéma pluriannuel, nouvelle fenêtre"
+							style={{ width: "fit-content" }}
+						>
+							En savoir plus sur le schéma pluriannuel ↗️
+						</a>
+					</AuditNotice>
 				);
 			default:
 				return null;
