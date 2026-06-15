@@ -24,8 +24,7 @@ import { auth } from "~/lib/auth";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
 import { getDeclarationStatus } from "~/utils/declaration/status";
 
-// Since ADR-0004 audit/contact/schema are always-present groups on the row; only
-// the two remaining relations still need asserting non-null for the preview.
+// Only entity and created_by remain nullable relations for the preview.
 type RequiredPopulatedDeclaration = Omit<
 	PopulatedDeclaration,
 	"entity" | "created_by"

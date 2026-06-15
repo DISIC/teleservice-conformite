@@ -3,9 +3,9 @@ import type { Field } from "payload";
 import { toVerifyField } from "./common";
 
 /**
- * Contact content, folded onto the declaration row as a group (ADR-0004).
- * `parent` set = linked mode (mirror of a Library parent, read-only in the
- * declaration form); `parent` null = custom mode (editable inline).
+ * Contact content folded onto the declaration row as a group. `parent` set =
+ * linked mode (mirror of a Library parent, read-only in the declaration form);
+ * `parent` null = custom mode (editable inline).
  */
 export const contactGroup: Field = {
 	name: "contact",

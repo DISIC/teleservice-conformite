@@ -42,12 +42,10 @@ function validateSection(
 }
 
 /**
- * Validates the WHOLE declaration against every visible Section's Zod schema,
- * using the persisted `declaration` (not live form instances — only one Section
- * is mounted at a time, ADR-0001). Returns a flat, ordered list of field-level
- * errors in visible-Section order, then schema field order — empty when the
- * declaration is complete enough to publish. Powers the "Prévisualiser et
- * publier" gate and its live error summary (ADR-0003).
+ * Validates the whole declaration against every visible Section's Zod schema,
+ * using the persisted `declaration` (not live form instances). Returns a flat,
+ * ordered list of field-level errors — empty when the declaration is complete
+ * enough to publish.
  */
 export function validateDeclaration(
 	declaration: PopulatedDeclaration,

@@ -19,9 +19,8 @@ type RecalculateOverrides = {
 
 /**
  * Recomputes Modifiée/Publiée for a declaration whose content may have drifted
- * from its published snapshot. Since ADR-0004 the audit/contact/schema content
- * is read straight off the declaration row — no per-section rows to hydrate.
- * No-op for drafts (no `publishedContent` to compare against).
+ * from its published snapshot. Audit/contact/schema content is read straight off
+ * the declaration row; no-op for drafts.
  */
 export async function recalculateDeclarationStatus(
 	payload: Payload,

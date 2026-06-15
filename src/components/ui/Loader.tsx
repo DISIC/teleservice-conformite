@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/a11y/useSemanticElements: role */
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 

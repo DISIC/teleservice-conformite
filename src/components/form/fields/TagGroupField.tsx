@@ -16,13 +16,8 @@ interface TagGroupFieldProps
 }
 
 export function TagGroupField(props: TagGroupFieldProps) {
-	const {
-		readOnlyField,
-		// required,
-		initialTags,
-		nativeInputProps,
-		...commonProps
-	} = props;
+	const { readOnlyField, initialTags, nativeInputProps, ...commonProps } =
+		props;
 	const { classes, cx } = useStyles();
 	const field = useFieldContext<string[]>();
 	const [tagInput, setTagInput] = useState<string>("");

@@ -1,9 +1,9 @@
 import type { CollectionConfig } from "payload";
 
 /**
- * Library ("Schémas et Contacts") parent — a user's reusable contact (ADR-0004).
- * Owned per-user via `user`; entity-level sharing is retired. Declarations hold
- * their own copy in the `contact` group and may link to one of these parents.
+ * Library ("Schémas et Contacts") parent — a user's reusable contact. Owned
+ * per-user via `user`. Declarations hold their own copy in the `contact` group
+ * and may link to one of these parents.
  */
 export const Contacts: CollectionConfig = {
 	slug: "contacts",

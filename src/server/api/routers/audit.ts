@@ -5,8 +5,8 @@ import { recalculateDeclarationStatus } from "../utils/publish-comparison";
 
 /**
  * Lenient all-optional partial: any one Sub-section slice may arrive on its
- * own (ADR-0002). `isRealised` is supplied explicitly by the general form —
- * never inferred from the presence of unrelated fields.
+ * own. `isRealised` is supplied explicitly by the general form — never inferred
+ * from the presence of unrelated fields.
  */
 const auditUpsertValues = z.object({
 	isRealised: z.boolean().optional(),
@@ -49,8 +49,7 @@ export const auditRouter = createTRPCRouter({
 			const { usedTools, testEnvironments, technologies, date, ...scalars } =
 				values;
 
-			// Merge the submitted slice onto the existing audit group — every audit
-			// field is optional, so only the Sub-section's own fields are touched.
+			// Merge the slice; optional fields mean only the Sub-section's own fields change.
 			const audit = {
 				...declaration.audit,
 				...scalars,

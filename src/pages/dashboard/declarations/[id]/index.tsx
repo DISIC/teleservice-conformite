@@ -51,10 +51,8 @@ export default function DeclarationPage({
 	const status = getDeclarationStatus(declaration);
 	const editingMode = getEditingMode(status);
 
-	// Declaration-wide publish gate (ADR-0003). Armed by the terminal Section's
-	// "Prévisualiser et publier"; once armed, the summary re-derives from the
-	// declaration on every save, shrinking as Sections are fixed and clearing
-	// at zero.
+	// Armed by the terminal Section's "Prévisualiser et publier"; once armed, the
+	// error summary re-derives from the declaration on every save.
 	const [publishAttempted, setPublishAttempted] = useState(false);
 	const declarationErrors = useMemo(
 		() => (publishAttempted ? validateDeclaration(declaration) : []),
@@ -95,9 +93,8 @@ export default function DeclarationPage({
 		return () => clearTimeout(timer);
 	}, [showAlert]);
 
-	// When the publish gate routes to an errored Section (via `&field=`), move
-	// focus to that field once the Section has mounted, then drop the param so it
-	// neither lingers in the URL nor re-fires on later re-renders (ADR-0003).
+	// Focus the errored field on first mount, then drop the param so it neither
+	// lingers in the URL nor re-fires on later re-renders.
 	useEffect(() => {
 		if (typeof fieldQuery !== "string") return;
 

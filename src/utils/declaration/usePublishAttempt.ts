@@ -11,14 +11,9 @@ type UsePublishAttemptArgs = {
 };
 
 /**
- * The shared "publish" navigation used by both the terminal Contact footer CTA
- * and the top-of-page StateNotice CTA, so the two can't drift.
- *
- * `attemptPublish` is the single publish gate (CONTEXT.md Invariants — publish
- * always validates, in every state): arm the error summary, validate the whole
- * declaration, then either go to `/preview` or route to the first errored
- * Section's field. `override` lets the Contact save validate against its
- * freshly-upserted value before page state has caught up.
+ * Shared publish navigation used by both the terminal Contact footer CTA and the
+ * top-of-page StateNotice CTA. `attemptPublish` arms the error summary, validates
+ * the whole declaration, then routes to preview or the first errored Section.
  */
 export function usePublishAttempt({
 	declaration,

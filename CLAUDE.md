@@ -38,8 +38,14 @@ src/
 └── utils/       # Shared utilities
 ```
 
+## Code comments
+
+Comment only to state a business rule or constraint the code cannot show. One line preferred, two max. Never cite ADRs or docs from code comments — discoverability flows docs→code. Never comment what changed, where something came from, or what the next line does.
+
 ## Agent skills
 
 ### Domain docs
 
 Single-context repo. `CONTEXT.md` lives at the repo root; ADRs live in `docs/adr/`. See `docs/agents/domain.md`.
+
+ADRs hold the reasoning; guides hold the resulting rule. A guide may link an ADR where a rule would surprise, but never restates its trade-off analysis. Code never cites ADRs or docs.

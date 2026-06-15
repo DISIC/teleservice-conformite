@@ -43,12 +43,9 @@ async function getOwnedLibraryItem(
 }
 
 /**
- * Propagation fan-out (ADR-0004): rewrite the linked copy in every declaration
- * pointing at this parent, then recompute each one's published/modified status
- * (a published declaration whose copy just changed flips to Modifiée). Linked
- * groups are read-only in the UI and writable only here — the single choke point
- * that keeps a copy in sync with its parent. Sequential rather than one
- * transaction: fine at this scale (a user's declarations, single digits–dozens).
+ * Rewrite the linked copy in every declaration pointing at this parent, then
+ * recompute each one's published/modified status. Linked groups are read-only in
+ * the UI and writable only here — the single choke point that keeps copies in sync.
  */
 async function propagateToLinkedDeclarations(
 	payload: Payload,
@@ -167,9 +164,8 @@ export const libraryRouter = createTRPCRouter({
 		}),
 
 	/**
-	 * Delete a parent. Detach is structural (ADR-0004): null the `parent` on every
-	 * linked declaration first, leaving each copy's content untouched, then delete
-	 * the parent row. No published declaration is affected.
+	 * Delete a parent. Null the `parent` on every linked declaration first, leaving
+	 * each copy's content untouched, then delete the parent row.
 	 */
 	deleteContact: userProtectedProcedure
 		.input(z.object({ id: z.number() }))

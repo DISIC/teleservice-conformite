@@ -7,8 +7,8 @@ import { recalculateDeclarationStatus } from "../utils/publish-comparison";
 export const contactRouter = createTRPCRouter({
 	/**
 	 * Custom-mode save: writes the contact group inline on the declaration row and
-	 * detaches any Library parent (`parent: null`). Linking to a Library parent is
-	 * a separate gesture owned by the Library router (ADR-0004).
+	 * detaches any Library parent. Linking to a Library parent is handled by the
+	 * Library router.
 	 */
 	upsert: userProtectedProcedure
 		.input(

@@ -34,12 +34,8 @@ export type SectionShellProps = {
 	 * declared as realised).
 	 */
 	hideActions?: boolean;
-	/**
-	 * Sequential (Brouillon walkthrough) hides the top-right actions, keeps the
-	 * section permanently editable, and turns the footer "Suivant" into an action
-	 * button — "Enregistrer et suivant" — that commits the section then advances.
-	 * Standalone (default) is the per-section edit/read-only toggle. See ADR-0003.
-	 */
+	/** Sequential keeps every section editable and commits via the footer;
+	 *  standalone toggles edit/read-only per section. */
 	mode?: EditingMode;
 	children: ReactNode;
 };
@@ -62,15 +58,12 @@ export function SectionShell({
 }: SectionShellProps) {
 	const isEditing = !readOnly;
 	const isSequential = mode === "sequential";
-	// In sequential mode the footer drives the save, so it stays enabled and
-	// "Précédent" is always plain navigation. A nothing-to-save section degrades
-	// to a plain "Suivant" link (nothing to commit).
+	// In sequential mode the footer drives the save; a nothing-to-save section
+	// degrades to a plain "Suivant" link.
 	const sequentialSave = isSequential && !hideActions;
 	const navDisabled = !isSequential && isEditing && !hideActions;
-	// The last Section of the walkthrough (no `nextHref`) ends with the
-	// declaration-wide publish gate instead of a "next" link. `onSave` runs the
-	// section's submit, whose success path validates the whole declaration and
-	// either routes to preview or back to the first errored Section (ADR-0003).
+	// The last Section of the walkthrough ends with the declaration-wide publish
+	// gate instead of a "next" link.
 	const isTerminal = isSequential && !hideActions && !nextHref;
 	const { classes, cx } = useStyles();
 

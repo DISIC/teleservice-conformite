@@ -88,7 +88,6 @@ async function extractAccessibilityRateWithAlbert(
 			},
 		],
 		temperature: 0.1,
-		// max_tokens: 500,
 	};
 
 	const response = await fetch(`${apiUrl}/v1/chat/completions`, {
