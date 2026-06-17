@@ -1,19 +1,19 @@
 import z from "zod";
-import { contact } from "~/forms/contact/contactSchema";
+import { contactUpsertValues } from "~/forms/contact/contactSchema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { hasAccessToDeclaration } from "../utils/payload-helper";
 import { recalculateDeclarationStatus } from "../utils/publish-comparison";
 
 export const contactRouter = createTRPCRouter({
 	/**
-	 * Custom-mode save: writes the contact group inline on the declaration row and
-	 * detaches any Library parent. Linking to a Library parent is handled by the
+	 * Custom-mode save: merges the supplied contact fields onto the declaration row
+	 * and detaches any Library parent. Linking to a Library parent is handled by the
 	 * Library router.
 	 */
 	upsert: userProtectedProcedure
 		.input(
 			z.object({
-				values: contact,
+				values: contactUpsertValues,
 				declarationId: z.number(),
 			}),
 		)
@@ -26,10 +26,23 @@ export const contactRouter = createTRPCRouter({
 				userId: Number(ctx.session.user.id),
 			});
 
+			const declaration = await ctx.payload.findByID({
+				collection: "declarations",
+				id: declarationId,
+				depth: 0,
+			});
+
 			const updated = await ctx.payload.update({
 				collection: "declarations",
 				id: declarationId,
-				data: { contact: { ...values, parent: null, toVerify: false } },
+				data: {
+					contact: {
+						...declaration.contact,
+						...values,
+						parent: null,
+						toVerify: false,
+					},
+				},
 			});
 
 			const status = await recalculateDeclarationStatus(

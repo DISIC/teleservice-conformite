@@ -2,7 +2,18 @@ import z from "zod";
 import { submitFormOptions } from "~/forms/formOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
-export const schemaForm = z.object({
+/** Field key-set shared by the form and the lenient upsert input. */
+const schemaFields = z.object({
+	name: z.string(),
+	url: z.string(),
+	actionPlanUrls: z.array(z.object({ name: z.string(), url: z.string() })),
+});
+
+/** Lenient autosave input: every form field, optional and format-free. The
+ *  publish gate (not this mutation) owns completeness and format. */
+export const schemaUpsertValues = schemaFields.partial();
+
+export const schemaForm = schemaFields.extend({
 	name: z.string().min(1, "Le nom du schéma est requis"),
 	url: z.url("Lien invalide (ex: https://www.example.fr)").or(z.literal("")),
 	actionPlanUrls: z.array(

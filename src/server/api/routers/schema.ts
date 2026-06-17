@@ -1,19 +1,19 @@
 import z from "zod";
-import { schemaForm } from "~/forms/schema/schemaSchema";
+import { schemaUpsertValues } from "~/forms/schema/schemaSchema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { hasAccessToDeclaration } from "../utils/payload-helper";
 import { recalculateDeclarationStatus } from "../utils/publish-comparison";
 
 export const schemaRouter = createTRPCRouter({
 	/**
-	 * Custom-mode save: writes the schema group inline on the declaration row and
-	 * detaches any Library parent. Linking to a Library parent is handled by the
+	 * Custom-mode save: merges the supplied schema fields onto the declaration row
+	 * and detaches any Library parent. Linking to a Library parent is handled by the
 	 * Library router.
 	 */
 	upsert: userProtectedProcedure
 		.input(
 			z.object({
-				values: schemaForm,
+				values: schemaUpsertValues,
 				declarationId: z.number(),
 			}),
 		)
@@ -26,11 +26,23 @@ export const schemaRouter = createTRPCRouter({
 				userId: Number(ctx.session.user.id),
 			});
 
+			const declaration = await ctx.payload.findByID({
+				collection: "declarations",
+				id: declarationId,
+				depth: 0,
+			});
+
 			const updated = await ctx.payload.update({
 				collection: "declarations",
 				id: declarationId,
 				data: {
-					schema: { ...values, parent: null, skipped: false, toVerify: false },
+					schema: {
+						...declaration.schema,
+						...values,
+						parent: null,
+						skipped: false,
+						toVerify: false,
+					},
 				},
 			});
 

@@ -3,8 +3,19 @@ import z from "zod";
 import type { Contact } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
-export const contact = z
-	.object({
+/** Field key-set shared by the form and the lenient upsert input. */
+const contactFields = z.object({
+	name: z.string(),
+	url: z.string(),
+	email: z.string(),
+});
+
+/** Lenient autosave input: every form field, optional and format-free. The
+ *  publish gate (not this mutation) owns completeness and format. */
+export const contactUpsertValues = contactFields.partial();
+
+export const contact = contactFields
+	.extend({
 		name: z.string().min(1, "Le nom du contact est requis"),
 		url: z.url("Lien invalide (ex: https://www.example.fr)").or(z.literal("")),
 		email: z.email("Email invalide").or(z.literal("")),

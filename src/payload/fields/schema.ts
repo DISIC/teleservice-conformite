@@ -43,13 +43,11 @@ export const schemaGroup: Field = {
 					name: "name",
 					type: "text",
 					label: { fr: "Nom du plan d'actions" },
-					required: true,
 				},
 				{
 					name: "url",
 					type: "text",
 					label: { fr: "Lien du plan d'actions" },
-					required: true,
 				},
 			],
 		},
