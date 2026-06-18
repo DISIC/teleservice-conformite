@@ -3,39 +3,56 @@ import { submitFormOptions } from "~/forms/formOptions";
 import { appKindOptions, mobilePlatformOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
-export const declarationGeneral = z.object({
-	general: z.object({
-		organisation: z
-			.string()
-			.meta({ kind: "select" })
-			.min(1, { message: "Le nom de l'organisation est requis" }),
-		kind: z.enum(appKindOptions.map((option) => option.value)),
-		mobilePlatform: z
-			.enum(mobilePlatformOptions.map((option) => option.value))
-			.optional(),
-		name: z.string().min(1, { message: "Le nom de l'application est requis" }),
-		url: z
-			.url("Lien invalide (ex: https://www.example.fr)")
-			.optional()
-			.or(z.literal("")),
-		domain: z
-			.string()
-			.meta({ kind: "select" })
-			.min(1, { message: "Le domaine est requis" }),
-	}),
+// Loose leaves shared by the strict form schema and the lenient autosave input;
+// each layers its own rules on top.
+const generalFields = z.object({
+	organisation: z.string().meta({ kind: "select" }),
+	kind: z.enum(appKindOptions.map((option) => option.value)),
+	mobilePlatform: z
+		.enum(mobilePlatformOptions.map((option) => option.value))
+		.optional(),
+	name: z.string(),
+	url: z.string(),
+	domain: z.string().meta({ kind: "select" }),
 });
+
+export const declarationGeneral = z.object({ general: generalFields });
 
 export type ZDeclarationGeneral = z.infer<typeof declarationGeneral>;
 
 export const declarationGeneralRefined = declarationGeneral.superRefine(
 	(data, ctx) => {
-		if (data.general.kind === "mobile_app" && !data.general.mobilePlatform) {
+		const g = data.general;
+		if (!g.organisation)
 			ctx.addIssue({
 				code: "custom",
-				message: "La plateforme mobile est requise",
-				path: ["general", "mobilePlatform"],
+				path: ["general", "organisation"],
+				message: "Le nom de l'organisation est requis",
 			});
-		}
+		if (!g.name)
+			ctx.addIssue({
+				code: "custom",
+				path: ["general", "name"],
+				message: "Le nom de l'application est requis",
+			});
+		if (!g.domain)
+			ctx.addIssue({
+				code: "custom",
+				path: ["general", "domain"],
+				message: "Le domaine est requis",
+			});
+		if (g.url && !z.url().safeParse(g.url).success)
+			ctx.addIssue({
+				code: "custom",
+				path: ["general", "url"],
+				message: "Lien invalide (ex: https://www.example.fr)",
+			});
+		if (g.kind === "mobile_app" && !g.mobilePlatform)
+			ctx.addIssue({
+				code: "custom",
+				path: ["general", "mobilePlatform"],
+				message: "La plateforme mobile est requise",
+			});
 	},
 );
 
@@ -45,7 +62,7 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 		kind: "website",
 		mobilePlatform: undefined,
 		name: "",
-		url: undefined,
+		url: "",
 		domain: "",
 	},
 };

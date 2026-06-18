@@ -48,7 +48,7 @@ export function RichRadioField(props: RichRadioFieldProps) {
 
 	return (
 		<RadioButtons
-			{...getFieldState(field.state.meta.errors)}
+			{...getFieldState(field.state.meta)}
 			legend={label}
 			name={field.name}
 			disabled={disabled}

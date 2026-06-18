@@ -77,7 +77,6 @@ function useAuditSubSection({
 
 	const { readOnly, afterSave, Frame } = useSectionForm({
 		title: AUDIT_SUB_SECTIONS[currentSubSection].title,
-		declaration,
 		isEditable,
 		isSaving: isPending,
 		prevHref,

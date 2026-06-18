@@ -13,6 +13,8 @@ export function SelectField(props: SelectFieldProps) {
 	const { readOnlyField, required, infoStateMessage, ...commonProps } = props;
 	const { classes, cx } = useStyles();
 	const field = useFieldContext<string>();
+	// Surface errors only once the field is touched (or marked by a submit).
+	const errors = field.state.meta.isTouched ? field.state.meta.errors : [];
 
 	if (readOnlyField) {
 		const value = String(
@@ -32,11 +34,8 @@ export function SelectField(props: SelectFieldProps) {
 					onChange: (e) => field.setValue(e.target.value),
 					required,
 				}}
-				state={field.state.meta.errors.length > 0 ? "error" : "default"}
-				stateRelatedMessage={
-					field.state.meta.errors.map((error) => error.message).join(",") ??
-					commonProps.stateRelatedMessage
-				}
+				state={errors.length > 0 ? "error" : "default"}
+				stateRelatedMessage={errors.map((error) => error.message).join(", ")}
 				className={cx(commonProps.className, classes.select)}
 			/>
 			{infoStateMessage && (

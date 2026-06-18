@@ -41,9 +41,13 @@ export type DefaultFieldProps = {
 	required?: boolean;
 };
 
-export function getFieldState(
-	errors: Array<{ message: string }>,
-): Pick<InputProps.Common, "state" | "stateRelatedMessage"> {
+// Errors stay hidden until the field is touched, so a pristine required field
+// isn't flagged before the declarant reaches it.
+export function getFieldState(meta: {
+	errors: Array<{ message: string }>;
+	isTouched: boolean;
+}): Pick<InputProps.Common, "state" | "stateRelatedMessage"> {
+	const errors = meta.isTouched ? meta.errors : [];
 	return {
 		state: errors.length > 0 ? "error" : "default",
 		stateRelatedMessage: errors.map((e) => e.message).join(", "),

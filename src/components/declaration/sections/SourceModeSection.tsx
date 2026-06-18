@@ -76,7 +76,6 @@ export function SourceModeSection<TValues, TForm>({
 
 	const { readOnly, afterSave, Frame } = useSectionForm({
 		title,
-		declaration,
 		isEditable: true,
 		isSaving,
 		prevHref,

@@ -59,7 +59,7 @@ export function TextField(props: TextFieldProps) {
 			{textArea ? (
 				<Input
 					{...commonProps}
-					{...getFieldState(field.state.meta.errors)}
+					{...getFieldState(field.state.meta)}
 					textArea={textArea}
 					nativeTextAreaProps={{
 						...nativeTextAreaProps,
@@ -70,7 +70,7 @@ export function TextField(props: TextFieldProps) {
 			) : (
 				<Input
 					{...commonProps}
-					{...getFieldState(field.state.meta.errors)}
+					{...getFieldState(field.state.meta)}
 					nativeInputProps={{
 						...nativeInputProps,
 						required: nativeInputProps?.required ?? required,

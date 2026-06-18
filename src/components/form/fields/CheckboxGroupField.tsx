@@ -31,7 +31,7 @@ export function CheckboxGroupField(props: CheckboxGroupFieldProps) {
 	return (
 		<Checkbox
 			{...commonProps}
-			{...getFieldState(field.state.meta.errors)}
+			{...getFieldState(field.state.meta)}
 			options={commonProps.options.map((option, index) => ({
 				...option,
 				nativeInputProps: {

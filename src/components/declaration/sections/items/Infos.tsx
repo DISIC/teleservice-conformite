@@ -2,12 +2,18 @@ import { useMemo } from "react";
 import { api } from "~/lib/api";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { useAppForm } from "~/forms/context";
+import {
+	autosaveListeners,
+	changeFormOptions,
+	submitFormOptions,
+} from "~/forms/formOptions";
 import { DeclarationGeneralForm } from "~/forms/declaration/declarationForm";
 import {
-	declarationGeneralFormOptions,
+	declarationGeneralRefined,
 	declarationToGeneralValues,
 	type ZDeclarationGeneral,
 } from "~/forms/declaration/declarationSchema";
+import { useAutosaveGuard } from "~/utils/declaration/useAutosaveGuard";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
@@ -19,6 +25,7 @@ export function InfosSection({
 	nextHref,
 	mode,
 }: SectionRenderProps) {
+	const isSequential = mode === "sequential";
 	const { mutateAsync: update, isPending } = api.declaration.update.useMutation(
 		{
 			onSuccess: ({ data }) =>
@@ -29,34 +36,41 @@ export function InfosSection({
 
 	const { readOnly, afterSave, Frame } = useSectionForm({
 		title: SECTION_TITLES.infos,
-		declaration,
 		isEditable: true,
 		initialReadOnly: true,
-		isSaving: isPending,
+		// Sequential mode autosaves silently — no pending indicator.
+		isSaving: isSequential ? false : isPending,
 		prevHref,
 		nextHref,
 		mode,
 	});
 
-	const defaultValues: ZDeclarationGeneral = useMemo(
+	const defaultValues = useMemo(
 		() => declarationToGeneralValues(declaration),
 		[declaration],
 	);
 
+	const save = (value: ZDeclarationGeneral) =>
+		update({
+			general: {
+				...value.general,
+				declarationId: declaration.id,
+				entityId: declaration.entity?.id ?? -1,
+			},
+		});
+
 	const form = useAppForm({
-		...declarationGeneralFormOptions,
-		defaultValues,
+		...(isSequential
+			? changeFormOptions(defaultValues, declarationGeneralRefined)
+			: submitFormOptions(defaultValues, declarationGeneralRefined)),
 		onSubmit: async ({ value }) => {
-			await update({
-				general: {
-					...value.general,
-					declarationId: declaration.id,
-					entityId: declaration.entity?.id ?? -1,
-				},
-			});
+			await save(value);
 			afterSave();
 		},
+		listeners: isSequential ? autosaveListeners(save) : undefined,
 	});
+
+	useAutosaveGuard({ enabled: isSequential, form, save });
 
 	return (
 		<Frame form={form}>

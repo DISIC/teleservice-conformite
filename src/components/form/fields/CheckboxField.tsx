@@ -37,7 +37,7 @@ export function CheckboxField(props: CheckboxFieldProps) {
 	return (
 		<Checkbox
 			{...commonProps}
-			{...getFieldState(field.state.meta.errors)}
+			{...getFieldState(field.state.meta)}
 			className={commonProps.className ?? fr.cx("fr-mb-0")}
 			options={commonProps.options.map(({ value, ...option }) => ({
 				...option,

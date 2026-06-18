@@ -26,7 +26,7 @@ export function NumberField(props: NumberFieldProps) {
 	return (
 		<Input
 			{...commonProps}
-			{...getFieldState(field.state.meta.errors)}
+			{...getFieldState(field.state.meta)}
 			nativeInputProps={{
 				...nativeInputProps,
 				type: "number",
