@@ -1,5 +1,5 @@
 import z from "zod";
-import { schemaForm } from "~/forms/schema/schemaSchema";
+import { schemaDraft } from "~/forms/schema/schemaSchema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { hasAccessToDeclaration } from "../utils/payload-helper";
 import { recalculateDeclarationStatus } from "../utils/publish-comparison";
@@ -13,7 +13,7 @@ export const schemaRouter = createTRPCRouter({
 	upsert: userProtectedProcedure
 		.input(
 			z.object({
-				values: schemaForm,
+				values: schemaDraft,
 				declarationId: z.number(),
 			}),
 		)
