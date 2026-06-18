@@ -29,12 +29,3 @@ export function changeFormOptions<TValues>(
 
 // Coalesces a burst of keystrokes into a single save.
 export const AUTOSAVE_DEBOUNCE_MS = 1500;
-
-// Persists the whole form via `save` a debounce after any change.
-export function autosaveListeners<TValues>(save: (values: TValues) => unknown) {
-	return {
-		onChange: ({ formApi }: { formApi: { state: { values: TValues } } }) =>
-			void save(formApi.state.values),
-		onChangeDebounceMs: AUTOSAVE_DEBOUNCE_MS,
-	};
-}

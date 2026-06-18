@@ -1,19 +1,16 @@
 import { useMemo } from "react";
+import { useStore } from "@tanstack/react-form";
 import { api } from "~/lib/api";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { useAppForm } from "~/forms/context";
-import {
-	autosaveListeners,
-	changeFormOptions,
-	submitFormOptions,
-} from "~/forms/formOptions";
+import { changeFormOptions, submitFormOptions } from "~/forms/formOptions";
 import { DeclarationGeneralForm } from "~/forms/declaration/declarationForm";
 import {
 	declarationGeneralRefined,
 	declarationToGeneralValues,
 	type ZDeclarationGeneral,
 } from "~/forms/declaration/declarationSchema";
-import { useAutosaveGuard } from "~/utils/declaration/useAutosaveGuard";
+import { useAutosave } from "~/utils/declaration/useAutosave";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
@@ -67,10 +64,10 @@ export function InfosSection({
 			await save(value);
 			afterSave();
 		},
-		listeners: isSequential ? autosaveListeners(save) : undefined,
 	});
 
-	useAutosaveGuard({ enabled: isSequential, form, save });
+	const values = useStore(form.store, (state) => state.values);
+	useAutosave({ enabled: isSequential, values, save });
 
 	return (
 		<Frame form={form}>

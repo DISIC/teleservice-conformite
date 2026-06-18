@@ -4,16 +4,18 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { AuditNotice } from "~/components/ui/AuditNotice";
-import { type ReactNode, useEffect, useMemo } from "react";
+import { type StandardSchemaV1, useStore } from "@tanstack/react-form";
+import { type ReactNode, useEffect, useMemo, useRef } from "react";
 import { tss } from "tss-react";
 import { useAppForm } from "~/forms/context";
-import type { submitFormOptions } from "~/forms/formOptions";
+import { changeFormOptions, submitFormOptions } from "~/forms/formOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import type { EditingMode } from "~/utils/declaration/status";
 import {
 	SOURCE_MODE_FIELD,
 	type SourceModeKind,
 } from "~/utils/declaration/sourceMode";
+import { useAutosave } from "~/utils/declaration/useAutosave";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 import { useSourceMode } from "~/utils/declaration/useSourceMode";
 import { usePublishAttempt } from "~/utils/declaration/usePublishAttempt";
@@ -34,7 +36,7 @@ type SourceModeSectionProps<TValues, TForm> = {
 	mode: EditingMode;
 	prevHref: string | null;
 	nextHref: string | null;
-	formOptions: ReturnType<typeof submitFormOptions<TValues>>;
+	schema: StandardSchemaV1<TValues, unknown>;
 	toValues: (declaration: PopulatedDeclaration) => TValues;
 	/** Persists a custom edit and returns the slice to fold into the declaration. */
 	commit: (values: TValues) => Promise<Partial<PopulatedDeclaration>>;
@@ -59,7 +61,7 @@ export function SourceModeSection<TValues, TForm>({
 	mode,
 	prevHref,
 	nextHref,
-	formOptions,
+	schema,
 	toValues,
 	commit,
 	isSaving,
@@ -68,7 +70,9 @@ export function SourceModeSection<TValues, TForm>({
 	onPublishAttempt,
 }: SourceModeSectionProps<TValues, TForm>) {
 	const { classes } = useStyles();
+	const isSequential = mode === "sequential";
 	const controller = useSourceMode({ kind, declaration, onDeclarationChange });
+	const { libraryLink, effectiveMode, isLinked, linkedCount } = controller;
 	const { attemptPublish } = usePublishAttempt({
 		declaration,
 		onPublishAttempt,
@@ -77,7 +81,8 @@ export function SourceModeSection<TValues, TForm>({
 	const { readOnly, afterSave, Frame } = useSectionForm({
 		title,
 		isEditable: true,
-		isSaving,
+		// Sequential mode autosaves silently — no pending indicator.
+		isSaving: isSequential ? false : isSaving,
 		prevHref,
 		nextHref,
 		mode,
@@ -88,17 +93,16 @@ export function SourceModeSection<TValues, TForm>({
 		[declaration, toValues],
 	);
 
-	const form = useAppForm({
-		...formOptions,
-		defaultValues,
-		onSubmit: async ({ value }) => {
-			// Linked content is read-only and synced from the Library; only a Custom
-			// edit persists here. Skipped/Undecided have nothing to save.
-			const override =
-				!controller.isLinked && controller.effectiveMode === "custom"
-					? await commit(value)
-					: undefined;
+	// Only a Custom edit is this section's own work to persist; Linked content is
+	// Library-synced and Skipped has nothing to save.
+	const isCustomEdit = !isLinked && effectiveMode === "custom";
 
+	const form = useAppForm({
+		...(isSequential
+			? changeFormOptions(defaultValues, schema)
+			: submitFormOptions(defaultValues, schema)),
+		onSubmit: async ({ value }) => {
+			const override = isCustomEdit ? await commit(value) : undefined;
 			if (onPublishAttempt && mode === "sequential") {
 				attemptPublish(override);
 				return;
@@ -107,13 +111,19 @@ export function SourceModeSection<TValues, TForm>({
 		},
 	});
 
-	// Library link/unlink/skip update the declaration in place (no remount), so
-	// realign the form with the new persisted values when they change.
-	useEffect(() => {
-		form.reset(defaultValues);
-	}, [defaultValues, form]);
+	const values = useStore(form.store, (state) => state.values);
+	useAutosave({ enabled: isSequential && isCustomEdit, values, save: commit });
 
-	const { libraryLink, effectiveMode, isLinked, linkedCount } = controller;
+	// Realign the form only when a Library link/unlink/skip swaps the persisted
+	// source; a custom edit keeps its own live state (autosave + validation).
+	const sourceKey = `${effectiveMode ?? ""}:${libraryLink.linkedParentId ?? ""}`;
+	const lastSourceKey = useRef(sourceKey);
+	useEffect(() => {
+		if (lastSourceKey.current === sourceKey) return;
+		lastSourceKey.current = sourceKey;
+		form.reset(defaultValues);
+	}, [sourceKey, defaultValues, form]);
+
 	const hasLibraryItems = libraryLink.items.length > 0;
 	const visibleOptions = options.filter(
 		(option) => option.value !== "linked" || hasLibraryItems,

@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import { api } from "~/lib/api";
 import { ContactTypeForm } from "~/forms/contact/contactForm";
 import {
-	contactFormOptions,
+	contactForm,
 	declarationToContactValues,
 	type ZContactForm,
 } from "~/forms/contact/contactSchema";
@@ -57,7 +57,7 @@ export function ContactSection({
 			mode={mode}
 			prevHref={prevHref}
 			nextHref={nextHref}
-			formOptions={contactFormOptions}
+			schema={contactForm}
 			toValues={declarationToContactValues}
 			commit={async (values) => {
 				const { data: contact, status } = await upsertContact({

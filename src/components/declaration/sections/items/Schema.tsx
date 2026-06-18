@@ -3,7 +3,7 @@ import { api } from "~/lib/api";
 import { SchemaForm as DeclarationSchemaForm } from "~/forms/schema/schemaForm";
 import {
 	declarationToSchemaValues,
-	schemaFormOptions,
+	schemaForm,
 	type ZSchema,
 } from "~/forms/schema/schemaSchema";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
@@ -59,7 +59,7 @@ export function SchemaSection({
 			mode={mode}
 			prevHref={prevHref}
 			nextHref={nextHref}
-			formOptions={schemaFormOptions}
+			schema={schemaForm}
 			toValues={declarationToSchemaValues}
 			commit={async (values) => {
 				const { data: schema, status } = await upsertSchema({
