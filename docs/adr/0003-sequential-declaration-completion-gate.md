@@ -1,15 +1,14 @@
 # ADR-0003: Sequential completion mode + declaration-wide validation gate
 
 - **Status:** Accepted
-- **Date:** 2026-06-09 (gate scope widened 2026-06-10, ADR-0004; gate predicate extended 2026-06-14, ADR-0005; section-submit validation removed 2026-06-17)
+- **Date:** 2026-06-09 (gate scope widened 2026-06-10, ADR-0004; gate predicate extended 2026-06-14, ADR-0005)
 
-> Three later refinements are folded into the body below so it reads as the current gate:
+> Two later refinements are folded into the body below so it reads as the current gate:
 >
 > - **Scope (ADR-0004):** the gate is **universal** — `validateDeclaration` runs on every publish, including from Modifiée. There is no "published-modified is always publishable" fast path: removing a contact/schema from a published Declaration leaves it incomplete (`published-incomplete`).
 > - **Predicate (ADR-0005):** "complete" is no longer only "every section's Zod schema passes." For the Contact/Schema [[section|sections]] the declarant must also have **chosen a [[source mode]]** (Linked / Custom / Skipped); an Undecided section emits a gate error targeting the radio. This error is produced **outside** the per-field `runSchema` path.
-> - **Section submit removed (2026-06-17):** in **sequential** mode the section no longer validates or saves on submit. Fields **autosave** (text on blur, checkbox/select/radio on change, arrays on add/remove/reorder + item-field blur) through lenient partial mutations — contact/schema were relaxed to mirror `audit.upsert`. The footer is plain "Précédent / Suivant": navigation flushes the focused field then **always proceeds**, never blocking. "Enregistrer et suivant" is retired. Both CTAs (Contact, StateNotice) flush then run the gate directly — no per-section check stands before it. **Payload-level completeness validation is dropped** (`requiredWhenRealised`, required `actionPlanUrls`): the Zod gate is the sole owner of completeness, so an incomplete realised audit can persist. A non-blocking **advisory** layer remains: field-level **format-only** feedback onChange before any publish attempt, and the **full** section schema inline once the in-session "publish attempted" flag is set (one source per field at a time). This **reverses** the original decision's "section `onSubmit` runs the schema; validation _and_ save errors block navigation" — see the struck bullet below. Standalone mode is unaffected.
 >
-> The sequential/standalone mode split is unaffected by any of these.
+> The sequential/standalone mode split is unaffected by either.
 
 ## Context
 
@@ -29,7 +28,7 @@ The codebase already carries coarse per-section completeness predicates — `isT
 **Introduce an explicit editing mode and a declaration-wide validation gate, both keyed off Brouillon.**
 
 - **`mode: "sequential" | "standalone"`** — a single prop, decided once per page load from `status === "Brouillon"`, threaded `index → SectionContent → section → Shell`. `sequential` for Brouillon; `standalone` (today's behavior, unchanged) for Modifiée/Publiée. It is **not** an overload of `hideActions`; the two are orthogonal and compose (a nothing-to-save notice section in sequential mode degrades its footer to plain "Suivant"). See the **Editing mode** glossary entry.
-  - In `sequential`: no per-section top-right actions, `readOnly` forced `false` (every section permanently editable). ~~the footer "Suivant" becomes **"Enregistrer et suivant"** — an action button that runs the section's `handleSubmit` and, on save success, navigates to the next section. Navigation lives in `onSubmit`'s success path, so both validation _and_ save errors block it.~~ **Reversed 2026-06-17 (see header):** the footer is plain "Suivant", fields autosave, and navigation flushes-then-always-proceeds without validating. "Précédent" stays plain back-navigation.
+  - In `sequential`: no per-section top-right actions, `readOnly` forced `false` (every section permanently editable), and the footer "Suivant" becomes **"Enregistrer et suivant"** — an action button that runs the section's `handleSubmit` and, on save success, navigates to the next section. Navigation lives in `onSubmit`'s success path, so both validation _and_ save errors block it. "Précédent" stays plain back-navigation.
 
 - **Declaration-wide gate via the real section schemas.** The last section (Contact) ends with **"Prévisualiser et publier"**: it saves Contact, then runs `validateDeclaration(declaration)` — which runs **every section's Zod schema against the persisted `declaration` data** (not against form instances), skipping non-applicable slices (the non-realised audit Sub-sections, per the existing Invariant). It returns a flat, ordered list of `{ section, field, message }`. Clean → navigate to preview. Errors → redirect to the first errored section (visible-section order, then schema field order) and surface a **live, page-level error summary**.
   - The summary lives in `index.tsx` state, gated by a "publish attempted" flag (so it appears only after the first click and clears on reload / leaving the page). It is **re-derived from `declaration` on every save** — as the declarant fixes and saves sections the list shrinks and auto-dismisses at zero. Fixed height, 3 field-level rows max with "Voir plus" (internal scroll/expand), rows clickable to their section.
