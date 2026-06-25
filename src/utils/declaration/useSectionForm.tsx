@@ -2,6 +2,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { type ReactNode, useCallback, useState } from "react";
 import { useCommonStyles } from "~/components/ui/commonStyles";
+import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { SectionShell } from "~/components/declaration/sections/Shell";
 import type { EditingMode } from "~/utils/declaration/status";
 
@@ -33,6 +34,9 @@ type FrameProps = {
 	form: FrameForm;
 	children: ReactNode;
 	before?: ReactNode;
+	/** Suppress the required-fields caption when the body has no editable fields
+	 * (e.g. a Library-linked shared entity rendered as a read-only card). */
+	hideRequiredNotice?: boolean;
 };
 
 /**
@@ -80,7 +84,7 @@ export function useSectionForm({
 	// These deps must stay stable during autosave: a change remounts `Frame` and
 	// wipes in-progress field validation.
 	const Frame = useCallback(
-		({ form, children, before }: FrameProps) => (
+		({ form, children, before, hideRequiredNotice }: FrameProps) => (
 			<>
 				<Head>
 					<title>{title} - Téléservice Conformité</title>
@@ -109,6 +113,7 @@ export function useSectionForm({
 						}}
 						onInvalid={() => form.validate("submit")}
 					>
+						{!readOnly && !hideRequiredNotice && <RequiredFieldsNotice />}
 						<div className={commonClasses.partStack}>{children}</div>
 					</form>
 				</SectionShell>

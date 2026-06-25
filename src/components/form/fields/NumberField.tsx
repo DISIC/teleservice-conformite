@@ -4,6 +4,7 @@ import {
 	getFieldState,
 	useFieldContext,
 } from "~/forms/context";
+import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface NumberFieldProps
@@ -27,6 +28,7 @@ export function NumberField(props: NumberFieldProps) {
 		<Input
 			{...commonProps}
 			{...getFieldState(field.state.meta)}
+			label={withRequiredMark(commonProps.label, required)}
 			nativeInputProps={{
 				...nativeInputProps,
 				type: "number",

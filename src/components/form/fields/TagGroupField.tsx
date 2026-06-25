@@ -5,6 +5,7 @@ import Tag from "@codegouvfr/react-dsfr/Tag";
 import { useState } from "react";
 import { tss } from "tss-react";
 import { type DefaultFieldProps, useFieldContext } from "~/forms/context";
+import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface TagGroupFieldProps
@@ -16,8 +17,13 @@ interface TagGroupFieldProps
 }
 
 export function TagGroupField(props: TagGroupFieldProps) {
-	const { readOnlyField, initialTags, nativeInputProps, ...commonProps } =
-		props;
+	const {
+		readOnlyField,
+		required,
+		initialTags,
+		nativeInputProps,
+		...commonProps
+	} = props;
 	const { classes, cx } = useStyles();
 	const field = useFieldContext<string[]>();
 	const [tagInput, setTagInput] = useState<string>("");
@@ -50,6 +56,7 @@ export function TagGroupField(props: TagGroupFieldProps) {
 			<div className={classes.inputWrapper}>
 				<Input
 					{...commonProps}
+					label={withRequiredMark(commonProps.label, required)}
 					nativeInputProps={{
 						...nativeInputProps,
 						name: field.name,

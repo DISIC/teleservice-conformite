@@ -183,6 +183,7 @@ export function SourceModeSection<TValues, TForm>({
 	return (
 		<Frame
 			form={form}
+			hideRequiredNotice={bodyMode !== "custom"}
 			before={
 				showRadio ? (
 					<div

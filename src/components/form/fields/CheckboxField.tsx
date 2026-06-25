@@ -5,6 +5,7 @@ import {
 	getFieldState,
 	useFieldContext,
 } from "~/forms/context";
+import { withRequiredMark } from "../RequiredField";
 
 type TValue = string | boolean;
 
@@ -38,6 +39,7 @@ export function CheckboxField(props: CheckboxFieldProps) {
 		<Checkbox
 			{...commonProps}
 			{...getFieldState(field.state.meta)}
+			legend={withRequiredMark(commonProps.legend, required)}
 			className={commonProps.className ?? fr.cx("fr-mb-0")}
 			options={commonProps.options.map(({ value, ...option }) => ({
 				...option,

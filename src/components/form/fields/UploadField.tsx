@@ -1,5 +1,6 @@
 import { Upload, type UploadProps } from "@codegouvfr/react-dsfr/Upload";
 import { type DefaultFieldProps, useFieldContext } from "~/forms/context";
+import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface UploadFieldProps extends DefaultFieldProps, UploadProps {}
@@ -23,6 +24,7 @@ export function UploadField(props: UploadFieldProps) {
 	return (
 		<Upload
 			{...commonProps}
+			label={withRequiredMark(commonProps.label, required)}
 			state={errors.length > 0 ? "error" : "default"}
 			stateRelatedMessage={errors.map((error) => error.message).join(", ")}
 			nativeInputProps={{

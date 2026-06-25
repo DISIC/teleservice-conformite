@@ -6,6 +6,7 @@ import {
 
 import { type DefaultFieldProps, useFieldContext } from "~/forms/context";
 import { getFieldState } from "~/forms/context";
+import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 type RichRadioOption = {
@@ -49,7 +50,7 @@ export function RichRadioField(props: RichRadioFieldProps) {
 	return (
 		<RadioButtons
 			{...getFieldState(field.state.meta)}
-			legend={label}
+			legend={withRequiredMark(label, required)}
 			name={field.name}
 			disabled={disabled}
 			className={className ?? fr.cx("fr-mb-0")}

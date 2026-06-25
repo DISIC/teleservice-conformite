@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Select, type SelectProps } from "@codegouvfr/react-dsfr/SelectNext";
 import { tss } from "tss-react";
 import { type DefaultFieldProps, useFieldContext } from "~/forms/context";
+import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface SelectFieldProps
@@ -28,6 +29,7 @@ export function SelectField(props: SelectFieldProps) {
 		<>
 			<Select
 				{...commonProps}
+				label={withRequiredMark(commonProps.label, required)}
 				nativeSelectProps={{
 					name: field.name,
 					value: field.state.value,

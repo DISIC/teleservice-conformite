@@ -4,6 +4,7 @@ import {
 	getFieldState,
 	useFieldContext,
 } from "~/forms/context";
+import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface CheckboxGroupFieldProps
@@ -32,6 +33,7 @@ export function CheckboxGroupField(props: CheckboxGroupFieldProps) {
 		<Checkbox
 			{...commonProps}
 			{...getFieldState(field.state.meta)}
+			legend={withRequiredMark(commonProps.legend, required)}
 			options={commonProps.options.map((option, index) => ({
 				...option,
 				nativeInputProps: {

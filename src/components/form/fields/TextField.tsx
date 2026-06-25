@@ -7,6 +7,7 @@ import {
 	getFieldState,
 	useFieldContext,
 } from "~/forms/context";
+import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface TextFieldProps
@@ -59,6 +60,7 @@ export function TextField(props: TextFieldProps) {
 			{textArea ? (
 				<Input
 					{...commonProps}
+					label={withRequiredMark(commonProps.label, required)}
 					{...getFieldState(field.state.meta)}
 					textArea={textArea}
 					nativeTextAreaProps={{
@@ -70,6 +72,7 @@ export function TextField(props: TextFieldProps) {
 			) : (
 				<Input
 					{...commonProps}
+					label={withRequiredMark(commonProps.label, required)}
 					{...getFieldState(field.state.meta)}
 					nativeInputProps={{
 						...nativeInputProps,
