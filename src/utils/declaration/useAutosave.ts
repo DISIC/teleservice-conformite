@@ -40,20 +40,27 @@ export function useAutosave<TValues>({
 	const saveRef = useRef(save);
 	saveRef.current = save;
 
+	const commit = useCallback(async (next: TValues) => {
+		try {
+			await saveRef.current(next);
+			saved.current = next;
+		} catch {
+			// Leave the value dirty so the next debounce, flush, or leave warning retries.
+		}
+	}, []);
+
 	useEffect(() => {
 		if (!enabled || valuesEqual(values, saved.current)) return;
 		const id = setTimeout(() => {
-			saved.current = values;
-			saveRef.current(values);
+			void commit(values);
 		}, AUTOSAVE_DEBOUNCE_MS);
 		return () => clearTimeout(id);
-	}, [enabled, values]);
+	}, [enabled, values, commit]);
 
 	const flush = useRef(() => {});
 	flush.current = () => {
 		if (enabled && !valuesEqual(latest.current, saved.current)) {
-			saved.current = latest.current;
-			saveRef.current(latest.current);
+			void commit(latest.current);
 		}
 	};
 	useEffect(() => () => flush.current(), []);
