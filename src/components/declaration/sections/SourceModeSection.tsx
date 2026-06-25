@@ -16,6 +16,7 @@ import {
 	type SourceModeKind,
 } from "~/utils/declaration/sourceMode";
 import { useAutosave } from "~/utils/declaration/useAutosave";
+import { useRevealSectionErrors } from "~/utils/declaration/useRevealSectionErrors";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 import { useSourceMode } from "~/utils/declaration/useSourceMode";
 import { usePublishAttempt } from "~/utils/declaration/usePublishAttempt";
@@ -113,6 +114,7 @@ export function SourceModeSection<TValues, TForm>({
 
 	const values = useStore(form.store, (state) => state.values);
 	useAutosave({ enabled: isSequential && isCustomEdit, values, save: commit });
+	useRevealSectionErrors(form);
 
 	// Realign the form only when a Library link/unlink/skip swaps the persisted
 	// source; a custom edit keeps its own live state (autosave + validation).

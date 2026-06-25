@@ -11,6 +11,7 @@ import {
 	type ZDeclarationGeneral,
 } from "~/forms/declaration/declarationSchema";
 import { useAutosave } from "~/utils/declaration/useAutosave";
+import { useRevealSectionErrors } from "~/utils/declaration/useRevealSectionErrors";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
@@ -68,6 +69,7 @@ export function InfosSection({
 
 	const values = useStore(form.store, (state) => state.values);
 	useAutosave({ enabled: isSequential, values, save });
+	useRevealSectionErrors(form);
 
 	return (
 		<Frame form={form}>

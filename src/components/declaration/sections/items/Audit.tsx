@@ -29,6 +29,7 @@ import {
 	type ZAuditTools,
 } from "~/forms/audit/auditSchema";
 import { useAutosave } from "~/utils/declaration/useAutosave";
+import { useRevealSectionErrors } from "~/utils/declaration/useRevealSectionErrors";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
@@ -150,6 +151,7 @@ export function AuditGeneralSection(props: SectionRenderProps) {
 		values,
 		save,
 	});
+	useRevealSectionErrors(form);
 
 	return (
 		<Frame form={form}>
@@ -201,6 +203,7 @@ export function AuditOutilsSection(props: SectionRenderProps) {
 
 	const values = useStore(form.store, (state) => state.values);
 	useAutosave({ enabled: isSequential && !showNotice, values, save });
+	useRevealSectionErrors(form);
 
 	return (
 		<Frame form={form}>
@@ -249,6 +252,7 @@ export function AuditContenusSection(props: SectionRenderProps) {
 
 	const values = useStore(form.store, (state) => state.values);
 	useAutosave({ enabled: isSequential && !showNotice, values, save });
+	useRevealSectionErrors(form);
 
 	return (
 		<Frame form={form}>
@@ -305,6 +309,7 @@ export function AuditNonConformitesSection(props: SectionRenderProps) {
 
 	const values = useStore(form.store, (state) => state.values);
 	useAutosave({ enabled: isSequential && !showNotice, values, save });
+	useRevealSectionErrors(form);
 
 	return (
 		<Frame form={form}>
