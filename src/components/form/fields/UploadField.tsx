@@ -1,5 +1,9 @@
 import { Upload, type UploadProps } from "@codegouvfr/react-dsfr/Upload";
-import { type DefaultFieldProps, useFieldContext } from "~/forms/context";
+import {
+	type DefaultFieldProps,
+	getFieldState,
+	useFieldContext,
+} from "~/forms/context";
 import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
@@ -8,8 +12,6 @@ interface UploadFieldProps extends DefaultFieldProps, UploadProps {}
 export function UploadField(props: UploadFieldProps) {
 	const { readOnlyField, required, ...commonProps } = props;
 	const field = useFieldContext<File | undefined>();
-	// Surface errors only once the field is touched (or marked by a submit).
-	const errors = field.state.meta.isTouched ? field.state.meta.errors : [];
 
 	if (readOnlyField) {
 		return (
@@ -25,8 +27,7 @@ export function UploadField(props: UploadFieldProps) {
 		<Upload
 			{...commonProps}
 			label={withRequiredMark(commonProps.label, required)}
-			state={errors.length > 0 ? "error" : "default"}
-			stateRelatedMessage={errors.map((error) => error.message).join(", ")}
+			{...getFieldState(field.state.meta)}
 			nativeInputProps={{
 				name: field.name,
 				onChange: (e) =>

@@ -1,4 +1,3 @@
-import type { InputProps } from "@codegouvfr/react-dsfr/Input";
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 
 import { CancelButton, SubscribeButton } from "~/components/form/ActionButtons";
@@ -46,7 +45,7 @@ export type DefaultFieldProps = {
 export function getFieldState(meta: {
 	errors: Array<{ message: string }>;
 	isTouched: boolean;
-}): Pick<InputProps.Common, "state" | "stateRelatedMessage"> {
+}): { state: "default" | "error"; stateRelatedMessage: string } {
 	const errors = meta.isTouched ? meta.errors : [];
 	return {
 		state: errors.length > 0 ? "error" : "default",

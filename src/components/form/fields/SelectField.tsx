@@ -1,7 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Select, type SelectProps } from "@codegouvfr/react-dsfr/SelectNext";
 import { tss } from "tss-react";
-import { type DefaultFieldProps, useFieldContext } from "~/forms/context";
+import {
+	type DefaultFieldProps,
+	getFieldState,
+	useFieldContext,
+} from "~/forms/context";
 import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
@@ -14,8 +18,6 @@ export function SelectField(props: SelectFieldProps) {
 	const { readOnlyField, required, infoStateMessage, ...commonProps } = props;
 	const { classes, cx } = useStyles();
 	const field = useFieldContext<string>();
-	// Surface errors only once the field is touched (or marked by a submit).
-	const errors = field.state.meta.isTouched ? field.state.meta.errors : [];
 
 	if (readOnlyField) {
 		const value = String(
@@ -36,8 +38,7 @@ export function SelectField(props: SelectFieldProps) {
 					onChange: (e) => field.setValue(e.target.value),
 					required,
 				}}
-				state={errors.length > 0 ? "error" : "default"}
-				stateRelatedMessage={errors.map((error) => error.message).join(", ")}
+				{...getFieldState(field.state.meta)}
 				className={cx(commonProps.className, classes.select)}
 			/>
 			{infoStateMessage && (
