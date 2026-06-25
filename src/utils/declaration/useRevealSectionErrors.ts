@@ -2,10 +2,8 @@ import type { AnyFormApi } from "@tanstack/react-form";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-// Arriving from the publish error summary carries a `field` query param; surface
-// every error in the Section, not only the focused field. Runs on each effect
-// pass (no one-shot guard) so it re-applies after a field remount re-registers
-// the field and clears its errors.
+// A `field` query param means we arrived from the publish error summary: reveal
+// every error in the Section, not only the focused field.
 export function useRevealSectionErrors(form: AnyFormApi) {
 	const router = useRouter();
 	const fieldParam =
