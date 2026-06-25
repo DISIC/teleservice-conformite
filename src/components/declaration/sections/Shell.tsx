@@ -58,9 +58,8 @@ export function SectionShell({
 }: SectionShellProps) {
 	const isEditing = !readOnly;
 	const isSequential = mode === "sequential";
-	// In sequential mode the footer drives the save; a nothing-to-save section
-	// degrades to a plain "Suivant" link.
-	const sequentialSave = isSequential && !hideActions;
+	// Standalone has no autosave, so navigating mid-edit would discard the section;
+	// block footer nav until the edit is saved or cancelled.
 	const navDisabled = !isSequential && isEditing && !hideActions;
 	// The last Section of the walkthrough ends with the declaration-wide publish
 	// gate instead of a "next" link.
@@ -138,17 +137,7 @@ export function SectionShell({
 							Prévisualiser et publier
 						</Button>
 					) : nextHref ? (
-						sequentialSave ? (
-							<Button
-								priority="primary"
-								iconId={nextIcon}
-								iconPosition="right"
-								onClick={onSave}
-								disabled={isSaving}
-							>
-								Enregistrer et suivant
-							</Button>
-						) : navDisabled ? (
+						navDisabled ? (
 							<Button
 								priority="primary"
 								iconId={nextIcon}

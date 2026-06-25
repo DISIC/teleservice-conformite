@@ -1,14 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { SECTION_TITLES, sectionHref } from "~/utils/declaration/sections";
 import type { DeclarationError } from "~/utils/declaration/validateDeclaration";
-
-/** Number of error rows shown before the list collapses behind "Voir plus". */
-const COLLAPSED_ROWS = 3;
 
 type ErrorSummaryProps = {
 	declarationId: PopulatedDeclaration["id"];
@@ -22,11 +18,7 @@ type ErrorSummaryProps = {
  */
 export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
 	const router = useRouter();
-	const [expanded, setExpanded] = useState(false);
-	const { classes, cx } = useStyles();
-
-	const visibleErrors = expanded ? errors : errors.slice(0, COLLAPSED_ROWS);
-	const hiddenCount = errors.length - COLLAPSED_ROWS;
+	const { classes } = useStyles();
 
 	const goToSection = (error: DeclarationError) =>
 		router.push(
@@ -45,44 +37,28 @@ export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
 					: "Un champ doit être complété avant la publication"
 			}
 			description={
-				<div className={classes.body}>
-					<ul className={cx(classes.list, expanded && classes.listScroll)}>
-						{visibleErrors.map((error) => (
-							<li key={`${error.section}.${error.field}`}>
-								<button
-									type="button"
-									className={classes.row}
-									onClick={() => goToSection(error)}
-								>
-									<span className={classes.section}>
-										{SECTION_TITLES[error.section]}
-									</span>
-									<span>{error.message}</span>
-								</button>
-							</li>
-						))}
-					</ul>
-					{hiddenCount > 0 && (
-						<button
-							type="button"
-							className={classes.toggle}
-							onClick={() => setExpanded((prev) => !prev)}
-						>
-							{expanded ? "Voir moins" : `Voir plus (${hiddenCount})`}
-						</button>
-					)}
-				</div>
+				<ul className={classes.list}>
+					{errors.map((error) => (
+						<li key={`${error.section}.${error.field}`}>
+							<button
+								type="button"
+								className={classes.row}
+								onClick={() => goToSection(error)}
+							>
+								<span className={classes.section}>
+									{SECTION_TITLES[error.section]}
+								</span>
+								<span>{error.message}</span>
+							</button>
+						</li>
+					))}
+				</ul>
 			}
 		/>
 	);
 }
 
 const useStyles = tss.withName(ErrorSummary.name).create({
-	body: {
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("2v"),
-	},
 	list: {
 		listStyle: "none",
 		margin: 0,
@@ -90,8 +66,6 @@ const useStyles = tss.withName(ErrorSummary.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("1v"),
-	},
-	listScroll: {
 		maxHeight: 200,
 		overflowY: "auto",
 	},
@@ -112,16 +86,5 @@ const useStyles = tss.withName(ErrorSummary.name).create({
 	section: {
 		fontWeight: 700,
 		whiteSpace: "nowrap",
-	},
-	toggle: {
-		alignSelf: "flex-start",
-		background: "none",
-		border: "none",
-		padding: 0,
-		cursor: "pointer",
-		color: "inherit",
-		fontWeight: 500,
-		textDecoration: "underline",
-		textUnderlineOffset: "2px",
 	},
 });

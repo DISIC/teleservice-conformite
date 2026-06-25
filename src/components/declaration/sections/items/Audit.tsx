@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useStore } from "@tanstack/react-form";
 import { api } from "~/lib/api";
 import {
 	AUDIT_SUB_SECTIONS,
@@ -6,6 +7,7 @@ import {
 } from "~/utils/declaration/auditSubSections";
 import { isSectionToComplete } from "~/utils/declaration/sections";
 import { useAppForm } from "~/forms/context";
+import { changeFormOptions, submitFormOptions } from "~/forms/formOptions";
 import {
 	AuditGeneralForm,
 	CompliantElementsForm,
@@ -13,19 +15,21 @@ import {
 	ToolsForm,
 } from "~/forms/audit/auditForm";
 import {
-	auditContentsFormOptions,
-	auditGeneralFormOptions,
-	auditNonConformitiesFormOptions,
+	auditContents,
+	auditGeneral,
+	auditNonConformities,
 	auditToContentsValues,
 	auditToGeneralValues,
 	auditToNonConformitiesValues,
-	auditToolsFormOptions,
+	auditTools,
 	auditToToolsValues,
 	type ZAuditContents,
 	type ZAuditGeneral,
 	type ZAuditNonConformities,
 	type ZAuditTools,
 } from "~/forms/audit/auditSchema";
+import { useAutosave } from "~/utils/declaration/useAutosave";
+import { useRevealSectionErrors } from "~/utils/declaration/useRevealSectionErrors";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
@@ -55,6 +59,7 @@ function useAuditSubSection({
 	alwaysEditable,
 	mode,
 }: UseAuditSubSectionArgs) {
+	const isSequential = mode === "sequential";
 	const audit = declaration.audit;
 	const hasAudit = !!audit;
 	const subSectionToComplete = isSectionToComplete(
@@ -77,9 +82,9 @@ function useAuditSubSection({
 
 	const { readOnly, afterSave, Frame } = useSectionForm({
 		title: AUDIT_SUB_SECTIONS[currentSubSection].title,
-		declaration,
 		isEditable,
-		isSaving: isPending,
+		// Sequential mode autosaves silently — no pending indicator.
+		isSaving: isSequential ? false : isPending,
 		prevHref,
 		nextHref,
 		hideActions: showNotice,
@@ -89,6 +94,7 @@ function useAuditSubSection({
 	return {
 		audit,
 		hasAudit,
+		isSequential,
 		readOnly,
 		afterSave,
 		Frame,
@@ -99,23 +105,22 @@ function useAuditSubSection({
 
 export function AuditGeneralSection(props: SectionRenderProps) {
 	const { declaration } = props;
-	const { audit, readOnly, afterSave, Frame, upsert } = useAuditSubSection({
-		...props,
-		currentSubSection: "audit-general",
-		requiresRealised: false,
-		alwaysEditable: true,
-	});
+	const { audit, isSequential, readOnly, afterSave, Frame, upsert } =
+		useAuditSubSection({
+			...props,
+			currentSubSection: "audit-general",
+			requiresRealised: false,
+			alwaysEditable: true,
+		});
 
 	const defaultValues = useMemo(
 		(): ZAuditGeneral => auditToGeneralValues(audit),
 		[audit],
 	);
 
-	const form = useAppForm({
-		...auditGeneralFormOptions,
-		defaultValues,
-		onSubmit: async ({ value }) => {
-			const values =
+	const save = (value: ZAuditGeneral) =>
+		upsert({
+			values:
 				value.isAuditRealised === false
 					? { isRealised: false }
 					: {
@@ -124,11 +129,29 @@ export function AuditGeneralSection(props: SectionRenderProps) {
 							realisedBy: value.realisedBy,
 							rgaa_version: value.rgaa_version,
 							rate: value.rate,
-						};
-			await upsert({ values, declarationId: declaration.id });
+						},
+			declarationId: declaration.id,
+		});
+
+	const form = useAppForm({
+		...(isSequential
+			? changeFormOptions(defaultValues, auditGeneral)
+			: submitFormOptions(defaultValues, auditGeneral)),
+		onSubmit: async ({ value }) => {
+			await save(value);
 			afterSave();
 		},
 	});
+
+	const values = useStore(form.store, (state) => state.values);
+	// Hold autosave until the realisation question is answered: an undefined
+	// answer would otherwise persist as realised.
+	useAutosave({
+		enabled: isSequential && values.isAuditRealised !== undefined,
+		values,
+		save,
+	});
+	useRevealSectionErrors(form);
 
 	return (
 		<Frame form={form}>
@@ -139,33 +162,48 @@ export function AuditGeneralSection(props: SectionRenderProps) {
 
 export function AuditOutilsSection(props: SectionRenderProps) {
 	const { declaration } = props;
-	const { audit, readOnly, afterSave, Frame, showNotice, upsert } =
-		useAuditSubSection({
-			...props,
-			currentSubSection: "audit-outils",
-			requiresRealised: true,
-			alwaysEditable: false,
-		});
+	const {
+		audit,
+		isSequential,
+		readOnly,
+		afterSave,
+		Frame,
+		showNotice,
+		upsert,
+	} = useAuditSubSection({
+		...props,
+		currentSubSection: "audit-outils",
+		requiresRealised: true,
+		alwaysEditable: false,
+	});
 
 	const defaultValues = useMemo(
 		(): ZAuditTools => auditToToolsValues(audit),
 		[audit],
 	);
 
+	const save = (value: ZAuditTools) =>
+		upsert({
+			values: {
+				usedTools: value.usedTools,
+				testEnvironments: value.testEnvironments,
+			},
+			declarationId: declaration.id,
+		});
+
 	const form = useAppForm({
-		...auditToolsFormOptions,
-		defaultValues,
+		...(isSequential
+			? changeFormOptions(defaultValues, auditTools)
+			: submitFormOptions(defaultValues, auditTools)),
 		onSubmit: async ({ value }) => {
-			await upsert({
-				values: {
-					usedTools: value.usedTools,
-					testEnvironments: value.testEnvironments,
-				},
-				declarationId: declaration.id,
-			});
+			await save(value);
 			afterSave();
 		},
 	});
+
+	const values = useStore(form.store, (state) => state.values);
+	useAutosave({ enabled: isSequential && !showNotice, values, save });
+	useRevealSectionErrors(form);
 
 	return (
 		<Frame form={form}>
@@ -176,30 +214,45 @@ export function AuditOutilsSection(props: SectionRenderProps) {
 
 export function AuditContenusSection(props: SectionRenderProps) {
 	const { declaration } = props;
-	const { audit, readOnly, afterSave, Frame, showNotice, upsert } =
-		useAuditSubSection({
-			...props,
-			currentSubSection: "audit-contenus",
-			requiresRealised: true,
-			alwaysEditable: false,
-		});
+	const {
+		audit,
+		isSequential,
+		readOnly,
+		afterSave,
+		Frame,
+		showNotice,
+		upsert,
+	} = useAuditSubSection({
+		...props,
+		currentSubSection: "audit-contenus",
+		requiresRealised: true,
+		alwaysEditable: false,
+	});
 
 	const defaultValues = useMemo(
 		(): ZAuditContents => auditToContentsValues(audit),
 		[audit],
 	);
 
+	const save = (value: ZAuditContents) =>
+		upsert({
+			values: { compliantElements: value.compliantElements },
+			declarationId: declaration.id,
+		});
+
 	const form = useAppForm({
-		...auditContentsFormOptions,
-		defaultValues,
+		...(isSequential
+			? changeFormOptions(defaultValues, auditContents)
+			: submitFormOptions(defaultValues, auditContents)),
 		onSubmit: async ({ value }) => {
-			await upsert({
-				values: { compliantElements: value.compliantElements },
-				declarationId: declaration.id,
-			});
+			await save(value);
 			afterSave();
 		},
 	});
+
+	const values = useStore(form.store, (state) => state.values);
+	useAutosave({ enabled: isSequential && !showNotice, values, save });
+	useRevealSectionErrors(form);
 
 	return (
 		<Frame form={form}>
@@ -214,34 +267,49 @@ export function AuditContenusSection(props: SectionRenderProps) {
 
 export function AuditNonConformitesSection(props: SectionRenderProps) {
 	const { declaration } = props;
-	const { audit, readOnly, afterSave, Frame, showNotice, upsert } =
-		useAuditSubSection({
-			...props,
-			currentSubSection: "audit-non-conformites",
-			requiresRealised: true,
-			alwaysEditable: false,
-		});
+	const {
+		audit,
+		isSequential,
+		readOnly,
+		afterSave,
+		Frame,
+		showNotice,
+		upsert,
+	} = useAuditSubSection({
+		...props,
+		currentSubSection: "audit-non-conformites",
+		requiresRealised: true,
+		alwaysEditable: false,
+	});
 
 	const defaultValues = useMemo(
 		(): ZAuditNonConformities => auditToNonConformitiesValues(audit),
 		[audit],
 	);
 
+	const save = (value: ZAuditNonConformities) =>
+		upsert({
+			values: {
+				nonCompliantElements: value.nonCompliantElements,
+				optionalElements: value.optionalElements,
+				disproportionnedCharge: value.disproportionnedCharge,
+			},
+			declarationId: declaration.id,
+		});
+
 	const form = useAppForm({
-		...auditNonConformitiesFormOptions,
-		defaultValues,
+		...(isSequential
+			? changeFormOptions(defaultValues, auditNonConformities)
+			: submitFormOptions(defaultValues, auditNonConformities)),
 		onSubmit: async ({ value }) => {
-			await upsert({
-				values: {
-					nonCompliantElements: value.nonCompliantElements,
-					optionalElements: value.optionalElements,
-					disproportionnedCharge: value.disproportionnedCharge,
-				},
-				declarationId: declaration.id,
-			});
+			await save(value);
 			afterSave();
 		},
 	});
+
+	const values = useStore(form.store, (state) => state.values);
+	useAutosave({ enabled: isSequential && !showNotice, values, save });
+	useRevealSectionErrors(form);
 
 	return (
 		<Frame form={form}>

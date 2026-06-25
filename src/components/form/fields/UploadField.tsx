@@ -4,6 +4,7 @@ import {
 	getFieldState,
 	useFieldContext,
 } from "~/forms/context";
+import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 interface UploadFieldProps extends DefaultFieldProps, UploadProps {}
@@ -25,10 +26,8 @@ export function UploadField(props: UploadFieldProps) {
 	return (
 		<Upload
 			{...commonProps}
-			state={field.state.meta.errors.length > 0 ? "error" : "default"}
-			stateRelatedMessage={
-				getFieldState(field.state.meta.errors).stateRelatedMessage
-			}
+			label={withRequiredMark(commonProps.label, required)}
+			{...getFieldState(field.state.meta)}
 			nativeInputProps={{
 				name: field.name,
 				onChange: (e) =>

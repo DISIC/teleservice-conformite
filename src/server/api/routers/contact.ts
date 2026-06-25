@@ -1,5 +1,5 @@
 import z from "zod";
-import { contact } from "~/forms/contact/contactSchema";
+import { contactDraft } from "~/forms/contact/contactSchema";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { hasAccessToDeclaration } from "../utils/payload-helper";
 import { recalculateDeclarationStatus } from "../utils/publish-comparison";
@@ -13,7 +13,7 @@ export const contactRouter = createTRPCRouter({
 	upsert: userProtectedProcedure
 		.input(
 			z.object({
-				values: contact,
+				values: contactDraft,
 				declarationId: z.number(),
 			}),
 		)

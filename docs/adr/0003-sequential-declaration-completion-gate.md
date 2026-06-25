@@ -1,7 +1,9 @@
 # ADR-0003: Sequential completion mode + declaration-wide validation gate
 
-- **Status:** Accepted
-- **Date:** 2026-06-09 (gate scope widened 2026-06-10, ADR-0004; gate predicate extended 2026-06-14, ADR-0005)
+- **Status:** Accepted — partly superseded by ADR-0006
+- **Date:** 2026-06-09 (gate scope widened 2026-06-10, ADR-0004; gate predicate extended 2026-06-14, ADR-0005; save-on-advance + per-section save validation retired 2026-06-18, ADR-0006)
+
+> **Superseded in part (ADR-0006, 2026-06-18):** sequential mode no longer commits-and-advances ("Enregistrer et suivant") or validates per section on save. Edits **autosave** as they happen, the footer is plain "Suivant", and the declaration-wide gate is the only completeness check. The **mode split** (sequential vs. standalone) and the **gate** itself (described below) are unchanged; ignore the "Enregistrer et suivant" footer behavior and the "second validation entry point" consequence — see ADR-0006.
 
 > Two later refinements are folded into the body below so it reads as the current gate:
 >

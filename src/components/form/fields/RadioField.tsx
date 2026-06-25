@@ -8,6 +8,7 @@ import {
 	getFieldState,
 	useFieldContext,
 } from "~/forms/context";
+import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 type TValue = string | boolean;
@@ -38,7 +39,8 @@ export function RadioField(props: RadioFieldProps) {
 	return (
 		<RadioButtons
 			{...commonProps}
-			{...getFieldState(field.state.meta.errors)}
+			{...getFieldState(field.state.meta)}
+			legend={withRequiredMark(commonProps.legend, required)}
 			name={field.name}
 			className={commonProps.className ?? fr.cx("fr-mb-0")}
 			options={commonProps.options.map(

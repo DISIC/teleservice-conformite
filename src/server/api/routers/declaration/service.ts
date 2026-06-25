@@ -260,15 +260,24 @@ export const updateDeclaration = async (
 
 	await hasAccessToDeclaration({ payload, declarationId, userId });
 
-	await payload.update({
-		collection: "entities",
-		id: entityId,
-		data: {
-			name: organisation,
-			kind:
-				kindOptions.find((field) => field.label === domain)?.value ?? "none",
-		},
-	});
+	// Sequential autosave persists partials: skip empty required fields so a
+	// cleared value keeps its previously saved content instead of blanking it.
+	const entityData = {
+		...(organisation ? { name: organisation } : {}),
+		...(domain
+			? {
+					kind:
+						kindOptions.find((field) => field.label === domain)?.value ??
+						"none",
+				}
+			: {}),
+	};
+	if (Object.keys(entityData).length > 0)
+		await payload.update({
+			collection: "entities",
+			id: entityId,
+			data: entityData,
+		});
 
 	const newStatus = await recalculateDeclarationStatus(payload, declarationId, {
 		declarationFields: { name, app_kind: kind, url },
@@ -278,7 +287,7 @@ export const updateDeclaration = async (
 		collection: "declarations",
 		id: declarationId,
 		data: {
-			name,
+			...(name ? { name } : {}),
 			app_kind: kind,
 			mobile_platform: kind === "mobile_app" ? mobilePlatform : null,
 			url,

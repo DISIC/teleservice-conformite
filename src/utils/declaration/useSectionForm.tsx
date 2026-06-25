@@ -2,13 +2,12 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { type ReactNode, useCallback, useState } from "react";
 import { useCommonStyles } from "~/components/ui/commonStyles";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { SectionShell } from "~/components/declaration/sections/Shell";
 import type { EditingMode } from "~/utils/declaration/status";
 
 type UseSectionFormArgs = {
 	title: string;
-	declaration: PopulatedDeclaration;
 	isEditable: boolean;
 	initialReadOnly?: boolean;
 	/** Pin read-only even in sequential mode; used for Library-linked groups. */
@@ -35,6 +34,9 @@ type FrameProps = {
 	form: FrameForm;
 	children: ReactNode;
 	before?: ReactNode;
+	/** Suppress the required-fields caption when the body has no editable fields
+	 * (e.g. a Library-linked shared entity rendered as a read-only card). */
+	hideRequiredNotice?: boolean;
 };
 
 /**
@@ -47,7 +49,6 @@ type FrameProps = {
  */
 export function useSectionForm({
 	title,
-	declaration,
 	isEditable,
 	initialReadOnly,
 	locked,
@@ -66,8 +67,8 @@ export function useSectionForm({
 		locked ? true : isSequential ? false : (initialReadOnly ?? isEditable),
 	);
 
-	const enterEdit = () => setReadOnly(false);
-	const exitEdit = () => setReadOnly(true);
+	const enterEdit = useCallback(() => setReadOnly(false), []);
+	const exitEdit = useCallback(() => setReadOnly(true), []);
 
 	// Sequential mode advances on a clean save; standalone returns to read-only.
 	const afterSave = useCallback(() => {
@@ -80,13 +81,13 @@ export function useSectionForm({
 		setReadOnly(true);
 	}, [isSequential, nextHref, router]);
 
+	// These deps must stay stable during autosave: a change remounts `Frame` and
+	// wipes in-progress field validation.
 	const Frame = useCallback(
-		({ form, children, before }: FrameProps) => (
+		({ form, children, before, hideRequiredNotice }: FrameProps) => (
 			<>
 				<Head>
-					<title>
-						{title} - Déclaration de {declaration.name} - Téléservice Conformité
-					</title>
+					<title>{title} - Téléservice Conformité</title>
 				</Head>
 				<SectionShell
 					title={title}
@@ -112,6 +113,7 @@ export function useSectionForm({
 						}}
 						onInvalid={() => form.validate("submit")}
 					>
+						{!readOnly && !hideRequiredNotice && <RequiredFieldsNotice />}
 						<div className={commonClasses.partStack}>{children}</div>
 					</form>
 				</SectionShell>
@@ -119,7 +121,6 @@ export function useSectionForm({
 		),
 		[
 			title,
-			declaration.name,
 			isEditable,
 			readOnly,
 			isSaving,
@@ -128,6 +129,8 @@ export function useSectionForm({
 			hideActions,
 			mode,
 			commonClasses.partStack,
+			enterEdit,
+			exitEdit,
 		],
 	);
 
