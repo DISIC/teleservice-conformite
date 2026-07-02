@@ -66,4 +66,7 @@ Shared field UI (`Part`, `TextField`, `ActionButtons`, `RequiredField`) lives in
 - `payload/payload-types.ts` (831 lines, generated) and `payload/migrations/` — never edit; grep for a type name if needed.
 - `src/app/` — Payload admin + better-auth routes only; the entire app surface is Pages Router.
 - `pages/dashboard/testalbert.tsx` — debug page for the Albert extraction.
-- There are no tests in the repo; verify pure logic (`validateDeclaration`, schemas, `deriveSourceMode`) by reading its callers, not by searching for specs.
+
+## Verifying a change
+
+`yarn test` (vitest, no DB or browser) covers the pure seams: `validateDeclaration`, `getDeclarationState`, `getDeclarationStatus`/`getEditingMode`, `deriveSourceMode`, the publish snapshot (`extractDeclarationContentToPublish`), the Section registry helpers, and every section schema + its `declarationTo<X>Values` mapper. Tests live in `src/tests/` — `declaration/` for the gate/state/registry/snapshot logic, `forms/` for the section schemas, one file per module under test, named after it; `completeDeclaration()` in `src/tests/declaration/declaration.fixture.ts` builds a minimal gate-passing Brouillon — override only your delta. Anything involving hooks, autosave timing, or tRPC still needs a manual run (`yarn dev`).
