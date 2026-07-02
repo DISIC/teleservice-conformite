@@ -1,5 +1,6 @@
 import { formOptions } from "@tanstack/react-form";
 import z from "zod";
+import { optionalUrlIssue, requiredIssue } from "~/forms/rules";
 import type { Contact } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
@@ -13,18 +14,8 @@ const contactFields = z.object({
 });
 
 export const contact = contactFields.superRefine((data, ctx) => {
-	if (!data.name)
-		ctx.addIssue({
-			code: "custom",
-			path: ["name"],
-			message: "Le nom du contact est requis",
-		});
-	if (data.url && !z.url().safeParse(data.url).success)
-		ctx.addIssue({
-			code: "custom",
-			path: ["url"],
-			message: "Lien invalide (ex: https://www.example.fr)",
-		});
+	requiredIssue(ctx, ["name"], data.name, "Le nom du contact est requis");
+	optionalUrlIssue(ctx, ["url"], data.url);
 	if (data.email && !z.email().safeParse(data.email).success)
 		ctx.addIssue({
 			code: "custom",

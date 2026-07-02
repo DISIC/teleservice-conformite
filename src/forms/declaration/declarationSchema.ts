@@ -1,5 +1,6 @@
 import z from "zod";
 import { submitFormOptions } from "~/forms/formOptions";
+import { optionalUrlIssue, requiredIssue } from "~/forms/rules";
 import { appKindOptions, mobilePlatformOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
@@ -23,30 +24,25 @@ export type ZDeclarationGeneral = z.infer<typeof declarationGeneral>;
 export const declarationGeneralRefined = declarationGeneral.superRefine(
 	(data, ctx) => {
 		const g = data.general;
-		if (!g.organisation)
-			ctx.addIssue({
-				code: "custom",
-				path: ["general", "organisation"],
-				message: "Le nom de l'organisation est requis",
-			});
-		if (!g.name)
-			ctx.addIssue({
-				code: "custom",
-				path: ["general", "name"],
-				message: "Le nom de l'application est requis",
-			});
-		if (!g.domain)
-			ctx.addIssue({
-				code: "custom",
-				path: ["general", "domain"],
-				message: "Le domaine est requis",
-			});
-		if (g.url && !z.url().safeParse(g.url).success)
-			ctx.addIssue({
-				code: "custom",
-				path: ["general", "url"],
-				message: "Lien invalide (ex: https://www.example.fr)",
-			});
+		requiredIssue(
+			ctx,
+			["general", "organisation"],
+			g.organisation,
+			"Le nom de l'organisation est requis",
+		);
+		requiredIssue(
+			ctx,
+			["general", "name"],
+			g.name,
+			"Le nom de l'application est requis",
+		);
+		requiredIssue(
+			ctx,
+			["general", "domain"],
+			g.domain,
+			"Le domaine est requis",
+		);
+		optionalUrlIssue(ctx, ["general", "url"], g.url);
 		if (g.kind === "mobile_app" && !g.mobilePlatform)
 			ctx.addIssue({
 				code: "custom",
