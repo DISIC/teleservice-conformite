@@ -101,13 +101,20 @@ export function SourceModeSection<TValues, TForm>({
 		...sectionFormOptions(isSequential, defaultValues, schema),
 		onSubmit: async ({ value }) => {
 			const override = isCustomEdit ? await commit(value) : undefined;
-			if (onPublishAttempt && mode === "sequential") {
+			if (onPublishAttempt && isSequential) {
 				attemptPublish(override);
 				return;
 			}
 			afterSave();
 		},
 	});
+
+	// The publish gate is declaration-wide, so it must not stall on this section's
+	// own validators; flush any pending custom edit so it validates fresh values.
+	const publish = async () => {
+		const override = isCustomEdit ? await commit(form.state.values) : undefined;
+		attemptPublish(override);
+	};
 
 	useLiveSectionForm(form, {
 		mode,
@@ -182,6 +189,7 @@ export function SourceModeSection<TValues, TForm>({
 	return (
 		<Frame
 			form={form}
+			onPublish={onPublishAttempt && isSequential ? publish : undefined}
 			hideRequiredNotice={bodyMode !== "custom"}
 			before={
 				showRadio ? (

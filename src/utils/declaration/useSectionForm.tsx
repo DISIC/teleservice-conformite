@@ -34,6 +34,8 @@ type FrameProps = {
 	form: FrameForm;
 	children: ReactNode;
 	before?: ReactNode;
+	/** Terminal publish CTA; bypasses the section form submit when provided. */
+	onPublish?: () => void;
 	/** Suppress the required-fields caption when the body has no editable fields
 	 * (e.g. a Library-linked shared entity rendered as a read-only card). */
 	hideRequiredNotice?: boolean;
@@ -84,7 +86,7 @@ export function useSectionForm({
 	// These deps must stay stable during autosave: a change remounts `Frame` and
 	// wipes in-progress field validation.
 	const Frame = useCallback(
-		({ form, children, before, hideRequiredNotice }: FrameProps) => (
+		({ form, children, before, hideRequiredNotice, onPublish }: FrameProps) => (
 			<>
 				<Head>
 					<title>{title} - Téléservice Conformité</title>
@@ -99,6 +101,7 @@ export function useSectionForm({
 						exitEdit();
 					}}
 					onSave={() => form.handleSubmit()}
+					onPublish={onPublish}
 					isSaving={isSaving}
 					prevHref={prevHref}
 					nextHref={nextHref}

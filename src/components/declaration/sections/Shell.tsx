@@ -21,6 +21,8 @@ export type SectionShellProps = {
 	onEnterEdit: () => void;
 	onCancelEdit: () => void;
 	onSave: () => void;
+	/** Terminal publish CTA; bypasses the section form submit when provided. */
+	onPublish?: () => void;
 	isSaving?: boolean;
 	prevHref: string | null;
 	nextHref: string | null;
@@ -47,6 +49,7 @@ export function SectionShell({
 	onEnterEdit,
 	onCancelEdit,
 	onSave,
+	onPublish,
 	isSaving = false,
 	prevHref,
 	nextHref,
@@ -131,7 +134,7 @@ export function SectionShell({
 							priority="primary"
 							iconId="fr-icon-upload-fill"
 							iconPosition="left"
-							onClick={onSave}
+							onClick={onPublish ?? onSave}
 							disabled={isSaving}
 						>
 							Prévisualiser et publier
