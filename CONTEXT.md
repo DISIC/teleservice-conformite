@@ -184,6 +184,14 @@ The selected option is **derived from persisted state**, not stored as its own f
 
 **See also:** [[library|Library]], [[à-compléter-à-vérifier|À compléter / À vérifier]].
 
+### Library section
+
+The kind axis shared by the two Library-sourced [[section]]s — `contact` and `schema`. The symmetry Invariant is expressed structurally, not by convention: every shared flow (custom upsert, link/detach, parent CRUD + propagation, delete-detach) is written once, kind-parametrically — server-side in `server/api/routers/librarySection.ts`, where two adapters carry the per-kind field mapping and the `contact`/`schema`/`library` routers only instantiate; client-side in `SourceModeSection` + `useSourceMode`/`useLibraryLink`, with `applyLibrarySection` folding mutation results into page state. Schema's `skipped` is the single per-kind extension (`schema.skip` sits beside the shared upsert). A rule added for one kind belongs in the shared module — reintroducing twin per-kind implementations is a regression.
+
+**Avoid:** "Library item" for this axis — that names a parent row in the Library, not the Section kind.
+
+**See also:** [[library|Library]], [[source mode]], [[section]].
+
 ### Surfaces
 
 A Declaration is reached through two distinct route trees, kept separate on purpose:
