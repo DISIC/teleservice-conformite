@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useStore } from "@tanstack/react-form";
 import { api } from "~/lib/api";
 import {
 	AUDIT_SUB_SECTIONS,
@@ -7,7 +6,7 @@ import {
 } from "~/utils/declaration/auditSubSections";
 import { isSectionToComplete } from "~/utils/declaration/sections";
 import { useAppForm } from "~/forms/context";
-import { changeFormOptions, submitFormOptions } from "~/forms/formOptions";
+import { sectionFormOptions } from "~/forms/formOptions";
 import {
 	AuditGeneralForm,
 	CompliantElementsForm,
@@ -28,8 +27,7 @@ import {
 	type ZAuditNonConformities,
 	type ZAuditTools,
 } from "~/forms/audit/auditSchema";
-import { useAutosave } from "~/utils/declaration/useAutosave";
-import { useRevealSectionErrors } from "~/utils/declaration/useRevealSectionErrors";
+import { useLiveSectionForm } from "~/utils/declaration/useLiveSectionForm";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
@@ -134,24 +132,20 @@ export function AuditGeneralSection(props: SectionRenderProps) {
 		});
 
 	const form = useAppForm({
-		...(isSequential
-			? changeFormOptions(defaultValues, auditGeneral)
-			: submitFormOptions(defaultValues, auditGeneral)),
+		...sectionFormOptions(isSequential, defaultValues, auditGeneral),
 		onSubmit: async ({ value }) => {
 			await save(value);
 			afterSave();
 		},
 	});
 
-	const values = useStore(form.store, (state) => state.values);
 	// Hold autosave until the realisation question is answered: an undefined
 	// answer would otherwise persist as realised.
-	useAutosave({
-		enabled: isSequential && values.isAuditRealised !== undefined,
-		values,
+	useLiveSectionForm(form, {
+		mode: props.mode,
 		save,
+		autosaveWhen: (values) => values.isAuditRealised !== undefined,
 	});
-	useRevealSectionErrors(form);
 
 	return (
 		<Frame form={form}>
@@ -192,18 +186,18 @@ export function AuditOutilsSection(props: SectionRenderProps) {
 		});
 
 	const form = useAppForm({
-		...(isSequential
-			? changeFormOptions(defaultValues, auditTools)
-			: submitFormOptions(defaultValues, auditTools)),
+		...sectionFormOptions(isSequential, defaultValues, auditTools),
 		onSubmit: async ({ value }) => {
 			await save(value);
 			afterSave();
 		},
 	});
 
-	const values = useStore(form.store, (state) => state.values);
-	useAutosave({ enabled: isSequential && !showNotice, values, save });
-	useRevealSectionErrors(form);
+	useLiveSectionForm(form, {
+		mode: props.mode,
+		save,
+		autosaveWhen: () => !showNotice,
+	});
 
 	return (
 		<Frame form={form}>
@@ -241,18 +235,18 @@ export function AuditContenusSection(props: SectionRenderProps) {
 		});
 
 	const form = useAppForm({
-		...(isSequential
-			? changeFormOptions(defaultValues, auditContents)
-			: submitFormOptions(defaultValues, auditContents)),
+		...sectionFormOptions(isSequential, defaultValues, auditContents),
 		onSubmit: async ({ value }) => {
 			await save(value);
 			afterSave();
 		},
 	});
 
-	const values = useStore(form.store, (state) => state.values);
-	useAutosave({ enabled: isSequential && !showNotice, values, save });
-	useRevealSectionErrors(form);
+	useLiveSectionForm(form, {
+		mode: props.mode,
+		save,
+		autosaveWhen: () => !showNotice,
+	});
 
 	return (
 		<Frame form={form}>
@@ -298,18 +292,18 @@ export function AuditNonConformitesSection(props: SectionRenderProps) {
 		});
 
 	const form = useAppForm({
-		...(isSequential
-			? changeFormOptions(defaultValues, auditNonConformities)
-			: submitFormOptions(defaultValues, auditNonConformities)),
+		...sectionFormOptions(isSequential, defaultValues, auditNonConformities),
 		onSubmit: async ({ value }) => {
 			await save(value);
 			afterSave();
 		},
 	});
 
-	const values = useStore(form.store, (state) => state.values);
-	useAutosave({ enabled: isSequential && !showNotice, values, save });
-	useRevealSectionErrors(form);
+	useLiveSectionForm(form, {
+		mode: props.mode,
+		save,
+		autosaveWhen: () => !showNotice,
+	});
 
 	return (
 		<Frame form={form}>

@@ -1,17 +1,15 @@
 import { useMemo } from "react";
-import { useStore } from "@tanstack/react-form";
 import { api } from "~/lib/api";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
 import { useAppForm } from "~/forms/context";
-import { changeFormOptions, submitFormOptions } from "~/forms/formOptions";
+import { sectionFormOptions } from "~/forms/formOptions";
 import { DeclarationGeneralForm } from "~/forms/declaration/declarationForm";
 import {
 	declarationGeneralRefined,
 	declarationToGeneralValues,
 	type ZDeclarationGeneral,
 } from "~/forms/declaration/declarationSchema";
-import { useAutosave } from "~/utils/declaration/useAutosave";
-import { useRevealSectionErrors } from "~/utils/declaration/useRevealSectionErrors";
+import { useLiveSectionForm } from "~/utils/declaration/useLiveSectionForm";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
@@ -58,18 +56,18 @@ export function InfosSection({
 		});
 
 	const form = useAppForm({
-		...(isSequential
-			? changeFormOptions(defaultValues, declarationGeneralRefined)
-			: submitFormOptions(defaultValues, declarationGeneralRefined)),
+		...sectionFormOptions(
+			isSequential,
+			defaultValues,
+			declarationGeneralRefined,
+		),
 		onSubmit: async ({ value }) => {
 			await save(value);
 			afterSave();
 		},
 	});
 
-	const values = useStore(form.store, (state) => state.values);
-	useAutosave({ enabled: isSequential, values, save });
-	useRevealSectionErrors(form);
+	useLiveSectionForm(form, { mode, save });
 
 	return (
 		<Frame form={form}>

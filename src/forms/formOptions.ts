@@ -27,5 +27,17 @@ export function changeFormOptions<TValues>(
 	});
 }
 
+// A Section form's validation trigger follows the editing mode: live onChange
+// while sequential autosave persists, parse-on-submit in standalone.
+export function sectionFormOptions<TValues>(
+	isSequential: boolean,
+	defaultValues: TValues,
+	schema: StandardSchemaV1<TValues, unknown>,
+) {
+	return isSequential
+		? changeFormOptions(defaultValues, schema)
+		: submitFormOptions(defaultValues, schema);
+}
+
 // Coalesces a burst of keystrokes into a single save.
 export const AUTOSAVE_DEBOUNCE_MS = 1500;

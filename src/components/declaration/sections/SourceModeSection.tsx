@@ -4,19 +4,18 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { AuditNotice } from "~/components/ui/AuditNotice";
-import { type StandardSchemaV1, useStore } from "@tanstack/react-form";
+import type { StandardSchemaV1 } from "@tanstack/react-form";
 import { type ReactNode, useEffect, useMemo, useRef } from "react";
 import { tss } from "tss-react";
 import { useAppForm } from "~/forms/context";
-import { changeFormOptions, submitFormOptions } from "~/forms/formOptions";
+import { sectionFormOptions } from "~/forms/formOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import type { EditingMode } from "~/utils/declaration/status";
 import {
 	SOURCE_MODE_FIELD,
 	type SourceModeKind,
 } from "~/utils/declaration/sourceMode";
-import { useAutosave } from "~/utils/declaration/useAutosave";
-import { useRevealSectionErrors } from "~/utils/declaration/useRevealSectionErrors";
+import { useLiveSectionForm } from "~/utils/declaration/useLiveSectionForm";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
 import { useSourceMode } from "~/utils/declaration/useSourceMode";
 import { usePublishAttempt } from "~/utils/declaration/usePublishAttempt";
@@ -99,9 +98,7 @@ export function SourceModeSection<TValues, TForm>({
 	const isCustomEdit = !isLinked && effectiveMode === "custom";
 
 	const form = useAppForm({
-		...(isSequential
-			? changeFormOptions(defaultValues, schema)
-			: submitFormOptions(defaultValues, schema)),
+		...sectionFormOptions(isSequential, defaultValues, schema),
 		onSubmit: async ({ value }) => {
 			const override = isCustomEdit ? await commit(value) : undefined;
 			if (onPublishAttempt && mode === "sequential") {
@@ -112,9 +109,11 @@ export function SourceModeSection<TValues, TForm>({
 		},
 	});
 
-	const values = useStore(form.store, (state) => state.values);
-	useAutosave({ enabled: isSequential && isCustomEdit, values, save: commit });
-	useRevealSectionErrors(form);
+	useLiveSectionForm(form, {
+		mode,
+		save: commit,
+		autosaveWhen: () => isCustomEdit,
+	});
 
 	// Realign the form only when a Library link/unlink/skip swaps the persisted
 	// source; a custom edit keeps its own live state (autosave + validation).
