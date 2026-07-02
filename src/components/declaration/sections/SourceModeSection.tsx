@@ -13,7 +13,7 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import type { EditingMode } from "~/utils/declaration/status";
 import {
 	SOURCE_MODE_FIELD,
-	type SourceModeKind,
+	type LibrarySectionKind,
 } from "~/utils/declaration/sourceMode";
 import { useLiveSectionForm } from "~/utils/declaration/useLiveSectionForm";
 import { useSectionForm } from "~/utils/declaration/useSectionForm";
@@ -29,7 +29,7 @@ export type SourceModeOption = {
 };
 
 type SourceModeSectionProps<TValues, TForm> = {
-	kind: SourceModeKind;
+	kind: LibrarySectionKind;
 	title: string;
 	declaration: PopulatedDeclaration;
 	onDeclarationChange: DeclarationChangeFn;

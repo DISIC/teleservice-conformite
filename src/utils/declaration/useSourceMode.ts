@@ -5,7 +5,7 @@ import type { DeclarationChangeFn } from "~/components/declaration/sections/Cont
 import {
 	applyLibrarySection,
 	deriveSourceMode,
-	type SourceModeKind,
+	type LibrarySectionKind,
 	type SourceModeValue,
 } from "./sourceMode";
 import { type LibraryLink, useLibraryLink } from "./useLibraryLink";
@@ -25,7 +25,7 @@ export type SourceModeController = {
 };
 
 type UseSourceModeArgs = {
-	kind: SourceModeKind;
+	kind: LibrarySectionKind;
 	declaration: PopulatedDeclaration;
 	onDeclarationChange: DeclarationChangeFn;
 };

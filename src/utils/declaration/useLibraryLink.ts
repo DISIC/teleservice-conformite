@@ -3,7 +3,7 @@ import { declarationToContactValues } from "~/forms/contact/contactSchema";
 import { declarationToSchemaValues } from "~/forms/schema/schemaSchema";
 import { api } from "~/lib/api";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { applyLibrarySection, type SourceModeKind } from "./sourceMode";
+import { applyLibrarySection, type LibrarySectionKind } from "./sourceMode";
 
 export type LibraryLink = {
 	label: string;
@@ -16,13 +16,13 @@ export type LibraryLink = {
 };
 
 type UseLibraryLinkArgs = {
-	kind: SourceModeKind;
+	kind: LibrarySectionKind;
 	declaration: PopulatedDeclaration;
 	onDeclarationChange: DeclarationChangeFn;
 };
 
 const LIBRARY_COPY: Record<
-	SourceModeKind,
+	LibrarySectionKind,
 	{ label: string; placeholder: string }
 > = {
 	contact: {

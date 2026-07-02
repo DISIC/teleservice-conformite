@@ -10,10 +10,8 @@ import {
 export const schemaRouter = createTRPCRouter({
 	upsert: librarySectionUpsert("schema", schemaDraft),
 
-	/**
-	 * Skip mode: record the declarant's deliberate "no schema" choice. Clears any
-	 * content and Library link. Schema-only — a Contact is always required to publish.
-	 */
+	/** Skip: the declarant's deliberate "no schema" choice clears content and
+	 *  Library link. Schema-only; a Contact is always required to publish. */
 	skip: userProtectedProcedure
 		.input(z.object({ declarationId: z.number() }))
 		.mutation(async ({ input, ctx }) => {

@@ -79,10 +79,8 @@ export async function getOwnedLibraryItem(
 	return item;
 }
 
-/**
- * Every declaration-side write of a contact/schema group lands here: patch the
- * group on the declarations row, then recompute the published/modified status.
- */
+/** Single write path for a declaration's contact/schema group — no save may
+ *  skip the status recompute. */
 export async function writeLibrarySectionGroup<K extends LibrarySectionKind>(
 	payload: Payload,
 	declarationId: number,
@@ -136,11 +134,8 @@ async function propagateToLinkedDeclarations<K extends LibrarySectionKind>(
 	}
 }
 
-/**
- * Custom-mode save: writes the group inline on the declaration row and detaches
- * any Library parent. Linking to a Library parent is `libraryParentProcedures`'s
- * `link`; the lenient draft input is the ADR-0006 autosave contract.
- */
+/** Custom-mode save: detaches any Library parent. The draft input stays
+ *  lenient so half-filled autosaves persist; the publish gate rechecks. */
 export function librarySectionUpsert<
 	K extends LibrarySectionKind,
 	TValues extends Partial<SectionGroup<K>>,
