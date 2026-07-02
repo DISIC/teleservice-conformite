@@ -1,4 +1,3 @@
-import { TRPCError } from "@trpc/server";
 import type { Payload } from "payload";
 import { describe, expect, it, vi } from "vitest";
 import { completeDeclaration } from "./declaration.fixture";
@@ -51,14 +50,28 @@ describe("publishDeclaration", () => {
 		);
 	});
 
+	it("gates a Modifiée republish too — there is no fast path", async () => {
+		const { payload, update } = stubPayload(
+			completeDeclaration({
+				publishedContent: '{"name":"previous snapshot"}',
+				contact: null,
+			} as never),
+		);
+
+		await expect(publishDeclaration(payload, 1, 1)).rejects.toMatchObject({
+			code: "PRECONDITION_FAILED",
+		});
+		expect(update).not.toHaveBeenCalled();
+	});
+
 	it("rejects a user without an approved access right, without writing", async () => {
 		const { payload, update } = stubPayload(completeDeclaration(), {
 			hasAccess: false,
 		});
 
-		await expect(publishDeclaration(payload, 1, 1)).rejects.toBeInstanceOf(
-			TRPCError,
-		);
+		await expect(publishDeclaration(payload, 1, 1)).rejects.toMatchObject({
+			code: "UNAUTHORIZED",
+		});
 		expect(update).not.toHaveBeenCalled();
 	});
 });
