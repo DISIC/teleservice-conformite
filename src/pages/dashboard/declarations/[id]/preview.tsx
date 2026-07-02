@@ -1,5 +1,6 @@
 import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import config from "@payload-config";
 import type {
@@ -8,8 +9,10 @@ import type {
 	Redirect,
 } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { getPayload } from "payload";
+import { useState } from "react";
 import { tss } from "tss-react";
 import PublishedTemplate, {
 	extractDeclarationContentToPublish,
@@ -42,25 +45,24 @@ export default function DeclarationPreviewPage({
 	const publishedDeclarationContent: PublishedDeclaration =
 		extractDeclarationContentToPublish(declaration);
 
-	const { mutateAsync: publishDeclaration } =
-		api.declaration.updatePublishedContent.useMutation({
-			onSuccess: () => {
-				push(`/dashboard/declarations/${declaration.id}?published=true`);
-			},
-			onError: (error) => {
-				console.error("Error publishing declaration:", error);
-			},
-		});
+	const [publishError, setPublishError] = useState<
+		"incomplete" | "generic" | null
+	>(null);
+
+	const { mutate: publishDeclaration } = api.declaration.publish.useMutation({
+		onSuccess: () => {
+			push(`/dashboard/declarations/${declaration.id}?published=true`);
+		},
+		onError: (error) => {
+			setPublishError(
+				error.data?.code === "PRECONDITION_FAILED" ? "incomplete" : "generic",
+			);
+		},
+	});
 
 	const onPublish = () => {
-		try {
-			publishDeclaration({
-				id: declaration.id,
-				content: JSON.stringify(publishedDeclarationContent),
-			});
-		} catch {
-			return;
-		}
+		setPublishError(null);
+		publishDeclaration({ id: declaration.id });
 	};
 
 	return (
@@ -85,6 +87,27 @@ export default function DeclarationPreviewPage({
 							mode="preview"
 						/>
 					</div>
+					{publishError && (
+						<Alert
+							className={fr.cx("fr-mb-3v")}
+							severity="error"
+							title="Publication impossible"
+							description={
+								publishError === "incomplete" ? (
+									<>
+										La déclaration ne peut pas être publiée car elle est
+										incomplète.{" "}
+										<Link href={`/dashboard/declarations/${declaration.id}`}>
+											Retournez à la déclaration
+										</Link>{" "}
+										pour compléter les sections manquantes.
+									</>
+								) : (
+									"Une erreur est survenue lors de la publication. Veuillez réessayer."
+								)
+							}
+						/>
+					)}
 					<div className={classes.buttonsContainer}>
 						<Button
 							priority="tertiary"
