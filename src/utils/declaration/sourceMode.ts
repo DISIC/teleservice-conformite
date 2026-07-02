@@ -19,6 +19,20 @@ function hasParent(parent: unknown): boolean {
 	return !!parent && typeof parent === "object" && "id" in parent;
 }
 
+/** Autosave persists partial drafts, so any content field — not `name` alone —
+ *  marks the group as an in-progress custom edit. */
+function hasCustomContent(
+	kind: SourceModeKind,
+	declaration: PopulatedDeclaration,
+): boolean {
+	if (kind === "schema") {
+		const schema = declaration.schema;
+		return !!(schema?.name || schema?.url || schema?.actionPlanUrls?.length);
+	}
+	const contact = declaration.contact;
+	return !!(contact?.name || contact?.email || contact?.url);
+}
+
 /**
  * Derives the selected radio option from persisted state — no stored `mode`.
  * `null` means Undecided: nothing chosen yet, so the publish gate must block.
@@ -27,10 +41,9 @@ export function deriveSourceMode(
 	kind: SourceModeKind,
 	declaration: PopulatedDeclaration,
 ): SourceModeValue | null {
-	const group = declaration[kind];
-	if (hasParent(group?.parent)) return "linked";
+	if (hasParent(declaration[kind]?.parent)) return "linked";
 	if (kind === "schema" && declaration.schema?.skipped) return "skipped";
-	if (group?.name) return "custom";
+	if (hasCustomContent(kind, declaration)) return "custom";
 	return null;
 }
 

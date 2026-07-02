@@ -68,7 +68,7 @@ export const schemaFormOptions = submitFormOptions(
 export function declarationToSchemaValues(
 	declaration: PopulatedDeclaration,
 ): ZSchema {
-	if (!declaration.schema?.name) return schemaDefaultValues;
+	if (!declaration.schema) return schemaDefaultValues;
 	return {
 		name: declaration.schema.name ?? "",
 		url: declaration.schema.url ?? "",

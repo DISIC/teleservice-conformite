@@ -93,9 +93,17 @@ export function SourceModeSection<TValues, TForm>({
 		[declaration, toValues],
 	);
 
-	// Only a Custom edit is this section's own work to persist; Linked content is
-	// Library-synced and Skipped has nothing to save.
-	const isCustomEdit = !isLinked && effectiveMode === "custom";
+	const hasLibraryItems = libraryLink.items.length > 0;
+	const visibleOptions = options.filter(
+		(option) => option.value !== "linked" || hasLibraryItems,
+	);
+	const showRadio = visibleOptions.length >= 2;
+	const bodyMode = showRadio ? effectiveMode : "custom";
+
+	// Only a rendered Custom form is this section's own work to persist; Linked
+	// content is Library-synced and Skipped has nothing to save. Keyed on what is
+	// rendered (`bodyMode`), so a collapsed radio still autosaves its bare form.
+	const isCustomEdit = !isLinked && bodyMode === "custom";
 
 	const form = useAppForm({
 		...sectionFormOptions(isSequential, defaultValues, schema),
@@ -129,15 +137,9 @@ export function SourceModeSection<TValues, TForm>({
 	useEffect(() => {
 		if (lastSourceKey.current === sourceKey) return;
 		lastSourceKey.current = sourceKey;
+		if (isCustomEdit) return;
 		form.reset(defaultValues);
-	}, [sourceKey, defaultValues, form]);
-
-	const hasLibraryItems = libraryLink.items.length > 0;
-	const visibleOptions = options.filter(
-		(option) => option.value !== "linked" || hasLibraryItems,
-	);
-	const showRadio = visibleOptions.length >= 2;
-	const bodyMode = showRadio ? effectiveMode : "custom";
+	}, [sourceKey, defaultValues, form, isCustomEdit]);
 
 	const body = (() => {
 		switch (bodyMode) {
