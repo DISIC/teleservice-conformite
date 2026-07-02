@@ -3,6 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-06-18
 - **Supersedes (in part):** ADR-0003 — the sequential footer's "Enregistrer et suivant" save-on-advance and per-section save-time validation are retired here. ADR-0003's mode split (sequential vs. standalone) and the declaration-wide gate concept survive.
+- **Amended 2026-06-26:** the onBlur/onChange split in Decision §1 ("Autosave, not save-on-advance") and §5 ("Per-field validation display is onBlur") was reversed to a **uniform debounced-onChange** model. Autosave watches reactive form values and commits one debounced save after edits settle — there is no per-field-type blur path. Validation runs on `onChange`, with display gated by `isTouched` so a pristine field stays quiet until first edited. The debounce supplies the "settle before committing" onBlur was meant to give, while uniform onChange drops per-field-type blur wiring and clears a field's error live as it is corrected. The rest of this ADR (defer-to-gate, lenient partials, plain "Suivant", async-gated publish) stands.
 
 ## Context
 
