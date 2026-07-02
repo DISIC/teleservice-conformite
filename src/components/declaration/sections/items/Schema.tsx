@@ -7,6 +7,7 @@ import {
 	type ZSchema,
 } from "~/forms/schema/schemaSchema";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
+import { applyLibrarySection } from "~/utils/declaration/sourceMode";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
 import { SourceModeSection, type SourceModeOption } from "../SourceModeSection";
@@ -49,6 +50,7 @@ export function SchemaSection({
 		api.schema.upsert.useMutation({
 			onError: logMutationError("upserting schema", declaration.id),
 		});
+	const applySchema = applyLibrarySection("schema", onDeclarationChange);
 
 	return (
 		<SourceModeSection<ZSchema, SchemaFormApi>
@@ -61,18 +63,11 @@ export function SchemaSection({
 			nextHref={nextHref}
 			schema={schemaForm}
 			toValues={declarationToSchemaValues}
-			commit={async (values) => {
-				const { data: schema, status } = await upsertSchema({
-					values,
-					declarationId: declaration.id,
-				});
-				onDeclarationChange((prev) => ({
-					...prev,
-					schema,
-					status: status ?? prev.status,
-				}));
-				return { schema };
-			}}
+			commit={async (values) =>
+				applySchema(
+					await upsertSchema({ values, declarationId: declaration.id }),
+				)
+			}
 			isSaving={isPending}
 			options={SCHEMA_OPTIONS}
 			renderForm={({ form, readOnly }) => (

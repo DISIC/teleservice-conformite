@@ -1,8 +1,9 @@
+import type { DeclarationChangeFn } from "~/components/declaration/sections/Content";
 import { declarationToContactValues } from "~/forms/contact/contactSchema";
 import { declarationToSchemaValues } from "~/forms/schema/schemaSchema";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import type { DeclarationChangeFn } from "~/components/declaration/sections/Content";
 import { api } from "~/lib/api";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { applyLibrarySection, type SourceModeKind } from "./sourceMode";
 
 export type LibraryLink = {
 	label: string;
@@ -15,9 +16,23 @@ export type LibraryLink = {
 };
 
 type UseLibraryLinkArgs = {
-	kind: "schema" | "contact";
+	kind: SourceModeKind;
 	declaration: PopulatedDeclaration;
 	onDeclarationChange: DeclarationChangeFn;
+};
+
+const LIBRARY_COPY: Record<
+	SourceModeKind,
+	{ label: string; placeholder: string }
+> = {
+	contact: {
+		label: "Utiliser un contact de votre bibliothèque",
+		placeholder: "Sélectionner un contact",
+	},
+	schema: {
+		label: "Utiliser un schéma de votre bibliothèque",
+		placeholder: "Sélectionner un schéma",
+	},
 };
 
 /** Reads the group's `parent` id (depth 0 → a number; defensive for objects). */
@@ -47,25 +62,8 @@ export function useLibraryLink({
 		enabled: kind === "contact",
 	});
 
-	const applySchema = (result: {
-		data: PopulatedDeclaration["schema"];
-		status: "published" | "unpublished" | null;
-	}) =>
-		onDeclarationChange((prev) => ({
-			...prev,
-			schema: result.data,
-			status: result.status ?? prev.status,
-		}));
-
-	const applyContact = (result: {
-		data: PopulatedDeclaration["contact"];
-		status: "published" | "unpublished" | null;
-	}) =>
-		onDeclarationChange((prev) => ({
-			...prev,
-			contact: result.data,
-			status: result.status ?? prev.status,
-		}));
+	const applySchema = applyLibrarySection("schema", onDeclarationChange);
+	const applyContact = applyLibrarySection("contact", onDeclarationChange);
 
 	const linkSchema = api.library.linkSchema.useMutation({
 		onSuccess: applySchema,
@@ -80,43 +78,45 @@ export function useLibraryLink({
 		onSuccess: applyContact,
 	});
 
-	if (kind === "schema") {
-		return {
-			label: "Utiliser un schéma de votre bibliothèque",
-			placeholder: "Sélectionner un schéma",
-			items: (schemasQuery.data ?? []).map((s) => ({
-				id: s.id,
-				label: s.name,
-				hint: s.url || "",
-			})),
-			linkedParentId: parentId(declaration.schema?.parent),
-			onSelect: (id) =>
-				linkSchema.mutate({ schemaId: id, declarationId: declaration.id }),
-			onUnlink: () =>
-				unlinkSchema.mutate({
-					values: declarationToSchemaValues(declaration),
-					declarationId: declaration.id,
-				}),
-			refetch: schemasQuery.refetch,
-		};
-	}
+	const items =
+		kind === "schema"
+			? (schemasQuery.data ?? []).map((schema) => ({
+					id: schema.id,
+					label: schema.name,
+					hint: schema.url || "",
+				}))
+			: (contactsQuery.data ?? []).map((contact) => ({
+					id: contact.id,
+					label: contact.name,
+					hint: contact.email || contact.url || "",
+				}));
 
-	return {
-		label: "Utiliser un contact de votre bibliothèque",
-		placeholder: "Sélectionner un contact",
-		items: (contactsQuery.data ?? []).map((c) => ({
-			id: c.id,
-			label: c.name,
-			hint: c.email || c.url || "",
-		})),
-		linkedParentId: parentId(declaration.contact?.parent),
-		onSelect: (id) =>
-			linkContact.mutate({ contactId: id, declarationId: declaration.id }),
-		onUnlink: () =>
+	const onSelect = (id: number) => {
+		const input = { parentId: id, declarationId: declaration.id };
+		if (kind === "schema") linkSchema.mutate(input);
+		else linkContact.mutate(input);
+	};
+
+	// Detach keeps the mirrored content: re-save it as a custom copy.
+	const onUnlink = () => {
+		if (kind === "schema")
+			unlinkSchema.mutate({
+				values: declarationToSchemaValues(declaration),
+				declarationId: declaration.id,
+			});
+		else
 			unlinkContact.mutate({
 				values: declarationToContactValues(declaration),
 				declarationId: declaration.id,
-			}),
-		refetch: contactsQuery.refetch,
+			});
+	};
+
+	return {
+		...LIBRARY_COPY[kind],
+		items,
+		linkedParentId: parentId(declaration[kind]?.parent),
+		onSelect,
+		onUnlink,
+		refetch: kind === "schema" ? schemasQuery.refetch : contactsQuery.refetch,
 	};
 }

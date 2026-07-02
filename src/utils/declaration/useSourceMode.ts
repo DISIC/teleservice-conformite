@@ -3,6 +3,7 @@ import { api } from "~/lib/api";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import type { DeclarationChangeFn } from "~/components/declaration/sections/Content";
 import {
+	applyLibrarySection,
 	deriveSourceMode,
 	type SourceModeKind,
 	type SourceModeValue,
@@ -45,12 +46,7 @@ export function useSourceMode({
 	const parentId = libraryLink.linkedParentId;
 
 	const skip = api.schema.skip.useMutation({
-		onSuccess: ({ data: schema, status }) =>
-			onDeclarationChange((prev) => ({
-				...prev,
-				schema,
-				status: status ?? prev.status,
-			})),
+		onSuccess: applyLibrarySection("schema", onDeclarationChange),
 	});
 
 	const countQuery = api.library.linkedDeclarations.useQuery(

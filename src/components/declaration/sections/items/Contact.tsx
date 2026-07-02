@@ -7,6 +7,7 @@ import {
 	type ZContactForm,
 } from "~/forms/contact/contactSchema";
 import { SECTION_TITLES } from "~/utils/declaration/sections";
+import { applyLibrarySection } from "~/utils/declaration/sourceMode";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
 import { SourceModeSection, type SourceModeOption } from "../SourceModeSection";
@@ -47,6 +48,7 @@ export function ContactSection({
 		api.contact.upsert.useMutation({
 			onError: logMutationError("upserting contact", declaration.id),
 		});
+	const applyContact = applyLibrarySection("contact", onDeclarationChange);
 
 	return (
 		<SourceModeSection<ZContactForm, ContactFormApi>
@@ -59,18 +61,11 @@ export function ContactSection({
 			nextHref={nextHref}
 			schema={contactForm}
 			toValues={declarationToContactValues}
-			commit={async (values) => {
-				const { data: contact, status } = await upsertContact({
-					values,
-					declarationId: declaration.id,
-				});
-				onDeclarationChange((prev) => ({
-					...prev,
-					contact,
-					status: status ?? prev.status,
-				}));
-				return { contact };
-			}}
+			commit={async (values) =>
+				applyContact(
+					await upsertContact({ values, declarationId: declaration.id }),
+				)
+			}
 			isSaving={isPending}
 			options={CONTACT_OPTIONS}
 			renderForm={({ form, readOnly }) => (

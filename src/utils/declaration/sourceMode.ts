@@ -1,3 +1,6 @@
+import type { DeclarationChangeFn } from "~/components/declaration/sections/Content";
+import { declarationToContactValues } from "~/forms/contact/contactSchema";
+import { declarationToSchemaValues } from "~/forms/schema/schemaSchema";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 export type SourceModeKind = "contact" | "schema";
@@ -19,18 +22,23 @@ function hasParent(parent: unknown): boolean {
 	return !!parent && typeof parent === "object" && "id" in parent;
 }
 
+const SECTION_VALUES: Record<
+	SourceModeKind,
+	(declaration: PopulatedDeclaration) => Record<string, string | unknown[]>
+> = {
+	contact: declarationToContactValues,
+	schema: declarationToSchemaValues,
+};
+
 /** Autosave persists partial drafts, so any content field — not `name` alone —
  *  marks the group as an in-progress custom edit. */
 function hasCustomContent(
 	kind: SourceModeKind,
 	declaration: PopulatedDeclaration,
 ): boolean {
-	if (kind === "schema") {
-		const schema = declaration.schema;
-		return !!(schema?.name || schema?.url || schema?.actionPlanUrls?.length);
-	}
-	const contact = declaration.contact;
-	return !!(contact?.name || contact?.email || contact?.url);
+	return Object.values(SECTION_VALUES[kind](declaration)).some((value) =>
+		Array.isArray(value) ? value.length > 0 : Boolean(value),
+	);
 }
 
 /**
@@ -52,4 +60,28 @@ export function isSourceModeUndecided(
 	declaration: PopulatedDeclaration,
 ): boolean {
 	return deriveSourceMode(kind, declaration) === null;
+}
+
+export type LibrarySectionResult<K extends SourceModeKind> = {
+	data: PopulatedDeclaration[K];
+	status: "published" | "unpublished" | null;
+};
+
+/**
+ * Folds a section mutation result into page state: the group's new content plus
+ * the recomputed lifecycle status. Returns the slice, usable as a gate override.
+ */
+export function applyLibrarySection<K extends SourceModeKind>(
+	kind: K,
+	onDeclarationChange: DeclarationChangeFn,
+) {
+	return (result: LibrarySectionResult<K>) => {
+		const slice = { [kind]: result.data } as Pick<PopulatedDeclaration, K>;
+		onDeclarationChange((prev) => ({
+			...prev,
+			...slice,
+			status: result.status ?? prev.status,
+		}));
+		return slice;
+	};
 }
