@@ -168,6 +168,7 @@ export const ToolsForm = withForm({
 										}
 										options={[...toolOptions]}
 										readOnlyField={readOnly}
+										required
 									/>
 									{!readOnly && (
 										<field.TagGroupField
@@ -194,11 +195,12 @@ export const ToolsForm = withForm({
 									<field.CheckboxGroupField
 										legend={
 											!readOnly
-												? "Liste des environnements utilisés pour évaluer l’accessibilité *"
+												? "Liste des environnements utilisés pour évaluer l’accessibilité"
 												: undefined
 										}
 										options={[...testEnvironmentOptions]}
 										readOnlyField={readOnly}
+										required
 									/>
 									{!readOnly && (
 										<field.TagGroupField

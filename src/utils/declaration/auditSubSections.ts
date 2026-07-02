@@ -79,9 +79,7 @@ export const AUDIT_SUB_SECTIONS: Record<
 	},
 	"audit-non-conformites": {
 		title: "Non conformités & dérogations",
-		isToComplete: realisedSubSectionToComplete(
-			(d) => !!d.audit?.nonCompliantElements,
-		),
+		isToComplete: () => false,
 		validation: defineSectionValidation({
 			schema: auditNonConformities,
 			fromDeclaration: (d) => auditToNonConformitiesValues(d.audit),
