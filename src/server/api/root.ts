@@ -2,10 +2,8 @@ import { createTRPCRouter } from "~/server/api/trpc";
 import { accessRightRouter } from "./routers/accessRight";
 import { albertRouter } from "./routers/albert";
 import { auditRouter } from "./routers/audit";
-import { contactRouter } from "./routers/contact";
 import { declarationRouter } from "./routers/declaration";
-import { libraryRouter } from "./routers/library";
-import { schemaRouter } from "./routers/schema";
+import { contactRouter, libraryRouter, schemaRouter } from "./routers/library";
 
 export const appRouter = createTRPCRouter({
 	declaration: declarationRouter,

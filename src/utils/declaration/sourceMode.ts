@@ -1,10 +1,10 @@
 import type { DeclarationChangeFn } from "~/components/declaration/sections/Content";
 import { declarationToContactValues } from "~/forms/contact/contactSchema";
 import { declarationToSchemaValues } from "~/forms/schema/schemaSchema";
-import type { LibrarySectionKind } from "~/server/api/routers/librarySection";
+import type { LibrarySectionKind } from "~/server/api/routers/library";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
-export type { LibrarySectionKind } from "~/server/api/routers/librarySection";
+export type { LibrarySectionKind } from "~/server/api/routers/library";
 
 /** Linked = mirrors a Library item; custom = inline; skipped = schema only. */
 export type SourceModeValue = "linked" | "custom" | "skipped";
