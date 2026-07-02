@@ -12,7 +12,11 @@ import {
 	hasAccessToDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
-import type { PublishedDeclaration } from "~/utils/declaration-content";
+import {
+	extractDeclarationContentToPublish,
+	type PublishedDeclaration,
+} from "~/utils/declaration-content";
+import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
 import type { declarationGeneral } from "~/forms/declaration/declarationSchema";
 import { analyzeUrlWithAlbert } from "../albert";
 import {
@@ -314,36 +318,43 @@ export const updateDeclarationName = async (
 	});
 };
 
-export const updatePublishedContent = async (
+// Publish always validates: the snapshot is server-built — clients never supply publishedContent.
+export const publishDeclaration = async (
 	payload: Payload,
 	userId: number,
-	input: { id: number; content: string },
+	id: number,
 ) => {
-	const { id, content } = input;
+	await hasAccessToDeclaration({ payload, declarationId: id, userId });
 
-	const isOwner = await hasAccessToDeclaration({
-		payload,
-		declarationId: id,
-		userId,
-	});
+	const declaration = await getPopulatedDeclaration(
+		await payload.findByID({
+			collection: "declarations",
+			id,
+			depth: 1,
+		}),
+	);
 
-	if (!isOwner) {
+	const errors = validateDeclaration(declaration);
+	if (errors.length > 0) {
 		throw new TRPCError({
-			code: "UNAUTHORIZED",
-			message:
-				"Must be owner of the declaration to update its published content",
+			code: "PRECONDITION_FAILED",
+			message: "Declaration is incomplete and cannot be published",
 		});
 	}
 
-	return payload.update({
+	const result = await payload.update({
 		collection: "declarations",
 		id,
 		data: {
 			status: "published",
-			publishedContent: content,
+			publishedContent: JSON.stringify(
+				extractDeclarationContentToPublish(declaration),
+			),
 			published_at: new Date().toISOString(),
 		},
 	});
+
+	return getPopulatedDeclaration(result);
 };
 
 export const getPreviousPublishedRate = async (

@@ -1,7 +1,7 @@
 # ADR-0003: Sequential completion mode + declaration-wide validation gate
 
 - **Status:** Accepted — partly superseded by ADR-0006
-- **Date:** 2026-06-09 (gate scope widened 2026-06-10, ADR-0004; gate predicate extended 2026-06-14, ADR-0005; save-on-advance + per-section save validation retired 2026-06-18, ADR-0006)
+- **Date:** 2026-06-09 (gate scope widened 2026-06-10, ADR-0004; gate predicate extended 2026-06-14, ADR-0005; save-on-advance + per-section save validation retired 2026-06-18, ADR-0006; gate enforcement moved server-side 2026-07-02)
 
 > **Superseded in part (ADR-0006, 2026-06-18):** sequential mode no longer commits-and-advances ("Enregistrer et suivant") or validates per section on save. Edits **autosave** as they happen, the footer is plain "Suivant", and the declaration-wide gate is the only completeness check. The **mode split** (sequential vs. standalone) and the **gate** itself (described below) are unchanged; ignore the "Enregistrer et suivant" footer behavior and the "second validation entry point" consequence — see ADR-0006.
 
@@ -9,6 +9,7 @@
 >
 > - **Scope (ADR-0004):** the gate is **universal** — `validateDeclaration` runs on every publish, including from Modifiée. There is no "published-modified is always publishable" fast path: removing a contact/schema from a published Declaration leaves it incomplete (`published-incomplete`).
 > - **Predicate (ADR-0005):** "complete" is no longer only "every section's Zod schema passes." For the Contact/Schema [[section|sections]] the declarant must also have **chosen a [[source mode]]** (Linked / Custom / Skipped); an Undecided section emits a gate error targeting the radio. This error is produced **outside** the per-field `runSchema` path.
+> - **Enforcement (2026-07-02):** the gate runs **server-side** — the `declaration.publish` mutation itself validates the declaration and builds the published snapshot; the client sends only an id and can no longer supply `publishedContent`. The client CTA (ADR-0006 flow) remains the UX layer on top. Gate failure surfaces as an opaque `PRECONDITION_FAILED` without the error list: the details page's error summary recomputes field-level errors client-side from fresh data, so transporting them from the server would only duplicate a staler copy.
 >
 > The sequential/standalone mode split is unaffected by either.
 

@@ -221,7 +221,7 @@ Layered, not feature-foldered. One predictable layer per concern:
 - When `audit.isRealised === false`, fields belonging to the three non-Réalisation Sub-sections are not required and should not be surfaced for editing.
 - `toVerify` is per-Section, not per-Sub-section.
 - A **linked** contact/schema copy is written only by the Library propagation procedure — never directly by a Declaration save. Custom copies are written only by their own Declaration.
-- **Publish always validates.** The publish CTA runs full declaration validation regardless of lifecycle state — there is no fast path. (Supersedes the retired v1 invariant "published-modified is always publishable": removing a Contact/Schema from a published Declaration can make it incomplete, so completeness is no longer guaranteed by per-section save gating. See [[declaration-state|Declaration state]].)
+- **Publish always validates.** The publish action runs full declaration validation regardless of lifecycle state — there is no fast path. Enforced server-side: the publish mutation itself validates and builds the published snapshot, so a client can never author `publishedContent`. (Supersedes the retired v1 invariant "published-modified is always publishable": removing a Contact/Schema from a published Declaration can make it incomplete, so completeness is no longer guaranteed by per-section save gating. See [[declaration-state|Declaration state]].)
 - Contact and Schema are **symmetric** in flows and business logic: anything defined for one (Library behaviour, removal from a Declaration, À compléter flagging) applies identically to the other.
 
 ## Out of scope

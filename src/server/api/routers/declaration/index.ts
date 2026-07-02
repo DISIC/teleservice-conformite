@@ -73,13 +73,13 @@ export const declarationRouter = createTRPCRouter({
 				input,
 			),
 		})),
-	updatePublishedContent: userProtectedProcedure
-		.input(z.object({ id: z.number(), content: z.string() }))
+	publish: userProtectedProcedure
+		.input(z.object({ id: z.number() }))
 		.mutation(async ({ input, ctx }) => ({
-			data: await service.updatePublishedContent(
+			data: await service.publishDeclaration(
 				ctx.payload,
 				Number(ctx.session.user.id),
-				input,
+				input.id,
 			),
 		})),
 	getPreviousPublishedRate: userProtectedProcedure
