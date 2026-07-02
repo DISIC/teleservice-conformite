@@ -330,7 +330,7 @@ export const publishDeclaration = async (
 		await payload.findByID({
 			collection: "declarations",
 			id,
-			depth: 0,
+			depth: 1,
 		}),
 	);
 
