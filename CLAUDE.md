@@ -48,4 +48,6 @@ Comment only to state a business rule or constraint the code cannot show. One li
 
 Single-context repo. `CONTEXT.md` lives at the repo root; ADRs live in `docs/adr/`. See `docs/agents/domain.md`.
 
+Before working on the declaration details page (sections, forms, autosave, publish gate), read the area map in `docs/agents/declaration-form.md` — it locates every seam so you open only the files the task touches.
+
 ADRs hold the reasoning; guides hold the resulting rule. A guide may link an ADR where a rule would surprise, but never restates its trade-off analysis. Code never cites ADRs or docs.
