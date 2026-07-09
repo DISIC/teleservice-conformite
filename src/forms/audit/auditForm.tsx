@@ -66,6 +66,16 @@ export const AuditGeneralForm = withForm({
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
+								// Answering "Non" discards the realised-audit details so that
+								// re-answering "Oui" starts from a blank slate.
+								onOptionChange={(value) => {
+									if (value === false) {
+										form.setFieldValue("date", "");
+										form.setFieldValue("realisedBy", "");
+										form.setFieldValue("rgaa_version", "rgaa_4");
+										form.setFieldValue("rate", null);
+									}
+								}}
 								required
 							/>
 						)}

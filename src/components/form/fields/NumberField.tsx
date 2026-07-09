@@ -16,11 +16,14 @@ interface NumberFieldProps
 
 export function NumberField(props: NumberFieldProps) {
 	const { readOnlyField, required, nativeInputProps, ...commonProps } = props;
-	const field = useFieldContext<number>();
+	const field = useFieldContext<number | null>();
 
 	if (readOnlyField) {
 		return (
-			<ReadOnlyField label={commonProps.label} value={`${field.state.value}`} />
+			<ReadOnlyField
+				label={commonProps.label}
+				value={field.state.value != null ? `${field.state.value}` : ""}
+			/>
 		);
 	}
 
@@ -35,9 +38,15 @@ export function NumberField(props: NumberFieldProps) {
 				inputMode: "numeric",
 				pattern: "[0-9]*",
 				name: field.name,
-				value: field.state.value,
+				value: field.state.value ?? "",
 				required: nativeInputProps?.required ?? required,
-				onChange: (e) => field.setValue(e.target.valueAsNumber),
+				// An empty or malformed input reads as NaN, which no schema or store accepts; hold null instead.
+				onChange: (e) =>
+					field.setValue(
+						Number.isNaN(e.target.valueAsNumber)
+							? null
+							: e.target.valueAsNumber,
+					),
 			}}
 		/>
 	);

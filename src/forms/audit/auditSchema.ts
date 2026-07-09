@@ -27,7 +27,7 @@ export const auditGeneral = z
 		date: z.iso.date().optional().or(z.literal("")),
 		realisedBy: z.string().optional(),
 		rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
-		rate: z.number(),
+		rate: z.number().nullable(),
 	})
 	.superRefine((data, ctx) => {
 		if (data.isAuditRealised === undefined) {
@@ -46,7 +46,13 @@ export const auditGeneral = z
 					path: ["realisedBy"],
 				});
 			}
-			if (data.rate < 0 || data.rate > 100) {
+			if (data.rate === null) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Le taux de conformité est requis",
+					path: ["rate"],
+				});
+			} else if (data.rate < 0 || data.rate > 100) {
 				ctx.addIssue({
 					code: "custom",
 					message: "Le taux doit être entre 0 et 100",
@@ -63,7 +69,7 @@ export const auditGeneralDefaultValues: ZAuditGeneral = {
 	date: "",
 	realisedBy: "",
 	rgaa_version: "rgaa_4",
-	rate: 0,
+	rate: null,
 };
 
 export const auditGeneralFormOptions = submitFormOptions(
@@ -79,7 +85,7 @@ export function auditToGeneralValues(audit: Audit): ZAuditGeneral {
 		rgaa_version:
 			rgaaVersionOptions.find((opt) => opt.value === audit?.rgaa_version)
 				?.value ?? "rgaa_4",
-		rate: audit?.rate ?? 0,
+		rate: audit?.rate ?? null,
 	};
 }
 

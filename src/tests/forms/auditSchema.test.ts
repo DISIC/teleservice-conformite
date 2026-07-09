@@ -48,6 +48,29 @@ describe("auditGeneral", () => {
 			["rate"],
 		]);
 	});
+
+	it("a realised audit rejects an unfilled (null) rate", () => {
+		const result = auditGeneral.safeParse({
+			isAuditRealised: true,
+			date: "",
+			realisedBy: "DINUM",
+			rgaa_version: "rgaa_4",
+			rate: null,
+		});
+		expect(result.error?.issues.map((i) => i.path)).toEqual([["rate"]]);
+	});
+
+	it("accepts a null rate while the audit is not realised", () => {
+		expect(
+			auditGeneral.safeParse({
+				isAuditRealised: false,
+				date: "",
+				realisedBy: "",
+				rgaa_version: "rgaa_4",
+				rate: null,
+			}).success,
+		).toBe(true);
+	});
 });
 
 describe("auditContents", () => {

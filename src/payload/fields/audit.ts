@@ -8,24 +8,13 @@ const isRealised = (
 	siblingData: { isRealised?: boolean } | undefined,
 ) => Boolean(siblingData?.isRealised);
 
-const requiredWhenRealised = (
-	value: unknown,
-	{ siblingData }: { siblingData?: { isRealised?: boolean } },
-) => {
-	if (
-		siblingData?.isRealised &&
-		(value === null || value === undefined || value === "")
-	) {
-		return "Ce champ est obligatoire";
-	}
-
-	return true;
-};
-
 /**
  * Audit content folded onto the declaration row as a 1:1 group. Conditions read
  * `siblingData` from the audit group itself, so `isRealised` gates the
  * realised-only fields.
+ *
+ * No required-field validation here: the row is a draft that autosave writes
+ * one partial slice at a time — completeness is enforced by the publish gate.
  */
 export const auditGroup: Field = {
 	name: "audit",
@@ -52,21 +41,18 @@ export const auditGroup: Field = {
 			index: true,
 			hasMany: false,
 			admin: { condition: isRealised },
-			validate: requiredWhenRealised,
 		},
 		{
 			name: "realisedBy",
 			type: "text",
 			label: { fr: "Entite ou personne ayant realise l'audit" },
 			admin: { condition: isRealised },
-			validate: requiredWhenRealised,
 		},
 		{
 			name: "rate",
 			type: "number",
 			label: { fr: "Taux de conformité" },
 			admin: { condition: isRealised },
-			validate: requiredWhenRealised,
 		},
 		{
 			name: "compliantElements",

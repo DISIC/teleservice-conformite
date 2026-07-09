@@ -13,7 +13,7 @@ const auditUpsertValues = z.object({
 	date: z.iso.date().optional().or(z.literal("")),
 	realisedBy: z.string().optional(),
 	rgaa_version: z.enum(["rgaa_4", "rgaa_5"]).optional(),
-	rate: z.number().optional(),
+	rate: z.number().nullable().optional(),
 	compliantElements: z.string().optional(),
 	nonCompliantElements: z.string().optional(),
 	disproportionnedCharge: z.string().optional(),
@@ -64,6 +64,14 @@ export const auditRouter = createTRPCRouter({
 				}),
 				...(technologies !== undefined && {
 					technologies: technologies.map((name) => ({ name })),
+				}),
+				// Answering "non réalisé" invalidates the realised-audit details; clear
+				// them so switching back to "réalisé" starts from a blank slate.
+				...(values.isRealised === false && {
+					date: null,
+					realisedBy: null,
+					rgaa_version: null,
+					rate: null,
 				}),
 				toVerify: false,
 			};

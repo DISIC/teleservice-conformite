@@ -59,6 +59,7 @@ Shared field UI (`Part`, `TextField`, `ActionButtons`, `RequiredField`) lives in
 - `Frame`'s `useCallback` deps in `useSectionForm.tsx` must stay stable during autosave — a dep change remounts the form subtree and wipes in-progress field validation.
 - `Content.tsx` keys its Fragment by slug: navigating Sections always remounts, so edit state never survives navigation.
 - `validateDeclaration` reads the **persisted** declaration, not live form values — an unsaved edit doesn't count until autosave/save lands.
+- Autosave payloads must be storable at any point mid-fill: no `NaN`/unserialisable values in form state, and no required-field validation on the Payload group — a rejected slice fails silently and every retry (and the unmount flush) fails with it. Completeness belongs to the publish gate only.
 - The publish CTA on the terminal Contact section bypasses the section form's own submit (`onPublish` on `Frame`).
 
 ## Don't read
