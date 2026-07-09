@@ -1,3 +1,4 @@
+import { appKindPictograms } from "~/components/declaration/appKindPictograms";
 import { Part } from "~/components/form/Part";
 import {
 	appKindOptions,
@@ -35,12 +36,13 @@ export const DeclarationGeneralForm = withForm({
 						<field.RichRadioField
 							label="Type de service"
 							readOnlyField={readOnly}
-							options={appKindOptions.map(
-								({ pictogram: Pictogram, ...option }) => ({
+							options={appKindOptions.map((option) => {
+								const Pictogram = appKindPictograms[option.value];
+								return {
 									...option,
 									illustration: <Pictogram fontSize="3rem" />,
-								}),
-							)}
+								};
+							})}
 							onOptionChange={() => {
 								form.setFieldValue("general.url", "");
 								form.setFieldValue("general.mobilePlatform", undefined);

@@ -1,7 +1,3 @@
-import Application from "@codegouvfr/react-dsfr/picto/Application";
-import Search from "@codegouvfr/react-dsfr/picto/Search";
-import Compass from "@codegouvfr/react-dsfr/picto/Compass";
-
 export const sourceOptions = [
 	{ label: "Manuel", value: "manual" },
 	{ label: "IA", value: "ai" },
@@ -45,17 +41,14 @@ export const appKindOptions = [
 		label: "Site web",
 		value: "website",
 		hintText: "Site internet, intranet, extranet, application métier, ...",
-		pictogram: Search,
 	},
 	{
 		label: "Application mobile",
 		value: "mobile_app",
-		pictogram: Application,
 	},
 	{
 		label: "Autre",
 		value: "other",
-		pictogram: Compass,
 	},
 ] as const;
 

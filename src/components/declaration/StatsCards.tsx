@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { tss } from "tss-react";
 import { appKindOptions } from "~/payload/selectOptions";
+import { appKindPictograms } from "~/components/declaration/appKindPictograms";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { getConformityStatus } from "~/utils/declaration-helper";
 
@@ -28,7 +29,7 @@ export function StatsCards({ declaration }: StatsCardsProps) {
 	const rate = declaration.audit?.rate;
 	const conformity = rate != null ? getConformityStatus(rate) : null;
 	const appKindOption = getAppKindOption(declaration.app_kind);
-	const Pictogram = appKindOption?.pictogram;
+	const Pictogram = appKindOption && appKindPictograms[appKindOption.value];
 
 	return (
 		<div className={classes.grid}>
