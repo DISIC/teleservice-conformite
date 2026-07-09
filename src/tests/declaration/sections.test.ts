@@ -57,6 +57,16 @@ describe("isSectionToComplete (À compléter badges)", () => {
 		expect(isSectionToComplete(completeDeclaration(), "contact")).toBe(false);
 	});
 
+	it("flags schema until a source mode is chosen", () => {
+		expect(
+			isSectionToComplete(
+				completeDeclaration({ schema: {} } as never),
+				"schema",
+			),
+		).toBe(true);
+		expect(isSectionToComplete(completeDeclaration(), "schema")).toBe(false);
+	});
+
 	it("flags audit-general until the realisation question is answered", () => {
 		expect(
 			isSectionToComplete(
