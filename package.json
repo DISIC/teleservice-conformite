@@ -62,11 +62,12 @@
 		"@types/pg": "^8.15.5",
 		"@types/react": "19.0.0",
 		"@types/react-dom": "19.0.0",
+		"@typescript/native": "npm:typescript@^7.0.2",
 		"@vitest/ui": "4.1.9",
 		"lefthook": "^2.1.6",
 		"oxfmt": "^0.49.0",
 		"oxlint": "^1.64.0",
-		"typescript": "^5.8.2",
+		"typescript": "npm:@typescript/typescript6@^6.0.2",
 		"vitest": "^4.1.9"
 	},
 	"packageManager": "yarn@1.22.18",
