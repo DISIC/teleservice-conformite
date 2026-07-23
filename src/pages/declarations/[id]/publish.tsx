@@ -5,7 +5,6 @@ import type { GetServerSideProps, Redirect } from "next";
 import Head from "next/head";
 import { getPayload } from "payload";
 import { tss } from "tss-react";
-import ErrorPage from "~/components/declaration/ErrorPage";
 import PublishedTemplate from "~/components/declaration/PublishedTemplate";
 import { getDeclarationById } from "~/server/api/utils/payload-helper";
 import { auth } from "~/lib/auth";
@@ -13,7 +12,6 @@ import type { PublishedDeclaration } from "~/utils/declaration-content";
 
 export default function PublishPage({
 	publishedContent,
-	deleted,
 }: {
 	publishedContent: PublishedDeclaration | null;
 	deleted?: boolean;
@@ -21,7 +19,7 @@ export default function PublishPage({
 	const { classes } = useStyles();
 
 	if (!publishedContent) {
-		return <ErrorPage deleted={deleted} />;
+		return <></>;
 	}
 
 	return (
