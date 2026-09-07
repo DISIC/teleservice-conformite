@@ -1,12 +1,6 @@
-import { fr } from "@codegouvfr/react-dsfr";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import Error from "@codegouvfr/react-dsfr/picto/Error";
-import { tss } from "tss-react";
 import { Part } from "~/components/form/Part";
 import { AuditNotice } from "~/components/ui/AuditNotice";
-import DisproportionnedChargeContent from "~/components/modal/DisproportionnedChargeContent";
-import ExemptionListModalContent from "~/components/modal/ExemptionListContent";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
@@ -89,7 +83,6 @@ export const AuditGeneralForm = withForm({
 									{(field) => (
 										<field.TextField
 											label={`Date de réalisation de l'audit ${!readOnly ? "(facultatif)" : ""}`}
-											hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
 											nativeInputProps={{
 												type: "date",
 												max: new Date().toISOString().split("T")[0],
@@ -127,7 +120,7 @@ export const AuditGeneralForm = withForm({
 											label={
 												readOnly
 													? "Pourcentage de critères du RGAA respectés"
-													: "Taux de conformité"
+													: "Taux de conformité global"
 											}
 											hintText={
 												<>
@@ -236,7 +229,11 @@ export const CompliantElementsForm = withForm({
 		return (
 			<Part
 				readOnly={readOnly}
-				title="Éléments ayant fait l’objet de la vérification de conformité"
+				title={
+					readOnly
+						? "Éléments ayant fait l’objet de la vérification de conformité"
+						: undefined
+				}
 				grid={false}
 			>
 				<form.AppField name="compliantElements">
@@ -269,22 +266,10 @@ export const CompliantElementsForm = withForm({
 	},
 });
 
-const exemptionListmodal = createModal({
-	id: "exemption-list-modal",
-	isOpenedByDefault: false,
-});
-
-const disproportionnedChargeModal = createModal({
-	id: "disproportionned-charge-modal",
-	isOpenedByDefault: false,
-});
-
 export const NonCompliantElementsForm = withForm({
 	...auditNonConformitiesFormOptions,
 	props: { readOnly: false, showNotice: false },
 	render: function Render({ form, readOnly, showNotice }) {
-		const { classes } = useStyles();
-
 		if (showNotice) return <AuditNotRealisedNotice />;
 		return (
 			<>
@@ -322,25 +307,21 @@ export const NonCompliantElementsForm = withForm({
 							<field.TextField
 								label={
 									!readOnly
-										? "Éléments non soumis à l’obligation d’accessibilité (facultatif)"
+										? "Éléments non soumis à l’obligation d’accessibilité (si concerné)"
 										: "Dérogations pour charge disproportionnée"
 								}
 								textArea
 								hintText={
 									<>
-										<Button
-											onClick={(e) => {
-												e.preventDefault();
-												exemptionListmodal.open();
-											}}
-											className={classes.dialogActionButton}
+										<a
+											href="https://accessibilite.numerique.gouv.fr/obligations/champ-application/"
+											target="_blank"
+											rel="noopener noreferrer"
+											title="Liste des contenus non soumis à l’obligation d’accessibilité, nouvelle fenêtre"
 										>
 											Liste des contenus non soumis à l’obligation
-											d’accessibilité
-										</Button>
-										<exemptionListmodal.Component title="">
-											<ExemptionListModalContent />
-										</exemptionListmodal.Component>
+											d’accessibilité ↗️
+										</a>
 										<br />
 										Format attendu : Listez les éléments exemptés les uns à la
 										suite des autres
@@ -355,23 +336,19 @@ export const NonCompliantElementsForm = withForm({
 							<field.TextField
 								label={
 									!readOnly
-										? "Éléments avec dérogation pour charge disproportionnée (facultatif)"
+										? "Éléments avec dérogation pour charge disproportionnée (si concerné)"
 										: "Contenus non soumis à l’obligation d’accessibilité"
 								}
 								hintText={
 									<>
-										<Button
-											onClick={(e) => {
-												e.preventDefault();
-												disproportionnedChargeModal.open();
-											}}
-											className={classes.dialogActionButton}
+										<a
+											href="https://accessibilite.numerique.gouv.fr/obligations/champ-application/"
+											target="_blank"
+											rel="noopener noreferrer"
+											title="Qu’est-ce qu’une charge disproportionnée ?, nouvelle fenêtre"
 										>
-											Qu’est-ce qu’une charge disproportionnée ?
-										</Button>
-										<disproportionnedChargeModal.Component title="">
-											<DisproportionnedChargeContent />
-										</disproportionnedChargeModal.Component>
+											Qu’est-ce qu’une charge disproportionnée ? ↗️
+										</a>
 										<br />
 										Renseigner, pour chaque élément, son nom, la raison de la
 										dérogation et l’alternative accessible proposée.
@@ -389,27 +366,5 @@ export const NonCompliantElementsForm = withForm({
 				</Part>
 			</>
 		);
-	},
-});
-
-export const useStyles = tss.withName(NonCompliantElementsForm.name).create({
-	dialogActionButton: {
-		fontSize: fr.typography[18].style.fontSize,
-		lineHeight: fr.typography[18].style.lineHeight,
-		color: fr.colors.decisions.text.label.blueFrance.default,
-		backgroundColor: "transparent !important",
-		backgroundImage: "none !important",
-		border: "none !important",
-		boxShadow: "none !important",
-		padding: 0,
-		margin: 0,
-		minHeight: "unset",
-		height: "auto",
-		display: "inline",
-		"&:not(:disabled):hover:not([class^='Mui'])": {
-			backgroundColor: "transparent",
-			textDecoration: "underline",
-			textUnderlineOffset: 4,
-		},
 	},
 });
