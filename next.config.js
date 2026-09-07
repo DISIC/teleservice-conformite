@@ -2,6 +2,7 @@ import { withPayload } from "@payloadcms/next/withPayload";
 
 /** @type {import("next").NextConfig} */
 const config = {
+	agentRules: false,
 	reactStrictMode: true,
 	turbopack: {},
 	transpilePackages: ["@codegouvfr/react-dsfr", "tss-react"],
