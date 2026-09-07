@@ -151,16 +151,6 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 		padding: fr.spacing("4w"),
 		marginTop: fr.spacing("10v"),
 		marginBottom: fr.spacing("6v"),
-
-		"& > h2": {
-			marginBottom: fr.spacing("10v"),
-		},
-		"& > h3, h4, h5, h6": {
-			marginBottom: fr.spacing("4v"),
-		},
-		"& > p": {
-			marginBottom: fr.spacing("10v"),
-		},
 	},
 	buttonsContainer: {
 		display: "grid",

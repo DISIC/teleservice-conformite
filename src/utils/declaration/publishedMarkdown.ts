@@ -33,6 +33,14 @@ export const obsoleteSince = (publishedAt: IsoDate): IsoDate =>
 export const isObsolete = (publishedAt: IsoDate, today: Date): boolean =>
 	obsoleteSince(publishedAt) < today.toISOString().slice(0, 10);
 
+/** Header line: a first publication is "Publiée le", any republish "Mise à jour :". */
+export const publicationLabel = (
+	d: Pick<PublishedDeclaration, "firstPublishedAt" | "publishedAt">,
+): string =>
+	d.publishedAt === d.firstPublishedAt
+		? `Publiée le ${formatFrDate(d.publishedAt)}`
+		: `Mise à jour : ${formatFrDate(d.publishedAt)}`;
+
 const hasText = (value: string | null | undefined): value is string =>
 	!!value && value.trim().length > 0;
 

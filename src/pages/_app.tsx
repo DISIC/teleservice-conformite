@@ -13,6 +13,8 @@ import { tss } from "tss-react";
 import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 
 import { AlertHost } from "~/components/alert/AlertHost";
+import { PublishedHeader } from "~/components/declaration/PublishedHeader";
+import type { PublishedDeclaration } from "~/utils/declaration-content";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
 import { authClient } from "~/lib/auth-client";
@@ -90,6 +92,13 @@ function App({ Component, pageProps }: AppProps) {
 		return items;
 	}, [authSession?.session, authSession?.user, isAuthenticated, isPendingAuth]);
 
+	// The public declaration page describes the document, not the téléservice.
+	const publishedDeclaration =
+		router.pathname === "/declarations/[id]/publish"
+			? ((pageProps as { publishedContent?: PublishedDeclaration | null })
+					.publishedContent ?? null)
+			: null;
+
 	return (
 		<>
 			<Head>
@@ -115,21 +124,25 @@ function App({ Component, pageProps }: AppProps) {
 						},
 					]}
 				/>
-				<Header
-					brandTop={
-						<>
-							RÉPUBLIQUE
-							<br />
-							FRANÇAISE
-						</>
-					}
-					homeLinkProps={{
-						href: "/",
-						title: "Accueil Téléservice Conformité",
-					}}
-					quickAccessItems={quickAccessItems}
-					serviceTitle="Téléservice Conformité"
-				/>
+				{publishedDeclaration ? (
+					<PublishedHeader declaration={publishedDeclaration} />
+				) : (
+					<Header
+						brandTop={
+							<>
+								RÉPUBLIQUE
+								<br />
+								FRANÇAISE
+							</>
+						}
+						homeLinkProps={{
+							href: "/",
+							title: "Accueil Téléservice Conformité",
+						}}
+						quickAccessItems={quickAccessItems}
+						serviceTitle="Téléservice Conformité"
+					/>
+				)}
 				<main id="contenu" className={classes.main} style={{ flex: 1 }}>
 					<AlertHost />
 					<Component {...pageProps} />

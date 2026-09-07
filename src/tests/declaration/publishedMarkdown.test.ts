@@ -4,6 +4,7 @@ import {
 	buildPublishedMarkdown,
 	isObsolete,
 	obsoleteSince,
+	publicationLabel,
 } from "~/utils/declaration/publishedMarkdown";
 
 const TODAY = new Date("2026-09-07T12:00:00.000Z");
@@ -232,5 +233,25 @@ describe("obsolescence", () => {
 		expect(isObsolete("2023-03-24", new Date("2026-03-25T00:00:00Z"))).toBe(
 			true,
 		);
+	});
+});
+
+describe("publicationLabel", () => {
+	it("says « Publiée le » on a first publication", () => {
+		expect(
+			publicationLabel({
+				firstPublishedAt: "2026-08-27",
+				publishedAt: "2026-08-27",
+			}),
+		).toBe("Publiée le 27/08/2026");
+	});
+
+	it("says « Mise à jour » once republished", () => {
+		expect(
+			publicationLabel({
+				firstPublishedAt: "2025-03-24",
+				publishedAt: "2026-08-27",
+			}),
+		).toBe("Mise à jour : 27/08/2026");
 	});
 });
