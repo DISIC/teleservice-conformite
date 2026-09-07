@@ -1,7 +1,9 @@
 import type { Declaration } from "~/payload/payload-types";
-import { extractDeclarationContentToPublish } from "~/utils/declaration-content";
+import {
+	extractDeclarationContentToPublish,
+	parsePublishedDeclaration,
+} from "~/utils/declaration-content";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import type { PublishedDeclaration } from "~/utils/declaration-content";
 
 /** Three visual states derived from `status` + `publishedContent`. */
 export type Status = "draft" | "modified" | "published";
@@ -29,9 +31,12 @@ export function hasContentChangedSincePublish(
 	declaration: PopulatedDeclaration,
 ): boolean {
 	if (!declaration.publishedContent) return false;
-	const published: PublishedDeclaration = JSON.parse(
-		declaration.publishedContent,
-	);
-	const current = extractDeclarationContentToPublish(declaration);
+	const published = parsePublishedDeclaration(declaration.publishedContent);
+	// An unreadable snapshot can only be repaired by republishing.
+	if (!published) return true;
+	// The publish date is set by publishing itself, so it is never a content change.
+	const current = extractDeclarationContentToPublish(declaration, {
+		publishedAt: published.publishedAt,
+	});
 	return JSON.stringify(current) !== JSON.stringify(published);
 }

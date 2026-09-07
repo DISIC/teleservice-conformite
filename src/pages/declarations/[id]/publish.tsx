@@ -9,7 +9,10 @@ import ErrorPage from "~/components/declaration/ErrorPage";
 import PublishedTemplate from "~/components/declaration/PublishedTemplate";
 import { getDeclarationById } from "~/server/api/utils/payload-helper";
 import { auth } from "~/lib/auth";
-import type { PublishedDeclaration } from "~/utils/declaration-content";
+import {
+	parsePublishedDeclaration,
+	type PublishedDeclaration,
+} from "~/utils/declaration-content";
 
 export default function PublishPage({
 	publishedContent,
@@ -90,24 +93,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		{ trash: true },
 	);
 
-	if (
-		!declaration ||
-		!declaration.publishedContent ||
-		!!declaration.deletedAt
-	) {
-		return {
-			props: {
-				publishedContent: null,
-				deleted: !!declaration?.deletedAt,
-			},
-		};
-	}
+	const publishedContent = declaration?.deletedAt
+		? null
+		: parsePublishedDeclaration(declaration?.publishedContent);
 
 	return {
 		props: {
-			publishedContent: JSON.parse(
-				declaration.publishedContent,
-			) as PublishedDeclaration,
+			publishedContent,
+			deleted: !!declaration?.deletedAt,
 		},
 	};
 };

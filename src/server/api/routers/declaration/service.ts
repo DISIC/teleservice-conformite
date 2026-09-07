@@ -14,7 +14,7 @@ import {
 import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
 import {
 	extractDeclarationContentToPublish,
-	type PublishedDeclaration,
+	parsePublishedDeclaration,
 } from "~/utils/declaration-content";
 import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
 import type { declarationGeneral } from "~/forms/declaration/declarationSchema";
@@ -355,7 +355,7 @@ export const publishDeclaration = async (
 		data: {
 			status: "published",
 			publishedContent: JSON.stringify(
-				extractDeclarationContentToPublish(declaration),
+				extractDeclarationContentToPublish(declaration, { publishedAt }),
 			),
 			published_at: publishedAt,
 			// A first publication in this téléservice is its own initial publication.
@@ -385,16 +385,10 @@ export const getPreviousPublishedRate = async (
 
 	const previousVersion = versions.docs[1];
 
-	if (!previousVersion?.version?.publishedContent) return null;
-
-	try {
-		const published = JSON.parse(
-			previousVersion.version.publishedContent as string,
-		) as PublishedDeclaration;
-		return published.audit.rate ?? null;
-	} catch {
-		return null;
-	}
+	const published = parsePublishedDeclaration(
+		previousVersion?.version?.publishedContent,
+	);
+	return published?.audit.rate ?? null;
 };
 
 export const revertToPublished = async (

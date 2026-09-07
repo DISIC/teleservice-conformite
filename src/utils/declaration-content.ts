@@ -1,3 +1,4 @@
+import z from "zod";
 import {
 	appKindOptions,
 	rgaaVersionOptions,
@@ -11,37 +12,73 @@ type OptionLabel<T extends readonly { label: string }[]> = T[number]["label"];
 export type AppKindLabel = OptionLabel<typeof appKindOptions> | "";
 export type RgaaVersionLabel = OptionLabel<typeof rgaaVersionOptions>;
 
-export type PublishedDeclaration = {
-	name: string;
-	entityName: string;
-	schema: {
-		schemaName: string;
-		schemaUrl: string;
-		actionPlanUrls: { name: string; url: string }[];
-	};
-	appKindLabel: AppKindLabel;
-	url: string;
-	audit: {
-		rgaa_version: RgaaVersionLabel;
-		realised_by: string;
-		rate: number;
-		nonCompliantElements: string | null;
-		disproportionnedCharge: string | null;
-		optionalElements: string | null;
-		compliantElements: string;
-		technologies: { name: string }[];
-		testEnvironments: string[];
-		usedTools: string[];
-	};
-	contact: {
-		url: string | null;
-		email: string | null;
-	};
+const appKindLabels = appKindOptions.map((option) => option.label);
+const rgaaVersionLabels = rgaaVersionOptions.map((option) => option.label);
+
+/** The public snapshot's contract. Parsed, never cast: a snapshot that fails
+ *  it is treated as absent rather than rendered half-filled. */
+export const publishedDeclarationSchema = z.object({
+	name: z.string(),
+	entityName: z.string(),
+	schema: z.object({
+		schemaName: z.string(),
+		schemaUrl: z.string(),
+		actionPlanUrls: z.array(z.object({ name: z.string(), url: z.string() })),
+	}),
+	appKindLabel: z.enum([...appKindLabels, ""]),
+	url: z.string(),
+	// ISO calendar dates (YYYY-MM-DD): what the public reads, timezone-free.
+	firstPublishedAt: z.iso.date(),
+	publishedAt: z.iso.date(),
+	audit: z.object({
+		isRealised: z.boolean(),
+		rgaa_version: z.enum(rgaaVersionLabels),
+		realised_by: z.string(),
+		rate: z.number(),
+		nonCompliantElements: z.string().nullable(),
+		disproportionnedCharge: z.string().nullable(),
+		optionalElements: z.string().nullable(),
+		compliantElements: z.string(),
+		technologies: z.array(z.object({ name: z.string() })),
+		testEnvironments: z.array(z.string()),
+		usedTools: z.array(z.string()),
+	}),
+	contact: z.object({
+		url: z.string().nullable(),
+		email: z.string().nullable(),
+	}),
+});
+
+export type PublishedDeclaration = z.infer<typeof publishedDeclarationSchema>;
+
+export const parsePublishedDeclaration = (
+	json: string | null | undefined,
+): PublishedDeclaration | null => {
+	if (!json) return null;
+	try {
+		const result = publishedDeclarationSchema.safeParse(JSON.parse(json));
+		return result.success ? result.data : null;
+	} catch {
+		return null;
+	}
+};
+
+const toIsoDate = (value: string | null | undefined): string | null =>
+	value && !Number.isNaN(Date.parse(value))
+		? new Date(value).toISOString().slice(0, 10)
+		: null;
+
+type SnapshotDates = {
+	/** The publish action's date; defaults to the row's last `published_at`. */
+	publishedAt?: string;
 };
 
 export const extractDeclarationContentToPublish = (
 	declaration: PopulatedDeclaration,
+	dates: SnapshotDates = {},
 ): PublishedDeclaration => {
+	const publishedAt =
+		toIsoDate(dates.publishedAt) ?? toIsoDate(declaration.published_at) ?? "";
 	return {
 		name: declaration.name ?? "",
 		entityName: declaration.entity?.name ?? "",
@@ -56,7 +93,11 @@ export const extractDeclarationContentToPublish = (
 			appKindOptions.find((kind) => kind.value === declaration.app_kind)
 				?.label ?? "",
 		url: declaration?.url ?? "",
+		// A first publication in this téléservice is its own initial publication.
+		firstPublishedAt: toIsoDate(declaration.first_published_at) ?? publishedAt,
+		publishedAt,
 		audit: {
+			isRealised: declaration.audit?.isRealised === true,
 			rgaa_version:
 				rgaaVersionOptions.find(
 					(option) => option.value === declaration?.audit?.rgaa_version,
