@@ -78,7 +78,7 @@ export const SchemaForm = withForm({
 												type="button"
 												priority="tertiary no outline"
 												iconId="fr-icon-delete-line"
-												title="Supprimer ce plan d'actions"
+												title={`Supprimer le plan d'actions ${index + 1}`}
 												onClick={() => arrayField.removeValue(index)}
 											/>
 										)}

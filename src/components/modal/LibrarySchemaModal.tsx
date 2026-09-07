@@ -4,6 +4,7 @@ import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { useEffect, useId, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import type { Schema } from "~/payload/payload-types";
+import { useModalReturnFocus } from "~/hooks/useModalReturnFocus";
 import { api } from "~/lib/api";
 import { useAppForm } from "~/forms/context";
 import { SchemaForm as EntitySchemaForm } from "~/forms/schema/schemaForm";
@@ -27,6 +28,8 @@ export function LibrarySchemaModal({ actions }: LibrarySchemaModalProps) {
 			isOpenedByDefault: false,
 		}),
 	);
+
+	const openModal = useModalReturnFocus(modal);
 
 	const [editing, setEditing] = useState<Schema | null>(null);
 
@@ -66,7 +69,7 @@ export function LibrarySchemaModal({ actions }: LibrarySchemaModalProps) {
 
 	actions.open = (schema) => {
 		setEditing(schema ?? null);
-		modal.open();
+		openModal();
 	};
 
 	useEffect(() => {

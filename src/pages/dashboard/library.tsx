@@ -5,10 +5,14 @@ import Tag from "@codegouvfr/react-dsfr/Tag";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps } from "next";
 import Head from "next/head";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import { BackButton } from "~/components/ui/BackButton";
 import EmptyState from "~/components/ui/EmptyState";
+import {
+	ConfirmationModal,
+	type ConfirmationModalActions,
+} from "~/components/modal/ConfirmationModal";
 import {
 	LibraryContactModal,
 	type LibraryContactModalActions,
@@ -19,17 +23,19 @@ import {
 } from "~/components/modal/LibrarySchemaModal";
 import { Loader } from "~/components/ui/Loader";
 import Table from "~/components/ui/Table";
-import type { Contact } from "~/payload/payload-types";
+import type { Contact, Schema } from "~/payload/payload-types";
 import { api } from "~/lib/api";
 import { authPages } from "~/lib/auth";
 
 const contactColumnHelper = createColumnHelper<Contact>();
 
 const ItemActions = ({
+	label,
 	onEdit,
 	onDelete,
 	className,
 }: {
+	label: string;
 	onEdit: () => void;
 	onDelete: () => void;
 	className?: string;
@@ -38,14 +44,14 @@ const ItemActions = ({
 		<Button
 			priority="tertiary"
 			iconId="fr-icon-edit-line"
-			title="Modifier"
+			title={`Modifier ${label}`}
 			size="small"
 			onClick={onEdit}
 		/>
 		<Button
 			priority="tertiary"
 			iconId="fr-icon-delete-line"
-			title="Supprimer"
+			title={`Supprimer ${label}`}
 			size="small"
 			onClick={onDelete}
 		/>
@@ -59,6 +65,7 @@ export default function LibraryPage() {
 
 	const [contactModalActions] = useState<LibraryContactModalActions>({});
 	const [schemaModalActions] = useState<LibrarySchemaModalActions>({});
+	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 
 	const {
 		data: contacts = [],
@@ -76,14 +83,60 @@ export default function LibraryPage() {
 		utils.library.listSchemas.invalidate();
 	};
 
-	const { mutateAsync: deleteContact } = api.library.deleteContact.useMutation({
+	const { mutate: deleteContact } = api.library.deleteContact.useMutation({
 		onSuccess: refresh,
 		onError: (e) => alert(e.message),
 	});
-	const { mutateAsync: deleteSchema } = api.library.deleteSchema.useMutation({
+	const { mutate: deleteSchema } = api.library.deleteSchema.useMutation({
 		onSuccess: refresh,
 		onError: (e) => alert(e.message),
 	});
+
+	const confirmDeleteContact = useCallback(
+		(contact: Contact) =>
+			confirmationModalActions.open?.({
+				title: "Supprimer le contact",
+				confirmLabel: "Supprimer",
+				confirmIconId: "fr-icon-delete-fill",
+				description: (
+					<>
+						<p>
+							Êtes-vous sûr de vouloir supprimer le contact{" "}
+							<strong>{contact.name}</strong> ? Cette action est irréversible.
+						</p>
+						<p>
+							Les déclarations liées à ce contact conservent les informations
+							déjà renseignées, mais ne seront plus mises à jour depuis votre
+							bibliothèque.
+						</p>
+					</>
+				),
+				onConfirm: () => deleteContact({ id: contact.id }),
+			}),
+		[confirmationModalActions, deleteContact],
+	);
+
+	const confirmDeleteSchema = (schema: Schema) =>
+		confirmationModalActions.open?.({
+			title: "Supprimer le schéma pluriannuel",
+			confirmLabel: "Supprimer",
+			confirmIconId: "fr-icon-delete-fill",
+			description: (
+				<>
+					<p>
+						Êtes-vous sûr de vouloir supprimer le schéma{" "}
+						<strong>{schema.name}</strong> et ses plans d'action associés ?
+						Cette action est irréversible.
+					</p>
+					<p>
+						Les déclarations liées à ce schéma conservent les informations déjà
+						renseignées, mais ne seront plus mises à jour depuis votre
+						bibliothèque.
+					</p>
+				</>
+			),
+			onConfirm: () => deleteSchema({ id: schema.id }),
+		});
 
 	const contactColumns = useMemo(
 		() => [
@@ -127,8 +180,9 @@ export default function LibraryPage() {
 					return (
 						<ItemActions
 							className={classes.itemActions}
+							label={contact.name}
 							onEdit={() => contactModalActions.open?.(contact)}
-							onDelete={() => deleteContact({ id: contact.id })}
+							onDelete={() => confirmDeleteContact(contact)}
 						/>
 					);
 				},
@@ -138,7 +192,7 @@ export default function LibraryPage() {
 			classes.hint,
 			classes.itemActions,
 			classes.tags,
-			deleteContact,
+			confirmDeleteContact,
 			contactModalActions,
 		],
 	);
@@ -208,8 +262,9 @@ export default function LibraryPage() {
 											</span>
 											<ItemActions
 												className={classes.itemActions}
+												label={schema.name}
 												onEdit={() => schemaModalActions.open?.(schema)}
-												onDelete={() => deleteSchema({ id: schema.id })}
+												onDelete={() => confirmDeleteSchema(schema)}
 											/>
 										</div>
 										{(schema.actionPlanUrls ?? []).map((plan) => (
@@ -260,6 +315,7 @@ export default function LibraryPage() {
 						)}
 					</section>
 					<LibrarySchemaModal actions={schemaModalActions} />
+					<ConfirmationModal actions={confirmationModalActions} />
 					<LibraryContactModal actions={contactModalActions} />
 				</div>
 			</div>
