@@ -132,8 +132,19 @@ describe("validateDeclaration", () => {
 				message: "Les éléments conformes sont requis",
 			},
 		]);
-		// Tools and non-conformités are all-optional: applicable yet error-free.
-		expect(errorsFor(errors, "audit-outils")).toEqual([]);
+		expect(errorsFor(errors, "audit-outils")).toEqual([
+			{
+				section: "audit-outils",
+				field: "usedTools",
+				message: "Au moins un outil d'assistance est requis",
+			},
+			{
+				section: "audit-outils",
+				field: "testEnvironments",
+				message: "Au moins un environnement de test est requis",
+			},
+		]);
+		// Non-conformités stay all-optional: applicable yet error-free.
 		expect(errorsFor(errors, "audit-non-conformites")).toEqual([]);
 	});
 

@@ -92,10 +92,23 @@ describe("isSectionToComplete (À compléter badges)", () => {
 			audit: { isRealised: true },
 		} as never);
 		expect(isSectionToComplete(realised, "audit-outils")).toBe(true);
+		// Both lists must be filled: tools alone leave the slice incomplete.
 		expect(
 			isSectionToComplete(
 				completeDeclaration({
 					audit: { isRealised: true, usedTools: [{ name: "wave" }] },
+				} as never),
+				"audit-outils",
+			),
+		).toBe(true);
+		expect(
+			isSectionToComplete(
+				completeDeclaration({
+					audit: {
+						isRealised: true,
+						usedTools: [{ name: "wave" }],
+						testEnvironments: [{ name: "voiceover_safari" }],
+					},
 				} as never),
 				"audit-outils",
 			),

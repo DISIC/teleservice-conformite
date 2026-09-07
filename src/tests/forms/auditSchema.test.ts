@@ -85,8 +85,21 @@ describe("auditContents", () => {
 });
 
 describe("auditTools", () => {
-	it("is all-optional", () => {
-		expect(auditTools.safeParse({}).success).toBe(true);
+	it("requires at least one tool and one test environment", () => {
+		const result = auditTools.safeParse({
+			usedTools: [],
+			testEnvironments: [],
+		});
+		expect(result.error?.issues.map((i) => i.path)).toEqual([
+			["usedTools"],
+			["testEnvironments"],
+		]);
+		expect(
+			auditTools.safeParse({
+				usedTools: ["wave"],
+				testEnvironments: ["voiceover_safari"],
+			}).success,
+		).toBe(true);
 	});
 });
 

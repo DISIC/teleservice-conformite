@@ -91,8 +91,12 @@ export function auditToGeneralValues(audit: Audit): ZAuditGeneral {
 
 // ── Outils et environnements (slug `audit-outils`) ──────────────────────────
 export const auditTools = z.object({
-	usedTools: z.array(z.string()).optional(),
-	testEnvironments: z.array(z.string()).optional(),
+	usedTools: z
+		.array(z.string())
+		.min(1, { message: "Au moins un outil d'assistance est requis" }),
+	testEnvironments: z
+		.array(z.string())
+		.min(1, { message: "Au moins un environnement de test est requis" }),
 });
 
 export type ZAuditTools = z.infer<typeof auditTools>;

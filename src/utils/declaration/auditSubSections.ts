@@ -58,7 +58,9 @@ export const AUDIT_SUB_SECTIONS: Record<
 	"audit-outils": {
 		title: "Outils et environnements",
 		isToComplete: realisedSubSectionToComplete(
-			(d) => (d.audit?.usedTools?.length ?? 0) > 0,
+			(d) =>
+				(d.audit?.usedTools?.length ?? 0) > 0 &&
+				(d.audit?.testEnvironments?.length ?? 0) > 0,
 		),
 		validation: defineSectionValidation({
 			schema: auditTools,
