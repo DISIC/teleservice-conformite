@@ -13,6 +13,7 @@ import { tss } from "tss-react";
 import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 
 import { AlertHost } from "~/components/alert/AlertHost";
+import type { PageWithHeader } from "~/components/layout/pageHeader";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
 import { authClient } from "~/lib/auth-client";
@@ -90,6 +91,10 @@ function App({ Component, pageProps }: AppProps) {
 		return items;
 	}, [authSession?.session, authSession?.user, isAuthenticated, isPendingAuth]);
 
+	const pageHeader = (
+		Component as PageWithHeader<typeof pageProps>
+	).renderHeader?.(pageProps);
+
 	return (
 		<>
 			<Head>
@@ -115,21 +120,23 @@ function App({ Component, pageProps }: AppProps) {
 						},
 					]}
 				/>
-				<Header
-					brandTop={
-						<>
-							RÉPUBLIQUE
-							<br />
-							FRANÇAISE
-						</>
-					}
-					homeLinkProps={{
-						href: "/",
-						title: "Accueil Téléservice Conformité",
-					}}
-					quickAccessItems={quickAccessItems}
-					serviceTitle="Téléservice Conformité"
-				/>
+				{pageHeader ?? (
+					<Header
+						brandTop={
+							<>
+								RÉPUBLIQUE
+								<br />
+								FRANÇAISE
+							</>
+						}
+						homeLinkProps={{
+							href: "/",
+							title: "Accueil Téléservice Conformité",
+						}}
+						quickAccessItems={quickAccessItems}
+						serviceTitle="Téléservice Conformité"
+					/>
+				)}
 				<main id="contenu" className={classes.main} style={{ flex: 1 }}>
 					<AlertHost />
 					<Component {...pageProps} />

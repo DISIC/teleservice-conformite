@@ -3,6 +3,18 @@ import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { tss } from "tss-react";
+import { OBSOLETE_NOTICE_CLASS } from "~/utils/declaration/publishedMarkdown";
+
+type HeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+
+const HEADING_CLASS: Record<HeadingLevel, string> = {
+	h1: fr.cx("fr-h2"),
+	h2: fr.cx("fr-h3"),
+	h3: fr.cx("fr-h5"),
+	h4: fr.cx("fr-h6"),
+	h5: fr.cx("fr-h6"),
+	h6: fr.cx("fr-h6"),
+};
 
 export default function MarkdownToJsx({
 	content,
@@ -13,8 +25,9 @@ export default function MarkdownToJsx({
 }) {
 	const { classes } = useStyles();
 
-	const shiftHeading =
-		(from: "h1" | "h2" | "h3" | "h4" | "h5" | "h6") =>
+	// In preview mode headings drop a rank so the page's own h1 stays unique.
+	const headingRenderer =
+		(from: HeadingLevel) =>
 		(
 			props: React.DetailedHTMLProps<
 				React.HTMLAttributes<HTMLHeadingElement>,
@@ -22,9 +35,9 @@ export default function MarkdownToJsx({
 			>,
 		) => {
 			const level = Number(from.slice(1));
-			const newLevel = Math.min(6, level + 1);
-			const Tag = `h${newLevel}`;
-			return <Tag {...props} />;
+			const tagLevel = mode === "preview" ? Math.min(6, level + 1) : level;
+			const Tag = `h${tagLevel}` as HeadingLevel;
+			return <Tag {...props} className={HEADING_CLASS[from]} />;
 		};
 
 	const linkRenderer = (
@@ -42,16 +55,12 @@ export default function MarkdownToJsx({
 
 	const components = {
 		a: linkRenderer,
-		...(mode === "preview"
-			? {
-					h1: shiftHeading("h1"),
-					h2: shiftHeading("h2"),
-					h3: shiftHeading("h3"),
-					h4: shiftHeading("h4"),
-					h5: shiftHeading("h5"),
-					h6: shiftHeading("h6"),
-				}
-			: {}),
+		h1: headingRenderer("h1"),
+		h2: headingRenderer("h2"),
+		h3: headingRenderer("h3"),
+		h4: headingRenderer("h4"),
+		h5: headingRenderer("h5"),
+		h6: headingRenderer("h6"),
 	};
 
 	return (
@@ -72,12 +81,30 @@ const useStyles = tss.withName(MarkdownToJsx.name).create({
 		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},
 	markdownContainer: {
-		p: {
-			marginBottom: 0,
+		"p, ul, ol": {
+			marginTop: 0,
+			marginBottom: fr.spacing("6v"),
+		},
+		"ul, ol": {
+			paddingLeft: fr.spacing("8v"),
 		},
 		"h1, h2, h3, h4, h5, h6": {
-			marginTop: fr.spacing("10v"),
+			marginTop: fr.spacing("8v"),
 			marginBottom: fr.spacing("4v"),
+		},
+		"h1:first-child": {
+			marginTop: 0,
+		},
+		".fr-badge": {
+			marginBottom: fr.spacing("4v"),
+		},
+		[`.${OBSOLETE_NOTICE_CLASS}`]: {
+			backgroundColor: fr.colors.options.redMarianne._975_75.default,
+			padding: fr.spacing("6v"),
+			marginBottom: fr.spacing("6v"),
+			"& .fr-badge": { marginBottom: fr.spacing("2v") },
+			"& p": { marginBottom: fr.spacing("1v") },
+			"& p:last-child": { marginBottom: 0 },
 		},
 	},
 });

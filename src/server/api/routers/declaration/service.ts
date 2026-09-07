@@ -14,7 +14,7 @@ import {
 import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
 import {
 	extractDeclarationContentToPublish,
-	type PublishedDeclaration,
+	parsePublishedDeclaration,
 } from "~/utils/declaration-content";
 import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
 import type { declarationGeneral } from "~/forms/declaration/declarationSchema";
@@ -99,12 +99,14 @@ const createDeclarationFromImportedData = async (
 					nonCompliantElements: data.nonCompliantElements || "",
 					disproportionnedCharge: data.disproportionnedCharge || "",
 					optionalElements: data.optionalElements || "",
-					date:
-						data.publishedAt && !Number.isNaN(Date.parse(data.publishedAt))
-							? new Date(data.publishedAt).toISOString().slice(0, 10)
-							: new Date().toISOString().slice(0, 10),
 					toVerify: source === "ai",
 				},
+				// The source's publication date is when the declaration first went
+				// public, not when the audit ran. Unknown stays empty for the declarant.
+				first_published_at:
+					data.publishedAt && !Number.isNaN(Date.parse(data.publishedAt))
+						? new Date(data.publishedAt).toISOString()
+						: null,
 				contact: {
 					name: data.service.name
 						? `Contact - ${data.service.name}`
@@ -261,6 +263,7 @@ export const updateDeclaration = async (
 		url,
 		domain,
 		name,
+		firstPublishedAt,
 		declarationId,
 		entityId,
 	} = general;
@@ -297,6 +300,7 @@ export const updateDeclaration = async (
 					}
 				: {}),
 			url,
+			first_published_at: firstPublishedAt || null,
 			...(newStatus ? { status: newStatus } : {}),
 		},
 	});
@@ -344,15 +348,19 @@ export const publishDeclaration = async (
 		});
 	}
 
+	const publishedAt = new Date();
 	const result = await payload.update({
 		collection: "declarations",
 		id,
 		data: {
 			status: "published",
 			publishedContent: JSON.stringify(
-				extractDeclarationContentToPublish(declaration),
+				extractDeclarationContentToPublish(declaration, { publishedAt }),
 			),
-			published_at: new Date().toISOString(),
+			published_at: publishedAt.toISOString(),
+			// A first publication in this téléservice is its own initial publication.
+			first_published_at:
+				declaration.first_published_at ?? publishedAt.toISOString(),
 		},
 	});
 
@@ -378,16 +386,10 @@ export const getPreviousPublishedRate = async (
 
 	const previousVersion = versions.docs[1];
 
-	if (!previousVersion?.version?.publishedContent) return null;
-
-	try {
-		const published = JSON.parse(
-			previousVersion.version.publishedContent as string,
-		) as PublishedDeclaration;
-		return published.audit.rate ?? null;
-	} catch {
-		return null;
-	}
+	const published = parsePublishedDeclaration(
+		previousVersion?.version?.publishedContent,
+	);
+	return published?.audit.rate ?? null;
 };
 
 export const revertToPublished = async (

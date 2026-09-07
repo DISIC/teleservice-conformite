@@ -20,7 +20,7 @@ import { Pagination } from "./Pagination";
 declare module "@tanstack/react-table" {
 	interface ColumnMeta<TData extends RowData, TValue> {
 		styles?: CSSProperties;
-		noRowLink?: boolean;
+		rowLink?: boolean;
 	}
 }
 
@@ -116,15 +116,15 @@ export const Table = <TData,>(props: Props<TData>) => {
 				cell.column.columnDef.cell,
 				cell.getContext(),
 			);
-			const noRowLink = cell.column.columnDef.meta?.noRowLink;
+			const isRowLink = !!href && !!cell.column.columnDef.meta?.rowLink;
 			return (
 				<div
 					key={cell.id}
-					className={cx(classes.bodyCell, href && classes.bodyCellLinked)}
+					className={cx(classes.bodyCell, isRowLink && classes.bodyCellLinked)}
 					style={{ ...cell.column.columnDef.meta?.styles }}
 				>
-					{href && !noRowLink ? (
-						<Link href={href} className={classes.rowLink}>
+					{isRowLink ? (
+						<Link href={href} className={classes.rowLink} data-row-link>
 							{cellNode}
 						</Link>
 					) : (
@@ -176,7 +176,7 @@ const useStyles = tss.withName(Table.name).create(() => ({
 			display: "table",
 		},
 		thead: {
-			backgroundColor: "white!important",
+			backgroundColor: `${fr.colors.decisions.background.default.grey.default}!important`,
 			backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default})!important`,
 		},
 		"thead::after, tbody::after": {
@@ -198,17 +198,24 @@ const useStyles = tss.withName(Table.name).create(() => ({
 	},
 	tableWithRowLink: {
 		"tbody tr": {
+			position: "relative",
 			cursor: "pointer",
 		},
 		"tbody tr:hover > td": {
 			backgroundColor: `${fr.colors.decisions.background.default.grey.hover} !important`,
 			boxShadow: `inset 0 -1px 0 ${fr.colors.decisions.border.default.grey.default}`,
 		},
-		"tbody td:has(> div > a)": {
+		"tbody td:has(> div > a[data-row-link])": {
 			padding: "0 !important",
 		},
-		"tbody td a, tbody td a:hover, tbody td a:focus, tbody td a:active": {
-			backgroundColor: "transparent !important",
+		"tbody td a[data-row-link], tbody td a[data-row-link]:hover, tbody td a[data-row-link]:focus, tbody td a[data-row-link]:active":
+			{
+				backgroundColor: "transparent !important",
+			},
+		// Other controls in the row must stay reachable above the row link's overlay.
+		"tbody td :is(button, a:not([data-row-link]), [aria-describedby])": {
+			position: "relative",
+			zIndex: 1,
 		},
 	},
 	rowLink: {
@@ -224,6 +231,12 @@ const useStyles = tss.withName(Table.name).create(() => ({
 		"&:hover, &:focus, &:active, &:focus-visible, &:focus-within": {
 			backgroundColor: "transparent",
 			backgroundImage: "none",
+		},
+		// Single link per row: its click area is stretched over the whole row.
+		"&::after": {
+			content: '""',
+			position: "absolute",
+			inset: 0,
 		},
 	},
 	hiddenHeaders: {

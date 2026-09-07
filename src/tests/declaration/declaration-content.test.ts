@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { extractDeclarationContentToPublish } from "~/utils/declaration-content";
+import {
+	extractDeclarationContentToPublish,
+	parsePublishedDeclaration,
+} from "~/utils/declaration-content";
 import { completeDeclaration } from "./declaration.fixture";
-import { hasContentChangedSincePublish } from "~/utils/declaration/status";
 
 describe("extractDeclarationContentToPublish", () => {
 	it("publishes human-readable labels, not stored values", () => {
@@ -40,43 +42,50 @@ describe("extractDeclarationContentToPublish", () => {
 		expect(content.audit.rgaa_version).toBe("RGAA 4");
 		expect(content.schema.actionPlanUrls).toEqual([]);
 	});
-});
 
-describe("hasContentChangedSincePublish", () => {
-	const published = () => {
-		const declaration = completeDeclaration();
-		return completeDeclaration({
-			publishedContent: JSON.stringify(
-				extractDeclarationContentToPublish(declaration),
-			),
-		});
-	};
+	it("dates the snapshot with the publish action, falling back to the row", () => {
+		const explicit = extractDeclarationContentToPublish(
+			completeDeclaration({ first_published_at: "2024-03-24T10:00:00.000Z" }),
+			{ publishedAt: new Date("2026-08-27T09:30:00.000Z") },
+		);
+		expect(explicit.publishedAt).toBe("2026-08-27");
+		expect(explicit.firstPublishedAt).toBe("2024-03-24");
 
-	it("is false for a draft — nothing to differ from", () => {
-		expect(hasContentChangedSincePublish(completeDeclaration())).toBe(false);
+		const fromRow = extractDeclarationContentToPublish(
+			completeDeclaration({ published_at: "2026-08-27T09:30:00.000Z" }),
+		);
+		expect(fromRow.publishedAt).toBe("2026-08-27");
+		expect(fromRow.firstPublishedAt).toBe("2026-08-27");
 	});
 
-	it("is false right after publishing", () => {
-		expect(hasContentChangedSincePublish(published())).toBe(false);
-	});
-
-	it("detects an edit to published content", () => {
-		const declaration = published();
+	it("records whether an audit was performed", () => {
 		expect(
-			hasContentChangedSincePublish({
-				...declaration,
-				contact: { ...declaration.contact, email: "autre@example.fr" },
-			} as never),
+			extractDeclarationContentToPublish(completeDeclaration()).audit
+				.isRealised,
+		).toBe(false);
+		expect(
+			extractDeclarationContentToPublish(
+				completeDeclaration({
+					audit: { isRealised: true, realisedBy: "Orion", rate: 74 },
+				} as never),
+			).audit.isRealised,
 		).toBe(true);
 	});
+});
 
-	it("ignores edits to fields outside the public snapshot", () => {
-		const declaration = published();
-		expect(
-			hasContentChangedSincePublish({
-				...declaration,
-				contact: { ...declaration.contact, name: "Autre référent" },
-			} as never),
-		).toBe(false);
+describe("parsePublishedDeclaration", () => {
+	it("round-trips a snapshot written by the extractor", () => {
+		const snapshot = extractDeclarationContentToPublish(completeDeclaration(), {
+			publishedAt: new Date("2026-08-27T09:30:00.000Z"),
+		});
+		expect(parsePublishedDeclaration(JSON.stringify(snapshot))).toEqual(
+			snapshot,
+		);
+	});
+
+	it("treats anything off-contract as no snapshot", () => {
+		expect(parsePublishedDeclaration(null)).toBeNull();
+		expect(parsePublishedDeclaration("not json")).toBeNull();
+		expect(parsePublishedDeclaration('{"name":"legacy"}')).toBeNull();
 	});
 });

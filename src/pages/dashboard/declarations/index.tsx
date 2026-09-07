@@ -8,7 +8,7 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { getPayload } from "payload";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { BackButton } from "~/components/ui/BackButton";
 import Table from "~/components/ui/Table";
@@ -34,6 +34,7 @@ export default function EntityDeclarationsPage({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
 
+	const alertRef = useRef<HTMLDivElement>(null);
 	const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
 	const onCopySuccess = useCallback(
@@ -45,9 +46,7 @@ export default function EntityDeclarationsPage({
 	);
 
 	useEffect(() => {
-		if (!alertMessage) return;
-		const timer = setTimeout(() => setAlertMessage(null), 5000);
-		return () => clearTimeout(timer);
+		if (alertMessage) alertRef.current?.focus();
 	}, [alertMessage]);
 
 	const columns = useMemo(
@@ -104,10 +103,10 @@ export default function EntityDeclarationsPage({
 									)
 								}
 								nativeButtonProps={{
-									"aria-label": "Copier le lien web de la déclaration publiée",
+									"aria-label": `Copier le lien public de la déclaration ${declaration.name}`,
 								}}
 							>
-								Partager le lien public
+								Copier le lien public
 							</Button>
 						</div>
 					);
@@ -132,7 +131,7 @@ export default function EntityDeclarationsPage({
 						</Badge>
 					</div>
 					{alertMessage && (
-						<div className={classes.alertWrapper}>
+						<div className={classes.alertWrapper} ref={alertRef} tabIndex={-1}>
 							<Alert
 								small
 								severity="success"

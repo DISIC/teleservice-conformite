@@ -39,6 +39,48 @@ describe("validateDeclaration", () => {
 		]);
 	});
 
+	it("never requires the initial publication date on a manual declaration", () => {
+		expect(
+			errorsFor(
+				validateDeclaration(
+					completeDeclaration({
+						fromSource: "manual",
+						first_published_at: null,
+					}),
+				),
+				"infos",
+			),
+		).toEqual([]);
+	});
+
+	it("requires the initial publication date on an imported declaration", () => {
+		expect(
+			errorsFor(
+				validateDeclaration(
+					completeDeclaration({ fromSource: "ara", first_published_at: null }),
+				),
+				"infos",
+			),
+		).toEqual([
+			{
+				section: "infos",
+				field: "general.firstPublishedAt",
+				message: "La date de publication initiale est requise",
+			},
+		]);
+		expect(
+			errorsFor(
+				validateDeclaration(
+					completeDeclaration({
+						fromSource: "ai",
+						first_published_at: "2024-03-24T00:00:00.000Z",
+					}),
+				),
+				"infos",
+			),
+		).toEqual([]);
+	});
+
 	it("requires the platform once the service is a mobile app", () => {
 		const errors = errorsFor(
 			validateDeclaration(

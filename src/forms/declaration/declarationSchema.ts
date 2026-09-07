@@ -15,6 +15,9 @@ const generalFields = z.object({
 	name: z.string(),
 	url: z.string(),
 	domain: z.string().meta({ kind: "select" }),
+	firstPublishedAt: z.iso.date().or(z.literal("")),
+	// An imported declaration was already public: its initial date is required.
+	isImported: z.boolean(),
 });
 
 export const declarationGeneral = z.object({ general: generalFields });
@@ -49,6 +52,13 @@ export const declarationGeneralRefined = declarationGeneral.superRefine(
 			"Le domaine est requis",
 		);
 		optionalUrlIssue(ctx, ["general", "url"], g.url);
+		if (g.isImported)
+			requiredIssue(
+				ctx,
+				["general", "firstPublishedAt"],
+				g.firstPublishedAt,
+				"La date de publication initiale est requise",
+			);
 		if (g.kind === "mobile_app" && !g.mobilePlatform)
 			ctx.addIssue({
 				code: "custom",
@@ -66,6 +76,8 @@ export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 		name: "",
 		url: "",
 		domain: "",
+		firstPublishedAt: "",
+		isImported: false,
 	},
 };
 
@@ -87,6 +99,11 @@ export function declarationToGeneralValues(
 			name: declaration.name ?? "",
 			url: declaration.url ?? "",
 			domain: declaration.entity?.kind ?? "",
+			firstPublishedAt: declaration.first_published_at
+				? declaration.first_published_at.slice(0, 10)
+				: "",
+			isImported:
+				!!declaration.fromSource && declaration.fromSource !== "manual",
 		},
 	};
 }

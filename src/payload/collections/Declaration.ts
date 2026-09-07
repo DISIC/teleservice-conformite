@@ -50,6 +50,17 @@ export const Declarations: CollectionConfig = {
 			},
 		},
 		{
+			name: "first_published_at",
+			type: "date",
+			label: { fr: "Date de publication initiale" },
+			admin: {
+				position: "sidebar",
+				date: {
+					pickerAppearance: "dayOnly",
+				},
+			},
+		},
+		{
 			name: "created_by",
 			type: "relationship",
 			relationTo: "users",

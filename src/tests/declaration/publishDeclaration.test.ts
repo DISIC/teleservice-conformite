@@ -41,12 +41,33 @@ describe("publishDeclaration", () => {
 				id: 1,
 				data: expect.objectContaining({
 					status: "published",
-					publishedContent: JSON.stringify(
-						extractDeclarationContentToPublish(declaration),
-					),
+					publishedContent: expect.any(String),
 					published_at: expect.any(String),
+					first_published_at: expect.any(String),
 				}),
 			}),
+		);
+		const data = update.mock.calls[0]?.[0]?.data ?? {};
+		expect(JSON.parse(data.publishedContent)).toEqual(
+			extractDeclarationContentToPublish(declaration, {
+				publishedAt: new Date(data.published_at),
+			}),
+		);
+		expect(data.first_published_at).toBe(data.published_at);
+	});
+
+	it("keeps a declarant-supplied initial publication date", async () => {
+		const declaration = completeDeclaration({
+			first_published_at: "2024-03-24T00:00:00.000Z",
+		});
+		const { payload, update } = stubPayload(declaration);
+
+		await publishDeclaration(payload, 1, 1);
+
+		const data = update.mock.calls[0]?.[0]?.data ?? {};
+		expect(data.first_published_at).toBe("2024-03-24T00:00:00.000Z");
+		expect(JSON.parse(data.publishedContent).firstPublishedAt).toBe(
+			"2024-03-24",
 		);
 	});
 

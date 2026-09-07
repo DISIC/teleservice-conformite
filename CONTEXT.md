@@ -151,6 +151,31 @@ The ARA import is intended to be reusable later as an **update** of an existing 
 
 **See also:** [[status]], [[à-compléter-à-vérifier|À compléter / À vérifier]].
 
+### Date de publication initiale
+
+The date a Declaration was **first** made public, wherever that happened — in this téléservice, in ARA, or on an older declaration page being re-entered. Distinct from the audit date (`audit.date`, when the audit was performed) and from the last publication date (`published_at`, overwritten on every publish action).
+
+Its origin follows the [[creation-path|Creation path]]:
+
+- **Manuel** — unknown until the first publish action, which sets it to the publish date unless the declarant filled it in (an "ancienne déclaration" re-entered by hand keeps its historical date).
+- **Import ARA / Import IA** — prefilled from the source's publication date when present. When the source has none, it stays empty and **blocks publish** until the declarant fills it: nothing in the data can know when a pre-existing declaration was first published, and guessing "today" would be wrong.
+
+Always editable in the Informations générales [[section]]; never derived from `audit.date`.
+
+**Avoid:** "date de publication" alone — ambiguous with the last publish date. "Audit date" — a different fact.
+
+**See also:** [[creation-path|Creation path]], [[status]].
+
+### Obsolète
+
+A **Publiée** Declaration whose last publish action is more than three years old. Derived at read time from the last publication date and today's date — never stored, since it becomes true by the mere passage of time. Each publish action restarts the three years; the [[date-de-publication-initiale|Date de publication initiale]] plays no part.
+
+An Obsolète Declaration is presented as _réputée non conforme_ regardless of its audit rate, and its public view says so, but none of its content is hidden. It is a presentation state layered on [[status]], not a fourth lifecycle value.
+
+**Avoid:** "Expirée", "Périmée" — the design system copy is "Obsolète".
+
+**See also:** [[status]], [[declaration-state|Declaration state]].
+
 ### Library ("Schémas et Contacts")
 
 A user's personal pool of Contacts and Schemas, reusable across their Declarations. Ownership is **per-user**, not per-entity/organization (organization-level sharing is out of scope).

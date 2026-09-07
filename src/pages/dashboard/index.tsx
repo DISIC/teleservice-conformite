@@ -10,7 +10,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, Redirect } from "next";
 import Link from "next/link";
 import { getPayload } from "payload";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
 import EmptyState from "~/components/ui/EmptyState";
 import InfoBlock from "~/components/ui/InfoBlock";
@@ -86,7 +86,6 @@ const defaultColumns = [
 const buildActionsColumn = (onCopySuccess: (declarationName: string) => void) =>
 	columnHelper.display({
 		id: "actions",
-		meta: { noRowLink: true },
 		cell: (info) => {
 			const declaration = info.row.original;
 			if (declaration.status !== "published") return null;
@@ -104,10 +103,10 @@ const buildActionsColumn = (onCopySuccess: (declarationName: string) => void) =>
 							)
 						}
 						nativeButtonProps={{
-							"aria-label": "Copier le lien web de la déclaration publiée",
+							"aria-label": `Copier le lien public de la déclaration ${declaration.name}`,
 						}}
 					>
-						Partager le lien public
+						Copier le lien public
 					</Button>
 				</div>
 			);
@@ -124,6 +123,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { classes } = useStyles({
 		declarationLength: declarations.length || 0,
 	});
+	const alertRef = useRef<HTMLDivElement>(null);
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertDetails, setAlertDetails] = useState<AlertDetailsProps>({
 		description: "",
@@ -151,7 +151,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		() => [
 			columnHelper.accessor("name", {
 				header: "Nom de la déclaration",
-				meta: { styles: { maxWidth: 240 } },
+				meta: { styles: { maxWidth: 240 }, rowLink: true },
 				cell: (info) => (
 					<span className={classes.nameLink}>{info.getValue()}</span>
 				),
@@ -163,19 +163,15 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	);
 
 	useEffect(() => {
-		if (!showAlert) return;
-
-		const timer = setTimeout(() => setShowAlert(false), 5000);
-
-		return () => clearTimeout(timer);
-	}, [showAlert]);
+		if (showAlert) alertRef.current?.focus();
+	}, [showAlert, alertDetails]);
 
 	return (
 		<div className={fr.cx("fr-container")}>
 			<section id="declarations-page" className={classes.main}>
 				<h1>Déclarations d'accessibilité</h1>
 				{showAlert && (
-					<div className={classes.alertWrapper}>
+					<div className={classes.alertWrapper} ref={alertRef} tabIndex={-1}>
 						<Alert
 							small
 							severity={alertDetails.severity}
