@@ -71,7 +71,6 @@ export const Declarations: CollectionConfig = {
 			type: "select",
 			label: { fr: "Type de produit numérique" },
 			options: appKindOptions.map(({ label, value }) => ({ label, value })),
-			required: true,
 		},
 		{
 			name: "mobile_platform",

@@ -35,7 +35,7 @@ export function requiredUrlIssue(
 export function requiredIssue(
 	ctx: IssueCtx,
 	path: IssuePath,
-	value: string,
+	value: string | undefined,
 	message: string,
 ) {
 	if (!value) ctx.addIssue({ code: "custom", path, message });

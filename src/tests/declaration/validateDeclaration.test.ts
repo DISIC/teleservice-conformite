@@ -25,6 +25,20 @@ describe("validateDeclaration", () => {
 		expect(errors[0]?.section).toBe("infos");
 	});
 
+	it("blocks publishing while the service type is unset", () => {
+		const errors = errorsFor(
+			validateDeclaration(completeDeclaration({ app_kind: null } as never)),
+			"infos",
+		);
+		expect(errors).toEqual([
+			{
+				section: "infos",
+				field: "general.kind",
+				message: "Le type de service est requis",
+			},
+		]);
+	});
+
 	it("requires the platform once the service is a mobile app", () => {
 		const errors = errorsFor(
 			validateDeclaration(

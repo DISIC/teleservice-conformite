@@ -8,7 +8,7 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 // each layers its own rules on top.
 const generalFields = z.object({
 	organisation: z.string().meta({ kind: "select" }),
-	kind: z.enum(appKindOptions.map((option) => option.value)),
+	kind: z.enum(appKindOptions.map((option) => option.value)).optional(),
 	mobilePlatform: z
 		.enum(mobilePlatformOptions.map((option) => option.value))
 		.optional(),
@@ -29,6 +29,12 @@ export const declarationGeneralRefined = declarationGeneral.superRefine(
 			["general", "organisation"],
 			g.organisation,
 			"Le nom de l'organisation est requis",
+		);
+		requiredIssue(
+			ctx,
+			["general", "kind"],
+			g.kind,
+			"Le type de service est requis",
 		);
 		requiredIssue(
 			ctx,
@@ -55,7 +61,7 @@ export const declarationGeneralRefined = declarationGeneral.superRefine(
 export const declarationGeneralDefaultValues: ZDeclarationGeneral = {
 	general: {
 		organisation: "",
-		kind: "website",
+		kind: undefined,
 		mobilePlatform: undefined,
 		name: "",
 		url: "",
@@ -76,7 +82,7 @@ export function declarationToGeneralValues(
 	return {
 		general: {
 			organisation: declaration.entity?.name ?? "",
-			kind: declaration.app_kind,
+			kind: declaration.app_kind ?? undefined,
 			mobilePlatform: declaration.mobile_platform ?? undefined,
 			name: declaration.name ?? "",
 			url: declaration.url ?? "",

@@ -39,10 +39,8 @@ const defaultColumns = [
 		header: "Type",
 		cell: (info) => (
 			<Tag small>
-				{
-					appKindOptions.find((option) => option.value === info.getValue())
-						?.label
-				}
+				{appKindOptions.find((option) => option.value === info.getValue())
+					?.label ?? "—"}
 			</Tag>
 		),
 	}),

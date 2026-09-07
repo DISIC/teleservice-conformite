@@ -183,7 +183,6 @@ export const createManualDeclaration = async (
 		draft: true,
 		data: {
 			name,
-			app_kind: "website",
 			entity: declarationEntityId,
 			created_by: userId,
 			status: "unpublished",
@@ -291,8 +290,12 @@ export const updateDeclaration = async (
 		id: declarationId,
 		data: {
 			...(name ? { name } : {}),
-			app_kind: kind,
-			mobile_platform: kind === "mobile_app" ? mobilePlatform : null,
+			...(kind
+				? {
+						app_kind: kind,
+						mobile_platform: kind === "mobile_app" ? mobilePlatform : null,
+					}
+				: {}),
 			url,
 			...(newStatus ? { status: newStatus } : {}),
 		},
