@@ -13,8 +13,7 @@ import { tss } from "tss-react";
 import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 
 import { AlertHost } from "~/components/alert/AlertHost";
-import { PublishedHeader } from "~/components/declaration/PublishedHeader";
-import type { PublishedDeclaration } from "~/utils/declaration-content";
+import type { PageWithHeader } from "~/components/layout/pageHeader";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
 import { authClient } from "~/lib/auth-client";
@@ -92,12 +91,9 @@ function App({ Component, pageProps }: AppProps) {
 		return items;
 	}, [authSession?.session, authSession?.user, isAuthenticated, isPendingAuth]);
 
-	// The public declaration page describes the document, not the téléservice.
-	const publishedDeclaration =
-		router.pathname === "/declarations/[id]/publish"
-			? ((pageProps as { publishedContent?: PublishedDeclaration | null })
-					.publishedContent ?? null)
-			: null;
+	const pageHeader = (
+		Component as PageWithHeader<typeof pageProps>
+	).renderHeader?.(pageProps);
 
 	return (
 		<>
@@ -124,9 +120,7 @@ function App({ Component, pageProps }: AppProps) {
 						},
 					]}
 				/>
-				{publishedDeclaration ? (
-					<PublishedHeader declaration={publishedDeclaration} />
-				) : (
+				{pageHeader ?? (
 					<Header
 						brandTop={
 							<>

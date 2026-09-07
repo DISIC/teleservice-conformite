@@ -348,7 +348,7 @@ export const publishDeclaration = async (
 		});
 	}
 
-	const publishedAt = new Date().toISOString();
+	const publishedAt = new Date();
 	const result = await payload.update({
 		collection: "declarations",
 		id,
@@ -357,9 +357,10 @@ export const publishDeclaration = async (
 			publishedContent: JSON.stringify(
 				extractDeclarationContentToPublish(declaration, { publishedAt }),
 			),
-			published_at: publishedAt,
+			published_at: publishedAt.toISOString(),
 			// A first publication in this téléservice is its own initial publication.
-			first_published_at: declaration.first_published_at ?? publishedAt,
+			first_published_at:
+				declaration.first_published_at ?? publishedAt.toISOString(),
 		},
 	});
 

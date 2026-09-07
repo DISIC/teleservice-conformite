@@ -6,7 +6,6 @@ import { publicationLabel } from "~/utils/declaration/publishedMarkdown";
 
 export const PUBLISHED_HEADER_TITLE = "Déclaration d’accessibilité numérique";
 
-/** The public declaration page's header: the document label, the service, its publication date. */
 export function PublishedHeader({
 	declaration,
 }: {

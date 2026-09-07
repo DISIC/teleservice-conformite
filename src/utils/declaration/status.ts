@@ -36,7 +36,7 @@ export function hasContentChangedSincePublish(
 	if (!published) return true;
 	// The publish date is set by publishing itself, so it is never a content change.
 	const current = extractDeclarationContentToPublish(declaration, {
-		publishedAt: published.publishedAt,
+		publishedAt: new Date(published.publishedAt),
 	});
 	return JSON.stringify(current) !== JSON.stringify(published);
 }

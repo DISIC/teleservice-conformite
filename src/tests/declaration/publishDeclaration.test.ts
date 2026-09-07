@@ -50,7 +50,7 @@ describe("publishDeclaration", () => {
 		const data = update.mock.calls[0]?.[0]?.data ?? {};
 		expect(JSON.parse(data.publishedContent)).toEqual(
 			extractDeclarationContentToPublish(declaration, {
-				publishedAt: data.published_at,
+				publishedAt: new Date(data.published_at),
 			}),
 		);
 		expect(data.first_published_at).toBe(data.published_at);

@@ -33,7 +33,6 @@ export const obsoleteSince = (publishedAt: IsoDate): IsoDate =>
 export const isObsolete = (publishedAt: IsoDate, today: Date): boolean =>
 	obsoleteSince(publishedAt) < today.toISOString().slice(0, 10);
 
-/** Header line: a first publication is "Publiée le", any republish "Mise à jour :". */
 export const publicationLabel = (
 	d: Pick<PublishedDeclaration, "firstPublishedAt" | "publishedAt">,
 ): string =>
@@ -54,7 +53,6 @@ const CONFORMITY_BADGE_SEVERITY: Record<string, "success" | "info" | "error"> =
 		"Non conforme": "error",
 	};
 
-/** "Le site", "L’application mobile", or a neutral "Le service" for the catch-all kind. */
 const serviceSubject = (appKindLabel: PublishedDeclaration["appKindLabel"]) => {
 	const kind = appKindOptions.find((o) => o.label === appKindLabel)?.value;
 	switch (kind) {
@@ -263,7 +261,6 @@ const feedbackAndContact = (d: PublishedDeclaration): string[] => {
 	];
 };
 
-// Plain block: the renderer paints its background, the badge and paragraphs stack.
 export const OBSOLETE_NOTICE_CLASS = "declaration-obsolete";
 
 const obsoleteNotice = () =>
@@ -275,11 +272,6 @@ const obsoleteNotice = () =>
 		"</div>",
 	].join("\n");
 
-/**
- * Renders a published snapshot as the public accessibility declaration in
- * markdown, with raw DSFR islands only where markdown has no equivalent
- * (badge, alert). Pure: same snapshot and same day give the same document.
- */
 export function buildPublishedMarkdown(
 	declaration: PublishedDeclaration,
 	{ today }: PublishedMarkdownOptions,

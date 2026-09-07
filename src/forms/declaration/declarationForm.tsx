@@ -118,7 +118,7 @@ export const DeclarationGeneralForm = withForm({
 									hintText={
 										isImported
 											? "Date à laquelle cette déclaration a été publiée pour la première fois. La source importée ne la fournit pas toujours."
-											: "Laissez vide s’il s’agit de la première publication : la date de publication sera utilisée. Renseignez-la si vous reprenez une déclaration déjà publiée ailleurs."
+											: "Laissez vide s’il s’agit de la première publication : la date à laquelle vous publierez dans ce téléservice deviendra la date de publication initiale. Renseignez-la si vous reprenez une déclaration déjà publiée ailleurs."
 									}
 									nativeInputProps={{
 										type: "date",

@@ -16,8 +16,7 @@ const generalFields = z.object({
 	url: z.string(),
 	domain: z.string().meta({ kind: "select" }),
 	firstPublishedAt: z.iso.date().or(z.literal("")),
-	// Imports may carry an initial publication date the source did not know; the
-	// declarant then has to supply it. Never rendered, mapped from `fromSource`.
+	// An imported declaration was already public: its initial date is required.
 	isImported: z.boolean(),
 });
 

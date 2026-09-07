@@ -25,8 +25,7 @@ export default function MarkdownToJsx({
 }) {
 	const { classes } = useStyles();
 
-	// The mockup sets each heading one DSFR size below its rank; in preview mode
-	// the tag also drops a rank so the page's own h1 stays unique.
+	// In preview mode headings drop a rank so the page's own h1 stays unique.
 	const headingRenderer =
 		(from: HeadingLevel) =>
 		(
@@ -81,8 +80,6 @@ const useStyles = tss.withName(MarkdownToJsx.name).create({
 	link: {
 		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},
-	// Mirrors the published-declaration mockup: 24px between blocks, lists indented
-	// past the marker, section headings one step smaller than the DSFR defaults.
 	markdownContainer: {
 		"p, ul, ol": {
 			marginTop: 0,

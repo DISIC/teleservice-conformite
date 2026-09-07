@@ -63,14 +63,14 @@ export const parsePublishedDeclaration = (
 	}
 };
 
-const toIsoDate = (value: string | null | undefined): string | null =>
-	value && !Number.isNaN(Date.parse(value))
-		? new Date(value).toISOString().slice(0, 10)
-		: null;
+const toIsoDate = (value: string | Date | null | undefined): string | null => {
+	if (!value) return null;
+	const date = value instanceof Date ? value : new Date(value);
+	return Number.isNaN(date.getTime()) ? null : date.toISOString().slice(0, 10);
+};
 
 type SnapshotDates = {
-	/** The publish action's date; defaults to the row's last `published_at`. */
-	publishedAt?: string;
+	publishedAt?: Date;
 };
 
 export const extractDeclarationContentToPublish = (
