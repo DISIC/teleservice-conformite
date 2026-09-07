@@ -107,6 +107,30 @@ export const DeclarationGeneralForm = withForm({
 						/>
 					)}
 				</form.AppField>
+				<form.Subscribe selector={(store) => store.values.general?.isImported}>
+					{(isImported) => (
+						<form.AppField name="general.firstPublishedAt">
+							{(field) => (
+								<field.TextField
+									label={`Date de publication initiale de la déclaration${
+										!readOnly && !isImported ? " (facultatif)" : ""
+									}`}
+									hintText={
+										isImported
+											? "Date à laquelle cette déclaration a été publiée pour la première fois. La source importée ne la fournit pas toujours."
+											: "Laissez vide s’il s’agit de la première publication : la date de publication sera utilisée. Renseignez-la si vous reprenez une déclaration déjà publiée ailleurs."
+									}
+									nativeInputProps={{
+										type: "date",
+										max: new Date().toISOString().split("T")[0],
+									}}
+									readOnlyField={readOnly}
+									required={isImported}
+								/>
+							)}
+						</form.AppField>
+					)}
+				</form.Subscribe>
 			</Part>
 		);
 	},
