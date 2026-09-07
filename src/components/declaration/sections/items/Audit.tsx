@@ -311,6 +311,7 @@ export function AuditNonConformitesSection(props: SectionRenderProps) {
 				form={form}
 				readOnly={readOnly}
 				showNotice={showNotice}
+				showNonConformities={audit?.rate !== 100}
 			/>
 		</Frame>
 	);

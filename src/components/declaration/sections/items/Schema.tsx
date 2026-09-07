@@ -56,6 +56,7 @@ export function SchemaSection({
 		<SourceModeSection<ZSchema, SchemaFormApi>
 			kind="schema"
 			title={SECTION_TITLES.schema}
+			legend="Renseigner un schéma pluriannuel :"
 			declaration={declaration}
 			onDeclarationChange={onDeclarationChange}
 			mode={mode}

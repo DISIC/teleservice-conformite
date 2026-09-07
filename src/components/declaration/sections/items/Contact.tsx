@@ -54,6 +54,7 @@ export function ContactSection({
 		<SourceModeSection<ZContactForm, ContactFormApi>
 			kind="contact"
 			title={SECTION_TITLES.contact}
+			legend="Renseigner un moyen de contact :"
 			declaration={declaration}
 			onDeclarationChange={onDeclarationChange}
 			mode={mode}

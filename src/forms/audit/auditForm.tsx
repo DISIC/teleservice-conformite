@@ -268,39 +268,43 @@ export const CompliantElementsForm = withForm({
 
 export const NonCompliantElementsForm = withForm({
 	...auditNonConformitiesFormOptions,
-	props: { readOnly: false, showNotice: false },
-	render: function Render({ form, readOnly, showNotice }) {
+	props: { readOnly: false, showNotice: false, showNonConformities: true },
+	render: function Render({ form, readOnly, showNotice, showNonConformities }) {
 		if (showNotice) return <AuditNotRealisedNotice />;
 		return (
 			<>
-				<Part readOnly={readOnly} title="Non conformités" grid={false}>
-					<form.AppField name="nonCompliantElements">
-						{(field) => (
-							<field.TextField
-								label={
-									!readOnly ? "Éléments non conformes (facultatif)" : undefined
-								}
-								textArea
-								hintText={
-									<>
-										Exemples : Vidéo sans transcription, navigation au clavier
-										impossible, ...
-										<br />
-										Précisez les points non conformes et leur volume en
-										utilisant les mentions “quelques / la plupart des /
-										aucun(e)”. Vous pouvez trouver ces informations dans votre
-										déclaration existante ou votre audit.
-										<br />
-										Exemples :
-										<br />- Aucune image n’a de texte équivalent
-										<br />- Quelques vidéos n’ont pas de sous-titres
-									</>
-								}
-								readOnlyField={readOnly}
-							/>
-						)}
-					</form.AppField>
-				</Part>
+				{showNonConformities && (
+					<Part readOnly={readOnly} title="Non conformités" grid={false}>
+						<form.AppField name="nonCompliantElements">
+							{(field) => (
+								<field.TextField
+									label={
+										!readOnly
+											? "Éléments non conformes (facultatif)"
+											: undefined
+									}
+									textArea
+									hintText={
+										<>
+											Exemples : Vidéo sans transcription, navigation au clavier
+											impossible, ...
+											<br />
+											Précisez les points non conformes et leur volume en
+											utilisant les mentions “quelques / la plupart des /
+											aucun(e)”. Vous pouvez trouver ces informations dans votre
+											déclaration existante ou votre audit.
+											<br />
+											Exemples :
+											<br />- Aucune image n’a de texte équivalent
+											<br />- Quelques vidéos n’ont pas de sous-titres
+										</>
+									}
+									readOnlyField={readOnly}
+								/>
+							)}
+						</form.AppField>
+					</Part>
+				)}
 				<Part readOnly={readOnly} title="Dérogations" grid={false}>
 					<form.AppField name="optionalElements">
 						{(field) => (

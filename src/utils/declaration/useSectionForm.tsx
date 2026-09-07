@@ -108,6 +108,7 @@ export function useSectionForm({
 					hideActions={hideActions}
 					mode={mode}
 				>
+					{!readOnly && !hideRequiredNotice && <RequiredFieldsNotice />}
 					{before}
 					<form
 						onSubmit={(e) => {
@@ -116,7 +117,6 @@ export function useSectionForm({
 						}}
 						onInvalid={() => form.validate("submit")}
 					>
-						{!readOnly && !hideRequiredNotice && <RequiredFieldsNotice />}
 						<div className={commonClasses.partStack}>{children}</div>
 					</form>
 				</SectionShell>

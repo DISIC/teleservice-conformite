@@ -65,6 +65,8 @@ export const auditRouter = createTRPCRouter({
 				...(technologies !== undefined && {
 					technologies: technologies.map((name) => ({ name })),
 				}),
+				// A fully conformant audit has no non-conformities to declare.
+				...(values.rate === 100 && { nonCompliantElements: null }),
 				// Answering "non réalisé" invalidates the realised-audit details; clear
 				// them so switching back to "réalisé" starts from a blank slate.
 				...(values.isRealised === false && {

@@ -4,12 +4,15 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { AuditNotice } from "~/components/ui/AuditNotice";
+import { useRouter } from "next/router";
 import type { StandardSchemaV1 } from "@tanstack/react-form";
-import { type ReactNode, useEffect, useMemo, useRef } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
+import { withRequiredMark } from "~/components/form/RequiredField";
 import { useAppForm } from "~/forms/context";
 import { sectionFormOptions } from "~/forms/formOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { SECTIONS } from "~/utils/declaration/sections";
 import type { EditingMode } from "~/utils/declaration/status";
 import {
 	SOURCE_MODE_FIELD,
@@ -31,6 +34,8 @@ export type SourceModeOption = {
 type SourceModeSectionProps<TValues, TForm> = {
 	kind: LibrarySectionKind;
 	title: string;
+	/** Legend of the source radio — must read correctly whatever options remain. */
+	legend: string;
 	declaration: PopulatedDeclaration;
 	onDeclarationChange: DeclarationChangeFn;
 	mode: EditingMode;
@@ -56,6 +61,7 @@ type SourceModeSectionProps<TValues, TForm> = {
 export function SourceModeSection<TValues, TForm>({
 	kind,
 	title,
+	legend,
 	declaration,
 	onDeclarationChange,
 	mode,
@@ -70,6 +76,7 @@ export function SourceModeSection<TValues, TForm>({
 	onPublishAttempt,
 }: SourceModeSectionProps<TValues, TForm>) {
 	const { classes } = useStyles();
+	const router = useRouter();
 	const isSequential = mode === "sequential";
 	const controller = useSourceMode({ kind, declaration, onDeclarationChange });
 	const { libraryLink, effectiveMode, isLinked, linkedCount } = controller;
@@ -92,6 +99,21 @@ export function SourceModeSection<TValues, TForm>({
 		() => toValues(declaration),
 		[declaration, toValues],
 	);
+
+	// A `?field=` naming this radio means the publish gate routed here. The page
+	// strips the param once it has focused the field, so latch the reveal the way
+	// form fields latch theirs in field meta.
+	const [sourceModeRevealed, setSourceModeRevealed] = useState(false);
+	useEffect(() => {
+		if (router.query.field === SOURCE_MODE_FIELD[kind]) {
+			setSourceModeRevealed(true);
+		}
+	}, [router.query.field, kind]);
+
+	const sourceModeError =
+		sourceModeRevealed && effectiveMode === null
+			? SECTIONS[kind].validation.sourceMode?.message
+			: undefined;
 
 	const hasLibraryItems = libraryLink.items.length > 0;
 	const visibleOptions = options.filter(
@@ -192,15 +214,17 @@ export function SourceModeSection<TValues, TForm>({
 		<Frame
 			form={form}
 			onPublish={onPublishAttempt && isSequential ? publish : undefined}
-			hideRequiredNotice={bodyMode !== "custom"}
+			hideRequiredNotice={bodyMode !== "custom" && !showRadio}
 			before={
 				showRadio ? (
 					<div
 						className={effectiveMode === "linked" ? classes.picker : undefined}
 					>
 						<RadioButtons
-							legend={libraryLink.label}
+							legend={withRequiredMark(legend, true)}
 							disabled={readOnly}
+							state={sourceModeError ? "error" : "default"}
+							stateRelatedMessage={sourceModeError}
 							options={visibleOptions.map((option) => ({
 								label: option.label,
 								hintText: option.hintText,
