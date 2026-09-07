@@ -1,13 +1,10 @@
-import type { kindOptions } from "~/payload/selectOptions";
-
 export async function getEntityInfosFromSiret(siret: number): Promise<{
 	name: string;
 	siret: number;
-	kind: (typeof kindOptions)[number]["value"];
 }> {
 	const apiKey = process.env.INSEE_API_KEY;
 
-	if (!apiKey) return { name: `Entité ${siret}`, siret, kind: "none" };
+	if (!apiKey) return { name: `Entité ${siret}`, siret };
 
 	try {
 		const res = await fetch(
@@ -24,7 +21,7 @@ export async function getEntityInfosFromSiret(siret: number): Promise<{
 		if (res.status === 401 || res.status === 403) {
 			console.error("INSEE API key is invalid or has expired.");
 
-			return { name: `Entité ${siret}`, siret, kind: "none" };
+			return { name: `Entité ${siret}`, siret };
 		}
 
 		const data = (await res.json()) as any;
@@ -39,11 +36,10 @@ export async function getEntityInfosFromSiret(siret: number): Promise<{
 			? `${nameCandidate}${unite?.sigleUniteLegale ? ` (${unite?.sigleUniteLegale})` : ""}`
 			: `Entité ${siret}`;
 
-		const kind: (typeof kindOptions)[number]["value"] = "none";
-		return { name, siret, kind };
+		return { name, siret };
 	} catch (error) {
 		console.error("Error fetching data from INSEE API.", error);
 
-		return { name: `Entité ${siret}`, siret, kind: "none" };
+		return { name: `Entité ${siret}`, siret };
 	}
 }

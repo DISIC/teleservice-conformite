@@ -1,11 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import type { Payload } from "payload";
 import z from "zod";
-import {
-	kindOptions,
-	testEnvironmentOptions,
-	toolOptions,
-} from "~/payload/selectOptions";
+import { testEnvironmentOptions, toolOptions } from "~/payload/selectOptions";
 import { extractTechnologiesFromUrl } from "~/utils/declaration-helper";
 import type { AlbertResponse } from "../albert";
 
@@ -45,39 +41,6 @@ export const importedDeclarationDataSchema = z.object({
 export type ImportedDeclarationData = z.infer<
 	typeof importedDeclarationDataSchema
 >;
-
-export const createOrUpdateEntity = async (
-	payload: Payload,
-	entityId: number | undefined,
-	organisation: string,
-	domain: string,
-) => {
-	if (!entityId) {
-		const entity = await payload.create({
-			collection: "entities",
-			draft: true,
-			data: {
-				name: organisation,
-				kind:
-					kindOptions.find((field) => field.label === domain)?.value ?? "none",
-			},
-		});
-
-		return entity.id;
-	}
-
-	await payload.update({
-		collection: "entities",
-		id: entityId,
-		data: {
-			name: organisation,
-			kind:
-				kindOptions.find((field) => field.label === domain)?.value ?? "none",
-		},
-	});
-
-	return entityId;
-};
 
 /** Maps a raw ARA report (GET /api/reports/:id) into the normalized shape. */
 export const normalizeAraReport = (araJson: any): ImportedDeclarationData => ({
@@ -129,20 +92,15 @@ export const normalizeAlbertResponse = (
 	usedTools: extractTechnologiesFromUrl(albert.usedTools, toolOptions),
 });
 
-/** Reads the active user's entity (linked at signup), normalized for reuse. */
+/** Reads the active user's entity (linked at signup), or null when unset. */
 export const getUserEntity = async (payload: Payload, userId: number) => {
 	const user = await payload.findByID({
 		collection: "users",
 		id: userId,
 		depth: 1,
 	});
-	const entity = typeof user?.entity === "object" ? user.entity : null;
 
-	return {
-		id: entity?.id ?? null,
-		name: entity?.name ?? "",
-		kind: entity?.kind ?? "none",
-	};
+	return typeof user?.entity === "object" ? user.entity : null;
 };
 
 /** Best-effort hostname of a URL, used as a declaration-name fallback. */

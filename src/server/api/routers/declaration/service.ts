@@ -20,7 +20,6 @@ import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
 import type { declarationGeneral } from "~/forms/declaration/declarationSchema";
 import { analyzeUrlWithAlbert } from "../albert";
 import {
-	createOrUpdateEntity,
 	fetchAraReport,
 	getUserEntity,
 	hostnameOf,
@@ -50,21 +49,26 @@ const createDeclarationFromImportedData = async (
 	}
 
 	try {
-		const entity = await getUserEntity(payload, userId);
-
-		const newEntityId = await createOrUpdateEntity(
-			payload,
-			entity.id ?? undefined,
-			entity.name,
-			entity.kind,
-		);
-
 		const fallbackName =
 			hostnameOf(data.service.url) ??
 			(await getDefaultDeclarationName(payload, userId));
 		const declarationName = data.service.name?.trim()
-			? `Déclaration de ${data.service.name}`
-			: `Déclaration de ${fallbackName}`;
+			? data.service.name
+			: fallbackName;
+
+		const entity = await getUserEntity(payload, userId);
+		// Imports never infer the entity's sector: it stays empty until the user
+		// picks one on the general Section.
+		const entityId =
+			entity?.id ??
+			(
+				await payload.create({
+					collection: "entities",
+					draft: true,
+					data: { name: data.responsibleEntity?.trim() || declarationName },
+					req: { transactionID },
+				})
+			).id;
 
 		const declaration = await payload.create({
 			collection: "declarations",
@@ -73,9 +77,9 @@ const createDeclarationFromImportedData = async (
 				url: data.service.url ?? "",
 				app_kind:
 					appKindOptions.find((option) => option.value === data.service.type)
-						?.value ?? "other",
+						?.value ?? undefined,
 				status: "unpublished",
-				entity: newEntityId,
+				entity: entityId,
 				created_by: userId,
 				fromSource: source,
 				// AI-generated content needs review; ARA structured data does not.
@@ -91,7 +95,7 @@ const createDeclarationFromImportedData = async (
 					compliantElements:
 						data.compliantElements
 							.map((element) => `- ${element}`)
-							.join("\n") || "N/A",
+							.join("\n") || "",
 					nonCompliantElements: data.nonCompliantElements || "",
 					disproportionnedCharge: data.disproportionnedCharge || "",
 					optionalElements: data.optionalElements || "",
@@ -170,7 +174,7 @@ export const createManualDeclaration = async (
 			await payload.create({
 				collection: "entities",
 				draft: true,
-				data: { name, kind: "none" },
+				data: { name },
 			})
 		).id;
 
@@ -266,15 +270,10 @@ export const updateDeclaration = async (
 
 	// Sequential autosave persists partials: skip empty required fields so a
 	// cleared value keeps its previously saved content instead of blanking it.
+	const domainKind = kindOptions.find((field) => field.value === domain)?.value;
 	const entityData = {
 		...(organisation ? { name: organisation } : {}),
-		...(domain
-			? {
-					kind:
-						kindOptions.find((field) => field.label === domain)?.value ??
-						"none",
-				}
-			: {}),
+		...(domainKind ? { kind: domainKind } : {}),
 	};
 	if (Object.keys(entityData).length > 0)
 		await payload.update({
