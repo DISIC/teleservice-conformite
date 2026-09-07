@@ -6,6 +6,11 @@ import {
 } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
+type OptionLabel<T extends readonly { label: string }[]> = T[number]["label"];
+
+export type AppKindLabel = OptionLabel<typeof appKindOptions> | "";
+export type RgaaVersionLabel = OptionLabel<typeof rgaaVersionOptions>;
+
 export type PublishedDeclaration = {
 	name: string;
 	entityName: string;
@@ -14,10 +19,10 @@ export type PublishedDeclaration = {
 		schemaUrl: string;
 		actionPlanUrls: { name: string; url: string }[];
 	};
-	appKindLabel: string;
+	appKindLabel: AppKindLabel;
 	url: string;
 	audit: {
-		rgaa_version: string | undefined;
+		rgaa_version: RgaaVersionLabel;
 		realised_by: string;
 		rate: number;
 		nonCompliantElements: string | null;

@@ -1,16 +1,21 @@
 import MarkdownToJsx from "~/components/declaration/MarkdownToJsx";
+import { appKindOptions } from "~/payload/selectOptions";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
 import { getConformityStatus } from "~/utils/declaration-helper";
 
 export { extractDeclarationContentToPublish } from "~/utils/declaration-content";
 
+export type PublishedTemplateMode = "preview" | "published";
+
+type PublishedTemplateProps = {
+	declaration: PublishedDeclaration;
+	mode?: PublishedTemplateMode;
+};
+
 export default function PublishedTemplate({
 	declaration,
 	mode = "published",
-}: {
-	declaration: PublishedDeclaration;
-	mode?: "preview" | "published";
-}) {
+}: PublishedTemplateProps) {
 	const hasSchemaUrl = declaration.schema.schemaUrl.trim().length > 0;
 	const actionPlanUrls = declaration.schema.actionPlanUrls.filter(
 		(item) => item.url.trim().length > 0,
@@ -75,9 +80,7 @@ export default function PublishedTemplate({
 			]
 		: [];
 
-	const hasTechnologies =
-		Array.isArray(declaration.audit.technologies) &&
-		declaration.audit.technologies.length > 0;
+	const hasTechnologies = declaration.audit.technologies.length > 0;
 
 	const technologiesSection = hasTechnologies
 		? [
@@ -89,9 +92,7 @@ export default function PublishedTemplate({
 			]
 		: [];
 
-	const hasTestEnvironments =
-		Array.isArray(declaration.audit.testEnvironments) &&
-		declaration.audit.testEnvironments.length > 0;
+	const hasTestEnvironments = declaration.audit.testEnvironments.length > 0;
 
 	const testEnvironmentsSection = hasTestEnvironments
 		? [
@@ -102,9 +103,7 @@ export default function PublishedTemplate({
 			]
 		: [];
 
-	const hasUsedTools =
-		Array.isArray(declaration.audit.usedTools) &&
-		declaration.audit.usedTools.length > 0;
+	const hasUsedTools = declaration.audit.usedTools.length > 0;
 
 	const usedToolsSection = hasUsedTools
 		? [
@@ -126,13 +125,21 @@ export default function PublishedTemplate({
 			]
 		: [];
 
+	const appKind = appKindOptions.find(
+		(kind) => kind.label === declaration.appKindLabel,
+	)?.value;
+	const scopeSentence =
+		appKind && appKind !== "other"
+			? `Cette déclaration d’accessibilité s’applique au ${declaration.appKindLabel} ${declaration.url}`
+			: `Cette déclaration d’accessibilité s’applique à ${declaration.url}`;
+
 	const previewMd = [
 		"# Déclaration d’accessibilité",
 		"",
 		`## ${declaration.name}`,
 		`${declaration.entityName} s’engage à rendre ses sites internet, intranet, extranet et ses progiciels accessibles (et ses applications mobiles et mobilier urbain numérique) conformément à  l’article 47 de la loi n°2005-102 du 11 février 2005.`,
 		...actionPlanLinks,
-		`Cette déclaration d’accessibilité s’applique au ${declaration.appKindLabel} ${declaration.url}`,
+		scopeSentence,
 		"",
 		"### État de conformité",
 		`${declaration.entityName} ${declaration.url} est ${getConformityStatus(declaration.audit.rate).label.toLowerCase()} avec le référentiel général d’amélioration de l’accessibilité  (RGAA), version ${declaration.audit.rgaa_version} en raison des non-conformités et des dérogations  énumérées ci-dessous.`,
