@@ -5,8 +5,8 @@ import {
 	SECTION_SLUGS,
 	type SectionSlug,
 	sectionHref,
-} from "~/utils/declaration/sections";
-import type { EditingMode } from "~/utils/declaration/status";
+} from "~/domain/declaration/sections";
+import type { EditingMode } from "~/domain/declaration/status";
 import {
 	AuditContenusSection,
 	AuditGeneralSection,

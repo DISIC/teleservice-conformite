@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { extractDeclarationContentToPublish } from "~/utils/declaration-content";
+import { extractDeclarationContentToPublish } from "~/domain/declaration/published/snapshot";
 import {
 	getDeclarationStatus,
 	getEditingMode,
 	hasContentChangedSincePublish,
-} from "~/utils/declaration/status";
+} from "~/domain/declaration/status";
 import { completeDeclaration } from "./declaration.fixture";
 
 describe("getDeclarationStatus", () => {

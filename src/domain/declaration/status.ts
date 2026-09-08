@@ -2,7 +2,7 @@ import type { Declaration } from "~/payload/payload-types";
 import {
 	extractDeclarationContentToPublish,
 	parsePublishedDeclaration,
-} from "~/utils/declaration-content";
+} from "~/domain/declaration/published/snapshot";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 /** Three visual states derived from `status` + `publishedContent`. */

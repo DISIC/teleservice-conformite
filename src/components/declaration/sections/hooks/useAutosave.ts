@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { AUTOSAVE_DEBOUNCE_MS } from "~/forms/formOptions";
-import { useUnsavedChangesWarning } from "~/utils/declaration/useUnsavedChangesWarning";
+import { useUnsavedChangesWarning } from "~/components/declaration/sections/hooks/useUnsavedChangesWarning";
 
 function valuesEqual(a: unknown, b: unknown): boolean {
 	if (Object.is(a, b)) return true;

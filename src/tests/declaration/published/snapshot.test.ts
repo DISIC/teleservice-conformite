@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
 	extractDeclarationContentToPublish,
 	parsePublishedDeclaration,
-} from "~/utils/declaration-content";
-import { completeDeclaration } from "./declaration.fixture";
+} from "~/domain/declaration/published/snapshot";
+import { completeDeclaration } from "../declaration.fixture";
 
 describe("extractDeclarationContentToPublish", () => {
 	it("publishes human-readable labels, not stored values", () => {

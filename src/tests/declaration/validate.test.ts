@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { completeDeclaration } from "./declaration.fixture";
-import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
+import { validateDeclaration } from "~/domain/declaration/validate";
 
 const errorsFor = (
 	errors: ReturnType<typeof validateDeclaration>,

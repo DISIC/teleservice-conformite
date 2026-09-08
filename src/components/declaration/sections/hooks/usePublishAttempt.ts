@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 import { useCallback } from "react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { sectionHref } from "./sections";
-import { validateDeclaration } from "./validateDeclaration";
+import { sectionHref } from "~/domain/declaration/sections";
+import { validateDeclaration } from "~/domain/declaration/validate";
 
 type UsePublishAttemptArgs = {
 	declaration: PopulatedDeclaration;

@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import readAlbertPrompt from "~/utils/albert-prompt/albert-helper";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import readAlbertPrompt from "./readPrompt";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export interface AlbertResponse {
 	service: { name: string | null; type: string | null; url: string | null };

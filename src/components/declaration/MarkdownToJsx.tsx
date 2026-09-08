@@ -3,7 +3,7 @@ import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { tss } from "tss-react";
-import { OBSOLETE_NOTICE_CLASS } from "~/utils/declaration/publishedMarkdown";
+import { OBSOLETE_NOTICE_CLASS } from "~/domain/declaration/published/markdown";
 
 type HeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 

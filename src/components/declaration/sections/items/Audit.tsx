@@ -3,8 +3,8 @@ import { api } from "~/lib/api";
 import {
 	AUDIT_SUB_SECTIONS,
 	type AuditSubSectionSlug,
-} from "~/utils/declaration/auditSubSections";
-import { isSectionToComplete } from "~/utils/declaration/sections";
+} from "~/domain/declaration/auditSubSections";
+import { isSectionToComplete } from "~/domain/declaration/sections";
 import { useAppForm } from "~/forms/context";
 import { sectionFormOptions } from "~/forms/formOptions";
 import {
@@ -27,9 +27,9 @@ import {
 	type ZAuditNonConformities,
 	type ZAuditTools,
 } from "~/forms/audit/auditSchema";
-import { useLiveSectionForm } from "~/utils/declaration/useLiveSectionForm";
-import { useSectionForm } from "~/utils/declaration/useSectionForm";
-import { logMutationError } from "~/utils/declaration-helper";
+import { useLiveSectionForm } from "~/components/declaration/sections/hooks/useLiveSectionForm";
+import { useSectionForm } from "~/components/declaration/sections/hooks/useSectionForm";
+import { logMutationError } from "~/components/declaration/logMutationError";
 import type { SectionRenderProps } from "../Content";
 
 type UseAuditSubSectionArgs = SectionRenderProps & {

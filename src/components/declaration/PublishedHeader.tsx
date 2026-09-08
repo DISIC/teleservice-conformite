@@ -1,8 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Header } from "@codegouvfr/react-dsfr/Header";
-import type { PublishedDeclaration } from "~/utils/declaration-content";
+import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
 import { tss } from "tss-react";
-import { publicationLabel } from "~/utils/declaration/publishedMarkdown";
+import { publicationLabel } from "~/domain/declaration/published/markdown";
 
 export const PUBLISHED_HEADER_TITLE = "Déclaration d’accessibilité numérique";
 

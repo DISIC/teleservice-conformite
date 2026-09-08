@@ -2,12 +2,12 @@ import { useState } from "react";
 import { api } from "~/lib/api";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import type { DeclarationChangeFn } from "~/components/declaration/sections/Content";
+import { applyLibrarySection } from "~/components/declaration/sections/applyLibrarySection";
 import {
-	applyLibrarySection,
 	deriveSourceMode,
 	type LibrarySectionKind,
 	type SourceModeValue,
-} from "./sourceMode";
+} from "~/domain/declaration/sourceMode";
 import { type LibraryLink, useLibraryLink } from "./useLibraryLink";
 
 export type SourceModeController = {

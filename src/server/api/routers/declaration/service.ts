@@ -15,8 +15,8 @@ import { recalculateDeclarationStatus } from "~/server/api/utils/publish-compari
 import {
 	extractDeclarationContentToPublish,
 	parsePublishedDeclaration,
-} from "~/utils/declaration-content";
-import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
+} from "~/domain/declaration/published/snapshot";
+import { validateDeclaration } from "~/domain/declaration/validate";
 import type { declarationGeneral } from "~/forms/declaration/declarationSchema";
 import { analyzeUrlWithAlbert } from "../albert";
 import {

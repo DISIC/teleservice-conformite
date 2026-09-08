@@ -3,7 +3,7 @@ import { completeDeclaration } from "./declaration.fixture";
 import {
 	deriveSourceMode,
 	isSourceModeUndecided,
-} from "~/utils/declaration/sourceMode";
+} from "~/domain/declaration/sourceMode";
 
 describe("deriveSourceMode", () => {
 	it("is linked when parent is an unpopulated id", () => {

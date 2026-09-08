@@ -3,8 +3,8 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useRouter } from "next/router";
 import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { SECTION_TITLES, sectionHref } from "~/utils/declaration/sections";
-import type { DeclarationError } from "~/utils/declaration/validateDeclaration";
+import { SECTION_TITLES, sectionHref } from "~/domain/declaration/sections";
+import type { DeclarationError } from "~/domain/declaration/validate";
 
 type ErrorSummaryProps = {
 	declarationId: PopulatedDeclaration["id"];

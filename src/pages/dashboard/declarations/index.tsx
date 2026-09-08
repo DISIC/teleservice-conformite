@@ -16,7 +16,7 @@ import type { Entity } from "~/payload/payload-types";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { authPages } from "~/lib/auth";
-import { copyToClipboard } from "~/utils/declaration-helper";
+import { copyToClipboard } from "~/lib/clipboard";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 interface EntityDeclarationsPageProps {

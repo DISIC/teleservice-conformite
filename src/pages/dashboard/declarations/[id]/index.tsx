@@ -16,14 +16,14 @@ import { StateNotice } from "~/components/declaration/StateNotice";
 import {
 	getDeclarationStatus,
 	getEditingMode,
-} from "~/utils/declaration/status";
+} from "~/domain/declaration/status";
 import { StatsCards } from "~/components/declaration/StatsCards";
 import { SectionContent } from "~/components/declaration/sections/Content";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
-import { copyToClipboard } from "~/utils/declaration-helper";
-import { parseSectionFromQuery } from "~/utils/declaration/sections";
-import { validateDeclaration } from "~/utils/declaration/validateDeclaration";
+import { copyToClipboard } from "~/lib/clipboard";
+import { parseSectionFromQuery } from "~/domain/declaration/sections";
+import { validateDeclaration } from "~/domain/declaration/validate";
 import {
 	type DeclarationProps,
 	guardDeclaration,

@@ -6,7 +6,7 @@ import {
 	toolOptions,
 } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { NO_AUDIT } from "~/utils/declaration/audit";
+import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
 
 type OptionLabel<T extends readonly { label: string }[]> = T[number]["label"];
 

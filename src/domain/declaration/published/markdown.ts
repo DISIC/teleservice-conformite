@@ -1,6 +1,6 @@
 import { appKindOptions } from "~/payload/selectOptions";
-import type { PublishedDeclaration } from "~/utils/declaration-content";
-import { getConformityStatus } from "~/utils/declaration-helper";
+import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
+import { getConformityStatus } from "~/domain/declaration/conformity";
 
 // A declaration must be renewed every three years; past that it is deemed non compliant.
 const OBSOLESCENCE_YEARS = 3;

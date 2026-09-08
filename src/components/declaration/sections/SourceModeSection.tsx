@@ -12,16 +12,16 @@ import { withRequiredMark } from "~/components/form/RequiredField";
 import { useAppForm } from "~/forms/context";
 import { sectionFormOptions } from "~/forms/formOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { SECTIONS } from "~/utils/declaration/sections";
-import type { EditingMode } from "~/utils/declaration/status";
+import { SECTIONS } from "~/domain/declaration/sections";
+import type { EditingMode } from "~/domain/declaration/status";
 import {
 	SOURCE_MODE_FIELD,
 	type LibrarySectionKind,
-} from "~/utils/declaration/sourceMode";
-import { useLiveSectionForm } from "~/utils/declaration/useLiveSectionForm";
-import { useSectionForm } from "~/utils/declaration/useSectionForm";
-import { useSourceMode } from "~/utils/declaration/useSourceMode";
-import { usePublishAttempt } from "~/utils/declaration/usePublishAttempt";
+} from "~/domain/declaration/sourceMode";
+import { useLiveSectionForm } from "~/components/declaration/sections/hooks/useLiveSectionForm";
+import { useSectionForm } from "~/components/declaration/sections/hooks/useSectionForm";
+import { useSourceMode } from "~/components/declaration/sections/hooks/useSourceMode";
+import { usePublishAttempt } from "~/components/declaration/sections/hooks/usePublishAttempt";
 import type { DeclarationChangeFn } from "./Content";
 
 export type SourceModeOption = {

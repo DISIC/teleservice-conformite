@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { getDeclarationStatus } from "./status";
-import { validateDeclaration } from "./validateDeclaration";
+import { validateDeclaration } from "./validate";
 
 /**
  * Derived state answering "what should the declarant do next?". Distinct from

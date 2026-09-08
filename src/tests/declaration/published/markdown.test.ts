@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { PublishedDeclaration } from "~/utils/declaration-content";
+import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
 import {
 	buildPublishedMarkdown,
 	isObsolete,
 	obsoleteSince,
 	publicationLabel,
-} from "~/utils/declaration/publishedMarkdown";
+} from "~/domain/declaration/published/markdown";
 
 const TODAY = new Date("2026-09-07T12:00:00.000Z");
 
@@ -63,8 +63,7 @@ function publishedDeclaration(
 	};
 }
 
-const snapshot = (name: string) =>
-	`./__snapshots__/publishedMarkdown/${name}.md`;
+const snapshot = (name: string) => `./__snapshots__/markdown/${name}.md`;
 
 describe("buildPublishedMarkdown", () => {
 	it("renders the full, republished declaration", async () => {

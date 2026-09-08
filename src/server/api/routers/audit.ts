@@ -1,5 +1,5 @@
 import z from "zod";
-import { NO_AUDIT } from "~/utils/declaration/audit";
+import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
 import { createTRPCRouter, declarationProcedure } from "../trpc";
 import { recalculateDeclarationStatus } from "../utils/publish-comparison";
 
