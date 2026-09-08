@@ -100,6 +100,7 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	return (
 		<DsfrSideMenu
 			align="left"
+			sticky
 			burgerMenuButtonText="Sections de la déclaration"
 			items={items}
 			classes={{ root: classes.root }}
@@ -110,6 +111,9 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 const useStyles = tss.withName(SideMenu.name).create({
 	root: {
 		marginTop: 0,
+		[fr.breakpoints.up("md")]: {
+			top: fr.spacing("16v"),
+		},
 	},
 	itemLabel: {
 		display: "inline-flex",
