@@ -238,7 +238,7 @@ Layered, not feature-foldered. One predictable layer per concern:
 - `forms/` — TanStack form definitions + Zod schemas (cross-cutting layer).
 - `server/api/` — tRPC routers; `pages/` — Next.js routes; `emails/` — React Email templates.
 
-**Naming convention:** the folder is the namespace; files drop the redundant prefix (`sections/Shell.tsx`, not `DeclarationSectionShell.tsx`). Keep a prefix only when a bare name would collide or be ambiguous across folders (e.g. greppable `auditSchema.ts` rather than a fourth `schema.ts`). There is no `utils/` folder: every file belongs to a named layer above, and a file that fits none is a signal to name a new layer, not to open a bucket (ADR-0008).
+**Naming convention:** the folder is the namespace; files drop the redundant prefix (`sections/Shell.tsx`, not `DeclarationSectionShell.tsx`). Keep a prefix only when a bare name would collide or be ambiguous across folders (e.g. greppable `auditSchema.ts` rather than a fourth `schema.ts`). There is no `utils/` folder: every file belongs to a named layer above, and a file that fits none is a signal to name a new layer, not to open a bucket.
 
 ## Invariants
 
