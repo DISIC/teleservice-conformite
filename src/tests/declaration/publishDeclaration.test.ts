@@ -49,10 +49,9 @@ describe("publishDeclaration", () => {
 				publishedAt: new Date(data.published_at),
 			}),
 		);
-		expect(data.first_published_at).toBe(data.published_at);
 	});
 
-	it("keeps a declarant-supplied initial publication date", async () => {
+	it("keeps the initial publication date fixed before publishing", async () => {
 		const declaration = completeDeclaration({
 			first_published_at: "2024-03-24T00:00:00.000Z",
 		});

@@ -16,6 +16,7 @@ import {
 	extractDeclarationContentToPublish,
 	parsePublishedDeclaration,
 } from "~/domain/declaration/published/snapshot";
+import { getDeclarationStatus } from "~/domain/declaration/status";
 import { validateDeclaration } from "~/domain/declaration/validate";
 import type { declarationGeneral } from "~/forms/declaration/declarationSchema";
 import { analyzeUrlWithAlbert } from "../albert";
@@ -102,11 +103,11 @@ const createDeclarationFromImportedData = async (
 					toVerify: source === "ai",
 				},
 				// The source's publication date is when the declaration first went
-				// public, not when the audit ran. Unknown stays empty for the declarant.
+				// public, not when the audit ran. Unknown defaults to today, editable until publish.
 				first_published_at:
 					data.publishedAt && !Number.isNaN(Date.parse(data.publishedAt))
 						? new Date(data.publishedAt).toISOString()
-						: null,
+						: new Date().toISOString(),
 				contact: {
 					name: data.service.name
 						? `Contact - ${data.service.name}`
@@ -189,6 +190,7 @@ export const createManualDeclaration = async (
 			created_by: userId,
 			status: "unpublished",
 			fromSource: "manual",
+			first_published_at: new Date().toISOString(),
 		},
 	});
 
@@ -294,7 +296,10 @@ export const updateDeclaration = async (
 					}
 				: {}),
 			url,
-			first_published_at: firstPublishedAt || null,
+			// The initial publication date is frozen by the first publish action.
+			...(firstPublishedAt && getDeclarationStatus(declaration) === "draft"
+				? { first_published_at: firstPublishedAt }
+				: {}),
 			...(newStatus ? { status: newStatus } : {}),
 		},
 	});

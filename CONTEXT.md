@@ -155,12 +155,12 @@ The ARA import is intended to be reusable later as an **update** of an existing 
 
 The date a Declaration was **first** made public, wherever that happened — in this téléservice, in ARA, or on an older declaration page being re-entered. Distinct from the audit date (`audit.date`, when the audit was performed) and from the last publication date (`published_at`, overwritten on every publish action).
 
-Its origin follows the [[creation-path|Creation path]]:
+Always required. Its initial value follows the [[creation-path|Creation path]]:
 
-- **Manuel** — unknown until the first publish action, which sets it to the publish date unless the declarant filled it in (an "ancienne déclaration" re-entered by hand keeps its historical date).
-- **Import ARA / Import IA** — prefilled from the source's publication date when present. When the source has none, it stays empty and **blocks publish** until the declarant fills it: nothing in the data can know when a pre-existing declaration was first published, and guessing "today" would be wrong.
+- **Manuel** — defaults to the creation date, which the declarant changes when re-entering an "ancienne déclaration" already published elsewhere.
+- **Import ARA / Import IA** — prefilled from the source's publication date when present; otherwise defaults to the creation date, like Manuel.
 
-Always editable in the Informations générales [[section]]; never derived from `audit.date`.
+Shown at the top of the Informations générales [[section]] only while the Declaration has never been published: the first publish action freezes it, and the field disappears from the form afterwards. Never derived from `audit.date`.
 
 **Avoid:** "date de publication" alone — ambiguous with the last publish date. "Audit date" — a different fact.
 

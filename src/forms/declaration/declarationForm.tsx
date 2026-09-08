@@ -10,10 +10,34 @@ import { declarationGeneralFormOptions } from "./declarationSchema";
 
 export const DeclarationGeneralForm = withForm({
 	...declarationGeneralFormOptions,
-	props: { readOnly: false },
-	render: function Render({ form, readOnly }) {
+	props: { readOnly: false, showFirstPublishedAt: true },
+	render: function Render({ form, readOnly, showFirstPublishedAt }) {
 		return (
 			<Part readOnly={readOnly} title="Service numérique concerné">
+				{showFirstPublishedAt && (
+					<form.AppField name="general.firstPublishedAt">
+						{(field) => (
+							<field.TextField
+								label="Date de publication initiale de la déclaration"
+								hintText={
+									<>
+										Date à laquelle cette déclaration a été publiée pour la
+										première fois, quel qu’en soit le support.
+										<br />
+										S’il s’agit d’une première publication, conservez la date du
+										jour.
+									</>
+								}
+								nativeInputProps={{
+									type: "date",
+									max: new Date().toISOString().split("T")[0],
+								}}
+								readOnlyField={readOnly}
+								required
+							/>
+						)}
+					</form.AppField>
+				)}
 				<form.AppField name="general.name">
 					{(field) => (
 						<field.TextField
@@ -107,30 +131,6 @@ export const DeclarationGeneralForm = withForm({
 						/>
 					)}
 				</form.AppField>
-				<form.Subscribe selector={(store) => store.values.general?.isImported}>
-					{(isImported) => (
-						<form.AppField name="general.firstPublishedAt">
-							{(field) => (
-								<field.TextField
-									label={`Date de publication initiale de la déclaration${
-										!readOnly && !isImported ? " (facultatif)" : ""
-									}`}
-									hintText={
-										isImported
-											? "Date à laquelle cette déclaration a été publiée pour la première fois. La source importée ne la fournit pas toujours."
-											: "Laissez vide s’il s’agit de la première publication : la date à laquelle vous publierez dans ce téléservice deviendra la date de publication initiale. Renseignez-la si vous reprenez une déclaration déjà publiée ailleurs."
-									}
-									nativeInputProps={{
-										type: "date",
-										max: new Date().toISOString().split("T")[0],
-									}}
-									readOnlyField={readOnly}
-									required={isImported}
-								/>
-							)}
-						</form.AppField>
-					)}
-				</form.Subscribe>
 			</Part>
 		);
 	},

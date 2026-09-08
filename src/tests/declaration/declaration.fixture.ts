@@ -15,6 +15,7 @@ export function completeDeclaration(
 		app_kind: "website",
 		status: "unpublished",
 		publishedContent: null,
+		first_published_at: "2026-08-01T00:00:00.000Z",
 		entity: { id: 1, name: "DINUM", kind: "Protection sociale" },
 		created_by: null,
 		audit: { isRealised: false },

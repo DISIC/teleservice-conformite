@@ -52,7 +52,10 @@ describe("extractDeclarationContentToPublish", () => {
 		expect(explicit.firstPublishedAt).toBe("2024-03-24");
 
 		const fromRow = extractDeclarationContentToPublish(
-			completeDeclaration({ published_at: "2026-08-27T09:30:00.000Z" }),
+			completeDeclaration({
+				first_published_at: null,
+				published_at: "2026-08-27T09:30:00.000Z",
+			}),
 		);
 		expect(fromRow.publishedAt).toBe("2026-08-27");
 		expect(fromRow.firstPublishedAt).toBe("2026-08-27");

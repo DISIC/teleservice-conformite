@@ -71,7 +71,12 @@ export function InfosSection({
 
 	return (
 		<Frame form={form}>
-			<DeclarationGeneralForm form={form} readOnly={readOnly} />
+			{/* The initial publication date is frozen by the first publish action. */}
+			<DeclarationGeneralForm
+				form={form}
+				readOnly={readOnly}
+				showFirstPublishedAt={isSequential}
+			/>
 		</Frame>
 	);
 }

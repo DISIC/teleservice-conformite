@@ -39,40 +39,28 @@ describe("validateDeclaration", () => {
 		]);
 	});
 
-	it("never requires the initial publication date on a manual declaration", () => {
+	it("requires the initial publication date whatever the creation path", () => {
+		for (const fromSource of ["manual", "ara", "ai"] as const) {
+			expect(
+				errorsFor(
+					validateDeclaration(
+						completeDeclaration({ fromSource, first_published_at: null }),
+					),
+					"infos",
+				),
+			).toEqual([
+				{
+					section: "infos",
+					field: "general.firstPublishedAt",
+					message: "La date de publication initiale est requise",
+				},
+			]);
+		}
 		expect(
 			errorsFor(
 				validateDeclaration(
 					completeDeclaration({
 						fromSource: "manual",
-						first_published_at: null,
-					}),
-				),
-				"infos",
-			),
-		).toEqual([]);
-	});
-
-	it("requires the initial publication date on an imported declaration", () => {
-		expect(
-			errorsFor(
-				validateDeclaration(
-					completeDeclaration({ fromSource: "ara", first_published_at: null }),
-				),
-				"infos",
-			),
-		).toEqual([
-			{
-				section: "infos",
-				field: "general.firstPublishedAt",
-				message: "La date de publication initiale est requise",
-			},
-		]);
-		expect(
-			errorsFor(
-				validateDeclaration(
-					completeDeclaration({
-						fromSource: "ai",
 						first_published_at: "2024-03-24T00:00:00.000Z",
 					}),
 				),
