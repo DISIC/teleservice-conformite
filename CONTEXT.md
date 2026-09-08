@@ -231,13 +231,14 @@ Both trees use the **plural** `declarations/` segment. Singular `declaration/` i
 Layered, not feature-foldered. One predictable layer per concern:
 
 - `components/ui/` — generic, domain-free UI (primitives + cross-cutting pieces like EmptyState, HelpingMessage).
-- `components/declaration/` — declaration-specific UI only (e.g. the `sections/` tree).
+- `components/declaration/` — declaration-specific UI only (e.g. the `sections/` tree); `sections/hooks/` holds the Section-form hooks (frame, autosave, publish attempt, source mode) that only those components use.
+- `domain/declaration/` — pure business logic on a Declaration: the Section registry, the publish gate, status and state, source mode, and the published snapshot + markdown (`published/`). No React, no tRPC, no DOM; every module is unit-testable and mirrored in `src/tests/declaration/`.
 - `lib/` — infrastructure glue (api/tRPC client, auth, server guards).
 - `hooks/` — generic, cross-cutting hooks only.
 - `forms/` — TanStack form definitions + Zod schemas (cross-cutting layer).
 - `server/api/` — tRPC routers; `pages/` — Next.js routes; `emails/` — React Email templates.
 
-**Naming convention:** the folder is the namespace; files drop the redundant prefix (`sections/Shell.tsx`, not `DeclarationSectionShell.tsx`). Keep a prefix only when a bare name would collide or be ambiguous across folders (e.g. greppable `auditSchema.ts` rather than a fourth `schema.ts`). _Avoid_: "utils" as a catch-all bucket — every file belongs to a named layer above.
+**Naming convention:** the folder is the namespace; files drop the redundant prefix (`sections/Shell.tsx`, not `DeclarationSectionShell.tsx`). Keep a prefix only when a bare name would collide or be ambiguous across folders (e.g. greppable `auditSchema.ts` rather than a fourth `schema.ts`). There is no `utils/` folder: every file belongs to a named layer above, and a file that fits none is a signal to name a new layer, not to open a bucket (ADR-0008).
 
 ## Invariants
 

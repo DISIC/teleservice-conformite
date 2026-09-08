@@ -30,12 +30,14 @@ Next.js + Payload CMS + tRPC application for managing digital service compliance
 src/
 ├── app/         # Next.js App Router
 ├── pages/       # Next.js Pages Router (legacy/coexisting)
-├── components/  # Shared React components
-├── hooks/       # React hooks
+├── components/  # React components (ui/ generic, declaration/ domain-specific)
+├── domain/      # Pure business logic: no React, no I/O (declaration/ registry, gate, state, snapshot)
+├── forms/       # TanStack form definitions + Zod schemas
+├── hooks/       # Generic, cross-cutting React hooks
+├── lib/         # Infrastructure glue (tRPC client, auth, server guards)
 ├── server/      # tRPC routers + server logic
 ├── payload/     # Payload CMS config and collections
-├── styles/      # Global styles
-└── utils/       # Shared utilities
+└── styles/      # Global styles
 ```
 
 ## Code comments
