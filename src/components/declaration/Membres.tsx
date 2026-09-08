@@ -30,7 +30,9 @@ export default function Membres({ declaration }: MembresProps) {
 	const { mutateAsync: resendInviteMail } =
 		api.accessRight.resendInviteMail.useMutation();
 	const { data: tmpAccessRights, isLoading: isLoadingAccessRight } =
-		api.accessRight.getByDeclarationId.useQuery({ id: declaration.id });
+		api.accessRight.getByDeclarationId.useQuery({
+			declarationId: declaration.id,
+		});
 
 	const accessRights = tmpAccessRights ?? [];
 

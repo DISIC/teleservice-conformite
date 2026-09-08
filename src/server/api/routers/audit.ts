@@ -1,7 +1,6 @@
 import z from "zod";
 import { NO_AUDIT } from "~/utils/declaration/audit";
-import { createTRPCRouter, userProtectedProcedure } from "../trpc";
-import { hasAccessToDeclaration } from "../utils/payload-helper";
+import { createTRPCRouter, declarationProcedure } from "../trpc";
 import { recalculateDeclarationStatus } from "../utils/publish-comparison";
 
 /**
@@ -25,27 +24,12 @@ const auditUpsertValues = z.object({
 });
 
 export const auditRouter = createTRPCRouter({
-	update: userProtectedProcedure
-		.input(
-			z.object({
-				values: auditUpsertValues,
-				declarationId: z.number(),
-			}),
-		)
+	update: declarationProcedure
+		.input(z.object({ values: auditUpsertValues }))
 		.mutation(async ({ input, ctx }) => {
-			const { declarationId, values } = input;
-
-			await hasAccessToDeclaration({
-				payload: ctx.payload,
-				declarationId,
-				userId: Number(ctx.session.user.id),
-			});
-
-			const declaration = await ctx.payload.findByID({
-				collection: "declarations",
-				id: declarationId,
-				depth: 0,
-			});
+			const { values } = input;
+			const { declaration } = ctx;
+			const declarationId = declaration.id;
 
 			const { usedTools, testEnvironments, technologies, date, ...scalars } =
 				values;

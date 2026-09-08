@@ -1,7 +1,11 @@
 import z from "zod";
 import { contact, contactDraft } from "~/forms/contact/contactSchema";
 import { schemaDraft, schemaForm } from "~/forms/schema/schemaSchema";
-import { createTRPCRouter, userProtectedProcedure } from "../../trpc";
+import {
+	createTRPCRouter,
+	declarationProcedure,
+	userProtectedProcedure,
+} from "../../trpc";
 import * as service from "./service";
 
 export type { LibrarySectionKind } from "./service";
@@ -9,40 +13,32 @@ export type { LibrarySectionKind } from "./service";
 const kindInput = z.enum(["contact", "schema"]);
 
 export const contactRouter = createTRPCRouter({
-	upsert: userProtectedProcedure
-		.input(z.object({ values: contactDraft, declarationId: z.number() }))
+	upsert: declarationProcedure
+		.input(z.object({ values: contactDraft }))
 		.mutation(({ input, ctx }) =>
 			service.upsertSection(
 				ctx.payload,
-				Number(ctx.session.user.id),
 				"contact",
-				input.declarationId,
+				ctx.declaration.id,
 				input.values,
 			),
 		),
 });
 
 export const schemaRouter = createTRPCRouter({
-	upsert: userProtectedProcedure
-		.input(z.object({ values: schemaDraft, declarationId: z.number() }))
+	upsert: declarationProcedure
+		.input(z.object({ values: schemaDraft }))
 		.mutation(({ input, ctx }) =>
 			service.upsertSection(
 				ctx.payload,
-				Number(ctx.session.user.id),
 				"schema",
-				input.declarationId,
+				ctx.declaration.id,
 				input.values,
 			),
 		),
-	skip: userProtectedProcedure
-		.input(z.object({ declarationId: z.number() }))
-		.mutation(({ input, ctx }) =>
-			service.skipSchema(
-				ctx.payload,
-				Number(ctx.session.user.id),
-				input.declarationId,
-			),
-		),
+	skip: declarationProcedure.mutation(({ ctx }) =>
+		service.skipSchema(ctx.payload, ctx.declaration.id),
+	),
 });
 
 export const libraryRouter = createTRPCRouter({
@@ -94,25 +90,25 @@ export const libraryRouter = createTRPCRouter({
 				input.id,
 			),
 		),
-	linkContact: userProtectedProcedure
-		.input(z.object({ declarationId: z.number(), parentId: z.number() }))
+	linkContact: declarationProcedure
+		.input(z.object({ parentId: z.number() }))
 		.mutation(({ input, ctx }) =>
 			service.linkParent(
 				ctx.payload,
 				Number(ctx.session.user.id),
 				"contact",
-				input.declarationId,
+				ctx.declaration,
 				input.parentId,
 			),
 		),
-	linkSchema: userProtectedProcedure
-		.input(z.object({ declarationId: z.number(), parentId: z.number() }))
+	linkSchema: declarationProcedure
+		.input(z.object({ parentId: z.number() }))
 		.mutation(({ input, ctx }) =>
 			service.linkParent(
 				ctx.payload,
 				Number(ctx.session.user.id),
 				"schema",
-				input.declarationId,
+				ctx.declaration,
 				input.parentId,
 			),
 		),

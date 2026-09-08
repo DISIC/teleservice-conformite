@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import type { Payload } from "payload";
 import type { Contact, Declaration, Schema } from "~/payload/payload-types";
-import { hasAccessToDeclaration } from "../../utils/payload-helper";
+import type { PopulatedDeclaration } from "../../utils/payload-helper";
 import { recalculateDeclarationStatus } from "../../utils/publish-comparison";
 
 /** Contact and Schema are symmetric by invariant: every Library-section flow is
@@ -136,13 +136,10 @@ async function propagateToLinkedDeclarations<K extends LibrarySectionKind>(
  *  half-filled autosaves persist; the publish gate rechecks. */
 export async function upsertSection<K extends LibrarySectionKind>(
 	payload: Payload,
-	userId: number,
 	kind: K,
 	declarationId: number,
 	values: Partial<SectionGroup<K>>,
 ) {
-	await hasAccessToDeclaration({ payload, declarationId, userId });
-
 	return writeSectionGroup(payload, declarationId, kind, {
 		...values,
 		...ADAPTERS[kind].contentFlags,
@@ -153,13 +150,7 @@ export async function upsertSection<K extends LibrarySectionKind>(
 
 /** The declarant's deliberate "no schema" choice clears content and Library
  *  link. Schema-only; a Contact is always required to publish. */
-export async function skipSchema(
-	payload: Payload,
-	userId: number,
-	declarationId: number,
-) {
-	await hasAccessToDeclaration({ payload, declarationId, userId });
-
+export async function skipSchema(payload: Payload, declarationId: number) {
 	return writeSectionGroup(payload, declarationId, "schema", {
 		name: "",
 		url: "",
@@ -243,11 +234,9 @@ export async function linkParent<K extends LibrarySectionKind>(
 	payload: Payload,
 	userId: number,
 	kind: K,
-	declarationId: number,
+	declaration: PopulatedDeclaration,
 	parentId: number,
 ) {
-	await hasAccessToDeclaration({ payload, declarationId, userId });
-
 	const parent = await payload.findByID({
 		collection: LIBRARY_COLLECTION[kind],
 		id: parentId,
@@ -255,13 +244,7 @@ export async function linkParent<K extends LibrarySectionKind>(
 	});
 	assertOwner(parent?.user, userId);
 
-	const declaration = await payload.findByID({
-		collection: "declarations",
-		id: declarationId,
-		depth: 0,
-	});
-
-	return writeSectionGroup(payload, declarationId, kind, {
+	return writeSectionGroup(payload, declaration.id, kind, {
 		...declaration[kind],
 		...ADAPTERS[kind].contentFromParent(parent as ParentDoc<K>),
 		...ADAPTERS[kind].contentFlags,

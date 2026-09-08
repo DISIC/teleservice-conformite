@@ -9,7 +9,7 @@ import {
 import {
 	getDefaultDeclarationName,
 	getPopulatedDeclaration,
-	hasAccessToDeclaration,
+	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
 import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
 import {
@@ -229,31 +229,27 @@ export const createDeclarationFromUrlAnalysis = async (
 
 export const deleteDeclaration = async (
 	payload: Payload,
-	userId: number,
-	id: number,
+	declaration: PopulatedDeclaration,
 ): Promise<number> => {
-	await hasAccessToDeclaration({ payload, declarationId: id, userId });
-
 	await payload.update({
 		collection: "declarations",
-		id,
+		id: declaration.id,
 		data: { deletedAt: new Date().toISOString() },
 		trash: true,
 	});
 
-	return id;
+	return declaration.id;
 };
 
 type DeclarationGeneralUpdateInput = z.infer<
 	typeof declarationGeneral
 >["general"] & {
-	declarationId: number;
 	entityId: number;
 };
 
 export const updateDeclaration = async (
 	payload: Payload,
-	userId: number,
+	declaration: PopulatedDeclaration,
 	general: DeclarationGeneralUpdateInput,
 ) => {
 	const {
@@ -264,11 +260,9 @@ export const updateDeclaration = async (
 		domain,
 		name,
 		firstPublishedAt,
-		declarationId,
 		entityId,
 	} = general;
-
-	await hasAccessToDeclaration({ payload, declarationId, userId });
+	const declarationId = declaration.id;
 
 	// Sequential autosave persists partials: skip empty required fields so a
 	// cleared value keeps its previously saved content instead of blanking it.
@@ -310,36 +304,20 @@ export const updateDeclaration = async (
 
 export const updateDeclarationName = async (
 	payload: Payload,
-	userId: number,
-	input: { id: number; name: string },
-) => {
-	const { id, name } = input;
-
-	await hasAccessToDeclaration({ payload, declarationId: id, userId });
-
-	return payload.update({
+	declaration: PopulatedDeclaration,
+	name: string,
+) =>
+	payload.update({
 		collection: "declarations",
-		id,
+		id: declaration.id,
 		data: { name },
 	});
-};
 
 // Publish always validates: the snapshot is server-built — clients never supply publishedContent.
 export const publishDeclaration = async (
 	payload: Payload,
-	userId: number,
-	id: number,
+	declaration: PopulatedDeclaration,
 ) => {
-	await hasAccessToDeclaration({ payload, declarationId: id, userId });
-
-	const declaration = await getPopulatedDeclaration(
-		await payload.findByID({
-			collection: "declarations",
-			id,
-			depth: 1,
-		}),
-	);
-
 	const errors = validateDeclaration(declaration);
 	if (errors.length > 0) {
 		throw new TRPCError({
@@ -351,7 +329,7 @@ export const publishDeclaration = async (
 	const publishedAt = new Date();
 	const result = await payload.update({
 		collection: "declarations",
-		id,
+		id: declaration.id,
 		data: {
 			status: "published",
 			publishedContent: JSON.stringify(
@@ -369,15 +347,12 @@ export const publishDeclaration = async (
 
 export const getPreviousPublishedRate = async (
 	payload: Payload,
-	userId: number,
-	id: number,
+	declaration: PopulatedDeclaration,
 ): Promise<number | null> => {
-	await hasAccessToDeclaration({ payload, declarationId: id, userId });
-
 	const versions = await payload.findVersions({
 		collection: "declarations",
 		where: {
-			parent: { equals: id },
+			parent: { equals: declaration.id },
 			"version.status": { equals: "published" },
 		},
 		limit: 2,
@@ -394,17 +369,9 @@ export const getPreviousPublishedRate = async (
 
 export const revertToPublished = async (
 	payload: Payload,
-	userId: number,
-	id: number,
+	declaration: PopulatedDeclaration,
 ): Promise<number> => {
-	await hasAccessToDeclaration({ payload, declarationId: id, userId });
-
-	const declaration = await payload.findByID({
-		collection: "declarations",
-		id,
-	});
-
-	if (!declaration?.publishedContent) {
+	if (!declaration.publishedContent) {
 		throw new TRPCError({
 			code: "BAD_REQUEST",
 			message: "No published content to revert to",
@@ -437,5 +404,5 @@ export const revertToPublished = async (
 		id: previousVersionId,
 	});
 
-	return id;
+	return declaration.id;
 };

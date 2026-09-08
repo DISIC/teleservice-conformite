@@ -1,4 +1,3 @@
-import { TRPCError } from "@trpc/server";
 import { getPayload, type Payload } from "payload";
 import payloadConfig from "~/payload/payload.config";
 import type {
@@ -7,7 +6,6 @@ import type {
 	Entity,
 	User,
 } from "~/payload/payload-types";
-import type { Session } from "~/lib/auth-client";
 
 type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -93,91 +91,6 @@ export async function getPopulatedDeclaration(
 		created_by: sanitizedUser,
 		entity: sanitizedEntity,
 	};
-}
-
-export async function getDeclarationById(
-	payload: Payload,
-	session: Session,
-	declarationId: number,
-	options?: { trash?: boolean },
-) {
-	try {
-		const result = await payload.findByID({
-			collection: "declarations",
-			id: declarationId,
-			depth: 0,
-			trash: options?.trash ?? false,
-		});
-
-		const hasAccessRight = await payload.find({
-			collection: "access-rights",
-			where: {
-				declaration: { equals: declarationId },
-				user: { equals: session.user.id },
-				status: { equals: "approved" },
-			},
-		});
-
-		if (hasAccessRight.totalDocs === 0) {
-			return null;
-		}
-
-		const declaration = await getPopulatedDeclaration(result);
-
-		return declaration;
-	} catch (error) {
-		console.error("Error fetching declaration by ID:", error);
-
-		return null;
-	}
-}
-
-export async function hasAccessToDeclaration({
-	payload,
-	userId,
-	declarationId,
-}: {
-	payload: Payload;
-	userId: number | null;
-	declarationId: number | null;
-}): Promise<boolean> {
-	if (!userId || !declarationId) {
-		throw new TRPCError({
-			code: "UNAUTHORIZED",
-			message: "User not authorized to access this declaration.",
-		});
-	}
-
-	const declaration = await payload.findByID({
-		collection: "declarations",
-		id: declarationId,
-	});
-
-	if (!declaration) {
-		throw new TRPCError({
-			code: "NOT_FOUND",
-			message: "Declaration not found.",
-		});
-	}
-
-	const accessRight = await payload.find({
-		collection: "access-rights",
-		where: {
-			declaration: { equals: declarationId },
-			user: { equals: userId },
-			status: { equals: "approved" },
-		},
-		limit: 1,
-	});
-
-	if (accessRight.totalDocs === 0) {
-		throw new TRPCError({
-			code: "UNAUTHORIZED",
-			message: "Must have an approved access right to access this declaration.",
-		});
-	}
-
-	return true;
 }
 
 export const getDefaultDeclarationName = async (

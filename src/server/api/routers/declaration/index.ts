@@ -1,6 +1,10 @@
 import z from "zod";
 import { declarationGeneral } from "~/forms/declaration/declarationSchema";
-import { createTRPCRouter, userProtectedProcedure } from "../../trpc";
+import {
+	createTRPCRouter,
+	declarationProcedure,
+	userProtectedProcedure,
+} from "../../trpc";
 import * as service from "./service";
 
 export const declarationRouter = createTRPCRouter({
@@ -39,20 +43,13 @@ export const declarationRouter = createTRPCRouter({
 				input.url,
 			),
 		})),
-	delete: userProtectedProcedure
-		.input(z.object({ id: z.number() }))
-		.mutation(async ({ input, ctx }) => ({
-			data: await service.deleteDeclaration(
-				ctx.payload,
-				Number(ctx.session.user.id),
-				input.id,
-			),
-		})),
-	update: userProtectedProcedure
+	delete: declarationProcedure.mutation(async ({ ctx }) => ({
+		data: await service.deleteDeclaration(ctx.payload, ctx.declaration),
+	})),
+	update: declarationProcedure
 		.input(
 			z.object({
 				general: declarationGeneral.shape.general.extend({
-					declarationId: z.number(),
 					entityId: z.number(),
 				}),
 			}),
@@ -60,44 +57,26 @@ export const declarationRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => ({
 			data: await service.updateDeclaration(
 				ctx.payload,
-				Number(ctx.session.user.id),
+				ctx.declaration,
 				input.general,
 			),
 		})),
-	updateName: userProtectedProcedure
-		.input(z.object({ id: z.number(), name: z.string() }))
+	updateName: declarationProcedure
+		.input(z.object({ name: z.string() }))
 		.mutation(async ({ input, ctx }) => ({
 			data: await service.updateDeclarationName(
 				ctx.payload,
-				Number(ctx.session.user.id),
-				input,
+				ctx.declaration,
+				input.name,
 			),
 		})),
-	publish: userProtectedProcedure
-		.input(z.object({ id: z.number() }))
-		.mutation(async ({ input, ctx }) => ({
-			data: await service.publishDeclaration(
-				ctx.payload,
-				Number(ctx.session.user.id),
-				input.id,
-			),
-		})),
-	getPreviousPublishedRate: userProtectedProcedure
-		.input(z.object({ id: z.number() }))
-		.query(async ({ input, ctx }) =>
-			service.getPreviousPublishedRate(
-				ctx.payload,
-				Number(ctx.session.user.id),
-				input.id,
-			),
-		),
-	revertToPublished: userProtectedProcedure
-		.input(z.object({ id: z.number() }))
-		.mutation(async ({ input, ctx }) => ({
-			data: await service.revertToPublished(
-				ctx.payload,
-				Number(ctx.session.user.id),
-				input.id,
-			),
-		})),
+	publish: declarationProcedure.mutation(async ({ ctx }) => ({
+		data: await service.publishDeclaration(ctx.payload, ctx.declaration),
+	})),
+	getPreviousPublishedRate: declarationProcedure.query(({ ctx }) =>
+		service.getPreviousPublishedRate(ctx.payload, ctx.declaration),
+	),
+	revertToPublished: declarationProcedure.mutation(async ({ ctx }) => ({
+		data: await service.revertToPublished(ctx.payload, ctx.declaration),
+	})),
 });

@@ -1,9 +1,10 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
-import { ZodError } from "zod";
+import z, { ZodError } from "zod";
 import { auth } from "~/lib/auth";
 import getPayloadClient from "../../payload/payloadClient";
+import { loadOwnedDeclaration } from "./utils/declaration-access";
 
 export type BetterAuthSession = Awaited<ReturnType<typeof auth.api.getSession>>;
 
@@ -71,3 +72,17 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 export const userProtectedProcedure = t.procedure.use(isAuthedAsUser);
+
+/** Declaration-scoped procedures resolve the owned declaration at the seam:
+ *  a body that forgets the guard cannot exist — it has no `ctx.declaration`. */
+export const declarationProcedure = userProtectedProcedure
+	.input(z.object({ declarationId: z.number() }))
+	.use(async ({ ctx, input, next }) => {
+		const declaration = await loadOwnedDeclaration(
+			ctx.payload,
+			Number(ctx.session.user.id),
+			input.declarationId,
+		);
+
+		return next({ ctx: { declaration } });
+	});

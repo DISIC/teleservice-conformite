@@ -311,7 +311,7 @@ export default function DeclarationPage({
 						className: classes.dialogActionButton,
 						onClick: async () => {
 							try {
-								await deleteDeclaration({ id: declaration?.id });
+								await deleteDeclaration({ declarationId: declaration.id });
 							} catch (error) {
 								console.error("Error deleting declaration:", error);
 							}

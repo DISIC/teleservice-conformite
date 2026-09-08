@@ -48,9 +48,9 @@ export function InfosSection({
 
 	const save = (value: ZDeclarationGeneral) =>
 		update({
+			declarationId: declaration.id,
 			general: {
 				...value.general,
-				declarationId: declaration.id,
 				entityId: declaration.entity?.id ?? -1,
 			},
 		});

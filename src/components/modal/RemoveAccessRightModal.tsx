@@ -39,7 +39,7 @@ export function RemoveAccessRightModal({
 		{
 			onSuccess: () =>
 				apiUtils.accessRight.getByDeclarationId.invalidate({
-					id: declarationId,
+					declarationId,
 				}),
 		},
 	);

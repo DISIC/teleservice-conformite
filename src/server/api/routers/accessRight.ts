@@ -12,18 +12,22 @@ import {
 	getInvitationUserEmailHtml,
 	getInviteAcceptRecapEmailHtml,
 } from "~/emails";
-import { createTRPCRouter, userProtectedProcedure } from "../trpc";
+import {
+	createTRPCRouter,
+	declarationProcedure,
+	userProtectedProcedure,
+} from "../trpc";
+import { loadOwnedDeclaration } from "../utils/declaration-access";
 import {
 	fetchOrReturnRealValue,
 	findByIdPopulated,
 	findPopulated,
-	hasAccessToDeclaration,
 } from "../utils/payload-helper";
 
 type EmailToInviteUserDeclarationProps = {
 	payload: Payload;
 	emailToInvite: string;
-	declaration: Declaration;
+	declaration: Pick<Declaration, "id" | "name">;
 	invitedBy: { name: string };
 	token: string;
 	entity: Entity;
@@ -57,58 +61,38 @@ export interface AccessRightAugmented extends AccessRight {
 }
 
 export const accessRightRouter = createTRPCRouter({
-	getByDeclarationId: userProtectedProcedure
-		.input(z.object({ id: z.number() }))
-		.query(async ({ input, ctx }) => {
-			const { id } = input;
+	getByDeclarationId: declarationProcedure.query(async ({ ctx }) => {
+		const accessRights = await ctx.payload.find({
+			collection: "access-rights",
+			where: {
+				declaration: { equals: ctx.declaration.id },
+			},
+			sort: "createdAt",
+			limit: 100,
+			depth: 1,
+		});
 
-			const accessRights = await ctx.payload.find({
-				collection: "access-rights",
-				where: {
-					declaration: { equals: id },
-				},
-				sort: "createdAt",
-				limit: 100,
-				depth: 1,
-			});
+		const tmpAccessRights = await Promise.all(
+			accessRights.docs.map(async (ar) => ({
+				...ar,
+				user: ar.user ? await fetchOrReturnRealValue(ar.user, "users") : null,
+			})),
+		);
 
-			const tmpAccessRights = await Promise.all(
-				accessRights.docs.map(async (ar) => ({
-					...ar,
-					user: ar.user ? await fetchOrReturnRealValue(ar.user, "users") : null,
-				})),
-			);
+		return tmpAccessRights;
+	}),
 
-			return tmpAccessRights;
-		}),
-
-	create: userProtectedProcedure
-		.input(
-			z.object({
-				declarationId: z.number(),
-				email: z.email(),
-				role: z.enum(["admin"]),
-			}),
-		)
+	create: declarationProcedure
+		.input(z.object({ email: z.email(), role: z.enum(["admin"]) }))
 		.mutation(async ({ input, ctx }) => {
-			const { declarationId, email, role } = input;
+			const { email, role } = input;
+			const { declaration } = ctx;
+			const declarationId = declaration.id;
 
-			await hasAccessToDeclaration({
-				payload: ctx.payload,
-				declarationId,
-				userId: Number(ctx.session.user.id),
-			});
-
-			const declaration = await findByIdPopulated(
-				ctx.payload,
-				"declarations",
-				declarationId,
-				1,
-			);
-			if (!declaration)
+			if (!declaration.entity)
 				throw new TRPCError({
-					code: "NOT_FOUND",
-					message: "Declaration not found",
+					code: "PRECONDITION_FAILED",
+					message: "Declaration has no entity",
 				});
 
 			const isAccessRightExist = await ctx.payload.find({
@@ -267,11 +251,11 @@ export const accessRightRouter = createTRPCRouter({
 					message: "Access right not found",
 				});
 
-			await hasAccessToDeclaration({
-				payload: ctx.payload,
-				declarationId: accessRight.declaration.id,
-				userId: Number(ctx.session.user.id),
-			});
+			await loadOwnedDeclaration(
+				ctx.payload,
+				Number(ctx.session.user.id),
+				accessRight.declaration.id,
+			);
 
 			const currentEntity = accessRight.declaration.entity;
 
@@ -324,11 +308,11 @@ export const accessRightRouter = createTRPCRouter({
 					message: "Access right not found",
 				});
 
-			await hasAccessToDeclaration({
-				payload: ctx.payload,
-				declarationId: accessRight.declaration as number,
-				userId: Number(ctx.session.user.id),
-			});
+			await loadOwnedDeclaration(
+				ctx.payload,
+				Number(ctx.session.user.id),
+				accessRight.declaration as number,
+			);
 
 			const deletedAccesRight = await ctx.payload.delete({
 				collection: "access-rights",

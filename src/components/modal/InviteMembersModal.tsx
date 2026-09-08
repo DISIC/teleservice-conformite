@@ -45,7 +45,7 @@ export function InviteMembersModal({
 		{
 			onSuccess: () =>
 				apiUtils.accessRight.getByDeclarationId.invalidate({
-					id: declarationId,
+					declarationId,
 				}),
 		},
 	);

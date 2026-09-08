@@ -63,7 +63,7 @@ export function RevertModal({
 					doClosesModal: false,
 					disabled: isPending,
 					onClick: () => {
-						revertToPublished({ id: declarationId });
+						revertToPublished({ declarationId });
 					},
 				},
 			]}

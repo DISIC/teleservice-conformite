@@ -3,8 +3,8 @@ import config from "@payload-config";
 import type { GetServerSidePropsContext, Redirect } from "next";
 import { getPayload } from "payload";
 import type { Contact, Schema } from "~/payload/payload-types";
+import { loadOwnedDeclaration } from "~/server/api/utils/declaration-access";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { getDeclarationById } from "~/server/api/utils/payload-helper";
 import { authPages } from "~/lib/auth";
 
 export interface DeclarationParams extends ParsedUrlQuery {
@@ -20,6 +20,33 @@ export interface LibraryProps {
 	librarySchemas: Schema[];
 }
 
+/** Page-side counterpart of `declarationProcedure`: resolves the session and the
+ *  owned declaration from `[id]`, or `null` when either is missing. */
+export async function loadDeclarationForPage(
+	context: GetServerSidePropsContext,
+	options: { trash?: boolean } = {},
+) {
+	const { id } = (context.params ?? {}) as DeclarationParams;
+	const declarationId = Number.parseInt(id ?? "", 10);
+
+	const [payload, session] = await Promise.all([
+		getPayload({ config }),
+		authPages.api.getSession({ headers: context.req.headers as HeadersInit }),
+	]);
+
+	if (!session || Number.isNaN(declarationId))
+		return { payload, session, declaration: null };
+
+	const declaration = await loadOwnedDeclaration(
+		payload,
+		Number(session.user.id),
+		declarationId,
+		options,
+	).catch(() => null);
+
+	return { payload, session, declaration };
+}
+
 export async function guardDeclaration(
 	context: GetServerSidePropsContext,
 	options?: {
@@ -33,31 +60,18 @@ export async function guardDeclaration(
 		trash = false,
 		includeLibrary = false,
 	} = options ?? {};
-	const { id } = (context.params ?? {}) as DeclarationParams;
 
 	const redirect: Redirect = {
 		destination: redirectUrl,
 		permanent: false,
 	};
 
-	if (!id || typeof id !== "string") return { redirect };
-
-	const payload = await getPayload({ config });
-
-	const session = await authPages.api.getSession({
-		headers: context.req.headers as HeadersInit,
-	});
-
-	if (!session) return { redirect };
-
-	const declaration = await getDeclarationById(
-		payload,
-		session,
-		Number.parseInt(id, 10),
+	const { payload, session, declaration } = await loadDeclarationForPage(
+		context,
 		{ trash },
 	);
 
-	if (!declaration) return { redirect };
+	if (!session || !declaration) return { redirect };
 
 	const props: DeclarationProps & Partial<LibraryProps> = { declaration };
 

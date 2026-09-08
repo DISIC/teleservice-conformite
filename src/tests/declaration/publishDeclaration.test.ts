@@ -4,13 +4,8 @@ import { completeDeclaration } from "./declaration.fixture";
 import { publishDeclaration } from "~/server/api/routers/declaration/service";
 import { extractDeclarationContentToPublish } from "~/utils/declaration-content";
 
-function stubPayload(
-	declaration: ReturnType<typeof completeDeclaration>,
-	{ hasAccess = true } = {},
-) {
+function stubPayload(declaration: ReturnType<typeof completeDeclaration>) {
 	const payload = {
-		findByID: vi.fn().mockResolvedValue(declaration),
-		find: vi.fn().mockResolvedValue({ totalDocs: hasAccess ? 1 : 0, docs: [] }),
 		update: vi.fn().mockResolvedValue(declaration),
 	};
 	return { payload: payload as unknown as Payload, update: payload.update };
@@ -18,11 +13,12 @@ function stubPayload(
 
 describe("publishDeclaration", () => {
 	it("never writes when the gate fails — incomplete declarations cannot publish", async () => {
-		const { payload, update } = stubPayload(
-			completeDeclaration({ contact: null } as never),
-		);
+		const declaration = completeDeclaration({ contact: null } as never);
+		const { payload, update } = stubPayload(declaration);
 
-		await expect(publishDeclaration(payload, 1, 1)).rejects.toMatchObject({
+		await expect(
+			publishDeclaration(payload, declaration),
+		).rejects.toMatchObject({
 			code: "PRECONDITION_FAILED",
 		});
 		expect(update).not.toHaveBeenCalled();
@@ -32,7 +28,7 @@ describe("publishDeclaration", () => {
 		const declaration = completeDeclaration();
 		const { payload, update } = stubPayload(declaration);
 
-		await publishDeclaration(payload, 1, 1);
+		await publishDeclaration(payload, declaration);
 
 		expect(update).toHaveBeenCalledTimes(1);
 		expect(update).toHaveBeenCalledWith(
@@ -62,7 +58,7 @@ describe("publishDeclaration", () => {
 		});
 		const { payload, update } = stubPayload(declaration);
 
-		await publishDeclaration(payload, 1, 1);
+		await publishDeclaration(payload, declaration);
 
 		const data = update.mock.calls[0]?.[0]?.data ?? {};
 		expect(data.first_published_at).toBe("2024-03-24T00:00:00.000Z");
@@ -72,26 +68,16 @@ describe("publishDeclaration", () => {
 	});
 
 	it("gates a Modifiée republish too — there is no fast path", async () => {
-		const { payload, update } = stubPayload(
-			completeDeclaration({
-				publishedContent: '{"name":"previous snapshot"}',
-				contact: null,
-			} as never),
-		);
+		const declaration = completeDeclaration({
+			publishedContent: '{"name":"previous snapshot"}',
+			contact: null,
+		} as never);
+		const { payload, update } = stubPayload(declaration);
 
-		await expect(publishDeclaration(payload, 1, 1)).rejects.toMatchObject({
+		await expect(
+			publishDeclaration(payload, declaration),
+		).rejects.toMatchObject({
 			code: "PRECONDITION_FAILED",
-		});
-		expect(update).not.toHaveBeenCalled();
-	});
-
-	it("rejects a user without an approved access right, without writing", async () => {
-		const { payload, update } = stubPayload(completeDeclaration(), {
-			hasAccess: false,
-		});
-
-		await expect(publishDeclaration(payload, 1, 1)).rejects.toMatchObject({
-			code: "UNAUTHORIZED",
 		});
 		expect(update).not.toHaveBeenCalled();
 	});

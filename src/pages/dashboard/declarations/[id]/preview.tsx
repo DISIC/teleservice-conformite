@@ -1,29 +1,19 @@
-import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import config from "@payload-config";
-import type {
-	GetServerSideProps,
-	InferGetServerSidePropsType,
-	Redirect,
-} from "next";
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { getPayload } from "payload";
 import { useState } from "react";
 import { tss } from "tss-react";
 import PublishedTemplate, {
 	extractDeclarationContentToPublish,
 } from "~/components/declaration/PublishedTemplate";
 import type { Entity, User } from "~/payload/payload-types";
-import {
-	getDeclarationById,
-	type PopulatedDeclaration,
-} from "~/server/api/utils/payload-helper";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
-import { auth } from "~/lib/auth";
+import { guardDeclaration } from "~/lib/server-guards";
 import type { PublishedDeclaration } from "~/utils/declaration-content";
 import { getDeclarationStatus } from "~/utils/declaration/status";
 
@@ -62,7 +52,7 @@ export default function DeclarationPreviewPage({
 
 	const onPublish = () => {
 		setPublishError(null);
-		publishDeclaration({ id: declaration.id });
+		publishDeclaration({ declarationId: declaration.id });
 	};
 
 	return (
@@ -162,39 +152,11 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 	},
 });
 
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
-
 export const getServerSideProps = (async (context) => {
-	const { id } = context.params as Params;
+	const guarded = await guardDeclaration(context);
+	if (!guarded.props) return { redirect: guarded.redirect };
 
-	const redirect: Redirect = {
-		destination: "/dashboard",
-		permanent: false,
-	};
-
-	if (!id || typeof id !== "string") {
-		return { redirect };
-	}
-
-	const [payload, session] = await Promise.all([
-		getPayload({ config }),
-		auth.api.getSession({
-			headers: context.req.headers as HeadersInit,
-		}),
-	]);
-
-	if (!session) return { redirect };
-
-	const declaration = await getDeclarationById(
-		payload,
-		session,
-		Number.parseInt(id, 10),
-	);
-
-	if (!declaration) return { redirect };
-
+	const { declaration } = guarded.props;
 	const { entity, created_by } = declaration;
 
 	if (!entity || !created_by) {

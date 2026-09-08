@@ -1,16 +1,12 @@
-import type { ParsedUrlQuery } from "node:querystring";
 import { fr } from "@codegouvfr/react-dsfr";
-import config from "@payload-config";
 import type { GetServerSideProps, Redirect } from "next";
 import Head from "next/head";
-import { getPayload } from "payload";
 import { tss } from "tss-react";
 import ErrorPage from "~/components/declaration/ErrorPage";
 import { PublishedHeader } from "~/components/declaration/PublishedHeader";
 import PublishedTemplate from "~/components/declaration/PublishedTemplate";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
-import { getDeclarationById } from "~/server/api/utils/payload-helper";
-import { auth } from "~/lib/auth";
+import { loadDeclarationForPage } from "~/lib/server-guards";
 import {
 	parsePublishedDeclaration,
 	type PublishedDeclaration,
@@ -62,36 +58,19 @@ const useStyles = tss.withName("PublishPage").create({
 	},
 });
 
-interface Params extends ParsedUrlQuery {
-	id: string;
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.params as Params;
-
+export const getServerSideProps: GetServerSideProps<PublishPageProps> = async (
+	context,
+) => {
 	const redirect: Redirect = {
 		destination: "/",
 		permanent: false,
 	};
 
-	if (!id || typeof id !== "string") {
-		return { redirect };
-	}
-
-	const payload = await getPayload({ config });
-
-	const session = await auth.api.getSession({
-		headers: context.req.headers as HeadersInit,
+	const { session, declaration } = await loadDeclarationForPage(context, {
+		trash: true,
 	});
 
 	if (!session) return { redirect };
-
-	const declaration = await getDeclarationById(
-		payload,
-		session,
-		Number.parseInt(id, 10),
-		{ trash: true },
-	);
 
 	const publishedContent = declaration?.deletedAt
 		? null
