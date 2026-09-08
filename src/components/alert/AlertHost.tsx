@@ -3,7 +3,11 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
 
-import { type AlertEvent, onAlert, showAlert } from "~/utils/alert-event";
+import {
+	type AlertEvent,
+	onAlert,
+	showAlert,
+} from "~/components/alert/alertEvents";
 
 type Item = AlertEvent & { id: string; expiresAt?: number };
 

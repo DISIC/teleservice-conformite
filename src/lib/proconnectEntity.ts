@@ -2,7 +2,7 @@ import { createAuthMiddleware } from "better-auth/plugins";
 import { getPayload } from "payload";
 import payloadConfig from "~/payload/payload.config";
 import type { Entity } from "~/payload/payload-types";
-import { getEntityInfosFromSiret } from "~/utils/siret-helper";
+import { getEntityInfosFromSiret } from "~/lib/sirene";
 
 export const upsertEntityToUser = createAuthMiddleware(async (ctx) => {
 	if (ctx.params?.id === "proconnect") {

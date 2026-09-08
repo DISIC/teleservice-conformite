@@ -14,27 +14,12 @@ type Listener = (event: AlertEvent) => void;
 
 const listeners = new Set<Listener>();
 
-export const alertEvents = {
-	on(listener: Listener) {
-		listeners.add(listener);
-		return () => listeners.delete(listener);
-	},
-	off(listener: Listener) {
-		listeners.delete(listener);
-	},
-	emit(event: AlertEvent) {
-		for (const l of Array.from(listeners)) l(event);
-	},
-};
-
 export function showAlert(event: AlertEvent) {
-	alertEvents.emit(event);
+	for (const listener of Array.from(listeners)) listener(event);
 }
 
+/** Returns the unsubscribe function. */
 export function onAlert(listener: Listener) {
-	return alertEvents.on(listener);
-}
-
-export function offAlert(listener: Listener) {
-	alertEvents.off(listener);
+	listeners.add(listener);
+	return () => listeners.delete(listener);
 }

@@ -21,7 +21,7 @@ import { StatsCards } from "~/components/declaration/StatsCards";
 import { SectionContent } from "~/components/declaration/sections/Content";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
-import { copyToClipboard } from "~/utils/declaration-helper";
+import { copyToClipboard } from "~/lib/clipboard";
 import { parseSectionFromQuery } from "~/domain/declaration/sections";
 import { validateDeclaration } from "~/domain/declaration/validate";
 import {

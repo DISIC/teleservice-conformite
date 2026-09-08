@@ -2,8 +2,37 @@ import { TRPCError } from "@trpc/server";
 import type { Payload } from "payload";
 import z from "zod";
 import { testEnvironmentOptions, toolOptions } from "~/payload/selectOptions";
-import { extractTechnologiesFromUrl } from "~/utils/declaration-helper";
 import type { AlbertResponse } from "../albert";
+
+/** Maps free-text tool names onto option values when a label matches, keeping unknown names verbatim. */
+const canonicalizeOptionValues = (
+	tools: string[],
+	options: typeof toolOptions | typeof testEnvironmentOptions,
+): string[] => {
+	const toolLabels = options.map((option) => option.label);
+
+	return [
+		...new Set(
+			tools.reduce((acc: string[], option) => {
+				const matchedTool = toolLabels.find((label) =>
+					option.toLowerCase().includes(label.toLowerCase()),
+				);
+
+				if (matchedTool) {
+					const toolOptionValue = toolOptions.find(
+						(tool) => tool.label === matchedTool,
+					)?.value;
+					if (toolOptionValue && !acc.includes(toolOptionValue))
+						acc.push(toolOptionValue);
+				} else {
+					acc.push(option);
+				}
+
+				return acc;
+			}, []),
+		),
+	];
+};
 
 export const importedDeclarationDataSchema = z.object({
 	service: z.object({
@@ -59,13 +88,13 @@ export const normalizeAraReport = (araJson: any): ImportedDeclarationData => ({
 		(page: any) => page?.name,
 	),
 	technologies: araJson.context?.technologies ?? [],
-	testEnvironments: extractTechnologiesFromUrl(
+	testEnvironments: canonicalizeOptionValues(
 		(araJson.context?.environments ?? []).map(
 			(env: any) => env?.assistiveTechnology,
 		),
 		testEnvironmentOptions,
 	),
-	usedTools: extractTechnologiesFromUrl(
+	usedTools: canonicalizeOptionValues(
 		araJson.context?.tools ?? [],
 		toolOptions,
 	),
@@ -85,11 +114,11 @@ export const normalizeAlbertResponse = (
 ): ImportedDeclarationData => ({
 	...albert,
 	rgaaVersion: albert.rgaaVersion ?? "rgaa_4",
-	testEnvironments: extractTechnologiesFromUrl(
+	testEnvironments: canonicalizeOptionValues(
 		albert.testEnvironments,
 		testEnvironmentOptions,
 	),
-	usedTools: extractTechnologiesFromUrl(albert.usedTools, toolOptions),
+	usedTools: canonicalizeOptionValues(albert.usedTools, toolOptions),
 });
 
 /** Reads the active user's entity (linked at signup), or null when unset. */
