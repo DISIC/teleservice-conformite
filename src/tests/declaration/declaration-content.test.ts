@@ -58,6 +58,39 @@ describe("extractDeclarationContentToPublish", () => {
 		expect(fromRow.firstPublishedAt).toBe("2026-08-27");
 	});
 
+	it("publishes no audit detail when no audit was realised", () => {
+		const content = extractDeclarationContentToPublish(
+			completeDeclaration({
+				audit: {
+					isRealised: false,
+					realisedBy: "Orion",
+					rate: 74,
+					rgaa_version: "rgaa_5",
+					compliantElements: "Accueil",
+					nonCompliantElements: "Images sans alternative",
+					optionalElements: "Cartes IGN",
+					disproportionnedCharge: "Archives PDF",
+					usedTools: [{ name: "wave" }],
+					testEnvironments: [{ name: "voiceover_safari" }],
+					technologies: [{ name: "React" }],
+				},
+			} as never),
+		);
+		expect(content.audit).toEqual({
+			isRealised: false,
+			rgaa_version: "RGAA 4",
+			realised_by: "",
+			rate: 0,
+			nonCompliantElements: "",
+			disproportionnedCharge: "",
+			optionalElements: "",
+			compliantElements: "",
+			technologies: [],
+			testEnvironments: [],
+			usedTools: [],
+		});
+	});
+
 	it("records whether an audit was performed", () => {
 		expect(
 			extractDeclarationContentToPublish(completeDeclaration()).audit

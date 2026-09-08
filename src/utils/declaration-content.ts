@@ -6,6 +6,7 @@ import {
 	toolOptions,
 } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { NO_AUDIT } from "~/utils/declaration/audit";
 
 type OptionLabel<T extends readonly { label: string }[]> = T[number]["label"];
 
@@ -79,6 +80,10 @@ export const extractDeclarationContentToPublish = (
 ): PublishedDeclaration => {
 	const publishedAt =
 		toIsoDate(dates.publishedAt) ?? toIsoDate(declaration.published_at) ?? "";
+	// Without a realised audit there is nothing to publish about it, whatever
+	// details the row still carries.
+	const audit =
+		declaration.audit?.isRealised === true ? declaration.audit : NO_AUDIT;
 	return {
 		name: declaration.name ?? "",
 		entityName: declaration.entity?.name ?? "",
@@ -97,30 +102,27 @@ export const extractDeclarationContentToPublish = (
 		firstPublishedAt: toIsoDate(declaration.first_published_at) ?? publishedAt,
 		publishedAt,
 		audit: {
-			isRealised: declaration.audit?.isRealised === true,
+			isRealised: audit.isRealised === true,
 			rgaa_version:
-				rgaaVersionOptions.find(
-					(option) => option.value === declaration?.audit?.rgaa_version,
-				)?.label ?? "RGAA 4",
-			realised_by: declaration.audit?.realisedBy ?? "",
-			rate: declaration.audit?.rate ?? 0,
-			nonCompliantElements: declaration?.audit?.nonCompliantElements ?? "",
-			disproportionnedCharge: declaration?.audit?.disproportionnedCharge ?? "",
-			optionalElements: declaration?.audit?.optionalElements ?? "",
-			compliantElements: declaration?.audit?.compliantElements ?? "",
-			technologies: declaration?.audit?.technologies ?? [],
-			testEnvironments:
-				(declaration?.audit?.testEnvironments ?? [])?.map(
-					(env) =>
-						testEnvironmentOptions.find((option) => option.value === env.name)
-							?.label ?? env.name,
-				) ?? [],
-			usedTools:
-				(declaration?.audit?.usedTools ?? [])?.map(
-					(tool) =>
-						toolOptions.find((option) => option.value === tool.name)?.label ??
-						tool.name,
-				) ?? [],
+				rgaaVersionOptions.find((option) => option.value === audit.rgaa_version)
+					?.label ?? "RGAA 4",
+			realised_by: audit.realisedBy ?? "",
+			rate: audit.rate ?? 0,
+			nonCompliantElements: audit.nonCompliantElements ?? "",
+			disproportionnedCharge: audit.disproportionnedCharge ?? "",
+			optionalElements: audit.optionalElements ?? "",
+			compliantElements: audit.compliantElements ?? "",
+			technologies: audit.technologies ?? [],
+			testEnvironments: (audit.testEnvironments ?? []).map(
+				(env) =>
+					testEnvironmentOptions.find((option) => option.value === env.name)
+						?.label ?? env.name,
+			),
+			usedTools: (audit.usedTools ?? []).map(
+				(tool) =>
+					toolOptions.find((option) => option.value === tool.name)?.label ??
+					tool.name,
+			),
 		},
 		contact: {
 			url: declaration.contact?.url ?? "",

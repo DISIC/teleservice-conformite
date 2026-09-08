@@ -1,4 +1,5 @@
 import z from "zod";
+import { NO_AUDIT } from "~/utils/declaration/audit";
 import { createTRPCRouter, userProtectedProcedure } from "../trpc";
 import { hasAccessToDeclaration } from "../utils/payload-helper";
 import { recalculateDeclarationStatus } from "../utils/publish-comparison";
@@ -67,14 +68,9 @@ export const auditRouter = createTRPCRouter({
 				}),
 				// A fully conformant audit has no non-conformities to declare.
 				...(values.rate === 100 && { nonCompliantElements: null }),
-				// Answering "non réalisé" invalidates the realised-audit details; clear
-				// them so switching back to "réalisé" starts from a blank slate.
-				...(values.isRealised === false && {
-					date: null,
-					realisedBy: null,
-					rgaa_version: null,
-					rate: null,
-				}),
+				// Answering "non réalisé" invalidates every audit detail; clear them all
+				// so switching back to "réalisé" starts from a blank slate.
+				...(values.isRealised === false && NO_AUDIT),
 				toVerify: false,
 			};
 
