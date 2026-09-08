@@ -1,5 +1,5 @@
-import { formOptions } from "@tanstack/react-form";
 import z from "zod";
+import { changeFormOptions } from "~/forms/formOptions";
 import { optionalUrlIssue, requiredIssue } from "~/forms/rules";
 import type { Contact } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
@@ -55,13 +55,13 @@ export const contactDefaultValues: ZContactForm = {
 	email: "",
 };
 
-export const contactFormOptions = formOptions({
-	defaultValues: contactDefaultValues,
-	validators: {
-		onChange: ({ formApi }) => formApi.parseValuesWithSchema(contactForm),
-		onSubmit: ({ formApi }) => formApi.parseValuesWithSchema(contactForm),
-	},
-});
+// A single onChange trigger: a second submit-cause validation would stamp a
+// duplicate error under its own key, and only the edited field clears that key —
+// stranding the sibling flagged by the email-or-url rule.
+export const contactFormOptions = changeFormOptions(
+	contactDefaultValues,
+	contactForm,
+);
 
 /** Maps a persisted declaration to this form's values. Keep in sync with the
  *  schema above so the publish gate validates the exact shape the form feeds. */
