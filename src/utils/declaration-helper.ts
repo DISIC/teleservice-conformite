@@ -1,18 +1,5 @@
 import { testEnvironmentOptions, toolOptions } from "~/payload/selectOptions";
 
-export const getConformityStatus = (
-	rate: number,
-): { label: string; severity: "success" | "warning" | "error" } => {
-	if (rate < 50) {
-		return { label: "Non conforme", severity: "error" };
-	}
-	if (rate >= 50 && rate <= 99) {
-		return { label: "Partiellement conforme", severity: "success" };
-	}
-
-	return { label: "Conforme", severity: "success" };
-};
-
 export const extractTechnologiesFromUrl = (
 	tools: string[],
 	options: typeof toolOptions | typeof testEnvironmentOptions,

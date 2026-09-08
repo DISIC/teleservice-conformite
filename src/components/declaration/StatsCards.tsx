@@ -4,7 +4,7 @@ import { tss } from "tss-react";
 import { appKindOptions } from "~/payload/selectOptions";
 import { appKindPictograms } from "~/components/declaration/appKindPictograms";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { getConformityStatus } from "~/utils/declaration-helper";
+import { getConformityStatus } from "~/domain/declaration/conformity";
 
 type StatsCardsProps = {
 	declaration: PopulatedDeclaration;

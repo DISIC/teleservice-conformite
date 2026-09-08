@@ -7,7 +7,7 @@ import {
 	parseSectionFromQuery,
 	SECTION_SLUGS,
 	sectionHref,
-} from "~/utils/declaration/sections";
+} from "~/domain/declaration/sections";
 
 describe("walkthrough navigation", () => {
 	it("starts at infos and ends at contact", () => {

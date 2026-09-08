@@ -6,8 +6,8 @@ import {
 	declarationToContactValues,
 	type ZContactForm,
 } from "~/forms/contact/contactSchema";
-import { SECTION_TITLES } from "~/utils/declaration/sections";
-import { applyLibrarySection } from "~/utils/declaration/sourceMode";
+import { SECTION_TITLES } from "~/domain/declaration/sections";
+import { applyLibrarySection } from "~/domain/declaration/sourceMode";
 import { logMutationError } from "~/utils/declaration-helper";
 import type { SectionRenderProps } from "../Content";
 import { SourceModeSection, type SourceModeOption } from "../SourceModeSection";

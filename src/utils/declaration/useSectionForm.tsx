@@ -4,7 +4,7 @@ import { type ReactNode, useCallback, useState } from "react";
 import { useCommonStyles } from "~/components/ui/commonStyles";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { SectionShell } from "~/components/declaration/sections/Shell";
-import type { EditingMode } from "~/utils/declaration/status";
+import type { EditingMode } from "~/domain/declaration/status";
 
 type UseSectionFormArgs = {
 	title: string;

@@ -1,5 +1,5 @@
 import { type AnyFormApi, useStore } from "@tanstack/react-form";
-import type { EditingMode } from "~/utils/declaration/status";
+import type { EditingMode } from "~/domain/declaration/status";
 import { useAutosave } from "~/utils/declaration/useAutosave";
 import { useRevealSectionErrors } from "~/utils/declaration/useRevealSectionErrors";
 

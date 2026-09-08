@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { api } from "~/lib/api";
-import { SECTION_TITLES } from "~/utils/declaration/sections";
+import { SECTION_TITLES } from "~/domain/declaration/sections";
 import { useAppForm } from "~/forms/context";
 import { sectionFormOptions } from "~/forms/formOptions";
 import { DeclarationGeneralForm } from "~/forms/declaration/declarationForm";

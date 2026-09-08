@@ -1,8 +1,8 @@
 import MarkdownToJsx from "~/components/declaration/MarkdownToJsx";
-import type { PublishedDeclaration } from "~/utils/declaration-content";
-import { buildPublishedMarkdown } from "~/utils/declaration/publishedMarkdown";
+import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
+import { buildPublishedMarkdown } from "~/domain/declaration/published/markdown";
 
-export { extractDeclarationContentToPublish } from "~/utils/declaration-content";
+export { extractDeclarationContentToPublish } from "~/domain/declaration/published/snapshot";
 
 export type PublishedTemplateMode = "preview" | "published";
 

@@ -14,8 +14,8 @@ import type { Entity, User } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { guardDeclaration } from "~/lib/server-guards";
-import type { PublishedDeclaration } from "~/utils/declaration-content";
-import { getDeclarationStatus } from "~/utils/declaration/status";
+import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
+import { getDeclarationStatus } from "~/domain/declaration/status";
 
 // Only entity and created_by remain nullable relations for the preview.
 type RequiredPopulatedDeclaration = Omit<

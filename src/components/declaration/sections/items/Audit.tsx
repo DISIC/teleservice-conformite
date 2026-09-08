@@ -3,8 +3,8 @@ import { api } from "~/lib/api";
 import {
 	AUDIT_SUB_SECTIONS,
 	type AuditSubSectionSlug,
-} from "~/utils/declaration/auditSubSections";
-import { isSectionToComplete } from "~/utils/declaration/sections";
+} from "~/domain/declaration/auditSubSections";
+import { isSectionToComplete } from "~/domain/declaration/sections";
 import { useAppForm } from "~/forms/context";
 import { sectionFormOptions } from "~/forms/formOptions";
 import {

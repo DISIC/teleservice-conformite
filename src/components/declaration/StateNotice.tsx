@@ -11,7 +11,7 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import {
 	getDeclarationState,
 	STATE_PRESENTATION,
-} from "~/utils/declaration/state";
+} from "~/domain/declaration/state";
 import { usePublishAttempt } from "~/utils/declaration/usePublishAttempt";
 
 type StateNoticeProps = {

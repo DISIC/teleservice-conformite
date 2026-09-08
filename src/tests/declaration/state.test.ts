@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { completeDeclaration } from "./declaration.fixture";
-import { getDeclarationState } from "~/utils/declaration/state";
+import { getDeclarationState } from "~/domain/declaration/state";
 
 describe("getDeclarationState", () => {
 	it("renders no notice for a clean published declaration", () => {

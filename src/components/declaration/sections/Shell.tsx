@@ -6,7 +6,7 @@ import type {
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
-import type { EditingMode } from "~/utils/declaration/status";
+import type { EditingMode } from "~/domain/declaration/status";
 
 export type SectionShellProps = {
 	title: string;

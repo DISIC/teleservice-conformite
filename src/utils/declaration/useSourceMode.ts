@@ -7,7 +7,7 @@ import {
 	deriveSourceMode,
 	type LibrarySectionKind,
 	type SourceModeValue,
-} from "./sourceMode";
+} from "~/domain/declaration/sourceMode";
 import { type LibraryLink, useLibraryLink } from "./useLibraryLink";
 
 export type SourceModeController = {

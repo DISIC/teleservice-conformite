@@ -18,10 +18,8 @@ import Table from "~/components/ui/Table";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { auth } from "~/lib/auth";
-import {
-	copyToClipboard,
-	getConformityStatus,
-} from "~/utils/declaration-helper";
+import { copyToClipboard } from "~/utils/declaration-helper";
+import { getConformityStatus } from "~/domain/declaration/conformity";
 import Document from "@codegouvfr/react-dsfr/picto/Document";
 import Book from "@codegouvfr/react-dsfr/picto/Book";
 

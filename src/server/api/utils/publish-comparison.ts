@@ -1,6 +1,6 @@
 import type { Payload } from "payload";
 import type { Declaration } from "~/payload/payload-types";
-import { hasContentChangedSincePublish } from "~/utils/declaration/status";
+import { hasContentChangedSincePublish } from "~/domain/declaration/status";
 import { findByIdPopulated, type PopulatedDeclaration } from "./payload-helper";
 
 type DeclarationFieldOverrides = Partial<

@@ -10,7 +10,7 @@ import { loadDeclarationForPage } from "~/lib/server-guards";
 import {
 	parsePublishedDeclaration,
 	type PublishedDeclaration,
-} from "~/utils/declaration-content";
+} from "~/domain/declaration/published/snapshot";
 
 type PublishPageProps = {
 	publishedContent: PublishedDeclaration | null;

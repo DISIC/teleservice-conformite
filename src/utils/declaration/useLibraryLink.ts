@@ -3,7 +3,10 @@ import { declarationToContactValues } from "~/forms/contact/contactSchema";
 import { declarationToSchemaValues } from "~/forms/schema/schemaSchema";
 import { api } from "~/lib/api";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { applyLibrarySection, type LibrarySectionKind } from "./sourceMode";
+import {
+	applyLibrarySection,
+	type LibrarySectionKind,
+} from "~/domain/declaration/sourceMode";
 
 export type LibraryLink = {
 	label: string;

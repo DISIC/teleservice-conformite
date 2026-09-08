@@ -2,7 +2,7 @@ import type { Payload } from "payload";
 import { describe, expect, it, vi } from "vitest";
 import { completeDeclaration } from "./declaration.fixture";
 import { publishDeclaration } from "~/server/api/routers/declaration/service";
-import { extractDeclarationContentToPublish } from "~/utils/declaration-content";
+import { extractDeclarationContentToPublish } from "~/domain/declaration/published/snapshot";
 
 function stubPayload(declaration: ReturnType<typeof completeDeclaration>) {
 	const payload = {

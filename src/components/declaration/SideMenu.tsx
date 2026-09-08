@@ -7,7 +7,7 @@ import {
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { SECTION_BADGE } from "~/utils/declaration/state";
+import { SECTION_BADGE } from "~/domain/declaration/state";
 import {
 	isAuditSubSection,
 	isAuditToVerify,
@@ -17,7 +17,7 @@ import {
 	SECTION_TITLES,
 	type SectionSlug,
 	sectionHref,
-} from "~/utils/declaration/sections";
+} from "~/domain/declaration/sections";
 
 type SideMenuProps = {
 	declaration: PopulatedDeclaration;
