@@ -1,7 +1,7 @@
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useEffect, useId, useState } from "react";
 import { api } from "~/lib/api";
-import { logMutationError } from "~/utils/declaration-helper";
+import { logMutationError } from "~/components/declaration/logMutationError";
 
 export type RevertModalActions = {
 	open?: () => void;

@@ -9,9 +9,9 @@ import {
 	declarationToGeneralValues,
 	type ZDeclarationGeneral,
 } from "~/forms/declaration/declarationSchema";
-import { useLiveSectionForm } from "~/utils/declaration/useLiveSectionForm";
-import { useSectionForm } from "~/utils/declaration/useSectionForm";
-import { logMutationError } from "~/utils/declaration-helper";
+import { useLiveSectionForm } from "~/components/declaration/sections/hooks/useLiveSectionForm";
+import { useSectionForm } from "~/components/declaration/sections/hooks/useSectionForm";
+import { logMutationError } from "~/components/declaration/logMutationError";
 import type { SectionRenderProps } from "../Content";
 
 export function InfosSection({

@@ -7,8 +7,8 @@ import {
 	type ZSchema,
 } from "~/forms/schema/schemaSchema";
 import { SECTION_TITLES } from "~/domain/declaration/sections";
-import { applyLibrarySection } from "~/domain/declaration/sourceMode";
-import { logMutationError } from "~/utils/declaration-helper";
+import { applyLibrarySection } from "~/components/declaration/sections/applyLibrarySection";
+import { logMutationError } from "~/components/declaration/logMutationError";
 import type { SectionRenderProps } from "../Content";
 import { SourceModeSection, type SourceModeOption } from "../SourceModeSection";
 import Calendar from "@codegouvfr/react-dsfr/picto/Calendar";

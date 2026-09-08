@@ -12,7 +12,7 @@ import {
 	getDeclarationState,
 	STATE_PRESENTATION,
 } from "~/domain/declaration/state";
-import { usePublishAttempt } from "~/utils/declaration/usePublishAttempt";
+import { usePublishAttempt } from "~/components/declaration/sections/hooks/usePublishAttempt";
 
 type StateNoticeProps = {
 	declaration: PopulatedDeclaration;

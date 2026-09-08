@@ -18,10 +18,10 @@ import {
 	SOURCE_MODE_FIELD,
 	type LibrarySectionKind,
 } from "~/domain/declaration/sourceMode";
-import { useLiveSectionForm } from "~/utils/declaration/useLiveSectionForm";
-import { useSectionForm } from "~/utils/declaration/useSectionForm";
-import { useSourceMode } from "~/utils/declaration/useSourceMode";
-import { usePublishAttempt } from "~/utils/declaration/usePublishAttempt";
+import { useLiveSectionForm } from "~/components/declaration/sections/hooks/useLiveSectionForm";
+import { useSectionForm } from "~/components/declaration/sections/hooks/useSectionForm";
+import { useSourceMode } from "~/components/declaration/sections/hooks/useSourceMode";
+import { usePublishAttempt } from "~/components/declaration/sections/hooks/usePublishAttempt";
 import type { DeclarationChangeFn } from "./Content";
 
 export type SourceModeOption = {

@@ -1,7 +1,7 @@
 import { type AnyFormApi, useStore } from "@tanstack/react-form";
 import type { EditingMode } from "~/domain/declaration/status";
-import { useAutosave } from "~/utils/declaration/useAutosave";
-import { useRevealSectionErrors } from "~/utils/declaration/useRevealSectionErrors";
+import { useAutosave } from "~/components/declaration/sections/hooks/useAutosave";
+import { useRevealSectionErrors } from "~/components/declaration/sections/hooks/useRevealSectionErrors";
 
 // A Section form's live behaviour in one wiring point: debounced autosave runs
 // in sequential mode only; error reveal on a publish redirect runs in both modes.
