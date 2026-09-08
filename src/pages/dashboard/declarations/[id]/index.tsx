@@ -7,7 +7,7 @@ import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import { BackButton } from "~/components/ui/BackButton";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
@@ -55,10 +55,11 @@ export default function DeclarationPage({
 	const hasPublishedDeclaration = !!declaration?.publishedContent;
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertDetails, setAlertDetails] = useState<{
-		title?: string;
-		description?: string;
+		title?: ReactNode;
+		description?: ReactNode;
 		severity: "info" | "success" | "warning" | "error";
-	}>({ title: "", description: "", severity: "info" });
+		autoDismiss: boolean;
+	}>({ title: "", description: "", severity: "info", autoDismiss: true });
 	const { classes } = useStyles();
 
 	const status = getDeclarationStatus(declaration);
@@ -87,24 +88,26 @@ export default function DeclarationPage({
 		title,
 		description,
 		severity,
+		autoDismiss = true,
 	}: {
-		title?: string;
-		description?: string;
+		title?: ReactNode;
+		description?: ReactNode;
 		severity: "info" | "success" | "warning" | "error";
+		autoDismiss?: boolean;
 	}) => {
-		setAlertDetails({ title, description, severity });
+		setAlertDetails({ title, description, severity, autoDismiss });
 		setShowAlert(true);
 	};
 
 	useEffect(() => {
-		if (!showAlert) return;
+		if (!showAlert || !alertDetails.autoDismiss) return;
 
 		const timer = setTimeout(() => {
 			setShowAlert(false);
 		}, 5000);
 
 		return () => clearTimeout(timer);
-	}, [showAlert]);
+	}, [showAlert, alertDetails]);
 
 	// Focus the errored field on first mount, then drop the param so it neither
 	// lingers in the URL nor re-fires on later re-renders.
@@ -124,8 +127,19 @@ export default function DeclarationPage({
 	useEffect(() => {
 		if (published === "true") {
 			showDeclarationAlert({
-				description: "Votre déclaration est en ligne",
+				title: "Votre déclaration est en ligne.",
+				description: (
+					<a
+						href={`/declarations/${declaration.id}/publish`}
+						target="_blank"
+						rel="noopener noreferrer"
+						title={`Voir la déclaration ${declaration.name}, nouvelle fenêtre`}
+					>
+						Voir la déclaration
+					</a>
+				),
 				severity: "success",
+				autoDismiss: false,
 			});
 
 			router.replace(`/dashboard/declarations/${declaration.id}`, undefined, {
