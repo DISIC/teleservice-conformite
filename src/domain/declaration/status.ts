@@ -40,3 +40,15 @@ export function hasContentChangedSincePublish(
 	});
 	return JSON.stringify(current) !== JSON.stringify(published);
 }
+
+/** The status column a save leaves behind: a published Declaration turns
+ *  Modifiée when the row drifts from its snapshot and back to Publiée when an
+ *  edit restores it; a draft keeps its column. */
+export function statusAfterEdit(
+	declaration: PopulatedDeclaration,
+): "published" | "unpublished" {
+	if (!declaration.publishedContent) return declaration.status ?? "unpublished";
+	return hasContentChangedSincePublish(declaration)
+		? "unpublished"
+		: "published";
+}
