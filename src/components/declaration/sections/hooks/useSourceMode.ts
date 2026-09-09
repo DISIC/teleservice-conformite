@@ -58,9 +58,11 @@ export function useSourceMode({
 	if (!kind) return null;
 
 	const select = (value: SourceModeValue) => {
-		// Detaching from a linked parent is a persisted write, not a local mode flip.
+		// Detaching from a linked parent is a persisted write, not a local mode flip:
+		// drop any stale local choice so the saved source drives the radio.
 		if (value === "custom" && derived === "linked") {
 			libraryLink.onUnlink();
+			setPending(null);
 			return;
 		}
 		if (value === "skipped") skip.mutate({ declarationId: declaration.id });
