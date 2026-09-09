@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { api } from "~/lib/api";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import type { DeclarationChangeFn } from "~/components/declaration/sections/Content";
 import { applySavedDeclaration } from "~/components/declaration/sections/applySavedDeclaration";
+import type { DeclarationChangeFn } from "~/components/declaration/sections/defineSection";
 import {
 	deriveSourceMode,
 	type LibrarySectionKind,
 	type SourceModeValue,
 } from "~/domain/declaration/sourceMode";
+import { api } from "~/lib/api";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { type LibraryLink, useLibraryLink } from "./useLibraryLink";
 
 export type SourceModeController = {
@@ -25,7 +25,8 @@ export type SourceModeController = {
 };
 
 type UseSourceModeArgs = {
-	kind: LibrarySectionKind;
+	/** `null` for a Section without a Library — the controller is then `null` too. */
+	kind: LibrarySectionKind | null;
 	declaration: PopulatedDeclaration;
 	onDeclarationChange: DeclarationChangeFn;
 };
@@ -34,10 +35,10 @@ export function useSourceMode({
 	kind,
 	declaration,
 	onDeclarationChange,
-}: UseSourceModeArgs): SourceModeController {
+}: UseSourceModeArgs): SourceModeController | null {
 	const [pending, setPending] = useState<SourceModeValue | null>(null);
 
-	const derived = deriveSourceMode(kind, declaration);
+	const derived = kind ? deriveSourceMode(kind, declaration) : null;
 	const libraryLink = useLibraryLink({
 		kind,
 		declaration,
@@ -50,9 +51,11 @@ export function useSourceMode({
 	});
 
 	const countQuery = api.library.linkedDeclarations.useQuery(
-		{ kind, id: parentId ?? 0 },
-		{ enabled: parentId !== null },
+		{ kind: kind ?? "contact", id: parentId ?? 0 },
+		{ enabled: kind !== null && parentId !== null },
 	);
+
+	if (!kind) return null;
 
 	const select = (value: SourceModeValue) => {
 		// Detaching from a linked parent is a persisted write, not a local mode flip.

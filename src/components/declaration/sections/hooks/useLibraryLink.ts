@@ -1,10 +1,10 @@
-import type { DeclarationChangeFn } from "~/components/declaration/sections/Content";
+import type { DeclarationChangeFn } from "~/components/declaration/sections/defineSection";
+import { applySavedDeclaration } from "~/components/declaration/sections/applySavedDeclaration";
+import type { LibrarySectionKind } from "~/domain/declaration/sourceMode";
 import { declarationToContactValues } from "~/forms/contact/contactSchema";
 import { declarationToSchemaValues } from "~/forms/schema/schemaSchema";
 import { api } from "~/lib/api";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { applySavedDeclaration } from "~/components/declaration/sections/applySavedDeclaration";
-import type { LibrarySectionKind } from "~/domain/declaration/sourceMode";
 
 export type LibraryLink = {
 	label: string;
@@ -13,11 +13,11 @@ export type LibraryLink = {
 	linkedParentId: number | null;
 	onSelect: (id: number) => void;
 	onUnlink: () => void;
-	refetch: () => void;
 };
 
 type UseLibraryLinkArgs = {
-	kind: LibrarySectionKind;
+	/** `null` for a Section without a Library: queries stay off, the link is inert. */
+	kind: LibrarySectionKind | null;
 	declaration: PopulatedDeclaration;
 	onDeclarationChange: DeclarationChangeFn;
 };
@@ -48,8 +48,7 @@ function parentId(parent: unknown): number | null {
 /**
  * Wires a Section's Library picker to the per-user Library: lists parents, links
  * the declaration to one, or detaches it to a custom copy. Linking/unlinking
- * folds the returned group and recomputed status into local state, re-rendering
- * the section in place.
+ * folds the returned Declaration into page state, re-rendering the section in place.
  */
 export function useLibraryLink({
 	kind,
@@ -79,16 +78,18 @@ export function useLibraryLink({
 					label: schema.name,
 					hint: schema.url || "",
 				}))
-			: (contactsQuery.data ?? []).map((contact) => ({
-					id: contact.id,
-					label: contact.name,
-					hint: contact.email || contact.url || "",
-				}));
+			: kind === "contact"
+				? (contactsQuery.data ?? []).map((contact) => ({
+						id: contact.id,
+						label: contact.name,
+						hint: contact.email || contact.url || "",
+					}))
+				: [];
 
 	const onSelect = (id: number) => {
 		const input = { parentId: id, declarationId: declaration.id };
 		if (kind === "schema") linkSchema.mutate(input);
-		else linkContact.mutate(input);
+		else if (kind === "contact") linkContact.mutate(input);
 	};
 
 	// Detach keeps the mirrored content: re-save it as a custom copy.
@@ -98,7 +99,7 @@ export function useLibraryLink({
 				values: declarationToSchemaValues(declaration),
 				declarationId: declaration.id,
 			});
-		else
+		else if (kind === "contact")
 			unlinkContact.mutate({
 				values: declarationToContactValues(declaration),
 				declarationId: declaration.id,
@@ -106,11 +107,10 @@ export function useLibraryLink({
 	};
 
 	return {
-		...LIBRARY_COPY[kind],
+		...(kind ? LIBRARY_COPY[kind] : { label: "", placeholder: "" }),
 		items,
-		linkedParentId: parentId(declaration[kind]?.parent),
+		linkedParentId: kind ? parentId(declaration[kind]?.parent) : null,
 		onSelect,
 		onUnlink,
-		refetch: kind === "schema" ? schemasQuery.refetch : contactsQuery.refetch,
 	};
 }

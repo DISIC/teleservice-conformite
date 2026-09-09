@@ -86,7 +86,7 @@ How the declaration details page presents its [[section]]s for editing. Derived 
 - **Sequential** — used while the Declaration is **Brouillon** (never published). The [[section]]s are chained into one guided walkthrough: every section renders permanently editable (no read-only toggle, no per-section Modifier/Annuler/Enregistrer). Edits **autosave** as they happen (silent on success, a DSFR Alert on failure), so a partially-filled section persists and navigation never blocks. The footer is plain "Suivant" section-to-section movement — it neither saves nor validates. The final section (Contact) ends the walkthrough with a completeness gate ("Prévisualiser et publier") that validates _all_ sections against their schemas and surfaces a single, live, page-level error summary (ADR-0006).
 - **Standalone** — used once the Declaration has been published (**Modifiée** or **Publiée**). Each [[section]] is edited on its own via its top-right Modifier → Annuler/Enregistrer toggle, independent of the others (the ADR-0002 model). Footer navigation is plain section-to-section movement.
 
-The two modes select different behaviors of the same `sections/Shell`; the active mode is decided once per page load from `status === "Brouillon"`.
+The two modes select different behaviors of the same `Section` runtime and `sections/Shell`; the active mode is decided once per page load from `status === "Brouillon"`, and `resolveSectionEditing` turns it into the per-Section behaviour (autosave, starts read-only, terminal publish gate).
 
 **Distinct from the "nothing to save" signal:** mode answers "how does the whole declaration get edited"; the per-section `hideActions` flag is an orthogonal signal for "this particular section has nothing to save" (e.g. an audit notice when the audit isn't realised). The two compose — a nothing-to-save section in sequential mode still just advances.
 
@@ -211,7 +211,7 @@ The selected option is **derived from persisted state**, not stored as its own f
 
 ### Library section
 
-The kind axis shared by the two Library-sourced [[section]]s — `contact` and `schema`. The symmetry Invariant is expressed structurally, not by convention: every shared flow is written once, kind-parametrically — the custom upsert as one merge rule in `server/api/utils/section-write.ts`, link/detach, parent CRUD + propagation and delete-detach in `server/api/routers/library/service.ts`, where two adapters carry the per-kind field mapping and `index.ts` binds the `contact`/`schema`/`library` routes onto them; client-side in `SourceModeSection` + `useSourceMode`/`useLibraryLink`, with `applySavedDeclaration` folding every save result into page state. Schema's `skipped` is the single per-kind extension (`schema.skip` sits beside the shared upsert). A rule added for one kind belongs in the shared module — reintroducing twin per-kind implementations is a regression.
+The kind axis shared by the two Library-sourced [[section]]s — `contact` and `schema`. The symmetry Invariant is expressed structurally, not by convention: every shared flow is written once, kind-parametrically — the custom upsert as one merge rule in `server/api/utils/section-write.ts`, link/detach, parent CRUD + propagation and delete-detach in `server/api/routers/library/service.ts`, where two adapters carry the per-kind field mapping and `index.ts` binds the `contact`/`schema`/`library` routes onto them; client-side in the `library` branch of the `Section` runtime (`components/declaration/sections/Section.tsx`) + `useSourceMode`/`useLibraryLink`, with `applySavedDeclaration` folding every save result into page state. Schema's `skipped` is the single per-kind extension (`schema.skip` sits beside the shared upsert). A rule added for one kind belongs in the shared module — reintroducing twin per-kind implementations is a regression.
 
 **Avoid:** "Library item" for this axis — that names a parent row in the Library, not the Section kind.
 
@@ -231,8 +231,8 @@ Both trees use the **plural** `declarations/` segment. Singular `declaration/` i
 Layered, not feature-foldered. One predictable layer per concern:
 
 - `components/ui/` — generic, domain-free UI (primitives + cross-cutting pieces like EmptyState, HelpingMessage).
-- `components/declaration/` — declaration-specific UI only (e.g. the `sections/` tree); `sections/hooks/` holds the Section-form hooks (frame, autosave, publish attempt, source mode) that only those components use.
-- `domain/declaration/` — pure business logic on a Declaration: the Section registry, the publish gate, status and state, source mode, and the published snapshot + markdown (`published/`). No React, no tRPC, no DOM; every module is unit-testable and mirrored in `src/tests/declaration/`.
+- `components/declaration/` — declaration-specific UI only (e.g. the `sections/` tree: `Section.tsx` is the one Section runtime, `items/` holds one `defineSection` per Section); `sections/hooks/` holds the hooks the runtime composes (autosave, error reveal, publish attempt, source mode).
+- `domain/declaration/` — pure business logic on a Declaration: the Section registry, the publish gate, status and state, source mode, the Section editing matrix (`sectionEditing`), and the published snapshot + markdown (`published/`). No React, no tRPC, no DOM; every module is unit-testable and mirrored in `src/tests/declaration/`.
 - `lib/` — infrastructure glue (api/tRPC client, auth, server guards).
 - `hooks/` — generic, cross-cutting hooks only.
 - `forms/` — TanStack form definitions + Zod schemas (cross-cutting layer).

@@ -1,5 +1,3 @@
-import { Fragment, type ReactNode } from "react";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import {
 	getPrevNextSections,
 	SECTION_SLUGS,
@@ -7,47 +5,32 @@ import {
 	sectionHref,
 } from "~/domain/declaration/sections";
 import type { EditingMode } from "~/domain/declaration/status";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import type {
+	AnySectionDefinition,
+	DeclarationChangeFn,
+} from "./defineSection";
 import {
-	AuditContenusSection,
-	AuditGeneralSection,
-	AuditNonConformitesSection,
-	AuditOutilsSection,
+	auditContenusSection,
+	auditGeneralSection,
+	auditNonConformitesSection,
+	auditOutilsSection,
 } from "./items/Audit";
-import { ContactSection } from "./items/Contact";
-import { InfosSection } from "./items/Infos";
-import { SchemaSection } from "./items/Schema";
+import { contactSection } from "./items/Contact";
+import { infosSection } from "./items/Infos";
+import { schemaSection } from "./items/Schema";
+import { Section } from "./Section";
 
-export type DeclarationChangeFn = (
-	updater: (prev: PopulatedDeclaration) => PopulatedDeclaration,
-) => void;
+export type { DeclarationChangeFn };
 
-/** Props every Section component receives from {@link SectionContent}. */
-export type SectionRenderProps = {
-	declaration: PopulatedDeclaration;
-	onDeclarationChange: DeclarationChangeFn;
-	prevHref: string | null;
-	nextHref: string | null;
-	mode: EditingMode;
-};
-
-type SectionRenderer = (props: SectionRenderProps) => ReactNode;
-
-/**
- * Maps each non-terminal SectionSlug to its rendered component. Each audit
- * Sub-section is its own self-contained form component, so the dispatch stays a
- * pure lookup. `contact` is rendered separately because it alone needs
- * `onPublishAttempt`.
- */
-const SECTION_RENDERERS: Record<
-	Exclude<SectionSlug, "contact">,
-	SectionRenderer
-> = {
-	infos: (props) => <InfosSection {...props} />,
-	"audit-general": (props) => <AuditGeneralSection {...props} />,
-	"audit-outils": (props) => <AuditOutilsSection {...props} />,
-	"audit-contenus": (props) => <AuditContenusSection {...props} />,
-	"audit-non-conformites": (props) => <AuditNonConformitesSection {...props} />,
-	schema: (props) => <SchemaSection {...props} />,
+const SECTION_DEFINITIONS: Record<SectionSlug, AnySectionDefinition> = {
+	infos: infosSection,
+	"audit-general": auditGeneralSection,
+	"audit-outils": auditOutilsSection,
+	"audit-contenus": auditContenusSection,
+	"audit-non-conformites": auditNonConformitesSection,
+	schema: schemaSection,
+	contact: contactSection,
 };
 
 type SectionContentProps = {
@@ -59,11 +42,7 @@ type SectionContentProps = {
 	onPublishAttempt: () => void;
 };
 
-/**
- * Dispatches to the right Section component based on `currentSection`. The
- * keyed Fragment forces a fresh mount per slug, so a Section never carries edit
- * state across a navigation — switching always lands in read-only.
- */
+/** Mounts the runtime for the current slug; the key forces a fresh mount per Section. */
 export function SectionContent({
 	declaration,
 	currentSection,
@@ -72,23 +51,17 @@ export function SectionContent({
 	onPublishAttempt,
 }: SectionContentProps) {
 	const { prev, next } = getPrevNextSections(currentSection, SECTION_SLUGS);
-	const prevHref = prev ? sectionHref(declaration.id, prev) : null;
-	const nextHref = next ? sectionHref(declaration.id, next) : null;
-	const renderProps = {
-		declaration,
-		onDeclarationChange,
-		prevHref,
-		nextHref,
-		mode,
-	};
 
 	return (
-		<Fragment key={currentSection}>
-			{currentSection === "contact" ? (
-				<ContactSection {...renderProps} onPublishAttempt={onPublishAttempt} />
-			) : (
-				SECTION_RENDERERS[currentSection](renderProps)
-			)}
-		</Fragment>
+		<Section
+			key={currentSection}
+			definition={SECTION_DEFINITIONS[currentSection]}
+			declaration={declaration}
+			onDeclarationChange={onDeclarationChange}
+			mode={mode}
+			prevHref={prev ? sectionHref(declaration.id, prev) : null}
+			nextHref={next ? sectionHref(declaration.id, next) : null}
+			onPublishAttempt={onPublishAttempt}
+		/>
 	);
 }

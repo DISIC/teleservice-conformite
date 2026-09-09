@@ -9,7 +9,7 @@ import {
 	auditToNonConformitiesValues,
 	auditToToolsValues,
 } from "~/forms/audit/auditSchema";
-import { defineSectionValidation } from "./sectionValidation";
+import type { SectionValidation } from "./sectionValidation";
 
 /**
  * Audit Sub-section registry. The four Sub-sections persist into the single
@@ -29,7 +29,7 @@ type AuditSubSectionMeta = {
 	title: string;
 	/** "À compléter" — Sub-section's slice of the audit row is missing data. */
 	isToComplete: (declaration: PopulatedDeclaration) => boolean;
-	validation: ReturnType<typeof defineSectionValidation>;
+	validation: SectionValidation;
 };
 
 // `isRealised` has no default: `null` means the declarant has not answered yet.
@@ -50,10 +50,10 @@ export const AUDIT_SUB_SECTIONS: Record<
 		// Complete once the audit question is answered; the date itself is optional
 		// and does not gate completeness.
 		isToComplete: (d) => isAuditMissing(d),
-		validation: defineSectionValidation({
+		validation: {
 			schema: auditGeneral,
 			fromDeclaration: (d) => auditToGeneralValues(d.audit),
-		}),
+		},
 	},
 	"audit-outils": {
 		title: "Outils et environnements",
@@ -62,30 +62,30 @@ export const AUDIT_SUB_SECTIONS: Record<
 				(d.audit?.usedTools?.length ?? 0) > 0 &&
 				(d.audit?.testEnvironments?.length ?? 0) > 0,
 		),
-		validation: defineSectionValidation({
+		validation: {
 			schema: auditTools,
 			fromDeclaration: (d) => auditToToolsValues(d.audit),
 			isApplicable: (d) => d.audit?.isRealised === true,
-		}),
+		},
 	},
 	"audit-contenus": {
 		title: "Contenus vérifiés",
 		isToComplete: realisedSubSectionToComplete(
 			(d) => !!d.audit?.compliantElements,
 		),
-		validation: defineSectionValidation({
+		validation: {
 			schema: auditContents,
 			fromDeclaration: (d) => auditToContentsValues(d.audit),
 			isApplicable: (d) => d.audit?.isRealised === true,
-		}),
+		},
 	},
 	"audit-non-conformites": {
 		title: "Non conformités & dérogations",
 		isToComplete: () => false,
-		validation: defineSectionValidation({
+		validation: {
 			schema: auditNonConformities,
 			fromDeclaration: (d) => auditToNonConformitiesValues(d.audit),
 			isApplicable: (d) => d.audit?.isRealised === true,
-		}),
+		},
 	},
 };

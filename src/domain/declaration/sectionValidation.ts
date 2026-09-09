@@ -21,9 +21,3 @@ export type SectionValidation<TSchema extends z.ZodType = z.ZodType> = {
 		message: string;
 	};
 };
-
-export function defineSectionValidation<TSchema extends z.ZodType>(
-	validation: SectionValidation<TSchema>,
-): SectionValidation<TSchema> {
-	return validation;
-}

@@ -11,10 +11,7 @@ import {
 	schemaForm,
 } from "~/forms/schema/schemaSchema";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import {
-	defineSectionValidation,
-	type SectionValidation,
-} from "./sectionValidation";
+import type { SectionValidation } from "./sectionValidation";
 import { isSourceModeUndecided, SOURCE_MODE_FIELD } from "./sourceMode";
 import {
 	AUDIT_SUB_SECTION_SLUGS,
@@ -78,17 +75,17 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 		title: "Informations générales",
 		isToComplete: () => false,
 		isToVerify: () => false,
-		validation: defineSectionValidation({
+		validation: {
 			schema: declarationGeneralRefined,
 			fromDeclaration: declarationToGeneralValues,
-		}),
+		},
 	},
 	...auditSubSectionEntries,
 	schema: {
 		title: "Schéma pluriannuel & plans d'action",
 		isToComplete: (d) => isSourceModeUndecided("schema", d),
 		isToVerify: (d) => d.schema?.toVerify === true,
-		validation: defineSectionValidation({
+		validation: {
 			schema: schemaForm,
 			fromDeclaration: declarationToSchemaValues,
 			isApplicable: (d) => d.schema?.skipped !== true,
@@ -97,13 +94,13 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 				isUndecided: (d) => isSourceModeUndecided("schema", d),
 				message: "Sélectionnez une option pour le schéma pluriannuel",
 			},
-		}),
+		},
 	},
 	contact: {
 		title: "Contact",
 		isToComplete: (d) => !d.contact?.name,
 		isToVerify: (d) => d.contact?.toVerify === true,
-		validation: defineSectionValidation({
+		validation: {
 			schema: contactForm,
 			fromDeclaration: declarationToContactValues,
 			sourceMode: {
@@ -111,7 +108,7 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 				isUndecided: (d) => isSourceModeUndecided("contact", d),
 				message: "Sélectionnez une option pour le contact",
 			},
-		}),
+		},
 	},
 };
 
