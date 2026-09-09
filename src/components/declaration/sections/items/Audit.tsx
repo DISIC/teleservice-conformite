@@ -1,12 +1,7 @@
-import { useMemo } from "react";
-import { api } from "~/lib/api";
-import {
-	AUDIT_SUB_SECTIONS,
-	type AuditSubSectionSlug,
-} from "~/domain/declaration/auditSubSections";
+import type { StandardSchemaV1 } from "@tanstack/react-form";
+import type { ComponentProps, ReactNode } from "react";
+import type { AuditSubSectionSlug } from "~/domain/declaration/auditSubSections";
 import { isSectionToComplete } from "~/domain/declaration/sections";
-import { useAppForm } from "~/forms/context";
-import { sectionFormOptions } from "~/forms/formOptions";
 import {
 	AuditGeneralForm,
 	CompliantElementsForm,
@@ -27,292 +22,143 @@ import {
 	type ZAuditNonConformities,
 	type ZAuditTools,
 } from "~/forms/audit/auditSchema";
-import { useLiveSectionForm } from "~/components/declaration/sections/hooks/useLiveSectionForm";
-import { useSectionForm } from "~/components/declaration/sections/hooks/useSectionForm";
-import { logMutationError } from "~/components/declaration/logMutationError";
-import type { SectionRenderProps } from "../Content";
+import { api } from "~/lib/api";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import type { SectionPatch } from "~/server/api/utils/section-write";
+import { defineSection, type SectionRenderArgs } from "../defineSection";
 
-type UseAuditSubSectionArgs = SectionRenderProps & {
-	currentSubSection: AuditSubSectionSlug;
-	/** The slice is only meaningful once the audit is realised; otherwise a
-	 *  notice replaces the form and the action buttons are hidden. */
-	requiresRealised: boolean;
-	/** Keep the Sub-section editable regardless of completeness (the general
-	 *  Sub-section is always re-answerable). */
-	alwaysEditable: boolean;
-};
+type Audit = PopulatedDeclaration["audit"];
+
+const isRealised = (declaration: PopulatedDeclaration) =>
+	declaration.audit?.isRealised === true;
 
 /**
- * Cross-cutting plumbing shared by the four audit Sub-section components: the
- * single `audit.upsert` mutation, the `useSectionForm` frame, and the
- * not-realised notice. The form itself stays in each component.
+ * The four Sub-sections are independent forms over the single `audit` group:
+ * each maps its own values to a slice of the one `audit.update` patch.
  */
-function useAuditSubSection({
-	declaration,
-	onDeclarationChange,
-	currentSubSection,
-	prevHref,
-	nextHref,
-	requiresRealised,
-	alwaysEditable,
-	mode,
-}: UseAuditSubSectionArgs) {
-	const isSequential = mode === "sequential";
-	const audit = declaration.audit;
-	const hasAudit = !!audit;
-	const subSectionToComplete = isSectionToComplete(
-		declaration,
-		currentSubSection,
-	);
-	const isEditable = alwaysEditable
-		? hasAudit
-		: hasAudit && !subSectionToComplete;
-
-	// Non-general Sub-sections show a notice (no form, no actions) until the
-	// audit is declared as realised.
-	const showNotice = requiresRealised && audit?.isRealised !== true;
-
-	const { mutateAsync: upsert, isPending } = api.audit.update.useMutation({
-		onSuccess: ({ data }) =>
-			onDeclarationChange((prev) => ({ ...prev, audit: data })),
-		onError: logMutationError("saving audit", declaration.id),
+function auditSubSection<TValues, TForm>(config: {
+	slug: AuditSubSectionSlug;
+	schema: StandardSchemaV1<TValues, unknown>;
+	toValues: (audit: Audit) => TValues;
+	toPatch: (values: TValues) => SectionPatch<"audit">;
+	/** Only meaningful once the audit is realised; a notice replaces the form until then. */
+	requiresRealised: boolean;
+	autosaveWhen?: (values: TValues) => boolean;
+	renderForm: (args: SectionRenderArgs<TForm>) => ReactNode;
+}) {
+	return defineSection<TValues, TForm>({
+		slug: config.slug,
+		schema: config.schema,
+		toValues: (declaration) => config.toValues(declaration.audit),
+		useSave: (declaration, options) => {
+			const { mutateAsync, isPending } = api.audit.update.useMutation(options);
+			return {
+				save: (values) =>
+					mutateAsync({
+						declarationId: declaration.id,
+						values: config.toPatch(values),
+					}),
+				isPending,
+			};
+		},
+		// The realisation question is always re-answerable; a realised-only slice
+		// toggles read-only/edit only once it holds data.
+		isEditable: (declaration) =>
+			!!declaration.audit &&
+			(!config.requiresRealised ||
+				!isSectionToComplete(declaration, config.slug)),
+		hideActions: config.requiresRealised
+			? (declaration) => !isRealised(declaration)
+			: undefined,
+		autosaveWhen: config.autosaveWhen,
+		renderForm: config.renderForm,
 	});
-
-	const { readOnly, afterSave, Frame } = useSectionForm({
-		title: AUDIT_SUB_SECTIONS[currentSubSection].title,
-		isEditable,
-		// Sequential mode autosaves silently — no pending indicator.
-		isSaving: isSequential ? false : isPending,
-		prevHref,
-		nextHref,
-		hideActions: showNotice,
-		mode,
-	});
-
-	return {
-		audit,
-		hasAudit,
-		isSequential,
-		readOnly,
-		afterSave,
-		Frame,
-		showNotice,
-		upsert,
-	};
 }
 
-export function AuditGeneralSection(props: SectionRenderProps) {
-	const { declaration } = props;
-	const { audit, isSequential, readOnly, afterSave, Frame, upsert } =
-		useAuditSubSection({
-			...props,
-			currentSubSection: "audit-general",
-			requiresRealised: false,
-			alwaysEditable: true,
-		});
-
-	const defaultValues = useMemo(
-		(): ZAuditGeneral => auditToGeneralValues(audit),
-		[audit],
-	);
-
-	const save = (value: ZAuditGeneral) =>
-		upsert({
-			values:
-				value.isAuditRealised === false
-					? { isRealised: false }
-					: {
-							isRealised: true,
-							date: value.date,
-							realisedBy: value.realisedBy,
-							rgaa_version: value.rgaa_version,
-							rate: value.rate,
-						},
-			declarationId: declaration.id,
-		});
-
-	const form = useAppForm({
-		...sectionFormOptions(isSequential, defaultValues, auditGeneral),
-		onSubmit: async ({ value }) => {
-			await save(value);
-			afterSave();
-		},
-	});
-
+export const auditGeneralSection = auditSubSection<
+	ZAuditGeneral,
+	ComponentProps<typeof AuditGeneralForm>["form"]
+>({
+	slug: "audit-general",
+	schema: auditGeneral,
+	toValues: auditToGeneralValues,
+	toPatch: (value) =>
+		value.isAuditRealised === false
+			? { isRealised: false }
+			: {
+					isRealised: true,
+					date: value.date,
+					realisedBy: value.realisedBy,
+					rgaa_version: value.rgaa_version,
+					rate: value.rate,
+				},
+	requiresRealised: false,
 	// Hold autosave until the realisation question is answered: an undefined
 	// answer would otherwise persist as realised.
-	useLiveSectionForm(form, {
-		mode: props.mode,
-		save,
-		autosaveWhen: (values) => values.isAuditRealised !== undefined,
-	});
+	autosaveWhen: (values) => values.isAuditRealised !== undefined,
+	renderForm: ({ form, readOnly }) => (
+		<AuditGeneralForm form={form} readOnly={readOnly} />
+	),
+});
 
-	return (
-		<Frame form={form}>
-			<AuditGeneralForm form={form} readOnly={readOnly} />
-		</Frame>
-	);
-}
+export const auditOutilsSection = auditSubSection<
+	ZAuditTools,
+	ComponentProps<typeof ToolsForm>["form"]
+>({
+	slug: "audit-outils",
+	schema: auditTools,
+	toValues: auditToToolsValues,
+	toPatch: (value) => ({
+		usedTools: value.usedTools,
+		testEnvironments: value.testEnvironments,
+	}),
+	requiresRealised: true,
+	renderForm: ({ form, readOnly, declaration }) => (
+		<ToolsForm
+			form={form}
+			readOnly={readOnly}
+			showNotice={!isRealised(declaration)}
+		/>
+	),
+});
 
-export function AuditOutilsSection(props: SectionRenderProps) {
-	const { declaration } = props;
-	const {
-		audit,
-		isSequential,
-		readOnly,
-		afterSave,
-		Frame,
-		showNotice,
-		upsert,
-	} = useAuditSubSection({
-		...props,
-		currentSubSection: "audit-outils",
-		requiresRealised: true,
-		alwaysEditable: false,
-	});
+export const auditContenusSection = auditSubSection<
+	ZAuditContents,
+	ComponentProps<typeof CompliantElementsForm>["form"]
+>({
+	slug: "audit-contenus",
+	schema: auditContents,
+	toValues: auditToContentsValues,
+	toPatch: (value) => ({ compliantElements: value.compliantElements }),
+	requiresRealised: true,
+	renderForm: ({ form, readOnly, declaration }) => (
+		<CompliantElementsForm
+			form={form}
+			readOnly={readOnly}
+			showNotice={!isRealised(declaration)}
+		/>
+	),
+});
 
-	const defaultValues = useMemo(
-		(): ZAuditTools => auditToToolsValues(audit),
-		[audit],
-	);
-
-	const save = (value: ZAuditTools) =>
-		upsert({
-			values: {
-				usedTools: value.usedTools,
-				testEnvironments: value.testEnvironments,
-			},
-			declarationId: declaration.id,
-		});
-
-	const form = useAppForm({
-		...sectionFormOptions(isSequential, defaultValues, auditTools),
-		onSubmit: async ({ value }) => {
-			await save(value);
-			afterSave();
-		},
-	});
-
-	useLiveSectionForm(form, {
-		mode: props.mode,
-		save,
-		autosaveWhen: () => !showNotice,
-	});
-
-	return (
-		<Frame form={form}>
-			<ToolsForm form={form} readOnly={readOnly} showNotice={showNotice} />
-		</Frame>
-	);
-}
-
-export function AuditContenusSection(props: SectionRenderProps) {
-	const { declaration } = props;
-	const {
-		audit,
-		isSequential,
-		readOnly,
-		afterSave,
-		Frame,
-		showNotice,
-		upsert,
-	} = useAuditSubSection({
-		...props,
-		currentSubSection: "audit-contenus",
-		requiresRealised: true,
-		alwaysEditable: false,
-	});
-
-	const defaultValues = useMemo(
-		(): ZAuditContents => auditToContentsValues(audit),
-		[audit],
-	);
-
-	const save = (value: ZAuditContents) =>
-		upsert({
-			values: { compliantElements: value.compliantElements },
-			declarationId: declaration.id,
-		});
-
-	const form = useAppForm({
-		...sectionFormOptions(isSequential, defaultValues, auditContents),
-		onSubmit: async ({ value }) => {
-			await save(value);
-			afterSave();
-		},
-	});
-
-	useLiveSectionForm(form, {
-		mode: props.mode,
-		save,
-		autosaveWhen: () => !showNotice,
-	});
-
-	return (
-		<Frame form={form}>
-			<CompliantElementsForm
-				form={form}
-				readOnly={readOnly}
-				showNotice={showNotice}
-			/>
-		</Frame>
-	);
-}
-
-export function AuditNonConformitesSection(props: SectionRenderProps) {
-	const { declaration } = props;
-	const {
-		audit,
-		isSequential,
-		readOnly,
-		afterSave,
-		Frame,
-		showNotice,
-		upsert,
-	} = useAuditSubSection({
-		...props,
-		currentSubSection: "audit-non-conformites",
-		requiresRealised: true,
-		alwaysEditable: false,
-	});
-
-	const defaultValues = useMemo(
-		(): ZAuditNonConformities => auditToNonConformitiesValues(audit),
-		[audit],
-	);
-
-	const save = (value: ZAuditNonConformities) =>
-		upsert({
-			values: {
-				nonCompliantElements: value.nonCompliantElements,
-				optionalElements: value.optionalElements,
-				disproportionnedCharge: value.disproportionnedCharge,
-			},
-			declarationId: declaration.id,
-		});
-
-	const form = useAppForm({
-		...sectionFormOptions(isSequential, defaultValues, auditNonConformities),
-		onSubmit: async ({ value }) => {
-			await save(value);
-			afterSave();
-		},
-	});
-
-	useLiveSectionForm(form, {
-		mode: props.mode,
-		save,
-		autosaveWhen: () => !showNotice,
-	});
-
-	return (
-		<Frame form={form}>
-			<NonCompliantElementsForm
-				form={form}
-				readOnly={readOnly}
-				showNotice={showNotice}
-				showNonConformities={audit?.rate !== 100}
-			/>
-		</Frame>
-	);
-}
+export const auditNonConformitesSection = auditSubSection<
+	ZAuditNonConformities,
+	ComponentProps<typeof NonCompliantElementsForm>["form"]
+>({
+	slug: "audit-non-conformites",
+	schema: auditNonConformities,
+	toValues: auditToNonConformitiesValues,
+	toPatch: (value) => ({
+		nonCompliantElements: value.nonCompliantElements,
+		optionalElements: value.optionalElements,
+		disproportionnedCharge: value.disproportionnedCharge,
+	}),
+	requiresRealised: true,
+	renderForm: ({ form, readOnly, declaration }) => (
+		<NonCompliantElementsForm
+			form={form}
+			readOnly={readOnly}
+			showNotice={!isRealised(declaration)}
+			showNonConformities={declaration.audit?.rate !== 100}
+		/>
+	),
+});

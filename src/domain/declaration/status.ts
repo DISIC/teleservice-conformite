@@ -40,3 +40,13 @@ export function hasContentChangedSincePublish(
 	});
 	return JSON.stringify(current) !== JSON.stringify(published);
 }
+
+// Published: Modifiée when the row drifts from its snapshot, Publiée when restored. Brouillon: unchanged.
+export function statusAfterEdit(
+	declaration: PopulatedDeclaration,
+): "published" | "unpublished" {
+	if (!declaration.publishedContent) return declaration.status ?? "unpublished";
+	return hasContentChangedSincePublish(declaration)
+		? "unpublished"
+		: "published";
+}

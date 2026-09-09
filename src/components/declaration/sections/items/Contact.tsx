@@ -1,23 +1,14 @@
+import Avatar from "@codegouvfr/react-dsfr/picto/Avatar";
+import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
 import type { ComponentProps } from "react";
-import { api } from "~/lib/api";
 import { ContactTypeForm } from "~/forms/contact/contactForm";
 import {
 	contactForm,
 	declarationToContactValues,
 	type ZContactForm,
 } from "~/forms/contact/contactSchema";
-import { SECTION_TITLES } from "~/domain/declaration/sections";
-import { applyLibrarySection } from "~/components/declaration/sections/applyLibrarySection";
-import { logMutationError } from "~/components/declaration/logMutationError";
-import type { SectionRenderProps } from "../Content";
-import { SourceModeSection, type SourceModeOption } from "../SourceModeSection";
-import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
-import Avatar from "@codegouvfr/react-dsfr/picto/Avatar";
-
-type ContactSectionProps = SectionRenderProps & {
-	/** Flips the page's "publish attempted" flag (terminal Section only). */
-	onPublishAttempt: () => void;
-};
+import { api } from "~/lib/api";
+import { defineSection, type SourceModeOption } from "../defineSection";
 
 type ContactFormApi = ComponentProps<typeof ContactTypeForm>["form"];
 
@@ -36,43 +27,23 @@ const CONTACT_OPTIONS: SourceModeOption[] = [
 	},
 ];
 
-export function ContactSection({
-	declaration,
-	onDeclarationChange,
-	prevHref,
-	nextHref,
-	mode,
-	onPublishAttempt,
-}: ContactSectionProps) {
-	const { mutateAsync: upsertContact, isPending } =
-		api.contact.upsert.useMutation({
-			onError: logMutationError("upserting contact", declaration.id),
-		});
-	const applyContact = applyLibrarySection("contact", onDeclarationChange);
-
-	return (
-		<SourceModeSection<ZContactForm, ContactFormApi>
-			kind="contact"
-			title={SECTION_TITLES.contact}
-			legend="Renseigner un moyen de contact :"
-			declaration={declaration}
-			onDeclarationChange={onDeclarationChange}
-			mode={mode}
-			prevHref={prevHref}
-			nextHref={nextHref}
-			schema={contactForm}
-			toValues={declarationToContactValues}
-			commit={async (values) =>
-				applyContact(
-					await upsertContact({ values, declarationId: declaration.id }),
-				)
-			}
-			isSaving={isPending}
-			options={CONTACT_OPTIONS}
-			renderForm={({ form, readOnly }) => (
-				<ContactTypeForm form={form} readOnly={readOnly} />
-			)}
-			onPublishAttempt={onPublishAttempt}
-		/>
-	);
-}
+export const contactSection = defineSection<ZContactForm, ContactFormApi>({
+	slug: "contact",
+	schema: contactForm,
+	toValues: declarationToContactValues,
+	useSave: (declaration, options) => {
+		const { mutateAsync, isPending } = api.contact.upsert.useMutation(options);
+		return {
+			save: (values) => mutateAsync({ declarationId: declaration.id, values }),
+			isPending,
+		};
+	},
+	renderForm: ({ form, readOnly }) => (
+		<ContactTypeForm form={form} readOnly={readOnly} />
+	),
+	library: {
+		kind: "contact",
+		legend: "Renseigner un moyen de contact :",
+		options: CONTACT_OPTIONS,
+	},
+});

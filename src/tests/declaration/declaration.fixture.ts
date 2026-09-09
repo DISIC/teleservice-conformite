@@ -1,3 +1,4 @@
+import { extractDeclarationContentToPublish } from "~/domain/declaration/published/snapshot";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 /**
@@ -23,4 +24,23 @@ export function completeDeclaration(
 		contact: { name: "Référent accessibilité", email: "a11y@example.fr" },
 		...overrides,
 	} as unknown as PopulatedDeclaration;
+}
+
+const PUBLISHED_AT = "2026-08-27T09:30:00.000Z";
+
+/** A Publiée Declaration whose snapshot matches its current content. */
+export function publishedDeclaration(
+	overrides: Partial<PopulatedDeclaration> = {},
+): PopulatedDeclaration {
+	const content = completeDeclaration(overrides);
+	return completeDeclaration({
+		...overrides,
+		status: "published",
+		published_at: PUBLISHED_AT,
+		publishedContent: JSON.stringify(
+			extractDeclarationContentToPublish(content, {
+				publishedAt: new Date(PUBLISHED_AT),
+			}),
+		),
+	});
 }

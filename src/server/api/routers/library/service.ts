@@ -1,8 +1,14 @@
 import { TRPCError } from "@trpc/server";
 import type { Payload } from "payload";
 import type { Contact, Declaration, Schema } from "~/payload/payload-types";
-import type { PopulatedDeclaration } from "../../utils/payload-helper";
-import { recalculateDeclarationStatus } from "../../utils/publish-comparison";
+import {
+	getPopulatedDeclaration,
+	type PopulatedDeclaration,
+} from "../../utils/payload-helper";
+import {
+	type DeclarationRowData,
+	writeDeclaration,
+} from "../../utils/section-write";
 
 /** Contact and Schema are symmetric by invariant: every Library-section flow is
  *  written once here, kind-parametrically; adapters carry the field mapping. */
@@ -72,25 +78,14 @@ async function getOwnedLibraryItem(
 	return item;
 }
 
-/** Single write path for a declaration's contact/schema group — no save may
- *  skip the status recompute. */
-async function writeSectionGroup<K extends LibrarySectionKind>(
-	payload: Payload,
-	declarationId: number,
+function groupData<K extends LibrarySectionKind>(
 	kind: K,
 	group: Partial<SectionGroup<K>>,
-) {
-	const updated = await payload.update({
-		collection: "declarations",
-		id: declarationId,
-		data: { [kind]: group } as Partial<Pick<Declaration, K>>,
-	});
-
-	const status = await recalculateDeclarationStatus(payload, declarationId);
-
-	return { data: updated[kind], status };
+): DeclarationRowData {
+	return { [kind]: group } as DeclarationRowData;
 }
 
+// Linked copies are hydrated so the status rule sees the whole row, entity included.
 function findLinked(
 	payload: Payload,
 	kind: LibrarySectionKind,
@@ -99,7 +94,7 @@ function findLinked(
 	return payload.find({
 		collection: "declarations",
 		where: { [`${kind}.parent`]: { equals: parentId } },
-		depth: 0,
+		depth: 1,
 		limit: 1000,
 	});
 }
@@ -114,50 +109,37 @@ async function propagateToLinkedDeclarations<K extends LibrarySectionKind>(
 ) {
 	const linked = await findLinked(payload, kind, parentId);
 
-	for (const declaration of linked.docs) {
-		await payload.update({
-			collection: "declarations",
-			id: declaration.id,
-			data: {
-				[kind]: {
-					...declaration[kind],
-					...values,
-					parent: parentId,
-					toVerify: false,
-				},
-			},
-		});
-
-		await recalculateDeclarationStatus(payload, declaration.id);
+	for (const doc of linked.docs) {
+		const declaration = await getPopulatedDeclaration(doc);
+		await writeDeclaration(
+			payload,
+			declaration,
+			groupData(kind, {
+				...declaration[kind],
+				...values,
+				parent: parentId,
+				toVerify: false,
+			}),
+		);
 	}
-}
-
-/** Custom-mode save: detaches any Library parent. Values stay draft-lenient so
- *  half-filled autosaves persist; the publish gate rechecks. */
-export async function upsertSection<K extends LibrarySectionKind>(
-	payload: Payload,
-	kind: K,
-	declarationId: number,
-	values: Partial<SectionGroup<K>>,
-) {
-	return writeSectionGroup(payload, declarationId, kind, {
-		...values,
-		...ADAPTERS[kind].contentFlags,
-		parent: null,
-		toVerify: false,
-	});
 }
 
 /** The declarant's deliberate "no schema" choice clears content and Library
  *  link. Schema-only; a Contact is always required to publish. */
-export async function skipSchema(payload: Payload, declarationId: number) {
-	return writeSectionGroup(payload, declarationId, "schema", {
-		name: "",
-		url: "",
-		actionPlanUrls: [],
-		parent: null,
-		skipped: true,
-		toVerify: false,
+export function skipSchema(
+	payload: Payload,
+	declaration: PopulatedDeclaration,
+) {
+	return writeDeclaration(payload, declaration, {
+		schema: {
+			...declaration.schema,
+			name: "",
+			url: "",
+			actionPlanUrls: [],
+			parent: null,
+			skipped: true,
+			toVerify: false,
+		},
 	});
 }
 
@@ -216,12 +198,13 @@ export async function deleteParent(
 
 	const linked = await findLinked(payload, kind, id);
 
-	for (const declaration of linked.docs) {
-		await payload.update({
-			collection: "declarations",
-			id: declaration.id,
-			data: { [kind]: { ...declaration[kind], parent: null } },
-		});
+	for (const doc of linked.docs) {
+		const declaration = await getPopulatedDeclaration(doc);
+		await writeDeclaration(
+			payload,
+			declaration,
+			groupData(kind, { ...declaration[kind], parent: null }),
+		);
 	}
 
 	await payload.delete({ collection: LIBRARY_COLLECTION[kind], id });
@@ -244,13 +227,17 @@ export async function linkParent<K extends LibrarySectionKind>(
 	});
 	assertOwner(parent?.user, userId);
 
-	return writeSectionGroup(payload, declaration.id, kind, {
-		...declaration[kind],
-		...ADAPTERS[kind].contentFromParent(parent as ParentDoc<K>),
-		...ADAPTERS[kind].contentFlags,
-		parent: parentId,
-		toVerify: false,
-	});
+	return writeDeclaration(
+		payload,
+		declaration,
+		groupData(kind, {
+			...declaration[kind],
+			...ADAPTERS[kind].contentFromParent(parent as ParentDoc<K>),
+			...ADAPTERS[kind].contentFlags,
+			parent: parentId,
+			toVerify: false,
+		}),
+	);
 }
 
 /** Pre-check for the edit/delete warning modals — published declarations flip

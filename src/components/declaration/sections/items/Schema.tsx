@@ -1,19 +1,15 @@
+import Calendar from "@codegouvfr/react-dsfr/picto/Calendar";
+import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
+import Error from "@codegouvfr/react-dsfr/picto/Error";
 import type { ComponentProps } from "react";
-import { api } from "~/lib/api";
 import { SchemaForm as DeclarationSchemaForm } from "~/forms/schema/schemaForm";
 import {
 	declarationToSchemaValues,
 	schemaForm,
 	type ZSchema,
 } from "~/forms/schema/schemaSchema";
-import { SECTION_TITLES } from "~/domain/declaration/sections";
-import { applyLibrarySection } from "~/components/declaration/sections/applyLibrarySection";
-import { logMutationError } from "~/components/declaration/logMutationError";
-import type { SectionRenderProps } from "../Content";
-import { SourceModeSection, type SourceModeOption } from "../SourceModeSection";
-import Calendar from "@codegouvfr/react-dsfr/picto/Calendar";
-import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
-import Error from "@codegouvfr/react-dsfr/picto/Error";
+import { api } from "~/lib/api";
+import { defineSection, type SourceModeOption } from "../defineSection";
 
 type SchemaFormApi = ComponentProps<typeof DeclarationSchemaForm>["form"];
 
@@ -39,41 +35,23 @@ const SCHEMA_OPTIONS: SourceModeOption[] = [
 	},
 ];
 
-export function SchemaSection({
-	declaration,
-	onDeclarationChange,
-	prevHref,
-	nextHref,
-	mode,
-}: SectionRenderProps) {
-	const { mutateAsync: upsertSchema, isPending } =
-		api.schema.upsert.useMutation({
-			onError: logMutationError("upserting schema", declaration.id),
-		});
-	const applySchema = applyLibrarySection("schema", onDeclarationChange);
-
-	return (
-		<SourceModeSection<ZSchema, SchemaFormApi>
-			kind="schema"
-			title={SECTION_TITLES.schema}
-			legend="Renseigner un schéma pluriannuel :"
-			declaration={declaration}
-			onDeclarationChange={onDeclarationChange}
-			mode={mode}
-			prevHref={prevHref}
-			nextHref={nextHref}
-			schema={schemaForm}
-			toValues={declarationToSchemaValues}
-			commit={async (values) =>
-				applySchema(
-					await upsertSchema({ values, declarationId: declaration.id }),
-				)
-			}
-			isSaving={isPending}
-			options={SCHEMA_OPTIONS}
-			renderForm={({ form, readOnly }) => (
-				<DeclarationSchemaForm form={form} readOnly={readOnly} />
-			)}
-		/>
-	);
-}
+export const schemaSection = defineSection<ZSchema, SchemaFormApi>({
+	slug: "schema",
+	schema: schemaForm,
+	toValues: declarationToSchemaValues,
+	useSave: (declaration, options) => {
+		const { mutateAsync, isPending } = api.schema.upsert.useMutation(options);
+		return {
+			save: (values) => mutateAsync({ declarationId: declaration.id, values }),
+			isPending,
+		};
+	},
+	renderForm: ({ form, readOnly }) => (
+		<DeclarationSchemaForm form={form} readOnly={readOnly} />
+	),
+	library: {
+		kind: "schema",
+		legend: "Renseigner un schéma pluriannuel :",
+		options: SCHEMA_OPTIONS,
+	},
+});

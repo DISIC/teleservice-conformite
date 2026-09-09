@@ -4,8 +4,12 @@ import {
 	getDeclarationStatus,
 	getEditingMode,
 	hasContentChangedSincePublish,
+	statusAfterEdit,
 } from "~/domain/declaration/status";
-import { completeDeclaration } from "./declaration.fixture";
+import {
+	completeDeclaration,
+	publishedDeclaration,
+} from "./declaration.fixture";
 
 describe("getDeclarationStatus", () => {
 	it("is draft when unpublished with no snapshot", () => {
@@ -91,5 +95,27 @@ describe("hasContentChangedSincePublish", () => {
 				contact: { ...declaration.contact, name: "Autre référent" },
 			} as never),
 		).toBe(false);
+	});
+});
+
+describe("statusAfterEdit", () => {
+	it("keeps a draft's column — there is no snapshot to drift from", () => {
+		expect(statusAfterEdit(completeDeclaration())).toBe("unpublished");
+	});
+
+	it("turns Publiée into Modifiée when public content drifts", () => {
+		const declaration = publishedDeclaration();
+		expect(
+			statusAfterEdit({
+				...declaration,
+				contact: { ...declaration.contact, email: "autre@example.fr" },
+			}),
+		).toBe("unpublished");
+	});
+
+	it("turns Modifiée back into Publiée when the row matches its snapshot again", () => {
+		expect(
+			statusAfterEdit({ ...publishedDeclaration(), status: "unpublished" }),
+		).toBe("published");
 	});
 });

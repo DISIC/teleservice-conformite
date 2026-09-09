@@ -14,12 +14,7 @@ import {
 	auditToolsFormOptions,
 } from "./auditSchema";
 
-/**
- * Shown in place of a `requiresRealised` Sub-section's fields when the audit
- * has not been declared as realised. The Sub-section stays visible in the
- * SideMenu but has nothing to fill — `useAuditSubSection` also hides its action
- * buttons via `hideActions`.
- */
+// A Sub-section that requires a realised audit stays in the SideMenu but has nothing to fill.
 function AuditNotRealisedNotice() {
 	return (
 		<AuditNotice Pictogram={Error} heading="Aucun audit n’a été réalisé.">
