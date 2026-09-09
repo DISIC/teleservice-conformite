@@ -1,71 +1,16 @@
 import z from "zod";
-import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
 import { createTRPCRouter, declarationProcedure } from "../trpc";
-import { recalculateDeclarationStatus } from "../utils/publish-comparison";
-
-/**
- * Lenient all-optional partial: any one Sub-section slice may arrive on its
- * own. `isRealised` is supplied explicitly by the general form — never inferred
- * from the presence of unrelated fields.
- */
-const auditUpsertValues = z.object({
-	isRealised: z.boolean().optional(),
-	date: z.iso.date().optional().or(z.literal("")),
-	realisedBy: z.string().optional(),
-	rgaa_version: z.enum(["rgaa_4", "rgaa_5"]).optional(),
-	rate: z.number().nullable().optional(),
-	compliantElements: z.string().optional(),
-	nonCompliantElements: z.string().optional(),
-	disproportionnedCharge: z.string().optional(),
-	optionalElements: z.string().optional(),
-	usedTools: z.array(z.string()).optional(),
-	testEnvironments: z.array(z.string()).optional(),
-	technologies: z.array(z.string()).optional(),
-});
+import { auditPatch, saveSection } from "../utils/section-write";
 
 export const auditRouter = createTRPCRouter({
 	update: declarationProcedure
-		.input(z.object({ values: auditUpsertValues }))
-		.mutation(async ({ input, ctx }) => {
-			const { values } = input;
-			const { declaration } = ctx;
-			const declarationId = declaration.id;
-
-			const { usedTools, testEnvironments, technologies, date, ...scalars } =
-				values;
-
-			// Merge the slice; optional fields mean only the Sub-section's own fields change.
-			const audit = {
-				...declaration.audit,
-				...scalars,
-				...(date !== undefined && {
-					date: date && date !== "" ? date : null,
-				}),
-				...(usedTools !== undefined && {
-					usedTools: usedTools.map((name) => ({ name })),
-				}),
-				...(testEnvironments !== undefined && {
-					testEnvironments: testEnvironments.map((name) => ({ name })),
-				}),
-				...(technologies !== undefined && {
-					technologies: technologies.map((name) => ({ name })),
-				}),
-				// A fully conformant audit has no non-conformities to declare.
-				...(values.rate === 100 && { nonCompliantElements: null }),
-				// Answering "non réalisé" invalidates every audit detail; clear them all
-				// so switching back to "réalisé" starts from a blank slate.
-				...(values.isRealised === false && NO_AUDIT),
-				toVerify: false,
-			};
-
-			const updated = await ctx.payload.update({
-				collection: "declarations",
-				id: declarationId,
-				data: { audit },
-			});
-
-			await recalculateDeclarationStatus(ctx.payload, declarationId);
-
-			return { data: updated.audit };
-		}),
+		.input(z.object({ values: auditPatch }))
+		.mutation(async ({ input, ctx }) => ({
+			data: await saveSection(
+				ctx.payload,
+				ctx.declaration,
+				"audit",
+				input.values,
+			),
+		})),
 });

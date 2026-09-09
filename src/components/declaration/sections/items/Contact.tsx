@@ -7,7 +7,7 @@ import {
 	type ZContactForm,
 } from "~/forms/contact/contactSchema";
 import { SECTION_TITLES } from "~/domain/declaration/sections";
-import { applyLibrarySection } from "~/components/declaration/sections/applyLibrarySection";
+import { applySavedDeclaration } from "~/components/declaration/sections/applySavedDeclaration";
 import { logMutationError } from "~/components/declaration/logMutationError";
 import type { SectionRenderProps } from "../Content";
 import { SourceModeSection, type SourceModeOption } from "../SourceModeSection";
@@ -48,7 +48,7 @@ export function ContactSection({
 		api.contact.upsert.useMutation({
 			onError: logMutationError("upserting contact", declaration.id),
 		});
-	const applyContact = applyLibrarySection("contact", onDeclarationChange);
+	const applyContact = applySavedDeclaration(onDeclarationChange);
 
 	return (
 		<SourceModeSection<ZContactForm, ContactFormApi>

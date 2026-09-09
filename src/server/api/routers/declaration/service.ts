@@ -11,12 +11,11 @@ import {
 	getPopulatedDeclaration,
 	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
-import { recalculateDeclarationStatus } from "~/server/api/utils/publish-comparison";
+import { saveSection } from "~/server/api/utils/section-write";
 import {
 	extractDeclarationContentToPublish,
 	parsePublishedDeclaration,
 } from "~/domain/declaration/published/snapshot";
-import { getDeclarationStatus } from "~/domain/declaration/status";
 import { validateDeclaration } from "~/domain/declaration/validate";
 import type { declarationGeneral } from "~/forms/declaration/declarationSchema";
 import { analyzeUrlWithAlbert } from "../albert";
@@ -254,17 +253,7 @@ export const updateDeclaration = async (
 	declaration: PopulatedDeclaration,
 	general: DeclarationGeneralUpdateInput,
 ) => {
-	const {
-		organisation,
-		kind,
-		mobilePlatform,
-		url,
-		domain,
-		name,
-		firstPublishedAt,
-		entityId,
-	} = general;
-	const declarationId = declaration.id;
+	const { organisation, domain, entityId } = general;
 
 	// Sequential autosave persists partials: skip empty required fields so a
 	// cleared value keeps its previously saved content instead of blanking it.
@@ -280,31 +269,12 @@ export const updateDeclaration = async (
 			data: entityData,
 		});
 
-	const newStatus = await recalculateDeclarationStatus(payload, declarationId, {
-		declarationFields: { name, app_kind: kind, url },
-	});
+	// The entity name is public content: the drift check must see its new value.
+	const current = declaration.entity
+		? { ...declaration, entity: { ...declaration.entity, ...entityData } }
+		: declaration;
 
-	const result = await payload.update({
-		collection: "declarations",
-		id: declarationId,
-		data: {
-			...(name ? { name } : {}),
-			...(kind
-				? {
-						app_kind: kind,
-						mobile_platform: kind === "mobile_app" ? mobilePlatform : null,
-					}
-				: {}),
-			url,
-			// The initial publication date is frozen by the first publish action.
-			...(firstPublishedAt && getDeclarationStatus(declaration) === "draft"
-				? { first_published_at: firstPublishedAt }
-				: {}),
-			...(newStatus ? { status: newStatus } : {}),
-		},
-	});
-
-	return getPopulatedDeclaration(result);
+	return saveSection(payload, current, "infos", general);
 };
 
 export const updateDeclarationName = async (

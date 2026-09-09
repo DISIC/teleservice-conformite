@@ -30,6 +30,7 @@ import {
 import { useLiveSectionForm } from "~/components/declaration/sections/hooks/useLiveSectionForm";
 import { useSectionForm } from "~/components/declaration/sections/hooks/useSectionForm";
 import { logMutationError } from "~/components/declaration/logMutationError";
+import { applySavedDeclaration } from "~/components/declaration/sections/applySavedDeclaration";
 import type { SectionRenderProps } from "../Content";
 
 type UseAuditSubSectionArgs = SectionRenderProps & {
@@ -44,7 +45,7 @@ type UseAuditSubSectionArgs = SectionRenderProps & {
 
 /**
  * Cross-cutting plumbing shared by the four audit Sub-section components: the
- * single `audit.upsert` mutation, the `useSectionForm` frame, and the
+ * single `audit.update` mutation, the `useSectionForm` frame, and the
  * not-realised notice. The form itself stays in each component.
  */
 function useAuditSubSection({
@@ -73,8 +74,7 @@ function useAuditSubSection({
 	const showNotice = requiresRealised && audit?.isRealised !== true;
 
 	const { mutateAsync: upsert, isPending } = api.audit.update.useMutation({
-		onSuccess: ({ data }) =>
-			onDeclarationChange((prev) => ({ ...prev, audit: data })),
+		onSuccess: applySavedDeclaration(onDeclarationChange),
 		onError: logMutationError("saving audit", declaration.id),
 	});
 

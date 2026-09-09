@@ -3,7 +3,7 @@ import { declarationToContactValues } from "~/forms/contact/contactSchema";
 import { declarationToSchemaValues } from "~/forms/schema/schemaSchema";
 import { api } from "~/lib/api";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { applyLibrarySection } from "~/components/declaration/sections/applyLibrarySection";
+import { applySavedDeclaration } from "~/components/declaration/sections/applySavedDeclaration";
 import type { LibrarySectionKind } from "~/domain/declaration/sourceMode";
 
 export type LibraryLink = {
@@ -63,21 +63,14 @@ export function useLibraryLink({
 		enabled: kind === "contact",
 	});
 
-	const applySchema = applyLibrarySection("schema", onDeclarationChange);
-	const applyContact = applyLibrarySection("contact", onDeclarationChange);
+	const apply = applySavedDeclaration(onDeclarationChange);
 
-	const linkSchema = api.library.linkSchema.useMutation({
-		onSuccess: applySchema,
-	});
+	const linkSchema = api.library.linkSchema.useMutation({ onSuccess: apply });
 	const linkContact = api.library.linkContact.useMutation({
-		onSuccess: applyContact,
+		onSuccess: apply,
 	});
-	const unlinkSchema = api.schema.upsert.useMutation({
-		onSuccess: applySchema,
-	});
-	const unlinkContact = api.contact.upsert.useMutation({
-		onSuccess: applyContact,
-	});
+	const unlinkSchema = api.schema.upsert.useMutation({ onSuccess: apply });
+	const unlinkContact = api.contact.upsert.useMutation({ onSuccess: apply });
 
 	const items =
 		kind === "schema"

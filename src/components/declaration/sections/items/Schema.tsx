@@ -7,7 +7,7 @@ import {
 	type ZSchema,
 } from "~/forms/schema/schemaSchema";
 import { SECTION_TITLES } from "~/domain/declaration/sections";
-import { applyLibrarySection } from "~/components/declaration/sections/applyLibrarySection";
+import { applySavedDeclaration } from "~/components/declaration/sections/applySavedDeclaration";
 import { logMutationError } from "~/components/declaration/logMutationError";
 import type { SectionRenderProps } from "../Content";
 import { SourceModeSection, type SourceModeOption } from "../SourceModeSection";
@@ -50,7 +50,7 @@ export function SchemaSection({
 		api.schema.upsert.useMutation({
 			onError: logMutationError("upserting schema", declaration.id),
 		});
-	const applySchema = applyLibrarySection("schema", onDeclarationChange);
+	const applySchema = applySavedDeclaration(onDeclarationChange);
 
 	return (
 		<SourceModeSection<ZSchema, SchemaFormApi>

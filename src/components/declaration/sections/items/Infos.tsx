@@ -12,6 +12,7 @@ import {
 import { useLiveSectionForm } from "~/components/declaration/sections/hooks/useLiveSectionForm";
 import { useSectionForm } from "~/components/declaration/sections/hooks/useSectionForm";
 import { logMutationError } from "~/components/declaration/logMutationError";
+import { applySavedDeclaration } from "~/components/declaration/sections/applySavedDeclaration";
 import type { SectionRenderProps } from "../Content";
 
 export function InfosSection({
@@ -24,8 +25,7 @@ export function InfosSection({
 	const isSequential = mode === "sequential";
 	const { mutateAsync: update, isPending } = api.declaration.update.useMutation(
 		{
-			onSuccess: ({ data }) =>
-				onDeclarationChange((prev) => ({ ...prev, ...data })),
+			onSuccess: applySavedDeclaration(onDeclarationChange),
 			onError: logMutationError("updating declaration", declaration.id),
 		},
 	);

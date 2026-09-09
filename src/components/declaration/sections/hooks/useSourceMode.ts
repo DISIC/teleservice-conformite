@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api } from "~/lib/api";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import type { DeclarationChangeFn } from "~/components/declaration/sections/Content";
-import { applyLibrarySection } from "~/components/declaration/sections/applyLibrarySection";
+import { applySavedDeclaration } from "~/components/declaration/sections/applySavedDeclaration";
 import {
 	deriveSourceMode,
 	type LibrarySectionKind,
@@ -46,7 +46,7 @@ export function useSourceMode({
 	const parentId = libraryLink.linkedParentId;
 
 	const skip = api.schema.skip.useMutation({
-		onSuccess: applyLibrarySection("schema", onDeclarationChange),
+		onSuccess: applySavedDeclaration(onDeclarationChange),
 	});
 
 	const countQuery = api.library.linkedDeclarations.useQuery(

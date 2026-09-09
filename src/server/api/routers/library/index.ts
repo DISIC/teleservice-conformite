@@ -6,6 +6,7 @@ import {
 	declarationProcedure,
 	userProtectedProcedure,
 } from "../../trpc";
+import { saveSection } from "../../utils/section-write";
 import * as service from "./service";
 
 export type { LibrarySectionKind } from "./service";
@@ -15,30 +16,30 @@ const kindInput = z.enum(["contact", "schema"]);
 export const contactRouter = createTRPCRouter({
 	upsert: declarationProcedure
 		.input(z.object({ values: contactDraft }))
-		.mutation(({ input, ctx }) =>
-			service.upsertSection(
+		.mutation(async ({ input, ctx }) => ({
+			data: await saveSection(
 				ctx.payload,
+				ctx.declaration,
 				"contact",
-				ctx.declaration.id,
 				input.values,
 			),
-		),
+		})),
 });
 
 export const schemaRouter = createTRPCRouter({
 	upsert: declarationProcedure
 		.input(z.object({ values: schemaDraft }))
-		.mutation(({ input, ctx }) =>
-			service.upsertSection(
+		.mutation(async ({ input, ctx }) => ({
+			data: await saveSection(
 				ctx.payload,
+				ctx.declaration,
 				"schema",
-				ctx.declaration.id,
 				input.values,
 			),
-		),
-	skip: declarationProcedure.mutation(({ ctx }) =>
-		service.skipSchema(ctx.payload, ctx.declaration.id),
-	),
+		})),
+	skip: declarationProcedure.mutation(async ({ ctx }) => ({
+		data: await service.skipSchema(ctx.payload, ctx.declaration),
+	})),
 });
 
 export const libraryRouter = createTRPCRouter({
@@ -92,26 +93,26 @@ export const libraryRouter = createTRPCRouter({
 		),
 	linkContact: declarationProcedure
 		.input(z.object({ parentId: z.number() }))
-		.mutation(({ input, ctx }) =>
-			service.linkParent(
+		.mutation(async ({ input, ctx }) => ({
+			data: await service.linkParent(
 				ctx.payload,
 				Number(ctx.session.user.id),
 				"contact",
 				ctx.declaration,
 				input.parentId,
 			),
-		),
+		})),
 	linkSchema: declarationProcedure
 		.input(z.object({ parentId: z.number() }))
-		.mutation(({ input, ctx }) =>
-			service.linkParent(
+		.mutation(async ({ input, ctx }) => ({
+			data: await service.linkParent(
 				ctx.payload,
 				Number(ctx.session.user.id),
 				"schema",
 				ctx.declaration,
 				input.parentId,
 			),
-		),
+		})),
 	linkedDeclarations: userProtectedProcedure
 		.input(z.object({ kind: kindInput, id: z.number() }))
 		.query(({ input, ctx }) =>
