@@ -41,16 +41,11 @@ export type SectionRenderArgs<TForm> = {
 	mode: EditingMode;
 };
 
-/**
- * What differs between Sections. Everything else — editing mode, read-only
- * state, autosave, error reveal, the frame and its buttons, the terminal publish
- * gate, the source-mode radio — is the `Section` runtime's job.
- */
+/** What differs between Sections; editing state, autosave, frame and gate belong to the runtime. */
 export type SectionDefinition<TValues, TForm> = {
 	slug: SectionSlug;
 	schema: StandardSchemaV1<TValues, unknown>;
 	toValues: (declaration: PopulatedDeclaration) => TValues;
-	/** Hook: binds the Section's tRPC mutation; the runtime supplies the fold and the error sink. */
 	useSave: (
 		declaration: PopulatedDeclaration,
 		options: SectionSaveOptions,

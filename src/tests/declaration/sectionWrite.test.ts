@@ -2,7 +2,10 @@ import type { Payload } from "payload";
 import { describe, expect, it, vi } from "vitest";
 import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { saveSection } from "~/server/api/utils/section-write";
+import {
+	saveSection,
+	writeDeclaration,
+} from "~/server/api/utils/section-write";
 import {
 	completeDeclaration,
 	publishedDeclaration,
@@ -106,6 +109,21 @@ describe("saveSection — one write, status derived from the row as written", ()
 
 		expect(result.contact.email).toBe("b@example.fr");
 		expect(result.entity).toEqual(declaration.entity);
+	});
+});
+
+describe("writeDeclaration — direct row writes", () => {
+	it("turns a Publiée declaration Modifiée when its name changes", async () => {
+		const { payload, update, on } = stubPayload();
+		const declaration = on(publishedDeclaration());
+
+		await writeDeclaration(payload, declaration, { name: "Nouveau nom" });
+
+		expect(update).toHaveBeenCalledTimes(1);
+		expect(writtenData(update)).toEqual({
+			name: "Nouveau nom",
+			status: "unpublished",
+		});
 	});
 });
 

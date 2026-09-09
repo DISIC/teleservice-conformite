@@ -18,9 +18,7 @@ import {
 /** The four data groups a Section save writes; Audit Sub-sections are slices of one. */
 export type SectionKind = "infos" | "audit" | LibrarySectionKind;
 
-/** Lenient all-optional partial: any one Sub-section slice may arrive on its
- *  own. `isRealised` is supplied explicitly by the general form — never inferred
- *  from the presence of unrelated fields. */
+// Any one Sub-section slice may arrive alone; `isRealised` is never inferred from other fields.
 export const auditPatch = z.object({
 	isRealised: z.boolean().optional(),
 	date: z.iso.date().optional().or(z.literal("")),

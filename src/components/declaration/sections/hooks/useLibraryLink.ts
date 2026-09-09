@@ -45,11 +45,6 @@ function parentId(parent: unknown): number | null {
 	return null;
 }
 
-/**
- * Wires a Section's Library picker to the per-user Library: lists parents, links
- * the declaration to one, or detaches it to a custom copy. Linking/unlinking
- * folds the returned Declaration into page state, re-rendering the section in place.
- */
 export function useLibraryLink({
 	kind,
 	declaration,

@@ -11,7 +11,10 @@ import {
 	getPopulatedDeclaration,
 	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
-import { saveSection } from "~/server/api/utils/section-write";
+import {
+	saveSection,
+	writeDeclaration,
+} from "~/server/api/utils/section-write";
 import {
 	extractDeclarationContentToPublish,
 	parsePublishedDeclaration,
@@ -277,16 +280,11 @@ export const updateDeclaration = async (
 	return saveSection(payload, current, "infos", general);
 };
 
-export const updateDeclarationName = async (
+export const updateDeclarationName = (
 	payload: Payload,
 	declaration: PopulatedDeclaration,
 	name: string,
-) =>
-	payload.update({
-		collection: "declarations",
-		id: declaration.id,
-		data: { name },
-	});
+) => writeDeclaration(payload, declaration, { name });
 
 // Publish always validates: the snapshot is server-built — clients never supply publishedContent.
 export const publishDeclaration = async (
