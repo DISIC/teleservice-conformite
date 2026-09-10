@@ -15,7 +15,7 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { guardDeclaration } from "~/lib/server-guards";
 import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
-import { getDeclarationStatus } from "~/domain/declaration/status";
+import { getDeclarationState } from "~/domain/declaration/state";
 
 // Only entity and created_by remain nullable relations for the preview.
 type RequiredPopulatedDeclaration = Omit<
@@ -168,7 +168,8 @@ export const getServerSideProps = (async (context) => {
 		};
 	}
 
-	if (getDeclarationStatus(declaration) === "published") {
+	// Nothing to preview when the public page already matches the row.
+	if (getDeclarationState(declaration) === null) {
 		return {
 			redirect: {
 				destination: `/dashboard/declarations/${declaration.id}`,

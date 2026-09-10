@@ -10,6 +10,7 @@ import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
+import { StatusBadge } from "~/components/declaration/StatusBadge";
 import { PageHeading } from "~/components/layout/PageHeading";
 import {
 	CreateDeclarationModal,
@@ -22,6 +23,7 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { copyToClipboard } from "~/lib/clipboard";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { getConformityStatus } from "~/domain/declaration/conformity";
+import { getDeclarationStatus } from "~/domain/declaration/status";
 import type { Entity } from "~/payload/payload-types";
 
 interface DeclarationsPageProps {
@@ -43,17 +45,10 @@ const defaultColumns = [
 			</Tag>
 		),
 	}),
-	columnHelper.accessor("status", {
+	columnHelper.accessor((row) => getDeclarationStatus(row), {
+		id: "status",
 		header: "Statut",
-		cell: (info) => (
-			<Badge
-				noIcon
-				small
-				severity={info.getValue() === "published" ? "success" : undefined}
-			>
-				{info.getValue() === "published" ? "Publié" : "Brouillon"}
-			</Badge>
-		),
+		cell: (info) => <StatusBadge declaration={info.row.original} />,
 	}),
 	columnHelper.accessor("updatedAt", {
 		header: "Dernière mise à jour",
@@ -87,7 +82,7 @@ const buildActionsColumn = (onCopySuccess: (declarationName: string) => void) =>
 		id: "actions",
 		cell: (info) => {
 			const declaration = info.row.original;
-			if (declaration.status !== "published") return null;
+			if (getDeclarationStatus(declaration) !== "published") return null;
 
 			return (
 				<div style={{ display: "flex", justifyContent: "flex-end" }}>

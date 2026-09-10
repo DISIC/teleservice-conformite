@@ -12,35 +12,30 @@ import {
 } from "./declaration.fixture";
 
 describe("getDeclarationStatus", () => {
-	it("is draft when unpublished with no snapshot", () => {
-		expect(
-			getDeclarationStatus({ status: "unpublished", publishedContent: null }),
-		).toBe("draft");
+	it("is draft with no snapshot", () => {
+		expect(getDeclarationStatus({ publishedContent: null })).toBe("draft");
 	});
 
 	it("treats an empty snapshot like no snapshot", () => {
-		expect(
-			getDeclarationStatus({ status: "unpublished", publishedContent: "" }),
-		).toBe("draft");
+		expect(getDeclarationStatus({ publishedContent: "" })).toBe("draft");
 	});
 
-	it("is modified when unpublished but a snapshot exists", () => {
-		expect(
-			getDeclarationStatus({ status: "unpublished", publishedContent: "{}" }),
-		).toBe("modified");
+	it("is published once a snapshot exists", () => {
+		expect(getDeclarationStatus({ publishedContent: "{}" })).toBe("published");
 	});
 
-	it("is published when the status column says so", () => {
-		expect(
-			getDeclarationStatus({ status: "published", publishedContent: "{}" }),
-		).toBe("published");
+	it("stays published while modified since the last publish", () => {
+		const modified = {
+			...publishedDeclaration(),
+			status: "unpublished" as const,
+		};
+		expect(getDeclarationStatus(modified)).toBe("published");
 	});
 });
 
 describe("getEditingMode", () => {
 	it("is sequential only for a never-published draft", () => {
 		expect(getEditingMode("draft")).toBe("sequential");
-		expect(getEditingMode("modified")).toBe("standalone");
 		expect(getEditingMode("published")).toBe("standalone");
 	});
 });

@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
@@ -8,7 +7,9 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
+import { StatusBadge } from "~/components/declaration/StatusBadge";
 import { PageHeading } from "~/components/layout/PageHeading";
+import { getDeclarationStatus } from "~/domain/declaration/status";
 import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
 import type { Entity } from "~/payload/payload-types";
@@ -64,23 +65,16 @@ export default function EntityDeclarationsPage({
 					</Tag>
 				),
 			}),
-			columnHelper.accessor("status", {
+			columnHelper.accessor((row) => getDeclarationStatus(row), {
+				id: "status",
 				header: "Statut",
-				cell: (info) => (
-					<Badge
-						noIcon
-						small
-						severity={info.getValue() === "published" ? "success" : undefined}
-					>
-						{info.getValue() === "published" ? "Publié" : "Brouillon"}
-					</Badge>
-				),
+				cell: (info) => <StatusBadge declaration={info.row.original} />,
 			}),
 			columnHelper.display({
 				id: "actions",
 				cell: (info) => {
 					const declaration = info.row.original;
-					if (declaration.status !== "published") return null;
+					if (getDeclarationStatus(declaration) !== "published") return null;
 					const publicUrl = `/declarations/${declaration.id}/publish`;
 					return (
 						<div className={classes.actions}>
