@@ -62,7 +62,7 @@ const useStyles = tss.withName(PageHeading.name).create({
 	},
 	row: {
 		display: "flex",
-		alignItems: "flex-start",
+		alignItems: "center",
 		justifyContent: "space-between",
 		gap: fr.spacing("6v"),
 		flexWrap: "wrap",
