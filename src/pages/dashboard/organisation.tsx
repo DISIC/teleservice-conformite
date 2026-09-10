@@ -187,7 +187,9 @@ export const getServerSideProps = (async (context) => {
 
 	if (!session) return { redirect: { destination: "/", permanent: false } };
 	if (!entity)
-		return { redirect: { destination: "/dashboard", permanent: false } };
+		return {
+			redirect: { destination: "/dashboard/declarations", permanent: false },
+		};
 
 	const result = await payload.find({
 		collection: "declarations",

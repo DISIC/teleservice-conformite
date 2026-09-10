@@ -5,11 +5,9 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
-import config from "@payload-config";
 import { createColumnHelper } from "@tanstack/react-table";
-import type { GetServerSideProps, Redirect } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
-import { getPayload } from "payload";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { PageHeading } from "~/components/layout/PageHeading";
@@ -21,14 +19,14 @@ import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { auth } from "~/lib/auth";
 import { copyToClipboard } from "~/lib/clipboard";
+import { loadEntityForPage } from "~/lib/server-guards";
 import { getConformityStatus } from "~/domain/declaration/conformity";
 import type { Entity } from "~/payload/payload-types";
 
 interface DeclarationsPageProps {
-	declarations: Array<PopulatedDeclaration & { updatedAtFormatted: string }>;
-	entity: Entity;
+	declarations: PopulatedDeclaration[];
+	entity: Entity | null;
 }
 
 const NUMBER_PER_PAGE = 10;
@@ -173,7 +171,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 			<PageHeading
 				title="Mes déclarations d’accessibilité"
 				pictogram={<Contract fontSize="3.5rem" />}
-				entityName={entity.name}
+				entityName={entity?.name}
 				actions={
 					<Button
 						iconId="fr-icon-add-line"
@@ -253,64 +251,20 @@ const useStyles = tss.withName(DeclarationsPage.name).create({
 });
 
 export const getServerSideProps = (async (context) => {
-	const redirect: Redirect = {
-		destination: "/",
-		permanent: false,
+	const { payload, session, entity } = await loadEntityForPage(context);
+
+	if (!session) return { redirect: { destination: "/", permanent: false } };
+
+	const result = await payload.find({
+		collection: "declarations",
+		depth: 3,
+		where: {
+			"accessRights.user": { equals: session.user.id },
+			"accessRights.status": { equals: "approved" },
+		},
+	});
+
+	return {
+		props: { declarations: result.docs as PopulatedDeclaration[], entity },
 	};
-
-	const [payload, authSession] = await Promise.all([
-		getPayload({ config }),
-		auth.api.getSession({
-			headers: new Headers(context.req.headers as HeadersInit),
-		}),
-	]);
-
-	if (!authSession) return { redirect };
-
-	try {
-		const user = await payload.findByID({
-			collection: "users",
-			id: Number(authSession.user.id),
-			depth: 1,
-		});
-
-		const currentEntity =
-			user?.entity && typeof user.entity === "object" ? user.entity : null;
-
-		if (!currentEntity) {
-			return { redirect: { destination: "/", permanent: false } };
-		}
-
-		const result = await payload.find({
-			collection: "declarations",
-			trash: true,
-			depth: 3,
-			where: {
-				"accessRights.user": { equals: authSession?.user?.id },
-				"accessRights.status": { equals: "approved" },
-			},
-		});
-
-		const allDocs = result?.docs || [];
-		const declarations: Array<
-			PopulatedDeclaration & { updatedAtFormatted: string }
-		> = [];
-		const deletedDeclarations: typeof allDocs = [];
-		for (const doc of allDocs) {
-			if (doc?.deletedAt) {
-				deletedDeclarations.push(doc);
-				continue;
-			}
-			declarations.push({
-				...doc,
-				updatedAtFormatted: new Date(doc.updatedAt).toLocaleDateString("fr-FR"),
-			} as PopulatedDeclaration & { updatedAtFormatted: string });
-		}
-
-		return { props: { declarations, entity: currentEntity } };
-	} catch (error) {
-		console.error("Error fetching declaration:", error);
-
-		return { redirect };
-	}
 }) satisfies GetServerSideProps<DeclarationsPageProps>;

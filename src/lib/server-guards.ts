@@ -28,11 +28,9 @@ export async function loadEntityForPage(context: GetServerSidePropsContext) {
 
 	if (!session) return { payload, session: null, entity: null };
 
-	const user = await payload.findByID({
-		collection: "users",
-		id: Number(session.user.id),
-		depth: 1,
-	});
+	const user = await payload
+		.findByID({ collection: "users", id: Number(session.user.id), depth: 1 })
+		.catch(() => null);
 	const entity =
 		user?.entity && typeof user.entity === "object"
 			? (user.entity as Entity)
