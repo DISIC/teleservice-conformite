@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import Book from "@codegouvfr/react-dsfr/picto/Book";
+import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useState } from "react";
@@ -73,7 +73,7 @@ export default function SchemasPage({
 			</Head>
 			<PageHeading
 				title="Mes schémas"
-				pictogram={<Book fontSize="3.5rem" />}
+				pictogram={<DataVisualization fontSize="3.5rem" />}
 				entityName={entity.name}
 				actions={
 					<Button iconId="fr-icon-add-line" onClick={openCreate}>
@@ -87,9 +87,11 @@ export default function SchemasPage({
 						<Loader />
 					) : schemas.length === 0 ? (
 						<EmptyState
-							description="Ajoutez un schéma pluriannuel et les plans d’action associés"
+							pictogram={<DataVisualization fontSize="3rem" />}
+							title="Vous n’avez aucun schéma pluriannuel enregistré"
+							description="Centralisez et gérez les schémas pluriannuels nécessaires à vos déclarations d’accessibilité."
 							ctaProps={{
-								children: "Ajouter un schéma pluriannuel",
+								children: "Ajouter un schéma",
 								onClick: openCreate,
 								iconId: "fr-icon-add-line",
 							}}

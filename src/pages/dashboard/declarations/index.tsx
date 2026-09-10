@@ -3,7 +3,7 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
+import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 import config from "@payload-config";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -172,7 +172,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 			</Head>
 			<PageHeading
 				title="Mes déclarations d’accessibilité"
-				pictogram={<Conclusion fontSize="3.5rem" />}
+				pictogram={<Contract fontSize="3.5rem" />}
 				entityName={entity.name}
 				actions={
 					<Button
@@ -208,7 +208,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 						<EmptyState
 							title="Ajoutez votre première déclaration d’accessibilité"
 							description="Vous devez réaliser une déclaration par service et par type de support."
-							pictogram={<Conclusion fontSize="3rem" />}
+							pictogram={<Contract fontSize="3rem" />}
 							ctaProps={{
 								onClick: () => createModalActions.open?.(),
 								children: "Ajouter une déclaration",

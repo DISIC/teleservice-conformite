@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import MainSend from "@codegouvfr/react-dsfr/picto/MainSend";
+import NationalIdentityCard from "@codegouvfr/react-dsfr/picto/NationalIdentityCard";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
@@ -129,7 +129,7 @@ export default function ContactsPage({
 			</Head>
 			<PageHeading
 				title="Mes contacts"
-				pictogram={<MainSend fontSize="3.5rem" />}
+				pictogram={<NationalIdentityCard fontSize="3.5rem" />}
 				entityName={entity.name}
 				actions={
 					<Button iconId="fr-icon-add-line" onClick={openCreate}>
@@ -143,7 +143,9 @@ export default function ContactsPage({
 						<Loader />
 					) : contacts.length === 0 ? (
 						<EmptyState
-							description="Ajoutez un contact"
+							pictogram={<NationalIdentityCard fontSize="3rem" />}
+							title="Vous n’avez aucun contact enregistré"
+							description="Centralisez et gérez les contacts nécessaires à vos déclarations d’accessibilité."
 							ctaProps={{
 								children: "Ajouter un contact",
 								onClick: openCreate,

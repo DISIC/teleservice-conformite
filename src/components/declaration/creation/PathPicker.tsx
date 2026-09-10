@@ -74,7 +74,7 @@ export function PathPicker({
 			)}
 			{!path && (
 				<HelpingMessage
-					image={<Accessibility fontSize="6rem" />}
+					image={<Accessibility fontSize="4rem" />}
 					message={
 						<span>
 							<a

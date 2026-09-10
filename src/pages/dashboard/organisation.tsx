@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import Document from "@codegouvfr/react-dsfr/picto/Document";
+import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
@@ -124,7 +124,7 @@ export default function EntityDeclarationsPage({
 			</Head>
 			<PageHeading
 				title="Toutes les déclarations de l’organisation"
-				pictogram={<Document fontSize="3.5rem" />}
+				pictogram={<Contract fontSize="3.5rem" />}
 				entityName={entity.name}
 			/>
 			<div className={fr.cx("fr-container")}>
@@ -147,7 +147,11 @@ export default function EntityDeclarationsPage({
 							numberPerPage={NUMBER_PER_PAGE}
 						/>
 					) : (
-						<EmptyState description="Aucune déclaration dans votre organisation pour le moment" />
+						<EmptyState
+							pictogram={<Contract fontSize="3rem" />}
+							title="Il n’y a aucune déclaration d’accessibilité."
+							description={`Retrouvez ici toutes les déclarations créées dans votre organisation ${entity.name}`}
+						/>
 					)}
 				</div>
 			</div>
