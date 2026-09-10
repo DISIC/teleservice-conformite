@@ -73,7 +73,7 @@ export default function AddFirstDeclaration() {
 	const signIn = async () => {
 		const response = await authClient.signIn.oauth2({
 			providerId: "proconnect",
-			callbackURL: "/dashboard",
+			callbackURL: "/dashboard/declarations",
 		});
 
 		const urlParams = new URLSearchParams(response?.data?.url);
@@ -156,7 +156,7 @@ export default function AddFirstDeclaration() {
 					<Button
 						priority="primary"
 						linkProps={{
-							href: "/dashboard/form",
+							href: "/dashboard/declarations",
 						}}
 					>
 						Créer la déclaration

@@ -1,4 +1,4 @@
-import { fr } from "@codegouvfr/react-dsfr";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { Header, type HeaderProps } from "@codegouvfr/react-dsfr/Header";
@@ -35,61 +35,60 @@ const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
 
 export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
 
-const getBackgroundColor = (pathname: string) => {
-	const page = pathname.split("/").pop() || "";
+const NAVIGATION = [
+	{ text: "Mes déclarations", href: "/dashboard/declarations" },
+	{ text: "Mes contacts", href: "/dashboard/contacts" },
+	{ text: "Mes schémas", href: "/dashboard/schemas" },
+	{
+		text: "Toutes les déclarations de l’organisation",
+		href: "/dashboard/organisation",
+	},
+];
 
-	if (["form", "preview"].includes(page)) {
-		return fr.colors.decisions.background.alt.blueFrance.default;
-	}
-
-	return "inherit";
-};
+// The active tab is the longest nav href that prefixes the pathname.
+const getActiveHref = (pathname: string) =>
+	NAVIGATION.map((item) => item.href)
+		.filter((href) => pathname === href || pathname.startsWith(`${href}/`))
+		.sort((a, b) => b.length - a.length)[0];
 
 function App({ Component, pageProps }: AppProps) {
 	const router = useRouter();
-	const { classes } = useStyles({
-		backgroundColor: getBackgroundColor(router.pathname),
-	});
+	const { classes } = useStyles();
 	const { data: authSession, isPending: isPendingAuth } =
 		authClient.useSession();
-	const isAuthenticated = !!authSession;
+	const isAuthenticated = !isPendingAuth && !!authSession;
 
-	const getTitleFromPathname = (pathname: string): string | undefined => {
-		if (pathname === "/dashboard") return "Liste des déclarations";
+	const quickAccessItems = useMemo<HeaderProps.QuickAccessItem[]>(() => {
+		if (!isAuthenticated) return [];
 
-		if (pathname === "/dashboard/form") return "Ajouter une déclaration";
-	};
-
-	const quickAccessItems = useMemo(() => {
-		const items = [] as HeaderProps.QuickAccessItem[];
-
-		if (isPendingAuth) return [];
-
-		if (isAuthenticated) {
-			items.push(
-				{
-					iconId: "ri-account-circle-fill",
-					text: "Paramètres / Compte",
-					linkProps: {
-						href: "/dashboard",
+		return [
+			{
+				iconId: "fr-icon-logout-box-r-line",
+				text: "Déconnexion",
+				buttonProps: {
+					priority: "tertiary",
+					onClick: async () => {
+						await authClient.signOut({
+							fetchOptions: { onSuccess: () => router.reload() },
+						});
 					},
 				},
-				{
-					iconId: "ri-menu-2-line",
-					text: "Déconnexion",
-					buttonProps: {
-						onClick: async () => {
-							await authClient.signOut({
-								fetchOptions: { onSuccess: () => router.reload() },
-							});
-						},
-					},
-				},
-			);
-		}
+			},
+		];
+	}, [isAuthenticated]);
 
-		return items;
-	}, [authSession?.session, authSession?.user, isAuthenticated, isPendingAuth]);
+	const activeHref = getActiveHref(router.pathname);
+	const navigation = useMemo(
+		() =>
+			isAuthenticated
+				? NAVIGATION.map((item) => ({
+						text: item.text,
+						isActive: item.href === activeHref,
+						linkProps: { href: item.href },
+					}))
+				: undefined,
+		[isAuthenticated, activeHref],
+	);
 
 	const pageHeader = (
 		Component as PageWithHeader<typeof pageProps>
@@ -98,16 +97,9 @@ function App({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>
-					{`${
-						getTitleFromPathname(router.pathname)
-							? `${getTitleFromPathname(router.pathname)} - `
-							: ""
-					}Téléservice Conformité`}
-				</title>
+				<title>Téléservice Conformité</title>
 			</Head>
 			<div className={classes.mainContainer}>
-				{" "}
 				<SkipLinks
 					links={[
 						{
@@ -134,7 +126,16 @@ function App({ Component, pageProps }: AppProps) {
 							title: "Accueil Téléservice Conformité",
 						}}
 						quickAccessItems={quickAccessItems}
-						serviceTitle="Téléservice Conformité"
+						navigation={navigation}
+						serviceTitle={
+							<>
+								Téléservice de déclaration d’accessibilité numérique{" "}
+								<Badge as="span" noIcon small severity="info">
+									BETA
+								</Badge>
+							</>
+						}
+						serviceTagline="Centralisez et gérez vos déclarations d’accessibilité conformément aux exigences légales."
 					/>
 				)}
 				<main id="contenu" className={classes.main} style={{ flex: 1 }}>
@@ -151,34 +152,17 @@ function App({ Component, pageProps }: AppProps) {
 	);
 }
 
-export const useStyles = tss
-	.withName(App.name)
-	.withParams<{
-		backgroundColor?: string;
-	}>()
-	.create(({ backgroundColor = "inherit" }) => ({
-		mainContainer: {
-			minHeight: "100vh",
-			display: "flex",
-			flexDirection: "column",
-		},
-		main: {
-			backgroundColor: backgroundColor,
-			display: "flex",
-			width: "100%",
-			flexDirection: "column",
-		},
-		formContainer: {
-			boxSizing: "border-box",
-			paddingInline: fr.spacing("4v"),
-			paddingBlock: fr.spacing("12v"),
-			width: "100%",
-			height: "100%",
-
-			"@media (min-width: 1024px)": {
-				paddingInline: "16rem",
-			},
-		},
-	}));
+const useStyles = tss.withName(App.name).create({
+	mainContainer: {
+		minHeight: "100vh",
+		display: "flex",
+		flexDirection: "column",
+	},
+	main: {
+		display: "flex",
+		width: "100%",
+		flexDirection: "column",
+	},
+});
 
 export default withDsfr(api.withTRPC(withAppEmotionCache(App)));
