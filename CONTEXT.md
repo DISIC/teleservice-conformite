@@ -137,7 +137,7 @@ Does **not** violate the "visible status is a pure function of two columns" Inva
 
 ### Creation path
 
-One of the three ways a Declaration comes into existence, chosen by the declarant on the creation page (`/dashboard/form`):
+One of the three ways a Declaration comes into existence, chosen by the declarant in the creation modal opened from Mes déclarations (`/dashboard/declarations`):
 
 - **Manuel** (`fromSource: "manual"`) — declarant supplies only a name; a skeleton Declaration is created and completed via the **sequential** [[editing mode|Editing mode]].
 - **Import ARA** (`fromSource: "ara"`) — declarant supplies the URL of an ARA report; its data is fetched from ARA's API and the Declaration is created pre-filled.
@@ -176,13 +176,13 @@ An Obsolète Declaration is presented as _réputée non conforme_ regardless of 
 
 **See also:** [[status]], [[declaration-state|Declaration state]].
 
-### Library ("Schémas et Contacts")
+### Library ("Mes contacts" / "Mes schémas")
 
-A user's personal pool of Contacts and Schemas, reusable across their Declarations. Ownership is **per-user**, not per-entity/organization (organization-level sharing is out of scope).
+A user's personal pool of Contacts and Schemas, reusable across their Declarations. Ownership is **per-user**, not per-entity/organization (organization-level sharing is out of scope). Managed from two dedicated pages of the [[surfaces|Dashboard]], one per kind; there is no single "library page" any more.
 
 A Declaration's contact/schema is sourced in one of these **modes**, chosen explicitly via a [[source mode]] radio in the section form:
 
-- **Linked** — the Declaration references a Library parent (an object created/managed in the "Schémas et Contacts" area). It holds its **own copy** of the parent's content, but the copy mirrors the parent: while linked, the data renders **read-only** in the Declaration form, and editing the parent (only possible from the Library area) **auto-propagates** to every linked copy. If propagation touches published Declarations, a warning modal lists them before saving (they move to Modifiée and need republishing — the public snapshot never moves on its own).
+- **Linked** — the Declaration references a Library parent (an object created/managed from the "Mes contacts" / "Mes schémas" pages). It holds its **own copy** of the parent's content, but the copy mirrors the parent: while linked, the data renders **read-only** in the Declaration form, and editing the parent (only possible from the Library area) **auto-propagates** to every linked copy. If propagation touches published Declarations, a warning modal lists them before saving (they move to Modifiée and need republishing — the public snapshot never moves on its own).
 - **Custom** — the declarant flips the custom switch and writes the object inline. It belongs to that Declaration alone: editable in place, no parent, no propagation in or out.
 - **Skipped** _(schema only)_ — the declarant declares "no schema" deliberately. Contact has no Skipped mode; a Contact is always required to publish.
 
@@ -193,7 +193,7 @@ Lifecycle rules:
 - **Deleting** a Library parent never affects Declarations — their copies survive, detached (they become custom). Published content is immutable to Library operations.
 - Removing a contact or schema **from a published Declaration itself** moves it to Modifiée with that section flagged À compléter; the public snapshot is unchanged.
 
-**Avoid:** "shared documents" / entity-level sharing — the retired model where Contacts/Schemas were linked to an `entity`. "Pre-fill" for the linked mode — pre-fill is the copy-without-link gesture, linking is more than pre-fill.
+**Avoid:** "shared documents" / entity-level sharing — the retired model where Contacts/Schemas were linked to an `entity`. "Bibliothèque" / "Schémas et Contacts" as a page name — the retired single page. "Pre-fill" for the linked mode — pre-fill is the copy-without-link gesture, linking is more than pre-fill.
 
 **See also:** [[section]], [[status]], [[source mode]].
 
@@ -221,7 +221,9 @@ The kind axis shared by the two Library-sourced [[section]]s — `contact` and `
 
 A Declaration is reached through two distinct route trees, kept separate on purpose:
 
-- **Dashboard editor** — `/dashboard/declarations/[id]` (authenticated). The editing surface: SideMenu, [[section]]s, status actions, Membres.
+- **Dashboard** — `/dashboard/*` (authenticated). Four pages sit behind the téléservice header's navigation: **Mes déclarations** (`/dashboard/declarations`, the user's own Declarations, where creation starts), **Mes contacts** and **Mes schémas** (the [[library|Library]]), and **Toutes les déclarations de l'organisation** (`/dashboard/organisation`). The bare `/dashboard` is only the landing URL and forwards to Mes déclarations.
+  - **Dashboard editor** — `/dashboard/declarations/[id]`. The editing surface: SideMenu, [[section]]s, status actions, Membres. Reached only from Mes déclarations.
+  - **Organisation view** — the entity-wide list is read-only discovery: it never opens the editor, it only leads to the public published view of each published Declaration.
 - **Public published view** — `/declarations/[id]/publish` (no auth). Read-only render of `publishedContent` via `PublishedDeclarationTemplate`.
 
 Both trees use the **plural** `declarations/` segment. Singular `declaration/` is not used as a route segment.

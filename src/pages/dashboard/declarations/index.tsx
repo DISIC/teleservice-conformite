@@ -1,143 +1,197 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import config from "@payload-config";
+import Contract from "@codegouvfr/react-dsfr/picto/Contract";
+import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 import { createColumnHelper } from "@tanstack/react-table";
-import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
-import Link from "next/link";
-import { getPayload } from "payload";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
-import { BackButton } from "~/components/ui/BackButton";
+import { PageHeading } from "~/components/layout/PageHeading";
+import {
+	CreateDeclarationModal,
+	type CreateDeclarationModalActions,
+} from "~/components/modal/CreateDeclarationModal";
+import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
-import type { Entity } from "~/payload/payload-types";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { authPages } from "~/lib/auth";
 import { copyToClipboard } from "~/lib/clipboard";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { loadEntityForPage } from "~/lib/server-guards";
+import { getConformityStatus } from "~/domain/declaration/conformity";
+import type { Entity } from "~/payload/payload-types";
 
-interface EntityDeclarationsPageProps {
-	entity: Entity;
+interface DeclarationsPageProps {
 	declarations: PopulatedDeclaration[];
+	entity: Entity | null;
 }
 
 const NUMBER_PER_PAGE = 10;
 
 const columnHelper = createColumnHelper<PopulatedDeclaration>();
 
-export default function EntityDeclarationsPage({
-	entity,
-	declarations,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+const defaultColumns = [
+	columnHelper.accessor("app_kind", {
+		header: "Type",
+		cell: (info) => (
+			<Tag small>
+				{appKindOptions.find((option) => option.value === info.getValue())
+					?.label ?? "—"}
+			</Tag>
+		),
+	}),
+	columnHelper.accessor("status", {
+		header: "Statut",
+		cell: (info) => (
+			<Badge
+				noIcon
+				small
+				severity={info.getValue() === "published" ? "success" : undefined}
+			>
+				{info.getValue() === "published" ? "Publié" : "Brouillon"}
+			</Badge>
+		),
+	}),
+	columnHelper.accessor("updatedAt", {
+		header: "Dernière mise à jour",
+		cell: (info) => {
+			const date = new Date(info.getValue());
+			return date.toLocaleDateString("fr-FR");
+		},
+	}),
+	columnHelper.accessor((row) => row.audit?.rate, {
+		header: "Taux de conformité",
+		cell: (info) => {
+			const rate = info.getValue();
+
+			if (rate === undefined || rate === null) return "-";
+
+			const conformityStatus = getConformityStatus(rate);
+
+			return (
+				<Tooltip kind="hover" title={conformityStatus.label}>
+					<Badge noIcon small severity={conformityStatus.severity}>
+						{`${rate}%`}
+					</Badge>
+				</Tooltip>
+			);
+		},
+	}),
+];
+
+const buildActionsColumn = (onCopySuccess: (declarationName: string) => void) =>
+	columnHelper.display({
+		id: "actions",
+		cell: (info) => {
+			const declaration = info.row.original;
+			if (declaration.status !== "published") return null;
+
+			return (
+				<div style={{ display: "flex", justifyContent: "flex-end" }}>
+					<Button
+						iconId="fr-icon-link"
+						priority="secondary"
+						size="small"
+						title={`Copier le lien public de la déclaration ${declaration.name}`}
+						onClick={() =>
+							copyToClipboard(
+								`${process.env.NEXT_PUBLIC_FRONT_URL}/declarations/${declaration.id}/publish`,
+								() => onCopySuccess(declaration.name || ""),
+							)
+						}
+						nativeButtonProps={{
+							"aria-label": `Copier le lien public de la déclaration ${declaration.name}`,
+						}}
+					/>
+				</div>
+			);
+		},
+	});
+
+type AlertDetailsProps = {
+	description?: string;
+	severity: "info" | "success" | "warning" | "error";
+};
+
+export default function DeclarationsPage(props: DeclarationsPageProps) {
+	const { declarations, entity } = props;
 	const { classes } = useStyles();
-
+	const [createModalActions] = useState<CreateDeclarationModalActions>({});
 	const alertRef = useRef<HTMLDivElement>(null);
-	const [alertMessage, setAlertMessage] = useState<string | null>(null);
+	const [showAlert, setShowAlert] = useState<boolean>(false);
+	const [alertDetails, setAlertDetails] = useState<AlertDetailsProps>({
+		description: "",
+		severity: "info",
+	});
 
-	const onCopySuccess = useCallback(
-		(declarationName: string) =>
-			setAlertMessage(
-				`Lien de la déclaration ${declarationName} copié dans le presse-papier`,
-			),
+	const showDeclarationAlert = useCallback(
+		({ description, severity }: AlertDetailsProps) => {
+			setAlertDetails({ description, severity });
+			setShowAlert(true);
+		},
 		[],
 	);
 
-	useEffect(() => {
-		if (alertMessage) alertRef.current?.focus();
-	}, [alertMessage]);
+	const onCopySuccess = useCallback(
+		(declarationName: string) =>
+			showDeclarationAlert({
+				description: `Lien de la déclaration ${declarationName} copié dans le presse-papier`,
+				severity: "success",
+			}),
+		[showDeclarationAlert],
+	);
 
 	const columns = useMemo(
 		() => [
 			columnHelper.accessor("name", {
 				header: "Nom de la déclaration",
-				meta: { styles: { maxWidth: 240 } },
+				meta: { styles: { maxWidth: 240 }, rowLink: true },
 				cell: (info) => (
-					<Link
-						href={`/dashboard/declarations/${info.row.original.id}`}
-						className={classes.nameLink}
-					>
-						{info.getValue()}
-					</Link>
+					<span className={classes.nameLink}>{info.getValue()}</span>
 				),
 			}),
-			columnHelper.accessor("app_kind", {
-				header: "Type",
-				cell: (info) => (
-					<Tag small>
-						{appKindOptions.find((option) => option.value === info.getValue())
-							?.label ?? "—"}
-					</Tag>
-				),
-			}),
-			columnHelper.accessor("status", {
-				header: "Statut",
-				cell: (info) => (
-					<Badge
-						noIcon
-						small
-						severity={info.getValue() === "published" ? "success" : undefined}
-					>
-						{info.getValue() === "published" ? "Publié" : "Brouillon"}
-					</Badge>
-				),
-			}),
-			columnHelper.display({
-				id: "actions",
-				cell: (info) => {
-					const declaration = info.row.original;
-					if (declaration.status !== "published") return null;
-					return (
-						<div style={{ display: "flex", justifyContent: "flex-end" }}>
-							<Button
-								iconId="fr-icon-share-line"
-								iconPosition="left"
-								priority="tertiary no outline"
-								size="small"
-								onClick={() =>
-									copyToClipboard(
-										`${process.env.NEXT_PUBLIC_FRONT_URL}/declarations/${declaration.id}/publish`,
-										() => onCopySuccess(declaration.name || ""),
-									)
-								}
-								nativeButtonProps={{
-									"aria-label": `Copier le lien public de la déclaration ${declaration.name}`,
-								}}
-							>
-								Copier le lien public
-							</Button>
-						</div>
-					);
-				},
-			}),
+			...defaultColumns,
+			buildActionsColumn(onCopySuccess),
 		],
-		[classes.nameLink, onCopySuccess],
+		[onCopySuccess, classes.nameLink],
 	);
+
+	useEffect(() => {
+		if (showAlert) alertRef.current?.focus();
+	}, [showAlert, alertDetails]);
 
 	return (
 		<>
 			<Head>
-				<title>Toutes les déclarations - Téléservice Conformité</title>
+				<title>Mes déclarations - Téléservice Conformité</title>
 			</Head>
+			<PageHeading
+				title="Mes déclarations d’accessibilité"
+				pictogram={<Contract fontSize="3.5rem" />}
+				entityName={entity?.name}
+				actions={
+					<Button
+						iconId="fr-icon-add-line"
+						onClick={() => createModalActions.open?.()}
+					>
+						Ajouter une déclaration
+					</Button>
+				}
+			/>
 			<div className={fr.cx("fr-container")}>
-				<div className={classes.main}>
-					<BackButton>Retour sur la liste des déclarations</BackButton>
-					<div className={classes.headerWrapper}>
-						<h1>Toutes les déclarations</h1>
-						<Badge noIcon small>
-							Visible par tous les membres de {entity.name}
-						</Badge>
-					</div>
-					{alertMessage && (
+				<section id="declarations-page" className={classes.main}>
+					{showAlert && (
 						<div className={classes.alertWrapper} ref={alertRef} tabIndex={-1}>
 							<Alert
 								small
-								severity="success"
-								description={alertMessage}
+								severity={alertDetails.severity}
+								description={alertDetails?.description ?? ""}
 								closable
-								onClose={() => setAlertMessage(null)}
+								isClosed={!showAlert}
+								onClose={() => setShowAlert(false)}
 							/>
 						</div>
 					)}
@@ -146,87 +200,71 @@ export default function EntityDeclarationsPage({
 							columns={columns}
 							data={declarations}
 							numberPerPage={NUMBER_PER_PAGE}
+							getRowHref={(row) => `/dashboard/declarations/${row.id}`}
 						/>
 					) : (
-						<p className={classes.empty}>
-							Aucune déclaration dans votre organisation pour le moment
-						</p>
+						<EmptyState
+							title="Ajoutez votre première déclaration d’accessibilité"
+							description="Vous devez réaliser une déclaration par service et par type de support."
+							pictogram={<Contract fontSize="3rem" />}
+							ctaProps={{
+								onClick: () => createModalActions.open?.(),
+								children: "Ajouter une déclaration",
+								iconId: "fr-icon-add-line",
+							}}
+						>
+							<p>
+								<strong>Documents à préparer</strong>
+								<br />
+								Si vous les possédez, pensez à préparer votre déclaration
+								d’accessibilité existante, votre grille et rapport d’audit, le
+								fichier ou l’URL de votre schéma pluriannuel.
+							</p>
+							<p className={fr.cx("fr-text--xs", "fr-mb-0")}>
+								Durée de complétion estimée : entre 6 et 15 minutes
+							</p>
+						</EmptyState>
 					)}
-				</div>
+				</section>
 			</div>
+			<CreateDeclarationModal actions={createModalActions} entity={entity} />
 		</>
 	);
 }
 
-const useStyles = tss.withName(EntityDeclarationsPage.name).create({
+const useStyles = tss.withName(DeclarationsPage.name).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("8v"),
-	},
-	headerWrapper: {
-		display: "flex",
-		alignItems: "center",
-		gap: fr.spacing("4v"),
-		flexWrap: "wrap",
 	},
 	alertWrapper: {
 		width: "100%",
 		display: "flex",
-		"& div": { width: "100%" },
+		"& div": {
+			width: "100%",
+		},
+		marginBottom: fr.spacing("6v"),
 		animation: "fadeIn 0.25s ease-in-out",
 	},
-	empty: {
-		color: fr.colors.decisions.text.mention.grey.default,
-		fontStyle: "italic",
-	},
 	nameLink: {
-		color: "inherit",
-		backgroundImage: "none",
 		fontWeight: 500,
-		transition: "color 0.15s ease",
-		"&:hover": {
-			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-		},
 	},
 });
 
 export const getServerSideProps = (async (context) => {
-	const session = await authPages.api.getSession({
-		headers: context.req.headers as HeadersInit,
-	});
+	const { payload, session, entity } = await loadEntityForPage(context);
 
-	if (!session) {
-		return { redirect: { destination: "/", permanent: false } };
-	}
-
-	const payload = await getPayload({ config });
-	const user = await payload.findByID({
-		collection: "users",
-		id: Number(session.user.id),
-		depth: 1,
-	});
-
-	const entity =
-		user?.entity && typeof user.entity === "object" ? user.entity : null;
-
-	if (!entity) {
-		return { redirect: { destination: "/dashboard", permanent: false } };
-	}
+	if (!session) return { redirect: { destination: "/", permanent: false } };
 
 	const result = await payload.find({
 		collection: "declarations",
-		depth: 1,
+		depth: 3,
 		where: {
-			entity: { equals: entity.id },
+			"accessRights.user": { equals: session.user.id },
+			"accessRights.status": { equals: "approved" },
 		},
-		limit: 1000,
 	});
 
-	const declarations = (result?.docs ?? []).map(
-		(doc) => doc as PopulatedDeclaration,
-	);
-
-	return { props: { entity, declarations } };
-}) satisfies GetServerSideProps<EntityDeclarationsPageProps>;
+	return {
+		props: { declarations: result.docs as PopulatedDeclaration[], entity },
+	};
+}) satisfies GetServerSideProps<DeclarationsPageProps>;

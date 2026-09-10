@@ -1,8 +1,6 @@
-import { fr } from "@codegouvfr/react-dsfr";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { useEffect, useId, useMemo, useState } from "react";
-import { tss } from "tss-react";
 import type { Contact } from "~/payload/payload-types";
 import { useModalReturnFocus } from "~/hooks/useModalReturnFocus";
 import { api } from "~/lib/api";
@@ -22,7 +20,6 @@ interface LibraryContactModalProps {
 }
 
 export function LibraryContactModal({ actions }: LibraryContactModalProps) {
-	const { classes } = useStyles();
 	const id = useId();
 
 	const [modal] = useState(() =>
@@ -102,33 +99,10 @@ export function LibraryContactModal({ actions }: LibraryContactModalProps) {
 					},
 				]}
 				size="large"
-				title={
-					<section className={classes.modalHeader}>
-						<h1 className={classes.modalHeading}>
-							{editing ? "Modifier un contact" : "Ajouter un contact"}
-						</h1>
-					</section>
-				}
+				title={editing ? "Modifier un contact" : "Ajouter un contact"}
 			>
 				<ContactTypeForm form={form} readOnly={false} />
 			</modal.Component>
 		</form>
 	);
 }
-
-const useStyles = tss.withName("LibraryContactModal").create({
-	modalHeader: {
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("2v"),
-	},
-	modalHeading: {
-		color: fr.colors.decisions.text.title.grey.default,
-		fontFamily: "Marianne",
-		fontSize: "1.5rem",
-		fontStyle: "normal",
-		fontWeight: 700,
-		lineHeight: "2rem",
-		marginBottom: 0,
-	},
-});
