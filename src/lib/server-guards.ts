@@ -2,7 +2,7 @@ import type { ParsedUrlQuery } from "node:querystring";
 import config from "@payload-config";
 import type { GetServerSidePropsContext, Redirect } from "next";
 import { getPayload } from "payload";
-import type { Contact, Schema } from "~/payload/payload-types";
+import type { Contact, Entity, Schema } from "~/payload/payload-types";
 import { loadOwnedDeclaration } from "~/server/api/utils/declaration-access";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { authPages } from "~/lib/auth";
@@ -18,6 +18,28 @@ export interface DeclarationProps {
 export interface LibraryProps {
 	libraryContacts: Contact[];
 	librarySchemas: Schema[];
+}
+
+/** Session + the caller's entity for pages that only need to know who is browsing. */
+export async function loadEntityForPage(context: GetServerSidePropsContext) {
+	const [payload, session] = await Promise.all([
+		getPayload({ config }),
+		authPages.api.getSession({ headers: context.req.headers as HeadersInit }),
+	]);
+
+	if (!session) return { payload, session: null, entity: null };
+
+	const user = await payload.findByID({
+		collection: "users",
+		id: Number(session.user.id),
+		depth: 1,
+	});
+	const entity =
+		user?.entity && typeof user.entity === "object"
+			? (user.entity as Entity)
+			: null;
+
+	return { payload, session, entity };
 }
 
 /** Page-side counterpart of `declarationProcedure`: resolves the session and the
