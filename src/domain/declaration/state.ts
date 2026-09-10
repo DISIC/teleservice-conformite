@@ -44,12 +44,8 @@ function hasUnverifiedAiContent(declaration: PopulatedDeclaration): boolean {
 	);
 }
 
-/**
- * Derives the {@link DeclarationState}: the lifecycle decides first, then the
- * editable branches (draft / modified) sub-split on completeness and AI-verification.
- * The modified branch can be incomplete too: removing a Contact or Schema from a
- * published declaration yields `published-incomplete`.
- */
+// Lifecycle first, then completeness and AI-verification split the editable
+// branches; a published declaration can turn incomplete when a Section is removed.
 export function getDeclarationState(
 	declaration: PopulatedDeclaration,
 ): DeclarationState | null {

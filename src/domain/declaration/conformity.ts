@@ -1,9 +1,9 @@
-import type { AlertProps } from "@codegouvfr/react-dsfr/Alert";
+export type ConformitySeverity = "success" | "info" | "warning" | "error";
 
 // RGAA thresholds: below 50 % non conforme, 50–99 % partiellement conforme, 100 % conforme.
 export const getConformityStatus = (
 	rate: number,
-): { label: string; severity: AlertProps.Severity } => {
+): { label: string; severity: ConformitySeverity } => {
 	if (rate < 50) {
 		return { label: "Non conforme", severity: "error" };
 	}
@@ -14,6 +14,6 @@ export const getConformityStatus = (
 	return { label: "Conforme", severity: "success" };
 };
 
-/** French notation: `12,5 %`. */
+// French locale: decimal comma, space before the percent sign.
 export const formatRate = (rate: number): string =>
 	`${rate.toString().replace(".", ",")} %`;

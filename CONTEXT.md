@@ -242,7 +242,7 @@ Layered, not feature-foldered. One predictable layer per concern:
 
 ## Invariants
 
-- A Declaration's visible status is a pure function of `status` + `publishedContent`. Don't introduce a third source of truth.
+- A Declaration's visible [[status|Status]] is a pure function of `publishedContent` alone; Modifiée is a [[declaration-state|Declaration state]] read from the `status` column. Don't introduce a third source of truth.
 - A Declaration has exactly one audit — the `audit` group on its row (structural since ADR-0004; v1's "at most one `audits` row" invariant is subsumed). The four Audit [[sub-section]]s are UI groupings over that single group.
 - When `audit.isRealised === false`, fields belonging to the three non-Réalisation Sub-sections are not required and should not be surfaced for editing.
 - `toVerify` is per-Section, not per-Sub-section.

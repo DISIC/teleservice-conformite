@@ -4,7 +4,7 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
-import { useDeclarationColumns } from "~/components/declaration/declarationColumns";
+import { useDeclarationColumns } from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
 import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";

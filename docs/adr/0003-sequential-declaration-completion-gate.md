@@ -1,7 +1,8 @@
 # ADR-0003: Sequential completion mode + declaration-wide validation gate
 
 - **Status:** Accepted — partly superseded by ADR-0006
-- **Date:** 2026-06-09 (gate scope widened 2026-06-10, ADR-0004; gate predicate extended 2026-06-14, ADR-0005; save-on-advance + per-section save validation retired 2026-06-18, ADR-0006; gate enforcement moved server-side 2026-07-02; Status made binary 2026-09-10 — Modifiée is a Declaration state, not a Status)
+- **Amended 2026-09-10:** Status is binary (Brouillon / Publiée, from `publishedContent` alone). Where this ADR says "Modifiée/Publiée" as lifecycle values, read "Publiée, clean or Modifiée": Modifiée is a Declaration state layered on Publiée, not a Status. The mode split is unchanged — `sequential` for Brouillon, `standalone` for Publiée.
+- **Date:** 2026-06-09 (gate scope widened 2026-06-10, ADR-0004; gate predicate extended 2026-06-14, ADR-0005; save-on-advance + per-section save validation retired 2026-06-18, ADR-0006; gate enforcement moved server-side 2026-07-02)
 
 > **Superseded in part (ADR-0006, 2026-06-18):** sequential mode no longer commits-and-advances ("Enregistrer et suivant") or validates per section on save. Edits **autosave** as they happen, the footer is plain "Suivant", and the declaration-wide gate is the only completeness check. The **mode split** (sequential vs. standalone) and the **gate** itself (described below) are unchanged; ignore the "Enregistrer et suivant" footer behavior and the "second validation entry point" consequence — see ADR-0006.
 

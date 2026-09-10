@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { completeDeclaration } from "./declaration.fixture";
+import {
+	completeDeclaration,
+	publishedDeclaration,
+} from "./declaration.fixture";
 import { getDeclarationState } from "~/domain/declaration/state";
 
 describe("getDeclarationState", () => {
@@ -26,6 +29,14 @@ describe("getDeclarationState", () => {
 			audit: { isRealised: false, toVerify: true },
 		} as never);
 		expect(getDeclarationState(d)).toBe("to-verify");
+	});
+
+	it("keeps a modified declaration on the published branch", () => {
+		const modified = {
+			...publishedDeclaration(),
+			status: "unpublished" as const,
+		};
+		expect(getDeclarationState(modified)).toBe("published-modified");
 	});
 
 	it("is published-modified for a complete declaration edited since publish", () => {

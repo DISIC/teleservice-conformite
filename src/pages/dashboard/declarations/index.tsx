@@ -6,7 +6,7 @@ import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
-import { useDeclarationColumns } from "~/components/declaration/declarationColumns";
+import { useDeclarationColumns } from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
 import {
 	CreateDeclarationModal,

@@ -20,7 +20,6 @@ const columnHelper = createColumnHelper<PopulatedDeclaration>();
 const publicUrl = (declaration: PopulatedDeclaration) =>
 	`/declarations/${declaration.id}/publish`;
 
-/** Shared columns for the declaration tables (Mes déclarations, Organisation). */
 export function useDeclarationColumns() {
 	const { classes } = useStyles();
 
@@ -127,7 +126,7 @@ function buildColumns(classes: Record<"name" | "rate" | "actions", string>) {
 	};
 }
 
-const useStyles = tss.withName("DeclarationColumns").create({
+const useStyles = tss.withName("TableColumns").create({
 	name: {
 		fontWeight: 500,
 	},
