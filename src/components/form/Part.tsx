@@ -49,7 +49,7 @@ const useStyles = tss
 					display: "flex",
 					flexDirection: "column",
 					// Separate consecutive editable Parts with a top rule.
-					"&:not(:first-child)": {
+					"&:not(:first-of-type)": {
 						borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
 						paddingTop: fr.spacing("6v"),
 					},

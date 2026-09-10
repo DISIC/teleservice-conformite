@@ -52,7 +52,7 @@ const ToolAdvantages = () => {
 			<h3>Profitez des avantages de l’outil</h3>
 			<div className={classes.advantagesList}>
 				{list.map(({ title, description, Icon, iconPosition }) => (
-					<div key={title} data-iconPosition={iconPosition}>
+					<div key={title} data-icon-position={iconPosition}>
 						<div>
 							<h4>{title}</h4>
 							<p>{description}</p>
@@ -293,10 +293,10 @@ const useStyles = tss.withName(AddFirstDeclaration.name).create({
 			alignItems: "center",
 			justifyContent: "center",
 			gap: fr.spacing("6w"),
-			"&[data-iconPosition='left']": {
+			"&[data-icon-position='left']": {
 				flexDirection: "row-reverse",
 			},
-			"&[data-iconPosition='right']": {
+			"&[data-icon-position='right']": {
 				flexDirection: "row",
 			},
 			"& > div": {

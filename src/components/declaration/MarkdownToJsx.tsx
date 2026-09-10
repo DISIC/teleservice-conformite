@@ -92,7 +92,7 @@ const useStyles = tss.withName(MarkdownToJsx.name).create({
 			marginTop: fr.spacing("8v"),
 			marginBottom: fr.spacing("4v"),
 		},
-		"h1:first-child": {
+		"h1:first-of-type": {
 			marginTop: 0,
 		},
 		".fr-badge": {
