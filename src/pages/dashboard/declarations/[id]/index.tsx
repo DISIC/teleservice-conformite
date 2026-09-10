@@ -9,6 +9,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react";
+import { PageHeading } from "~/components/layout/PageHeading";
 import { BackButton } from "~/components/ui/BackButton";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
@@ -76,7 +77,7 @@ export default function DeclarationPage({
 	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
 		{
 			onSuccess: async () => {
-				router.push("/dashboard");
+				router.push("/dashboard/declarations");
 			},
 			onError: (error) => {
 				console.error("Error deleting declaration:", error);
@@ -155,32 +156,25 @@ export default function DeclarationPage({
 					Déclaration de {declaration.name} - Téléservice Conformité
 				</title>
 			</Head>
-			<section
-				id="declaration-page"
-				className={fr.cx("fr-container", "fr-mt-10v")}
-			>
-				<BackButton href="/dashboard" className={fr.cx("fr-mb-6v")}>
-					Retour à la liste des déclarations
-				</BackButton>
-				<header className={classes.headerSection}>
-					<span className={classes.header}>
-						<span className={classes.titleWithOrg}>
-							<h1>{declaration.name}</h1>
-							{declaration.entity?.name && (
-								<span className={classes.organisationName}>
-									{declaration.entity.name}
-								</span>
-							)}
-						</span>
-						<Badge
-							noIcon
-							small
-							severity={status !== "draft" ? "success" : undefined}
-						>
-							{status !== "draft" ? "Publié" : "Brouillon"}
-						</Badge>
-					</span>
-					<div className={classes.buttonsContainer}>
+			<PageHeading
+				title={declaration.name}
+				entityName={declaration.entity?.name}
+				backButton={
+					<BackButton href="/dashboard/declarations">
+						Retourner à la liste de mes déclarations
+					</BackButton>
+				}
+				badge={
+					<Badge
+						noIcon
+						small
+						severity={status !== "draft" ? "success" : undefined}
+					>
+						{status !== "draft" ? "Publié" : "Brouillon"}
+					</Badge>
+				}
+				actions={
+					<>
 						{hasPublishedDeclaration && (
 							<>
 								<Button
@@ -220,7 +214,7 @@ export default function DeclarationPage({
 							</>
 						)}
 						<Button
-							iconId="fr-icon-delete-fill"
+							iconId="fr-icon-delete-line"
 							priority="tertiary"
 							onClick={() => deleteModal.open()}
 							size="small"
@@ -230,22 +224,26 @@ export default function DeclarationPage({
 						>
 							Supprimer
 						</Button>
+					</>
+				}
+			/>
+			<section
+				id="declaration-page"
+				className={fr.cx("fr-container", "fr-mt-10v")}
+			>
+				{showAlert && (
+					<div className={classes.alertWrapper}>
+						<Alert
+							small
+							severity={alertDetails.severity}
+							title={alertDetails?.title ?? ""}
+							description={alertDetails?.description ?? ""}
+							closable
+							isClosed={!showAlert}
+							onClose={() => setShowAlert(false)}
+						/>
 					</div>
-					{showAlert && (
-						<div className={classes.alertWrapper}>
-							<Alert
-								small
-								severity={alertDetails.severity}
-								title={alertDetails?.title ?? ""}
-								description={alertDetails?.description ?? ""}
-								closable
-								isClosed={!showAlert}
-								onClose={() => setShowAlert(false)}
-							/>
-						</div>
-					)}
-				</header>
-
+				)}
 				<div className={classes.stateNoticeWrapper}>
 					<StateNotice
 						declaration={declaration}
@@ -345,42 +343,6 @@ export default function DeclarationPage({
 }
 
 const useStyles = tss.withName(DeclarationPage.name).create({
-	headerSection: {
-		display: "flex",
-		flexWrap: "wrap",
-		alignItems: "center",
-		justifyContent: "space-between",
-		rowGap: fr.spacing("2v"),
-		marginBottom: fr.spacing("6v"),
-	},
-	header: {
-		display: "flex",
-		flexDirection: "row",
-		alignItems: "flex-start",
-		flexWrap: "wrap",
-		gap: fr.spacing("3v"),
-		"& > h1": {
-			margin: 0,
-		},
-	},
-	titleWithOrg: {
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("2v"),
-		"& > h1": {
-			margin: 0,
-		},
-	},
-	organisationName: {
-		color: fr.colors.decisions.text.mention.grey.default,
-		fontSize: "14px",
-	},
-	buttonsContainer: {
-		display: "flex",
-		flexDirection: "row",
-		flexWrap: "wrap",
-		gap: fr.spacing("4v"),
-	},
 	statsWrapper: {
 		marginBottom: fr.spacing("8v"),
 	},
@@ -418,7 +380,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 	alertWrapper: {
 		width: "100%",
 		display: "flex",
-		marginTop: fr.spacing("6v"),
+		marginBottom: fr.spacing("6v"),
 		"& div": {
 			width: "100%",
 		},

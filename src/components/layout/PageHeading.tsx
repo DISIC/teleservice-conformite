@@ -4,7 +4,7 @@ import { tss } from "tss-react";
 
 type PageHeadingProps = {
 	title: ReactNode;
-	pictogram: ReactNode;
+	pictogram?: ReactNode;
 	entityName?: string | null;
 	badge?: ReactNode;
 	actions?: ReactNode;
@@ -27,9 +27,11 @@ export function PageHeading({
 				{backButton && <div className={classes.back}>{backButton}</div>}
 				<div className={classes.row}>
 					<div className={classes.heading}>
-						<span className={classes.pictogram} aria-hidden="true">
-							{pictogram}
-						</span>
+						{pictogram && (
+							<span className={classes.pictogram} aria-hidden="true">
+								{pictogram}
+							</span>
+						)}
 						<div className={classes.titles}>
 							<div className={classes.titleLine}>
 								<h1 className={classes.title}>{title}</h1>
