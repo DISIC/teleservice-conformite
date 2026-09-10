@@ -90,13 +90,14 @@ const buildActionsColumn = (onCopySuccess: (declarationName: string) => void) =>
 		cell: (info) => {
 			const declaration = info.row.original;
 			if (declaration.status !== "published") return null;
+
 			return (
 				<div style={{ display: "flex", justifyContent: "flex-end" }}>
 					<Button
-						iconId="fr-icon-share-line"
-						iconPosition="left"
-						priority="tertiary no outline"
+						iconId="fr-icon-link"
+						priority="secondary"
 						size="small"
+						title={`Copier le lien public de la déclaration ${declaration.name}`}
 						onClick={() =>
 							copyToClipboard(
 								`${process.env.NEXT_PUBLIC_FRONT_URL}/declarations/${declaration.id}/publish`,
@@ -106,9 +107,7 @@ const buildActionsColumn = (onCopySuccess: (declarationName: string) => void) =>
 						nativeButtonProps={{
 							"aria-label": `Copier le lien public de la déclaration ${declaration.name}`,
 						}}
-					>
-						Copier le lien public
-					</Button>
+					/>
 				</div>
 			);
 		},

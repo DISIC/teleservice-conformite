@@ -2,21 +2,20 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import config from "@payload-config";
+import Document from "@codegouvfr/react-dsfr/picto/Document";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import Link from "next/link";
-import { getPayload } from "payload";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
-import { BackButton } from "~/components/ui/BackButton";
+import { PageHeading } from "~/components/layout/PageHeading";
+import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
 import type { Entity } from "~/payload/payload-types";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { authPages } from "~/lib/auth";
 import { copyToClipboard } from "~/lib/clipboard";
+import { loadEntityForPage } from "~/lib/server-guards";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 interface EntityDeclarationsPageProps {
@@ -54,14 +53,7 @@ export default function EntityDeclarationsPage({
 			columnHelper.accessor("name", {
 				header: "Nom de la déclaration",
 				meta: { styles: { maxWidth: 240 } },
-				cell: (info) => (
-					<Link
-						href={`/dashboard/declarations/${info.row.original.id}`}
-						className={classes.nameLink}
-					>
-						{info.getValue()}
-					</Link>
-				),
+				cell: (info) => <span className={classes.name}>{info.getValue()}</span>,
 			}),
 			columnHelper.accessor("app_kind", {
 				header: "Type",
@@ -89,47 +81,54 @@ export default function EntityDeclarationsPage({
 				cell: (info) => {
 					const declaration = info.row.original;
 					if (declaration.status !== "published") return null;
+					const publicUrl = `/declarations/${declaration.id}/publish`;
 					return (
-						<div style={{ display: "flex", justifyContent: "flex-end" }}>
+						<div className={classes.actions}>
 							<Button
-								iconId="fr-icon-share-line"
-								iconPosition="left"
-								priority="tertiary no outline"
+								iconId="fr-icon-link"
+								priority="secondary"
 								size="small"
+								title={`Copier le lien public de la déclaration ${declaration.name}`}
 								onClick={() =>
 									copyToClipboard(
-										`${process.env.NEXT_PUBLIC_FRONT_URL}/declarations/${declaration.id}/publish`,
+										`${process.env.NEXT_PUBLIC_FRONT_URL}${publicUrl}`,
 										() => onCopySuccess(declaration.name || ""),
 									)
 								}
-								nativeButtonProps={{
-									"aria-label": `Copier le lien public de la déclaration ${declaration.name}`,
+							/>
+							<Button
+								iconId="fr-icon-eye-line"
+								priority="secondary"
+								size="small"
+								title={`Voir la déclaration ${declaration.name}, nouvelle fenêtre`}
+								linkProps={{
+									href: publicUrl,
+									target: "_blank",
+									rel: "noopener noreferrer",
 								}}
-							>
-								Copier le lien public
-							</Button>
+							/>
 						</div>
 					);
 				},
 			}),
 		],
-		[classes.nameLink, onCopySuccess],
+		[classes.actions, classes.name, onCopySuccess],
 	);
 
 	return (
 		<>
 			<Head>
-				<title>Toutes les déclarations - Téléservice Conformité</title>
+				<title>
+					Toutes les déclarations de l’organisation - Téléservice Conformité
+				</title>
 			</Head>
+			<PageHeading
+				title="Toutes les déclarations de l’organisation"
+				pictogram={<Document fontSize="3.5rem" />}
+				entityName={entity.name}
+			/>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
-					<BackButton>Retour sur la liste des déclarations</BackButton>
-					<div className={classes.headerWrapper}>
-						<h1>Toutes les déclarations</h1>
-						<Badge noIcon small>
-							Visible par tous les membres de {entity.name}
-						</Badge>
-					</div>
 					{alertMessage && (
 						<div className={classes.alertWrapper} ref={alertRef} tabIndex={-1}>
 							<Alert
@@ -148,9 +147,7 @@ export default function EntityDeclarationsPage({
 							numberPerPage={NUMBER_PER_PAGE}
 						/>
 					) : (
-						<p className={classes.empty}>
-							Aucune déclaration dans votre organisation pour le moment
-						</p>
+						<EmptyState description="Aucune déclaration dans votre organisation pour le moment" />
 					)}
 				</div>
 			</div>
@@ -163,13 +160,7 @@ const useStyles = tss.withName(EntityDeclarationsPage.name).create({
 		paddingBlock: fr.spacing("12v"),
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("8v"),
-	},
-	headerWrapper: {
-		display: "flex",
-		alignItems: "center",
-		gap: fr.spacing("4v"),
-		flexWrap: "wrap",
+		gap: fr.spacing("6v"),
 	},
 	alertWrapper: {
 		width: "100%",
@@ -177,43 +168,22 @@ const useStyles = tss.withName(EntityDeclarationsPage.name).create({
 		"& div": { width: "100%" },
 		animation: "fadeIn 0.25s ease-in-out",
 	},
-	empty: {
-		color: fr.colors.decisions.text.mention.grey.default,
-		fontStyle: "italic",
-	},
-	nameLink: {
-		color: "inherit",
-		backgroundImage: "none",
+	name: {
 		fontWeight: 500,
-		transition: "color 0.15s ease",
-		"&:hover": {
-			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-		},
+	},
+	actions: {
+		display: "flex",
+		justifyContent: "flex-end",
+		gap: fr.spacing("2v"),
 	},
 });
 
 export const getServerSideProps = (async (context) => {
-	const session = await authPages.api.getSession({
-		headers: context.req.headers as HeadersInit,
-	});
+	const { payload, session, entity } = await loadEntityForPage(context);
 
-	if (!session) {
-		return { redirect: { destination: "/", permanent: false } };
-	}
-
-	const payload = await getPayload({ config });
-	const user = await payload.findByID({
-		collection: "users",
-		id: Number(session.user.id),
-		depth: 1,
-	});
-
-	const entity =
-		user?.entity && typeof user.entity === "object" ? user.entity : null;
-
-	if (!entity) {
+	if (!session) return { redirect: { destination: "/", permanent: false } };
+	if (!entity)
 		return { redirect: { destination: "/dashboard", permanent: false } };
-	}
 
 	const result = await payload.find({
 		collection: "declarations",

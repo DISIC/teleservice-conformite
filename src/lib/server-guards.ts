@@ -78,7 +78,7 @@ export async function guardDeclaration(
 	},
 ) {
 	const {
-		redirectUrl = "/dashboard",
+		redirectUrl = "/dashboard/declarations",
 		trash = false,
 		includeLibrary = false,
 	} = options ?? {};
