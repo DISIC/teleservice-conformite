@@ -116,15 +116,9 @@ export default function SchemasPage({
 									>
 										<strong>{schema.name}</strong>
 										<span className={classes.hint}>{schema.url}</span>
-										<span className={classes.hint} suppressHydrationWarning>
+										<span className={classes.hint}>
 											Dernière mise à jour{" "}
-											<Tag
-												small
-												linkProps={{
-													href: "#",
-													style: { pointerEvents: "none" },
-												}}
-											>
+											<Tag small as="span">
 												{new Date(schema.updatedAt).toLocaleDateString("fr-FR")}
 											</Tag>
 										</span>
