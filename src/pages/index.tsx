@@ -1,5 +1,314 @@
-import AddFirstDeclaration from "~/components/declaration/AddFirstDeclaration";
+import { fr } from "@codegouvfr/react-dsfr";
+import { ProConnectButton } from "@codegouvfr/react-dsfr/ProConnectButton";
+import Conclusion from "@codegouvfr/react-dsfr/picto/Conclusion";
+import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
+import Document from "@codegouvfr/react-dsfr/picto/Document";
+import FlowList from "@codegouvfr/react-dsfr/picto/FlowList";
+import Innovation from "@codegouvfr/react-dsfr/picto/Innovation";
+import MentalDisabilities from "@codegouvfr/react-dsfr/picto/MentalDisabilities";
+import Notification from "@codegouvfr/react-dsfr/picto/Notification";
+import Cookies from "js-cookie";
+import { tss } from "tss-react";
+
+import { authClient } from "~/lib/auth-client";
+
+const ToolAdvantages = () => {
+	const { classes } = useStyles();
+
+	const list = [
+		{
+			title: "Déclaration conforme",
+			description:
+				"Votre déclaration est générée selon le format réglementaire et toujours conforme aux exigences légales.",
+			iconPosition: "right",
+			Icon: DataVisualization,
+		},
+		{
+			title: "Déclarations centralisées",
+			description:
+				"Regroupez toutes vos déclarations au même endroit et facilitez le travail en équipe.",
+			iconPosition: "left",
+			Icon: FlowList,
+		},
+		{
+			title: "Rappels automatiques",
+			description:
+				"Recevez automatiquement une alerte quand une déclaration arrive à échéance.",
+			iconPosition: "right",
+			Icon: Notification,
+		},
+		{
+			title: "En 1 clic avec Ara",
+			description:
+				"Si vous utilisez l’outil Ara pour réaliser votre audit, récupérez en un clic les données de votre déclaration existante pour pré-remplir automatiquement la nouvelle.",
+			iconPosition: "left",
+			Icon: Innovation,
+		},
+	];
+
+	return (
+		<div className={classes.advantagesContainer}>
+			<h3>Profitez des avantages de l’outil</h3>
+			<div className={classes.advantagesList}>
+				{list.map(({ title, description, Icon, iconPosition }) => (
+					<div key={title} data-icon-position={iconPosition}>
+						<div>
+							<h4>{title}</h4>
+							<p>{description}</p>
+						</div>
+						<Icon fontSize="10rem" />
+					</div>
+				))}
+			</div>
+		</div>
+	);
+};
 
 export default function Home() {
-	return <AddFirstDeclaration />;
+	const { classes, cx } = useStyles();
+
+	const signIn = async () => {
+		const response = await authClient.signIn.oauth2({
+			providerId: "proconnect",
+			callbackURL: "/dashboard/declarations",
+		});
+
+		const urlParams = new URLSearchParams(response?.data?.url);
+		Cookies.set("oauth_state", urlParams.get("state") ?? "");
+		Cookies.set("oauth_nonce", urlParams.get("nonce") ?? "");
+	};
+
+	return (
+		<section className={classes.main}>
+			<div className={classes.headerWrapper}>
+				<div className={cx(classes.header, fr.cx("fr-container"))}>
+					<h1 className={fr.cx("fr-mb-0")}>
+						Téléservice de déclaration d’accessibilité
+					</h1>
+					<MentalDisabilities fontSize="8rem" />
+				</div>
+			</div>
+			<div className={cx(classes.body, fr.cx("fr-container"))}>
+				<p>
+					Ce service a été créé pour garantir la conformité et assurer que
+					toutes les déclarations soient produites selon les mêmes standards.
+					<br />
+					Tous les sites et applications en production doivent être référencés
+					dans l’outil, y compris ceux qui n’ont pas encore fait l’objet d’un
+					audit d’accessibilité.
+				</p>
+				<div>
+					<div className={classes.infoSection}>
+						<h2>Créez la déclaration pour votre service</h2>
+						<p>
+							<strong>
+								Vous devez réaliser une déclaration par service et par type de
+								support.
+							</strong>
+							<br />
+							<br />
+							Par exemple, pour le service Choisir{" "}
+							<strong>le service public</strong>, vous devrez faire une
+							déclaration pour le site web, une autre pour l’application mobile
+							iOs et une dernière pour l’application mobile Android.
+						</p>
+						<div>
+							<Conclusion fontSize="3rem" />
+							<p>
+								Durée de complétion estimée :{" "}
+								<strong>Entre 6 et 15 minutes</strong>
+							</p>
+						</div>
+					</div>
+					<div className={classes.documentsSection}>
+						<Document fontSize="5rem" />
+						<p className={classes.documentsSectionTitle}>
+							<strong>Documents à préparer</strong>
+						</p>
+						<ul>
+							<li>
+								<p>
+									<strong>Votre déclaration d’accessibilité existante</strong>
+								</p>
+								<p>si vous en avez une</p>
+							</li>
+							<li>
+								<p>
+									<strong>Votre grille et rapport d’audit</strong>
+								</p>
+								<p>si vous en avez une</p>
+							</li>
+							<li>
+								<p>
+									<strong>Le fichier ou l’URL du schéma annuel</strong>
+								</p>
+								<p>si vous en avez une</p>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div className={cx(classes.main, fr.cx("fr-container"))}>
+				<div className={classes.heroSection}>
+					<h3>Connectez-vous pour accéder à l'interface</h3>
+					<ProConnectButton onClick={signIn} />
+				</div>
+			</div>
+			<ToolAdvantages />
+		</section>
+	);
 }
+
+const useStyles = tss.withName(Home.name).create({
+	main: {
+		marginBottom: fr.spacing("22v"),
+	},
+	headerWrapper: {
+		backgroundColor: fr.colors.decisions.artwork.background.blueFrance.default,
+	},
+	header: {
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		paddingBlock: fr.spacing("5w"),
+		gap: fr.spacing("4v"),
+
+		"@media (max-width: 768px)": {
+			flexDirection: "column",
+			justifyContent: "center",
+			textAlign: "center",
+		},
+	},
+	body: {
+		"& > p": {
+			marginBlock: fr.spacing("8w"),
+			fontWeight: 400,
+			fontFamily: "Marianne",
+			fontSize: "1.25rem",
+			lineHeight: "2rem",
+			overflowWrap: "anywhere",
+			wordBreak: "break-word",
+		},
+
+		"& > div": {
+			display: "grid",
+			gridTemplateColumns: "auto auto",
+			gap: fr.spacing("4w"),
+
+			"@media (max-width: 1024px)": {
+				gridTemplateColumns: "1fr",
+			},
+		},
+	},
+	infoSection: {
+		display: "flex",
+		flexDirection: "column",
+		justifyContent: "space-between",
+		padding: fr.spacing("7w"),
+		backgroundColor: fr.colors.decisions.artwork.background.blueFrance.default,
+		"& > h2": {
+			fontWeight: 700,
+			fontFamily: "Marianne",
+		},
+
+		"& > div": {
+			display: "flex",
+			flexDirection: "row",
+			gap: fr.spacing("2w"),
+			alignItems: "center",
+
+			"& > p": {
+				margin: 0,
+			},
+		},
+
+		"@media (max-width: 768px)": {
+			padding: fr.spacing("4w"),
+			textAlign: "left",
+		},
+	},
+	documentsSection: {
+		padding: fr.spacing("4w"),
+		color: fr.colors.decisions.background.default.grey.default,
+		backgroundColor:
+			fr.colors.decisions.background.actionHigh.blueFrance.default,
+
+		"& .fr-artwork-major": {
+			fill: "#ffffff !important",
+		},
+
+		"& ul": {
+			margin: 0,
+			padding: 0,
+
+			"& li": {
+				listStyleType: "none",
+				marginBottom: fr.spacing("2w"),
+				"& > p": { margin: 0 },
+			},
+		},
+
+		"@media (max-width: 768px)": {
+			padding: fr.spacing("3w"),
+		},
+	},
+	documentsSectionTitle: {
+		fontSize: "1.1rem",
+	},
+	advantagesContainer: {
+		display: "flex",
+		flexDirection: "column",
+		"& h3": {
+			textAlign: "center",
+			marginTop: fr.spacing("25v"),
+			marginBottom: 0,
+		},
+	},
+	advantagesList: {
+		"& > div": {
+			display: "flex",
+			flexDirection: "row",
+			alignItems: "center",
+			justifyContent: "center",
+			gap: fr.spacing("6w"),
+			"&[data-icon-position='left']": {
+				flexDirection: "row-reverse",
+			},
+			"&[data-icon-position='right']": {
+				flexDirection: "row",
+			},
+			"& > div": {
+				width: "25rem",
+				"& > p": { margin: 0 },
+				"& > h4": {
+					color: fr.colors.decisions.text.title.blueFrance.default,
+				},
+			},
+
+			"@media (max-width: 1024px)": {
+				flexDirection: "column",
+				textAlign: "center",
+				gap: fr.spacing("4w"),
+				"& > div": {
+					width: "100%",
+				},
+				"& .fr-artwork-major": {
+					width: "6rem !important",
+					height: "6rem !important",
+				},
+			},
+		},
+		marginTop: fr.spacing("7w"),
+		justifyContent: "center",
+		alignItems: "center",
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("7w"),
+	},
+	heroSection: {
+		gridColumn: "4 / span 6",
+		marginTop: fr.spacing("14w"),
+		textAlign: "center",
+	},
+});
