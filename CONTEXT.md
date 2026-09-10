@@ -137,7 +137,7 @@ Does **not** violate the "visible status is a pure function of two columns" Inva
 
 ### Creation path
 
-One of the three ways a Declaration comes into existence, chosen by the declarant on the creation page (`/dashboard/form`):
+One of the three ways a Declaration comes into existence, chosen by the declarant in the creation modal opened from Mes déclarations (`/dashboard/declarations`):
 
 - **Manuel** (`fromSource: "manual"`) — declarant supplies only a name; a skeleton Declaration is created and completed via the **sequential** [[editing mode|Editing mode]].
 - **Import ARA** (`fromSource: "ara"`) — declarant supplies the URL of an ARA report; its data is fetched from ARA's API and the Declaration is created pre-filled.

@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import NationalIdentityCard from "@codegouvfr/react-dsfr/picto/NationalIdentityCard";
@@ -34,6 +35,7 @@ export default function ContactsPage({
 
 	const [contactModalActions] = useState<LibraryContactModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	const {
 		data: contacts = [],
@@ -43,7 +45,7 @@ export default function ContactsPage({
 
 	const { mutate: deleteContact } = api.library.deleteContact.useMutation({
 		onSuccess: () => utils.library.listContacts.invalidate(),
-		onError: (e) => alert(e.message),
+		onError: (e) => setErrorMessage(e.message),
 	});
 
 	const confirmDelete = useCallback(
@@ -139,6 +141,15 @@ export default function ContactsPage({
 			/>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
+					{errorMessage && (
+						<Alert
+							small
+							severity="error"
+							description={errorMessage}
+							closable
+							onClose={() => setErrorMessage(null)}
+						/>
+					)}
 					{isLoading || isFetching ? (
 						<Loader />
 					) : contacts.length === 0 ? (

@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
@@ -30,6 +31,7 @@ export default function SchemasPage({
 
 	const [schemaModalActions] = useState<LibrarySchemaModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	const {
 		data: schemas = [],
@@ -39,7 +41,7 @@ export default function SchemasPage({
 
 	const { mutate: deleteSchema } = api.library.deleteSchema.useMutation({
 		onSuccess: () => utils.library.listSchemas.invalidate(),
-		onError: (e) => alert(e.message),
+		onError: (e) => setErrorMessage(e.message),
 	});
 
 	const confirmDelete = (schema: Schema) =>
@@ -83,6 +85,15 @@ export default function SchemasPage({
 			/>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
+					{errorMessage && (
+						<Alert
+							small
+							severity="error"
+							description={errorMessage}
+							closable
+							onClose={() => setErrorMessage(null)}
+						/>
+					)}
 					{isLoading || isFetching ? (
 						<Loader />
 					) : schemas.length === 0 ? (

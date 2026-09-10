@@ -45,7 +45,6 @@ const NAVIGATION = [
 	},
 ];
 
-// The active tab is the longest nav href that prefixes the pathname.
 const getActiveHref = (pathname: string) =>
 	NAVIGATION.map((item) => item.href)
 		.filter((href) => pathname === href || pathname.startsWith(`${href}/`))

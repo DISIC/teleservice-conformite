@@ -20,7 +20,6 @@ export interface LibraryProps {
 	librarySchemas: Schema[];
 }
 
-/** Session + the caller's entity for pages that only need to know who is browsing. */
 export async function loadEntityForPage(context: GetServerSidePropsContext) {
 	const [payload, session] = await Promise.all([
 		getPayload({ config }),
