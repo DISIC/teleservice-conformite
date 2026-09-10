@@ -35,11 +35,12 @@ type AuditSubSectionMeta = {
 // `isRealised` has no default: `null` means the declarant has not answered yet.
 const isAuditMissing = (d: PopulatedDeclaration) => d.audit?.isRealised == null;
 
-// A non-realised audit has no slice to complete: these Sub-sections are inert.
+// Only a realised audit has slices to complete: until the declarant answers
+// "réalisé", these Sub-sections stay unflagged.
 const realisedSubSectionToComplete =
 	(hasData: (d: PopulatedDeclaration) => boolean) =>
 	(d: PopulatedDeclaration) =>
-		d.audit?.isRealised !== false && (isAuditMissing(d) || !hasData(d));
+		d.audit?.isRealised === true && !hasData(d);
 
 export const AUDIT_SUB_SECTIONS: Record<
 	AuditSubSectionSlug,

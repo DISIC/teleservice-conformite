@@ -10,6 +10,7 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { SECTION_BADGE } from "~/domain/declaration/state";
 import {
 	isAuditSubSection,
+	isAuditToComplete,
 	isAuditToVerify,
 	isSectionToComplete,
 	isSectionToVerify,
@@ -27,7 +28,6 @@ type SideMenuProps = {
 export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	const { classes } = useStyles();
 	const declarationId = declaration.id;
-	const auditMissing = !declaration.audit;
 	const isAuditCurrent = isAuditSubSection(currentSection);
 	const visibleAuditSubSections = SECTION_SLUGS.filter(isAuditSubSection);
 
@@ -81,7 +81,7 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 		sectionItem("infos"),
 		{
 			text: renderLabel("Audit", {
-				toComplete: auditMissing,
+				toComplete: isAuditToComplete(declaration),
 				toVerify: isAuditToVerify(declaration),
 			}),
 			linkProps: {

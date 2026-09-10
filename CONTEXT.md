@@ -100,7 +100,7 @@ The `isAuditRealised` boolean on the Declaration's `audit` group. When `false`, 
 
 Status badges shown on `SideMenu` items (and historically on the Démarche page tiles):
 
-- **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit Sub-sections, computed per-slice (e.g. an empty `usedTools` or `testEnvironments` list for Outils).
+- **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit, `Réalisation de l'audit` is flagged until the realisation question is answered; the other Sub-sections are flagged per-slice (e.g. an empty `usedTools` or `testEnvironments` list for Outils) **only once the audit is declared realised** — before that answer they stay quiet. The Audit parent is flagged when any of its Sub-sections is.
 - **À vérifier** — the Section's `toVerify` flag is `true`, set when content was AI-generated and needs human review. Tracked at Section level only; not fanned out to Sub-sections.
 - **Modifié** — _(future)_ a Section changed since the last publish. The badge **variant** exists in `SECTION_BADGE` but the per-section diff against `publishedContent` is not yet implemented; only [[declaration-state|Declaration state]] currently surfaces "Modifié", at the declaration level.
 
