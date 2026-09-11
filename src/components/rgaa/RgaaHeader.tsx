@@ -1,6 +1,7 @@
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Header } from "@codegouvfr/react-dsfr/Header";
+import Notice from "@codegouvfr/react-dsfr/Notice";
 import type { MainNavigationProps } from "@codegouvfr/react-dsfr/MainNavigation";
 import { useRouter } from "next/router";
 import { tss } from "tss-react";
@@ -165,54 +166,67 @@ export default function RgaaHeader() {
 	});
 
 	return (
-		<Header
-			brandTop={
-				<>
-					RÉPUBLIQUE
-					<br />
-					FRANÇAISE
-				</>
-			}
-			homeLinkProps={{
-				href: "/beta/rgaa5",
-				title: "Accueil - RGAA 5",
-			}}
-			quickAccessItems={[
-				<Button
-					key="publish-declaration"
-					iconId="ri-share-box-line"
-					iconPosition="right"
-					linkProps={{
-						href: "/",
-					}}
-					priority="tertiary"
-				>
-					Publier une déclaration
-				</Button>,
-				<Button
-					key="rgaa-4"
-					iconId="ri-share-box-line"
-					iconPosition="right"
-					linkProps={{
-						href: "/",
-					}}
-					priority="tertiary"
-				>
-					RGAA4 - Version en vigueur
-				</Button>,
-			]}
-			navigation={navigation}
-			serviceTitle={
-				<>
-					RGAA - Version 5{" "}
-					<Badge as="span" noIcon small severity="info">
-						BETA
-					</Badge>
-				</>
-			}
-			serviceTagline="Référentiel général d’amélioration de l’accessibilité"
-			className={classes.main}
-		/>
+		<>
+			<Header
+				brandTop={
+					<>
+						RÉPUBLIQUE
+						<br />
+						FRANÇAISE
+					</>
+				}
+				homeLinkProps={{
+					href: "/beta/rgaa5",
+					title: "Accueil - RGAA 5",
+				}}
+				quickAccessItems={[
+					<Button
+						key="publish-declaration"
+						iconId="ri-share-box-line"
+						iconPosition="right"
+						linkProps={{
+							href: "/",
+						}}
+						priority="tertiary"
+					>
+						Publier une déclaration
+					</Button>,
+					<Button
+						key="rgaa-4"
+						iconId="ri-share-box-line"
+						iconPosition="right"
+						linkProps={{
+							href: "/",
+						}}
+						priority="tertiary"
+					>
+						RGAA4 - Version en vigueur
+					</Button>,
+				]}
+				navigation={navigation}
+				serviceTitle={
+					<>
+						RGAA - Version 5{" "}
+						<Badge as="span" noIcon small severity="info">
+							BETA
+						</Badge>
+					</>
+				}
+				serviceTagline="Référentiel général d’amélioration de l’accessibilité"
+				className={classes.main}
+			/>
+			<Notice
+				title="Version bêta"
+				description="La version 5 du RGAA n’est pas encore encore applicable."
+				severity="info"
+				link={{
+					linkProps: {
+						href: "#",
+					},
+					text: "Voir la version en vigueur",
+				}}
+			/>
+		</>
 	);
 }
 
