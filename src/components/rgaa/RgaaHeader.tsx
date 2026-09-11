@@ -36,12 +36,18 @@ const NAVIGATION: NavEntry[] = [
 			{
 				categoryMainLink: {
 					text: "Critères et tests",
-					href: "/methode",
+					href: "/beta/rgaa5/methode",
 				},
 				links: [
-					{ text: "Référentiel web", href: "/rgaa5/web" },
-					{ text: "Référentiel bureautique", href: "/rgaa5/bureautique" },
-					{ text: "Référentiel application mobile", href: "/rgaa5/mobile" },
+					{ text: "Référentiel web", href: "/beta/rgaa5/rgaa/web" },
+					{
+						text: "Référentiel bureautique",
+						href: "/beta/rgaa5/rgaa//bureautique",
+					},
+					{
+						text: "Référentiel application mobile",
+						href: "/beta/rgaa5/rgaa//mobile",
+					},
 				],
 			},
 		],
@@ -57,9 +63,9 @@ const NAVIGATION: NavEntry[] = [
 					text: "Documentation",
 				},
 				links: [
-					{ text: "Référentiel web", href: "/rgaa5" },
-					{ text: "Référentiel bureautique", href: "/rgaa5" },
-					{ text: "Référentiel application mobile", href: "/rgaa5" },
+					{ text: "Référentiel web", href: "/beta/rgaa5" },
+					{ text: "Référentiel bureautique", href: "/beta/rgaa5" },
+					{ text: "Référentiel application mobile", href: "/beta/rgaa5" },
 				],
 			},
 			{
@@ -67,8 +73,8 @@ const NAVIGATION: NavEntry[] = [
 					text: "Outils",
 				},
 				links: [
-					{ text: "Ara - Outil d’audit d’accessibilité", href: "/rgaa5" },
-					{ text: "Kit d’audit", href: "/rgaa5" },
+					{ text: "Ara - Outil d’audit d’accessibilité", href: "/beta/rgaa5" },
+					{ text: "Kit d’audit", href: "/beta/rgaa5" },
 				],
 			},
 			{
@@ -76,9 +82,9 @@ const NAVIGATION: NavEntry[] = [
 					text: "Notes de version",
 				},
 				links: [
-					{ text: "Note de version du RGAA 5", href: "/rgaa5" },
-					{ text: "Note de version du RGAA 4.12", href: "/rgaa5" },
-					{ text: "Notes de révision du RGAA 4.1", href: "/rgaa5" },
+					{ text: "Note de version du RGAA 5", href: "/beta/rgaa5" },
+					{ text: "Note de version du RGAA 4.12", href: "/beta/rgaa5" },
+					{ text: "Notes de révision du RGAA 4.1", href: "/beta/rgaa5" },
 				],
 			},
 		],
