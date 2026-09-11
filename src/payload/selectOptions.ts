@@ -59,7 +59,7 @@ export const mobilePlatformOptions = [
 
 export const declarationStatusOptions = [
 	{
-		label: "Publié",
+		label: "Publiée",
 		value: "published",
 	},
 

@@ -3,6 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-06-18
 - **Supersedes (in part):** ADR-0003 — the sequential footer's "Enregistrer et suivant" save-on-advance and per-section save-time validation are retired here. ADR-0003's mode split (sequential vs. standalone) and the declaration-wide gate concept survive.
+- **Amended 2026-09-10:** the invariant cited in Consequences is now "visible status is a pure function of `publishedContent` alone" — Status became binary; the `status` column only feeds the Modifiée Declaration state. The consequence itself stands.
 - **Amended 2026-06-26:** the onBlur/onChange split in Decision §1 ("Autosave, not save-on-advance") and §5 ("Per-field validation display is onBlur") was reversed to a **uniform debounced-onChange** model. Autosave watches reactive form values and commits one debounced save after edits settle — there is no per-field-type blur path. Validation runs on `onChange`, with display gated by `isTouched` so a pristine field stays quiet until first edited. The debounce supplies the "settle before committing" onBlur was meant to give, while uniform onChange drops per-field-type blur wiring and clears a field's error live as it is corrected. The rest of this ADR (defer-to-gate, lenient partials, plain "Suivant", async-gated publish) stands.
 
 ## Context
@@ -37,7 +38,7 @@ This collides with the persistence layer. Three of the four section mutations re
 
 **Harder / committed to:**
 
-- **Brouillon rows can be incomplete at the DB level.** Any consumer of a draft declaration must treat section data as possibly-partial; completeness is guaranteed only after the gate passes. The "visible status is a pure function of two columns" invariant is unaffected.
+- **Brouillon rows can be incomplete at the DB level.** Any consumer of a draft declaration must treat section data as possibly-partial; completeness is guaranteed only after the gate passes. The "visible status is a pure function of the row" invariant is unaffected.
 - **Autosave failures are the only data-loss surface.** The DSFR `Alert` on failure is load-bearing, not decorative.
 - **The publish action is now async-gated** on in-flight saves; it must track pending autosaves and flush the focused dirty field before validating, or it validates stale state.
 - **Per-section relaxation is not uniform.** Infos keeps two Payload-required fields; a reader must not assume "all sections accept any partial."

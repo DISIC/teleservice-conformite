@@ -1,20 +1,15 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import Badge from "@codegouvfr/react-dsfr/Badge";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import Tag from "@codegouvfr/react-dsfr/Tag";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
-import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
+import { useDeclarationColumns } from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
 import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
 import type { Entity } from "~/payload/payload-types";
-import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { copyToClipboard } from "~/lib/clipboard";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
@@ -25,13 +20,18 @@ interface EntityDeclarationsPageProps {
 
 const NUMBER_PER_PAGE = 10;
 
-const columnHelper = createColumnHelper<PopulatedDeclaration>();
-
 export default function EntityDeclarationsPage({
 	entity,
 	declarations,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
+	const {
+		nameColumn,
+		appKindColumn,
+		statusColumn,
+		conformityRateColumn,
+		publicActionsColumn,
+	} = useDeclarationColumns();
 
 	const alertRef = useRef<HTMLDivElement>(null);
 	const [alertMessage, setAlertMessage] = useState<string | null>(null);
@@ -50,69 +50,20 @@ export default function EntityDeclarationsPage({
 
 	const columns = useMemo(
 		() => [
-			columnHelper.accessor("name", {
-				header: "Nom de la déclaration",
-				meta: { styles: { maxWidth: 240 } },
-				cell: (info) => <span className={classes.name}>{info.getValue()}</span>,
-			}),
-			columnHelper.accessor("app_kind", {
-				header: "Type",
-				cell: (info) => (
-					<Tag small>
-						{appKindOptions.find((option) => option.value === info.getValue())
-							?.label ?? "—"}
-					</Tag>
-				),
-			}),
-			columnHelper.accessor("status", {
-				header: "Statut",
-				cell: (info) => (
-					<Badge
-						noIcon
-						small
-						severity={info.getValue() === "published" ? "success" : undefined}
-					>
-						{info.getValue() === "published" ? "Publié" : "Brouillon"}
-					</Badge>
-				),
-			}),
-			columnHelper.display({
-				id: "actions",
-				cell: (info) => {
-					const declaration = info.row.original;
-					if (declaration.status !== "published") return null;
-					const publicUrl = `/declarations/${declaration.id}/publish`;
-					return (
-						<div className={classes.actions}>
-							<Button
-								iconId="fr-icon-link"
-								priority="secondary"
-								size="small"
-								title={`Copier le lien public de la déclaration ${declaration.name}`}
-								onClick={() =>
-									copyToClipboard(
-										`${process.env.NEXT_PUBLIC_FRONT_URL}${publicUrl}`,
-										() => onCopySuccess(declaration.name || ""),
-									)
-								}
-							/>
-							<Button
-								iconId="fr-icon-eye-line"
-								priority="secondary"
-								size="small"
-								title={`Voir la déclaration ${declaration.name}, nouvelle fenêtre`}
-								linkProps={{
-									href: publicUrl,
-									target: "_blank",
-									rel: "noopener noreferrer",
-								}}
-							/>
-						</div>
-					);
-				},
-			}),
+			nameColumn({ rowLink: false }),
+			appKindColumn,
+			statusColumn,
+			conformityRateColumn,
+			publicActionsColumn({ onCopySuccess, withPreview: true }),
 		],
-		[classes.actions, classes.name, onCopySuccess],
+		[
+			nameColumn,
+			appKindColumn,
+			statusColumn,
+			conformityRateColumn,
+			publicActionsColumn,
+			onCopySuccess,
+		],
 	);
 
 	return (
@@ -171,14 +122,6 @@ const useStyles = tss.withName(EntityDeclarationsPage.name).create({
 		display: "flex",
 		"& div": { width: "100%" },
 		animation: "fadeIn 0.25s ease-in-out",
-	},
-	name: {
-		fontWeight: 500,
-	},
-	actions: {
-		display: "flex",
-		justifyContent: "flex-end",
-		gap: fr.spacing("2v"),
 	},
 });
 

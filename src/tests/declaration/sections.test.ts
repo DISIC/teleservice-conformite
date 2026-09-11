@@ -3,6 +3,7 @@ import { completeDeclaration } from "./declaration.fixture";
 import {
 	DEFAULT_SECTION,
 	getPrevNextSections,
+	isAuditToComplete,
 	isSectionToComplete,
 	parseSectionFromQuery,
 	SECTION_SLUGS,
@@ -79,12 +80,29 @@ describe("isSectionToComplete (À compléter badges)", () => {
 		);
 	});
 
-	it("keeps realised-only Sub-sections inert while the audit is not realised", () => {
-		const notRealised = completeDeclaration({
-			audit: { isRealised: false },
-		} as never);
-		expect(isSectionToComplete(notRealised, "audit-outils")).toBe(false);
-		expect(isSectionToComplete(notRealised, "audit-contenus")).toBe(false);
+	it("flags the Audit parent when any Sub-section is À compléter", () => {
+		expect(isAuditToComplete(completeDeclaration())).toBe(false);
+		expect(isAuditToComplete(completeDeclaration({ audit: {} } as never))).toBe(
+			true,
+		);
+		expect(
+			isAuditToComplete(
+				completeDeclaration({ audit: { isRealised: true } } as never),
+			),
+		).toBe(true);
+		expect(
+			isAuditToComplete(
+				completeDeclaration({ audit: { isRealised: false } } as never),
+			),
+		).toBe(false);
+	});
+
+	it("keeps realised-only Sub-sections inert until the audit is declared realised", () => {
+		for (const audit of [{}, { isRealised: false }]) {
+			const d = completeDeclaration({ audit } as never);
+			expect(isSectionToComplete(d, "audit-outils")).toBe(false);
+			expect(isSectionToComplete(d, "audit-contenus")).toBe(false);
+		}
 	});
 
 	it("flags an empty realised Sub-section slice", () => {

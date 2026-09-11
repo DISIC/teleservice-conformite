@@ -5,8 +5,8 @@ import {
 } from "~/domain/declaration/published/snapshot";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
-/** Three visual states derived from `status` + `publishedContent`. */
-export type Status = "draft" | "modified" | "published";
+/** Brouillon until the first publish action, Publiée forever after — even while modified. */
+export type Status = "draft" | "published";
 
 /**
  * How the declaration details page presents its Sections for editing. Derived
@@ -20,10 +20,9 @@ export function getEditingMode(status: Status): EditingMode {
 }
 
 export function getDeclarationStatus(
-	declaration: Pick<Declaration, "status" | "publishedContent">,
+	declaration: Pick<Declaration, "publishedContent">,
 ): Status {
-	if (declaration.status === "published") return "published";
-	return declaration.publishedContent ? "modified" : "draft";
+	return declaration.publishedContent ? "published" : "draft";
 }
 
 /** Returns `false` when no snapshot exists — a draft has nothing to differ from. */

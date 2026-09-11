@@ -4,7 +4,10 @@ import { tss } from "tss-react";
 import { appKindOptions } from "~/payload/selectOptions";
 import { appKindPictograms } from "~/components/declaration/appKindPictograms";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { getConformityStatus } from "~/domain/declaration/conformity";
+import {
+	formatRate,
+	getConformityStatus,
+} from "~/domain/declaration/conformity";
 
 type StatsCardsProps = {
 	declaration: PopulatedDeclaration;
@@ -13,10 +16,6 @@ type StatsCardsProps = {
 function formatDate(value: string | null | undefined): string {
 	if (!value) return "—";
 	return new Date(value).toLocaleDateString("fr-FR");
-}
-
-function formatRate(rate: number): string {
-	return `${rate.toString().replace(".", ",")} %`;
 }
 
 function getAppKindOption(value: PopulatedDeclaration["app_kind"]) {

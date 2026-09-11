@@ -169,6 +169,13 @@ export function isSectionToVerify(
 	return SECTIONS[slug].isToVerify(declaration);
 }
 
+/** The Audit parent is À compléter as soon as one of its Sub-sections is. */
+export function isAuditToComplete(declaration: PopulatedDeclaration): boolean {
+	return AUDIT_SUB_SECTION_SLUGS.some((slug) =>
+		SECTIONS[slug].isToComplete(declaration),
+	);
+}
+
 export function isAuditToVerify(declaration: PopulatedDeclaration): boolean {
 	return declaration.audit?.toVerify === true;
 }

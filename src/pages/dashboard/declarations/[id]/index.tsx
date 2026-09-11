@@ -1,6 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
@@ -14,6 +13,7 @@ import { BackButton } from "~/components/ui/BackButton";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
 import { StateNotice } from "~/components/declaration/StateNotice";
+import { StatusBadge } from "~/components/declaration/StatusBadge";
 import {
 	getDeclarationStatus,
 	getEditingMode,
@@ -53,7 +53,6 @@ export default function DeclarationPage({
 	const currentSection = parseSectionFromQuery(sectionQuery);
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
-	const hasPublishedDeclaration = !!declaration?.publishedContent;
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertDetails, setAlertDetails] = useState<{
 		title?: ReactNode;
@@ -65,6 +64,7 @@ export default function DeclarationPage({
 
 	const status = getDeclarationStatus(declaration);
 	const editingMode = getEditingMode(status);
+	const isPublished = status === "published";
 
 	// Armed by the terminal Section's "Prévisualiser et publier"; once armed, the
 	// error summary re-derives from the declaration on every save.
@@ -164,18 +164,10 @@ export default function DeclarationPage({
 						Retourner à la liste de mes déclarations
 					</BackButton>
 				}
-				badge={
-					<Badge
-						noIcon
-						small
-						severity={status !== "draft" ? "success" : undefined}
-					>
-						{status !== "draft" ? "Publié" : "Brouillon"}
-					</Badge>
-				}
+				badge={<StatusBadge declaration={declaration} />}
 				actions={
 					<>
-						{hasPublishedDeclaration && (
+						{isPublished && (
 							<>
 								<Button
 									priority="tertiary"

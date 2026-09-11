@@ -1,15 +1,12 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import Tag from "@codegouvfr/react-dsfr/Tag";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
-import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
-import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
+import { useDeclarationColumns } from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
 import {
 	CreateDeclarationModal,
@@ -17,11 +14,8 @@ import {
 } from "~/components/modal/CreateDeclarationModal";
 import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
-import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { copyToClipboard } from "~/lib/clipboard";
 import { loadEntityForPage } from "~/lib/server-guards";
-import { getConformityStatus } from "~/domain/declaration/conformity";
 import type { Entity } from "~/payload/payload-types";
 
 interface DeclarationsPageProps {
@@ -31,86 +25,6 @@ interface DeclarationsPageProps {
 
 const NUMBER_PER_PAGE = 10;
 
-const columnHelper = createColumnHelper<PopulatedDeclaration>();
-
-const defaultColumns = [
-	columnHelper.accessor("app_kind", {
-		header: "Type",
-		cell: (info) => (
-			<Tag small>
-				{appKindOptions.find((option) => option.value === info.getValue())
-					?.label ?? "—"}
-			</Tag>
-		),
-	}),
-	columnHelper.accessor("status", {
-		header: "Statut",
-		cell: (info) => (
-			<Badge
-				noIcon
-				small
-				severity={info.getValue() === "published" ? "success" : undefined}
-			>
-				{info.getValue() === "published" ? "Publié" : "Brouillon"}
-			</Badge>
-		),
-	}),
-	columnHelper.accessor("updatedAt", {
-		header: "Dernière mise à jour",
-		cell: (info) => {
-			const date = new Date(info.getValue());
-			return date.toLocaleDateString("fr-FR");
-		},
-	}),
-	columnHelper.accessor((row) => row.audit?.rate, {
-		header: "Taux de conformité",
-		cell: (info) => {
-			const rate = info.getValue();
-
-			if (rate === undefined || rate === null) return "-";
-
-			const conformityStatus = getConformityStatus(rate);
-
-			return (
-				<Tooltip kind="hover" title={conformityStatus.label}>
-					<Badge noIcon small severity={conformityStatus.severity}>
-						{`${rate}%`}
-					</Badge>
-				</Tooltip>
-			);
-		},
-	}),
-];
-
-const buildActionsColumn = (onCopySuccess: (declarationName: string) => void) =>
-	columnHelper.display({
-		id: "actions",
-		cell: (info) => {
-			const declaration = info.row.original;
-			if (declaration.status !== "published") return null;
-
-			return (
-				<div style={{ display: "flex", justifyContent: "flex-end" }}>
-					<Button
-						iconId="fr-icon-link"
-						priority="secondary"
-						size="small"
-						title={`Copier le lien public de la déclaration ${declaration.name}`}
-						onClick={() =>
-							copyToClipboard(
-								`${process.env.NEXT_PUBLIC_FRONT_URL}/declarations/${declaration.id}/publish`,
-								() => onCopySuccess(declaration.name || ""),
-							)
-						}
-						nativeButtonProps={{
-							"aria-label": `Copier le lien public de la déclaration ${declaration.name}`,
-						}}
-					/>
-				</div>
-			);
-		},
-	});
-
 type AlertDetailsProps = {
 	description?: string;
 	severity: "info" | "success" | "warning" | "error";
@@ -119,6 +33,13 @@ type AlertDetailsProps = {
 export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { declarations, entity } = props;
 	const { classes } = useStyles();
+	const {
+		nameColumn,
+		appKindColumn,
+		statusColumn,
+		conformityRateColumn,
+		publicActionsColumn,
+	} = useDeclarationColumns();
 	const [createModalActions] = useState<CreateDeclarationModalActions>({});
 	const alertRef = useRef<HTMLDivElement>(null);
 	const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -146,17 +67,20 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 
 	const columns = useMemo(
 		() => [
-			columnHelper.accessor("name", {
-				header: "Nom de la déclaration",
-				meta: { styles: { maxWidth: 240 }, rowLink: true },
-				cell: (info) => (
-					<span className={classes.nameLink}>{info.getValue()}</span>
-				),
-			}),
-			...defaultColumns,
-			buildActionsColumn(onCopySuccess),
+			nameColumn({ rowLink: true }),
+			appKindColumn,
+			statusColumn,
+			conformityRateColumn,
+			publicActionsColumn({ onCopySuccess, withPreview: false }),
 		],
-		[onCopySuccess, classes.nameLink],
+		[
+			nameColumn,
+			appKindColumn,
+			statusColumn,
+			conformityRateColumn,
+			publicActionsColumn,
+			onCopySuccess,
+		],
 	);
 
 	useEffect(() => {
@@ -244,9 +168,6 @@ const useStyles = tss.withName(DeclarationsPage.name).create({
 		},
 		marginBottom: fr.spacing("6v"),
 		animation: "fadeIn 0.25s ease-in-out",
-	},
-	nameLink: {
-		fontWeight: 500,
 	},
 });
 

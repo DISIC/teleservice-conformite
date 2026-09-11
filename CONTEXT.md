@@ -60,31 +60,29 @@ Examples: the **Outils et environnements** Sub-section has two Parts — "Outils
 
 ### Status
 
-The Declaration's publication lifecycle. **Three visual states**, derived from **two database columns**:
+The Declaration's publication lifecycle. **Two values**, derived from the presence of `publishedContent` alone:
 
-| Visual state  | `status`        | `publishedContent`               |
-| ------------- | --------------- | -------------------------------- |
-| **Brouillon** | `"unpublished"` | empty/null                       |
-| **Modifiée**  | `"unpublished"` | non-empty (was published before) |
-| **Publiée**   | `"published"`   | non-empty                        |
+| Status        | `publishedContent`                  |
+| ------------- | ----------------------------------- |
+| **Brouillon** | empty/null — never published        |
+| **Publiée**   | non-empty — published at least once |
 
-`publishedContent` holds the snapshot of the declaration as it appeared when last published. Its presence is what distinguishes a fresh draft from a modified-since-publish declaration.
+`publishedContent` holds the snapshot of the declaration as it appeared when last published. Editing a Publiée Declaration does **not** change its Status: the public page is still live, so the badge on the list and on the details page keeps reading Publiée. Whether the row has drifted from that snapshot is a [[declaration-state|Declaration state]] question (**Modifiée**): the `status` column reads `"unpublished"` over a non-empty snapshot.
 
 Transitions:
 
 - `Brouillon` → **publish action** → `Publiée` (sets `status`, `published_at`, `publishedContent`)
-- `Publiée` → **edit any Section** → `Modifiée` (sets `status="unpublished"`, keeps `publishedContent`)
-- `Modifiée` → **publish action** → `Publiée`
-- `Modifiée` → **`revertToPublished`** → `Publiée` (restores Section content from `publishedContent`)
+- `Publiée` → **edit any Section** → still `Publiée`, now Modifiée (sets `status="unpublished"`, keeps `publishedContent`)
+- Modifiée → **publish action** or **`revertToPublished`** → clean `Publiée` (`status="published"`; revert restores Section content from `publishedContent`)
 
-**Avoid:** "Draft" (use "Brouillon"), "Dirty" (use "Modifiée"). UI badge labels live in `DeclarationStatusBadge`.
+**Avoid:** "Draft" (use "Brouillon"), "Dirty" (use "Modifiée"), treating Modifiée as a third Status. UI badge labels live in `StatusBadge`.
 
 ### Editing mode (sequential / standalone)
 
 How the declaration details page presents its [[section]]s for editing. Derived from [[status]], but a distinct concept — it describes _interaction_, not lifecycle.
 
 - **Sequential** — used while the Declaration is **Brouillon** (never published). The [[section]]s are chained into one guided walkthrough: every section renders permanently editable (no read-only toggle, no per-section Modifier/Annuler/Enregistrer). Edits **autosave** as they happen (silent on success, a DSFR Alert on failure), so a partially-filled section persists and navigation never blocks. The footer is plain "Suivant" section-to-section movement — it neither saves nor validates. The final section (Contact) ends the walkthrough with a completeness gate ("Prévisualiser et publier") that validates _all_ sections against their schemas and surfaces a single, live, page-level error summary (ADR-0006).
-- **Standalone** — used once the Declaration has been published (**Modifiée** or **Publiée**). Each [[section]] is edited on its own via its top-right Modifier → Annuler/Enregistrer toggle, independent of the others (the ADR-0002 model). Footer navigation is plain section-to-section movement.
+- **Standalone** — used once the Declaration has been published (**Publiée**, clean or Modifiée). Each [[section]] is edited on its own via its top-right Modifier → Annuler/Enregistrer toggle, independent of the others (the ADR-0002 model). Footer navigation is plain section-to-section movement.
 
 The two modes select different behaviors of the same `Section` runtime and `sections/Shell`; the active mode is decided once per page load from `status === "Brouillon"`, and `resolveSectionEditing` turns it into the per-Section behaviour (autosave, starts read-only, terminal publish gate).
 
@@ -102,7 +100,7 @@ The `isAuditRealised` boolean on the Declaration's `audit` group. When `false`, 
 
 Status badges shown on `SideMenu` items (and historically on the Démarche page tiles):
 
-- **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit Sub-sections, computed per-slice (e.g. an empty `usedTools` or `testEnvironments` list for Outils).
+- **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit, `Réalisation de l'audit` is flagged until the realisation question is answered; the other Sub-sections are flagged per-slice (e.g. an empty `usedTools` or `testEnvironments` list for Outils) **only once the audit is declared realised** — before that answer they stay quiet. The Audit parent is flagged when any of its Sub-sections is.
 - **À vérifier** — the Section's `toVerify` flag is `true`, set when content was AI-generated and needs human review. Tracked at Section level only; not fanned out to Sub-sections.
 - **Modifié** — _(future)_ a Section changed since the last publish. The badge **variant** exists in `SECTION_BADGE` but the per-section diff against `publishedContent` is not yet implemented; only [[declaration-state|Declaration state]] currently surfaces "Modifié", at the declaration level.
 
@@ -112,24 +110,24 @@ Status badges shown on `SideMenu` items (and historically on the Démarche page 
 
 ### Declaration state
 
-A **derived, presentation-facing** state answering _"what should the declarant do next?"_, surfaced as a single notice card at the top of the [[dashboard editor|Surfaces]]. Distinct from [[status]]: where `Status` is the pure 3-state lifecycle (two DB columns), `DeclarationState` is a **richer** value that folds completeness and AI-verification on top of the lifecycle. The two are not the same axis and must not be conflated.
+A **derived, presentation-facing** state answering _"what should the declarant do next?"_, surfaced as a single notice card at the top of the [[dashboard editor|Surfaces]]. Distinct from [[status]]: where `Status` is the binary lifecycle (snapshot present or not), `DeclarationState` is a **richer** value that folds the Modifiée split, completeness and AI-verification on top of it. The two are not the same axis and must not be conflated.
 
-Computed by `getDeclarationState(declaration)` as a switch on [[status]], with the editable branches sub-split by completeness:
+Computed by `getDeclarationState(declaration)`: [[status]] decides first, the `status` column splits Publiée into clean / Modifiée, then the editable branches sub-split by completeness:
 
-| `DeclarationState`     | Reached when                                            | Maps to [[status]] |
-| ---------------------- | ------------------------------------------------------- | ------------------ |
-| `incomplete`           | draft **and** `validateDeclaration()` returns errors    | Brouillon          |
-| `to-verify`            | draft, complete, has unverified AI content (`toVerify`) | Brouillon          |
-| `ready`                | draft, complete, no AI flag                             | Brouillon          |
-| `published-incomplete` | modified **and** `validateDeclaration()` returns errors | Modifiée           |
-| `published-modified`   | modified, complete                                      | Modifiée           |
-| `null` (no notice)     | clean published, unchanged                              | Publiée            |
+| `DeclarationState`     | Reached when                                             | Maps to [[status]] |
+| ---------------------- | -------------------------------------------------------- | ------------------ |
+| `incomplete`           | draft **and** `validateDeclaration()` returns errors     | Brouillon          |
+| `to-verify`            | draft, complete, has unverified AI content (`toVerify`)  | Brouillon          |
+| `ready`                | draft, complete, no AI flag                              | Brouillon          |
+| `published-incomplete` | Publiée, modified **and** `validateDeclaration()` errors | Publiée (Modifiée) |
+| `published-modified`   | Publiée, modified, complete                              | Publiée (Modifiée) |
+| `null` (no notice)     | Publiée, unchanged since the last publish                | Publiée            |
 
-**Key rule (v2):** the lifecycle decides first (Brouillon / Modifiée / Publiée), then completeness and AI-verification sub-split the editable branches **symmetrically**. A published Declaration **can** become incomplete — removing its Contact or Schema moves it to Modifiée with that Section flagged À compléter (`published-incomplete`), and publishing is blocked until completed. The public snapshot is unaffected. _(Supersedes the retired v1 rule "incomplete is Brouillon-only".)_
+**Key rule (v2):** the lifecycle decides first (Brouillon / Publiée, then clean or Modifiée), then completeness and AI-verification sub-split the editable branches **symmetrically**. A published Declaration **can** become incomplete — removing its Contact or Schema moves it to Modifiée with that Section flagged À compléter (`published-incomplete`), and publishing is blocked until completed. The public snapshot is unaffected. _(Supersedes the retired v1 rule "incomplete is Brouillon-only".)_
 
 `to-verify` becomes reachable once the IA import [[creation-path|Creation path]] lands — it creates Declarations with `toVerify` Sections. ARA imports are structured data and are not flagged.
 
-Does **not** violate the "visible status is a pure function of two columns" Invariant: that invariant governs `Status`, which is unchanged. `DeclarationState` is a separate concept layered above it.
+Does **not** violate the "visible status is a pure function of the row" Invariant: that invariant governs `Status`, which is unchanged. `DeclarationState` is a separate concept layered above it.
 
 **Avoid:** "StateDeclaration" (reversed word order), "Readiness" (rejected name), reusing "Status" for this — they are different concepts.
 
@@ -244,7 +242,7 @@ Layered, not feature-foldered. One predictable layer per concern:
 
 ## Invariants
 
-- A Declaration's visible status is a pure function of `status` + `publishedContent`. Don't introduce a third source of truth.
+- A Declaration's visible [[status|Status]] is a pure function of `publishedContent` alone; Modifiée is a [[declaration-state|Declaration state]] read from the `status` column. Don't introduce a third source of truth.
 - A Declaration has exactly one audit — the `audit` group on its row (structural since ADR-0004; v1's "at most one `audits` row" invariant is subsumed). The four Audit [[sub-section]]s are UI groupings over that single group.
 - When `audit.isRealised === false`, fields belonging to the three non-Réalisation Sub-sections are not required and should not be surfaced for editing.
 - `toVerify` is per-Section, not per-Sub-section.

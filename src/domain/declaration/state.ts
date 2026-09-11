@@ -44,27 +44,21 @@ function hasUnverifiedAiContent(declaration: PopulatedDeclaration): boolean {
 	);
 }
 
-/**
- * Derives the {@link DeclarationState} as a switch on {@link Status}, sub-splitting
- * the editable branches (draft / modified) on completeness then AI-verification.
- * The modified branch can be incomplete too: removing a Contact or Schema from a
- * published declaration yields `published-incomplete`.
- */
+// Lifecycle first, then completeness and AI-verification split the editable
+// branches; a published declaration can turn incomplete when a Section is removed.
 export function getDeclarationState(
 	declaration: PopulatedDeclaration,
 ): DeclarationState | null {
-	switch (getDeclarationStatus(declaration)) {
-		case "published":
-			return null;
-		case "modified":
-			if (validateDeclaration(declaration).length > 0)
-				return "published-incomplete";
-			return "published-modified";
-		case "draft":
-			if (hasUnverifiedAiContent(declaration)) return "to-verify";
-			if (validateDeclaration(declaration).length > 0) return "incomplete";
-			return "ready";
+	if (getDeclarationStatus(declaration) === "draft") {
+		if (hasUnverifiedAiContent(declaration)) return "to-verify";
+		if (validateDeclaration(declaration).length > 0) return "incomplete";
+		return "ready";
 	}
+	// Editing a Publiée row flips its column back to "unpublished" until republished.
+	if (declaration.status === "published") return null;
+	if (validateDeclaration(declaration).length > 0)
+		return "published-incomplete";
+	return "published-modified";
 }
 
 /**
