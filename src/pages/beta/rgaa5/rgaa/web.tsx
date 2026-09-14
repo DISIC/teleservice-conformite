@@ -62,6 +62,5 @@ export const getStaticProps: GetStaticProps<
 const useStyles = tss.withName(WebReferencePage.name).create({
 	section: {
 		paddingBlock: fr.spacing("8w"),
-		maxWidth: "50rem",
 	},
 });

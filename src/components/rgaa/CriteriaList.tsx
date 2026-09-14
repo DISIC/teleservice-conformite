@@ -4,38 +4,10 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import { fr } from "@codegouvfr/react-dsfr";
 import TopicSidebarList from "./TopicSidebarList";
 import { getAllTopicNames } from "./helpers/topics";
-
-export type Test = {
-	number: number;
-	label: string;
-	conditions?: string[];
-};
-
-export type Criterium = {
-	number: number;
-	title: string;
-	tests: Test[];
-};
-
-export type Criteria = {
-	criterium: Criterium;
-};
-
-export type Topic = {
-	topic: string;
-	number: number;
-	criteria: Criteria[];
-};
-
-export type Criterias = {
-	reference: string;
-	topics: Topic[];
-};
-
-interface CriteriaListProps {
-	reference: "web" | "mobile" | "bureautique";
-	criterias?: Criterias;
-}
+import Button from "@codegouvfr/react-dsfr/Button";
+import { useState } from "react";
+import AccordionList from "./AccordionList";
+import type { Criterias } from "./helpers/topics";
 
 const colors = {
 	web: {
@@ -52,10 +24,16 @@ const colors = {
 	},
 };
 
+interface CriteriaListProps {
+	reference: "web" | "mobile" | "bureautique";
+	criterias?: Criterias;
+}
+
 export default function CriteriaList({
 	reference,
 	criterias = exampleCriterias,
 }: CriteriaListProps) {
+	const [expanded, setExpanded] = useState(true);
 	const { classes } = useStyles(colors[reference]);
 
 	const allTopics = getAllTopicNames(criterias);
@@ -66,7 +44,20 @@ export default function CriteriaList({
 				<Badge className={classes.badge}>{criterias.reference}</Badge>
 				<TopicSidebarList topics={allTopics} />
 			</div>
-			{/* <div><AccordionList /></div> */}
+			<div className={classes.rightContent}>
+				<Button
+					className={classes.toggleButton}
+					iconId={
+						expanded ? "ri-arrow-drop-down-line" : "ri-arrow-drop-up-line"
+					}
+					iconPosition="right"
+					onClick={() => setExpanded((value) => !value)}
+					priority="secondary"
+				>
+					{expanded ? "Tout déplier" : "Tout replier"}
+				</Button>
+				<AccordionList reference={reference} criterias={criterias} />
+			</div>
 		</div>
 	);
 }
@@ -77,7 +68,8 @@ const useStyles = tss
 	.create(({ backgroundColor, color }) => ({
 		grid: {
 			display: "grid",
-			gridTemplateColumns: "auto 1fr",
+			gridTemplateColumns: "1fr 2fr",
+			gap: fr.spacing("4w"),
 		},
 		badge: {
 			backgroundColor,
@@ -87,5 +79,13 @@ const useStyles = tss
 			display: "flex",
 			flexDirection: "column",
 			gap: fr.spacing("3w"),
+		},
+		rightContent: {
+			display: "flex",
+			flexDirection: "column",
+			gap: fr.spacing("5w"),
+		},
+		toggleButton: {
+			alignSelf: "flex-end",
 		},
 	}));

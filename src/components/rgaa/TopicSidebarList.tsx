@@ -3,26 +3,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
-
-const DEFAULT_TOPICS = [
-	"Images",
-	"Cadres",
-	"Couleurs",
-	"Multimédia",
-	"Tableaux",
-	"Liens",
-	"Scripts et composants interactifs",
-	"Éléments obligatoires",
-	"Structuration de l’information",
-	"Présentation de l’information",
-	"Formulaires",
-	"Navigation",
-	"Consultation",
-	"Documentation et fonctionnalités d’accessibilité",
-	"Outils d’édition",
-	"Services d’assistance",
-	"Communication en temps réel",
-];
+import { DEFAULT_TOPICS } from "./helpers/topics";
 
 interface TopicSidebarListProps {
 	topics: string[];
@@ -78,9 +59,7 @@ const useStyles = tss.withName(TopicSidebarList.name).create({
 		paddingLeft: 0,
 	},
 	item: {
-		display: "flex",
-		alignItems: "center",
-		gap: fr.spacing("3v"),
+		display: "inline",
 		padding: `${fr.spacing("3v")} 0`,
 	},
 	link: {
@@ -94,6 +73,7 @@ const useStyles = tss.withName(TopicSidebarList.name).create({
 		color: fr.colors.decisions.text.default.grey.default,
 		borderLeft: "2px solid transparent",
 		paddingLeft: fr.spacing("2v"),
+		marginRight: fr.spacing("2v"),
 
 		"&[aria-current='page']": {
 			color: fr.colors.decisions.text.active.blueFrance.default,
