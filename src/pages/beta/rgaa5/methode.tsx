@@ -1,62 +1,15 @@
-import Badge from "@codegouvfr/react-dsfr/Badge";
-import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Card from "@codegouvfr/react-dsfr/Card";
 import { fr } from "@codegouvfr/react-dsfr";
-import Application from "@codegouvfr/react-dsfr/picto/Application";
-import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
-import Search from "@codegouvfr/react-dsfr/picto/Search";
-import TechnicalError from "@codegouvfr/react-dsfr/picto/TechnicalError";
 import type { GetStaticProps } from "next";
 import Head from "next/head";
-import type { ComponentType } from "react";
-import type { PictoProps } from "@codegouvfr/react-dsfr/picto/utils/PictoWrapper";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
+import PageHero from "~/components/rgaa/PageHero";
+import { REFERENCES } from "~/components/rgaa/references";
 import RgaaHeader from "~/components/rgaa/RgaaHeader";
 import { tss } from "tss-react";
-
-type Referential = {
-	title: string;
-	description: string;
-	iconId: string;
-	Picto: ComponentType<PictoProps>;
-	background: string;
-	circleBackground: string;
-	href: string;
-};
-
-const REFERENTIALS: Referential[] = [
-	{
-		title: "Référentiel web",
-		description:
-			"Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-		iconId: "ri-search-line",
-		Picto: Search,
-		background: fr.colors.decisions.background.alt.pinkMacaron.default,
-		circleBackground: fr.colors.decisions.background.alt.pinkMacaron.active,
-		href: "/beta/rgaa5/rgaa/web",
-	},
-	{
-		title: "Référentiel application mobile",
-		description:
-			"Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-		iconId: "ri-smartphone-line",
-		Picto: Application,
-		background: fr.colors.decisions.background.alt.yellowTournesol.default,
-		circleBackground: fr.colors.decisions.background.alt.yellowTournesol.active,
-		href: "/beta/rgaa5/rgaa/mobile",
-	},
-	{
-		title: "Référentiel bureautique",
-		description:
-			"Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-		iconId: "ri-file-text-line",
-		Picto: DocumentSearch,
-		background: fr.colors.decisions.background.alt.greenEmeraude.default,
-		circleBackground: fr.colors.decisions.background.alt.greenEmeraude.active,
-		href: "/beta/rgaa5/rgaa/desktop",
-	},
-];
+import TechnicalError from "@codegouvfr/react-dsfr/picto/TechnicalError";
+import { ROOTPATH } from ".";
 
 type TechnicalMethodPageProps = Record<string, never>;
 
@@ -68,46 +21,21 @@ const TechnicalMethodPage: PageWithHeader<TechnicalMethodPageProps> = () => {
 			<Head>
 				<title>RGAA 5 - Méthode technique - Critères et tests</title>
 			</Head>
-			<div className={classes.hero}>
-				<div className={fr.cx("fr-container")}>
-					<Breadcrumb
-						currentPageLabel="Méthode technique"
-						homeLinkProps={{ href: "/beta/rgaa5" }}
-						segments={[]}
-					/>
-					<div className={classes.heroContent}>
-						<div className={classes.heroText}>
-							<Badge as="span" small noIcon className={classes.betaTag}>
-								beta
-							</Badge>
-							<h1 className={classes.title}>Critères et tests</h1>
-							<p className={classes.description}>
-								Ici un texte décrivant le fait que le RGAA s’appuie désormais
-								sur 3 référentiels. Lorem ipsum dolor sit amet, consectetuer
-								adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
-							</p>
-							<ul className={classes.referentialTags}>
-								{REFERENTIALS.map(({ title, iconId, href }) => (
-									<li key={title}>
-										<Button
-											priority="secondary"
-											size="small"
-											iconId={iconId as never}
-											iconPosition="left"
-											linkProps={{ href }}
-										>
-											{title}
-										</Button>
-									</li>
-								))}
-							</ul>
-						</div>
-						<div className={classes.heroIllustration}>
-							<TechnicalError fontSize="7.5rem" />
-						</div>
-					</div>
-				</div>
-			</div>
+			<PageHero
+				breadcrumbCurrentPageLabel="Méthode technique"
+				breacrumbSegments={[]}
+				title="Critères et tests"
+				description="Ici un texte décrivant le fait que le RGAA s’appuie désormais sur
+							3 référentiels. Lorem ipsum dolor sit amet, consectetuer
+							adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa."
+				Pictogram={TechnicalError}
+				references={REFERENCES}
+				badgeColor={fr.colors.decisions.text.actionHigh.blueEcume.default}
+				badgeBackgroundColor={
+					fr.colors.decisions.background.alt.blueEcume.active
+				}
+				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
+			/>
 
 			<section className={cx(fr.cx("fr-container"), classes.section)}>
 				<h2>Pourquoi 3 référentiels ?</h2>
@@ -122,23 +50,23 @@ const TechnicalMethodPage: PageWithHeader<TechnicalMethodPageProps> = () => {
 
 			<section className={cx(fr.cx("fr-container"), classes.cardsSection)}>
 				<div className={classes.cardsGrid}>
-					{REFERENTIALS.map((referential) => (
+					{REFERENCES.map((reference) => (
 						<Card
-							key={referential.title}
-							title={referential.title}
-							desc={referential.description}
+							key={reference.title}
+							title={reference.title}
+							desc={reference.description}
 							enlargeLink
-							linkProps={{ href: referential.href }}
+							linkProps={{ href: reference.href }}
 							imageComponent={
 								<div
 									className={classes.cardMedia}
-									style={{ backgroundColor: referential.background }}
+									style={{ backgroundColor: reference.background }}
 								>
 									<div
 										className={classes.cardMediaCircle}
-										style={{ backgroundColor: referential.circleBackground }}
+										style={{ backgroundColor: reference.circleBackground }}
 									>
-										<referential.Picto fontSize="4.5rem" />
+										<reference.Picto fontSize="4.5rem" />
 									</div>
 								</div>
 							}
@@ -162,7 +90,7 @@ const TechnicalMethodPage: PageWithHeader<TechnicalMethodPageProps> = () => {
 						size="large"
 						iconId="fr-icon-arrow-right-line"
 						iconPosition="right"
-						linkProps={{ href: "/beta/rgaa5/" }}
+						linkProps={{ href: ROOTPATH }}
 					>
 						Voir les notes de version
 					</Button>

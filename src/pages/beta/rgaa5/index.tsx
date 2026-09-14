@@ -3,6 +3,8 @@ import Head from "next/head";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
 import RgaaHeader from "~/components/rgaa/RgaaHeader";
 
+export const ROOTPATH = "/beta/rgaa5";
+
 type RgaaPageProps = Record<string, never>;
 
 const RgaaPage: PageWithHeader<RgaaPageProps> = () => {
