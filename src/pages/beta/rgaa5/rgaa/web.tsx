@@ -7,10 +7,14 @@ import { ROOTPATH } from "..";
 import { REFERENCES } from "~/components/rgaa/references";
 import { fr } from "@codegouvfr/react-dsfr";
 import Search from "@codegouvfr/react-dsfr/picto/Search";
+import CriteriaList from "~/components/rgaa/CriteriaList";
+import { tss } from "tss-react";
 
 type WebReferencePageProps = Record<string, never>;
 
 const WebReferencePage: PageWithHeader<WebReferencePageProps> = () => {
+	const { classes, cx } = useStyles();
+
 	const otherReferences = REFERENCES.filter(
 		(reference) => reference.id !== "web",
 	);
@@ -38,6 +42,9 @@ const WebReferencePage: PageWithHeader<WebReferencePageProps> = () => {
 				}
 				backgroundColor={fr.colors.decisions.background.alt.pinkMacaron.default}
 			/>
+			<section className={cx(fr.cx("fr-container"), classes.section)}>
+				<CriteriaList reference="web" />
+			</section>
 		</>
 	);
 };
@@ -51,3 +58,10 @@ export const getStaticProps: GetStaticProps<
 > = async () => {
 	return { props: {} };
 };
+
+const useStyles = tss.withName(WebReferencePage.name).create({
+	section: {
+		paddingBlock: fr.spacing("8w"),
+		maxWidth: "50rem",
+	},
+});

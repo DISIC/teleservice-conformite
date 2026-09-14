@@ -27,7 +27,7 @@ export const REFERENCES: Reference[] = [
 		Picto: Search,
 		background: fr.colors.decisions.background.alt.pinkMacaron.default,
 		circleBackground: fr.colors.decisions.background.alt.pinkMacaron.active,
-		href: `${ROOTPATH}rgaa/web`,
+		href: `${ROOTPATH}/rgaa/web`,
 	},
 	{
 		id: "mobile",
@@ -38,7 +38,7 @@ export const REFERENCES: Reference[] = [
 		Picto: Application,
 		background: fr.colors.decisions.background.alt.yellowTournesol.default,
 		circleBackground: fr.colors.decisions.background.alt.yellowTournesol.active,
-		href: `${ROOTPATH}rgaa/mobile`,
+		href: `${ROOTPATH}/rgaa/mobile`,
 	},
 	{
 		id: "bureautique",
@@ -49,6 +49,6 @@ export const REFERENCES: Reference[] = [
 		Picto: DocumentSearch,
 		background: fr.colors.decisions.background.alt.greenEmeraude.default,
 		circleBackground: fr.colors.decisions.background.alt.greenEmeraude.active,
-		href: `${ROOTPATH}rgaa/desktop`,
+		href: `${ROOTPATH}/rgaa/bureautique`,
 	},
 ];
