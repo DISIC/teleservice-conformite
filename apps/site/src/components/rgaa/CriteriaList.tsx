@@ -56,7 +56,7 @@ export default function CriteriaList({
 		);
 		setCollapsesExpanded(
 			topicsRef.current?.querySelectorAll(
-				":scope > div > .fr-accordion > .fr-collapse",
+				"[data-topic-accordion] > .fr-accordion > .fr-collapse",
 			) ?? [],
 			!allExpanded,
 		);

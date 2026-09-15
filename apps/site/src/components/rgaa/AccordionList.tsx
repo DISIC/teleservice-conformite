@@ -41,6 +41,7 @@ const colors = {
 
 type NumberedAccordionProps = {
 	as: "h4" | "p";
+	id?: string;
 	number: string;
 	label: string;
 	accordionLabel: string;
@@ -53,6 +54,7 @@ type NumberedAccordionProps = {
 
 function NumberedAccordion({
 	as: HtmlTag,
+	id,
 	number,
 	label,
 	accordionLabel,
@@ -66,7 +68,7 @@ function NumberedAccordion({
 	const pathname = usePathname();
 
 	return (
-		<div className={classes.numberedAccordion}>
+		<div id={id} className={classes.numberedAccordion}>
 			<HtmlTag className={HtmlTag === "p" ? classes.heading : undefined}>
 				<span>{number}. </span>
 				<span>{label}</span>
@@ -147,6 +149,7 @@ function TopicCriteria({ reference, topic }: TopicCriteriaProps) {
 						<NumberedAccordion
 							key={criterium.number}
 							as="h4"
+							id={criteriumNumber}
 							number={criteriumNumber}
 							label={criterium.title}
 							accordionLabel={`Tests et références du critère ${criteriumNumber}`}
@@ -219,29 +222,35 @@ export default function AccordionList({
 					);
 
 				return (
-					<Accordion
+					<div
 						key={applicationTopic.topic}
-						titleAs="h2"
-						defaultExpanded={expandedTopics[applicationTopic.topic] ?? false}
-						onExpandedChange={(expanded) =>
-							onTopicExpandedChange(applicationTopic.topic, expanded)
-						}
-						label={
-							<>
-								{`${index + 1}. ${topic}`}
-								<Button
-									iconId="fr-icon-links-fill"
-									title={`Lien vers ${index + 1}. ${topic}`}
-									priority="tertiary no outline"
-									linkProps={{ href: `${pathname}#${index + 1}` }}
-									className={linkClasses.link}
-								/>
-							</>
-						}
-						className={classes.topicAccordion}
+						id={`${index + 1}`}
+						data-topic-accordion
+						className={classes.topicAnchor}
 					>
-						<TopicCriteria reference={reference} topic={applicationTopic} />
-					</Accordion>
+						<Accordion
+							titleAs="h2"
+							defaultExpanded={expandedTopics[applicationTopic.topic] ?? false}
+							onExpandedChange={(expanded) =>
+								onTopicExpandedChange(applicationTopic.topic, expanded)
+							}
+							label={
+								<>
+									{`${index + 1}. ${topic}`}
+									<Button
+										iconId="fr-icon-links-fill"
+										title={`Lien vers ${index + 1}. ${topic}`}
+										priority="tertiary no outline"
+										linkProps={{ href: `${pathname}#${index + 1}` }}
+										className={linkClasses.link}
+									/>
+								</>
+							}
+							className={classes.topicAccordion}
+						>
+							<TopicCriteria reference={reference} topic={applicationTopic} />
+						</Accordion>
+					</div>
 				);
 			})}
 		</div>
@@ -260,6 +269,9 @@ const useStyles = tss
 				display: "flex",
 				flexDirection: "column",
 				gap: fr.spacing("5w"),
+			},
+			topicAnchor: {
+				scrollMarginTop: fr.spacing("2w"),
 			},
 			topicAccordion: {
 				color: fr.colors.decisions.text.title.grey.default,
@@ -373,6 +385,7 @@ const useNumberedAccordionStyles = tss.withName("NumberedAccordion").create({
 		},
 	},
 	numberedAccordion: {
+		scrollMarginTop: fr.spacing("2w"),
 		marginBottom: fr.spacing("6w"),
 	},
 });
