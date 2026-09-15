@@ -1,6 +1,6 @@
 # Téléservice Conformité
 
-pnpm + Turborepo monorepo. Today it holds one application, `apps/teleservice`: a Next.js + Payload CMS + tRPC application for managing digital service compliance. The public RGAA 5 site (`apps/site`) and the content loader (`packages/content`) are planned; see `docs/rgaa5-integration.md`.
+pnpm + Turborepo monorepo with two applications: `apps/teleservice`, the Next.js + Payload CMS + tRPC application for managing digital service compliance, and `apps/site`, the public RGAA 5 site (Next.js App Router, static export). The content loader (`packages/content`) is planned; see `docs/rgaa5-integration.md`.
 
 ## Stack
 
@@ -20,7 +20,7 @@ pnpm + Turborepo monorepo. Today it holds one application, `apps/teleservice`: a
 
 Run from the repo root; Turborepo fans them out to every workspace package.
 
-- `pnpm dev` — start every app in dev mode (teleservice: Next.js turbo)
+- `pnpm dev` — start every app in dev mode (teleservice on :3000, site on :3001)
 - `pnpm build` — production build of every package
 - `pnpm run check` — lint + format check (oxlint + oxfmt), repo-wide
 - `pnpm check:write` — lint fix + format write, repo-wide
@@ -35,6 +35,11 @@ Lint and format config (`.oxlintrc.json`, `.oxfmtrc.json`, `lefthook.yml`) lives
 
 ```
 apps/
+├── site/          # public RGAA 5 site: App Router, `output: "export"`, no server
+│   └── src/
+│       ├── app/            # routes: /, /obligations, /methode, /rgaa/[referentiel]
+│       ├── components/rgaa # header, hero, criteria accordions (client components, tss-react)
+│       └── dsfr-bootstrap/ # react-dsfr App Router wiring (DsfrHead, DsfrProvider)
 └── teleservice/   # the compliance application (own package.json, tsconfig, .env)
     ├── public/
     └── src/
@@ -55,6 +60,8 @@ CONTEXT.md         # domain glossary
 ```
 
 Paths in the guides below are relative to `apps/teleservice/` unless they start with `apps/`, `packages/` or `docs/`.
+
+Both apps depend on the same `@codegouvfr/react-dsfr` copy; `react-dsfr update-icons` (each app's `predev`/`prebuild`) rewrites the shared icon CSS for the app it runs in. Building one app at a time is always correct; only `pnpm dev` with both apps running at once can leave one of them missing an icon until its own `predev` runs again.
 
 ## Code comments
 

@@ -1,54 +1,71 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import Application from "@codegouvfr/react-dsfr/picto/Application";
-import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
-import Search from "@codegouvfr/react-dsfr/picto/Search";
-import type { PictoProps } from "@codegouvfr/react-dsfr/picto/utils/PictoWrapper";
-import type { ComponentType } from "react";
-import { ROOTPATH } from "~/pages/beta/rgaa5";
+import type { PictogramId } from "./Pictogram";
+
+export const REFERENCE_IDS = ["web", "mobile", "bureautique"] as const;
+
+export type ReferenceId = (typeof REFERENCE_IDS)[number];
 
 export type Reference = {
-	id: string;
+	id: ReferenceId;
 	title: string;
+	pageTitle: string;
 	description: string;
 	iconId: string;
-	Picto: ComponentType<PictoProps>;
+	pictogram: PictogramId;
+	href: string;
 	background: string;
 	circleBackground: string;
-	href: string;
+	badgeColor: string;
+	badgeBackgroundColor: string;
 };
 
 export const REFERENCES: Reference[] = [
 	{
 		id: "web",
 		title: "Référentiel web",
+		pageTitle: "Référentiel Web",
 		description:
 			"Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
 		iconId: "ri-search-line",
-		Picto: Search,
+		pictogram: "search",
+		href: "/rgaa/web",
 		background: fr.colors.decisions.background.alt.pinkMacaron.default,
 		circleBackground: fr.colors.decisions.background.alt.pinkMacaron.active,
-		href: `${ROOTPATH}/rgaa/web`,
+		badgeColor: fr.colors.decisions.text.label.purpleGlycine.default,
+		badgeBackgroundColor:
+			fr.colors.decisions.background.contrast.pinkMacaron.default,
 	},
 	{
 		id: "mobile",
 		title: "Référentiel application mobile",
+		pageTitle: "Référentiel application mobile",
 		description:
 			"Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
 		iconId: "ri-smartphone-line",
-		Picto: Application,
+		pictogram: "application",
+		href: "/rgaa/mobile",
 		background: fr.colors.decisions.background.alt.yellowTournesol.default,
 		circleBackground: fr.colors.decisions.background.alt.yellowTournesol.active,
-		href: `${ROOTPATH}/rgaa/mobile`,
+		badgeColor: fr.colors.decisions.text.label.yellowTournesol.default,
+		badgeBackgroundColor:
+			fr.colors.decisions.background.actionLow.yellowTournesol.default,
 	},
 	{
 		id: "bureautique",
 		title: "Référentiel bureautique",
+		pageTitle: "Référentiel bureautique",
 		description:
 			"Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
 		iconId: "ri-file-text-line",
-		Picto: DocumentSearch,
+		pictogram: "document-search",
+		href: "/rgaa/bureautique",
 		background: fr.colors.decisions.background.alt.greenEmeraude.default,
 		circleBackground: fr.colors.decisions.background.alt.greenEmeraude.active,
-		href: `${ROOTPATH}/rgaa/bureautique`,
+		badgeColor: fr.colors.decisions.text.label.greenEmeraude.default,
+		badgeBackgroundColor:
+			fr.colors.decisions.background.contrast.greenEmeraude.default,
 	},
 ];
+
+export const getReference = (id: ReferenceId): Reference =>
+	REFERENCES.find((reference) => reference.id === id)!;

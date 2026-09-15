@@ -1,12 +1,15 @@
+"use client";
+
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { fr } from "@codegouvfr/react-dsfr";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import DisabledTopicAccordion from "./DisabledTopicAccordion";
 import { DEFAULT_TOPICS, type Criterias } from "./helpers/topics";
+import type { ReferenceId } from "./references";
 
 interface AccordionListProps {
-	reference: "web" | "mobile" | "bureautique";
+	reference: ReferenceId;
 	criterias: Criterias;
 }
 

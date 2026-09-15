@@ -1,10 +1,16 @@
+"use client";
+
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Header } from "@codegouvfr/react-dsfr/Header";
-import Notice from "@codegouvfr/react-dsfr/Notice";
 import type { MainNavigationProps } from "@codegouvfr/react-dsfr/MainNavigation";
-import { useRouter } from "next/router";
+import Notice from "@codegouvfr/react-dsfr/Notice";
+import { usePathname } from "next/navigation";
 import { tss } from "tss-react";
+
+// The two spaces live on two hosts; the switch button is a plain link between them.
+const TELESERVICE_URL = process.env.NEXT_PUBLIC_TELESERVICE_URL ?? "/";
+const RGAA4_URL = "https://accessibilite.numerique.gouv.fr";
 
 type NavLink = { text: string; href: string };
 type NavCategory = {
@@ -19,8 +25,8 @@ type NavEntry =
 	| { text: string; categories: NavCategory[]; leader?: NavLeader };
 
 const NAVIGATION: NavEntry[] = [
-	{ text: "Accueil", href: "/beta/rgaa5" },
-	{ text: "Obligations légales", href: "/beta/rgaa5/obligations" },
+	{ text: "Accueil", href: "/" },
+	{ text: "Obligations légales", href: "/obligations" },
 	{
 		text: "Méthode technique",
 		leader: {
@@ -29,25 +35,19 @@ const NAVIGATION: NavEntry[] = [
 				"La version 5 du RGAA n’est pas encore applicable. Vous pouvez lorem ipsum dolor sit amet",
 			link: {
 				text: "RGAA4 - Version en vigueur",
-				href: "/",
+				href: RGAA4_URL,
 			},
 		},
 		categories: [
 			{
 				categoryMainLink: {
 					text: "Critères et tests",
-					href: "/beta/rgaa5/methode",
+					href: "/methode",
 				},
 				links: [
-					{ text: "Référentiel web", href: "/beta/rgaa5/rgaa/web" },
-					{
-						text: "Référentiel bureautique",
-						href: "/beta/rgaa5/rgaa//bureautique",
-					},
-					{
-						text: "Référentiel application mobile",
-						href: "/beta/rgaa5/rgaa//mobile",
-					},
+					{ text: "Référentiel web", href: "/rgaa/web" },
+					{ text: "Référentiel bureautique", href: "/rgaa/bureautique" },
+					{ text: "Référentiel application mobile", href: "/rgaa/mobile" },
 				],
 			},
 		],
@@ -63,9 +63,9 @@ const NAVIGATION: NavEntry[] = [
 					text: "Documentation",
 				},
 				links: [
-					{ text: "Référentiel web", href: "/beta/rgaa5" },
-					{ text: "Référentiel bureautique", href: "/beta/rgaa5" },
-					{ text: "Référentiel application mobile", href: "/beta/rgaa5" },
+					{ text: "Référentiel web", href: "/" },
+					{ text: "Référentiel bureautique", href: "/" },
+					{ text: "Référentiel application mobile", href: "/" },
 				],
 			},
 			{
@@ -73,8 +73,8 @@ const NAVIGATION: NavEntry[] = [
 					text: "Outils",
 				},
 				links: [
-					{ text: "Ara - Outil d’audit d’accessibilité", href: "/beta/rgaa5" },
-					{ text: "Kit d’audit", href: "/beta/rgaa5" },
+					{ text: "Ara - Outil d’audit d’accessibilité", href: "/" },
+					{ text: "Kit d’audit", href: "/" },
 				],
 			},
 			{
@@ -82,9 +82,9 @@ const NAVIGATION: NavEntry[] = [
 					text: "Notes de version",
 				},
 				links: [
-					{ text: "Note de version du RGAA 5", href: "/beta/rgaa5" },
-					{ text: "Note de version du RGAA 4.12", href: "/beta/rgaa5" },
-					{ text: "Notes de révision du RGAA 4.1", href: "/beta/rgaa5" },
+					{ text: "Note de version du RGAA 5", href: "/" },
+					{ text: "Note de version du RGAA 4.12", href: "/" },
+					{ text: "Notes de révision du RGAA 4.1", href: "/" },
 				],
 			},
 		],
@@ -103,14 +103,20 @@ const entryHrefs = (entry: NavEntry): string[] =>
 				])
 			: entry.links.map((link) => link.href);
 
+const normalize = (pathname: string) =>
+	pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
+
 const getActiveHref = (pathname: string) =>
 	NAVIGATION.flatMap(entryHrefs)
-		.filter((href) => pathname === href || pathname.startsWith(`${href}/`))
+		.filter(
+			(href) =>
+				pathname === href || (href !== "/" && pathname.startsWith(`${href}/`)),
+		)
 		.sort((a, b) => b.length - a.length)[0] ?? "";
 
 export default function RgaaHeader() {
 	const { classes } = useStyles();
-	const { pathname } = useRouter();
+	const pathname = normalize(usePathname());
 	const activeHref = getActiveHref(pathname);
 
 	const navigation: MainNavigationProps.Item[] = NAVIGATION.map((entry) => {
@@ -182,7 +188,7 @@ export default function RgaaHeader() {
 					</>
 				}
 				homeLinkProps={{
-					href: "/beta/rgaa5",
+					href: "/",
 					title: "Accueil - RGAA 5",
 				}}
 				quickAccessItems={[
@@ -190,9 +196,7 @@ export default function RgaaHeader() {
 						key="publish-declaration"
 						iconId="ri-share-box-line"
 						iconPosition="right"
-						linkProps={{
-							href: "/",
-						}}
+						linkProps={{ href: TELESERVICE_URL }}
 						priority="tertiary"
 					>
 						Publier une déclaration
@@ -201,9 +205,7 @@ export default function RgaaHeader() {
 						key="rgaa-4"
 						iconId="ri-share-box-line"
 						iconPosition="right"
-						linkProps={{
-							href: "/",
-						}}
+						linkProps={{ href: RGAA4_URL }}
 						priority="tertiary"
 					>
 						RGAA4 - Version en vigueur
@@ -226,9 +228,7 @@ export default function RgaaHeader() {
 				description="La version 5 du RGAA n’est pas encore encore applicable."
 				severity="info"
 				link={{
-					linkProps: {
-						href: "#",
-					},
+					linkProps: { href: RGAA4_URL },
 					text: "Voir la version en vigueur",
 				}}
 			/>

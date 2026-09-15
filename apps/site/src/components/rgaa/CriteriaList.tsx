@@ -1,13 +1,15 @@
-import { tss } from "tss-react";
-import exampleCriterias from "./reference-criterias.json";
-import Badge from "@codegouvfr/react-dsfr/Badge";
+"use client";
+
 import { fr } from "@codegouvfr/react-dsfr";
-import TopicSidebarList from "./TopicSidebarList";
-import { getAllTopicNames } from "./helpers/topics";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { useState } from "react";
+import { tss } from "tss-react";
 import AccordionList from "./AccordionList";
-import type { Criterias } from "./helpers/topics";
+import { type Criterias, getAllTopicNames } from "./helpers/topics";
+import exampleCriterias from "./reference-criterias.json";
+import type { ReferenceId } from "./references";
+import TopicSidebarList from "./TopicSidebarList";
 
 const colors = {
 	web: {
@@ -25,7 +27,7 @@ const colors = {
 };
 
 interface CriteriaListProps {
-	reference: "web" | "mobile" | "bureautique";
+	reference: ReferenceId;
 	criterias?: Criterias;
 }
 

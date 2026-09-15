@@ -1,16 +1,16 @@
+"use client";
+
+import { fr } from "@codegouvfr/react-dsfr";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import Button from "@codegouvfr/react-dsfr/Button";
-import type { PictoProps } from "@codegouvfr/react-dsfr/picto/utils/PictoWrapper";
 import { tss } from "tss-react";
-import { fr } from "@codegouvfr/react-dsfr";
 import BetaBadge from "./BetaBadge";
-import type { ComponentType } from "react";
+import Pictogram, { type PictogramId } from "./Pictogram";
 import type { Reference } from "./references";
-import { ROOTPATH } from "~/pages/beta/rgaa5";
 
 type PageHeroProps = {
 	breadcrumbCurrentPageLabel: string;
-	breacrumbSegments: {
+	breadcrumbSegments: {
 		label: string;
 		linkProps: {
 			href: string;
@@ -18,7 +18,7 @@ type PageHeroProps = {
 	}[];
 	title: string;
 	description: string;
-	Pictogram: ComponentType<PictoProps>;
+	pictogram: PictogramId;
 	references: Reference[];
 	badgeColor: string;
 	badgeBackgroundColor: string;
@@ -28,10 +28,10 @@ type PageHeroProps = {
 export default function PageHero(props: PageHeroProps) {
 	const {
 		breadcrumbCurrentPageLabel,
-		breacrumbSegments,
+		breadcrumbSegments,
 		title,
 		description,
-		Pictogram,
+		pictogram,
 		references,
 		badgeColor,
 		badgeBackgroundColor,
@@ -44,8 +44,8 @@ export default function PageHero(props: PageHeroProps) {
 			<div className={fr.cx("fr-container")}>
 				<Breadcrumb
 					currentPageLabel={breadcrumbCurrentPageLabel}
-					homeLinkProps={{ href: ROOTPATH }}
-					segments={breacrumbSegments}
+					homeLinkProps={{ href: "/" }}
+					segments={breadcrumbSegments}
 				/>
 				<div className={classes.heroContent}>
 					<div className={classes.heroText}>
@@ -56,7 +56,7 @@ export default function PageHero(props: PageHeroProps) {
 						<h1 className={classes.title}>{title}</h1>
 						<p className={classes.description}>{description} </p>
 						<ul className={classes.referentialTags}>
-							{references?.map(({ title, iconId, href }) => (
+							{references.map(({ title, iconId, href }) => (
 								<li key={title}>
 									<Button
 										priority="secondary"
@@ -72,7 +72,7 @@ export default function PageHero(props: PageHeroProps) {
 						</ul>
 					</div>
 					<div className={classes.heroIllustration}>
-						<Pictogram fontSize="7.5rem" />
+						<Pictogram id={pictogram} fontSize="7.5rem" />
 					</div>
 				</div>
 			</div>

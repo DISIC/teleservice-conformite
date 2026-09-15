@@ -1,8 +1,10 @@
-import Badge from "@codegouvfr/react-dsfr/Badge";
+"use client";
+
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react";
-import { useRouter } from "next/router";
+import Badge from "@codegouvfr/react-dsfr/Badge";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { tss } from "tss-react";
 import { DEFAULT_TOPICS } from "./helpers/topics";
 
 interface TopicSidebarListProps {
@@ -11,7 +13,7 @@ interface TopicSidebarListProps {
 
 export default function TopicSidebarList({ topics }: TopicSidebarListProps) {
 	const { classes } = useStyles();
-	const { pathname } = useRouter();
+	const pathname = usePathname();
 	const [selectedTopic, setSelectedTopic] = useState(DEFAULT_TOPICS[0]);
 
 	return (

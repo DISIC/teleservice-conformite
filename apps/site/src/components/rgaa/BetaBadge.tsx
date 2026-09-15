@@ -1,3 +1,5 @@
+"use client";
+
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { tss } from "tss-react";
 
