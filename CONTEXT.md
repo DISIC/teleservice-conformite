@@ -266,7 +266,7 @@ A site-wide revision number of the RGAA (5.0, 5.1, ...) covering the three Réf�
 
 ### Données publiées (RGAA)
 
-The generated, downloadable representation of one Version: one file per Référentiel (its applicable Critères with their Tests, references, cas particuliers and notes), one whole-model file (every Critère with its applicability), one glossary file. Generated from the sources, never hand-edited, governed by a published schema, frozen per Version. This is what audit tools consume; it is **not** the RGAA 4 file format.
+The generated, downloadable representation of one Version: one file per Référentiel (its applicable Critères with their Tests, references, cas particuliers and notes), one whole-model file (every Critère with its applicability), one glossary file. Generated from the sources, never hand-edited, governed by a published schema, frozen per Version. They live in two identical copies: committed in the repository next to the sources (regenerated on every merge, so tools keep the GitHub history and diff they have today) and served by the site at a versioned address, which is the canonical download. This is what audit tools consume; it is **not** the RGAA 4 file format.
 
 **Avoid:** "the JSON" without saying which file; "API" (there is no server, only versioned files).
 
