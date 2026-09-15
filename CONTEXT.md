@@ -242,7 +242,7 @@ One of the three normative documents of RGAA 5: **Web**, **Applications mobiles*
 
 One entry of the single RGAA 5 list, identified by its number (`thématique.critère`, e.g. `1.1`) and carrying **one wording shared by every Référentiel**. A Critère is applicable to one, two or three [[referentiel|Référentiels]]; its identity and wording never vary by Référentiel.
 
-What is **shared** by every Référentiel: number, wording, [[thematique|Thématique]], level (A / AA). What is **per Référentiel**, alongside that Référentiel's Tests: normative references (WCAG success criteria, EN 301 549 clauses), technique codes, _cas particuliers_ and _notes techniques_ — all of it technology-specific prose.
+What is **shared** by every Référentiel: number, wording, [[thematique|Thématique]]. A Critère has **no conformance level of its own**: the legal obligation does not rank criteria, and one Critère can cover WCAG success criteria of different levels; A / AA is a property of a WCAG reference. What is **per Référentiel**, alongside that Référentiel's Tests, is its [[annexe-rgaa|Annexe]]: normative references (WCAG success criteria, EN 301 549 clauses), technique codes, _cas particuliers_ and _notes techniques_ — all of it technology-specific prose.
 
 **Avoid:** "web criterion" / "mobile criterion" as if there were three lists of Critères.
 
@@ -272,9 +272,15 @@ The generated, downloadable representation of one Version: one `criteres.json` h
 
 ### Déclinaison (RGAA)
 
-The per-Référentiel part of a Critère: its Tests, normative references, technique codes, cas particuliers and notes techniques for one Référentiel. A Critère has one Déclinaison per Référentiel it applies to and none for the others; the absence of a Déclinaison is what "outside this Référentiel" means.
+The per-Référentiel part of a Critère: its Tests and its [[annexe-rgaa|Annexe]] for one Référentiel. A Critère has one Déclinaison per Référentiel it applies to and none for the others; the absence of a Déclinaison is what "outside this Référentiel" means.
 
 **Avoid:** "variant" or "version" of a Critère.
+
+### Annexe (RGAA)
+
+What backs a Critère in one Référentiel without being a Test: normative references (WCAG success criteria, EN 301 549 clauses), technique codes, _cas particuliers_, _notes techniques_. One Annexe per [[declinaison|Déclinaison]]; it is the second block of a Critère on the page, after its Tests. Named after the RGAA 4 source file `annexe.md`.
+
+**Avoid:** "metadata" (the Annexe is normative content, not data about data).
 
 ### Thématique
 

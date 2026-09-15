@@ -139,7 +139,17 @@ packages/content/src/
 
 ### 3.5 Données publiées
 
-**Décision.** Nouvelle structure reflétant le modèle, en JSON, trois fichiers par Version : `criteres.json`, le modèle complet, imbriqué comme le document (`thematiques[] > criteres[] > declinaisons{} > tests[]`), chaque Critère avec ses champs partagés et ses **déclinaisons** par Référentiel (Tests, références, techniques, cas particuliers, notes) ; `glossaire.json`, chaque Terme avec ses Référentiels ; le **schéma JSON publié** à côté, promesse de compatibilité. Versionnées dans l'URL (`/rgaa/data/5/criteres.json`). Liens absolus produits depuis une URL de base configurée. Les identifiants (`"1.10"`) sont des chaînes. `tests` est toujours un tableau d'objets ; la dimension Référentiel n'est pas sur `tests` mais un niveau au-dessus, dans `declinaisons`, objet à trois clés fermées (`web`, `mobile`, `bureautique`), absentes quand le Critère ne s'applique pas. Exemple en annexe C.
+**Décision.** Nouvelle structure reflétant le modèle, en JSON, trois fichiers par Version : `criteres.json`, le modèle complet, imbriqué comme le document (`topics[] > criteria[] > referentiels{} > tests[]`), chaque Critère avec ses champs partagés et sa déclinaison par Référentiel (Tests + annexe) ; `glossaire.json`, chaque Terme avec ses Référentiels ; le **schéma JSON publié** à côté, promesse de compatibilité. Versionnées dans l'URL (`/rgaa/data/5/criteres.json`).
+
+Règles de forme, toutes visibles dans l'exemple de l'annexe C :
+
+- **Clés en anglais**, comme le JSON RGAA 4 que lisent déjà les outils (`topics`, `criteria`, `number`, `title`, `tests`, `particularCases`, `technicalNotes`) et comme les champs du téléservice ; les noms propres du domaine restent tels quels (`referentiels`, `wcag`), et les valeurs sont en français. Le wrapper `criterium` de RGAA 4 disparaît.
+- **Numéros complets en chaînes** (`"1.1"`, `"1.1.1"`, `"1.10"`) : chaque objet porte sa propre citation, celle qu'utilisent les auditeurs, les ancres et la recherche ; un test se cite hors de son arbre. RGAA 4 numérotait localement (`number: 1` à chaque niveau) et devait reconstruire `"1.1.1"` dans `methodologies.json`.
+- **La dimension Référentiel** n'est pas sur `tests` mais un niveau au-dessus, dans `referentiels`, objet à trois clés fermées (`web`, `mobile`, `bureautique`) ; une clé absente signifie « hors référentiel ». `tests` est toujours un tableau d'objets.
+- **Un groupe `appendix`** par déclinaison réunit ce qui étaye le Critère sans être un test : `references`, `techniques`, `particularCases`, `technicalNotes`. Il reflète le fichier source `annexe.md` et se rend en un bloc sur la page.
+- **Rien de dérivable, rien de vide.** Pas d'URL par objet : un bloc `urls` en tête donne les gabarits (`/rgaa/{referentiel}/criteres#{number}`, `/rgaa/glossaire#{slug}`). Pas de `null` ni de `[]` : une clé sans valeur est omise, le schéma la déclare optionnelle.
+- **Pas de niveau (A / AA) sur le Critère.** RGAA 4 n'en stockait pas ; l'obligation légale ne distingue pas les niveaux et plusieurs Critères couvrent des critères WCAG de niveaux différents. Le niveau reste une propriété des références WCAG (`level`), sauf si les auteurs de RGAA 5 en définissent un par Critère.
+- **Liens absolus** dans les textes markdown, produits depuis une URL de base configurée. Exemple en annexe C.
 
 **Où elles vivent.** Deux copies identiques par construction, le générateur étant déterministe :
 
@@ -245,7 +255,7 @@ Le cadrage proposait un fichier YAML par critère pour les sources, jugé plus l
 
 ## Annexe C — Exemple de Données publiées (`rgaa/data/5/criteres.json`)
 
-Imbrication du document : `thematiques[] > criteres[] > declinaisons{} > tests[]`, même profondeur que le `topics > criteria > criterium > tests` de RGAA 4. Critère 1.1 applicable à Web et Mobile, Critère 1.2 à Web seulement (aucune clé `mobile` dans ses `declinaisons`). Textes en markdown, liens absolus, identifiants en chaînes.
+Imbrication du document : `topics[] > criteria[] > referentiels{} > tests[]`, même profondeur que le `topics > criteria > criterium > tests` de RGAA 4. Critère 1.1 applicable à Web et Mobile, Critère 1.2 à Web seulement (aucune clé `mobile` dans ses `referentiels`). Textes en markdown, liens absolus, numéros complets en chaînes, clés vides omises.
 
 ```json
 {
@@ -255,103 +265,95 @@ Imbrication du document : `thematiques[] > criteres[] > declinaisons{} > tests[]
 		"date": "2027-01-15"
 	},
 	"source": "https://github.com/DISIC/teleservice-conformite/tree/main/rgaa/content",
+	"urls": {
+		"criterion": "https://accessibilite.numerique.gouv.fr/rgaa/{referentiel}/criteres#{number}",
+		"test": "https://accessibilite.numerique.gouv.fr/rgaa/{referentiel}/criteres#{number}",
+		"term": "https://accessibilite.numerique.gouv.fr/rgaa/glossaire#{slug}"
+	},
 	"referentiels": [
 		{
 			"id": "web",
-			"intitule": "Sites web"
+			"title": "Sites web"
 		},
 		{
 			"id": "mobile",
-			"intitule": "Applications mobiles"
+			"title": "Applications mobiles"
 		},
 		{
 			"id": "bureautique",
-			"intitule": "Logiciels bureautiques"
+			"title": "Logiciels bureautiques"
 		}
 	],
-	"thematiques": [
+	"topics": [
 		{
-			"numero": 1,
-			"intitule": "Images",
-			"criteres": [
+			"number": "1",
+			"title": "Images",
+			"criteria": [
 				{
-					"numero": "1.1",
-					"niveau": "A",
-					"intitule": "Chaque [image porteuse d’information](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-porteuse-d-information) a-t-elle une [alternative textuelle](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#alternative-textuelle-image) ?",
-					"referentiels": ["web", "mobile"],
-					"declinaisons": {
+					"number": "1.1",
+					"title": "Chaque [image porteuse d’information](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-porteuse-d-information) a-t-elle une [alternative textuelle](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#alternative-textuelle-image) ?",
+					"referentiels": {
 						"web": {
-							"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1",
 							"tests": [
 								{
-									"numero": "1.1.1",
-									"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1.1",
-									"intitule": "Chaque image (balise `<img>` ou balise possédant l’attribut WAI-ARIA `role=\"img\"`) porteuse d’information a-t-elle une alternative textuelle ?",
-									"conditions": [],
-									"methodologie": "1. Retrouver dans le document les images structurées au moyen d’un élément `<img>` …\n2. …"
+									"number": "1.1.1",
+									"title": "Chaque image (balise `<img>` ou balise possédant l’attribut WAI-ARIA `role=\"img\"`) porteuse d’information a-t-elle une alternative textuelle ?",
+									"methodology": "1. Retrouver dans le document les images structurées au moyen d’un élément `<img>` …\n2. Pour chaque image, déterminer si l’image est porteuse d’information ;\n3. …"
 								},
 								{
-									"numero": "1.1.2",
-									"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1.2",
-									"intitule": "Chaque image vectorielle (balise `<svg>`) porteuse d’information vérifie-t-elle ces conditions ?",
+									"number": "1.1.2",
+									"title": "Chaque image vectorielle (balise `<svg>`) porteuse d’information vérifie-t-elle ces conditions ?",
 									"conditions": [
 										"La balise `<svg>` possède un attribut WAI-ARIA `role=\"img\"` ;",
 										"La balise `<svg>` a une alternative textuelle."
 									],
-									"methodologie": "1. …"
+									"methodology": "1. …"
 								}
 							],
-							"references": [
-								{
-									"norme": "WCAG",
-									"version": "2.2",
-									"reference": "1.1.1",
-									"intitule": "Non-text Content",
-									"niveau": "A"
-								}
-							],
-							"techniques": ["H36", "H37", "H53", "F65", "H24"],
-							"casParticuliers": null,
-							"notesTechniques": "L’attribut `alt` étant la seule technique totalement supportée …"
+							"appendix": {
+								"references": [
+									{
+										"standard": "WCAG 2.2",
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": ["H36", "H37", "H53", "F65", "H24"],
+								"technicalNotes": "L’attribut `alt` étant la seule technique totalement supportée …"
+							}
 						},
 						"mobile": {
-							"url": "https://accessibilite.numerique.gouv.fr/rgaa/mobile/criteres#1.1",
 							"tests": [
 								{
-									"numero": "1.1.1",
-									"url": "https://accessibilite.numerique.gouv.fr/rgaa/mobile/criteres#1.1.1",
-									"intitule": "Chaque image porteuse d’information possède-t-elle une description accessible ?",
-									"conditions": [],
-									"methodologie": "1. Parcourir chaque écran avec le lecteur d’écran de la plateforme …"
+									"number": "1.1.1",
+									"title": "Chaque image porteuse d’information possède-t-elle une description accessible ?",
+									"methodology": "1. Parcourir chaque écran avec le lecteur d’écran de la plateforme …"
 								}
 							],
-							"references": [
-								{
-									"norme": "EN 301 549",
-									"version": "3.2.1",
-									"reference": "11.1.1.1",
-									"intitule": "Non-text content (open functionality)"
-								}
-							],
-							"techniques": [],
-							"casParticuliers": "Les icônes décoratives …",
-							"notesTechniques": null
+							"appendix": {
+								"references": [
+									{
+										"standard": "EN 301 549 v3.2.1",
+										"reference": "11.1.1.1",
+										"title": "Non-text content (open functionality)"
+									}
+								],
+								"particularCases": "Les icônes décoratives …"
+							}
 						}
 					}
 				},
 				{
-					"numero": "1.2",
-					"niveau": "A",
-					"intitule": "Chaque [image de décoration](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-de-decoration) est-elle correctement ignorée par les technologies d’assistance ?",
-					"referentiels": ["web"],
-					"declinaisons": {
+					"number": "1.2",
+					"title": "Chaque [image de décoration](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-de-decoration) est-elle correctement ignorée par les technologies d’assistance ?",
+					"referentiels": {
 						"web": {
-							"url": "…",
 							"tests": ["…"],
-							"references": ["…"],
-							"techniques": ["…"],
-							"casParticuliers": null,
-							"notesTechniques": null
+							"appendix": {
+								"references": ["…"],
+								"techniques": ["…"]
+							}
 						}
 					}
 				}
@@ -361,4 +363,4 @@ Imbrication du document : `thematiques[] > criteres[] > declinaisons{} > tests[]
 }
 ```
 
-Choix visibles dans l'exemple : les Critères sont **imbriqués sous leur Thématique**, comme la page les affiche et comme les consommateurs de RGAA 4 les parcourent (une liste à plat avait été envisagée pour la simplicité du schéma ; l'imbrication épouse le document et supprime le regroupement côté page) ; un test est un objet (`numero`, `intitule`, `conditions`, `methodologie`, `url`), les méthodologies sont intégrées, plus de `methodologies.json` ; le même `"1.1.1"` peut apparaître sous `web` et `mobile` avec un contenu différent, l'identité d'un Test étant le couple (Référentiel, numéro) ; `references` est une liste typée (`norme`, `version`, `reference`, `intitule`, `niveau`) commune aux critères WCAG et aux clauses EN 301 549 ; `referentiels` sur le Critère est redondant avec les clés de `declinaisons`, gardé pour que la page écrive « s'applique aussi à Mobile » sans inspecter les clés ; une Thématique dont aucun Critère ne porte de déclinaison pour le Référentiel affiché est entièrement marquée hors référentiel. Le glossaire suit le même en-tête puis `termes: [{ "slug", "titre", "referentiels", "definition" }]`, `definition` en markdown.
+Lecture de l'exemple : un Critère porte deux champs et une carte `referentiels` ; une déclinaison porte deux blocs, `tests` et `appendix`, qui deviennent deux sections de l'accordéon ; l'absence de `referentiels[ref]` est le marqueur « hors référentiel », et une Thématique dont aucun Critère n'a de clé pour le Référentiel affiché est entièrement marquée. Le même `"1.1.1"` peut apparaître sous `web` et `mobile` avec un contenu différent, l'identité d'un Test étant le couple (Référentiel, numéro). `references` est une liste typée (`standard`, `reference`, `title`, `level`) commune aux critères WCAG et aux clauses EN 301 549 ; les méthodologies sont intégrées aux tests, plus de `methodologies.json`. Le glossaire suit le même en-tête puis `terms: [{ "slug", "title", "referentiels", "definition" }]`, `definition` en markdown. Écartés : numéros locaux par niveau (`number: 1`) qui obligent à reconstruire la citation ; clés en français ; niveau par Critère ; URL par objet ; `null` et tableaux vides.
