@@ -115,9 +115,31 @@ _Recommandation en attente de validation :_ quand un dossier de Référentiel po
 - _Fichiers générés non commités, servis uniquement par le site._ Retenu un temps ; abandonné parce que les outils tiers lisent aujourd'hui `RGAA/criteres.json` directement sur GitHub et que le dépôt leur offre l'historique et le diff de chaque changement.
 - _Collections Payload._ Incompatible avec la contribution par PR en fichiers.
 
+### 3.4 bis Chaîne de transformation : du markdown à la page statique
+
+**Une source de vérité : les schémas Zod de `packages/content`.** Ils servent trois fois sans être écrits deux fois : validation à l'exécution (frontmatter des sources, fichiers publiés), types TypeScript (`type Critere = z.infer<typeof Critere>`) et schéma JSON publié (`z.toJSONSchema`, natif en Zod 4).
+
+```
+packages/content/src/
+  schema/sources.ts     frontmatter : index de critère, annexe, test, terme, faq, thematiques.yml
+  schema/published.ts   sortie : Thematique, Critere, Declinaison, Test, Terme, CriteresFile, GlossaireFile + types inférés
+  read.ts               parcourt rgaa/content/, gray-matter, valide le frontmatter, garde le corps en markdown
+  build.ts              assemble le modèle, absolutise les liens [texte](#slug), vérifie slugs, applicabilité, numérotation
+  write.ts              JSON.stringify(modèle, null, 2) → rgaa/data/<version>/ ; z.toJSONSchema → rgaa/data/schema/
+  markdown.ts           markdown-it configuré avec les règles de slug RGAA 4, rend un corps en HTML
+  cli.ts                `check` (read + build, erreurs en français, code 1) et `build` (check + write)
+  index.ts              readPublished(version), renderMarkdown, les types
+```
+
+**Deux consommateurs, un chemin chacun.** La CI exécute `check` sur toute PR touchant `rgaa/content/`, puis `build` et commit sur `main`. Le site appelle `readPublished("5")`, qui lit `rgaa/data/5/criteres.json` sur le disque et l'analyse avec le schéma de sortie : la page reçoit une valeur `CriteresFile` typée et vérifiée, sans type écrit à la main ni conversion forcée.
+
+**Génération statique.** Avec l'App Router et `output: "export"`, chaque route est rendue en HTML à `next build`. Un composant serveur peut lire le disque pendant ce build (il s'exécute dans Node) ; après l'export il n'y a plus de serveur, la lecture ne peut donc avoir lieu nulle part ailleurs. La page de critères d'un Référentiel déclare `generateStaticParams` avec les trois identifiants et `dynamicParams = false`, appelle `readPublished`, parcourt `thematiques` et rend chaque corps markdown en HTML via `renderMarkdown`, inséré avec `dangerouslySetInnerHTML` pour que l'hydratation ne parcoure pas ce contenu. Même schéma, avec `generateStaticParams` sur les slugs, pour le glossaire, la FAQ et les pages éditoriales. Le navigateur reçoit du HTML complet et la charge d'hydratation des seuls accordéons et en-tête ; le JSON n'est jamais envoyé ni récupéré à l'exécution.
+
+**Ordre de build**, exprimé en dépendances pnpm pour qu'un `pnpm build` à la racine l'enchaîne : `packages/content` construit et écrit `rgaa/data/` ; `apps/site` copie `rgaa/data/` dans `public/rgaa/data/` en `prebuild` pour que Next serve les fichiers tels quels sous `/rgaa/data/…` ; `next build` écrit `out/` ; Pagefind indexe `out/`. L'application statique Clever Cloud sert `out/` via `CC_WEBROOT`. Que le build tourne dans le hook de build de Clever Cloud ou dans GitHub Actions est un détail du premier spike.
+
 ### 3.5 Données publiées
 
-**Décision.** Nouvelle structure reflétant le modèle, en JSON, trois fichiers par Version : `criteres.json`, le modèle complet, chaque Critère avec ses champs partagés et ses **déclinaisons** par Référentiel (Tests, références, techniques, cas particuliers, notes) ; `glossaire.json`, chaque Terme avec ses Référentiels ; le **schéma JSON publié** à côté, promesse de compatibilité. Versionnées dans l'URL (`/rgaa/data/5/criteres.json`). Liens absolus produits depuis une URL de base configurée. Les identifiants (`"1.10"`) sont des chaînes. `tests` est toujours un tableau d'objets ; la dimension Référentiel n'est pas sur `tests` mais un niveau au-dessus, dans `declinaisons`, objet à trois clés fermées (`web`, `mobile`, `bureautique`), absentes quand le Critère ne s'applique pas. Exemple en annexe C.
+**Décision.** Nouvelle structure reflétant le modèle, en JSON, trois fichiers par Version : `criteres.json`, le modèle complet, imbriqué comme le document (`thematiques[] > criteres[] > declinaisons{} > tests[]`), chaque Critère avec ses champs partagés et ses **déclinaisons** par Référentiel (Tests, références, techniques, cas particuliers, notes) ; `glossaire.json`, chaque Terme avec ses Référentiels ; le **schéma JSON publié** à côté, promesse de compatibilité. Versionnées dans l'URL (`/rgaa/data/5/criteres.json`). Liens absolus produits depuis une URL de base configurée. Les identifiants (`"1.10"`) sont des chaînes. `tests` est toujours un tableau d'objets ; la dimension Référentiel n'est pas sur `tests` mais un niveau au-dessus, dans `declinaisons`, objet à trois clés fermées (`web`, `mobile`, `bureautique`), absentes quand le Critère ne s'applique pas. Exemple en annexe C.
 
 **Où elles vivent.** Deux copies identiques par construction, le générateur étant déterministe :
 
@@ -126,7 +148,7 @@ _Recommandation en attente de validation :_ quand un dossier de Référentiel po
 
 _Écarté :_ le hook pre-commit du dépôt RGAA 4, qui ne s'exécutait pas pour les contributeurs éditant depuis le navigateur et laissait le JSON obsolète jusqu'à une régénération manuelle.
 
-**Alternatives écartées.** Reprendre la structure RGAA 4 (aucune place pour le Référentiel, tests en objet indexé par position, bizarreries pérennisées) ; publier deux structures (double surface à maintenir) ; **un fichier par Référentiel** ne contenant que les Critères applicables (retenu un temps : sans objet dès que chaque page affiche la liste complète, la vue par Référentiel se réduit au modèle complet dont on lit une clé ; un tel fichier, aplati avec un indicateur `applicable`, reste générable en quelques heures si un outil tiers le demande) ; `declinaisons` en tableau plutôt qu'en objet (possible, coûte une recherche par identifiant au lieu d'un accès direct, l'ensemble des clés étant fermé).
+**Alternatives écartées.** Reprendre la structure RGAA 4 (aucune place pour le Référentiel, tests en objet indexé par position, bizarreries pérennisées) ; publier deux structures (double surface à maintenir) ; **un fichier par Référentiel** ne contenant que les Critères applicables (retenu un temps : sans objet dès que chaque page affiche la liste complète, la vue par Référentiel se réduit au modèle complet dont on lit une clé ; un tel fichier, aplati avec un indicateur `applicable`, reste générable en quelques heures si un outil tiers le demande) ; `declinaisons` en tableau plutôt qu'en objet (possible, coûte une recherche par identifiant au lieu d'un accès direct, l'ensemble des clés étant fermé) ; liste de Critères à plat avec un numéro de Thématique (schéma plus plat, mais regroupement à refaire côté page et rupture avec le parcours `topics > criteria` que connaissent les outils).
 
 ### 3.6 URL, navigation, recherche
 
@@ -223,105 +245,120 @@ Le cadrage proposait un fichier YAML par critère pour les sources, jugé plus l
 
 ## Annexe C — Exemple de Données publiées (`rgaa/data/5/criteres.json`)
 
-Critère 1.1 applicable à Web et Mobile, Critère 1.2 à Web seulement (aucune clé `mobile` dans ses `declinaisons`). Textes en markdown, liens absolus, identifiants en chaînes.
+Imbrication du document : `thematiques[] > criteres[] > declinaisons{} > tests[]`, même profondeur que le `topics > criteria > criterium > tests` de RGAA 4. Critère 1.1 applicable à Web et Mobile, Critère 1.2 à Web seulement (aucune clé `mobile` dans ses `declinaisons`). Textes en markdown, liens absolus, identifiants en chaînes.
 
 ```json
 {
 	"$schema": "https://accessibilite.numerique.gouv.fr/rgaa/data/schema/criteres.schema.json",
-	"rgaa": { "version": "5.0", "date": "2027-01-15" },
+	"rgaa": {
+		"version": "5.0",
+		"date": "2027-01-15"
+	},
 	"source": "https://github.com/DISIC/teleservice-conformite/tree/main/rgaa/content",
 	"referentiels": [
-		{ "id": "web", "intitule": "Sites web" },
-		{ "id": "mobile", "intitule": "Applications mobiles" },
-		{ "id": "bureautique", "intitule": "Logiciels bureautiques" }
-	],
-	"thematiques": [{ "numero": 1, "intitule": "Images" }],
-	"criteres": [
 		{
-			"numero": "1.1",
-			"thematique": 1,
-			"niveau": "A",
-			"intitule": "Chaque [image porteuse d’information](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-porteuse-d-information) a-t-elle une [alternative textuelle](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#alternative-textuelle-image) ?",
-			"referentiels": ["web", "mobile"],
-			"declinaisons": {
-				"web": {
-					"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1",
-					"tests": [
-						{
-							"numero": "1.1.1",
-							"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1.1",
-							"intitule": "Chaque image (balise `<img>` ou balise possédant l’attribut WAI-ARIA `role=\"img\"`) porteuse d’information a-t-elle une alternative textuelle ?",
-							"conditions": [],
-							"methodologie": "1. Retrouver dans le document les images structurées au moyen d’un élément `<img>` …\n2. …"
-						},
-						{
-							"numero": "1.1.2",
-							"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1.2",
-							"intitule": "Chaque image vectorielle (balise `<svg>`) porteuse d’information vérifie-t-elle ces conditions ?",
-							"conditions": [
-								"La balise `<svg>` possède un attribut WAI-ARIA `role=\"img\"` ;",
-								"La balise `<svg>` a une alternative textuelle."
-							],
-							"methodologie": "1. …"
-						}
-					],
-					"references": [
-						{
-							"norme": "WCAG",
-							"version": "2.2",
-							"reference": "1.1.1",
-							"intitule": "Non-text Content",
-							"niveau": "A"
-						}
-					],
-					"techniques": ["H36", "H37", "H53", "F65", "H24"],
-					"casParticuliers": null,
-					"notesTechniques": "L’attribut `alt` étant la seule technique totalement supportée …"
-				},
-				"mobile": {
-					"url": "https://accessibilite.numerique.gouv.fr/rgaa/mobile/criteres#1.1",
-					"tests": [
-						{
-							"numero": "1.1.1",
-							"url": "https://accessibilite.numerique.gouv.fr/rgaa/mobile/criteres#1.1.1",
-							"intitule": "Chaque image porteuse d’information possède-t-elle une description accessible ?",
-							"conditions": [],
-							"methodologie": "1. Parcourir chaque écran avec le lecteur d’écran de la plateforme …"
-						}
-					],
-					"references": [
-						{
-							"norme": "EN 301 549",
-							"version": "3.2.1",
-							"reference": "11.1.1.1",
-							"intitule": "Non-text content (open functionality)"
-						}
-					],
-					"techniques": [],
-					"casParticuliers": "Les icônes décoratives …",
-					"notesTechniques": null
-				}
-			}
+			"id": "web",
+			"intitule": "Sites web"
 		},
 		{
-			"numero": "1.2",
-			"thematique": 1,
-			"niveau": "A",
-			"intitule": "Chaque [image de décoration](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-de-decoration) est-elle correctement ignorée par les technologies d’assistance ?",
-			"referentiels": ["web"],
-			"declinaisons": {
-				"web": {
-					"url": "…",
-					"tests": ["…"],
-					"references": ["…"],
-					"techniques": ["…"],
-					"casParticuliers": null,
-					"notesTechniques": null
+			"id": "mobile",
+			"intitule": "Applications mobiles"
+		},
+		{
+			"id": "bureautique",
+			"intitule": "Logiciels bureautiques"
+		}
+	],
+	"thematiques": [
+		{
+			"numero": 1,
+			"intitule": "Images",
+			"criteres": [
+				{
+					"numero": "1.1",
+					"niveau": "A",
+					"intitule": "Chaque [image porteuse d’information](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-porteuse-d-information) a-t-elle une [alternative textuelle](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#alternative-textuelle-image) ?",
+					"referentiels": ["web", "mobile"],
+					"declinaisons": {
+						"web": {
+							"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1",
+							"tests": [
+								{
+									"numero": "1.1.1",
+									"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1.1",
+									"intitule": "Chaque image (balise `<img>` ou balise possédant l’attribut WAI-ARIA `role=\"img\"`) porteuse d’information a-t-elle une alternative textuelle ?",
+									"conditions": [],
+									"methodologie": "1. Retrouver dans le document les images structurées au moyen d’un élément `<img>` …\n2. …"
+								},
+								{
+									"numero": "1.1.2",
+									"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1.2",
+									"intitule": "Chaque image vectorielle (balise `<svg>`) porteuse d’information vérifie-t-elle ces conditions ?",
+									"conditions": [
+										"La balise `<svg>` possède un attribut WAI-ARIA `role=\"img\"` ;",
+										"La balise `<svg>` a une alternative textuelle."
+									],
+									"methodologie": "1. …"
+								}
+							],
+							"references": [
+								{
+									"norme": "WCAG",
+									"version": "2.2",
+									"reference": "1.1.1",
+									"intitule": "Non-text Content",
+									"niveau": "A"
+								}
+							],
+							"techniques": ["H36", "H37", "H53", "F65", "H24"],
+							"casParticuliers": null,
+							"notesTechniques": "L’attribut `alt` étant la seule technique totalement supportée …"
+						},
+						"mobile": {
+							"url": "https://accessibilite.numerique.gouv.fr/rgaa/mobile/criteres#1.1",
+							"tests": [
+								{
+									"numero": "1.1.1",
+									"url": "https://accessibilite.numerique.gouv.fr/rgaa/mobile/criteres#1.1.1",
+									"intitule": "Chaque image porteuse d’information possède-t-elle une description accessible ?",
+									"conditions": [],
+									"methodologie": "1. Parcourir chaque écran avec le lecteur d’écran de la plateforme …"
+								}
+							],
+							"references": [
+								{
+									"norme": "EN 301 549",
+									"version": "3.2.1",
+									"reference": "11.1.1.1",
+									"intitule": "Non-text content (open functionality)"
+								}
+							],
+							"techniques": [],
+							"casParticuliers": "Les icônes décoratives …",
+							"notesTechniques": null
+						}
+					}
+				},
+				{
+					"numero": "1.2",
+					"niveau": "A",
+					"intitule": "Chaque [image de décoration](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-de-decoration) est-elle correctement ignorée par les technologies d’assistance ?",
+					"referentiels": ["web"],
+					"declinaisons": {
+						"web": {
+							"url": "…",
+							"tests": ["…"],
+							"references": ["…"],
+							"techniques": ["…"],
+							"casParticuliers": null,
+							"notesTechniques": null
+						}
+					}
 				}
-			}
+			]
 		}
 	]
 }
 ```
 
-Choix visibles dans l'exemple : `criteres` à plat avec un numéro de `thematique` et une liste `thematiques` (le regroupement pour l'affichage est une passe du loader) ; un test est un objet (`numero`, `intitule`, `conditions`, `methodologie`, `url`), les méthodologies sont intégrées, plus de `methodologies.json` ; le même `"1.1.1"` peut apparaître sous `web` et `mobile` avec un contenu différent, l'identité d'un Test étant le couple (Référentiel, numéro) ; `references` est une liste typée (`norme`, `version`, `reference`, `intitule`, `niveau`) commune aux critères WCAG et aux clauses EN 301 549 ; `referentiels` sur le Critère est redondant avec les clés de `declinaisons`, gardé pour que la page écrive « s'applique aussi à Mobile » sans inspecter les clés. Le glossaire suit le même en-tête puis `termes: [{ "slug", "titre", "referentiels", "definition" }]`, `definition` en markdown.
+Choix visibles dans l'exemple : les Critères sont **imbriqués sous leur Thématique**, comme la page les affiche et comme les consommateurs de RGAA 4 les parcourent (une liste à plat avait été envisagée pour la simplicité du schéma ; l'imbrication épouse le document et supprime le regroupement côté page) ; un test est un objet (`numero`, `intitule`, `conditions`, `methodologie`, `url`), les méthodologies sont intégrées, plus de `methodologies.json` ; le même `"1.1.1"` peut apparaître sous `web` et `mobile` avec un contenu différent, l'identité d'un Test étant le couple (Référentiel, numéro) ; `references` est une liste typée (`norme`, `version`, `reference`, `intitule`, `niveau`) commune aux critères WCAG et aux clauses EN 301 549 ; `referentiels` sur le Critère est redondant avec les clés de `declinaisons`, gardé pour que la page écrive « s'applique aussi à Mobile » sans inspecter les clés ; une Thématique dont aucun Critère ne porte de déclinaison pour le Référentiel affiché est entièrement marquée hors référentiel. Le glossaire suit le même en-tête puis `termes: [{ "slug", "titre", "referentiels", "definition" }]`, `definition` en markdown.
