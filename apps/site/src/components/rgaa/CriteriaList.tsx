@@ -3,9 +3,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { tss } from "tss-react";
 import AccordionList from "./AccordionList";
+import { setCollapsesExpanded } from "./helpers/collapse";
 import { type Criterias, getAllTopicNames } from "./helpers/topics";
 import exampleCriterias from "./reference-criterias.json";
 import type { ReferenceId } from "./references";
@@ -35,10 +36,31 @@ export default function CriteriaList({
 	reference,
 	criterias = exampleCriterias,
 }: CriteriaListProps) {
-	const [expanded, setExpanded] = useState(true);
 	const { classes } = useStyles(colors[reference]);
 
 	const allTopics = getAllTopicNames(criterias);
+
+	const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>(
+		() => Object.fromEntries(allTopics.map((topic) => [topic, true])),
+	);
+
+	const topicsRef = useRef<HTMLDivElement>(null);
+
+	const allExpanded = allTopics.every((topic) => expandedTopics[topic]);
+
+	const toggleAll = () => {
+		setExpandedTopics(
+			allExpanded
+				? {}
+				: Object.fromEntries(allTopics.map((topic) => [topic, true])),
+		);
+		setCollapsesExpanded(
+			topicsRef.current?.querySelectorAll(
+				":scope > div > .fr-accordion > .fr-collapse",
+			) ?? [],
+			!allExpanded,
+		);
+	};
 
 	return (
 		<div className={classes.grid}>
@@ -46,17 +68,24 @@ export default function CriteriaList({
 				<Badge className={classes.badge}>{criterias.reference}</Badge>
 				<TopicSidebarList topics={allTopics} />
 			</div>
-			<div className={classes.rightContent}>
+			<div className={classes.rightContent} ref={topicsRef}>
 				<Button
 					className={classes.toggleButton}
-					iconId={expanded ? "ri-arrow-down-s-line" : "ri-arrow-up-s-line"}
+					iconId={allExpanded ? "ri-arrow-up-s-line" : "ri-arrow-down-s-line"}
 					iconPosition="right"
-					onClick={() => setExpanded((value) => !value)}
+					onClick={toggleAll}
 					priority="secondary"
 				>
-					{expanded ? "Tout déplier" : "Tout replier"}
+					{allExpanded ? "Tout replier" : "Tout déplier"}
 				</Button>
-				<AccordionList reference={reference} criterias={criterias} />
+				<AccordionList
+					reference={reference}
+					criterias={criterias}
+					expandedTopics={expandedTopics}
+					onTopicExpandedChange={(topic, expanded) =>
+						setExpandedTopics((value) => ({ ...value, [topic]: expanded }))
+					}
+				/>
 			</div>
 		</div>
 	);

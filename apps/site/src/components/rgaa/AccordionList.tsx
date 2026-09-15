@@ -3,9 +3,10 @@
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
-import type { ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { tss } from "tss-react";
 import DisabledTopicAccordion from "./DisabledTopicAccordion";
+import { setCollapsesExpanded } from "./helpers/collapse";
 import { DEFAULT_TOPICS, type Criterias } from "./helpers/topics";
 import type { ReferenceId } from "./references";
 import { usePathname } from "next/navigation";
@@ -13,6 +14,8 @@ import { usePathname } from "next/navigation";
 interface AccordionListProps {
 	reference: ReferenceId;
 	criterias: Criterias;
+	expandedTopics: Record<string, boolean>;
+	onTopicExpandedChange: (topic: string, expanded: boolean) => void;
 }
 
 const colors = {
@@ -45,6 +48,7 @@ type NumberedAccordionProps = {
 	showLinkIcon?: boolean;
 	className?: string;
 	defaultExpanded?: boolean;
+	onExpandedChange?: (expanded: boolean) => void;
 };
 
 function NumberedAccordion({
@@ -56,6 +60,7 @@ function NumberedAccordion({
 	showLinkIcon = false,
 	className,
 	defaultExpanded = false,
+	onExpandedChange,
 }: NumberedAccordionProps) {
 	const { classes } = useNumberedAccordionStyles();
 	const pathname = usePathname();
@@ -80,6 +85,7 @@ function NumberedAccordion({
 					label={accordionLabel}
 					className={className}
 					defaultExpanded={defaultExpanded}
+					onExpandedChange={(value) => onExpandedChange?.(value)}
 				>
 					{children}
 				</Accordion>
@@ -88,17 +94,115 @@ function NumberedAccordion({
 	);
 }
 
+type TopicCriteriaProps = {
+	reference: ReferenceId;
+	topic: Criterias["topics"][number];
+};
+
+function TopicCriteria({ reference, topic }: TopicCriteriaProps) {
+	const { classes } = useStyles(colors[reference]);
+	const [expandedCriteria, setExpandedCriteria] = useState<
+		Record<string, boolean>
+	>({});
+	const criteriaRef = useRef<HTMLDivElement>(null);
+
+	const allExpanded = topic.criteria.every(
+		({ criterium }) => expandedCriteria[criterium.number],
+	);
+
+	const toggleAll = () => {
+		setExpandedCriteria(
+			allExpanded
+				? {}
+				: Object.fromEntries(
+						topic.criteria.map(({ criterium }) => [criterium.number, true]),
+					),
+		);
+		setCollapsesExpanded(
+			criteriaRef.current?.querySelectorAll(
+				":scope > div > .fr-accordion > .fr-collapse",
+			) ?? [],
+			!allExpanded,
+		);
+	};
+
+	return (
+		<>
+			<Button
+				className={classes.toggleButton}
+				iconId={allExpanded ? "ri-arrow-up-s-line" : "ri-arrow-down-s-line"}
+				iconPosition="right"
+				onClick={toggleAll}
+				priority="secondary"
+			>
+				{allExpanded
+					? "Replier tous les critères"
+					: "Déplier tous les critères"}
+			</Button>
+			<div ref={criteriaRef}>
+				{topic.criteria.map(({ criterium }) => {
+					const criteriumNumber = `${topic.number}.${criterium.number}`;
+
+					return (
+						<NumberedAccordion
+							key={criterium.number}
+							as="h4"
+							number={criteriumNumber}
+							label={criterium.title}
+							accordionLabel={`Tests et références du critère ${criteriumNumber}`}
+							showLinkIcon={true}
+							className={classes.criteriaAccordion}
+							defaultExpanded={expandedCriteria[criterium.number] ?? false}
+							onExpandedChange={(expanded) =>
+								setExpandedCriteria((value) => ({
+									...value,
+									[criterium.number]: expanded,
+								}))
+							}
+						>
+							{criterium.tests.map((test) => {
+								const testNumber = `${criteriumNumber}.${test.number}`;
+
+								return (
+									<NumberedAccordion
+										key={test.number}
+										as="p"
+										number={testNumber}
+										label={test.label}
+										accordionLabel={`Méthodologie du test ${testNumber}`}
+										className={classes.testAccordion}
+									>
+										{test?.methodologies?.length && (
+											<div className={classes.methodologies}>
+												{test.methodologies?.map((methodology) => (
+													<p key={methodology}>{methodology}</p>
+												))}
+											</div>
+										)}
+									</NumberedAccordion>
+								);
+							})}
+						</NumberedAccordion>
+					);
+				})}
+			</div>
+		</>
+	);
+}
+
 export default function AccordionList({
 	reference,
 	criterias,
+	expandedTopics,
+	onTopicExpandedChange,
 }: AccordionListProps) {
-	const { classes, cx } = useStyles(colors[reference]);
+	const { classes } = useStyles(colors[reference]);
 	const { classes: linkClasses } = useNumberedAccordionStyles();
 	const pathname = usePathname();
-	// const [expanded, setExpanded] = useState(true);
 
+	// Not an fr-accordions-group: that DSFR group only lets one accordion stay open.
 	return (
-		<div className={cx(fr.cx("fr-accordions-group"), classes.list)}>
+		<div className={classes.list}>
 			{DEFAULT_TOPICS.map((topic, index) => {
 				const applicationTopic = criterias.topics.find(
 					(t) => t.topic === topic,
@@ -118,7 +222,10 @@ export default function AccordionList({
 					<Accordion
 						key={applicationTopic.topic}
 						titleAs="h2"
-						defaultExpanded
+						defaultExpanded={expandedTopics[applicationTopic.topic] ?? false}
+						onExpandedChange={(expanded) =>
+							onTopicExpandedChange(applicationTopic.topic, expanded)
+						}
 						label={
 							<>
 								{`${index + 1}. ${topic}`}
@@ -133,45 +240,7 @@ export default function AccordionList({
 						}
 						className={classes.topicAccordion}
 					>
-						{applicationTopic.criteria.map(({ criterium }) => {
-							const criteriumNumber = `${applicationTopic.number}.${criterium.number}`;
-
-							return (
-								<NumberedAccordion
-									key={criterium.number}
-									as="h4"
-									number={criteriumNumber}
-									label={criterium.title}
-									accordionLabel={`Tests et références du critère ${criteriumNumber}`}
-									showLinkIcon={true}
-									className={classes.criteriaAccordion}
-									defaultExpanded
-								>
-									{criterium.tests.map((test) => {
-										const testNumber = `${criteriumNumber}.${test.number}`;
-
-										return (
-											<NumberedAccordion
-												key={test.number}
-												as="p"
-												number={testNumber}
-												label={test.label}
-												accordionLabel={`Méthodologie du test ${testNumber}`}
-												className={classes.testAccordion}
-											>
-												{test?.methodologies?.length && (
-													<div className={classes.methodologies}>
-														{test.methodologies?.map((methodology) => (
-															<p key={methodology}>{methodology}</p>
-														))}
-													</div>
-												)}
-											</NumberedAccordion>
-										);
-									})}
-								</NumberedAccordion>
-							);
-						})}
+						<TopicCriteria reference={reference} topic={applicationTopic} />
 					</Accordion>
 				);
 			})}
@@ -260,7 +329,9 @@ const useStyles = tss
 				},
 			},
 			toggleButton: {
-				alignSelf: "flex-end",
+				display: "flex",
+				marginLeft: "auto",
+				marginBottom: fr.spacing("3w"),
 			},
 			methodologies: {
 				backgroundColor: fr.colors.decisions.background.default.grey.default,
