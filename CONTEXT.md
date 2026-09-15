@@ -226,6 +226,66 @@ A Declaration is reached through two distinct route trees, kept separate on purp
 
 Both trees use the **plural** `declarations/` segment. Singular `declaration/` is not used as a route segment.
 
+Once the RGAA 5 site shares the deployable, the root `/` is the RGAA home, not the téléservice. The téléservice gains one public **landing** at `/declarations` (what today's root shows); `/dashboard/*` and `/declarations/[id]/publish` keep their addresses.
+
+## Glossary — RGAA 5 référentiel (public site)
+
+Vocabulary of the RGAA 5 content hosted alongside the téléservice. Distinct from the Declaration vocabulary above: a Declaration _cites_ a Référentiel, it does not own Critères.
+
+### Référentiel
+
+One of the three normative documents of RGAA 5: **Web**, **Applications mobiles**, **Bureautique** (desktop software). A Référentiel is a projection of the single list of [[critere|Critères]]: it presents the **whole** list, each Critère either carrying its [[declinaison|Déclinaison]] for that Référentiel or marked as outside it, and shows only the [[test-rgaa|Tests]] written for that Référentiel.
+
+**Avoid:** "version" (RGAA 5 vs 4.1.2 is a version, web/mobile/bureautique are Référentiels); "kind of application" (that is the Declaration's `app_kind`, a different concept).
+
+### Critère
+
+One entry of the single RGAA 5 list, identified by its number (`thématique.critère`, e.g. `1.1`) and carrying **one wording shared by every Référentiel**. A Critère is applicable to one, two or three [[referentiel|Référentiels]]; its identity and wording never vary by Référentiel.
+
+What is **shared** by every Référentiel: number, wording, [[thematique|Thématique]]. A Critère has **no conformance level of its own**: the legal obligation does not rank criteria, and one Critère can cover WCAG success criteria of different levels; A / AA is a property of a WCAG reference. What is **per Référentiel**, alongside that Référentiel's Tests, is its [[annexe-rgaa|Annexe]]: normative references (WCAG success criteria, EN 301 549 clauses), technique codes, _cas particuliers_ and _notes techniques_ — all of it technology-specific prose.
+
+**Avoid:** "web criterion" / "mobile criterion" as if there were three lists of Critères.
+
+### Test (RGAA)
+
+The verification unit of a Critère **for one Référentiel**. A Test belongs to exactly one (Critère, Référentiel) pair and its wording and methodology are specific to that Référentiel. Test numbers restart per Référentiel: "test 1.2.1" is ambiguous on its own, the full identity is (Référentiel, 1.2.1).
+
+**Avoid:** confusing with the Declaration's _Audit_ — an audit applies Tests, it does not define them.
+
+### Terme (glossaire)
+
+One entry of the **single shared glossary**, identified by its slug. Every Terme declares the Référentiels it applies to (default: all three). A Test may only reference Termes applicable to its own Référentiel. When a notion genuinely differs by platform it is two Termes with two distinct names, never one Terme with hidden per-Référentiel variants.
+
+**Avoid:** "web glossary" / "mobile glossary" — there is one glossary.
+
+### Version (RGAA)
+
+A site-wide revision number of the RGAA (5.0, 5.1, ...) covering the three Référentiels together; no Référentiel has a version of its own. The site renders the **current** Version only. Earlier Versions survive as frozen published data at a stable address plus revision notes; RGAA 4.1.2 additionally survives as a whole archived site.
+
+**Avoid:** using "version" for web/mobile/bureautique (those are Référentiels).
+
+### Données publiées (RGAA)
+
+The generated, downloadable representation of one Version: one `criteres.json` holding every Critère with its per-Référentiel [[declinaison|Déclinaisons]], one glossary file with applicability per Terme, and the published schema. There is no per-Référentiel file: a Référentiel view is the whole model with one Déclinaison read. Generated from the sources, never hand-edited, governed by a published schema, frozen per Version. They live in two identical copies: committed in the repository next to the sources (regenerated on every merge, so tools keep the GitHub history and diff they have today) and served by the site at a versioned address, which is the canonical download. This is what audit tools consume; it is **not** the RGAA 4 file format.
+
+**Avoid:** "the JSON" without saying which file; "API" (there is no server, only versioned files).
+
+### Déclinaison (RGAA)
+
+The per-Référentiel part of a Critère: its Tests and its [[annexe-rgaa|Annexe]] for one Référentiel. A Critère has one Déclinaison per Référentiel it applies to and none for the others; the absence of a Déclinaison is what "outside this Référentiel" means.
+
+**Avoid:** "variant" or "version" of a Critère.
+
+### Annexe (RGAA)
+
+What backs a Critère in one Référentiel without being a Test: normative references (WCAG success criteria, EN 301 549 clauses), technique codes, _cas particuliers_, _notes techniques_. One Annexe per [[declinaison|Déclinaison]]; it is the second block of a Critère on the page, after its Tests. Named after the RGAA 4 source file `annexe.md`.
+
+**Avoid:** "metadata" (the Annexe is normative content, not data about data).
+
+### Thématique
+
+The grouping of Critères, named by the first segment of a Critère number (`1` = Images, ...). Shared by all Référentiels.
+
 ## Code structure & naming
 
 Layered, not feature-foldered. One predictable layer per concern:
@@ -252,8 +312,11 @@ Layered, not feature-foldered. One predictable layer per concern:
 - **A Declaration is reached only through an approved access right of the caller**, and that rule has one implementation: `loadOwnedDeclaration` (`server/api/utils/declaration-access.ts`). tRPC procedures scoped to a Declaration take a top-level `declarationId` input and are built on `declarationProcedure`, which resolves the owned, populated Declaration into `ctx.declaration` before the body runs; pages go through `loadDeclarationForPage` / `guardDeclaration` (`lib/server-guards.ts`). A procedure body never re-checks access and never re-fetches the Declaration it was given.
 - **Every write to a Declaration's content goes through `writeDeclaration`** (`server/api/utils/section-write.ts`). The `status` column is derived from the row as it is about to be written and lands in the same update; no caller recomputes or re-reads it afterwards. Section saves enter through `saveSection`, whose per-Section merge rules are the only place a save shapes its data. Every save returns the whole Declaration, and the client folds it with `applySavedDeclaration`.
 
+- **A Critère number is stable across Référentiels, and every Référentiel shows the full list.** A Critère that does not apply to a Référentiel is displayed there as outside it ("Ne s'applique pas aux applications mobiles" / "Hors référentiel Mobile"), never dropped and never renumbered, even when a whole Thématique has nothing applicable. "1.3" names the same Critère in Web, Mobile and Bureautique, in every audit grid and in every consumer of the published data. Never label this "Non applicable": that is an audit result.
+
 ## Out of scope
 
 - **"Block"** — conversational synonym for Section. Never used as a code identifier.
 - **"Wizard step" / `MultiStep`** — the audit's previous step-by-step entry flow. Retired with ADR-0001; the `MultiStep` component may still exist for legacy reasons but is no longer referenced by the audit Section.
+- **Aligning `app_kind` with the RGAA 5 Référentiels** — deferred until RGAA 5 goes live. Until then "Autre" is not "Bureautique" and a Declaration does not name the Référentiel its audit followed; do not add an interim free-text field for it.
 - **Entity-level sharing of Contacts/Schemas** — retired in the v2 redesign in favour of the per-user [[library|Library]]. The `entity` link on `contacts`/`schemas` no longer carries sharing semantics.
