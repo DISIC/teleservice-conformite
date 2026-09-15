@@ -18,18 +18,17 @@ Le site RGAA 4.1.2 reste sur Netlify depuis son dépôt actuel et passe sur un s
 
 ## 2. Ce qui change par rapport au document de cadrage
 
-| Sujet                              | Document de cadrage                                                                                 | Décision de la session                                                                          | Pourquoi                                                                                                                                                                                    |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Déployable                         | Une seule application Next.js                                                                       | Deux applications (site statique + téléservice) dans un monorepo                                | Performance du site, en-têtes distincts, déploiements séparés. Le choix des deux en-têtes distincts a supprimé l'argument « une seule coque cohérente » qui justifiait l'application unique |
-| Domaine du téléservice             | Sous-chemin `/declarations` du domaine racine                                                       | Sous-domaine                                                                                    | Clever Cloud route par domaine, pas par chemin ; un proxy annulerait les gains du statique                                                                                                  |
-| Sérialisation des données publiées | YAML à la place du JSON actuel (« plus lisible et plus sûr », convertible en JSON)                  | JSON, schéma JSON publié                                                                        | Fichiers générés, jamais édités à la main, consommés par des programmes : le typage implicite du YAML lit `1.10` comme 1.1, le JSON se lit sans bibliothèque partout                        |
-| Format des sources (critères)      | Non tranché ; l'exemple YAML du cadrage illustrait la structure d'un critère                        | Dossier par critère, markdown à frontmatter, un fichier par test                                | Habitude des contributeurs, conflits de fusion, prose lisible ; le YAML ne subsiste que dans le frontmatter (2–3 champs)                                                                    |
-| Référentiels                       | « Chaque référentiel est indépendant »                                                              | Une seule liste de Critères, projetée par Référentiel                                           | Contradiction interne du cadrage ; une modification d'intitulé ne doit pas être répétée trois fois                                                                                          |
-| Espace authentifié                 | `/declarations/workspace`                                                                           | `/dashboard/*` conservé, `/declarations` devient la page d'accueil publique du téléservice      | Aucun renommage, frontière claire pour l'en-tête                                                                                                                                            |
-| Fichiers JSON générés              | Commités par un hook pre-commit (jamais exécuté par les contributeurs éditant depuis le navigateur) | Générés au build du site et commités sur `main` par la CI dans `rgaa/data/`, à côté des sources | Disponibilité sur GitHub et historique pour les outils, comme avant ; plus de JSON obsolète en attente d'un mainteneur                                                                      |
-| Structure des données publiées     | Reprise implicite du format RGAA 4                                                                  | Nouvelle structure (Référentiels, applicabilité), versionnée dans l'URL                         | Le format RGAA 4 n'a pas de notion de Référentiel ; les outils doivent changer de toute façon                                                                                               |
-| En-tête                            | Un seul site cohérent                                                                               | Deux en-têtes distincts avec un bouton de bascule en haut à droite                              | Décision produit                                                                                                                                                                            |
-| Prévisualisation des PR            | Non traitée                                                                                         | Aucune pour l'instant                                                                           | La mise en page est fixée par les composants DSFR ; le rendu markdown de GitHub suffit                                                                                                      |
+| Sujet                          | Document de cadrage                                                                                 | Décision de la session                                                                          | Pourquoi                                                                                                                                                                                              |
+| ------------------------------ | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Déployable                     | Une seule application Next.js                                                                       | Deux applications (site statique + téléservice) dans un monorepo                                | Performance du site, en-têtes distincts, déploiements séparés. Le choix des deux en-têtes distincts a supprimé l'argument « une seule coque cohérente » qui justifiait l'application unique           |
+| Domaine du téléservice         | Sous-chemin `/declarations` du domaine racine                                                       | Sous-domaine                                                                                    | Clever Cloud route par domaine, pas par chemin ; un proxy annulerait les gains du statique                                                                                                            |
+| Format des sources (critères)  | Un fichier YAML par critère                                                                         | Dossier par critère, markdown à frontmatter, un fichier par test                                | Habitude des contributeurs, prose lisible et relisible dans le diff GitHub ; le YAML subsiste dans le frontmatter (2–3 champs) ; la granularité (un fichier par test) est un choix distinct du format |
+| Référentiels                   | « Chaque référentiel est indépendant »                                                              | Une seule liste de Critères, projetée par Référentiel                                           | Contradiction interne du cadrage ; une modification d'intitulé ne doit pas être répétée trois fois                                                                                                    |
+| Espace authentifié             | `/declarations/workspace`                                                                           | `/dashboard/*` conservé, `/declarations` devient la page d'accueil publique du téléservice      | Aucun renommage, frontière claire pour l'en-tête                                                                                                                                                      |
+| Fichiers JSON générés          | Commités par un hook pre-commit (jamais exécuté par les contributeurs éditant depuis le navigateur) | Générés au build du site et commités sur `main` par la CI dans `rgaa/data/`, à côté des sources | Disponibilité sur GitHub et historique pour les outils, comme avant ; plus de JSON obsolète en attente d'un mainteneur                                                                                |
+| Structure des données publiées | Reprise implicite du format RGAA 4                                                                  | Nouvelle structure (Référentiels, applicabilité), versionnée dans l'URL                         | Le format RGAA 4 n'a pas de notion de Référentiel ; les outils doivent changer de toute façon                                                                                                         |
+| En-tête                        | Un seul site cohérent                                                                               | Deux en-têtes distincts avec un bouton de bascule en haut à droite                              | Décision produit                                                                                                                                                                                      |
+| Prévisualisation des PR        | Non traitée                                                                                         | Aucune pour l'instant                                                                           | La mise en page est fixée par les composants DSFR ; le rendu markdown de GitHub suffit                                                                                                                |
 
 ## 3. Décisions détaillées
 
@@ -68,7 +67,7 @@ Décisions enregistrées dans `CONTEXT.md` ; rappel des choix et des alternative
 - **Un Critère est une entité unique** (numéro, intitulé, niveau, Thématique partagés), applicable à un, deux ou trois Référentiels. _Écarté :_ trois listes de critères indépendantes (dérive de rédaction, triple correction). L'intitulé ne varie pas par Référentiel ; seuls les Tests varient.
 - **Un Test appartient à un couple (Critère, Référentiel)** ; sa numérotation repart à 1 par Référentiel. Le Test 1.2.1 de Mobile n'est pas le Test 1.2.1 de Bureautique.
 - **Références normatives, techniques, cas particuliers et notes techniques sont par Référentiel**, à côté des Tests. _Écarté :_ les partager (elles sont technologiques : techniques WCAG côté Web, clauses EN 301 549 côté Mobile).
-- **Numérotation stable avec trous** : un Référentiel n'affiche que ses Critères applicables, sans renuméroter ni insérer de « non applicable ». _Écarté :_ renumérotation par Référentiel (casse la promesse « même liste ») et lignes de substitution.
+- **Numérotation stable, liste complète sur chaque Référentiel** : chaque page de Référentiel présente tous les Critères dans la même numérotation ; un Critère qui ne s'applique pas y est affiché comme hors référentiel, jamais retiré ni renuméroté, y compris quand une Thématique entière n'a aucun Critère applicable. _Vocabulaire :_ la mention est une phrase (« Ne s'applique pas aux applications mobiles ») ou « Hors référentiel Mobile », jamais « Non applicable », qui est un statut de résultat d'audit. _Écarté :_ n'afficher que les Critères applicables avec des trous dans la numérotation (premier choix de la session, remplacé parce que la page a besoin de la liste complète) ; renumérotation par Référentiel (casse la promesse « même liste »).
 - **Un glossaire partagé**, chaque Terme déclarant ses Référentiels (défaut : les trois). Une notion qui diffère selon la plateforme donne deux Termes nommés distinctement. La CI interdit à un Test de lier un Terme non applicable à son Référentiel. _Écarté :_ trois glossaires, ou des variantes cachées sous un même Terme.
 - **Version globale du site** (5.0, 5.1…), les trois Référentiels évoluant ensemble ; seule la Version courante est rendue, les précédentes survivent en Données publiées figées et notes de révision. _Écarté :_ rendre toutes les Versions (multiplication d'URL quasi identiques).
 
@@ -96,12 +95,14 @@ rgaa/
     pages/…               méthode, obligations, ressources, accueil
     _modeles/             exemples copiables de chaque type de fichier, commentés en français
   data/                   généré par la CI sur main, jamais édité à la main
-    5/                    Version courante : web/, mobile/, bureautique/, criteres.json, glossaire.json
+    5/                    Version courante : criteres.json (modèle complet), glossaire.json
     5.0/                  Versions antérieures figées, même disposition
     schema/               schéma JSON publié
 ```
 
 L'applicabilité d'un Critère à un Référentiel est **déduite de la présence du sous-dossier** ; la CI exige au moins un test dans tout sous-dossier présent. Pas de champ d'applicabilité redondant.
+
+_Recommandation en attente de validation :_ quand un dossier de Référentiel porte plusieurs champs de prose (cas particuliers, notes techniques), un fichier par champ (`cas-particuliers.md`, `notes-techniques.md`) plutôt que deux sections de titre dans `annexe.md`, dont le frontmatter ne garderait que les références. Chaque fichier n'a alors qu'un corps de prose, le loader n'analyse jamais de titres, et la CI valide un jeu de fichiers fixe par dossier.
 
 **Contrôles CI.** Frontmatter conforme au schéma ; tout lien de glossaire résout vers un Terme existant et applicable au Référentiel ; tout lien interne résout ; tests numérotés de 1 à n sans trou ni doublon ; au moins un test par sous-dossier de Référentiel présent.
 
@@ -116,7 +117,7 @@ L'applicabilité d'un Critère à un Référentiel est **déduite de la présenc
 
 ### 3.5 Données publiées
 
-**Décision.** Nouveau format reflétant le modèle : un fichier par Référentiel (Critères applicables, Tests, références, cas particuliers, notes), un fichier « modèle complet » (tous les Critères avec leur applicabilité), un fichier glossaire (avec applicabilité par Terme). Versionnées dans l'URL (par exemple `/rgaa/data/5/web/criteres.json`). Liens absolus produits depuis une URL de base configurée. **Schéma JSON publié** à côté des fichiers : c'est lui la promesse de compatibilité.
+**Décision.** Nouvelle structure reflétant le modèle, en JSON, trois fichiers par Version : `criteres.json`, le modèle complet, chaque Critère avec ses champs partagés et ses **déclinaisons** par Référentiel (Tests, références, techniques, cas particuliers, notes) ; `glossaire.json`, chaque Terme avec ses Référentiels ; le **schéma JSON publié** à côté, promesse de compatibilité. Versionnées dans l'URL (`/rgaa/data/5/criteres.json`). Liens absolus produits depuis une URL de base configurée. Les identifiants (`"1.10"`) sont des chaînes. `tests` est toujours un tableau d'objets ; la dimension Référentiel n'est pas sur `tests` mais un niveau au-dessus, dans `declinaisons`, objet à trois clés fermées (`web`, `mobile`, `bureautique`), absentes quand le Critère ne s'applique pas. Exemple en annexe C.
 
 **Où elles vivent.** Deux copies identiques par construction, le générateur étant déterministe :
 
@@ -125,11 +126,11 @@ L'applicabilité d'un Critère à un Référentiel est **déduite de la présenc
 
 _Écarté :_ le hook pre-commit du dépôt RGAA 4, qui ne s'exécutait pas pour les contributeurs éditant depuis le navigateur et laissait le JSON obsolète jusqu'à une régénération manuelle.
 
-**Alternatives écartées.** Reprendre la structure RGAA 4 (aucune place pour le Référentiel, bizarreries pérennisées) ; publier deux structures (double surface à maintenir) ; **sérialiser en YAML** plutôt qu'en JSON, comme le proposait le cadrage pour sa lisibilité : ces fichiers sont générés, jamais édités à la main et lus par des programmes, donc la lisibilité pour l'humain n'est pas le critère. Le YAML type implicitement (`1.10` non cité devient le nombre 1.1 et se confond avec le critère 1.1, `no` devient `false` en YAML 1.1, les parseurs 1.1 et 1.2 divergent), exige une bibliothèque chez chaque consommateur et se valide contre un schéma JSON seulement après conversion. Le JSON a une grammaire unique, aucun type implicite, un parseur natif dans tout navigateur et tout langage, et le schéma JSON s'y applique directement. Une vue YAML resterait générable d'un appel depuis le même modèle, mais ne sera pas publiée : seconde surface à documenter, et celle où `1.10` se trompe. Voir l'annexe B.
+**Alternatives écartées.** Reprendre la structure RGAA 4 (aucune place pour le Référentiel, tests en objet indexé par position, bizarreries pérennisées) ; publier deux structures (double surface à maintenir) ; **un fichier par Référentiel** ne contenant que les Critères applicables (retenu un temps : sans objet dès que chaque page affiche la liste complète, la vue par Référentiel se réduit au modèle complet dont on lit une clé ; un tel fichier, aplati avec un indicateur `applicable`, reste générable en quelques heures si un outil tiers le demande) ; `declinaisons` en tableau plutôt qu'en objet (possible, coûte une recherche par identifiant au lieu d'un accès direct, l'ensemble des clés étant fermé).
 
 ### 3.6 URL, navigation, recherche
 
-- **Une page par Référentiel** listant tous ses Critères en accordéons, ancres `#1.1` et `#1.1.1` avec les **règles de slug du site RGAA 4** (reprises pour que les anciens liens profonds survivent au 301, le navigateur conservant le fragment). Une page d'accueil par Référentiel (`/rgaa/web`) pour l'introduction, l'environnement de test et le téléchargement des données. **Une page de glossaire partagée**. _Écarté :_ une page par Critère (triple les URL, change l'habitude de lecture des auditeurs).
+- **Une page par Référentiel** présentant la liste complète des Critères en accordéons, ceux qui ne s'appliquent pas marqués par une phrase (« Ne s'applique pas aux applications mobiles »), jamais « Non applicable », ancres `#1.1` et `#1.1.1` avec les **règles de slug du site RGAA 4** (reprises pour que les anciens liens profonds survivent au 301, le navigateur conservant le fragment). Une page d'accueil par Référentiel (`/rgaa/web`) pour l'introduction, l'environnement de test et le téléchargement des données. **Une page de glossaire partagée**. _Écarté :_ une page par Critère (triple les URL, change l'habitude de lecture des auditeurs).
 - **Téléservice :** `/dashboard/*` et `/declarations/[id]/publish` inchangés ; nouvelle page d'accueil publique à `/declarations` (contenu de l'actuelle racine). La racine `/` est l'accueil RGAA.
 - **Deux en-têtes distincts**, chacun avec un bouton en haut à droite vers l'autre espace. _Écarté :_ un en-tête unique dont la navigation dépend de l'arbre de routes.
 - **Recherche : Pagefind** exécuté sur l'export statique après `next build`, avec un filtre par Référentiel porté par des attributs de données sur les pages. _Écarté :_ pas de recherche ; index client sur mesure.
@@ -183,6 +184,7 @@ Tranches ordonnées ; chacune laisse les deux applications déployables.
 - RGAA 5 conserve-t-il la numérotation RGAA 4 pour les critères survivants ? (qualité d'atterrissage des anciennes ancres)
 - Calendrier : le cadrage vise une mise en ligne en novembre 2026 et une bascule en janvier 2027.
 - Architecture exacte des pages éditoriales selon les maquettes.
+- Un fichier par champ de prose dans les dossiers de Référentiel (§ 3.4), à valider.
 
 ## Annexe A — Arborescence cible du dépôt
 
@@ -198,10 +200,128 @@ docs/                 documentation d'équipe (ce document, ADR)
 CONTEXT.md            glossaire unique, deux groupes
 ```
 
-## Annexe B — YAML et JSON : où chacun sert
+## Annexe B — Pourquoi les sources sont en markdown à frontmatter et non en YAML
 
-Le cadrage proposait de publier les fichiers de données en YAML à la place du JSON actuel, le jugeant « plus lisible et plus sûr », et convertible en JSON au besoin. La session a tranché à l'inverse pour ces fichiers et a réservé le YAML aux sources.
+Le cadrage proposait un fichier YAML par critère pour les sources, jugé plus lisible et plus sûr que le JSON généré aujourd'hui, avec l'idée qu'aucun cadriciel comme 11ty ne serait plus là pour « formater » le markdown. Deux mises au point, puis la comparaison.
 
-**Données publiées : JSON.** Elles sont générées depuis `rgaa/content/`, jamais corrigées à la main (une correction se fait dans le markdown source) et lues par des programmes. Pour un tel usage la sûreté joue contre le YAML : typage implicite (`1.10` non cité devient 1.1, `no` devient `false` sous YAML 1.1), divergences entre parseurs 1.1 et 1.2, bibliothèque nécessaire dans chaque consommateur, validation par schéma JSON possible seulement après conversion. Le JSON a une grammaire unique, aucun type implicite, un parseur natif partout (`fetch().json()` dans le navigateur), et le schéma publié s'y applique directement. Sa lisibilité, avec une indentation de deux espaces et un fichier par Référentiel, suffit à l'inspection.
+**11ty n'a jamais été le formateur.** Il appelait deux bibliothèques, `front-matter` pour séparer l'en-tête du corps et `markdown-it` pour rendre le corps, puis versait le résultat dans des gabarits Nunjucks. `packages/content` fait la même chose avec `gray-matter` et `markdown-it` (ou `remark`), en versant dans des composants React. Et le YAML ne supprime pas ce rendu : la prose contenue dans un fichier YAML reste du markdown (accents graves autour de `<img>`, liens vers le glossaire), exactement comme dans les chaînes du JSON RGAA 4 ; elle doit donc passer par le même rendu. Le YAML change le contenant de la prose, pas la chaîne d'outils.
 
-**Sources : markdown à frontmatter YAML.** Là où des humains saisissent deux ou trois valeurs étiquetées (`niveau`, `referentiels`, références WCAG) le YAML est lisible et sûr, et Zod le valide. La prose (intitulés, méthodologies, cas particuliers, notes) reste en markdown : lisible, relisible dans le diff de GitHub, un fichier par test pour éviter les conflits de fusion, et sans les deux-points ni points d'interrogation qui cassent un scalaire YAML non cité.
+**La granularité n'est pas le format.** Un fichier YAML par test est possible ; les conflits de fusion tiennent au découpage, pas au format.
+
+**Comparaison.**
+
+| Dimension                                                   | Markdown à frontmatter                                                                                   | Fichier YAML                                                                                                                         |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Champs structurés (niveau, références, techniques)          | YAML dans le frontmatter, validé par Zod                                                                 | YAML, validé par Zod : identique                                                                                                     |
+| Prose (méthodologies, cas particuliers, notes, définitions) | Native : listes numérotées, sous-listes, code et liens écrits comme ils se lisent                        | Scalaires bloc : prose indentée sous `\|`, l'indentation porte le sens, une erreur rattache silencieusement le texte à une autre clé |
+| Risques pour un contributeur dans l'éditeur web             | Une ligne de frontmatter fautive fait échouer un fichier avec une erreur claire                          | `1.10` non cité devient 1.1, un `: ` ou un ` #` dans un texte brut casse ou tronque la valeur, règles de citation à connaître        |
+| Relecture sur GitHub                                        | Onglet de prévisualisation rendu, diff de prose                                                          | Pas de prévisualisation, diff indenté                                                                                                |
+| Plusieurs champs de prose dans un même enregistrement       | Point faible : deux sections de titre à analyser (le générateur RGAA 4 le fait par expression régulière) | Point fort : deux clés, aucune convention                                                                                            |
+| Réemploi du matériau RGAA 4                                 | 119 fichiers de glossaire et les corps de méthodologie repris tels quels                                 | Tout convertir                                                                                                                       |
+
+**Décision.** Le RGAA est de la prose à laquelle sont attachés quelques champs étiquetés, pas des enregistrements auxquels est attachée un peu de prose. Le markdown à frontmatter met chaque nature de contenu dans le format fait pour elle, conserve l'habitude des contributeurs et le matériau RGAA 4, et coûte les deux mêmes bibliothèques que le YAML. Le point fort du YAML (plusieurs champs de prose par enregistrement) est absorbé par la règle « un fichier par champ de prose » proposée au § 3.4.
+
+## Annexe C — Exemple de Données publiées (`rgaa/data/5/criteres.json`)
+
+Critère 1.1 applicable à Web et Mobile, Critère 1.2 à Web seulement (aucune clé `mobile` dans ses `declinaisons`). Textes en markdown, liens absolus, identifiants en chaînes.
+
+```json
+{
+	"$schema": "https://accessibilite.numerique.gouv.fr/rgaa/data/schema/criteres.schema.json",
+	"rgaa": { "version": "5.0", "date": "2027-01-15" },
+	"source": "https://github.com/DISIC/teleservice-conformite/tree/main/rgaa/content",
+	"referentiels": [
+		{ "id": "web", "intitule": "Sites web" },
+		{ "id": "mobile", "intitule": "Applications mobiles" },
+		{ "id": "bureautique", "intitule": "Logiciels bureautiques" }
+	],
+	"thematiques": [{ "numero": 1, "intitule": "Images" }],
+	"criteres": [
+		{
+			"numero": "1.1",
+			"thematique": 1,
+			"niveau": "A",
+			"intitule": "Chaque [image porteuse d’information](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-porteuse-d-information) a-t-elle une [alternative textuelle](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#alternative-textuelle-image) ?",
+			"referentiels": ["web", "mobile"],
+			"declinaisons": {
+				"web": {
+					"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1",
+					"tests": [
+						{
+							"numero": "1.1.1",
+							"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1.1",
+							"intitule": "Chaque image (balise `<img>` ou balise possédant l’attribut WAI-ARIA `role=\"img\"`) porteuse d’information a-t-elle une alternative textuelle ?",
+							"conditions": [],
+							"methodologie": "1. Retrouver dans le document les images structurées au moyen d’un élément `<img>` …\n2. …"
+						},
+						{
+							"numero": "1.1.2",
+							"url": "https://accessibilite.numerique.gouv.fr/rgaa/web/criteres#1.1.2",
+							"intitule": "Chaque image vectorielle (balise `<svg>`) porteuse d’information vérifie-t-elle ces conditions ?",
+							"conditions": [
+								"La balise `<svg>` possède un attribut WAI-ARIA `role=\"img\"` ;",
+								"La balise `<svg>` a une alternative textuelle."
+							],
+							"methodologie": "1. …"
+						}
+					],
+					"references": [
+						{
+							"norme": "WCAG",
+							"version": "2.2",
+							"reference": "1.1.1",
+							"intitule": "Non-text Content",
+							"niveau": "A"
+						}
+					],
+					"techniques": ["H36", "H37", "H53", "F65", "H24"],
+					"casParticuliers": null,
+					"notesTechniques": "L’attribut `alt` étant la seule technique totalement supportée …"
+				},
+				"mobile": {
+					"url": "https://accessibilite.numerique.gouv.fr/rgaa/mobile/criteres#1.1",
+					"tests": [
+						{
+							"numero": "1.1.1",
+							"url": "https://accessibilite.numerique.gouv.fr/rgaa/mobile/criteres#1.1.1",
+							"intitule": "Chaque image porteuse d’information possède-t-elle une description accessible ?",
+							"conditions": [],
+							"methodologie": "1. Parcourir chaque écran avec le lecteur d’écran de la plateforme …"
+						}
+					],
+					"references": [
+						{
+							"norme": "EN 301 549",
+							"version": "3.2.1",
+							"reference": "11.1.1.1",
+							"intitule": "Non-text content (open functionality)"
+						}
+					],
+					"techniques": [],
+					"casParticuliers": "Les icônes décoratives …",
+					"notesTechniques": null
+				}
+			}
+		},
+		{
+			"numero": "1.2",
+			"thematique": 1,
+			"niveau": "A",
+			"intitule": "Chaque [image de décoration](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-de-decoration) est-elle correctement ignorée par les technologies d’assistance ?",
+			"referentiels": ["web"],
+			"declinaisons": {
+				"web": {
+					"url": "…",
+					"tests": ["…"],
+					"references": ["…"],
+					"techniques": ["…"],
+					"casParticuliers": null,
+					"notesTechniques": null
+				}
+			}
+		}
+	]
+}
+```
+
+Choix visibles dans l'exemple : `criteres` à plat avec un numéro de `thematique` et une liste `thematiques` (le regroupement pour l'affichage est une passe du loader) ; un test est un objet (`numero`, `intitule`, `conditions`, `methodologie`, `url`), les méthodologies sont intégrées, plus de `methodologies.json` ; le même `"1.1.1"` peut apparaître sous `web` et `mobile` avec un contenu différent, l'identité d'un Test étant le couple (Référentiel, numéro) ; `references` est une liste typée (`norme`, `version`, `reference`, `intitule`, `niveau`) commune aux critères WCAG et aux clauses EN 301 549 ; `referentiels` sur le Critère est redondant avec les clés de `declinaisons`, gardé pour que la page écrive « s'applique aussi à Mobile » sans inspecter les clés. Le glossaire suit le même en-tête puis `termes: [{ "slug", "titre", "referentiels", "definition" }]`, `definition` en markdown.

@@ -234,7 +234,7 @@ Vocabulary of the RGAA 5 content hosted alongside the téléservice. Distinct fr
 
 ### Référentiel
 
-One of the three normative documents of RGAA 5: **Web**, **Applications mobiles**, **Bureautique** (desktop software). A Référentiel is a projection of the single list of [[critere|Critères]]: it shows the Critères applicable to it and, for each one, only the [[test-rgaa|Tests]] written for that Référentiel.
+One of the three normative documents of RGAA 5: **Web**, **Applications mobiles**, **Bureautique** (desktop software). A Référentiel is a projection of the single list of [[critere|Critères]]: it presents the **whole** list, each Critère either carrying its [[declinaison|Déclinaison]] for that Référentiel or marked as outside it, and shows only the [[test-rgaa|Tests]] written for that Référentiel.
 
 **Avoid:** "version" (RGAA 5 vs 4.1.2 is a version, web/mobile/bureautique are Référentiels); "kind of application" (that is the Declaration's `app_kind`, a different concept).
 
@@ -266,9 +266,15 @@ A site-wide revision number of the RGAA (5.0, 5.1, ...) covering the three Réf�
 
 ### Données publiées (RGAA)
 
-The generated, downloadable representation of one Version: one file per Référentiel (its applicable Critères with their Tests, references, cas particuliers and notes), one whole-model file (every Critère with its applicability), one glossary file. Generated from the sources, never hand-edited, governed by a published schema, frozen per Version. They live in two identical copies: committed in the repository next to the sources (regenerated on every merge, so tools keep the GitHub history and diff they have today) and served by the site at a versioned address, which is the canonical download. This is what audit tools consume; it is **not** the RGAA 4 file format.
+The generated, downloadable representation of one Version: one `criteres.json` holding every Critère with its per-Référentiel [[declinaison|Déclinaisons]], one glossary file with applicability per Terme, and the published schema. There is no per-Référentiel file: a Référentiel view is the whole model with one Déclinaison read. Generated from the sources, never hand-edited, governed by a published schema, frozen per Version. They live in two identical copies: committed in the repository next to the sources (regenerated on every merge, so tools keep the GitHub history and diff they have today) and served by the site at a versioned address, which is the canonical download. This is what audit tools consume; it is **not** the RGAA 4 file format.
 
 **Avoid:** "the JSON" without saying which file; "API" (there is no server, only versioned files).
+
+### Déclinaison (RGAA)
+
+The per-Référentiel part of a Critère: its Tests, normative references, technique codes, cas particuliers and notes techniques for one Référentiel. A Critère has one Déclinaison per Référentiel it applies to and none for the others; the absence of a Déclinaison is what "outside this Référentiel" means.
+
+**Avoid:** "variant" or "version" of a Critère.
 
 ### Thématique
 
@@ -300,7 +306,7 @@ Layered, not feature-foldered. One predictable layer per concern:
 - **A Declaration is reached only through an approved access right of the caller**, and that rule has one implementation: `loadOwnedDeclaration` (`server/api/utils/declaration-access.ts`). tRPC procedures scoped to a Declaration take a top-level `declarationId` input and are built on `declarationProcedure`, which resolves the owned, populated Declaration into `ctx.declaration` before the body runs; pages go through `loadDeclarationForPage` / `guardDeclaration` (`lib/server-guards.ts`). A procedure body never re-checks access and never re-fetches the Declaration it was given.
 - **Every write to a Declaration's content goes through `writeDeclaration`** (`server/api/utils/section-write.ts`). The `status` column is derived from the row as it is about to be written and lands in the same update; no caller recomputes or re-reads it afterwards. Section saves enter through `saveSection`, whose per-Section merge rules are the only place a save shapes its data. Every save returns the whole Declaration, and the client folds it with `applySavedDeclaration`.
 
-- **A Critère number is stable across Référentiels.** A Référentiel lists only the Critères applicable to it and shows the resulting gaps; it never renumbers and never inserts placeholders. "1.3" names the same Critère in Web, Mobile and Bureautique, in every audit grid and in every consumer of the published data.
+- **A Critère number is stable across Référentiels, and every Référentiel shows the full list.** A Critère that does not apply to a Référentiel is displayed there as outside it ("Ne s'applique pas aux applications mobiles" / "Hors référentiel Mobile"), never dropped and never renumbered, even when a whole Thématique has nothing applicable. "1.3" names the same Critère in Web, Mobile and Bureautique, in every audit grid and in every consumer of the published data. Never label this "Non applicable": that is an audit result.
 
 ## Out of scope
 
