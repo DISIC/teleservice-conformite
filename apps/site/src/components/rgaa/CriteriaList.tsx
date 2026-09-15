@@ -49,9 +49,7 @@ export default function CriteriaList({
 			<div className={classes.rightContent}>
 				<Button
 					className={classes.toggleButton}
-					iconId={
-						expanded ? "ri-arrow-drop-down-line" : "ri-arrow-drop-up-line"
-					}
+					iconId={expanded ? "ri-arrow-down-s-line" : "ri-arrow-up-s-line"}
 					iconPosition="right"
 					onClick={() => setExpanded((value) => !value)}
 					priority="secondary"

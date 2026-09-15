@@ -4,7 +4,8 @@
 	"scripts": {
 		"dev": "turbo run dev",
 		"build": "turbo run build",
-		"start": "pnpm --filter teleservice start",
+		"start:teleservice": "pnpm --filter teleservice start",
+		"start:site": "pnpm --filter site start",
 		"typecheck": "turbo run typecheck",
 		"test": "turbo run test",
 		"check": "oxlint && oxfmt --check",

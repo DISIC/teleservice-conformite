@@ -1,7 +1,7 @@
 export type Test = {
 	number: string;
 	label: string;
-	conditions?: string[];
+	methodologies?: string[];
 };
 
 export type Criterium = {

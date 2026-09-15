@@ -1,5 +1,5 @@
 {
-	"reference": "web",
+	"reference": "Référentiel web",
 	"topics": [
 		{
 			"topic": "Images",
@@ -29,16 +29,16 @@
 							},
 							{
 								"number": "5",
-								"label": "Chaque image vectorielle (balise <svg>) porteuse d’information, vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Chaque image vectorielle (balise <svg>) porteuse d’information, vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La balise <svg> possède un attribut WAI-ARIA role=\"img\" ;",
 									"La balise <svg> a une alternative textuelle."
 								]
 							},
 							{
 								"number": "6",
-								"label": "Chaque image objet (balise <object> avec l’attribut type=\"image/…\") porteuse d’information, vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque image objet (balise <object> avec l’attribut type=\"image/…\") porteuse d’information, vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La balise <object> possède une alternative textuelle et un attribut role=\"img\" ;",
 									"L’élément <object> est immédiatement suivi d’un lien ou bouton adjacent permettant d’accéder à un contenu alternatif ;",
 									"Un mécanisme permet à l’utilisateur de remplacer l’élément <object> par un contenu alternatif."
@@ -46,8 +46,8 @@
 							},
 							{
 								"number": "7",
-								"label": "Chaque image embarquée (balise <embed> avec l’attribut type=\"image/…\") porteuse d’information, vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque image embarquée (balise <embed> avec l’attribut type=\"image/…\") porteuse d’information, vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La balise <embed> possède une alternative textuelle et un attribut role=\"img\" ;",
 									"L’élément <embed> est immédiatement suivi d’un lien ou bouton adjacent permettant d’accéder à un contenu alternatif ;",
 									"Un mécanisme permet à l’utilisateur de remplacer l’élément <embed> par un contenu alternatif."
@@ -55,8 +55,8 @@
 							},
 							{
 								"number": "8",
-								"label": "Chaque image bitmap (balise <canvas>) porteuse d’information, vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque image bitmap (balise <canvas>) porteuse d’information, vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La balise <canvas> possède une alternative textuelle et un attribut role=\"img\" ;",
 									"Un contenu alternatif est présent entre les balises <canvas> et </canvas> ;",
 									"L’élément <canvas> est immédiatement suivi d’un lien ou bouton adjacent permettant d’accéder à un contenu alternatif ;",
@@ -74,24 +74,24 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque image (balise <img>) de décoration, sans légende, vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque image (balise <img>) de décoration, sans légende, vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La balise <img> possède un attribut alt vide (alt=\"\") et est dépourvue de tout autre attribut permettant de fournir une alternative textuelle ;",
 									"La balise <img> possède un attribut WAI-ARIA aria-hidden=\"true\" ou role=\"presentation\"."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Chaque zone non cliquable (balise <area> sans attribut href) de décoration, vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque zone non cliquable (balise <area> sans attribut href) de décoration, vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La balise <area> possède un attribut alt vide (alt=\"\") et est dépourvue de tout autre attribut permettant de fournir une alternative textuelle ;",
 									"La balise <area> possède un attribut WAI-ARIA aria-hidden=\"true\" ou role=\"presentation\"."
 								]
 							},
 							{
 								"number": "3",
-								"label": "Chaque image objet (balise <object> avec l’attribut type=\"image/…\") de décoration, sans légende, vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Chaque image objet (balise <object> avec l’attribut type=\"image/…\") de décoration, sans légende, vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La balise <object> possède un attribut WAI-ARIA aria-hidden=\"true\" ;",
 									"La balise <object> est dépourvue d’alternative textuelle ;",
 									"Il n’y a aucun texte faisant office d’alternative textuelle entre <object> et </object>."
@@ -99,8 +99,8 @@
 							},
 							{
 								"number": "4",
-								"label": "Chaque image vectorielle (balise <svg>) de décoration, sans légende, vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Chaque image vectorielle (balise <svg>) de décoration, sans légende, vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La balise <svg> possède un attribut WAI-ARIA aria-hidden=\"true\" ;",
 									"La balise <svg> et ses enfants sont dépourvus d’alternative textuelle ;",
 									"Les balises <title> et <desc> sont absentes ou vides ;",
@@ -109,8 +109,8 @@
 							},
 							{
 								"number": "5",
-								"label": "Chaque image bitmap (balise <canvas>) de décoration, sans légende, vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Chaque image bitmap (balise <canvas>) de décoration, sans légende, vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La balise <canvas> possède un attribut WAI-ARIA aria-hidden=\"true\" ;",
 									"La balise <canvas> et ses enfants sont dépourvus d’alternative textuelle ;",
 									"Il n’y a aucun texte faisant office d’alternative textuelle entre <canvas> et </canvas>."
@@ -118,8 +118,8 @@
 							},
 							{
 								"number": "6",
-								"label": "Chaque image embarquée (balise <embed> avec l’attribut type=\"image/…\") de décoration, sans légende, vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Chaque image embarquée (balise <embed> avec l’attribut type=\"image/…\") de décoration, sans légende, vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La balise <embed> possède un attribut WAI-ARIA aria-hidden=\"true\" ;",
 									"La balise <embed> et ses enfants sont dépourvus d’alternative textuelle."
 								]
@@ -136,7 +136,7 @@
 							{
 								"number": "1",
 								"label": "Chaque image (balise <img> ou balise possédant l’attribut WAI-ARIA role=\"img\") porteuse d’information, ayant une alternative textuelle, cette alternative est-elle pertinente (hors cas particuliers) ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut alt est pertinent ;",
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
@@ -146,7 +146,7 @@
 							{
 								"number": "2",
 								"label": "Pour chaque zone (balise <area>) d’une image réactive porteuse d’information, ayant une alternative textuelle, cette alternative est-elle pertinente (hors cas particuliers) ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut alt est pertinent ;",
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
@@ -156,7 +156,7 @@
 							{
 								"number": "3",
 								"label": "Pour chaque bouton de type image (balise <input> avec l’attribut type=\"image\"), ayant une alternative textuelle, cette alternative est-elle pertinente (hors cas particuliers) ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut alt est pertinent ;",
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
@@ -166,7 +166,7 @@
 							{
 								"number": "4",
 								"label": "Pour chaque image objet (balise <object> avec l’attribut type=\"image/…\") porteuse d’information, ayant une alternative textuelle ou un contenu alternatif, cette alternative est-elle pertinente (hors cas particuliers) ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
 									"S’il est présent, le passage de texte associé via l’attribut WAI-ARIA aria-labelledby est pertinent ;",
@@ -176,7 +176,7 @@
 							{
 								"number": "5",
 								"label": "Pour chaque image embarquée (balise <embed> avec l’attribut type=\"image/…\") porteuse d’information, ayant une alternative textuelle ou un contenu alternatif, cette alternative est-elle pertinente (hors cas particuliers) ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
 									"S’il est présent, le passage de texte associé via l’attribut WAI-ARIA aria-labelledby est pertinent ;",
@@ -186,7 +186,7 @@
 							{
 								"number": "6",
 								"label": "Pour chaque image vectorielle (balise <svg>) porteuse d’information, ayant une alternative textuelle, cette alternative est-elle pertinente (hors cas particuliers) ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l'élément <title> est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
 									"S’il est présent, le passage de texte associé via l’attribut WAI-ARIA aria-labelledby est pertinent."
@@ -195,7 +195,7 @@
 							{
 								"number": "7",
 								"label": "Pour chaque image bitmap (balise <canvas>) porteuse d’information, ayant une alternative textuelle ou un contenu alternatif, cette alternative est-elle pertinente (hors cas particuliers) ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
 									"S’il est présent, le passage de texte associé via l’attribut WAI-ARIA aria-labelledby est pertinent ;",
@@ -222,7 +222,7 @@
 							{
 								"number": "1",
 								"label": "Pour chaque image (balise <img>) utilisée comme CAPTCHA ou comme image-test, ayant une alternative textuelle, cette alternative est-elle pertinente ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut alt est pertinent ;",
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
@@ -232,7 +232,7 @@
 							{
 								"number": "2",
 								"label": "Pour chaque zone (balise <area>) d’une image réactive utilisée comme CAPTCHA ou comme image-test, ayant une alternative textuelle, cette alternative est-elle pertinente ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut alt est pertinent ;",
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
@@ -242,7 +242,7 @@
 							{
 								"number": "3",
 								"label": "Pour chaque bouton de type image (balise <input> avec l’attribut type=\"image\") utilisé comme CAPTCHA ou comme image-test, ayant une alternative textuelle, cette alternative est-elle pertinente ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut alt est pertinent ;",
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
@@ -252,7 +252,7 @@
 							{
 								"number": "4",
 								"label": "Pour chaque image objet (balise <object> avec l’attribut type=\"image/…\") utilisée comme CAPTCHA ou comme image-test, ayant une alternative textuelle ou un contenu alternatif, cette alternative est-elle pertinente ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut alt est pertinent ;",
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
@@ -263,7 +263,7 @@
 							{
 								"number": "5",
 								"label": "Pour chaque image embarquée (balise <embed> avec l’attribut type=\"image/…\") utilisée comme CAPTCHA ou comme image-test, ayant une alternative textuelle ou un contenu alternatif, cette alternative est-elle pertinente ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut alt est pertinent ;",
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
@@ -274,7 +274,7 @@
 							{
 								"number": "6",
 								"label": "Pour chaque image vectorielle (balise <svg>) utilisée comme CAPTCHA ou comme image-test, ayant une alternative textuelle, cette alternative est-elle pertinente ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut alt est pertinent ;",
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
@@ -284,7 +284,7 @@
 							{
 								"number": "7",
 								"label": "Pour chaque image bitmap (balise <canvas>) utilisée comme CAPTCHA ou comme image-test, ayant une alternative textuelle ou un contenu alternatif, cette alternative est-elle pertinente ?",
-								"conditions": [
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut alt est pertinent ;",
 									"S’il est présent, le contenu de l’attribut title est pertinent ;",
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
@@ -303,16 +303,16 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque image (balises <img>, <area>, <object>, <embed>, <svg>, <canvas> ou possédant un attribut WAI-ARIA role=\"img\") utilisée comme CAPTCHA vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque image (balises <img>, <area>, <object>, <embed>, <svg>, <canvas> ou possédant un attribut WAI-ARIA role=\"img\") utilisée comme CAPTCHA vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"Il existe une autre forme de CAPTCHA non graphique, au moins ;",
 									"Il existe une autre solution d’accès à la fonctionnalité qui est sécurisée par le CAPTCHA."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Chaque bouton associé à une image (balise input avec l’attribut type=\"image\") utilisée comme CAPTCHA vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque bouton associé à une image (balise input avec l’attribut type=\"image\") utilisée comme CAPTCHA vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"Il existe une autre forme de CAPTCHA non graphique, au moins ;",
 									"Il existe une autre solution d’accès à la fonctionnalité sécurisée par le CAPTCHA."
 								]
@@ -328,8 +328,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque image (balise <img>) porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque image (balise <img>) porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"Il existe un attribut longdesc qui donne l’adresse (URL) d’une page ou d’un emplacement dans la page contenant la description détaillée ;",
 									"Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image ;",
 									"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée."
@@ -337,8 +337,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Chaque image objet (balise <object> avec l’attribut type=\"image/…\") porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque image objet (balise <object> avec l’attribut type=\"image/…\") porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"Il existe un attribut longdesc qui donne l’adresse (URL) d’une page ou d’un emplacement dans la page contenant la description détaillée ;",
 									"Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image ;",
 									"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée."
@@ -346,8 +346,8 @@
 							},
 							{
 								"number": "3",
-								"label": "Chaque image embarquée (balise <embed>) porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque image embarquée (balise <embed>) porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"Il existe un attribut longdesc qui donne l’adresse (URL) d’une page ou d’un emplacement dans la page contenant la description détaillée ;",
 									"Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image ;",
 									"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée."
@@ -355,8 +355,8 @@
 							},
 							{
 								"number": "4",
-								"label": "Chaque bouton de type image (balise <input> avec l’attribut type=\"image\") porteur d’information, qui nécessite une description détaillée, vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque bouton de type image (balise <input> avec l’attribut type=\"image\") porteur d’information, qui nécessite une description détaillée, vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"Il existe un attribut longdesc qui donne l’adresse (URL) d’une page ou d’un emplacement dans la page contenant la description détaillée ;",
 									"Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image ;",
 									"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée."
@@ -364,8 +364,8 @@
 							},
 							{
 								"number": "5",
-								"label": "Chaque image vectorielle (balise <svg>) porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque image vectorielle (balise <svg>) porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"Il existe un attribut WAI-ARIA aria-label contenant l’alternative textuelle et une référence à une description détaillée adjacente ;",
 									"Il existe un attribut WAI-ARIA aria-labelledby associant un passage de texte faisant office d’alternative textuelle et un autre faisant office de description détaillée ;",
 									"Il existe un attribut WAI-ARIA aria-describedby associant un passage de texte faisant office de description détaillée ;",
@@ -378,8 +378,8 @@
 							},
 							{
 								"number": "7",
-								"label": "Chaque image bitmap (balise <canvas>), porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque image bitmap (balise <canvas>), porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"Il existe un attribut WAI-ARIA aria-label contenant l’alternative textuelle et une référence à une description détaillée adjacente ;",
 									"Il existe un attribut WAI-ARIA aria-labelledby associant un passage de texte faisant office d’alternative textuelle et un autre faisant office de description détaillée ;",
 									"Il existe un contenu textuel entre <canvas> et </canvas> faisant référence à une description détaillée adjacente à l’image bitmap ;",
@@ -397,8 +397,8 @@
 							},
 							{
 								"number": "10",
-								"label": "Chaque balise possédant un attribut WAI-ARIA role=\"img\" porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque balise possédant un attribut WAI-ARIA role=\"img\" porteuse d’information, qui nécessite une description détaillée, vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"Il existe un attribut WAI-ARIA aria-label contenant l’alternative textuelle et une référence à une description détaillée adjacente ;",
 									"Il existe un attribut WAI-ARIA aria-labelledby associant un passage de texte faisant office d’alternative textuelle et un autre faisant office de description détaillée ;",
 									"Il existe un attribut WAI-ARIA aria-describedby associant un passage de texte faisant office de description détaillée ;",
@@ -416,8 +416,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque image (balise <img>) porteuse d’information, ayant une description détaillée, vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Chaque image (balise <img>) porteuse d’information, ayant une description détaillée, vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La description détaillée via l’adresse référencée dans l’attribut longdesc est pertinente ;",
 									"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente ;",
 									"La description détaillée via un lien ou un bouton adjacent est pertinente ;",
@@ -426,8 +426,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Chaque bouton de type image (balise <input> avec l’attribut type=\"image\") porteur d’information, ayant une description détaillée, vérifie-t-il ces conditions ?",
-								"conditions": [
+								"label": "Chaque bouton de type image (balise <input> avec l’attribut type=\"image\") porteur d’information, ayant une description détaillée, vérifie-t-il ces methodologies ?",
+								"methodologies": [
 									"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente ;",
 									"La description détaillée via un lien ou un bouton adjacent est pertinente ;",
 									"Le passage de texte associé via l’attribut WAI-ARIA aria-describedby est pertinent."
@@ -435,8 +435,8 @@
 							},
 							{
 								"number": "3",
-								"label": "Chaque image objet (balise <object> avec l’attribut type=\"image/…\") porteuse d’information, ayant une description détaillée, vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Chaque image objet (balise <object> avec l’attribut type=\"image/…\") porteuse d’information, ayant une description détaillée, vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente ;",
 									"La description détaillée adjacente à l’image objet est pertinente ;",
 									"La description détaillée via un lien ou un bouton adjacent est pertinente ;",
@@ -445,8 +445,8 @@
 							},
 							{
 								"number": "4",
-								"label": "Chaque image embarquée (balise <embed> avec l’attribut type=\"image/…\") porteuse d’information, ayant une description détaillée, vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Chaque image embarquée (balise <embed> avec l’attribut type=\"image/…\") porteuse d’information, ayant une description détaillée, vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente ;",
 									"La description détaillée adjacente à l’image embarquée est pertinente ;",
 									"La description détaillée via un lien ou un bouton adjacent est pertinente ;",
@@ -455,8 +455,8 @@
 							},
 							{
 								"number": "5",
-								"label": "Chaque image vectorielle (balise <svg>) porteuse d’information, ayant une description détaillée, vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Chaque image vectorielle (balise <svg>) porteuse d’information, ayant une description détaillée, vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente ;",
 									"La description détaillée dans la page et signalée par le texte contenu dans la balise <desc> ou <title> est pertinente ;",
 									"La description détaillée adjacente contenue dans la balise <desc> est pertinente ;",
@@ -466,8 +466,8 @@
 							},
 							{
 								"number": "6",
-								"label": "Chaque image bitmap (balise <canvas>) porteuse d’information, ayant une description détaillée, vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Chaque image bitmap (balise <canvas>) porteuse d’information, ayant une description détaillée, vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente ;",
 									"La description détaillée dans la page et signalée par le texte contenu entre <canvas> et </canvas> est pertinente ;",
 									"La description détaillée contenue entre <canvas> et </canvas> est pertinente ;",
@@ -520,8 +520,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque image pourvue d’une légende (balise <img>, <input> avec l’attribut type=\"image\" ou possédant un attribut WAI-ARIA role=\"img\" associée à une légende adjacente), vérifie-t-elle, si nécessaire, ces conditions ?",
-								"conditions": [
+								"label": "Chaque image pourvue d’une légende (balise <img>, <input> avec l’attribut type=\"image\" ou possédant un attribut WAI-ARIA role=\"img\" associée à une légende adjacente), vérifie-t-elle, si nécessaire, ces methodologies ?",
+								"methodologies": [
 									"L’image (balise <img>, <input> avec l’attribut type=\"image\" ou possédant un attribut WAI-ARIA role=\"img\") et sa légende adjacente sont contenues dans une balise <figure> ;",
 									"La balise <figure> possède un attribut WAI-ARIA role=\"figure\" ou role=\"group\" ;",
 									"La balise <figure> possède un attribut WAI-ARIA aria-label dont le contenu est identique au contenu de la légende ;",
@@ -530,8 +530,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Chaque image objet pourvue d’une légende (balise <object> avec l’attribut type=\"image/…\" associée à une légende adjacente), vérifie-t-elle, si nécessaire, ces conditions ?",
-								"conditions": [
+								"label": "Chaque image objet pourvue d’une légende (balise <object> avec l’attribut type=\"image/…\" associée à une légende adjacente), vérifie-t-elle, si nécessaire, ces methodologies ?",
+								"methodologies": [
 									"L’image objet et sa légende adjacente sont contenues dans une balise <figure> ;",
 									"La balise <figure> possède un attribut WAI-ARIA role=\"figure\" ou role=\"group\" ;",
 									"La balise <figure> possède un attribut WAI-ARIA aria-label dont le contenu est identique au contenu de la légende ;",
@@ -540,8 +540,8 @@
 							},
 							{
 								"number": "3",
-								"label": "Chaque image embarquée pourvue d’une légende (balise <embed> associée à une légende adjacente), vérifie-t-elle, si nécessaire, ces conditions ?",
-								"conditions": [
+								"label": "Chaque image embarquée pourvue d’une légende (balise <embed> associée à une légende adjacente), vérifie-t-elle, si nécessaire, ces methodologies ?",
+								"methodologies": [
 									"L’image embarquée (balise <embed>) et sa légende adjacente sont contenues dans une balise <figure> ;",
 									"La balise <figure> possède un attribut WAI-ARIA role=\"figure\" ou role=\"group\" ;",
 									"La balise <figure> possède un attribut WAI-ARIA aria-label dont le contenu est identique au contenu de la légende ;",
@@ -550,8 +550,8 @@
 							},
 							{
 								"number": "4",
-								"label": "Chaque image vectorielle pourvue d’une légende (balise <svg> associée à une légende adjacente), vérifie-t-elle, si nécessaire, ces conditions ?",
-								"conditions": [
+								"label": "Chaque image vectorielle pourvue d’une légende (balise <svg> associée à une légende adjacente), vérifie-t-elle, si nécessaire, ces methodologies ?",
+								"methodologies": [
 									"L’image vectorielle (balise <svg>) et sa légende adjacente sont contenues dans une balise <figure> ;",
 									"La balise <figure> possède un attribut WAI-ARIA role=\"figure\" ou role=\"group\" ;",
 									"La balise <figure> possède un attribut WAI-ARIA aria-label dont le contenu est identique au contenu de la légende ;",
@@ -560,8 +560,8 @@
 							},
 							{
 								"number": "5",
-								"label": "Chaque image bitmap pourvue d’une légende (balise <canvas> associée à une légende adjacente), vérifie-t-elle, si nécessaire, ces conditions ?",
-								"conditions": [
+								"label": "Chaque image bitmap pourvue d’une légende (balise <canvas> associée à une légende adjacente), vérifie-t-elle, si nécessaire, ces methodologies ?",
+								"methodologies": [
 									"L’image bitmap (balise <canvas>) et sa légende adjacente sont contenues dans une balise <figure> ;",
 									"La balise <figure> possède un attribut WAI-ARIA role=\"figure\" ou role=\"group\" ;",
 									"La balise <figure> possède un attribut WAI-ARIA aria-label dont le contenu est identique au contenu de la légende ;",
@@ -650,32 +650,32 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, le texte et le texte en image sans effet de graisse d’une taille restituée inférieure à 24px vérifient-ils une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, le texte et le texte en image sans effet de graisse d’une taille restituée inférieure à 24px vérifient-ils une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le rapport de contraste entre le texte et son arrière-plan est de 4.5:1, au moins ;",
 									"Un mécanisme permet à l’utilisateur d’afficher le texte avec un rapport de contraste de 4.5:1, au moins."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Dans chaque page web, le texte et le texte en image en gras d’une taille restituée inférieure à 18,5px vérifient-ils une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, le texte et le texte en image en gras d’une taille restituée inférieure à 18,5px vérifient-ils une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le rapport de contraste entre le texte et son arrière-plan est de 4.5:1, au moins ;",
 									"Un mécanisme permet à l’utilisateur d’afficher le texte avec un rapport de contraste de 4.5:1, au moins."
 								]
 							},
 							{
 								"number": "3",
-								"label": "Dans chaque page web, le texte et le texte en image sans effet de graisse d’une taille restituée supérieure ou égale à 24px vérifient-ils une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, le texte et le texte en image sans effet de graisse d’une taille restituée supérieure ou égale à 24px vérifient-ils une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le rapport de contraste entre le texte et son arrière-plan est de 3:1, au moins ;",
 									"Un mécanisme permet à l’utilisateur d’afficher le texte avec un rapport de contraste de 3:1, au moins."
 								]
 							},
 							{
 								"number": "4",
-								"label": "Dans chaque page web, le texte et le texte en image en gras d’une taille restituée supérieure ou égale à 18,5px vérifient-ils une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, le texte et le texte en image en gras d’une taille restituée supérieure ou égale à 18,5px vérifient-ils une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le rapport de contraste entre le texte et son arrière-plan est de 3:1, au moins ;",
 									"Un mécanisme permet à l’utilisateur d’afficher le texte avec un rapport de contraste de 3:1, au moins."
 								]
@@ -695,24 +695,24 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, le rapport de contraste entre les couleurs d’un composant d’interface dans ses différents états et la couleur d’arrière-plan contiguë vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, le rapport de contraste entre les couleurs d’un composant d’interface dans ses différents états et la couleur d’arrière-plan contiguë vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le rapport de contraste est de 3:1, au moins ;",
 									"Un mécanisme permet un rapport de contraste de 3:1, au moins."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Dans chaque page web, le rapport de contraste des différentes couleurs composant un élément graphique, lorsqu’elles sont nécessaires à sa compréhension, et la couleur d’arrière-plan contiguë, vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, le rapport de contraste des différentes couleurs composant un élément graphique, lorsqu’elles sont nécessaires à sa compréhension, et la couleur d’arrière-plan contiguë, vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le rapport de contraste est de 3:1, au moins ;",
 									"Un mécanisme permet un rapport de contraste de 3:1, au moins."
 								]
 							},
 							{
 								"number": "3",
-								"label": "Dans chaque page web, le rapport de contraste des différentes couleurs contiguës entre elles d’un élément graphique, lorsqu’elles sont nécessaires à sa compréhension, vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, le rapport de contraste des différentes couleurs contiguës entre elles d’un élément graphique, lorsqu’elles sont nécessaires à sa compréhension, vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le rapport de contraste est de 3:1, au moins ;",
 									"Un mécanisme permet un rapport de contraste de 3:1, au moins."
 								]
@@ -738,16 +738,16 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque média temporel pré-enregistré seulement audio, vérifie-t-il, si nécessaire, l’une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque média temporel pré-enregistré seulement audio, vérifie-t-il, si nécessaire, l’une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Il existe une transcription textuelle accessible via un lien ou bouton adjacent ;",
 									"Il existe une transcription textuelle adjacente clairement identifiable."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Chaque média temporel pré-enregistré seulement vidéo vérifie-t-il, si nécessaire, l’une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque média temporel pré-enregistré seulement vidéo vérifie-t-il, si nécessaire, l’une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Il existe une version alternative « audio seulement » accessible via un lien ou bouton adjacent ;",
 									"Il existe une version alternative « audio seulement » adjacente clairement identifiable ;",
 									"Il existe une transcription textuelle accessible via un lien ou bouton adjacent ;",
@@ -758,8 +758,8 @@
 							},
 							{
 								"number": "3",
-								"label": "Chaque média temporel synchronisé pré-enregistré vérifie-t-il, si nécessaire, une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque média temporel synchronisé pré-enregistré vérifie-t-il, si nécessaire, une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Il existe une transcription textuelle accessible via un lien ou bouton adjacent ;",
 									"Il existe une transcription textuelle adjacente clairement identifiable ;",
 									"Il existe une audiodescription synchronisée ;",
@@ -781,8 +781,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Chaque média temporel pré-enregistré seulement vidéo vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque média temporel pré-enregistré seulement vidéo vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"La transcription textuelle est pertinente ;",
 									"L’audiodescription synchronisée est pertinente ;",
 									"L’audiodescription synchronisée de la version alternative est pertinente ;",
@@ -791,8 +791,8 @@
 							},
 							{
 								"number": "3",
-								"label": "Chaque média temporel synchronisé pré-enregistré vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque média temporel synchronisé pré-enregistré vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"La transcription textuelle est pertinente ;",
 									"L’audiodescription synchronisée est pertinente ;",
 									"L’audiodescription synchronisée de la version alternative est pertinente."
@@ -809,8 +809,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque média temporel synchronisé pré-enregistré vérifie-t-il, si nécessaire, l’une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque média temporel synchronisé pré-enregistré vérifie-t-il, si nécessaire, l’une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le média temporel synchronisé possède des sous-titres synchronisés ;",
 									"Il existe une version alternative possédant des sous-titres synchronisés accessible via un lien ou bouton adjacent."
 								]
@@ -843,16 +843,16 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque média temporel pré-enregistré seulement vidéo vérifie-t-il, si nécessaire, une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque média temporel pré-enregistré seulement vidéo vérifie-t-il, si nécessaire, une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Il existe une audiodescription synchronisée ;",
 									"Il existe une version alternative avec une audiodescription synchronisée."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Chaque média temporel synchronisé pré-enregistré vérifie-t-il, si nécessaire, une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque média temporel synchronisé pré-enregistré vérifie-t-il, si nécessaire, une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Il existe une audiodescription synchronisée ;",
 									"Il existe une version alternative avec une audiodescription synchronisée."
 								]
@@ -898,16 +898,16 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque média non temporel vérifie-t-il, si nécessaire, une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque média non temporel vérifie-t-il, si nécessaire, une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Un lien ou un bouton adjacent, clairement identifiable, permet d’accéder à une page contenant une alternative ;",
 									"Un lien ou un bouton adjacent, clairement identifiable, permet d’accéder à une alternative dans la page."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Chaque média non temporel associé à une alternative vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque média non temporel associé à une alternative vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"La page référencée par le lien ou bouton adjacent est accessible ;",
 									"L’alternative dans la page, référencée par le lien ou bouton adjacent, est accessible."
 								]
@@ -936,8 +936,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque séquence sonore déclenchée automatiquement via une balise <object>, <video>, <audio>, <embed>, <bgsound> ou un code JavaScript vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque séquence sonore déclenchée automatiquement via une balise <object>, <video>, <audio>, <embed>, <bgsound> ou un code JavaScript vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La séquence sonore a une durée inférieure ou égale à 3 secondes ;",
 									"La séquence sonore peut être stoppée sur action de l’utilisateur ;",
 									"Le volume de la séquence sonore peut être contrôlé par l’utilisateur indépendamment du contrôle de volume du système."
@@ -958,16 +958,16 @@
 							},
 							{
 								"number": "2",
-								"label": "Pour chaque média temporel, chaque fonctionnalité vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque média temporel, chaque fonctionnalité vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La fonctionnalité est accessible par le clavier et tout dispositif de pointage ;",
 									"Une fonctionnalité accessible par le clavier et tout dispositif de pointage permettant de réaliser la même action est présente dans la page."
 								]
 							},
 							{
 								"number": "3",
-								"label": "Pour chaque média temporel, chaque fonctionnalité vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque média temporel, chaque fonctionnalité vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La fonctionnalité est activable par le clavier et tout dispositif de pointage ;",
 									"Une fonctionnalité activable par le clavier et tout dispositif de pointage permettant de réaliser la même action est présente dans la page."
 								]
@@ -983,16 +983,16 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Pour chaque média non temporel, chaque fonctionnalité vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque média non temporel, chaque fonctionnalité vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La fonctionnalité est accessible par le clavier et tout dispositif de pointage ;",
 									"Une fonctionnalité accessible par le clavier et tout dispositif de pointage permettant de réaliser la même action est présente dans la page."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Pour chaque média non temporel, chaque fonctionnalité vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque média non temporel, chaque fonctionnalité vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La fonctionnalité est activable par le clavier et tout dispositif de pointage ;",
 									"Une fonctionnalité activable par le clavier et tout dispositif de pointage permettant de réaliser la même action est présente dans la page."
 								]
@@ -1008,16 +1008,16 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque média temporel et non temporel vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque média temporel et non temporel vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le nom, le rôle, la valeur, le paramétrage et les changements d’états des composants d’interfaces sont accessibles aux technologies d’assistance via une API d’accessibilité ;",
 									"Une alternative compatible avec une API d’accessibilité permet d’accéder aux mêmes fonctionnalités."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Chaque média temporel et non temporel qui possède une alternative compatible avec les technologies d’assistance, vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque média temporel et non temporel qui possède une alternative compatible avec les technologies d’assistance, vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"L’alternative est adjacente au média temporel ou non temporel ;",
 									"L’alternative est accessible via un lien ou bouton adjacent ;",
 									"Un mécanisme permet de remplacer le média temporel ou non temporel par son alternative."
@@ -1066,8 +1066,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque tableau de mise en forme vérifie-t-il ces conditions ?",
-								"conditions": [
+								"label": "Chaque tableau de mise en forme vérifie-t-il ces methodologies ?",
+								"methodologies": [
 									"Le contenu linéarisé reste compréhensible ;",
 									"La balise <table> possède un attribut role=\"presentation\"."
 								]
@@ -1109,16 +1109,16 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Pour chaque tableau de données, chaque en-tête de colonne s’appliquant à la totalité de la colonne vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque tableau de données, chaque en-tête de colonne s’appliquant à la totalité de la colonne vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"L’en-tête de colonnes est structuré au moyen d’une balise <th> ;",
 									"L’en-tête de colonnes est structuré au moyen d’une balise pourvue d’un attribut WAI-ARIA role=\"columnheader\"."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Pour chaque tableau de données, chaque en-tête de ligne s’appliquant à la totalité de la ligne vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque tableau de données, chaque en-tête de ligne s’appliquant à la totalité de la ligne vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"L’en-tête de lignes est structuré au moyen d’une balise <th> ;",
 									"L’en-tête de lignes est structuré au moyen d’une balise pourvue d’un attribut WAI-ARIA role=\"rowheader\"."
 								]
@@ -1142,8 +1142,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Pour chaque contenu de balise <th> s’appliquant à la totalité de la ligne ou de la colonne, la balise <th> respecte-t-elle une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Pour chaque contenu de balise <th> s’appliquant à la totalité de la ligne ou de la colonne, la balise <th> respecte-t-elle une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"La balise <th> possède un attribut id unique ;",
 									"La balise <th> possède un attribut scope ;",
 									"La balise <th> possède un attribut WAI-ARIA role=\"rowheader\" ou role=\"columnheader\"."
@@ -1151,16 +1151,16 @@
 							},
 							{
 								"number": "2",
-								"label": "Pour chaque contenu de balise <th> s’appliquant à la totalité de la ligne ou de la colonne et possédant un attribut scope, la balise <th> vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque contenu de balise <th> s’appliquant à la totalité de la ligne ou de la colonne et possédant un attribut scope, la balise <th> vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La balise <th> possède un attribut scope avec la valeur \"row\" pour les en-têtes de ligne ;",
 									"La balise <th> possède un attribut scope avec la valeur \"col\" pour les en-têtes de colonne."
 								]
 							},
 							{
 								"number": "3",
-								"label": "Pour chaque contenu de balise <th> ne s’appliquant pas à la totalité de la ligne ou de la colonne, la balise <th> vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque contenu de balise <th> ne s’appliquant pas à la totalité de la ligne ou de la colonne, la balise <th> vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La balise <th> ne possède pas d’attribut scope ;",
 									"La balise <th> ne possède pas d’attribut WAI-ARIA role=\"rowheader\" ou role=\"columnheader\" ;",
 									"La balise <th> possède un attribut id unique."
@@ -1168,16 +1168,16 @@
 							},
 							{
 								"number": "4",
-								"label": "Pour chaque contenu de balise <td> ou <th> associée à un ou plusieurs en-têtes possédant un attribut id, la balise vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque contenu de balise <td> ou <th> associée à un ou plusieurs en-têtes possédant un attribut id, la balise vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"La balise possède un attribut headers ;",
 									"L’attribut headers possède la liste des valeurs d’attribut id des en-têtes associés."
 								]
 							},
 							{
 								"number": "5",
-								"label": "Pour chaque balise pourvue d’un attribut WAI-ARIA role=\"rowheader\" ou role=\"columnheader\" dont le contenu s’applique à la totalité de la ligne ou de la colonne, la balise vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque balise pourvue d’un attribut WAI-ARIA role=\"rowheader\" ou role=\"columnheader\" dont le contenu s’applique à la totalité de la ligne ou de la colonne, la balise vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"La balise possède un attribut WAI-ARIA role=\"rowheader\" pour les en-têtes de ligne ;",
 									"La balise possède un attribut WAI-ARIA role=\"columnheader\" pour les en-têtes de colonne."
 								]
@@ -1193,8 +1193,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque tableau de mise en forme (balise <table>) vérifie-t-il ces conditions ?",
-								"conditions": [
+								"label": "Chaque tableau de mise en forme (balise <table>) vérifie-t-il ces methodologies ?",
+								"methodologies": [
 									"Le tableau de mise en forme (balise <table>) n’a pas d’attribut summary (sinon vide) et ne contient pas de balises <caption>, <th>, <thead>, <tfoot> ou de balises ayant un attribut WAI-ARIA role=\"rowheader\", role=\"columnheader\" ;",
 									"Les cellules du tableau de mise en forme (balises <td>) ne possèdent pas d’attributs scope, headers et axis."
 								]
@@ -1216,32 +1216,32 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque lien texte vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque lien texte vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’intitulé de lien seul permet d’en comprendre la fonction et la destination ;",
 									"L’intitulé de lien additionné au contexte du lien permet d’en comprendre la fonction et la destination."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Chaque lien image vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque lien image vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’intitulé de lien seul permet d’en comprendre la fonction et la destination ;",
 									"L’intitulé de lien additionné au contexte du lien permet d’en comprendre la fonction et la destination."
 								]
 							},
 							{
 								"number": "3",
-								"label": "Chaque lien composite vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque lien composite vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’intitulé de lien seul permet d’en comprendre la fonction et la destination ;",
 									"L’intitulé de lien additionné au contexte du lien permet d’en comprendre la fonction et la destination."
 								]
 							},
 							{
 								"number": "4",
-								"label": "Chaque lien SVG vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque lien SVG vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’intitulé de lien seul permet d’en comprendre la fonction et la destination ;",
 									"L’intitulé de lien additionné au contexte du lien permet d’en comprendre la fonction et la destination."
 								]
@@ -1280,8 +1280,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque script qui génère ou contrôle un composant d’interface vérifie-t-il, si nécessaire, une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque script qui génère ou contrôle un composant d’interface vérifie-t-il, si nécessaire, une de ces methodologies ?",
+								"methodologies": [
 									"Le nom, le rôle, la valeur, le paramétrage et les changements d’états sont accessibles aux technologies d’assistance via une API d’accessibilité ;",
 									"Un composant d’interface accessible permettant d’accéder aux mêmes fonctionnalités est présent dans la page ;",
 									"Une alternative accessible permet d’accéder aux mêmes fonctionnalités."
@@ -1289,16 +1289,16 @@
 							},
 							{
 								"number": "2",
-								"label": "Chaque script qui génère ou contrôle un composant d’interface respecte-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque script qui génère ou contrôle un composant d’interface respecte-t-il une de ces methodologies ?",
+								"methodologies": [
 									"Le composant d’interface est correctement restitué par les technologies d’assistance ;",
 									"Une alternative accessible permet d’accéder aux mêmes fonctionnalités."
 								]
 							},
 							{
 								"number": "3",
-								"label": "Chaque script qui génère ou contrôle un composant d’interface vérifie-t-il ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque script qui génère ou contrôle un composant d’interface vérifie-t-il ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le composant possède un nom pertinent ;",
 									"Le nom accessible du composant contient au moins l’intitulé visible ;",
 									"Le composant possède un rôle pertinent."
@@ -1315,8 +1315,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque script débutant par la balise <script> et ayant une alternative vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque script débutant par la balise <script> et ayant une alternative vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"L’alternative entre <noscript> et </noscript> permet d’accéder à des contenus et des fonctionnalités similaires ;",
 									"La page affichée, lorsque JavaScript est désactivé, permet d’accéder à des contenus et des fonctionnalités similaires ;",
 									"La page alternative permet d’accéder à des contenus et des fonctionnalités similaires ;",
@@ -1326,8 +1326,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Chaque élément non textuel mis à jour par un script (dans la page, ou dans un cadre) et ayant une alternative vérifie-t-il ces conditions ?",
-								"conditions": [
+								"label": "Chaque élément non textuel mis à jour par un script (dans la page, ou dans un cadre) et ayant une alternative vérifie-t-il ces methodologies ?",
+								"methodologies": [
 									"L’alternative de l’élément non textuel est mise à jour ;",
 									"L’alternative mise à jour est pertinente."
 								]
@@ -1343,8 +1343,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque élément possédant un gestionnaire d’événement contrôlé par un script vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque élément possédant un gestionnaire d’événement contrôlé par un script vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’élément est accessible par le clavier et tout dispositif de pointage ;",
 									"Un élément accessible par le clavier et tout dispositif de pointage permettant de réaliser la même action est présent dans la page."
 								]
@@ -1364,8 +1364,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque script qui initie un changement de contexte vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque script qui initie un changement de contexte vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"L’utilisateur est averti par un texte de l’action du script et du type de changement avant son déclenchement ;",
 									"Le changement de contexte est initié par un bouton (input de type submit, button ou image ou balise <button>) explicite ;",
 									"Le changement de contexte est initié par un lien explicite."
@@ -1430,8 +1430,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Pour chaque déclaration de type de document, le code source généré de la page vérifie-t-il ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque déclaration de type de document, le code source généré de la page vérifie-t-il ces methodologies ?",
+								"methodologies": [
 									"Les balises, attributs et valeurs d’attributs respectent les règles d’écriture ;",
 									"L’imbrication des balises est conforme ;",
 									"L’ouverture et la fermeture des balises sont conformes ;",
@@ -1450,8 +1450,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Pour chaque page web, l’indication de langue par défaut vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque page web, l’indication de langue par défaut vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"L’indication de la langue de la page (attribut lang et/ou xml:lang) est donnée pour l’élément html ;",
 									"L’indication de la langue de la page (attribut lang et/ou xml:lang) est donnée sur chaque élément de texte ou sur l’un des éléments parents."
 								]
@@ -1467,8 +1467,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Pour chaque page web ayant une langue par défaut, le code de langue vérifie-t-il ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque page web ayant une langue par défaut, le code de langue vérifie-t-il ces methodologies ?",
+								"methodologies": [
 									"Le code de langue est valide ;",
 									"Le code de langue est pertinent."
 								]
@@ -1510,8 +1510,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, chaque texte écrit dans une langue différente de la langue par défaut vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque texte écrit dans une langue différente de la langue par défaut vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’indication de langue est donnée sur l’élément contenant le texte (attribut lang et/ou xml:lang) ;",
 									"L’indication de langue est donnée sur un des éléments parents (attribut lang et/ou xml:lang)"
 								]
@@ -1527,8 +1527,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Pour chaque page web, le code de langue de chaque changement de langue vérifie-t-il ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque page web, le code de langue de chaque changement de langue vérifie-t-il ces methodologies ?",
+								"methodologies": [
 									"Le code de langue est valide ;",
 									"Le code de langue est pertinent."
 								]
@@ -1561,8 +1561,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Dans chaque page web, chaque changement du sens de lecture (attribut dir) vérifie-t-il ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque changement du sens de lecture (attribut dir) vérifie-t-il ces methodologies ?",
+								"methodologies": [
 									"La valeur de l’attribut dir est conforme (rtl ou ltr) ;",
 									"La valeur de l’attribut dir est pertinente."
 								]
@@ -1605,8 +1605,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, la structure du document vérifie-t-elle ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, la structure du document vérifie-t-elle ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"La zone d’en-tête de la page est structurée via une balise <header> ;",
 									"Les zones de navigation principales et secondaires sont structurées via une balise <nav> ;",
 									"La balise <nav> est réservée à la structuration des zones de navigation principales et secondaires ;",
@@ -1626,16 +1626,16 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, les informations regroupées visuellement sous forme de liste non ordonnée vérifient-elles une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, les informations regroupées visuellement sous forme de liste non ordonnée vérifient-elles une de ces methodologies ?",
+								"methodologies": [
 									"La liste utilise les balises HTML <ul> et <li> ;",
 									"La liste utilise les attributs WAI-ARIA role=\"list\" et role=\"listitem\"."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Dans chaque page web, les informations regroupées visuellement sous forme de liste ordonnée vérifient-elles une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, les informations regroupées visuellement sous forme de liste ordonnée vérifient-elles une de ces methodologies ?",
+								"methodologies": [
 									"La liste utilise les balises HTML <ol> et <li> ;",
 									"La liste utilise les attributs WAI-ARIA role=\"list\" et role=\"listitem\"."
 								]
@@ -1686,8 +1686,8 @@
 							},
 							{
 								"number": "3",
-								"label": "Dans chaque page web, l’utilisation des espaces vérifie-t-elle ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, l’utilisation des espaces vérifie-t-elle ces methodologies ?",
+								"methodologies": [
 									"Les espaces ne sont pas utilisées pour séparer les lettres d’un mot ;",
 									"Les espaces ne sont pas utilisées pour simuler des tableaux ;",
 									"Les espaces ne sont pas utilisées pour simuler des colonnes de texte."
@@ -1730,8 +1730,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, l’augmentation de la taille des caractères jusqu’à 200 %, au moins, ne doit pas provoquer de perte d’information. Cette règle est-elle respectée selon une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, l’augmentation de la taille des caractères jusqu’à 200 %, au moins, ne doit pas provoquer de perte d’information. Cette règle est-elle respectée selon une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Lors de l’utilisation de la fonction d’agrandissement du texte du navigateur ;",
 									"Lors de l’utilisation des fonctions de zoom graphique du navigateur ;",
 									"Lors de l’utilisation d’un composant d’interface propre au site permettant d’agrandir le texte ou de zoomer."
@@ -1739,8 +1739,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Dans chaque page web, l’augmentation de la taille des caractères jusqu’à 200 %, au moins, doit être possible pour l’ensemble du texte dans la page. Cette règle est-elle respectée selon une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, l’augmentation de la taille des caractères jusqu’à 200 %, au moins, doit être possible pour l’ensemble du texte dans la page. Cette règle est-elle respectée selon une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Lors de l’utilisation de la fonction d’agrandissement du texte du navigateur ;",
 									"Lors de l’utilisation des fonctions de zoom graphique du navigateur ;",
 									"Lors de l’utilisation d’un composant d’interface propre au site permettant d’agrandir le texte ou de zoomer."
@@ -1778,8 +1778,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, chaque lien texte signalé uniquement par la couleur, et dont la nature n’est pas évidente, vérifie-t-il ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque lien texte signalé uniquement par la couleur, et dont la nature n’est pas évidente, vérifie-t-il ces methodologies ?",
+								"methodologies": [
 									"La couleur du lien a un rapport de contraste supérieur ou égal à 3:1 par rapport au texte environnant ;",
 									"Le lien dispose d’une indication visuelle au survol autre qu’un changement de couleur ;",
 									"Le lien dispose d’une indication visuelle au focus autre qu’un changement de couleur."
@@ -1796,8 +1796,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Pour chaque élément recevant le focus, la prise de focus vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque élément recevant le focus, la prise de focus vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"Le style du focus natif du navigateur n’est pas supprimé ou dégradé ;",
 									"Un style du focus défini par l’auteur est visible."
 								]
@@ -1813,8 +1813,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, chaque contenu caché vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque contenu caché vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"Le contenu caché a vocation à être ignoré par les technologies d’assistance ;",
 									"Le contenu caché n’a pas vocation à être ignoré par les technologies d’assistance et est rendu restituable par les technologies d’assistance suite à une action de l’utilisateur réalisable au clavier ou par tout dispositif de pointage sur un élément précédent le contenu caché ou suite à un repositionnement du focus dessus."
 								]
@@ -1897,8 +1897,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, le texte reste-t-il lisible lorsque l’affichage est modifié selon ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, le texte reste-t-il lisible lorsque l’affichage est modifié selon ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’espacement entre les lignes (line-height) est augmenté jusqu’à 1,5 fois la taille de la police ;",
 									"L’espacement suivant les paragraphes (balise <p>) est augmenté jusqu’à 2 fois la taille de la police ;",
 									"L’espacement des lettres (letter-spacing) est augmenté jusqu’à 0,12 fois la taille de la police ;",
@@ -1924,8 +1924,8 @@
 							},
 							{
 								"number": "3",
-								"label": "Chaque contenu additionnel qui apparaît à la prise de focus ou au survol d’un composant d’interface vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque contenu additionnel qui apparaît à la prise de focus ou au survol d’un composant d’interface vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le contenu additionnel reste visible jusqu’à ce que l’utilisateur retire le pointeur souris ou le focus du contenu additionnel et du composant d’interface ayant déclenché son apparition ;",
 									"Le contenu additionnel reste visible jusqu’à ce que l’utilisateur déclenche une action masquant ce contenu sans déplacer le focus ou le pointeur de la souris du composant d’interface ayant déclenché son apparition ;",
 									"Le contenu additionnel reste visible jusqu’à ce qu’il ne soit plus valide."
@@ -1942,8 +1942,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, les contenus additionnels apparaissant au survol d’un composant d’interface via les styles CSS respectent-ils si nécessaire une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, les contenus additionnels apparaissant au survol d’un composant d’interface via les styles CSS respectent-ils si nécessaire une de ces methodologies ?",
+								"methodologies": [
 									"Les contenus additionnels apparaissent également à l’activation du composant via le clavier et tout dispositif de pointage ;",
 									"Les contenus additionnels apparaissent également à la prise de focus du composant ;",
 									"Les contenus additionnels apparaissent également par le biais de l’activation ou de la prise de focus d’un autre composant."
@@ -1951,8 +1951,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Dans chaque page web, les contenus additionnels apparaissant au focus d’un composant d’interface via les styles CSS respectent-ils si nécessaire une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, les contenus additionnels apparaissant au focus d’un composant d’interface via les styles CSS respectent-ils si nécessaire une de ces methodologies ?",
+								"methodologies": [
 									"Les contenus additionnels apparaissent également à l’activation du composant via le clavier et tout dispositif de pointage ;",
 									"Les contenus additionnels apparaissent également au survol du composant ;",
 									"Les contenus additionnels apparaissent également par le biais de l’activation ou du survol d’un autre composant."
@@ -1975,8 +1975,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque champ de formulaire vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque champ de formulaire vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"Le champ de formulaire possède un attribut WAI-ARIA aria-labelledby référençant un passage de texte identifié ;",
 									"Le champ de formulaire possède un attribut WAI-ARIA aria-label ;",
 									"Une balise <label> ayant un attribut for est associée au champ de formulaire ;",
@@ -1986,16 +1986,16 @@
 							},
 							{
 								"number": "2",
-								"label": "Chaque champ de formulaire associé à une balise <label> ayant un attribut for, vérifie-t-il ces conditions ?",
-								"conditions": [
+								"label": "Chaque champ de formulaire associé à une balise <label> ayant un attribut for, vérifie-t-il ces methodologies ?",
+								"methodologies": [
 									"Le champ de formulaire possède un attribut id ;",
 									"La valeur de l’attribut for est égale à la valeur de l’attribut id du champ de formulaire associé."
 								]
 							},
 							{
 								"number": "3",
-								"label": "Chaque champ de formulaire ayant une étiquette dont le contenu n’est pas visible ou à proximité (masqué, aria-label) ou qui n’est pas accolé au champ (aria-labelledby), vérifie-t-il une de ses conditions ?",
-								"conditions": [
+								"label": "Chaque champ de formulaire ayant une étiquette dont le contenu n’est pas visible ou à proximité (masqué, aria-label) ou qui n’est pas accolé au champ (aria-labelledby), vérifie-t-il une de ses methodologies ?",
+								"methodologies": [
 									"Le champ de formulaire possède un attribut title dont le contenu permet de comprendre la nature de la saisie attendue ;",
 									"Le champ de formulaire est accompagné d’un passage de texte accolé au champ qui devient visible à la prise de focus permettant de comprendre la nature de la saisie attendue ;",
 									"Le champ de formulaire est accompagné d’un passage de texte visible accolé au champ permettant de comprendre la nature de la saisie attendue."
@@ -2028,8 +2028,8 @@
 							},
 							{
 								"number": "5",
-								"label": "Chaque champ de formulaire ayant un intitulé visible vérifie-t-il ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque champ de formulaire ayant un intitulé visible vérifie-t-il ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label du champ de formulaire contient au moins l’intitulé visible ;",
 									"S’il est présent, le passage de texte lié au champ de formulaire via un attribut WAI-ARIA aria-labelledby contient au moins l’intitulé visible ;",
 									"S’il est présent, le contenu de l’attribut title du champ de formulaire contient au moins l’intitulé visible ;",
@@ -2072,16 +2072,16 @@
 							},
 							{
 								"number": "2",
-								"label": "Chaque étiquette accolée à un champ (à l’exception des cases à cocher, bouton radio ou balises ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\"), vérifie-t-elle ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque étiquette accolée à un champ (à l’exception des cases à cocher, bouton radio ou balises ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\"), vérifie-t-elle ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’étiquette est visuellement accolée immédiatement au-dessus ou à gauche du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de gauche à droite ;",
 									"L’étiquette est visuellement accolée immédiatement au-dessus ou à droite du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de droite à gauche."
 								]
 							},
 							{
 								"number": "3",
-								"label": "Chaque étiquette accolée à un champ de type checkbox ou radio ou à une balise ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\", vérifie-t-elle ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque étiquette accolée à un champ de type checkbox ou radio ou à une balise ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\", vérifie-t-elle ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’étiquette est visuellement accolée immédiatement au-dessous ou à droite du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de gauche à droite ;",
 									"L’étiquette est visuellement accolée immédiatement au-dessous ou à gauche du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de droite à gauche."
 								]
@@ -2097,8 +2097,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Les champs de même nature vérifient-ils l’une de ces conditions, si nécessaire ?",
-								"conditions": [
+								"label": "Les champs de même nature vérifient-ils l’une de ces methodologies, si nécessaire ?",
+								"methodologies": [
 									"Les champs de même nature sont regroupés dans une balise <fieldset> ;",
 									"Les champs de même nature sont regroupés dans une balise possédant un attribut WAI-ARIA role=\"group\" ;",
 									"Les champs de même nature de type radio (<input type=\"radio\">) ou balises possédant un attribut WAI-ARIA role=\"radio\") sont regroupés dans une balise possédant un attribut WAI-ARIA role=\"radiogroup\" ou role=\"group\"."
@@ -2162,8 +2162,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "L’intitulé de chaque bouton vérifie-t-il ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "L’intitulé de chaque bouton vérifie-t-il ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent ;",
 									"S’il est présent, le passage de texte lié au bouton via un attribut WAI-ARIA aria-labelledby est pertinent ;",
 									"S’il est présent, le contenu de l’attribut value d’une balise <input> de type submit, reset ou button est pertinent ;",
@@ -2174,8 +2174,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Chaque bouton affichant un intitulé visible vérifie-t-il ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque bouton affichant un intitulé visible vérifie-t-il ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label contient au moins l’intitulé visible ;",
 									"S’il est présent, le passage de texte lié au bouton via un attribut WAI-ARIA aria-labelledby contient au moins l’intitulé visible ;",
 									"S’il est présent, le contenu de l’attribut value d’une balise <input> de type submit, reset ou button contient au moins l’intitulé visible ;",
@@ -2195,56 +2195,56 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Les indications du caractère obligatoire de la saisie des champs vérifient-elles une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Les indications du caractère obligatoire de la saisie des champs vérifient-elles une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Une indication de champ obligatoire est visible et permet d’identifier nommément le champ concerné préalablement à la validation du formulaire ;",
 									"Le champ obligatoire dispose de l’attribut aria-required=\"true\" ou required préalablement à la validation du formulaire."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Les champs obligatoires ayant l’attribut aria-required=\"true\" ou required vérifient-ils une de ces conditions ?",
-								"conditions": [
+								"label": "Les champs obligatoires ayant l’attribut aria-required=\"true\" ou required vérifient-ils une de ces methodologies ?",
+								"methodologies": [
 									"Une indication de champ obligatoire est visible et située dans l’étiquette associée au champ préalablement à la validation du formulaire ;",
 									"Une indication de champ obligatoire est visible et située dans le passage de texte associé au champ préalablement à la validation du formulaire."
 								]
 							},
 							{
 								"number": "3",
-								"label": "Les messages d’erreur indiquant l’absence de saisie d’un champ obligatoire vérifient-ils une de ces conditions ?",
-								"conditions": [
+								"label": "Les messages d’erreur indiquant l’absence de saisie d’un champ obligatoire vérifient-ils une de ces methodologies ?",
+								"methodologies": [
 									"Le message d’erreur indiquant l’absence de saisie d’un champ obligatoire est visible et permet d’identifier nommément le champ concerné ;",
 									"Le champ obligatoire dispose de l’attribut aria-invalid=\"true\"."
 								]
 							},
 							{
 								"number": "4",
-								"label": "Les champs obligatoires ayant l’attribut aria-invalid=\"true\" vérifient-ils une de ces conditions ?",
-								"conditions": [
+								"label": "Les champs obligatoires ayant l’attribut aria-invalid=\"true\" vérifient-ils une de ces methodologies ?",
+								"methodologies": [
 									"Le message d’erreur indiquant le caractère invalide de la saisie est visible et situé dans l’étiquette associée au champ ;",
 									"Le message d’erreur indiquant le caractère invalide de la saisie est visible et situé dans le passage de texte associé au champ."
 								]
 							},
 							{
 								"number": "5",
-								"label": "Les instructions et indications du type de données et/ou de format obligatoires vérifient-elles une de ces conditions ?",
-								"conditions": [
+								"label": "Les instructions et indications du type de données et/ou de format obligatoires vérifient-elles une de ces methodologies ?",
+								"methodologies": [
 									"Une instruction ou une indication du type de données et/ou de format obligatoire est visible et permet d’identifier nommément le champ concerné préalablement à la validation du formulaire ;",
 									"Une instruction ou une indication du type de données et/ou de format obligatoire est visible dans l’étiquette ou le passage de texte associé au champ préalablement à la validation du formulaire."
 								]
 							},
 							{
 								"number": "6",
-								"label": "Les messages d’erreurs fournissant une instruction ou une indication du type de données et/ou de format obligatoire des champs vérifient-ils une de ces conditions ?",
-								"conditions": [
+								"label": "Les messages d’erreurs fournissant une instruction ou une indication du type de données et/ou de format obligatoire des champs vérifient-ils une de ces methodologies ?",
+								"methodologies": [
 									"Le message d’erreur fournissant une instruction ou une indication du type de données et/ou de format obligatoires est visible et identifie le champ concerné ;",
 									"Le champ dispose de l’attribut aria-invalid=\"true\"."
 								]
 							},
 							{
 								"number": "7",
-								"label": "Les champs ayant l’attribut aria-invalid=\"true\" dont la saisie requiert un type de données et/ou de format obligatoires vérifient-ils une de ces conditions ?",
-								"conditions": [
+								"label": "Les champs ayant l’attribut aria-invalid=\"true\" dont la saisie requiert un type de données et/ou de format obligatoires vérifient-ils une de ces methodologies ?",
+								"methodologies": [
 									"Une instruction ou une indication du type de données et/ou de format obligatoire est visible et située dans la balise <label> associée au champ ;",
 									"Une instruction ou une indication du type de données et/ou de format obligatoire est visible et située dans le passage de texte associé au champ."
 								]
@@ -2277,8 +2277,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Pour chaque formulaire qui modifie ou supprime des données, ou qui transmet des réponses à un test ou un examen, ou dont la validation a des conséquences financières ou juridiques, la saisie des données vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Pour chaque formulaire qui modifie ou supprime des données, ou qui transmet des réponses à un test ou un examen, ou dont la validation a des conséquences financières ou juridiques, la saisie des données vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"L’utilisateur peut modifier ou annuler les données et les actions effectuées sur ces données après la validation du formulaire ;",
 									"L’utilisateur peut vérifier et corriger les données avant la validation d’un formulaire en plusieurs étapes ;",
 									"Un mécanisme de confirmation explicite, via une case à cocher (balise <input> de type checkbox ou balise ayant un attribut WAI-ARIA role=\"checkbox\") ou une étape supplémentaire, est présent."
@@ -2286,8 +2286,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Chaque formulaire dont la validation modifie ou supprime des données à caractère financier, juridique ou personnel vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque formulaire dont la validation modifie ou supprime des données à caractère financier, juridique ou personnel vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"Un mécanisme permet de récupérer les données supprimées ou modifiées par l’utilisateur ;",
 									"Un mécanisme de demande de confirmation explicite de la suppression ou de la modification, via un champ de formulaire ou une étape supplémentaire, est proposé."
 								]
@@ -2303,8 +2303,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque champ de formulaire dont l’objet se rapporte à une information concernant l’utilisateur vérifie-t-il ces conditions ?",
-								"conditions": [
+								"label": "Chaque champ de formulaire dont l’objet se rapporte à une information concernant l’utilisateur vérifie-t-il ces methodologies ?",
+								"methodologies": [
 									"Le champ de formulaire possède un attribut autocomplete ;",
 									"L’attribut autocomplete est pourvu d’une valeur présente dans la liste des valeurs possibles pour l’attribut autocomplete associés à un champ de formulaire ;",
 									"La valeur indiquée pour l’attribut autocomplete est pertinente au regard du type d’information attendu."
@@ -2327,8 +2327,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque ensemble de pages vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Chaque ensemble de pages vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Un menu de navigation et un plan du site sont présents ;",
 									"Un menu de navigation et un moteur de recherche sont présents ;",
 									"Un moteur de recherche et un plan du site sont présents."
@@ -2345,8 +2345,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque ensemble de pages, chaque page disposant d’un menu et les barres de navigation vérifie-t-elle ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque ensemble de pages, chaque page disposant d’un menu et les barres de navigation vérifie-t-elle ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le menu et les barres de navigation sont toujours à la même place dans la présentation ;",
 									"Le menu et les barres de navigation se présentent toujours dans le même ordre relatif dans le code source."
 								]
@@ -2425,8 +2425,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web où elles sont présentes, la zone d’en-tête, de navigation principale, de contenu principal, de pied de page et de moteur de recherche respectent-elles au moins une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web où elles sont présentes, la zone d’en-tête, de navigation principale, de contenu principal, de pied de page et de moteur de recherche respectent-elles au moins une de ces methodologies ?",
+								"methodologies": [
 									"La zone possède un rôle WAI-ARIA de type landmark correspondant à sa nature ;",
 									"La zone possède un titre dont le contenu permet de comprendre la nature du contenu de la zone ;",
 									"La zone peut être masquée par le biais d’un bouton précédent directement la zone dans l’ordre du code source ;",
@@ -2449,8 +2449,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Dans chaque ensemble de pages, le lien d’évitement ou d’accès rapide à la zone de contenu principal vérifie-t-il ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque ensemble de pages, le lien d’évitement ou d’accès rapide à la zone de contenu principal vérifie-t-il ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"Le lien est situé à la même place dans la présentation ;",
 									"Le lien se présente toujours dans le même ordre relatif dans le code source ;",
 									"Le lien est visible ou, à défaut, visible à la prise de focus ;",
@@ -2485,8 +2485,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, chaque élément recevant le focus vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque élément recevant le focus vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"Il est possible d’atteindre l’élément suivant ou précédent pouvant recevoir le focus avec la touche de tabulation ;",
 									"L’utilisateur est informé d’un mécanisme fonctionnel permettant d’atteindre au clavier l’élément suivant ou précédent pouvant recevoir le focus."
 								]
@@ -2502,8 +2502,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, chaque raccourci clavier n’utilisant qu’une seule touche (lettre minuscule ou majuscule, ponctuation, chiffre ou symbole) vérifie-t-il l’une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque raccourci clavier n’utilisant qu’une seule touche (lettre minuscule ou majuscule, ponctuation, chiffre ou symbole) vérifie-t-il l’une de ces methodologies ?",
+								"methodologies": [
 									"Un mécanisme est disponible pour désactiver le raccourci clavier ;",
 									"Un mécanisme est disponible pour configurer la touche de raccourci clavier au moyen des touches de modification (Ctrl, Alt, Maj, etc.) ;",
 									"Dans le cas d’un composant d’interface utilisateur, le raccourci clavier qui lui est associé ne peut être activé que si le focus clavier est sur ce composant."
@@ -2539,8 +2539,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Pour chaque page web, chaque procédé de rafraîchissement (balise <object>, balise <embed>, balise <svg>, balise <canvas>, balise <meta>) vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Pour chaque page web, chaque procédé de rafraîchissement (balise <object>, balise <embed>, balise <svg>, balise <canvas>, balise <meta>) vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’utilisateur peut arrêter ou relancer le rafraîchissement ;",
 									"L’utilisateur peut augmenter la limite de temps entre deux rafraîchissements de dix fois, au moins ;",
 									"L’utilisateur est averti de l’imminence du rafraîchissement et dispose de vingt secondes, au moins, pour augmenter la limite de temps avant le prochain rafraîchissement ;",
@@ -2553,8 +2553,8 @@
 							},
 							{
 								"number": "3",
-								"label": "Pour chaque page web, chaque procédé de redirection effectué via un script vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Pour chaque page web, chaque procédé de redirection effectué via un script vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’utilisateur peut arrêter ou relancer la redirection ;",
 									"L’utilisateur peut augmenter la limite de temps avant la redirection de dix fois, au moins ;",
 									"L’utilisateur est averti de l’imminence de la redirection et dispose de vingt secondes, au moins, pour augmenter la limite de temps avant la prochaine redirection ;",
@@ -2563,8 +2563,8 @@
 							},
 							{
 								"number": "4",
-								"label": "Pour chaque page web, chaque procédé limitant le temps d’une session vérifie-t-il une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Pour chaque page web, chaque procédé limitant le temps d’une session vérifie-t-il une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’utilisateur peut supprimer la limite de temps ;",
 									"L’utilisateur peut augmenter la limite de temps ;",
 									"La limite de temps avant la fin de la session est de vingt heures au moins."
@@ -2594,8 +2594,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, chaque fonctionnalité de téléchargement d’un document bureautique vérifie-t-elle une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque fonctionnalité de téléchargement d’un document bureautique vérifie-t-elle une de ces methodologies ?",
+								"methodologies": [
 									"Le document en téléchargement est compatible avec l'accessibilité ;",
 									"Il en existe une version alternative en téléchargement compatible avec l'accessibilité ;",
 									"Il en existe une version alternative au format HTML compatible avec l'accessibilité."
@@ -2612,8 +2612,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Chaque document bureautique ayant une version accessible vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Chaque document bureautique ayant une version accessible vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"La version compatible avec l’accessibilité offre la même information ;",
 									"La version alternative au format HTML est pertinente et offre la même information."
 								]
@@ -2629,8 +2629,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, chaque contenu cryptique (art ASCII, émoticône, syntaxe cryptique) vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque contenu cryptique (art ASCII, émoticône, syntaxe cryptique) vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"Un attribut title est disponible ;",
 									"Une définition est donnée par le contexte adjacent."
 								]
@@ -2646,8 +2646,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, chaque contenu cryptique (art ASCII, émoticône, syntaxe cryptique) vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque contenu cryptique (art ASCII, émoticône, syntaxe cryptique) vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"Le contenu de l’attribut title est pertinent ;",
 									"La définition donnée par le contexte adjacent est pertinente."
 								]
@@ -2663,24 +2663,24 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, chaque image ou élément multimédia (balise <video>, balise <img>, balise <svg>, balise <canvas>, balise <embed> ou balise <object>) qui provoque un changement brusque de luminosité ou un effet de flash vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque image ou élément multimédia (balise <video>, balise <img>, balise <svg>, balise <canvas>, balise <embed> ou balise <object>) qui provoque un changement brusque de luminosité ou un effet de flash vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"La fréquence de l’effet est inférieure à 3 par seconde ;",
 									"La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
 								]
 							},
 							{
 								"number": "2",
-								"label": "Dans chaque page web, chaque script qui provoque un changement brusque de luminosité ou un effet de flash vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque script qui provoque un changement brusque de luminosité ou un effet de flash vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"La fréquence de l’effet est inférieure à 3 par seconde ;",
 									"La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
 								]
 							},
 							{
 								"number": "3",
-								"label": "Dans chaque page web, chaque mise en forme CSS qui provoque un changement brusque de luminosité ou un effet de flash vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque mise en forme CSS qui provoque un changement brusque de luminosité ou un effet de flash vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"La fréquence de l’effet est inférieure à 3 par seconde ;",
 									"La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
 								]
@@ -2696,8 +2696,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, chaque contenu en mouvement déclenché automatiquement, vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque contenu en mouvement déclenché automatiquement, vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"La durée du mouvement est inférieure ou égale à 5 secondes ;",
 									"L’utilisateur peut arrêter et relancer le mouvement ;",
 									"L’utilisateur peut afficher et masquer le contenu en mouvement ;",
@@ -2706,8 +2706,8 @@
 							},
 							{
 								"number": "2",
-								"label": "Dans chaque page web, chaque contenu clignotant déclenché automatiquement, vérifie-t-il une de ces conditions ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque contenu clignotant déclenché automatiquement, vérifie-t-il une de ces methodologies ?",
+								"methodologies": [
 									"La durée du clignotement est inférieure ou égale à 5 secondes ;",
 									"L’utilisateur peut arrêter et relancer le clignotement ;",
 									"L’utilisateur peut afficher et masquer le contenu clignotant ;",
@@ -2725,8 +2725,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, chaque contenu vérifie-t-il ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, chaque contenu vérifie-t-il ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"La consultation est possible quel que soit le mode d’orientation de l’écran ;",
 									"Le contenu proposé reste le même quel que soit le mode d’orientation de l’écran utilisé même si sa présentation et le moyen d’y accéder peut différer."
 								]
@@ -2759,8 +2759,8 @@
 						"tests": [
 							{
 								"number": "1",
-								"label": "Dans chaque page web, les actions déclenchées au moyen d’un dispositif de pointage sur un point unique de l’écran vérifient-elles l’une de ces conditions (hors cas particuliers) ?",
-								"conditions": [
+								"label": "Dans chaque page web, les actions déclenchées au moyen d’un dispositif de pointage sur un point unique de l’écran vérifient-elles l’une de ces methodologies (hors cas particuliers) ?",
+								"methodologies": [
 									"L’action est déclenchée au moment où le dispositif de pointage est relâché ou relevé ;",
 									"L’action est déclenchée au moment où le dispositif de pointage est pressé ou posé puis annulée lorsque le dispositif de pointage est relâché ou relevé ;",
 									"Un mécanisme est disponible pour abandonner (avant achèvement de l’action) ou annuler (après achèvement) l’exécution de l’action."

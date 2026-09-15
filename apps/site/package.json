@@ -6,6 +6,7 @@
 	"scripts": {
 		"predev": "react-dsfr update-icons",
 		"dev": "next dev -p 3001",
+		"start": "npx serve@latest out",
 		"prebuild": "react-dsfr update-icons",
 		"build": "next build",
 		"typecheck": "tsc --noEmit"
