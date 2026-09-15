@@ -72,10 +72,11 @@ The teleservice deploys from the repository root on a Node.js application. Cleve
 | -------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `CC_NODE_BUILD_TOOL`       | `pnpm` (or unset: the lockfile is detected)                                                                   |
 | `CC_POST_BUILD_HOOK`       | `pnpm --filter teleservice payload generate:types && pnpm build && pnpm --filter teleservice payload migrate` |
+| `CC_RUN_COMMAND`           | `pnpm start:teleservice`                                                                                      |
 | `CC_NODE_DEV_DEPENDENCIES` | `install` when `NODE_ENV=production` is set: the build needs dev dependencies (Turborepo, TypeScript)         |
 
-The start command is the root `start` script (`pnpm --filter teleservice start`); set `CC_RUN_COMMAND` only to override it. The Payload CLI runs through the app's `payload` script so that it resolves the app's config and migrations.
+Set `CC_RUN_COMMAND=pnpm start:teleservice` as the run command: the root manifest has no `start` script, one `start:<app>` script per application instead. The Payload CLI runs through the app's `payload` script so that it resolves the app's config and migrations.
 
 ### RGAA 5 site
 
-`pnpm --filter site build` writes a fully static export to `apps/site/out/`, to be served by a Clever Cloud static application (`CC_WEBROOT=/apps/site/out`, build through `CC_POST_BUILD_HOOK=pnpm --filter site build`). Not deployed yet.
+`pnpm --filter site build` writes a fully static export to `apps/site/out/`; `pnpm start:site` serves it locally. It is meant to be served by a Clever Cloud static application (`CC_WEBROOT=/apps/site/out`, build through `CC_POST_BUILD_HOOK=pnpm --filter site build`). Not deployed yet.
