@@ -19,7 +19,8 @@ Single-context repo:
 ├── docs/adr/
 │   ├── 0001-some-decision.md
 │   └── 0002-another-decision.md
-└── src/
+├── apps/teleservice/src/
+└── packages/
 ```
 
 ## Use the glossary's vocabulary

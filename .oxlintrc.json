@@ -10,8 +10,8 @@
 		"typescript/no-explicit-any": "off"
 	},
 	"ignorePatterns": [
-		"src/app/(payload)/*",
-		"src/payload/payload-types.ts",
-		"src/payload/migrations/**"
+		"apps/teleservice/src/app/(payload)/*",
+		"apps/teleservice/src/payload/payload-types.ts",
+		"apps/teleservice/src/payload/migrations/**"
 	]
 }

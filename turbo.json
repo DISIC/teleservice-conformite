@@ -1,0 +1,22 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"envMode": "loose",
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"cache": false
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"start": {
+			"cache": false,
+			"persistent": true
+		},
+		"typecheck": {
+			"dependsOn": ["^build"]
+		},
+		"test": {}
+	}
+}

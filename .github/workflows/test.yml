@@ -10,9 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
-      - run: yarn install --frozen-lockfile
-      - run: yarn test
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Pull requests only run the tests of packages changed since main.
+      - run: pnpm turbo run test ${{ github.event_name == 'pull_request' && '--affected' || '' }}
