@@ -67,7 +67,10 @@ export default function AccordionList({
 										iconId="fr-icon-links-fill"
 										title={`Lien vers ${index + 1}. ${topic}`}
 										priority="tertiary no outline"
-										linkProps={{ href: `${pathname}#${index + 1}` }}
+										linkProps={{
+											href: `${pathname}#${index + 1}`,
+											onClickCapture: (event) => event.stopPropagation(),
+										}}
 										className={linkClasses.link}
 									/>
 								</>
