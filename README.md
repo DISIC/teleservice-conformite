@@ -69,14 +69,15 @@ All run from the repo root.
 
 The teleservice deploys from the repository root on a Node.js application. Clever Cloud detects `pnpm-lock.yaml` and reads the pnpm version from the `packageManager` field, and installs the whole workspace during its build phase.
 
-| Variable                   | Value                                                                                                         |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `CC_NODE_BUILD_TOOL`       | `pnpm` (or unset: the lockfile is detected)                                                                   |
-| `CC_POST_BUILD_HOOK`       | `pnpm --filter teleservice payload generate:types && pnpm build && pnpm --filter teleservice payload migrate` |
-| `CC_RUN_COMMAND`           | `pnpm start:teleservice`                                                                                      |
-| `CC_NODE_DEV_DEPENDENCIES` | `install` when `NODE_ENV=production` is set: the build needs dev dependencies (Turborepo, TypeScript)         |
+| Variable                   | Value                                                                                                                              |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_ENV`                 | `production`                                                                                                                       |
+| `CC_NODE_BUILD_TOOL`       | `pnpm` (or unset: the lockfile is detected)                                                                                        |
+| `CC_NODE_DEV_DEPENDENCIES` | `install`: the build needs dev dependencies (TypeScript, `@types/*`)                                                               |
+| `CC_POST_BUILD_HOOK`       | `pnpm --filter teleservice payload generate:types && pnpm --filter teleservice build && pnpm --filter teleservice payload migrate` |
+| `CC_RUN_COMMAND`           | `pnpm start:teleservice`                                                                                                           |
 
-Set `CC_RUN_COMMAND=pnpm start:teleservice` as the run command: the root manifest has no `start` script, one `start:<app>` script per application instead. The Payload CLI runs through the app's `payload` script so that it resolves the app's config and migrations.
+`packageManager` pins pnpm 11: Clever Cloud implements `CC_NODE_DEV_DEPENDENCIES=install` as `pnpm install --prod false`, a spelling pnpm 12's new argument parser no longer accepts (it reads `false` as a package name). Move to pnpm 12 once the buildpack emits `--prod=false`. The hook builds the teleservice only: `pnpm build` at the root would also build the RGAA 5 site, which this application does not serve. The root manifest has no `start` script, one `start:<app>` script per application instead. The Payload CLI runs through the app's `payload` script so that it resolves the app's config and migrations.
 
 ### RGAA 5 site
 
