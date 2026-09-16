@@ -13,6 +13,7 @@
 	"ignorePatterns": [
 		"apps/teleservice/src/app/(payload)/*",
 		"apps/teleservice/src/payload/payload-types.ts",
-		"apps/teleservice/src/payload/migrations/**"
+		"apps/teleservice/src/payload/migrations/**",
+		"rgaa/data/**"
 	]
 }

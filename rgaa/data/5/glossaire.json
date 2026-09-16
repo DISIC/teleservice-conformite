@@ -1,0 +1,208 @@
+{
+	"rgaa": {
+		"version": "5.0"
+	},
+	"source": "https://github.com/DISIC/teleservice-conformite/tree/main/rgaa/content",
+	"terms": [
+		{
+			"slug": "alternative-courte-et-concise",
+			"title": "Alternative courte et concise",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Les conditions de restitution d’une alternative textuelle via des technologies d’assistance (par exemple une loupe d’écran) nécessitent qu’elle soit la plus courte possible. Une longueur maximale de 80 caractères est fortement recommandée ; elle limitera le nombre de manipulations nécessaires pour lire l’alternative par les utilisateurs de plages braille ou de loupes d’écran notamment."
+		},
+		{
+			"slug": "alternative-textuelle-image",
+			"title": "Alternative textuelle (image)",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "« Nom accessible » restitué par les technologies d’assistance pour les éléments graphiques de type :\n\n- Image (balise `<img>` ou balise ouvrante possédant un attribut WAI-ARIA `role=\"img\"`) ;\n- Zone d’image réactive (balise `<area>`) ;\n- Bouton de type image (balise `<input>` avec l’attribut `type=\"image\"`) ;\n- Image objet (balise `<object type=\"image/…\">`) ;\n- Image vectorielle (balise `<svg>`) ;\n- Image bitmap (balise `<canvas>`) ;\n- Image embarquée (balise `<embed>`).\n\nDans le cas d’un élément graphique, le « nom accessible » est obtenu selon l’ordre suivant :\n\n- Passage de texte associé via l’attribut WAI-ARIA `aria-labelledby` pour les balises :\n  - `<img>` ;\n  - `<input type=\"image\">` ;\n  - `<svg>` ;\n  - `<object type=\"image/…\">` ;\n  - `<embed type=\"image/…\">` ;\n  - `<canvas>` ;\n  - balises possédant un attribut WAI-ARIA `role=\"img\"`.\n- Sinon, contenu de l’attribut WAI-ARIA `aria-label` pour les éléments :\n  - `<img>` ;\n  - `<area>` ;\n  - `<input type=\"image\">` ;\n  - `<svg>` ;\n  - `<object type=\"image/…\">` ;\n  - `<embed type=\"image/…\">` ;\n  - `<canvas>` ;\n  - balises ouvrantes possédant un attribut WAI-ARIA `role=\"img\"`.\n- Sinon, contenu de l’attribut `alt` pour les balises :\n  - `<img>` ;\n  - `<area>` ;\n  - `<input type=\"image\">`.\n- Sinon, contenu de l’attribut `title` pour les balises :\n  - `<img>` ;\n  - `<input type=\"image\">` ;\n  - `<object type=\"image/…\">` ;\n  - `<embed type=\"image/…\">`.\n\nCet ordre doit être utilisé pour déterminer ce qui constitue l’alternative textuelle.\n\nNéanmoins, en cas de support partiel de l’algorithme de calcul du « nom accessible », c’est la valeur réellement restituée par les technologies d’assistance utilisées dans l’environnement de test (ou « base de référence ») qu’il faudra considérer comme alternative textuelle.\n\nPar exemple :\n\n- En cas de présence conjointe d’un attribut WAI-ARIA `aria-label` et d’un attribut WAI-ARIA `aria-labelledby` sur une balise `<img>`, c’est le passage de texte référencé par l’attribut WAI-ARIA `aria-labelledby` qui doit être considérée comme alternative textuelle si le contenu du passage de texte est réellement restitué par les technologies d’assistance utilisées dans l’environnement de test ;\n- En cas de présence conjointe d’un attribut WAI-ARIA `aria-label` et d’un attribut `alt` sur une balise `<img>`, c’est le contenu de l’attribut WAI-ARIA `aria-label` qui doit être considéré comme alternative textuelle si le contenu de l’attribut WAI-ARIA `aria-label` est réellement restitué par les technologies d’assistance utilisées dans l’environnement de test.\n\nRéférence : <span lang=\"en\">[Accessible name and description calculation](https://www.w3.org/TR/html-aam-1.0/#accessible-name-and-description-computation)</span>.\n\nRGAA considère trois types d’alternatives textuelles liées à la nature de l’image :\n\n- Pour une image porteuse d’information, l’alternative textuelle apporte l’information nécessaire à la compréhension du contenu qu’elle véhicule ;\n- Pour une image de décoration, aucune alternative textuelle ne doit être restituée ;\n- Pour une image [CAPTCHA](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#captcha) ou une [image-test](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-test), l’alternative textuelle décrit seulement la nature et la fonction de l’image. En effet, l’alternative textuelle ne peut apporter l’information véhiculée par l’image sans rendre la fonction associée inopérante.\n\nNote 1 : pour une image [CAPTCHA](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#captcha) l’alternative peut être, par exemple : « Code de sécurité anti-spam » ou « code pour vérifier que vous êtes un humain » ou toute autre alternative permettant à l’utilisateur de comprendre la nature et la fonction de l’image.\n\nNote 2 : pour un groupe d’images, par exemple un système de vote constitué de plusieurs images d’étoile, il est fortement conseillé d’utiliser soit la première image du groupe pour donner une alternative cohérente au groupe d’image (voir la [technique WCAG2.1 G196](https://www.w3.org/WAI/WCAG21/Techniques/general/G196)), soit une balise conteneur pourvue d’un rôle WAI-ARIA `img` et d’une alternative textuelle. Dans le premier cas, les autres images du groupe sont considérées comme des images de décoration. Dans le second cas, toutes les images du groupe sont considérées comme des images de décoration.\n\nNote 3 : pour les image-lien, l’alternative doit permettre de comprendre la fonction et la destination du lien ; ce cas est traité dans la thématique liens.\n\nNote 4 : pour les images vectorielles (balise `<svg>`) l’alternative textuelle pourrait se trouver aussi présente dans une balise `<title>` ou dans une balise `<text>` que cette dernière balise soit ou non visible, même si ce n’est pas le rôle dévolu à cet élément en SVG.\n\nNote 5 : l’utilisation de l’attribut `alt` étant la seule technique totalement supportée par les aides techniques il est recommandé de privilégier cette solution lors de la mise en œuvre d’une alternative à une balise `<img>`, `<area>` et `<input type=\"image\">`.\n\nNote 6 : bien que l’attribut `title` soit considéré comme une possibilité d’alternative textuelle à une image, son usage peut poser problème, notamment du fait qu’une image avec un attribut `alt` absent ou vide est considérée comme une image pourvue d’un `role=“présentation”` par WAI-ARIA : <https://www.w3.org/TR/html-aam-1.0/#details-id-54>. Il faut s’assurer que les assistances techniques présentes dans l’environnement de test retenu restituent correctement l’alternative proposée par l’attribut `title`."
+		},
+		{
+			"slug": "bouton-formulaire",
+			"title": "Bouton (formulaire)",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Élément d’un formulaire qui permet d’effectuer une action prédéfinie. Par exemple, le bouton de soumission d’un formulaire permet l’envoi au serveur des informations collectées pour leur traitement. L’intitulé d’un bouton doit décrire l’action qui résulte de son activation (par exemple : « Lancer votre recherche », « Envoyer votre message »).\n\nEn HTML, il y a trois types de boutons de formulaire :\n\n- Balise `<input>` de type `submit`, `reset` ou `button` ;\n- Balise `<input>` de type `image` ;\n- Balise `<button>`.\n\nIl est également possible de restituer un bouton à l’aide du rôle WAI-ARIA `button`.\n\nL’intitulé du bouton peut être de six types :\n\n- Le contenu du passage de texte associé au bouton via l’attribut WAI-ARIA `aria-labelledby` lorsqu’il est présent ;\n- Le contenu de l’attribut `aria-label` lorsqu’il est présent ;\n- Le contenu de l’attribut `alt` d’un bouton de type `image` ;\n- Le contenu de l’attribut `value` des boutons de type `submit`, `reset` ou `button` ;\n- Le contenu de la balise `<button>` ;\n- Le contenu de l’attribut `title` lorsqu’il est présent.\n\nNote importante : lorsque plusieurs de ces techniques sont présentes sur un même bouton, le calcul du « nom accessible », c’est-à-dire ce qui sera restitué, obéit à un ordre strict :\n\n- `aria-labelledby` ;\n- Sinon `aria-label` ;\n- Sinon `alt` pour le cas des <span lang=\"en\">input</span> `image` ;\n- Sinon `value` pour le cas des <span lang=\"en\">input</span> `submit`, `reset` ou `button` ;\n- Sinon contenu de la balise `<button>` ;\n- Sinon `title`.\n\nCet ordre doit être utilisé pour l’évaluation de la pertinence du « nom accessible » du bouton. Par exemple, même dans le cas de la présence d’un `title` et d’un passage de texte référencé par `aria-labelledby` sur le même bouton, c’est le passage de texte référencé par `aria-labelledby` qui doit être évalué.\n\nRéférence : <span lang=\"en\">[Accessible name and description calculation](https://www.w3.org/TR/html-aam-1.0/#accessible-name-and-description-computation)</span>.\n\nPar ailleurs, un « nom accessible » sera considéré comme non-pertinent s’il ne reprend pas le texte visible du bouton. Par exemple : `<button aria-label=\"confirmer la saisie\">valider la saisie</button>` sera considéré comme non conforme au critère 11.9."
+		},
+		{
+			"slug": "captcha",
+			"title": "CAPTCHA",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Un CAPTCHA est un test utilisé pour distinguer un utilisateur humain d’un ordinateur. Le test utilise souvent des images contenant du texte déformé, mélangé avec d’autres formes ou utilisant des jeux de couleur altérées, que l’utilisateur est invité à retaper. D’autres formes de CAPTCHA peuvent être basées sur des questions logiques ou des extraits sonores."
+		},
+		{
+			"slug": "contenu-alternatif",
+			"title": "Contenu alternatif",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Contenu venant se substituer à un autre apportant la même information mais pouvant être présenté de façon différente. Ce contenu peut être de forme textuelle mais également être lui-même structuré à l’aide de balises. Un contenu alternatif devra respecter l’ensemble des critères du RGAA qui lui sont applicables pour être considéré comme une alternative accessible à l’élément qu’il remplace. Exemple : un tableau de données peut être le contenu alternatif d’une image bitmap (balise `<canvas>`) affichant un graphique statistique."
+		},
+		{
+			"slug": "correctement-restitue-par-les-technologies-d-assistance",
+			"title": "Correctement restitué (par les technologies d’assistance)",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Lorsqu’un critère, un test ou une condition de test demande de vérifier la restitution d’un dispositif, il faut s’assurer que ladite restitution est compatible avec l’accessibilité.\n\nLe test consiste à vérifier que la restitution est pertinente pour au moins une des combinaisons de l’environnement de test (ou « base de référence ») utilisé pour déclarer qu’un élément, un dispositif ou une alternative est « compatible avec l’accessibilité ».\n\nPar exemple : le test 1.3.8 demande de vérifier que l’alternative d’une image bitmap (balise `<canvas>`) porteuse d’information est correctement restituée.\n\nOn procède alors à un test avec les outils de l’environnement de test défini pour le site.\n\nSi on constate que l’alternative est correctement restituée, le test est validé."
+		},
+		{
+			"slug": "description-detaillee-image",
+			"title": "Description détaillée (image)",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Contenu associé à une image en complément de son alternative textuelle afin de décrire en totalité l’information véhiculée par l’image. La description détaillée peut être associée à l’image via :\n\n- Un attribut `longdesc` qui contient l’adresse d’une page ou d’un emplacement dans la page contenant la description détaillée ;\n- Une référence à une description détaillée adjacente à l’image dans l’alternative textuelle ;\n- Un [lien ou un bouton adjacent](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#lien-ou-bouton-adjacent) qui permet d’accéder à la description détaillée dans la page ou dans une autre page ;\n- Un ou plusieurs passages de texte identifiés par un id et liés par un attribut WAI-ARIA `aria-describedby` sur le modèle `aria-describedby=\"ID1 ID2 ID3…\"`.\n\nNote 1 : Si le support de l’attribut `aria-describedby` fait défaut, il est possible d’utiliser un ou plusieurs passages de texte identifiés par un `id` et liés par un attribut WAI-ARIA `aria-labelledby` à la suite de l’alternative textuelle.\n\nNote 2 : Pour assurer une compatibilité maximum avec les agents utilisateurs, notamment Internet Explorer 11, il est recommandé d’implémenter un `tabindex=\"-1\"` sur les balises qui contiennent un passage de texte et qui ne sont pas des éléments interactifs (bouton, liens, éléments de formulaires, etc.)."
+		},
+		{
+			"slug": "image-de-decoration",
+			"title": "Image de décoration",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Image n’ayant aucune fonction et ne véhiculant aucune information particulière par rapport au contenu auquel elle est associée.\n\nExemples :\n\n- Une image précédant chaque item d’une liste ;\n- Une image servant à caler la mise en page ;\n- Une image de coin arrondie pour habiller un bloc d’information ;\n- Une image d’illustration n’apportant aucune information nécessaire à la compréhension du texte auquel elle est associée.\n\nNote : les balises possédant un attribut WAI-ARIA `role=\"img\"` ne peuvent faire office d’image de décoration qu’à la condition qu’elles possèdent un attribut WAI-ARIA `aria-hidden=\"true\"`."
+		},
+		{
+			"slug": "image-objet",
+			"title": "Image objet",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Image incorporée ou générée par une balise `<object>`."
+		},
+		{
+			"slug": "image-porteuse-d-information",
+			"title": "Image porteuse d’information",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Image qui véhicule une information nécessaire à la compréhension du contenu auquel elle est associée.\n\nNote 1 : lorsque l’image est le seul contenu d’un lien, son alternative est l’intitulé du lien. Dans ce cas, l’alternative de l’image devrait être évaluée avec la thématique « Liens ».\n\nNote 2 : lorsqu’un bouton de formulaire, inséré avec l’élément `<button>`, ne contient qu’une image (balise `<img>`, `<object>`, `<embed>`, `<canvas>` ou `<svg>`), l’alternative de l’image est l’intitulé du bouton. Deux cas peuvent se présenter :\n\n- Le bouton est contrôlé par son type, par exemple, le type `submit` ou `reset`, et fait partie d’un formulaire. Dans ce cas, le bouton image doit être évalué avec la thématique « Formulaires » ;\n- Le bouton est contrôlé par un dispositif JavaScript. Dans ce cas, le bouton image doit être évalué avec la thématique « Scripts »."
+		},
+		{
+			"slug": "image-reactive",
+			"title": "Image réactive",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "- Image réactive côté client (attribut `usemap`) : image divisée en zones cliquables ou neutres (attribut `nohref`) ;\n- Image réactive côté serveur (attribut `ismap`) : image pour laquelle le navigateur transmet au serveur les coordonnées du pointeur, chaque jeu de coordonnées correspondant à une ressource (page web). L’image réactive côté serveur est extrêmement rare.\n\nNote : en HTML5, l’attribut `ismap` est obsolète et non conforme pour les boutons de type `image` (`input type=\"image\"`)."
+		},
+		{
+			"slug": "image-test",
+			"title": "Image-test",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Image servant dans un test, captcha ou une image servant de test dans un quiz ou un jeu.\n\nExemple : une série d’images présente un détail issu de tableaux célèbres ; il faut reconnaître le titre et le peintre de chaque tableau. Dans cette situation, il n’est pas possible de donner une alternative pertinente (par exemple le nom du tableau et/ou du peintre) sans rendre le test inutilisable. L’alternative doit alors se contenter de donner la possibilité d’identifier l’image, par exemple “image 1 du test”."
+		},
+		{
+			"slug": "image-texte",
+			"title": "Image texte",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Image affichant du texte.\n\nNote : il n’est pas recommandé d’utiliser des images-textes. Lorsqu’il est possible de reproduire les mêmes effets en CSS, le critère 1.8 impose que le texte soit reproduit en texte CSS, ou qu’un mécanisme de remplacement permette à l’utilisateur de remplacer ces images par du [texte stylé](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#texte-style) en CSS."
+		},
+		{
+			"slug": "legende-d-image",
+			"title": "Légende d’image",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Lorsqu’un texte, adjacent à une image, contient des informations sur l’image (par exemple un copyright, une date, un auteur…) ou est destiné à compléter les informations apportées par l’image (par exemple un texte associé à une image dans une galerie d’images), on parle de légende d’image.\n\nLorsqu’une image est légendée il est nécessaire d’associer la légende de l’image à l’image par une relation de structure, de telle sorte que les technologies d’assistance puissent traiter l’image et sa légende comme un ensemble unique.\n\nHTML5 propose d’associer une légende à une image via les éléments `figure` (l’ensemble de l’image et la légende) et `figcaption` (la légende).\n\nUne image sans légende peut définir :\n\n- Une image qui n’est pas insérée dans un élément `figure` ;\n- Une image insérée dans un élément `figure` sans élément `figcaption`.\n\nNote : lorsque le texte adjacent à l’image peut faire office de texte de remplacement, il n’est pas obligatoire de recourir à l’ensemble `figure`, `figcaption`, l’image pouvant être simplement traitée comme une image de décoration.\n\nVous pouvez consulter, à ce sujet, la note en anglais <span lang=\"en\">[Requirements for providing text to act as an alternative for images](https://www.w3.org/TR/html51/semantics-embedded-content.html#alt-text)</span> du W3C."
+		},
+		{
+			"slug": "lien-ou-bouton-adjacent",
+			"title": "Lien ou bouton adjacent",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Lien ou bouton présenté de manière adjacente à un élément dans la page. Le lien ou bouton doit être adjacent visuellement dans la représentation graphique (CSS activé) et dans le code HTML. Dans le code HTML, le lien ou bouton doit se situer juste avant ou juste après l’élément auquel il est adjacent."
+		},
+		{
+			"slug": "mecanisme-de-remplacement",
+			"title": "Mécanisme de remplacement",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Mécanisme généralement basé sur CSS, permettant à l’utilisateur de remplacer du texte par du texte en image et inversement sur le principe du style switcher. Le mécanisme peut utiliser un langage de script côté serveur ou un langage de script côté client."
+		},
+		{
+			"slug": "passage-de-texte-lie-par-aria-labelledby-ou-aria-describedby",
+			"title": "Passage de texte lié par `aria-labelledby` ou `aria-describedby`",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Il s’agit d’un ou de plusieurs passages de texte identifiés par des `id` dont la valeur est unique dans la page et associés à un élément (champ de formulaire, bouton, etc.) par les attributs WAI-ARIA `aria-labelledby` ou `aria-describedby` sur le modèle suivant : `aria-labelledby=\"ID1 ID2 ID3…\"` où la valeur de l’attribut utilisé est égale à la liste des valeurs d’attributs `id` des passages de texte à associer présents dans la page.\n\nNote 1 : pour assurer une compatibilité maximum avec les agents utilisateurs, notamment Internet Explorer 11, il est recommandé d’implémenter un `tabindex=\"-1\"` sur les passages de textes qui ne sont pas des éléments interactifs (bouton, liens, éléments de formulaires, etc.).\n\nNote 2 : la valeur des attributs WAI-ARIA `aria-labelledby` ou `aria-describedby` ne doivent pas créer de référence récursive (A référence B qui référence A) ou traversante (A qui référence B qui référence C)."
+		},
+		{
+			"slug": "texte-style",
+			"title": "Texte stylé",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Texte dont la mise en forme est contrôlée par une feuille de styles."
+		},
+		{
+			"slug": "zone-cliquable",
+			"title": "Zone cliquable",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Région d’une image réactive à laquelle une action a été associée ; par exemple, le déclenchement d’un événement en cliquant sur un lien (pour une zone cliquable côté client : balise `<area>` avec l’attribut `href`). Les balises `<area>` sont contenues dans la balise `<map>`.\n\nPour les images réactives côté serveur, les coordonnées sont détenues sur le serveur."
+		},
+		{
+			"slug": "zone-d-une-image-reactive",
+			"title": "Zone (d’une image réactive)",
+			"referentiels": [
+				"web",
+				"mobile",
+				"bureautique"
+			],
+			"definition": "Zone cliquable ou zone non cliquable d’une image réactive côté client ou zone cliquable d’une image réactive côté serveur."
+		}
+	]
+}

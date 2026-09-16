@@ -1,13 +1,14 @@
 # Téléservice Conformité
 
-Monorepo of the French digital accessibility compliance service: `apps/teleservice`, the declaration application built with [Next.js](https://nextjs.org/), [Payload CMS](https://payloadcms.com/), and [tRPC](https://trpc.io/), and `apps/site`, the public RGAA 5 site (Next.js App Router exported as static HTML). The content pipeline will join as `packages/content` (see `docs/rgaa5-integration.md`).
+Monorepo of the French digital accessibility compliance service: `apps/teleservice`, the declaration application built with [Next.js](https://nextjs.org/), [Payload CMS](https://payloadcms.com/), and [tRPC](https://trpc.io/), and `apps/site`, the public RGAA 5 site (Next.js App Router exported as static HTML). The RGAA 5 sources live in `rgaa/content/` and are read and checked by `packages/content` (see `rgaa/README.md` and `docs/rgaa5-integration.md`).
 
 ## Layout
 
 ```
 apps/teleservice/   the compliance application (Next.js, Payload, Postgres), port 3000
 apps/site/          the public RGAA 5 site (Next.js App Router, static export), port 3001
-packages/           shared packages (none yet)
+packages/content/   @rgaa/content: reads and validates rgaa/content/, builds the published model
+rgaa/               RGAA 5 sources (content/) and generated data (data/), see rgaa/README.md
 docs/               ADRs, agent guides, RGAA 5 integration decisions
 ```
 
