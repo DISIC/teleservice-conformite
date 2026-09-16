@@ -1,0 +1,36 @@
+# Les Thématiques du RGAA 5, partagées par les trois Référentiels.
+# Le numéro d'une Thématique est le premier segment du numéro de ses Critères (1.1, 1.2… pour Images).
+- number: 1
+  title: Images
+- number: 2
+  title: Cadres
+- number: 3
+  title: Couleurs
+- number: 4
+  title: Multimédia
+- number: 5
+  title: Tableaux
+- number: 6
+  title: Liens
+- number: 7
+  title: Scripts et composants interactifs
+- number: 8
+  title: Éléments obligatoires
+- number: 9
+  title: Structuration de l’information
+- number: 10
+  title: Présentation de l’information
+- number: 11
+  title: Formulaires
+- number: 12
+  title: Navigation
+- number: 13
+  title: Consultation
+- number: 14
+  title: Documentation et fonctionnalités d’accessibilité
+- number: 15
+  title: Outils d’édition
+- number: 16
+  title: Services d’assistance
+- number: 17
+  title: Communication en temps réel

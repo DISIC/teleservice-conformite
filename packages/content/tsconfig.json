@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"target": "es2022",
+		"moduleDetection": "force",
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"lib": ["ES2022"],
+		"types": ["node"],
+		"noEmit": true,
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"paths": {
+			"~/*": ["./src/*"]
+		}
+	},
+	"include": ["src/**/*.ts", "vitest.config.ts"]
+}

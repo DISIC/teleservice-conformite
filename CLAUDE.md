@@ -1,6 +1,6 @@
 # Téléservice Conformité
 
-pnpm + Turborepo monorepo with two applications: `apps/teleservice`, the Next.js + Payload CMS + tRPC application for managing digital service compliance, and `apps/site`, the public RGAA 5 site (Next.js App Router, static export). The content loader (`packages/content`) is planned; see `docs/rgaa5-integration.md`.
+pnpm + Turborepo monorepo with two applications: `apps/teleservice`, the Next.js + Payload CMS + tRPC application for managing digital service compliance, and `apps/site`, the public RGAA 5 site (Next.js App Router, static export). The RGAA 5 sources live in `rgaa/content/` (markdown, edited by contributors) and `packages/content` reads and checks them; see `docs/rgaa5-integration.md`.
 
 ## Stack
 
@@ -27,6 +27,7 @@ Run from the repo root; Turborepo fans them out to every workspace package.
 - `pnpm typecheck` — `tsc --noEmit` in every package
 - `pnpm test` — vitest in every package
 - `pnpm --filter teleservice <script>` — run one app's script (`dev`, `payload`, `seed:dev`…)
+- `pnpm --filter @rgaa/content check` — validate `rgaa/content/` (French messages, exit 1 on any problem)
 - `docker compose up -d` — start Postgres and maildev
 
 Lint and format config (`.oxlintrc.json`, `.oxfmtrc.json`, `lefthook.yml`) lives once at the root. Per-package tasks (`build`, `dev`, `typecheck`, `test`) are declared in `turbo.json`.
@@ -54,7 +55,11 @@ apps/
         ├── payload/     # Payload CMS config and collections
         ├── styles/      # Global styles
         └── tests/       # vitest, mirrors the layer under test
-packages/          # shared packages (none yet)
+packages/
+└── content/       # @rgaa/content: reads rgaa/content/, validates it (Zod), builds the published model
+rgaa/
+├── content/       # RGAA 5 sources: thematiques.yml, criteres/<n>/<referentiel>/, glossaire/
+└── data/          # generated Données publiées, committed by CI (not yet produced)
 docs/              # team documentation: ADRs, agent guides, RGAA 5 decisions
 CONTEXT.md         # domain glossary
 ```
