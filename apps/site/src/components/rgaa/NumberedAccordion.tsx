@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
 type NumberedAccordionProps = {
-	as: "h4" | "p";
+	as: "h3" | "p";
 	id?: string;
 	number: string;
 	label: string;

@@ -65,7 +65,7 @@ export default function TopicCriteria({
 					return (
 						<NumberedAccordion
 							key={criterium.number}
-							as="h4"
+							as="h3"
 							id={criteriumNumber}
 							number={criteriumNumber}
 							label={criterium.title}
