@@ -13,7 +13,7 @@
 		"check:write": "oxlint --fix && oxfmt",
 		"format": "oxfmt",
 		"lint": "oxlint",
-		"prepare": "lefthook install"
+		"prepare": "lefthook install || true"
 	},
 	"devDependencies": {
 		"lefthook": "^2.1.6",
