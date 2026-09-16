@@ -126,5 +126,7 @@ const useStyles = tss
 			justifyContent: "center",
 			width: "16rem",
 			height: "16rem",
+			backgroundColor: fr.colors.decisions.background.default.grey.default,
+			borderRadius: "50%",
 		},
 	}));
