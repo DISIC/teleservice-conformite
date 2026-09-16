@@ -48,12 +48,12 @@ const useStyles = tss.withName(DisabledTopicAccordion.name).create({
 		display: "inline",
 		margin: 0,
 		marginRight: fr.spacing("2v"),
-		color: fr.colors.decisions.text.disabled.grey.default,
+		color: fr.colors.decisions.text.mention.grey.default,
 	},
 	icon: {
 		display: "inline",
 		marginRight: fr.spacing("2v"),
-		color: fr.colors.decisions.text.disabled.grey.default,
+		color: fr.colors.decisions.text.mention.grey.default,
 
 		"&::before": {
 			"--icon-size": "1.5rem",
