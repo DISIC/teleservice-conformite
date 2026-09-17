@@ -4,11 +4,11 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import { tss } from "tss-react";
 
-type HomeHeroProps = {
+type HeroProps = {
 	onStart: () => void;
 };
 
-export function HomeHero({ onStart }: HomeHeroProps) {
+export function Hero({ onStart }: HeroProps) {
 	const { classes, cx } = useStyles();
 
 	return (
@@ -42,7 +42,7 @@ export function HomeHero({ onStart }: HomeHeroProps) {
 	);
 }
 
-const useStyles = tss.withName(HomeHero.name).create({
+const useStyles = tss.withName(Hero.name).create({
 	band: {
 		backgroundColor: fr.colors.options.beigeGrisGalet._975_75.default,
 		paddingBlock: fr.spacing("13v"),

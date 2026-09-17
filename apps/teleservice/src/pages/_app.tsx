@@ -17,8 +17,7 @@ import { AlertHost } from "~/components/alert/AlertHost";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
-import { authClient } from "~/lib/auth-client";
-import { useProConnectSignIn } from "~/hooks/useProConnectSignIn";
+import { authClient, signInWithProConnect } from "~/lib/auth-client";
 
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
 	interface RegisterLink {
@@ -58,7 +57,6 @@ function App({ Component, pageProps }: AppProps) {
 	const { data: authSession, isPending: isPendingAuth } =
 		authClient.useSession();
 	const isAuthenticated = !isPendingAuth && !!authSession;
-	const signIn = useProConnectSignIn();
 
 	const quickAccessItems = useMemo<HeaderProps.QuickAccessItem[]>(() => {
 		if (isPendingAuth) return [];
@@ -68,7 +66,7 @@ function App({ Component, pageProps }: AppProps) {
 					iconId: "fr-icon-account-line",
 					text: "Se connecter",
 					buttonProps: {
-						onClick: signIn,
+						onClick: () => signInWithProConnect(),
 						className: fr.cx("fr-btn--tertiary"),
 					},
 				},

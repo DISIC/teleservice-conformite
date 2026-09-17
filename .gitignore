@@ -38,3 +38,6 @@ apps/teleservice/src/payload/payload-types.ts
 
 # albert folder (Python project)
 /albert/
+
+# agent tooling
+.claude/launch.json
