@@ -39,10 +39,7 @@ export function WhySection() {
 							href={href}
 							target="_blank"
 							rel="noopener noreferrer"
-							className={cx(
-								fr.cx("fr-link", "fr-link--sm", "fr-mt-16v"),
-								classes.cardLink,
-							)}
+							className={cx(fr.cx("fr-link", "fr-link--sm"), classes.cardLink)}
 						>
 							{linkLabel}
 						</a>
@@ -94,6 +91,9 @@ const useStyles = tss.withName(WhySection.name).create({
 		margin: 0,
 	},
 	cardLink: {
+		marginTop: "auto",
+		paddingTop: fr.spacing("12v"),
+		alignSelf: "flex-start",
 		color: fr.colors.decisions.text.mention.grey.default,
 		backgroundImage: "none",
 		"::after": {

@@ -1,5 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import Image from "next/image";
 import { tss } from "tss-react";
+import AraLogo from "~/assets/ara-logo.svg";
 
 export function AraSection() {
 	const { classes } = useStyles();
@@ -7,8 +9,11 @@ export function AraSection() {
 	return (
 		<section className={fr.cx("fr-container")}>
 			<div className={classes.block}>
-				{/* TODO: replace with the Ara illustration */}
-				<span className={classes.artwork} aria-hidden="true" />
+				<Image
+					src={AraLogo}
+					alt="Logo de l'outil Ara"
+					className={classes.artwork}
+				/>
 				<div className={classes.content}>
 					<h2 className={classes.heading}>En un clic avec Ara</h2>
 					<p className={classes.text}>
@@ -35,8 +40,8 @@ const useStyles = tss.withName(AraSection.name).create({
 		display: "flex",
 		alignItems: "center",
 		gap: fr.spacing("4w"),
-		marginBlock: fr.spacing("8w"),
-		padding: fr.spacing("4w"),
+		marginBlock: fr.spacing("9w"),
+		padding: fr.spacing("7w"),
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
 		"@media (max-width: 768px)": {
 			flexDirection: "column",
@@ -45,10 +50,8 @@ const useStyles = tss.withName(AraSection.name).create({
 	},
 	artwork: {
 		flexShrink: 0,
-		width: "7rem",
-		height: "7rem",
-		borderRadius: "50%",
-		backgroundColor: fr.colors.decisions.background.contrast.blueFrance.default,
+		width: fr.spacing("30v"),
+		height: fr.spacing("24v"),
 	},
 	content: {
 		display: "flex",
@@ -57,7 +60,6 @@ const useStyles = tss.withName(AraSection.name).create({
 	},
 	heading: {
 		margin: 0,
-		color: fr.colors.decisions.text.title.blueFrance.default,
 	},
 	text: {
 		margin: 0,

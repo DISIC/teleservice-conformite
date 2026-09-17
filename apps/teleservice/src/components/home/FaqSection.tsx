@@ -46,7 +46,7 @@ export function FaqSection() {
 const useStyles = tss.withName(FaqSection.name).create({
 	section: {
 		maxWidth: "48rem",
-		paddingBlock: fr.spacing("8w"),
+		paddingBlock: fr.spacing("7w"),
 	},
 	heading: {
 		textAlign: "center",
