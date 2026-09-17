@@ -17,6 +17,7 @@ import type { PageWithHeader } from "~/components/layout/pageHeader";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
 import { authClient } from "~/lib/auth-client";
+import { useProConnectSignIn } from "~/hooks/useProConnectSignIn";
 
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
 	interface RegisterLink {
@@ -56,9 +57,19 @@ function App({ Component, pageProps }: AppProps) {
 	const { data: authSession, isPending: isPendingAuth } =
 		authClient.useSession();
 	const isAuthenticated = !isPendingAuth && !!authSession;
+	const signIn = useProConnectSignIn();
 
 	const quickAccessItems = useMemo<HeaderProps.QuickAccessItem[]>(() => {
-		if (!isAuthenticated) return [];
+		if (isPendingAuth) return [];
+		if (!isAuthenticated) {
+			return [
+				{
+					iconId: "fr-icon-account-line",
+					text: "Se connecter",
+					buttonProps: { onClick: signIn },
+				},
+			];
+		}
 
 		return [
 			{
@@ -74,7 +85,7 @@ function App({ Component, pageProps }: AppProps) {
 				},
 			},
 		];
-	}, [isAuthenticated]);
+	}, [isAuthenticated, isPendingAuth]);
 
 	const activeHref = getActiveHref(router.pathname);
 	const navigation = useMemo(
