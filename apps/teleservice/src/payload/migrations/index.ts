@@ -3,6 +3,7 @@ import * as migration_20260615_092832_drop_audit_is_realised_default from './202
 import * as migration_20260615_134751 from './20260615_134751';
 import * as migration_20260907_100108_app_kind_optional from './20260907_100108_app_kind_optional';
 import * as migration_20260907_125149_first_published_at from './20260907_125149_first_published_at';
+import * as migration_20260917_094822_settings_global from './20260917_094822_settings_global';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20260907_125149_first_published_at.up,
     down: migration_20260907_125149_first_published_at.down,
-    name: '20260907_125149_first_published_at'
+    name: '20260907_125149_first_published_at',
+  },
+  {
+    up: migration_20260917_094822_settings_global.up,
+    down: migration_20260917_094822_settings_global.down,
+    name: '20260917_094822_settings_global'
   },
 ];

@@ -19,6 +19,7 @@ import { Schemas } from "./collections/Schemas";
 import { Sessions } from "./collections/Session";
 import { Users } from "./collections/User";
 import { Verifications } from "./collections/Verification";
+import { Settings } from "./globals/Settings";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -50,6 +51,7 @@ export default buildConfig({
 		Schemas,
 		Contacts,
 	],
+	globals: [Settings],
 	secret: process.env.PAYLOAD_SECRET || "",
 	db: postgresAdapter({
 		pool: {
