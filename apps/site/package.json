@@ -4,10 +4,10 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"predev": "react-dsfr update-icons",
+		"predev": "react-dsfr update-icons --projectDir ../..",
 		"dev": "next dev -p 3001",
 		"start": "npx serve@latest out",
-		"prebuild": "react-dsfr update-icons",
+		"prebuild": "react-dsfr update-icons --projectDir ../..",
 		"build": "next build",
 		"typecheck": "tsc --noEmit"
 	},

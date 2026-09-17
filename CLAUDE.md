@@ -66,7 +66,7 @@ CONTEXT.md         # domain glossary
 
 Paths in the guides below are relative to `apps/teleservice/` unless they start with `apps/`, `packages/` or `docs/`.
 
-Both apps depend on the same `@codegouvfr/react-dsfr` copy; `react-dsfr update-icons` (each app's `predev`/`prebuild`) rewrites the shared icon CSS for the app it runs in. Building one app at a time is always correct; only `pnpm dev` with both apps running at once can leave one of them missing an icon until its own `predev` runs again.
+Both apps resolve the same `@codegouvfr/react-dsfr` copy in the pnpm store, and `react-dsfr update-icons` (each app's `predev`/`prebuild`) prunes that copy's icon CSS and SVGs down to the icons it finds. The scripts therefore run with `--projectDir ../..` so both apps are scanned and the union is kept; `@codegouvfr/react-dsfr` is a root devDependency only so the CLI accepts the repo root. After adding an icon id, rerun `pnpm --filter teleservice exec react-dsfr update-icons --projectDir ../..`.
 
 ## Code comments
 

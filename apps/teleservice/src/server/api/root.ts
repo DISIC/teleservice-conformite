@@ -4,6 +4,7 @@ import { albertRouter } from "./routers/albert";
 import { auditRouter } from "./routers/audit";
 import { declarationRouter } from "./routers/declaration";
 import { contactRouter, libraryRouter, schemaRouter } from "./routers/library";
+import { settingsRouter } from "./routers/settings";
 
 export const appRouter = createTRPCRouter({
 	declaration: declarationRouter,
@@ -13,6 +14,7 @@ export const appRouter = createTRPCRouter({
 	library: libraryRouter,
 	albert: albertRouter,
 	accessRight: accessRightRouter,
+	settings: settingsRouter,
 });
 
 export type AppRouter = typeof appRouter;

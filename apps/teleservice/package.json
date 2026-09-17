@@ -4,9 +4,9 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"predev": "react-dsfr update-icons",
+		"predev": "react-dsfr update-icons --projectDir ../..",
 		"dev": "next dev",
-		"prebuild": "react-dsfr update-icons",
+		"prebuild": "react-dsfr update-icons --projectDir ../..",
 		"build": "next build",
 		"preview": "next build && next start",
 		"start": "next start",

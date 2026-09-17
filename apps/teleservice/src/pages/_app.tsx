@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
@@ -16,7 +17,7 @@ import { AlertHost } from "~/components/alert/AlertHost";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
-import { authClient } from "~/lib/auth-client";
+import { authClient, signInWithProConnect } from "~/lib/auth-client";
 
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
 	interface RegisterLink {
@@ -58,7 +59,19 @@ function App({ Component, pageProps }: AppProps) {
 	const isAuthenticated = !isPendingAuth && !!authSession;
 
 	const quickAccessItems = useMemo<HeaderProps.QuickAccessItem[]>(() => {
-		if (!isAuthenticated) return [];
+		if (isPendingAuth) return [];
+		if (!isAuthenticated) {
+			return [
+				{
+					iconId: "fr-icon-account-line",
+					text: "Se connecter",
+					buttonProps: {
+						onClick: () => signInWithProConnect(),
+						className: fr.cx("fr-btn--tertiary"),
+					},
+				},
+			];
+		}
 
 		return [
 			{
@@ -71,10 +84,11 @@ function App({ Component, pageProps }: AppProps) {
 							fetchOptions: { onSuccess: () => router.reload() },
 						});
 					},
+					className: fr.cx("fr-btn--tertiary"),
 				},
 			},
 		];
-	}, [isAuthenticated]);
+	}, [isAuthenticated, isPendingAuth]);
 
 	const activeHref = getActiveHref(router.pathname);
 	const navigation = useMemo(
@@ -134,7 +148,7 @@ function App({ Component, pageProps }: AppProps) {
 								</Badge>
 							</>
 						}
-						serviceTagline="Centralisez et gérez vos déclarations d’accessibilité conformément aux exigences légales."
+						serviceTagline="Publiez et centralisez vos déclarations d’accessibilité conformément aux exigences légales."
 					/>
 				)}
 				<main id="contenu" className={classes.main} style={{ flex: 1 }}>
