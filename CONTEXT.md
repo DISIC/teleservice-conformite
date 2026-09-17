@@ -190,7 +190,7 @@ A third axis next to [[status]] (lifecycle) and [[declaration-state|Declaration 
 
 The [[obsolescence|Obsolescence]] value of a **Publiée** Declaration during the three months before its deadline. A **declarant-facing warning only**: the public page is unchanged, the conformity badge stays truthful, and citizens have no action to take.
 
-For the declarant: the Statut badge keeps reading Publiée; the list's Statut cell adds a warning-icon line "Obsolète le {deadline}"; opening the Declaration shows the "bientôt obsolète" interstitial under the same rule as [[obsolète|Obsolète]].
+For the declarant: the Statut badge keeps reading Publiée; the list's Statut cell and the details header add a warning-icon line "Obsolète le {deadline}"; opening the Declaration shows the "bientôt obsolète" interstitial under the same rule as [[obsolète|Obsolète]], and the notice card offers to republish before the deadline when no [[declaration-state|Declaration state]] notice applies.
 
 **Avoid:** "Expirante", "Périme le", "Bientôt périmée".
 
