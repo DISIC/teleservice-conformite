@@ -73,7 +73,7 @@ export default function DeclarationPage({
 	const [updateRevealed, setUpdateRevealed] = useState(false);
 	const showInterstitial =
 		obsolescence !== "valid" &&
-		declaration.status === "published" &&
+		declaration.status !== "unpublished" &&
 		!updateRevealed;
 
 	// Armed by the terminal Section's "Prévisualiser et publier"; once armed, the

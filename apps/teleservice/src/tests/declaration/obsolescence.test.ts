@@ -18,12 +18,12 @@ describe("obsoleteSince", () => {
 		);
 	});
 
-	it("rolls a 29 February over to 1 March", () => {
+	it("clamps a 29 February to the last day of February", () => {
 		expect(
 			obsoleteSince(new Date("2024-02-29T00:00:00.000Z"))
 				.toISOString()
 				.slice(0, 10),
-		).toBe("2027-03-01");
+		).toBe("2027-02-28");
 	});
 });
 
@@ -43,6 +43,22 @@ describe("obsolescenceOf", () => {
 		);
 		expect(obsolescenceOf(PUBLISHED, new Date("2026-03-24T23:59:59Z"))).toBe(
 			"expiring",
+		);
+	});
+
+	it("opens the warning window on the last day of a short month", () => {
+		const published = new Date("2023-05-31T12:00:00Z");
+		expect(obsolescenceOf(published, new Date("2026-02-27T00:00:00Z"))).toBe(
+			"valid",
+		);
+		expect(obsolescenceOf(published, new Date("2026-02-28T00:00:00Z"))).toBe(
+			"expiring",
+		);
+		expect(obsolescenceOf(published, new Date("2026-05-31T23:59:59Z"))).toBe(
+			"expiring",
+		);
+		expect(obsolescenceOf(published, new Date("2026-06-01T00:00:00Z"))).toBe(
+			"obsolete",
 		);
 	});
 

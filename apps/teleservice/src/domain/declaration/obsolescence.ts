@@ -10,14 +10,13 @@ const EXPIRING_MONTHS = 3;
 /** Valide → Bientôt obsolète → Obsolète, read from the last publish date and today. Never stored. */
 export type Obsolescence = "valid" | "expiring" | "obsolete";
 
-const addMonths = (date: Date, months: number): Date =>
-	new Date(
-		Date.UTC(
-			date.getUTCFullYear(),
-			date.getUTCMonth() + months,
-			date.getUTCDate(),
-		),
-	);
+// Clamped to the last day of the target month, so a 31st never spills into the next one.
+const addMonths = (date: Date, months: number): Date => {
+	const year = date.getUTCFullYear();
+	const month = date.getUTCMonth() + months;
+	const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+	return new Date(Date.UTC(year, month, Math.min(date.getUTCDate(), lastDay)));
+};
 
 /** Calendar day (YYYY-MM-DD, UTC): obsolescence flips at midnight, not at the publish hour. */
 const calendarDay = (date: Date): string => date.toISOString().slice(0, 10);

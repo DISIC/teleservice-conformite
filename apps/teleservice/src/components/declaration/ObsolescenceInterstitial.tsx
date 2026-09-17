@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Warning from "@codegouvfr/react-dsfr/picto/Warning";
+import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import type { Declaration } from "~/payload/payload-types";
 import {
@@ -16,7 +17,7 @@ type ObsolescenceInterstitialProps = {
 	onUpdate: () => void;
 };
 
-type Step = { title: string; detail: string };
+type Step = { title: string; detail: ReactNode };
 
 // Only these words differ between the two screens.
 const COPY: Record<
@@ -48,8 +49,13 @@ const COPY: Record<
 const WITH_CHANGES: Step[] = [
 	{
 		title: "Procédez à un nouvel audit,",
-		detail:
-			"appliquez les corrections nécessaires et <br /> procédez à un contre audit.",
+		detail: (
+			<>
+				appliquez les corrections nécessaires et
+				<br />
+				procédez à un contre audit.
+			</>
+		),
 	},
 	{ title: "Modifiez les informations", detail: "de votre déclaration." },
 	{
@@ -156,17 +162,14 @@ function StepColumn({ heading, steps }: { heading: string; steps: Step[] }) {
 			</p>
 			<ol className={classes.steps}>
 				{steps.map((step, index) => (
-					<li key={step.title} className={classes.step}>
+					<li key={index} className={classes.step}>
 						<span className={classes.stepNumber} aria-hidden="true">
 							{index + 1}
 						</span>
 						<span>
 							<strong className={fr.cx("fr-text--lg")}>{step.title}</strong>
 							<br />
-							<span
-								dangerouslySetInnerHTML={{ __html: step.detail }}
-								className={fr.cx("fr-text--sm")}
-							/>
+							<span className={fr.cx("fr-text--sm")}>{step.detail}</span>
 						</span>
 					</li>
 				))}
