@@ -1,69 +1,54 @@
-import type { Payload } from "payload";
-import { describe, expect, it, vi } from "vitest";
-import { completeDeclaration } from "./declaration.fixture";
+import { describe, expect, it } from "vitest";
 import { publishDeclaration } from "~/server/api/routers/declaration/service";
+import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { fakePayload } from "../payload.fake";
+import { completeDeclaration } from "./declaration.fixture";
 
-function stubPayload(declaration: ReturnType<typeof completeDeclaration>) {
-	const payload = {
-		update: vi.fn().mockResolvedValue(declaration),
-	};
-	return { payload: payload as unknown as Payload, update: payload.update };
-}
+const seeded = (declaration: PopulatedDeclaration) =>
+	fakePayload({ declarations: [declaration] });
 
 describe("publishDeclaration", () => {
 	it("never writes when the gate fails — incomplete declarations cannot publish", async () => {
 		const declaration = completeDeclaration({ contact: null } as never);
-		const { payload, update } = stubPayload(declaration);
+		const { payload, read } = seeded(declaration);
 
 		await expect(
 			publishDeclaration(payload, declaration),
 		).rejects.toMatchObject({
 			code: "PRECONDITION_FAILED",
 		});
-		expect(update).not.toHaveBeenCalled();
+		expect(read("declarations", 1)).toBe(declaration);
 	});
 
-	it("writes the server-built snapshot for a complete declaration", async () => {
+	it("publishes a server-built snapshot dated by the publish action", async () => {
 		const declaration = completeDeclaration();
-		const { payload, update } = stubPayload(declaration);
+		const { payload, read } = seeded(declaration);
 
-		await publishDeclaration(payload, declaration);
+		const result = await publishDeclaration(payload, declaration);
 
-		expect(update).toHaveBeenCalledTimes(1);
-		expect(update).toHaveBeenCalledWith(
-			expect.objectContaining({
-				collection: "declarations",
-				id: 1,
-				data: expect.objectContaining({
-					status: "published",
-					publishedContent: expect.any(String),
-					published_at: expect.any(String),
-					first_published_at: expect.any(String),
-				}),
-			}),
-		);
-		const data = update.mock.calls[0]?.[0]?.data ?? {};
-		expect(JSON.parse(data.publishedContent)).toMatchObject({
+		expect(result.status).toBe("published");
+		expect(result.published_at).toEqual(expect.any(String));
+		expect(JSON.parse(result.publishedContent ?? "")).toMatchObject({
 			name: "Mon service",
 			entityName: "DINUM",
 			appKindLabel: "Site web",
-			publishedAt: data.published_at.slice(0, 10),
+			publishedAt: result.published_at?.slice(0, 10),
 			audit: { isRealised: false },
 			contact: { email: "a11y@example.fr", url: "" },
 		});
+		expect(read("declarations", 1)).toEqual(result);
 	});
 
 	it("keeps the initial publication date fixed before publishing", async () => {
 		const declaration = completeDeclaration({
 			first_published_at: "2024-03-24T00:00:00.000Z",
 		});
-		const { payload, update } = stubPayload(declaration);
+		const { payload } = seeded(declaration);
 
-		await publishDeclaration(payload, declaration);
+		const result = await publishDeclaration(payload, declaration);
 
-		const data = update.mock.calls[0]?.[0]?.data ?? {};
-		expect(data.first_published_at).toBe("2024-03-24T00:00:00.000Z");
-		expect(JSON.parse(data.publishedContent).firstPublishedAt).toBe(
+		expect(result.first_published_at).toBe("2024-03-24T00:00:00.000Z");
+		expect(JSON.parse(result.publishedContent ?? "").firstPublishedAt).toBe(
 			"2024-03-24",
 		);
 	});
@@ -73,13 +58,13 @@ describe("publishDeclaration", () => {
 			publishedContent: '{"name":"previous snapshot"}',
 			contact: null,
 		} as never);
-		const { payload, update } = stubPayload(declaration);
+		const { payload, read } = seeded(declaration);
 
 		await expect(
 			publishDeclaration(payload, declaration),
 		).rejects.toMatchObject({
 			code: "PRECONDITION_FAILED",
 		});
-		expect(update).not.toHaveBeenCalled();
+		expect(read("declarations", 1)).toBe(declaration);
 	});
 });
