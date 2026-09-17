@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
@@ -66,7 +67,10 @@ function App({ Component, pageProps }: AppProps) {
 				{
 					iconId: "fr-icon-account-line",
 					text: "Se connecter",
-					buttonProps: { onClick: signIn },
+					buttonProps: {
+						onClick: signIn,
+						className: fr.cx("fr-btn--tertiary"),
+					},
 				},
 			];
 		}
@@ -82,6 +86,7 @@ function App({ Component, pageProps }: AppProps) {
 							fetchOptions: { onSuccess: () => router.reload() },
 						});
 					},
+					className: fr.cx("fr-btn--tertiary"),
 				},
 			},
 		];

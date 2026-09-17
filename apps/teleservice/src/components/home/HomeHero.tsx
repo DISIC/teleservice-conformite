@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
-import SignDocument from "@codegouvfr/react-dsfr/picto/SignDocument";
+import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import { tss } from "tss-react";
 
 type HomeHeroProps = {
@@ -15,7 +15,7 @@ export function HomeHero({ onStart }: HomeHeroProps) {
 		<div className={classes.band}>
 			<div className={cx(fr.cx("fr-container"), classes.container)}>
 				<div className={classes.content}>
-					<Badge noIcon small severity="info">
+					<Badge noIcon small>
 						BETA
 					</Badge>
 					<h1 className={classes.title}>
@@ -27,12 +27,14 @@ export function HomeHero({ onStart }: HomeHeroProps) {
 						d’accessibilité numérique des services publics. Il permet un
 						meilleur suivi de la politique d’accessibilité de l’État.
 					</p>
-					<Button onClick={onStart}>Commencer</Button>
+					<Button onClick={onStart} size="large">
+						Commencer
+					</Button>
 				</div>
 				<div className={classes.artwork} aria-hidden="true">
 					<span className={classes.halo} />
 					<span className={classes.disc}>
-						<SignDocument fontSize="7rem" />
+						<Contract fontSize="7.5rem" />
 					</span>
 				</div>
 			</div>
@@ -43,7 +45,7 @@ export function HomeHero({ onStart }: HomeHeroProps) {
 const useStyles = tss.withName(HomeHero.name).create({
 	band: {
 		backgroundColor: fr.colors.options.beigeGrisGalet._975_75.default,
-		paddingBlock: fr.spacing("10w"),
+		paddingBlock: fr.spacing("13v"),
 		"@media (max-width: 768px)": {
 			paddingBlock: fr.spacing("6w"),
 		},
@@ -63,7 +65,7 @@ const useStyles = tss.withName(HomeHero.name).create({
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "flex-start",
-		gap: fr.spacing("4v"),
+		gap: fr.spacing("6v"),
 		maxWidth: "45rem",
 	},
 	title: {

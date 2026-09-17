@@ -31,7 +31,7 @@ export function WhySection() {
 			<ul className={classes.list}>
 				{REASONS.map(({ title, description, linkLabel, href }) => (
 					<li key={title} className={classes.card}>
-						<h3 className={classes.cardTitle}>
+						<h3 className={fr.cx("fr-mb-4v")}>
 							<span aria-hidden="true">👉</span> {title}
 						</h3>
 						<p className={classes.cardText}>{description}</p>
@@ -39,7 +39,10 @@ export function WhySection() {
 							href={href}
 							target="_blank"
 							rel="noopener noreferrer"
-							className={fr.cx("fr-link", "fr-link--sm")}
+							className={cx(
+								fr.cx("fr-link", "fr-link--sm", "fr-mt-16v"),
+								classes.cardLink,
+							)}
 						>
 							{linkLabel}
 						</a>
@@ -53,10 +56,10 @@ export function WhySection() {
 const useStyles = tss.withName(WhySection.name).create({
 	section: {
 		display: "grid",
-		gridTemplateColumns: "1fr 2fr",
+		gridTemplateColumns: "3fr 7fr",
 		alignItems: "center",
-		gap: fr.spacing("6w"),
-		paddingBlock: fr.spacing("10w"),
+		gap: fr.spacing("7w"),
+		paddingBlock: fr.spacing("9w"),
 		"@media (max-width: 992px)": {
 			gridTemplateColumns: "1fr",
 			gap: fr.spacing("4w"),
@@ -65,6 +68,10 @@ const useStyles = tss.withName(WhySection.name).create({
 	},
 	heading: {
 		margin: 0,
+		paddingRight: fr.spacing("10w"),
+		"@media (max-width: 992px)": {
+			paddingRight: 0,
+		},
 	},
 	list: {
 		listStyle: "none",
@@ -80,16 +87,17 @@ const useStyles = tss.withName(WhySection.name).create({
 	card: {
 		display: "flex",
 		flexDirection: "column",
-		gap: fr.spacing("3v"),
-		padding: fr.spacing("4w"),
+		padding: fr.spacing("10v"),
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-	},
-	cardTitle: {
-		margin: 0,
-		color: fr.colors.decisions.text.title.blueFrance.default,
 	},
 	cardText: {
 		margin: 0,
-		flex: 1,
+	},
+	cardLink: {
+		color: fr.colors.decisions.text.mention.grey.default,
+		backgroundImage: "none",
+		"::after": {
+			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+		},
 	},
 });

@@ -49,7 +49,9 @@ export function AdvantagesSection({ onStart }: AdvantagesSectionProps) {
 						/>
 					))}
 				</div>
-				<Button onClick={onStart}>Commencer</Button>
+				<Button onClick={onStart} size="large">
+					Commencer
+				</Button>
 			</div>
 		</section>
 	);
@@ -58,7 +60,7 @@ export function AdvantagesSection({ onStart }: AdvantagesSectionProps) {
 const useStyles = tss.withName(AdvantagesSection.name).create({
 	band: {
 		backgroundColor: fr.colors.options.beigeGrisGalet._975_75.default,
-		paddingBlock: fr.spacing("8w"),
+		paddingBlock: fr.spacing("9w"),
 	},
 	container: {
 		display: "flex",
