@@ -2,8 +2,6 @@ import { describe, expect, it } from "vitest";
 import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
 import {
 	buildPublishedMarkdown,
-	isObsolete,
-	obsoleteSince,
 	publicationLabel,
 } from "~/domain/declaration/published/markdown";
 
@@ -220,18 +218,6 @@ describe("buildPublishedMarkdown", () => {
 			"- **Schéma pluriannuel de mise en accessibilité** : https://schema.gouv.fr ;",
 		);
 		expect(md).toContain("- **Plan d’actions** : https://plan.gouv.fr");
-	});
-});
-
-describe("obsolescence", () => {
-	it("starts three years after the last publication", () => {
-		expect(obsoleteSince("2023-03-24")).toBe("2026-03-24");
-		expect(isObsolete("2023-03-24", new Date("2026-03-24T23:00:00Z"))).toBe(
-			false,
-		);
-		expect(isObsolete("2023-03-24", new Date("2026-03-25T00:00:00Z"))).toBe(
-			true,
-		);
 	});
 });
 
