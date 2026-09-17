@@ -1,7 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
@@ -13,6 +12,11 @@ import { BackButton } from "~/components/ui/BackButton";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
 import { StateNotice } from "~/components/declaration/StateNotice";
+import {
+	ConfirmationModal,
+	type ConfirmationModalActions,
+} from "~/components/modal/ConfirmationModal";
+import { ObsolescenceInterstitial } from "~/components/declaration/ObsolescenceInterstitial";
 import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
 import { StatusBadge } from "~/components/declaration/StatusBadge";
 import {
@@ -25,17 +29,13 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { copyToClipboard } from "~/lib/clipboard";
 import { parseSectionFromQuery } from "~/domain/declaration/sections";
+import { getObsolescence } from "~/domain/declaration/obsolescence";
 import { validateDeclaration } from "~/domain/declaration/validate";
 import {
 	type DeclarationProps,
 	guardDeclaration,
 	type LibraryProps,
 } from "~/lib/server-guards";
-
-const deleteModal = createModal({
-	id: "delete-modal",
-	isOpenedByDefault: false,
-});
 
 export default function DeclarationPage({
 	declaration: initialDeclaration,
@@ -67,6 +67,15 @@ export default function DeclarationPage({
 	const editingMode = getEditingMode(status);
 	const isPublished = status === "published";
 
+	// The interstitial gates an unchanged, ageing publication until the declarant
+	// starts updating it; once the row is Modifiée they are already acting.
+	const obsolescence = getObsolescence(declaration, new Date());
+	const [updateRevealed, setUpdateRevealed] = useState(false);
+	const showInterstitial =
+		obsolescence !== "valid" &&
+		declaration.status === "published" &&
+		!updateRevealed;
+
 	// Armed by the terminal Section's "Prévisualiser et publier"; once armed, the
 	// error summary re-derives from the declaration on every save.
 	const [publishAttempted, setPublishAttempted] = useState(false);
@@ -75,16 +84,43 @@ export default function DeclarationPage({
 		[publishAttempted, declaration],
 	);
 
-	const { mutateAsync: deleteDeclaration } = api.declaration.delete.useMutation(
-		{
-			onSuccess: async () => {
-				router.push("/dashboard/declarations");
-			},
-			onError: (error) => {
-				console.error("Error deleting declaration:", error);
-			},
+	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
+	const { mutate: deleteDeclaration } = api.declaration.delete.useMutation({
+		onSuccess: async () => {
+			router.push("/dashboard/declarations");
 		},
-	);
+		onError: (error) => {
+			console.error("Error deleting declaration:", error);
+		},
+	});
+
+	const confirmDelete = () =>
+		confirmationModalActions.open?.({
+			title: "Supprimer la déclaration",
+			confirmLabel: "Supprimer",
+			confirmIconId: "fr-icon-delete-fill",
+			description: (
+				<div className={classes.emptyStateContainer}>
+					<Binders fontSize="250px" />
+					<div>
+						<p>
+							Cette action est irréversible et entrainera la suppression de la
+							page publique de la déclaration.
+						</p>
+						<p>
+							Nous vous rappelons que chaque site doit fournir une déclaration
+							d'accessibilité accessible aux usagers.
+						</p>
+						<p>
+							Si votre déclaration arrive en fin de validité, vous pouvez la
+							mettre à jour depuis l'onglet « Déclaration » de votre
+							déclaration.
+						</p>
+					</div>
+				</div>
+			),
+			onConfirm: () => deleteDeclaration({ declarationId: declaration.id }),
+		});
 
 	const showDeclarationAlert = ({
 		title,
@@ -150,7 +186,7 @@ export default function DeclarationPage({
 		}
 	}, [published]);
 
-	return (
+	const heading = (
 		<>
 			<Head>
 				<title>
@@ -210,7 +246,7 @@ export default function DeclarationPage({
 						<Button
 							iconId="fr-icon-delete-line"
 							priority="tertiary"
-							onClick={() => deleteModal.open()}
+							onClick={confirmDelete}
 							size="small"
 							nativeButtonProps={{
 								"aria-label": "Supprimer la déclaration",
@@ -221,6 +257,31 @@ export default function DeclarationPage({
 					</>
 				}
 			/>
+			<ConfirmationModal actions={confirmationModalActions} />
+		</>
+	);
+
+	if (showInterstitial) {
+		return (
+			<>
+				{heading}
+				<section
+					id="declaration-page"
+					className={fr.cx("fr-container", "fr-mt-10v")}
+				>
+					<ObsolescenceInterstitial
+						declaration={declaration}
+						obsolescence={obsolescence}
+						onUpdate={() => setUpdateRevealed(true)}
+					/>
+				</section>
+			</>
+		);
+	}
+
+	return (
+		<>
+			{heading}
 			<section
 				id="declaration-page"
 				className={fr.cx("fr-container", "fr-mt-10v")}
@@ -281,57 +342,6 @@ export default function DeclarationPage({
 					</div>
 				</div>
 			</section>
-
-			<deleteModal.Component
-				title="Supprimer la déclaration"
-				buttons={[
-					{
-						doClosesModal: true,
-						children: "Annuler",
-						nativeButtonProps: {
-							"aria-label": "Annuler la suppression de la déclaration",
-						},
-					},
-					{
-						doClosesModal: false,
-						priority: "primary",
-						children: "Supprimer",
-						iconId: "fr-icon-delete-fill",
-						nativeButtonProps: {
-							"aria-label": "Confirmer la suppression de la déclaration",
-						},
-						className: classes.dialogActionButton,
-						onClick: async () => {
-							try {
-								await deleteDeclaration({ declarationId: declaration.id });
-							} catch (error) {
-								console.error("Error deleting declaration:", error);
-							}
-							deleteModal.close();
-						},
-					},
-				]}
-				className={classes.deleteModal}
-			>
-				<div className={classes.emptyStateContainer}>
-					<Binders fontSize="250px" />
-					<div>
-						<p>
-							Cette action est irréversible et entrainera la suppression de la
-							page publique de la déclaration.
-						</p>
-						<p>
-							Nous vous rappelons que chaque site doit fournir une déclaration
-							d'accessibilité accessible aux usagers.
-						</p>
-						<p>
-							Si votre déclaration arrive en fin de validité, vous pouvez la
-							mettre à jour depuis l'onglet « Déclaration » de votre
-							déclaration.
-						</p>
-					</div>
-				</div>
-			</deleteModal.Component>
 		</>
 	);
 }
@@ -362,11 +372,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 			},
 		},
 	},
-	dialogActionButton: {
-		backgroundColor:
-			fr.colors.decisions.background.actionHigh.redMarianne.default,
-		color: fr.colors.decisions.text.inverted.info.default,
-	},
 	tabContent: {
 		paddingTop: fr.spacing("6v"),
 		paddingBottom: fr.spacing("16v"),
@@ -377,15 +382,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		marginBottom: fr.spacing("6v"),
 		"& div": {
 			width: "100%",
-		},
-	},
-	deleteModal: {
-		"& .fr-modal__footer": {
-			marginTop: fr.spacing("8v"),
-			borderTop: `2px solid ${fr.colors.decisions.border.default.grey.default}`,
-		},
-		"& .fr-modal__content": {
-			marginBottom: fr.spacing("8v"),
 		},
 	},
 });

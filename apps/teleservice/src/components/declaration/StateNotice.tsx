@@ -12,6 +12,10 @@ import {
 	getDeclarationState,
 	STATE_PRESENTATION,
 } from "~/domain/declaration/state";
+import {
+	getObsolescence,
+	OBSOLESCENCE_PRESENTATION,
+} from "~/domain/declaration/obsolescence";
 import { usePublishAttempt } from "~/components/declaration/sections/hooks/usePublishAttempt";
 
 type StateNoticeProps = {
@@ -24,7 +28,8 @@ type StateNoticeProps = {
 
 /**
  * Top-of-page status notice telling the declarant what to do next, plus its
- * action CTAs. Renders nothing for a clean published declaration.
+ * action CTAs. A clean published declaration shows the obsolescence notice
+ * when one applies, nothing otherwise.
  */
 export function StateNotice({
 	declaration,
@@ -41,9 +46,16 @@ export function StateNotice({
 	const [revertActions] = useState<RevertModalActions>({});
 	const { classes } = useStyles();
 
-	if (!state) return null;
+	// The Declaration state names the blocking action, so it wins over obsolescence.
+	const obsolescence = getObsolescence(declaration, new Date());
+	const presentation = state
+		? STATE_PRESENTATION[state]
+		: obsolescence === "valid"
+			? null
+			: OBSOLESCENCE_PRESENTATION[obsolescence];
+	if (!presentation) return null;
 
-	const { bgColor, badge, heading, body, actions } = STATE_PRESENTATION[state];
+	const { bgColor, badge, heading, body, actions } = presentation;
 	// Publish always validates: the CTA runs the full declaration validation gate
 	// in every state — there is no fast path.
 	const onPublish = () => attemptPublish();

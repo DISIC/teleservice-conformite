@@ -1,4 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import type { Declaration } from "~/payload/payload-types";
+import type { StatePresentation } from "./state";
 
 // A declaration must be republished every three years; past that it is deemed non compliant.
 export const OBSOLESCENCE_YEARS = 3;
@@ -46,4 +48,33 @@ export const getObsolescence = (
 	const publishedAt = new Date(declaration.published_at);
 	if (Number.isNaN(publishedAt.getTime())) return "valid";
 	return obsolescenceOf(publishedAt, today);
+};
+
+/** Notice shown in the empty Declaration state slot; copy for the case where nothing else blocks. */
+export const OBSOLESCENCE_PRESENTATION: Record<
+	Exclude<Obsolescence, "valid">,
+	StatePresentation
+> = {
+	expiring: {
+		bgColor: fr.colors.decisions.background.alt.yellowMoutarde.default,
+		badge: {
+			label: "Bientôt obsolète",
+			color: fr.colors.decisions.text.label.yellowMoutarde.default,
+			bgColor: fr.colors.decisions.background.contrast.yellowMoutarde.default,
+		},
+		heading: "Votre déclaration sera bientôt obsolète.",
+		body: `Elle a été publiée il y a près de ${OBSOLESCENCE_YEARS} ans. Vérifiez les informations ci-dessous, puis prévisualisez et publiez avant l’échéance pour la renouveler pour ${OBSOLESCENCE_YEARS} ans.`,
+		actions: ["publish"],
+	},
+	obsolete: {
+		bgColor: fr.colors.decisions.background.alt.redMarianne.default,
+		badge: {
+			label: "Obsolète",
+			color: fr.colors.decisions.text.label.redMarianne.default,
+			bgColor: fr.colors.decisions.background.contrast.redMarianne.default,
+		},
+		heading: "Votre déclaration est obsolète.",
+		body: `Une déclaration de plus de ${OBSOLESCENCE_YEARS} ans est obsolète. Votre service numérique est alors considéré comme non conforme. Conformément à la législation, vous devez actualiser votre déclaration et la publier à nouveau. `,
+		actions: ["publish"],
+	},
 };
