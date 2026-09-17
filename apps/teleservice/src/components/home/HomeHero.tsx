@@ -56,7 +56,7 @@ const useStyles = tss.withName(HomeHero.name).create({
 		justifyContent: "space-between",
 		gap: fr.spacing("8w"),
 		"@media (max-width: 992px)": {
-			flexDirection: "column",
+			flexDirection: "column-reverse",
 			alignItems: "flex-start",
 			gap: fr.spacing("4w"),
 		},
