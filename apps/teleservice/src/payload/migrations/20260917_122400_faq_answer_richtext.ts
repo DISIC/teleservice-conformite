@@ -3,7 +3,7 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    DELETE FROM "settings_faq";
-  ALTER TABLE "settings_faq" ALTER COLUMN "answer" SET DATA TYPE jsonb;`)
+  ALTER TABLE "settings_faq" ALTER COLUMN "answer" SET DATA TYPE jsonb USING "answer"::jsonb;`)
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
