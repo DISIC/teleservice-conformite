@@ -5,7 +5,7 @@ import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { Header, type HeaderProps } from "@codegouvfr/react-dsfr/Header";
 import { createNextDsfrIntegrationApi } from "@codegouvfr/react-dsfr/next-pagesdir";
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
-import type { AppProps } from "next/app";
+import NextApp, { type AppContext, type AppProps } from "next/app";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -46,20 +46,26 @@ const NAVIGATION = [
 	},
 ];
 
+// better-auth's session cookie is httpOnly: only the server can tell, before the
+// client session resolves, whether to render the authenticated header.
+const SESSION_COOKIE = /(?:^|;\s*)(?:__Secure-)?better-auth\.session_token=/;
+
 const getActiveHref = (pathname: string) =>
 	NAVIGATION.map((item) => item.href)
 		.filter((href) => pathname === href || pathname.startsWith(`${href}/`))
 		.sort((a, b) => b.length - a.length)[0];
 
-function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps: allPageProps }: AppProps) {
+	const { hasSessionCookie, ...pageProps } = allPageProps as {
+		hasSessionCookie?: boolean;
+	};
 	const router = useRouter();
 	const { classes } = useStyles();
 	const { data: authSession, isPending: isPendingAuth } =
 		authClient.useSession();
-	const isAuthenticated = !isPendingAuth && !!authSession;
+	const isAuthenticated = isPendingAuth ? !!hasSessionCookie : !!authSession;
 
 	const quickAccessItems = useMemo<HeaderProps.QuickAccessItem[]>(() => {
-		if (isPendingAuth) return [];
 		if (!isAuthenticated) {
 			return [
 				{
@@ -88,7 +94,7 @@ function App({ Component, pageProps }: AppProps) {
 				},
 			},
 		];
-	}, [isAuthenticated, isPendingAuth]);
+	}, [isAuthenticated]);
 
 	const activeHref = getActiveHref(router.pathname);
 	const navigation = useMemo(
@@ -164,6 +170,19 @@ function App({ Component, pageProps }: AppProps) {
 		</>
 	);
 }
+
+App.getInitialProps = async (appContext: AppContext) => {
+	const initialProps = await NextApp.getInitialProps(appContext);
+	const cookie = appContext.ctx.req?.headers.cookie;
+	if (cookie === undefined) return initialProps;
+	return {
+		...initialProps,
+		pageProps: {
+			...initialProps.pageProps,
+			hasSessionCookie: SESSION_COOKIE.test(cookie),
+		},
+	};
+};
 
 const useStyles = tss.withName(App.name).create({
 	mainContainer: {
