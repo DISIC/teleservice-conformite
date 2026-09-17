@@ -1,9 +1,11 @@
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
 import { getConformityStatus } from "~/domain/declaration/conformity";
-
-// A declaration must be renewed every three years; past that it is deemed non compliant.
-const OBSOLESCENCE_YEARS = 3;
+import {
+	OBSOLESCENCE_YEARS,
+	obsolescenceOf,
+	obsoleteSince,
+} from "~/domain/declaration/obsolescence";
 
 /** Snapshot dates are calendar dates (YYYY-MM-DD), as the Zod contract enforces. */
 type IsoDate = string;
@@ -22,16 +24,8 @@ export const formatFrDate = (date: IsoDate): string => {
 	return `${day}/${month}/${year}`;
 };
 
-export const addYears = (date: IsoDate, years: number): IsoDate => {
-	const [year, rest] = [date.slice(0, 4), date.slice(4)];
-	return `${Number(year) + years}${rest}`;
-};
-
-export const obsoleteSince = (publishedAt: IsoDate): IsoDate =>
-	addYears(publishedAt, OBSOLESCENCE_YEARS);
-
-export const isObsolete = (publishedAt: IsoDate, today: Date): boolean =>
-	obsoleteSince(publishedAt) < today.toISOString().slice(0, 10);
+const obsoleteSinceDay = (publishedAt: IsoDate): IsoDate =>
+	obsoleteSince(new Date(publishedAt)).toISOString().slice(0, 10);
 
 export const publicationLabel = (
 	d: Pick<PublishedDeclaration, "firstPublishedAt" | "publishedAt">,
@@ -179,7 +173,7 @@ const establishment = (
 ): string[] => {
 	const established = `Cette déclaration a été établie le **${formatFrDate(d.firstPublishedAt)}**.`;
 	const dates = obsolete
-		? `${established} Elle est obsolète depuis le **${formatFrDate(obsoleteSince(d.publishedAt))}**.`
+		? `${established} Elle est obsolète depuis le **${formatFrDate(obsoleteSinceDay(d.publishedAt))}**.`
 		: d.publishedAt !== d.firstPublishedAt
 			? `${established} Elle a été mise à jour le **${formatFrDate(d.publishedAt)}**.`
 			: established;
@@ -278,7 +272,7 @@ export function buildPublishedMarkdown(
 ): string {
 	const obsolete =
 		hasText(declaration.publishedAt) &&
-		isObsolete(declaration.publishedAt, today);
+		obsolescenceOf(new Date(declaration.publishedAt), today) === "obsolete";
 
 	return [
 		`# ${declaration.name}`,

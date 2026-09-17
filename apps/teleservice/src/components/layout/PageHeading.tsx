@@ -6,6 +6,7 @@ type PageHeadingProps = {
 	title: ReactNode;
 	pictogram?: ReactNode;
 	entityName?: string | null;
+	subline?: ReactNode;
 	badge?: ReactNode;
 	actions?: ReactNode;
 	backButton?: ReactNode;
@@ -15,6 +16,7 @@ export function PageHeading({
 	title,
 	pictogram,
 	entityName,
+	subline,
 	badge,
 	actions,
 	backButton,
@@ -38,6 +40,7 @@ export function PageHeading({
 								{badge}
 							</div>
 							{entityName && <p className={classes.entity}>{entityName}</p>}
+							{subline}
 						</div>
 					</div>
 					{actions && <div className={classes.actions}>{actions}</div>}

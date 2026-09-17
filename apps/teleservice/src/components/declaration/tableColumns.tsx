@@ -5,6 +5,7 @@ import Tag from "@codegouvfr/react-dsfr/Tag";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { tss } from "tss-react";
+import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
 import { StatusBadge } from "~/components/declaration/StatusBadge";
 import {
 	formatRate,
@@ -26,7 +27,9 @@ export function useDeclarationColumns() {
 	return useMemo(() => buildColumns(classes), [classes]);
 }
 
-function buildColumns(classes: Record<"name" | "rate" | "actions", string>) {
+function buildColumns(
+	classes: Record<"name" | "status" | "rate" | "actions", string>,
+) {
 	const nameColumn = (options: { rowLink: boolean }) =>
 		columnHelper.accessor("name", {
 			header: "Nom de la déclaration",
@@ -49,7 +52,12 @@ function buildColumns(classes: Record<"name" | "rate" | "actions", string>) {
 		{
 			id: "status",
 			header: "Statut",
-			cell: (info) => <StatusBadge declaration={info.row.original} />,
+			cell: (info) => (
+				<div className={classes.status}>
+					<StatusBadge declaration={info.row.original} />
+					<ObsolescenceLine declaration={info.row.original} underBadge />
+				</div>
+			),
 		},
 	);
 
@@ -129,6 +137,12 @@ function buildColumns(classes: Record<"name" | "rate" | "actions", string>) {
 const useStyles = tss.withName("TableColumns").create({
 	name: {
 		fontWeight: 500,
+	},
+	status: {
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "flex-start",
+		gap: fr.spacing("1v"),
 	},
 	rate: {
 		display: "flex",

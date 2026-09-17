@@ -21,7 +21,7 @@ export type StateAction = "revert" | "publish";
 /** Badge variants surfaced on `SideMenu` items. `modified` is not rendered yet. */
 export type BadgeVariant = "to-complete" | "to-verify" | "modified";
 
-type StatePresentation = {
+export type StatePresentation = {
 	/** Card background — a `background.alt.<family>.default` decision token. */
 	bgColor: string;
 	/**

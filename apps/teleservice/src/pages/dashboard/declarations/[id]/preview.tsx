@@ -32,8 +32,11 @@ export default function DeclarationPreviewPage({
 	const { classes } = useStyles();
 	const { push, back } = useRouter();
 
+	// Publishing stamps today, so the preview must not inherit an old, possibly obsolete, date.
 	const publishedDeclarationContent: PublishedDeclaration =
-		extractDeclarationContentToPublish(declaration);
+		extractDeclarationContentToPublish(declaration, {
+			publishedAt: new Date(),
+		});
 
 	const [publishError, setPublishError] = useState<
 		"incomplete" | "generic" | null
