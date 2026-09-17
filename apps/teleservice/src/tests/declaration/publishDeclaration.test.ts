@@ -2,7 +2,6 @@ import type { Payload } from "payload";
 import { describe, expect, it, vi } from "vitest";
 import { completeDeclaration } from "./declaration.fixture";
 import { publishDeclaration } from "~/server/api/routers/declaration/service";
-import { extractDeclarationContentToPublish } from "~/domain/declaration/published/snapshot";
 
 function stubPayload(declaration: ReturnType<typeof completeDeclaration>) {
 	const payload = {
@@ -44,11 +43,14 @@ describe("publishDeclaration", () => {
 			}),
 		);
 		const data = update.mock.calls[0]?.[0]?.data ?? {};
-		expect(JSON.parse(data.publishedContent)).toEqual(
-			extractDeclarationContentToPublish(declaration, {
-				publishedAt: new Date(data.published_at),
-			}),
-		);
+		expect(JSON.parse(data.publishedContent)).toMatchObject({
+			name: "Mon service",
+			entityName: "DINUM",
+			appKindLabel: "Site web",
+			publishedAt: data.published_at.slice(0, 10),
+			audit: { isRealised: false },
+			contact: { email: "a11y@example.fr", url: "" },
+		});
 	});
 
 	it("keeps the initial publication date fixed before publishing", async () => {

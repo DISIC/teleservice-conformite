@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { extractDeclarationContentToPublish } from "~/domain/declaration/published/snapshot";
 import {
 	getDeclarationStatus,
 	getEditingMode,
@@ -41,31 +40,16 @@ describe("getEditingMode", () => {
 });
 
 describe("hasContentChangedSincePublish", () => {
-	const published = () => {
-		const declaration = completeDeclaration({
-			first_published_at: "2026-08-27T09:30:00.000Z",
-		});
-		return completeDeclaration({
-			first_published_at: "2026-08-27T09:30:00.000Z",
-			published_at: "2026-08-27T09:30:00.000Z",
-			publishedContent: JSON.stringify(
-				extractDeclarationContentToPublish(declaration, {
-					publishedAt: new Date("2026-08-27T09:30:00.000Z"),
-				}),
-			),
-		});
-	};
-
 	it("is false for a draft — nothing to differ from", () => {
 		expect(hasContentChangedSincePublish(completeDeclaration())).toBe(false);
 	});
 
 	it("is false right after publishing", () => {
-		expect(hasContentChangedSincePublish(published())).toBe(false);
+		expect(hasContentChangedSincePublish(publishedDeclaration())).toBe(false);
 	});
 
 	it("detects an edit to published content", () => {
-		const declaration = published();
+		const declaration = publishedDeclaration();
 		expect(
 			hasContentChangedSincePublish({
 				...declaration,
@@ -83,7 +67,7 @@ describe("hasContentChangedSincePublish", () => {
 	});
 
 	it("ignores edits to fields outside the public snapshot", () => {
-		const declaration = published();
+		const declaration = publishedDeclaration();
 		expect(
 			hasContentChangedSincePublish({
 				...declaration,

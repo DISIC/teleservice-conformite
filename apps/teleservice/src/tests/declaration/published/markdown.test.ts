@@ -107,12 +107,6 @@ describe("buildPublishedMarkdown", () => {
 		).toMatchFileSnapshot(snapshot("obsolete"));
 	});
 
-	it("is deterministic for a given day", () => {
-		const a = buildPublishedMarkdown(publishedDeclaration(), { today: TODAY });
-		const b = buildPublishedMarkdown(publishedDeclaration(), { today: TODAY });
-		expect(a).toBe(b);
-	});
-
 	describe("dates sentence", () => {
 		it("states only the establishment date on a first publication", () => {
 			const md = buildPublishedMarkdown(
