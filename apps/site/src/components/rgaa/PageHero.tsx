@@ -48,6 +48,9 @@ export default function PageHero(props: PageHeroProps) {
 					segments={breadcrumbSegments}
 				/>
 				<div className={classes.heroContent}>
+					<div className={classes.heroIllustration}>
+						<Pictogram id={pictogram} fontSize="inherit" />
+					</div>
 					<div className={classes.heroText}>
 						<BetaBadge
 							color={badgeColor}
@@ -71,9 +74,6 @@ export default function PageHero(props: PageHeroProps) {
 							))}
 						</ul>
 					</div>
-					<div className={classes.heroIllustration}>
-						<Pictogram id={pictogram} fontSize="7.5rem" />
-					</div>
 				</div>
 			</div>
 		</div>
@@ -86,18 +86,27 @@ const useStyles = tss
 	.create(({ backgroundColor }) => ({
 		hero: {
 			backgroundColor,
-			paddingTop: "24px",
-			paddingBottom: "60px",
+			paddingTop: fr.spacing("6v"),
+			paddingBottom: fr.spacing("12v"),
+			[fr.breakpoints.down("md")]: {
+				paddingBlock: fr.spacing("4v"),
+			},
 		},
 		heroContent: {
 			display: "flex",
+			flexDirection: "row-reverse",
 			alignItems: "center",
 			gap: fr.spacing("4w"),
 			marginTop: fr.spacing("4w"),
+			[fr.breakpoints.down("md")]: {
+				flexDirection: "column",
+				alignItems: "stretch",
+			},
 		},
 		heroText: {
 			display: "flex",
 			flex: 1,
+			minWidth: 0,
 			flexDirection: "column",
 			alignItems: "flex-start",
 			gap: fr.spacing("2w"),
@@ -118,15 +127,31 @@ const useStyles = tss
 			listStyle: "none",
 			margin: 0,
 			padding: 0,
+			[fr.breakpoints.down("md")]: {
+				alignSelf: "stretch",
+				flexDirection: "column",
+				flexWrap: "nowrap",
+				"& .fr-btn": {
+					width: "100%",
+					justifyContent: "flex-start",
+				},
+			},
 		},
 		heroIllustration: {
 			display: "flex",
 			flexShrink: 0,
 			alignItems: "center",
 			justifyContent: "center",
-			width: "16rem",
-			height: "16rem",
+			width: "216px",
+			height: "216px",
+			fontSize: "7.5rem",
 			backgroundColor: fr.colors.decisions.background.default.grey.default,
 			borderRadius: "50%",
+			[fr.breakpoints.down("md")]: {
+				alignSelf: "center",
+				width: "100px",
+				height: "100px",
+				fontSize: "3.5rem",
+			},
 		},
 	}));

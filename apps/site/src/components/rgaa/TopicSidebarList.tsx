@@ -45,7 +45,7 @@ export default function TopicSidebarList({ topics }: TopicSidebarListProps) {
 	return (
 		<SideMenu
 			title="Thématiques"
-			burgerMenuButtonText="Thématiques"
+			burgerMenuButtonText="Dans cette rubrique"
 			items={items}
 			sticky
 		/>

@@ -99,8 +99,13 @@ const useStyles = tss
 			display: "grid",
 			gridTemplateColumns: "1fr 2fr",
 			gap: fr.spacing("4w"),
+			[fr.breakpoints.down("md")]: {
+				gridTemplateColumns: "1fr",
+				gridAutoFlow: "row",
+			},
 		},
 		badge: {
+			alignSelf: "center",
 			backgroundColor,
 			color,
 		},
@@ -108,6 +113,9 @@ const useStyles = tss
 			display: "flex",
 			flexDirection: "column",
 			gap: fr.spacing("3w"),
+			[fr.breakpoints.down("md")]: {
+				flexDirection: "column-reverse",
+			},
 		},
 		rightContent: {
 			display: "flex",

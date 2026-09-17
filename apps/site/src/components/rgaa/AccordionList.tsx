@@ -109,6 +109,11 @@ const useStyles = tss
 			"& > .fr-collapse": {
 				borderBottom: "0px",
 				paddingLeft: fr.spacing("3w"),
+
+				[fr.breakpoints.down("md")]: {
+					paddingLeft: fr.spacing("2w"),
+					paddingRight: fr.spacing("2w"),
+				},
 			},
 
 			"& > .fr-accordion__title > .fr-accordion__btn": {

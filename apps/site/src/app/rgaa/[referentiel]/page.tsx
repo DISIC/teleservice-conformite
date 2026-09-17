@@ -54,7 +54,14 @@ export default async function ReferencePage({
 				backgroundColor={reference.background}
 			/>
 			{referentiel === "web" && (
-				<section className={fr.cx("fr-container", "fr-py-8w")}>
+				<section
+					className={fr.cx(
+						"fr-container",
+						"fr-px-0",
+						"fr-px-md-2w",
+						"fr-py-8w",
+					)}
+				>
 					<CriteriaList reference={referentiel} />
 				</section>
 			)}
