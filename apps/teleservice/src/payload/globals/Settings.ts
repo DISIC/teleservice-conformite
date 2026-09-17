@@ -1,3 +1,13 @@
+import {
+	BoldFeature,
+	FixedToolbarFeature,
+	ItalicFeature,
+	lexicalEditor,
+	LinkFeature,
+	OrderedListFeature,
+	ParagraphFeature,
+	UnorderedListFeature,
+} from "@payloadcms/richtext-lexical";
 import type { GlobalConfig } from "payload";
 
 export const Settings: GlobalConfig = {
@@ -26,8 +36,20 @@ export const Settings: GlobalConfig = {
 				{
 					name: "answer",
 					label: { fr: "Réponse" },
-					type: "textarea",
+					type: "richText",
 					required: true,
+					// Answers sit under an h3 accordion title: no headings, so the page outline stays valid.
+					editor: lexicalEditor({
+						features: [
+							ParagraphFeature(),
+							BoldFeature(),
+							ItalicFeature(),
+							UnorderedListFeature(),
+							OrderedListFeature(),
+							LinkFeature({ enabledCollections: [] }),
+							FixedToolbarFeature(),
+						],
+					}),
 				},
 			],
 		},

@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
+import { RichText } from "@payloadcms/richtext-lexical/react";
 import { tss } from "tss-react";
 
 import { Loader } from "~/components/ui/Loader";
@@ -20,7 +21,7 @@ export function FaqSection() {
 				<div className={fr.cx("fr-accordions-group")}>
 					{faq.map(({ id, question, answer }) => (
 						<Accordion key={id ?? question} label={question} titleAs="h3">
-							<p className={classes.answer}>{answer}</p>
+							<RichText data={answer} className={classes.answer} />
 						</Accordion>
 					))}
 				</div>
@@ -31,15 +32,17 @@ export function FaqSection() {
 
 const useStyles = tss.withName(FaqSection.name).create({
 	section: {
-		maxWidth: "48rem",
+		maxWidth: "50%",
 		paddingBlock: fr.spacing("7w"),
+		"@media (max-width: 1023px)": {
+			maxWidth: "100%",
+		},
 	},
 	heading: {
 		textAlign: "center",
 		marginBottom: fr.spacing("4w"),
 	},
 	answer: {
-		margin: 0,
-		whiteSpace: "pre-line",
+		"& p": { margin: 0 },
 	},
 });
