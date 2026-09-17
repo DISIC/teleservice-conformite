@@ -148,7 +148,7 @@ function App({ Component, pageProps }: AppProps) {
 								</Badge>
 							</>
 						}
-						serviceTagline="Centralisez et gérez vos déclarations d’accessibilité conformément aux exigences légales."
+						serviceTagline="Publiez et centralisez vos déclarations d’accessibilité conformément aux exigences légales."
 					/>
 				)}
 				<main id="contenu" className={classes.main} style={{ flex: 1 }}>
