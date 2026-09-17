@@ -13,6 +13,7 @@ import { BackButton } from "~/components/ui/BackButton";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
 import { StateNotice } from "~/components/declaration/StateNotice";
+import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
 import { StatusBadge } from "~/components/declaration/StatusBadge";
 import {
 	getDeclarationStatus,
@@ -159,6 +160,7 @@ export default function DeclarationPage({
 			<PageHeading
 				title={declaration.name}
 				entityName={declaration.entity?.name}
+				subline={<ObsolescenceLine declaration={declaration} />}
 				backButton={
 					<BackButton href="/dashboard/declarations">
 						Retourner à la liste de mes déclarations
