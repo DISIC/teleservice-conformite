@@ -129,6 +129,8 @@ Computed by `getDeclarationState(declaration)`: [[status]] decides first, the `s
 
 Does **not** violate the "visible status is a pure function of the row" Invariant: that invariant governs `Status`, which is unchanged. `DeclarationState` is a separate concept layered above it.
 
+Orthogonal to [[obsolescence|Obsolescence]]: an Obsolète Declaration can be clean, Modifiée or incomplete. The notice slot shows the Declaration state notice when there is one; the obsolescence notice fills the `null` case only.
+
 **Avoid:** "StateDeclaration" (reversed word order), "Readiness" (rejected name), reusing "Status" for this — they are different concepts.
 
 **See also:** [[status]], [[à-compléter-à-vérifier|À compléter / À vérifier]].
@@ -158,21 +160,53 @@ Always required. Its initial value follows the [[creation-path|Creation path]]:
 - **Manuel** — defaults to the creation date, which the declarant changes when re-entering an "ancienne déclaration" already published elsewhere.
 - **Import ARA / Import IA** — prefilled from the source's publication date when present; otherwise defaults to the creation date, like Manuel.
 
-Shown at the top of the Informations générales [[section]] only while the Declaration has never been published: the first publish action freezes it, and the field disappears from the form afterwards. Never derived from `audit.date`.
+Shown at the top of the Informations générales [[section]] only while the Declaration has never been published: the first publish action freezes it, and the field disappears from the form afterwards. Never derived from `audit.date`. Plays no part in [[obsolescence|Obsolescence]], which follows the last publication date.
 
 **Avoid:** "date de publication" alone — ambiguous with the last publish date. "Audit date" — a different fact.
 
 **See also:** [[creation-path|Creation path]], [[status]].
 
+### Obsolescence
+
+The three-year validity axis of a Declaration, read from the **last publish action** and today's date. Three values, in the order time walks through them:
+
+| Obsolescence         | Reached when                                                                    |
+| -------------------- | ------------------------------------------------------------------------------- |
+| **Valide**           | Brouillon, or Publiée for less than 2 years and 9 months since the last publish |
+| **Bientôt obsolète** | Publiée, within the last 3 months before the deadline                           |
+| **Obsolète**         | Publiée, deadline passed                                                        |
+
+The **deadline** is the last publication date plus three years. Every publish action, with or without content changes, restarts it; the [[date-de-publication-initiale|Date de publication initiale]] and the audit date play no part. Derived at read time and **never stored**, since it changes by the mere passage of time.
+
+A third axis next to [[status]] (lifecycle) and [[declaration-state|Declaration state]] (next action): it is never folded into either. Status stays Publiée underneath an Obsolète Declaration, and the Declaration state keeps answering "what next" — when both a Declaration state notice (Modifié, À compléter) and an obsolescence notice apply, the **Declaration state notice wins**, because it names the blocking action. The obsolescence notice, which offers to republish, shows only when the Declaration state has nothing to say.
+
+**Surfaces:** the Mes déclarations list (Statut cell), the details page header, the [[obsolète|interstitial]], the notice card, and the public page (Obsolète only).
+
+**Avoid:** "Validité", "Expiration" — use "Obsolescence" for the axis. "Statut" — a different axis.
+
+**See also:** [[obsolète|Obsolète]], [[bientôt-obsolète|Bientôt obsolète]], [[status]], [[declaration-state|Declaration state]].
+
+### Bientôt obsolète
+
+The [[obsolescence|Obsolescence]] value of a **Publiée** Declaration during the three months before its deadline. A **declarant-facing warning only**: the public page is unchanged, the conformity badge stays truthful, and citizens have no action to take.
+
+For the declarant: the Statut badge keeps reading Publiée; the list's Statut cell adds a warning-icon line "Obsolète le {deadline}"; opening the Declaration shows the "bientôt obsolète" interstitial under the same rule as [[obsolète|Obsolète]].
+
+**Avoid:** "Expirante", "Périme le", "Bientôt périmée".
+
+**See also:** [[obsolescence|Obsolescence]], [[obsolète|Obsolète]].
+
 ### Obsolète
 
-A **Publiée** Declaration whose last publish action is more than three years old. Derived at read time from the last publication date and today's date — never stored, since it becomes true by the mere passage of time. Each publish action restarts the three years; the [[date-de-publication-initiale|Date de publication initiale]] plays no part.
+The [[obsolescence|Obsolescence]] value of a **Publiée** Declaration whose deadline has passed. An Obsolète Declaration is presented as _réputée non conforme_ regardless of its audit rate, and its public view says so with a red notice and a "Non conforme" conformity badge, but none of its content is hidden or altered: the published snapshot, including the audit rate, is untouched.
 
-An Obsolète Declaration is presented as _réputée non conforme_ regardless of its audit rate, and its public view says so, but none of its content is hidden. It is a presentation state layered on [[status]], not a fourth lifecycle value.
+For the declarant: "Obsolète" **replaces** the Publiée badge in the list and the details header (Status itself is unchanged); the Statut cell reads "depuis le {deadline}" under the badge, the header "Obsolète depuis le {deadline}".
+
+**Interstitial.** Opening an Obsolète or Bientôt obsolète Declaration that is **unchanged since its last publish** shows a full-page interstitial in place of the Sections: what happened, what to do (new audit + update, or verify + republish as is), and "Mettre à jour ma déclaration", which reveals the details page for that visit. Nothing is persisted: the interstitial returns on the next visit until the Declaration is Modifiée (the declarant is already acting) or republished (the axis is Valide again). Republishing without any change is a legitimate path and needs no confirmation checkbox or date modal.
 
 **Avoid:** "Expirée", "Périmée" — the design system copy is "Obsolète".
 
-**See also:** [[status]], [[declaration-state|Declaration state]].
+**See also:** [[obsolescence|Obsolescence]], [[bientôt-obsolète|Bientôt obsolète]], [[status]], [[declaration-state|Declaration state]].
 
 ### Library ("Mes contacts" / "Mes schémas")
 
@@ -308,6 +342,7 @@ Layered, not feature-foldered. One predictable layer per concern:
 - `toVerify` is per-Section, not per-Sub-section.
 - A **linked** contact/schema copy is written only by the Library propagation procedure — never directly by a Declaration save. Custom copies are written only by their own Declaration.
 - **Publish always validates.** The publish action runs full declaration validation regardless of lifecycle state — there is no fast path. Enforced server-side: the publish mutation itself validates and builds the published snapshot, so a client can never author `publishedContent`. (Supersedes the retired v1 invariant "published-modified is always publishable": removing a Contact/Schema from a published Declaration can make it incomplete, so completeness is no longer guaranteed by per-section save gating. See [[declaration-state|Declaration state]].)
+- **Obsolescence is derived, never stored.** It is a pure function of `published_at` and today's date, computed where it is read (dashboard and public page alike, from one module). It is a third axis: never a Status value, never a Declaration state value, and no row column records it.
 - Contact and Schema are **symmetric** in flows and business logic: anything defined for one (Library behaviour, removal from a Declaration, À compléter flagging) applies identically to the other.
 - **A Declaration is reached only through an approved access right of the caller**, and that rule has one implementation: `loadOwnedDeclaration` (`server/api/utils/declaration-access.ts`). tRPC procedures scoped to a Declaration take a top-level `declarationId` input and are built on `declarationProcedure`, which resolves the owned, populated Declaration into `ctx.declaration` before the body runs; pages go through `loadDeclarationForPage` / `guardDeclaration` (`lib/server-guards.ts`). A procedure body never re-checks access and never re-fetches the Declaration it was given.
 - **Every write to a Declaration's content goes through `writeDeclaration`** (`server/api/utils/section-write.ts`). The `status` column is derived from the row as it is about to be written and lands in the same update; no caller recomputes or re-reads it afterwards. Section saves enter through `saveSection`, whose per-Section merge rules are the only place a save shapes its data. Every save returns the whole Declaration, and the client folds it with `applySavedDeclaration`.
