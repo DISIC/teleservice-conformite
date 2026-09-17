@@ -18,11 +18,38 @@ type ObsolescenceInterstitialProps = {
 
 type Step = { title: string; detail: string };
 
+// Only these words differ between the two screens.
+const COPY: Record<
+	Exclude<Obsolescence, "valid">,
+	{
+		title: string;
+		since: string;
+		deadline: string;
+		verdict: string;
+		status: string;
+	}
+> = {
+	obsolete: {
+		title: "est obsolète.",
+		since: "plus de",
+		deadline: "Elle est obsolète depuis le",
+		verdict: "Votre service numérique est donc",
+		status: "non conforme",
+	},
+	expiring: {
+		title: "est bientôt obsolète.",
+		since: "près de",
+		deadline: "Elle sera obsolète le",
+		verdict: "Passé cette date, votre service numérique sera",
+		status: "réputé non conforme",
+	},
+};
+
 const WITH_CHANGES: Step[] = [
 	{
 		title: "Procédez à un nouvel audit,",
 		detail:
-			"appliquez les corrections nécessaires et procédez à un contre audit.",
+			"appliquez les corrections nécessaires et <br /> procédez à un contre audit.",
 	},
 	{ title: "Modifiez les informations", detail: "de votre déclaration." },
 	{
@@ -55,73 +82,49 @@ export function ObsolescenceInterstitial({
 			)
 		: null;
 	const publicUrl = `/declarations/${declaration.id}/publish`;
+	const copy = COPY[obsolescence];
 
 	return (
 		<div className={classes.root}>
-			<Warning fontSize="96px" aria-hidden="true" />
-			<h2 className={cx(fr.cx("fr-h2", "fr-mb-4v"), classes.center)}>
+			<Warning fontSize="6rem" aria-hidden="true" />
+			<h2
+				className={cx(fr.cx("fr-h2", "fr-mt-4v", "fr-mb-6v"), classes.center)}
+			>
 				Votre déclaration
 				<br />
 				{declaration.name}
 				<br />
-				{obsolescence === "obsolete"
-					? "est obsolète."
-					: "est bientôt obsolète."}
+				{copy.title}
 			</h2>
-			{obsolescence === "obsolete" ? (
-				<>
-					<p className={classes.center}>
-						Votre déclaration a été publiée il y a plus de {OBSOLESCENCE_YEARS}{" "}
-						ans.
-						<br />
-						Elle est obsolète depuis le <strong>{deadline}</strong>.
-					</p>
-					<p className={classes.center}>
-						Votre service numérique est donc <strong>non conforme</strong> et
-						indiqué comme tel sur votre déclaration d’accessibilité.
-					</p>
-				</>
-			) : (
-				<>
-					<p className={classes.center}>
-						Votre déclaration a été publiée il y a près de {OBSOLESCENCE_YEARS}{" "}
-						ans.
-						<br />
-						Elle sera obsolète le <strong>{deadline}</strong>.
-					</p>
-					<p className={classes.center}>
-						Passé cette date, votre service numérique sera{" "}
-						<strong>réputé non conforme</strong> et indiqué comme tel sur votre
-						déclaration d’accessibilité.
-					</p>
-				</>
-			)}
+			<p className={cx(fr.cx("fr-text--xl", "fr-mb-2v"), classes.center)}>
+				Votre déclaration a été publiée il y a {copy.since} {OBSOLESCENCE_YEARS}{" "}
+				ans.
+				<br />
+				{copy.deadline} <strong>{deadline}</strong>.
+			</p>
+			<p className={cx(fr.cx("fr-text--xl"), classes.center)}>
+				{copy.verdict} <strong>{copy.status}</strong> et indiqué
+				<br />
+				comme tel sur votre déclaration d’accessibilité.
+			</p>
 			<Button
 				priority="tertiary"
 				size="small"
-				iconId="fr-icon-eye-line"
+				className={fr.cx("fr-mt-6v")}
+				iconId="fr-icon-eye-fill"
 				iconPosition="left"
-				linkProps={{
-					href: publicUrl,
-					target: "_blank",
-					rel: "noopener noreferrer",
-					title: `Voir la déclaration ${declaration.name}, nouvelle fenêtre`,
-				}}
+				linkProps={{ href: publicUrl }}
 			>
 				Voir la déclaration en ligne
 			</Button>
-
-			<h3
-				className={cx(fr.cx("fr-h3", "fr-mt-12v", "fr-mb-2v"), classes.center)}
-			>
+			<h2 className={cx(fr.cx("fr-mt-18v", "fr-mb-3v"), classes.center)}>
 				Que devez-vous faire ?
-			</h3>
-			<p className={classes.center}>
-				Conformément à la législation, vous devez actualiser votre déclaration
-				et la publier à nouveau
-				{obsolescence === "expiring" ? " avant cette échéance" : ""}.
+			</h2>
+			<p className={cx(fr.cx("fr-text--xl"), classes.center)}>
+				Conformément à la législation, vous devez actualiser votre
+				<br />
+				déclaration et la publier à nouveau.
 			</p>
-
 			<div className={classes.columns}>
 				<StepColumn
 					heading="Vous avez mis en place des évolutions sur votre service numérique."
@@ -132,8 +135,12 @@ export function ObsolescenceInterstitial({
 					steps={WITHOUT_CHANGES}
 				/>
 			</div>
-
-			<Button priority="primary" onClick={onUpdate} className={classes.cta}>
+			<Button
+				priority="primary"
+				size="large"
+				onClick={onUpdate}
+				className={fr.cx("fr-mt-12v")}
+			>
 				Mettre à jour ma déclaration
 			</Button>
 		</div>
@@ -144,7 +151,7 @@ function StepColumn({ heading, steps }: { heading: string; steps: Step[] }) {
 	const { classes, cx } = useStyles();
 	return (
 		<div className={classes.column}>
-			<p className={cx(fr.cx("fr-text--lg", "fr-text--bold"), classes.center)}>
+			<p className={cx(fr.cx("fr-text--xl", "fr-text--bold"), classes.center)}>
 				{heading}
 			</p>
 			<ol className={classes.steps}>
@@ -154,9 +161,12 @@ function StepColumn({ heading, steps }: { heading: string; steps: Step[] }) {
 							{index + 1}
 						</span>
 						<span>
-							<strong>{step.title}</strong>
+							<strong className={fr.cx("fr-text--lg")}>{step.title}</strong>
 							<br />
-							{step.detail}
+							<span
+								dangerouslySetInnerHTML={{ __html: step.detail }}
+								className={fr.cx("fr-text--sm")}
+							/>
 						</span>
 					</li>
 				))}
@@ -170,10 +180,12 @@ const useStyles = tss.withName(ObsolescenceInterstitial.name).create({
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
-		gap: fr.spacing("4v"),
-		maxWidth: 720,
+		paddingInline: fr.spacing("24v"),
 		marginInline: "auto",
-		paddingBlock: fr.spacing("12v"),
+		paddingBottom: fr.spacing("12v"),
+		"@media (max-width: 1023px)": {
+			paddingInline: fr.spacing("6v"),
+		},
 	},
 	center: {
 		textAlign: "center",
@@ -181,8 +193,9 @@ const useStyles = tss.withName(ObsolescenceInterstitial.name).create({
 	},
 	columns: {
 		display: "grid",
-		gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-		gap: fr.spacing("8v"),
+		gridTemplateColumns: "repeat(auto-fit, minmax(0, 360px))",
+		justifyContent: "center",
+		gap: fr.spacing("18v"),
 		width: "100%",
 		marginTop: fr.spacing("6v"),
 	},
@@ -201,7 +214,7 @@ const useStyles = tss.withName(ObsolescenceInterstitial.name).create({
 	},
 	step: {
 		display: "flex",
-		alignItems: "flex-start",
+		alignItems: "center",
 		gap: fr.spacing("3v"),
 		padding: 0,
 	},
@@ -210,14 +223,11 @@ const useStyles = tss.withName(ObsolescenceInterstitial.name).create({
 		display: "inline-flex",
 		alignItems: "center",
 		justifyContent: "center",
-		width: 40,
-		height: 40,
+		width: fr.spacing("12v"),
+		height: fr.spacing("12v"),
 		borderRadius: "50%",
 		fontWeight: 700,
 		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-	},
-	cta: {
-		marginTop: fr.spacing("6v"),
 	},
 });
