@@ -52,9 +52,25 @@ export async function createManualDeclaration(
 	return Number(new URL(page.url()).pathname.split("/").pop());
 }
 
-/** The Mes déclarations row whose name cell reads exactly `name`. */
-export const rowOf = (page: Page, name: string) =>
-	page.getByRole("row").filter({ has: page.getByText(name, { exact: true }) });
+/** Opens Mes déclarations and walks its ten-row pages until the Declaration named `name` shows up. */
+export async function openListRow(page: Page, name: string): Promise<Locator> {
+	await page.goto("/dashboard/declarations");
+	const rows = page.getByRole("row");
+	await rows.nth(1).waitFor();
+	for (;;) {
+		const row = rows.filter({ has: page.getByText(name, { exact: true }) });
+		if ((await row.count()) > 0) return row;
+		const next = page.getByRole("link", { name: "Page suivante" });
+		const lastPage =
+			(await next.count()) === 0 ||
+			(await next.getAttribute("aria-disabled")) !== null;
+		if (lastPage)
+			throw new Error(`No row named "${name}" in Mes déclarations.`);
+		const firstRow = await rows.nth(1).textContent();
+		await next.click();
+		await expect(rows.nth(1)).not.toHaveText(firstRow ?? "");
+	}
+}
 
 export const sectionHeading = (page: Page, slug: SectionSlug) =>
 	page.getByRole("heading", { level: 2, name: SECTION_TITLES[slug] });

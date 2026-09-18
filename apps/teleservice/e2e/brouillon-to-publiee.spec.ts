@@ -6,7 +6,7 @@ import {
 	footer,
 	goToNextSection,
 	publishFromPreview,
-	rowOf,
+	openListRow,
 	sectionHeading,
 	stateNotice,
 	waitForSave,
@@ -100,8 +100,7 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 	await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
 	await a11y.check("public page of a Publiée declaration");
 
-	await page.goto("/dashboard/declarations");
-	const row = rowOf(page, name);
+	const row = await openListRow(page, name);
 	await expect(row).toContainText("Publiée");
 	await expect(row).not.toContainText(
 		STATE_PRESENTATION.incomplete.badge!.label,

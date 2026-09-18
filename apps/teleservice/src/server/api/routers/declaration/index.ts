@@ -8,6 +8,15 @@ import {
 import * as service from "./service";
 
 export const declarationRouter = createTRPCRouter({
+	list: userProtectedProcedure
+		.input(z.object({ page: z.number().int().min(1) }))
+		.query(({ input, ctx }) =>
+			service.listOwnedDeclarations(
+				ctx.payload,
+				Number(ctx.session.user.id),
+				input.page,
+			),
+		),
 	// Fetch-only ARA preview consumed by UpdateAuditFromAraModal.
 	getInfoFromAra: userProtectedProcedure
 		.input(z.object({ id: z.string() }))

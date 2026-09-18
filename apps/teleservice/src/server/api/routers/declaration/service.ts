@@ -154,6 +154,42 @@ const createDeclarationFromImportedData = async (
 	}
 };
 
+export const DECLARATIONS_PER_PAGE = 10;
+
+export type DeclarationsPage = {
+	docs: PopulatedDeclaration[];
+	page: number;
+	totalPages: number;
+	totalDocs: number;
+	limit: number;
+};
+
+/** One page of the caller's declarations, newest first; the client fetches the next pages on demand. */
+export const listOwnedDeclarations = async (
+	payload: Payload,
+	userId: number,
+	page = 1,
+): Promise<DeclarationsPage> => {
+	const result = await payload.find({
+		collection: "declarations",
+		depth: 3,
+		page,
+		limit: DECLARATIONS_PER_PAGE,
+		sort: "-createdAt",
+		where: {
+			"accessRights.user": { equals: userId },
+			"accessRights.status": { equals: "approved" },
+		},
+	});
+	return {
+		docs: result.docs as PopulatedDeclaration[],
+		page: result.page ?? page,
+		totalPages: result.totalPages,
+		totalDocs: result.totalDocs,
+		limit: DECLARATIONS_PER_PAGE,
+	};
+};
+
 /** Fetches and normalizes an ARA report (fetch-only; no declaration created). */
 export const getAraReportData = async (
 	araId: string,

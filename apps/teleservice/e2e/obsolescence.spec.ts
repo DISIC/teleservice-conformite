@@ -2,7 +2,7 @@ import {
 	deadlineOf,
 	declarationPath,
 	obsolescenceNotice,
-	rowOf,
+	openListRow,
 } from "./support/declarationPage";
 import { expect, test } from "./support/fixtures";
 
@@ -17,13 +17,12 @@ test("Obsolescence: list, header, interstitial, notice and public page", async (
 	]);
 
 	// Bientôt obsolète keeps Publiée and adds the deadline; Obsolète replaces the badge.
-	await page.goto("/dashboard/declarations");
-	const expiringRow = rowOf(page, expiring.name);
+	const expiringRow = await openListRow(page, expiring.name);
 	await expect(expiringRow).toContainText("Publiée");
 	await expect(expiringRow).toContainText(
 		`Obsolète le ${deadlineOf(expiring)}`,
 	);
-	const obsoleteRow = rowOf(page, obsolete.name);
+	const obsoleteRow = await openListRow(page, obsolete.name);
 	await expect(obsoleteRow).toContainText(`Depuis le ${deadlineOf(obsolete)}`);
 	await expect(obsoleteRow).not.toContainText("Publiée");
 	await a11y.check("list with obsolescence rows");
