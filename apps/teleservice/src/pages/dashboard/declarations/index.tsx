@@ -37,18 +37,13 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { firstPage, entity } = props;
 	const { classes } = useStyles();
 	const [page, setPage] = useState(1);
-	// The server renders the first page; the others are fetched as the declarant moves.
+
 	const { data } = api.declaration.list.useQuery(
 		{ page },
 		{ enabled: page > 1, placeholderData: keepPreviousData },
 	);
 	const declarations = page === 1 ? firstPage : (data ?? firstPage);
 
-	// A list that shrinks under the declarant would otherwise strand them past the last page.
-	useEffect(() => {
-		if (page > declarations.totalPages)
-			setPage(Math.max(declarations.totalPages, 1));
-	}, [page, declarations.totalPages]);
 	const {
 		nameColumn,
 		appKindColumn,
