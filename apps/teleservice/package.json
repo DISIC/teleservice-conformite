@@ -13,6 +13,8 @@
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest",
+		"e2e": "node e2e/run.js",
+		"e2e:ui": "node e2e/run.js --ui",
 		"payload": "payload",
 		"seed:dev": "NODE_ENV=development PAYLOAD_CONFIG_PATH=./src/payload/payload.config.ts PAYLOAD_DROP_DATABASE=true"
 	},
@@ -54,6 +56,9 @@
 		"zod": "^4.0.0"
 	},
 	"devDependencies": {
+		"@axe-core/playwright": "4.13.0",
+		"@playwright/test": "1.63.0",
+		"@testcontainers/postgresql": "12.1.0",
 		"@types/js-cookie": "^3.0.6",
 		"@types/node": "^20.14.10",
 		"@types/pg": "^8.15.5",
