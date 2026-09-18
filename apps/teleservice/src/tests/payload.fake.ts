@@ -77,17 +77,33 @@ export function fakePayload(seed: Record<string, readonly Doc[]> = {}) {
 			collection,
 			where,
 			limit,
+			page = 1,
+			sort,
 		}: {
 			collection: string;
 			where?: Where;
 			limit?: number;
+			page?: number;
+			sort?: string;
 		}) {
 			const docs = [...table(collection).values()].filter((doc) =>
 				matches(doc, where),
 			);
+			if (sort) {
+				const field = sort.replace(/^-/, "");
+				const direction = sort.startsWith("-") ? -1 : 1;
+				docs.sort((a, b) => {
+					const left = String(readPath(a, field) ?? "");
+					const right = String(readPath(b, field) ?? "");
+					return left < right ? -direction : left > right ? direction : 0;
+				});
+			}
+			const start = limit ? (page - 1) * limit : 0;
 			return {
-				docs: limit ? docs.slice(0, limit) : docs,
+				docs: limit ? docs.slice(start, start + limit) : docs,
 				totalDocs: docs.length,
+				totalPages: limit ? Math.ceil(docs.length / limit) : 1,
+				page,
 			};
 		},
 		async create({

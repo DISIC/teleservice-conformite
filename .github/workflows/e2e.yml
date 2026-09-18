@@ -1,0 +1,63 @@
+name: E2E
+
+on:
+  pull_request:
+    paths:
+      - "apps/teleservice/**"
+      - "pnpm-lock.yaml"
+      - "turbo.json"
+      - ".github/workflows/e2e.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/teleservice/**"
+      - "pnpm-lock.yaml"
+      - "turbo.json"
+      - ".github/workflows/e2e.yml"
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # Forks receive no secrets, so the ProConnect login cannot run on their pull requests.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    env:
+      NEXT_PUBLIC_BETTER_AUTH_URL: http://localhost:3000
+      PROCONNECT_DOMAIN: fca.integ01.dev-agentconnect.fr
+      PROCONNECT_CLIENT_ID: ${{ secrets.PROCONNECT_INTEG_CLIENT_ID }}
+      PROCONNECT_CLIENT_SECRET: ${{ secrets.PROCONNECT_INTEG_CLIENT_SECRET }}
+      # The database is a throwaway container: fixed dummy secrets are enough.
+      PAYLOAD_SECRET: e2e-payload-secret
+      BETTER_AUTH_SECRET: e2e-better-auth-secret-0123456789abcdef
+      # The build never opens a connection; an unreachable address proves it if that changes.
+      POSTGRESQL_ADDON_URI: postgresql://nobody:nobody@127.0.0.1:1/none
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(pnpm --filter teleservice exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - run: pnpm --filter teleservice exec playwright install --with-deps chromium firefox webkit
+      - run: pnpm --filter teleservice payload generate:types
+      - run: pnpm --filter teleservice build
+      - run: pnpm --filter teleservice e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: apps/teleservice/playwright-report
+          retention-days: 7

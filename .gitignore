@@ -7,6 +7,7 @@ coverage
 
 # next.js
 .next/
+.next-e2e/
 out/
 next-env.d.ts
 
@@ -41,3 +42,8 @@ apps/teleservice/src/payload/payload-types.ts
 
 # agent tooling
 .claude/launch.json
+
+# playwright
+apps/teleservice/e2e/.auth/
+apps/teleservice/test-results/
+apps/teleservice/playwright-report/

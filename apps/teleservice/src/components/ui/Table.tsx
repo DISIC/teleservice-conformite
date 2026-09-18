@@ -36,6 +36,12 @@ type Props<TData> = {
 	colorVariant?: TableProps["colorVariant"];
 	className?: string;
 	numberPerPage: number;
+	/** Pages served by the caller (one fetch per page); without it the table paginates `data` itself. */
+	pagination?: {
+		pageCount: number;
+		page: number;
+		onPageChange: (page: number) => void;
+	};
 	hideHeaders?: boolean;
 	getRowHref?: (row: TData) => string | undefined;
 	tableOptions?: Partial<
@@ -56,6 +62,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 		colorVariant,
 		className,
 		numberPerPage,
+		pagination,
 		hideHeaders,
 		tableOptions,
 		getRowHref,
@@ -63,7 +70,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 
 	const { classes, cx } = useStyles();
 
-	const enablePagination = data.length > numberPerPage;
+	const enablePagination = !pagination && data.length > numberPerPage;
 
 	const [pageIndex, setPageIndex] = useState(0);
 
@@ -90,7 +97,11 @@ export const Table = <TData,>(props: Props<TData>) => {
 			: {}),
 	});
 
-	const pageCount = enablePagination ? table.getPageCount() : 0;
+	const pageCount = pagination
+		? pagination.pageCount
+		: enablePagination
+			? table.getPageCount()
+			: 0;
 
 	const headers: ReactNode[] | undefined = hideHeaders
 		? undefined
@@ -154,13 +165,17 @@ export const Table = <TData,>(props: Props<TData>) => {
 					className,
 				)}
 			/>
-			{enablePagination && (
+			{pageCount > 1 && (
 				<div className={classes.paginationWrapper}>
 					<Pagination
 						count={pageCount}
-						page={pageIndex + 1}
+						page={pagination ? pagination.page : pageIndex + 1}
 						numberPerPage={numberPerPage}
-						onPageChange={(page) => setPageIndex(page - 1)}
+						onPageChange={(page) =>
+							pagination
+								? pagination.onPageChange(page)
+								: setPageIndex(page - 1)
+						}
 					/>
 				</div>
 			)}

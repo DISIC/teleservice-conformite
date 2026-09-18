@@ -12,7 +12,7 @@ const { getColorSchemeHtmlAttributes, augmentDocumentForDsfr } =
 
 export default function Document(props: DocumentProps) {
 	return (
-		<Html {...getColorSchemeHtmlAttributes(props)}>
+		<Html lang="fr" {...getColorSchemeHtmlAttributes(props)}>
 			<Head />
 			<body>
 				<Main />

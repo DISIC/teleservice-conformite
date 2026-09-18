@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { keepPreviousData } from "@tanstack/react-query";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import type { GetServerSideProps } from "next";
@@ -14,16 +15,18 @@ import {
 } from "~/components/modal/CreateDeclarationModal";
 import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
-import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
 import type { Entity } from "~/payload/payload-types";
+import {
+	type DeclarationsPage as DeclarationsPageData,
+	listOwnedDeclarations,
+} from "~/server/api/routers/declaration/service";
 
 interface DeclarationsPageProps {
-	declarations: PopulatedDeclaration[];
+	firstPage: DeclarationsPageData;
 	entity: Entity | null;
 }
-
-const NUMBER_PER_PAGE = 10;
 
 type AlertDetailsProps = {
 	description?: string;
@@ -31,8 +34,21 @@ type AlertDetailsProps = {
 };
 
 export default function DeclarationsPage(props: DeclarationsPageProps) {
-	const { declarations, entity } = props;
+	const { firstPage, entity } = props;
 	const { classes } = useStyles();
+	const [page, setPage] = useState(1);
+	// The server renders the first page; the others are fetched as the declarant moves.
+	const { data } = api.declaration.list.useQuery(
+		{ page },
+		{ enabled: page > 1, placeholderData: keepPreviousData },
+	);
+	const declarations = page === 1 ? firstPage : (data ?? firstPage);
+
+	// A list that shrinks under the declarant would otherwise strand them past the last page.
+	useEffect(() => {
+		if (page > declarations.totalPages)
+			setPage(Math.max(declarations.totalPages, 1));
+	}, [page, declarations.totalPages]);
 	const {
 		nameColumn,
 		appKindColumn,
@@ -119,11 +135,16 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 							/>
 						</div>
 					)}
-					{declarations.length ? (
+					{declarations.totalDocs ? (
 						<Table
 							columns={columns}
-							data={declarations}
-							numberPerPage={NUMBER_PER_PAGE}
+							data={declarations.docs}
+							numberPerPage={declarations.limit}
+							pagination={{
+								pageCount: declarations.totalPages,
+								page: declarations.page,
+								onPageChange: setPage,
+							}}
 							getRowHref={(row) => `/dashboard/declarations/${row.id}`}
 						/>
 					) : (
@@ -176,16 +197,10 @@ export const getServerSideProps = (async (context) => {
 
 	if (!session) return { redirect: { destination: "/", permanent: false } };
 
-	const result = await payload.find({
-		collection: "declarations",
-		depth: 3,
-		where: {
-			"accessRights.user": { equals: session.user.id },
-			"accessRights.status": { equals: "approved" },
-		},
-	});
+	const firstPage = await listOwnedDeclarations(
+		payload,
+		Number(session.user.id),
+	);
 
-	return {
-		props: { declarations: result.docs as PopulatedDeclaration[], entity },
-	};
+	return { props: { firstPage, entity } };
 }) satisfies GetServerSideProps<DeclarationsPageProps>;
