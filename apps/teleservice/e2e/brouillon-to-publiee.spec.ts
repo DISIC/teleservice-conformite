@@ -2,9 +2,11 @@ import { STATE_PRESENTATION } from "~/domain/declaration/state";
 import {
 	checkRadio,
 	createManualDeclaration,
+	expectPreview,
 	footer,
 	goToNextSection,
 	publishFromPreview,
+	rowOf,
 	sectionHeading,
 	stateNotice,
 	waitForSave,
@@ -14,14 +16,18 @@ import { expect, test } from "./support/fixtures";
 test("Brouillon to Publiée through the sequential walkthrough", async ({
 	page,
 	uniqueName,
+	a11y,
 }) => {
 	const name = uniqueName("Service e2e");
-	const id = await createManualDeclaration(page, name);
+	const id = await createManualDeclaration(page, name, () =>
+		a11y.check("creation modal"),
+	);
 
 	// Sequential mode: every Section is editable in place, nothing to toggle.
 	await expect(sectionHeading(page, "infos")).toBeVisible();
 	await expect(page.getByRole("button", { name: "Modifier" })).toHaveCount(0);
 	await expect(stateNotice(page, "incomplete")).toBeVisible();
+	await a11y.check("details page in sequential mode");
 
 	// The sector lives on the entity shared by every UI-created row: always set it.
 	await checkRadio(page, /^Site web/);
@@ -63,6 +69,7 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 		name: /champs? (doit|doivent) être complétés? avant la publication/,
 	});
 	await expect(summary).toBeVisible();
+	await a11y.check("error summary after a blocked gate");
 	await page
 		.getByRole("button", { name: /Renseignez au moins un email/ })
 		.first()
@@ -77,7 +84,10 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 	await footer(page)
 		.getByRole("button", { name: "Prévisualiser et publier" })
 		.click();
+	await expectPreview(page);
+	await a11y.check("preview page");
 	await publishFromPreview(page);
+	await a11y.check("details page after publishing");
 
 	// Publiée: standalone mode, no notice, public page live, list badge swapped.
 	await expect(page.getByText("Publiée", { exact: true })).toBeVisible();
@@ -88,9 +98,10 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 
 	await page.goto(`/declarations/${id}/publish`);
 	await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
+	await a11y.check("public page of a Publiée declaration");
 
 	await page.goto("/dashboard/declarations");
-	const row = page.getByRole("row").filter({ hasText: name });
+	const row = rowOf(page, name);
 	await expect(row).toContainText("Publiée");
 	await expect(row).not.toContainText(
 		STATE_PRESENTATION.incomplete.badge!.label,

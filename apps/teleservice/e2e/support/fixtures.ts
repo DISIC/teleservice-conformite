@@ -1,5 +1,6 @@
 import { test as base } from "@playwright/test";
 import type { Payload } from "payload";
+import { expectAccessible } from "./a11y";
 import {
 	connectPayload,
 	seedDeclaration,
@@ -16,6 +17,8 @@ type Fixtures = {
 			label?: string,
 		) => Promise<SeededDeclaration>;
 	};
+	/** Axe checkpoint on the current page state; Chromium only, other engines give the same answer. */
+	a11y: { check: (checkpoint: string) => Promise<void> };
 };
 
 type WorkerFixtures = { payload: Payload };
@@ -38,6 +41,14 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
 			(label) =>
 				`${label} · ${testInfo.project.name}${retry} · ${testInfo.testId.slice(-6)}`,
 		);
+	},
+	a11y: async ({ page, browserName }, use, testInfo) => {
+		await use({
+			check: (checkpoint) =>
+				browserName === "chromium"
+					? expectAccessible(page, testInfo, checkpoint)
+					: Promise.resolve(),
+		});
 	},
 	seed: async ({ payload, uniqueName }, use) => {
 		await use({

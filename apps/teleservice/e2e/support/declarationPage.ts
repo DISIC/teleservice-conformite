@@ -4,6 +4,10 @@ import {
 	type SectionSlug,
 } from "~/domain/declaration/sections";
 import {
+	OBSOLESCENCE_PRESENTATION,
+	obsoleteSince,
+} from "~/domain/declaration/obsolescence";
+import {
 	type DeclarationState,
 	STATE_PRESENTATION,
 } from "~/domain/declaration/state";
@@ -30,6 +34,7 @@ export const declarationPath = (id: number, section?: SectionSlug) =>
 export async function createManualDeclaration(
 	page: Page,
 	name: string,
+	onModalOpen?: () => Promise<void>,
 ): Promise<number> {
 	await page.goto("/dashboard/declarations");
 	// An empty list repeats the CTA in its empty state; the heading's is always there.
@@ -38,12 +43,18 @@ export async function createManualDeclaration(
 		.first()
 		.click();
 	const dialog = page.getByRole("dialog", { name: "Créer une déclaration" });
+	await expect(dialog).toBeVisible();
+	await onModalOpen?.();
 	await checkRadio(dialog, /Je n’ai pas de déclaration d’accessibilité/);
 	await dialog.getByLabel("Nom du service numérique concerné").fill(name);
 	await dialog.getByRole("button", { name: "Continuer" }).click();
 	await page.waitForURL(/\/dashboard\/declarations\/\d+$/);
 	return Number(new URL(page.url()).pathname.split("/").pop());
 }
+
+/** The Mes déclarations row whose name cell reads exactly `name`. */
+export const rowOf = (page: Page, name: string) =>
+	page.getByRole("row").filter({ has: page.getByText(name, { exact: true }) });
 
 export const sectionHeading = (page: Page, slug: SectionSlug) =>
 	page.getByRole("heading", { level: 2, name: SECTION_TITLES[slug] });
@@ -60,7 +71,7 @@ export async function goToNextSection(page: Page, expected: SectionSlug) {
 export const stateNotice = (page: Page, state: DeclarationState) =>
 	page.getByText(STATE_PRESENTATION[state].heading);
 
-export async function publishFromPreview(page: Page) {
+export async function expectPreview(page: Page) {
 	await page.waitForURL(/\/preview$/);
 	await expect(
 		page.getByRole("heading", {
@@ -68,6 +79,21 @@ export async function publishFromPreview(page: Page) {
 			name: "Votre déclaration est prête à être publiée",
 		}),
 	).toBeVisible();
+}
+
+export async function publishFromPreview(page: Page) {
 	await page.getByRole("button", { name: "Publier la déclaration" }).click();
 	await expect(page.getByText("Votre déclaration est en ligne.")).toBeVisible();
 }
+
+export const obsolescenceNotice = (
+	page: Page,
+	value: "expiring" | "obsolete",
+) => page.getByText(OBSOLESCENCE_PRESENTATION[value].heading);
+
+/** The deadline exactly as ObsolescenceLine prints it. */
+export const deadlineOf = (declaration: { published_at?: string | null }) =>
+	obsoleteSince(new Date(declaration.published_at ?? "")).toLocaleDateString(
+		"fr-FR",
+		{ timeZone: "UTC" },
+	);

@@ -24,6 +24,7 @@ async function editContactEmail(
 test("Publiée: an edit makes it Modifiée, revert restores it, republish clears it", async ({
 	page,
 	seed,
+	a11y,
 }) => {
 	const declaration = await seed.declaration("publiee");
 	await page.goto(declarationPath(declaration.id, "contact"));
@@ -32,12 +33,15 @@ test("Publiée: an edit makes it Modifiée, revert restores it, republish clears
 	await expect(stateNotice(page, "published-modified")).toHaveCount(0);
 	await editContactEmail(page, NEW_EMAIL);
 	await expect(stateNotice(page, "published-modified")).toBeVisible();
+	await a11y.check("standalone details page with the Modifiée notice");
 
 	// Revert restores the published version; the page reloads with the old value.
 	await page.getByRole("button", { name: "Annuler les modifications" }).click();
 	const dialog = page.getByRole("dialog", {
 		name: "Annuler les modifications",
 	});
+	await expect(dialog).toBeVisible();
+	await a11y.check("revert confirmation dialog");
 	await Promise.all([
 		waitForSave(page, "declaration.revertToPublished"),
 		dialog.getByRole("button", { name: "Annuler les modifications" }).click(),
