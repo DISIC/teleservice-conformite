@@ -25,6 +25,8 @@ const browser = (name: string, device: keyof typeof devices) => ({
 
 export default defineConfig({
 	testDir: path.join(import.meta.dirname, "e2e"),
+	// Walkthroughs chain several autosave debounces and, locally, on-demand page compiles.
+	timeout: 60_000,
 	fullyParallel: true,
 	forbidOnly: CI,
 	retries: CI ? 1 : 0,

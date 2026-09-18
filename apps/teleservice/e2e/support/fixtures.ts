@@ -8,6 +8,8 @@ import {
 } from "./seed";
 
 type Fixtures = {
+	/** Names carry the project and the retry so parallel runs of one test never share a row. */
+	uniqueName: (label: string) => string;
 	seed: {
 		declaration: (
 			state: SeedState,
@@ -29,10 +31,15 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
 		},
 		{ scope: "worker" },
 	],
-	seed: async ({ payload }, use, testInfo) => {
-		// Names carry the project and the retry so parallel runs of one test never share a row.
-		const uniqueName = (label: string) =>
-			`${label} · ${testInfo.project.name}${testInfo.retry ? ` r${testInfo.retry}` : ""} · ${testInfo.testId.slice(-6)}`;
+	// oxlint-disable-next-line no-empty-pattern
+	uniqueName: async ({}, use, testInfo) => {
+		const retry = testInfo.retry ? ` r${testInfo.retry}` : "";
+		await use(
+			(label) =>
+				`${label} · ${testInfo.project.name}${retry} · ${testInfo.testId.slice(-6)}`,
+		);
+	},
+	seed: async ({ payload, uniqueName }, use) => {
 		await use({
 			declaration: (state, label = "Déclaration e2e") =>
 				seedDeclaration(payload, state, uniqueName(label)),
