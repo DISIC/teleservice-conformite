@@ -33,16 +33,17 @@ export default defineConfig({
 	workers: CI ? 2 : undefined,
 	reporter: [["list"], ["html", { open: CI ? "never" : "on-failure" }]],
 	use: { baseURL, trace: "on-first-retry" },
+	// Browsers first: UI mode opens on the first project and skips dependency projects (run.js signs in for it).
 	projects: [
+		browser("chromium", "Desktop Chrome"),
+		browser("firefox", "Desktop Firefox"),
+		browser("webkit", "Desktop Safari"),
 		{
 			name: "setup",
 			testMatch: /auth\.setup\.ts/,
 			timeout: 90_000,
 			use: { ...devices["Desktop Chrome"] },
 		},
-		browser("chromium", "Desktop Chrome"),
-		browser("firefox", "Desktop Firefox"),
-		browser("webkit", "Desktop Safari"),
 	],
 	webServer: {
 		command: PROD ? `next start -p ${PORT}` : `next dev -p ${PORT}`,

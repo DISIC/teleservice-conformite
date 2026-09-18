@@ -1,5 +1,9 @@
 import { spawn } from "node:child_process";
+import { rmSync } from "node:fs";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
+
+// A new database knows no session: a saved one would only log the tests out.
+rmSync(new URL("./.auth/user.json", import.meta.url), { force: true });
 
 // The app's .env supplies the secrets locally; CI sets them in the job. Existing variables win.
 try {
@@ -26,15 +30,18 @@ const run = (command, args, extra = {}) =>
 		);
 	});
 
+// Production mode keeps the seeder's Payload from pushing schema or regenerating types.
+const playwright = (/** @type {string[]} */ args) =>
+	run("playwright", ["test", ...args], { NODE_ENV: "production" });
+
 try {
-	const migrated = await run("payload", ["migrate"]);
-	// Production mode keeps the seeder's Payload from pushing schema or regenerating types.
-	process.exitCode =
-		migrated === 0
-			? await run("playwright", ["test", ...process.argv.slice(2)], {
-					NODE_ENV: "production",
-				})
-			: migrated;
+	const args = process.argv.slice(2);
+	let code = await run("payload", ["migrate"]);
+	// UI mode never runs dependency projects: sign in through the setup project before opening it.
+	if (code === 0 && args.includes("--ui"))
+		code = await playwright(["--project=setup"]);
+	if (code === 0) code = await playwright(args);
+	process.exitCode = code;
 } finally {
 	await container.stop();
 }
