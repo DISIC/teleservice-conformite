@@ -160,6 +160,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 				colorVariant={colorVariant}
 				className={cx(
 					classes.table,
+					!noScroll && classes.scrollable,
 					hideHeaders && classes.hiddenHeaders,
 					getRowHref && classes.tableWithRowLink,
 					className,
@@ -189,6 +190,8 @@ const useStyles = tss.withName(Table.name).create(() => ({
 		marginBottom: "0!important",
 		table: {
 			display: "table",
+			width: "auto",
+			minWidth: "100%",
 		},
 		thead: {
 			backgroundColor: `${fr.colors.decisions.background.default.grey.default}!important`,
@@ -197,6 +200,11 @@ const useStyles = tss.withName(Table.name).create(() => ({
 		"thead::after, tbody::after": {
 			backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default}), linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default}), linear-gradient(0deg, ${fr.colors.decisions.border.default.grey.default}, ${fr.colors.decisions.border.default.grey.default})!important`,
 		},
+	},
+	// The legacy react-dsfr markup has no scroll container, so the `.fr-table` wrapper carries it.
+	scrollable: {
+		overflowX: "auto",
+		overflowY: "hidden",
 	},
 	headerCell: {
 		minWidth: "max-content",
