@@ -206,7 +206,7 @@ export function Section({
 							title="En savoir plus sur le schéma pluriannuel, nouvelle fenêtre"
 							style={{ width: "fit-content" }}
 						>
-							En savoir plus sur le schéma pluriannuel ↗️
+							En savoir plus sur le schéma pluriannuel
 						</a>
 					</AuditNotice>
 				);
