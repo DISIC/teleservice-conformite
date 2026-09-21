@@ -115,8 +115,10 @@ describe("audit merge rules", () => {
 				isRealised: true,
 				date: "2026-01-10",
 				realisedBy: "Cabinet",
-				rgaa_version: "rgaa_4",
+				rgaa_version: "rgaa_5",
 				rate: 80,
+				hasBlockingElements: true,
+				blockingElements: "Navigation au clavier impossible",
 				compliantElements: "Titres",
 				nonCompliantElements: "Contrastes",
 				usedTools: [{ name: "axe" }],
@@ -171,6 +173,35 @@ describe("audit merge rules", () => {
 		expect(result.audit).toMatchObject({
 			rate: 100,
 			nonCompliantElements: null,
+		});
+	});
+
+	it("drops the blocking elements when the audit falls back to RGAA 4", async () => {
+		const declaration = realised();
+		const { payload } = seeded(declaration);
+
+		const result = await saveSection(payload, declaration, "audit", {
+			rgaa_version: "rgaa_4",
+		});
+
+		expect(result.audit).toMatchObject({
+			hasBlockingElements: null,
+			blockingElements: null,
+		});
+	});
+
+	it("drops the blocking elements when the audit reports none", async () => {
+		const declaration = realised();
+		const { payload } = seeded(declaration);
+
+		const result = await saveSection(payload, declaration, "audit", {
+			rgaa_version: "rgaa_5",
+			hasBlockingElements: false,
+		});
+
+		expect(result.audit).toMatchObject({
+			hasBlockingElements: false,
+			blockingElements: null,
 		});
 	});
 
