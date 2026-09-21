@@ -23,7 +23,6 @@ import {
 	getDeclarationStatus,
 	getEditingMode,
 } from "~/domain/declaration/status";
-import { StatsCards } from "~/components/declaration/StatsCards";
 import { SectionContent } from "~/components/declaration/sections/Content";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
@@ -307,10 +306,6 @@ export default function DeclarationPage({
 					/>
 				</div>
 
-				<div className={classes.statsWrapper}>
-					<StatsCards declaration={declaration} />
-				</div>
-
 				<div className={classes.tabContent}>
 					{declarationErrors.length > 0 && (
 						<div className={classes.errorSummaryWrapper}>
@@ -347,9 +342,6 @@ export default function DeclarationPage({
 }
 
 const useStyles = tss.withName(DeclarationPage.name).create({
-	statsWrapper: {
-		marginBottom: fr.spacing("8v"),
-	},
 	stateNoticeWrapper: {
 		marginBottom: fr.spacing("6v"),
 	},

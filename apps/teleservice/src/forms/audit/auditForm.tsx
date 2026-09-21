@@ -30,7 +30,7 @@ function AuditNotRealisedNotice() {
 				title="Lien vers le texte de loi, nouvelle fenêtre"
 				style={{ width: "fit-content" }}
 			>
-				Lien vers le texte de loi ↗️
+				Lien vers le texte de loi
 			</a>
 		</AuditNotice>
 	);
@@ -319,7 +319,7 @@ export const NonCompliantElementsForm = withForm({
 											title="Liste des contenus non soumis à l’obligation d’accessibilité, nouvelle fenêtre"
 										>
 											Liste des contenus non soumis à l’obligation
-											d’accessibilité ↗️
+											d’accessibilité
 										</a>
 										<br />
 										Format attendu : Listez les éléments exemptés les uns à la
@@ -346,7 +346,7 @@ export const NonCompliantElementsForm = withForm({
 											rel="noopener noreferrer"
 											title="Qu’est-ce qu’une charge disproportionnée ?, nouvelle fenêtre"
 										>
-											Qu’est-ce qu’une charge disproportionnée ? ↗️
+											Qu’est-ce qu’une charge disproportionnée ?
 										</a>
 										<br />
 										Renseigner, pour chaque élément, son nom, la raison de la
