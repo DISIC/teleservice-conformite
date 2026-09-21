@@ -12,6 +12,7 @@ import { BackButton } from "~/components/ui/BackButton";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
 import { StateNotice } from "~/components/declaration/StateNotice";
+import { ToCompleteGuidance } from "~/components/declaration/ToCompleteGuidance";
 import {
 	ConfirmationModal,
 	type ConfirmationModalActions,
@@ -34,12 +35,14 @@ import {
 	type DeclarationProps,
 	guardDeclaration,
 	type LibraryProps,
+	type VisitProps,
 } from "~/lib/server-guards";
 
 export default function DeclarationPage({
 	declaration: initialDeclaration,
 	libraryContacts,
 	librarySchemas,
+	hasVisitedBefore,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
 	const apiUtils = api.useUtils();
@@ -65,6 +68,9 @@ export default function DeclarationPage({
 	const status = getDeclarationStatus(declaration);
 	const editingMode = getEditingMode(status);
 	const isPublished = status === "published";
+	// The first pass only exists in the walkthrough: outside it, missing data is
+	// a regression to repair and is always flagged.
+	const showToComplete = hasVisitedBefore || editingMode === "standalone";
 
 	// The interstitial gates an unchanged, ageing publication until the declarant
 	// starts updating it; once the row is Modifiée they are already acting.
@@ -285,66 +291,63 @@ export default function DeclarationPage({
 				id="declaration-page"
 				className={fr.cx("fr-container", "fr-mt-10v")}
 			>
-				{showAlert && (
-					<div className={classes.alertWrapper}>
-						<Alert
-							small
-							severity={alertDetails.severity}
-							title={alertDetails?.title ?? ""}
-							description={alertDetails?.description ?? ""}
-							closable
-							isClosed={!showAlert}
-							onClose={() => setShowAlert(false)}
-						/>
-					</div>
-				)}
-				<div className={classes.stateNoticeWrapper}>
+				<ToCompleteGuidance show={showToComplete}>
+					{showAlert && (
+						<div className={classes.alertWrapper}>
+							<Alert
+								small
+								severity={alertDetails.severity}
+								title={alertDetails?.title ?? ""}
+								description={alertDetails?.description ?? ""}
+								closable
+								isClosed={!showAlert}
+								onClose={() => setShowAlert(false)}
+							/>
+						</div>
+					)}
 					<StateNotice
 						declaration={declaration}
 						onPublishAttempt={() => setPublishAttempted(true)}
 						onReverted={() => router.reload()}
 					/>
-				</div>
 
-				<div className={classes.tabContent}>
-					{declarationErrors.length > 0 && (
-						<div className={classes.errorSummaryWrapper}>
-							<ErrorSummary
-								declarationId={declaration.id}
-								errors={declarationErrors}
-							/>
-						</div>
-					)}
-					<div
-						className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
-						role="presentation"
-					>
-						<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
-							<SideMenu
-								declaration={declaration}
-								currentSection={currentSection}
-							/>
-						</aside>
-						<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
-							<SectionContent
-								declaration={declaration}
-								currentSection={currentSection}
-								onDeclarationChange={setDeclaration}
-								mode={editingMode}
-								onPublishAttempt={() => setPublishAttempted(true)}
-							/>
+					<div className={classes.tabContent}>
+						{declarationErrors.length > 0 && (
+							<div className={classes.errorSummaryWrapper}>
+								<ErrorSummary
+									declarationId={declaration.id}
+									errors={declarationErrors}
+								/>
+							</div>
+						)}
+						<div
+							className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
+							role="presentation"
+						>
+							<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
+								<SideMenu
+									declaration={declaration}
+									currentSection={currentSection}
+								/>
+							</aside>
+							<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
+								<SectionContent
+									declaration={declaration}
+									currentSection={currentSection}
+									onDeclarationChange={setDeclaration}
+									mode={editingMode}
+									onPublishAttempt={() => setPublishAttempted(true)}
+								/>
+							</div>
 						</div>
 					</div>
-				</div>
+				</ToCompleteGuidance>
 			</section>
 		</>
 	);
 }
 
 const useStyles = tss.withName(DeclarationPage.name).create({
-	stateNoticeWrapper: {
-		marginBottom: fr.spacing("6v"),
-	},
 	errorSummaryWrapper: {
 		marginBottom: fr.spacing("6v"),
 	},
@@ -381,4 +384,7 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 export const getServerSideProps = (async (context) =>
 	guardDeclaration(context, {
 		includeLibrary: true,
-	})) satisfies GetServerSideProps<DeclarationProps & Partial<LibraryProps>>;
+		trackVisit: true,
+	})) satisfies GetServerSideProps<
+	DeclarationProps & Partial<LibraryProps> & Partial<VisitProps>
+>;

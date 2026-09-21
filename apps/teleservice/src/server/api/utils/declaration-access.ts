@@ -56,3 +56,38 @@ export async function loadOwnedDeclaration(
 
 	return getPopulatedDeclaration(declaration);
 }
+
+/**
+ * Records that the declarant has seen the declaration and answers whether they
+ * had already left it once: the "À compléter" guidance appears only from the
+ * second visit on, never during the first pass through the walkthrough. The
+ * mark lives on the caller's own access right, so co-declarants each get a
+ * first pass.
+ */
+export async function trackDeclarationVisit(
+	payload: Payload,
+	userId: number,
+	declarationId: number,
+): Promise<boolean> {
+	const accessRight = await payload.find({
+		collection: "access-rights",
+		where: {
+			declaration: { equals: declarationId },
+			user: { equals: userId },
+			status: { equals: "approved" },
+		},
+		limit: 1,
+		depth: 0,
+	});
+
+	const own = accessRight.docs[0];
+	if (!own) return false;
+	if (own.firstVisitedAt) return true;
+
+	await payload.update({
+		collection: "access-rights",
+		id: own.id,
+		data: { firstVisitedAt: new Date().toISOString() },
+	});
+	return false;
+}

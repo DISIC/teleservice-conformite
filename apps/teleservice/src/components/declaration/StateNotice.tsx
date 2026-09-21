@@ -17,6 +17,7 @@ import {
 	OBSOLESCENCE_PRESENTATION,
 } from "~/domain/declaration/obsolescence";
 import { usePublishAttempt } from "~/components/declaration/sections/hooks/usePublishAttempt";
+import { useShowToComplete } from "~/components/declaration/ToCompleteGuidance";
 
 type StateNoticeProps = {
 	declaration: PopulatedDeclaration;
@@ -38,7 +39,13 @@ export function StateNotice({
 }: StateNoticeProps) {
 	// `getDeclarationState` runs the full declaration validation; memoize so it
 	// re-derives only when the declaration changes, not on every render.
-	const state = useMemo(() => getDeclarationState(declaration), [declaration]);
+	const derivedState = useMemo(
+		() => getDeclarationState(declaration),
+		[declaration],
+	);
+	const showToComplete = useShowToComplete();
+	const state =
+		derivedState === "incomplete" && !showToComplete ? null : derivedState;
 	const { attemptPublish } = usePublishAttempt({
 		declaration,
 		onPublishAttempt,
@@ -121,6 +128,7 @@ const useStyles = tss.withName(StateNotice.name).create({
 		alignItems: "center",
 		gap: fr.spacing("6v"),
 		padding: fr.spacing("6v"),
+		marginBottom: fr.spacing("6v"),
 	},
 	content: {
 		display: "flex",

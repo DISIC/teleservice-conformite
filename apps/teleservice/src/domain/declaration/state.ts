@@ -79,7 +79,7 @@ export const STATE_PRESENTATION: Record<DeclarationState, StatePresentation> = {
 		},
 		heading: "Votre déclaration est incomplète.",
 		body: 'Certaines informations sont nécessaires pour pouvoir publier la déclaration. Veuillez renseigner les champs marqués "À compléter".',
-		actions: [],
+		actions: ["publish"],
 	},
 	ready: {
 		bgColor: fr.colors.decisions.background.alt.greenEmeraude.default,
