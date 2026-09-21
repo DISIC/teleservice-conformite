@@ -219,56 +219,54 @@ export function Section({
 		}
 	})();
 
-	const sourcePicker =
-		library && source && editing.showRadio ? (
-			<div
-				className={
-					source.effectiveMode === "linked" ? classes.picker : undefined
-				}
-			>
-				<RadioButtons
-					legend={withRequiredMark(library.legend, true)}
-					disabled={readOnly}
-					state={sourceModeError ? "error" : "default"}
-					stateRelatedMessage={sourceModeError}
-					options={library.options
-						.filter((option) => editing.visibleOptions.includes(option.value))
-						.map((option) => ({
-							label: option.label,
-							hintText: option.hintText,
-							illustration: option.illustration,
-							nativeInputProps: {
-								name: SOURCE_MODE_FIELD[library.kind],
-								value: option.value,
-								checked: source.effectiveMode === option.value,
-								onChange: () => source.select(option.value),
-							},
-						}))}
-				/>
-				{source.effectiveMode === "linked" && (
-					<Select
-						label={source.libraryLink.label}
-						nativeSelectProps={{
-							value: source.libraryLink.linkedParentId ?? "",
-							onChange: (e) => {
-								if (e.target.value)
-									source.libraryLink.onSelect(Number(e.target.value));
-							},
-						}}
-					>
-						<option value="" disabled>
-							{source.libraryLink.placeholder}
+	// Read-only shows the chosen source through its body, not a frozen radio group.
+	const canPickSource = library && source && editing.showRadio && !readOnly;
+	const sourcePicker = canPickSource ? (
+		<div
+			className={source.effectiveMode === "linked" ? classes.picker : undefined}
+		>
+			<RadioButtons
+				legend={withRequiredMark(library.legend, true)}
+				state={sourceModeError ? "error" : "default"}
+				stateRelatedMessage={sourceModeError}
+				options={library.options
+					.filter((option) => editing.visibleOptions.includes(option.value))
+					.map((option) => ({
+						label: option.label,
+						hintText: option.hintText,
+						illustration: option.illustration,
+						nativeInputProps: {
+							name: SOURCE_MODE_FIELD[library.kind],
+							value: option.value,
+							checked: source.effectiveMode === option.value,
+							onChange: () => source.select(option.value),
+						},
+					}))}
+			/>
+			{source.effectiveMode === "linked" && (
+				<Select
+					label={source.libraryLink.label}
+					nativeSelectProps={{
+						value: source.libraryLink.linkedParentId ?? "",
+						onChange: (e) => {
+							if (e.target.value)
+								source.libraryLink.onSelect(Number(e.target.value));
+						},
+					}}
+				>
+					<option value="" disabled>
+						{source.libraryLink.placeholder}
+					</option>
+					{source.libraryLink.items.map((item) => (
+						<option key={item.id} value={item.id}>
+							{item.label}
+							{item.hint ? ` — ${item.hint}` : ""}
 						</option>
-						{source.libraryLink.items.map((item) => (
-							<option key={item.id} value={item.id}>
-								{item.label}
-								{item.hint ? ` — ${item.hint}` : ""}
-							</option>
-						))}
-					</Select>
-				)}
-			</div>
-		) : null;
+					))}
+				</Select>
+			)}
+		</div>
+	) : null;
 
 	const hideRequiredNotice =
 		!!library && editing.bodyMode !== "custom" && !editing.showRadio;
