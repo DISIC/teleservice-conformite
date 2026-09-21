@@ -162,6 +162,18 @@ export function isSectionToComplete(
 	return SECTIONS[slug].isToComplete(declaration);
 }
 
+/** An audit slice the "non réalisé" answer puts out of scope — nothing to fill.
+ *  A Skipped schema is a deliberate choice, not an inapplicable Section. */
+export function isSectionNotApplicable(
+	declaration: PopulatedDeclaration,
+	slug: SectionSlug,
+): boolean {
+	return (
+		isAuditSubSection(slug) &&
+		SECTIONS[slug].validation.isApplicable?.(declaration) === false
+	);
+}
+
 export function isSectionToVerify(
 	declaration: PopulatedDeclaration,
 	slug: SectionSlug,

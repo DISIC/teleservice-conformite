@@ -4,6 +4,7 @@ import {
 	DEFAULT_SECTION,
 	getPrevNextSections,
 	isAuditToComplete,
+	isSectionNotApplicable,
 	isSectionToComplete,
 	parseSectionFromQuery,
 	SECTION_SLUGS,
@@ -129,6 +130,36 @@ describe("isSectionToComplete (À compléter badges)", () => {
 					},
 				} as never),
 				"audit-outils",
+			),
+		).toBe(false);
+	});
+});
+
+describe("isSectionNotApplicable (Non applicable badges)", () => {
+	it("flags the realised-only audit Sub-sections until an audit is declared", () => {
+		const noAudit = completeDeclaration({
+			audit: { isRealised: false },
+		} as never);
+		expect(isSectionNotApplicable(noAudit, "audit-outils")).toBe(true);
+		expect(isSectionNotApplicable(noAudit, "audit-contenus")).toBe(true);
+		expect(isSectionNotApplicable(noAudit, "audit-non-conformites")).toBe(true);
+		expect(isSectionNotApplicable(noAudit, "audit-general")).toBe(false);
+	});
+
+	it("leaves them applicable once the audit is realised", () => {
+		expect(
+			isSectionNotApplicable(
+				completeDeclaration({ audit: { isRealised: true } } as never),
+				"audit-outils",
+			),
+		).toBe(false);
+	});
+
+	it("leaves a Skipped schema unflagged — skipping is a choice, not a scope", () => {
+		expect(
+			isSectionNotApplicable(
+				completeDeclaration({ schema: { skipped: true } } as never),
+				"schema",
 			),
 		).toBe(false);
 	});

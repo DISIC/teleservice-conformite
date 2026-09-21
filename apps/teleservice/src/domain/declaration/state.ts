@@ -19,7 +19,11 @@ export type DeclarationState =
 export type StateAction = "revert" | "publish";
 
 /** Badge variants surfaced on `SideMenu` items. `modified` is not rendered yet. */
-export type BadgeVariant = "to-complete" | "to-verify" | "modified";
+export type BadgeVariant =
+	| "to-complete"
+	| "to-verify"
+	| "modified"
+	| "not-applicable";
 
 export type StatePresentation = {
 	/** Card background — a `background.alt.<family>.default` decision token. */
@@ -131,4 +135,9 @@ export const SECTION_BADGE: Record<
 	"to-complete": STATE_PRESENTATION.incomplete.badge!,
 	"to-verify": STATE_PRESENTATION["to-verify"].badge!,
 	modified: STATE_PRESENTATION["published-modified"].badge!,
+	"not-applicable": {
+		label: "Non applicable",
+		color: fr.colors.decisions.text.label.grey.default,
+		bgColor: fr.colors.decisions.background.contrast.grey.default,
+	},
 };

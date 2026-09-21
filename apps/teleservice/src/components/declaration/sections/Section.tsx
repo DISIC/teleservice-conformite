@@ -14,7 +14,11 @@ import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { AuditNotice } from "~/components/ui/AuditNotice";
 import { useCommonStyles } from "~/components/ui/commonStyles";
 import { resolveSectionEditing } from "~/domain/declaration/sectionEditing";
-import { SECTIONS } from "~/domain/declaration/sections";
+import { SectionBadge } from "~/components/declaration/SectionBadge";
+import {
+	isSectionNotApplicable,
+	SECTIONS,
+} from "~/domain/declaration/sections";
 import { SOURCE_MODE_FIELD } from "~/domain/declaration/sourceMode";
 import type { EditingMode } from "~/domain/declaration/status";
 import { useAppForm } from "~/forms/context";
@@ -276,6 +280,11 @@ export function Section({
 			</Head>
 			<SectionShell
 				title={title}
+				badge={
+					isSectionNotApplicable(declaration, slug) ? (
+						<SectionBadge variant="not-applicable" />
+					) : undefined
+				}
 				isEditable={definition.isEditable?.(declaration) ?? true}
 				readOnly={readOnly}
 				onEnterEdit={() => setReadOnly(false)}
