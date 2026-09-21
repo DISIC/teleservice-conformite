@@ -3,20 +3,21 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import Button from "@codegouvfr/react-dsfr/Button";
+import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import BetaBadge from "./BetaBadge";
 import Pictogram, { type PictogramId } from "./Pictogram";
 import type { ReferentielInfos, ReferentielStyle } from "./referentiels";
 import ellipse from "../../assets/ellipse.svg";
 
-export type ReferentielLinkButtonsProps = Pick<
+export type LinkButtonsProps = Pick<
 	ReferentielInfos,
 	"id" | "title"
 > &
 	Pick<ReferentielStyle, "iconId" | "href">;
 
 type PageHeroProps = {
-	breadcrumbCurrentPageLabel: string;
+	breadcrumbCurrentPageLabel: ReactNode;
 	breadcrumbSegments: {
 		label: string;
 		linkProps: {
@@ -26,7 +27,7 @@ type PageHeroProps = {
 	title: string;
 	description: string;
 	pictogram: PictogramId;
-	referentiels: ReferentielLinkButtonsProps[];
+	linkButtons?: LinkButtonsProps[];
 	badgeColor: string;
 	badgeBackgroundColor: string;
 	backgroundColor: string;
@@ -40,7 +41,7 @@ export default function PageHero(props: PageHeroProps) {
 		title,
 		description,
 		pictogram,
-		referentiels,
+		linkButtons,
 		badgeColor,
 		badgeBackgroundColor,
 		backgroundColor,
@@ -71,19 +72,20 @@ export default function PageHero(props: PageHeroProps) {
 						<h1 className={classes.title}>{title}</h1>
 						<p className={classes.description}>{description} </p>
 						<ul className={classes.referentialTags}>
-							{referentiels.map(({ id, title, iconId, href }) => (
-								<li key={id}>
-									<Button
-										priority="secondary"
-										size="small"
-										iconId={iconId as never}
-										iconPosition="left"
-										linkProps={{ href }}
-									>
-										{title}
-									</Button>
-								</li>
-							))}
+							{linkButtons?.length &&
+								linkButtons.map(({ id, title, iconId, href }) => (
+									<li key={id}>
+										<Button
+											priority="secondary"
+											size="small"
+											iconId={iconId as never}
+											iconPosition="left"
+											linkProps={{ href }}
+										>
+											{title}
+										</Button>
+									</li>
+								))}
 						</ul>
 					</div>
 				</div>
