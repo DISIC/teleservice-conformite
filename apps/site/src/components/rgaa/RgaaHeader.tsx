@@ -25,6 +25,7 @@ type NavEntry =
 	| { text: string; categories: NavCategory[]; leader?: NavLeader };
 
 const NAVIGATION: NavEntry[] = [
+	// TODO: add link
 	{ text: "Accueil", href: "/" },
 	{ text: "Obligations légales", href: "/obligations" },
 	{
@@ -62,29 +63,32 @@ const NAVIGATION: NavEntry[] = [
 				categoryMainLink: {
 					text: "Documentation",
 				},
+				// TODO: add links
 				links: [
-					{ text: "Référentiel web", href: "/" },
-					{ text: "Référentiel bureautique", href: "/" },
-					{ text: "Référentiel application mobile", href: "/" },
+					{ text: "Référentiel web", href: "#" },
+					{ text: "Référentiel bureautique", href: "#" },
+					{ text: "Référentiel application mobile", href: "#" },
 				],
 			},
 			{
 				categoryMainLink: {
 					text: "Outils",
 				},
+				// TODO: add links
 				links: [
-					{ text: "Ara - Outil d’audit d’accessibilité", href: "/" },
-					{ text: "Kit d’audit", href: "/" },
+					{ text: "Ara - Outil d’audit d’accessibilité", href: "#" },
+					{ text: "Kit d’audit", href: "#" },
 				],
 			},
 			{
 				categoryMainLink: {
 					text: "Notes de version",
 				},
+				// TODO: add links
 				links: [
-					{ text: "Note de version du RGAA 5", href: "/" },
-					{ text: "Note de version du RGAA 4.12", href: "/" },
-					{ text: "Notes de révision du RGAA 4.1", href: "/" },
+					{ text: "Note de version du RGAA 5", href: "#" },
+					{ text: "Note de version du RGAA 4.12", href: "#" },
+					{ text: "Notes de révision du RGAA 4.1", href: "#" },
 				],
 			},
 		],
@@ -106,11 +110,12 @@ const entryHrefs = (entry: NavEntry): string[] =>
 const normalize = (pathname: string) =>
 	pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
 
+// TODO: add link
 const getActiveHref = (pathname: string) =>
 	NAVIGATION.flatMap(entryHrefs)
 		.filter(
 			(href) =>
-				pathname === href || (href !== "/" && pathname.startsWith(`${href}/`)),
+				pathname === href || (href !== "#" && pathname.startsWith(`${href}/`)),
 		)
 		.sort((a, b) => b.length - a.length)[0] ?? "";
 
