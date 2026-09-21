@@ -30,7 +30,7 @@ function AuditNotRealisedNotice() {
 				title="Lien vers le texte de loi, nouvelle fenêtre"
 				style={{ width: "fit-content" }}
 			>
-				Lien vers le texte de loi ↗️
+				Lien vers le texte de loi
 			</a>
 		</AuditNotice>
 	);
@@ -55,16 +55,6 @@ export const AuditGeneralForm = withForm({
 									{ label: "Oui", value: true },
 									{ label: "Non", value: false },
 								]}
-								// Answering "Non" discards the realised-audit details so that
-								// re-answering "Oui" starts from a blank slate.
-								onOptionChange={(value) => {
-									if (value === false) {
-										form.setFieldValue("date", "");
-										form.setFieldValue("realisedBy", "");
-										form.setFieldValue("rgaa_version", "rgaa_4");
-										form.setFieldValue("rate", null);
-									}
-								}}
 								required
 							/>
 						)}
@@ -319,7 +309,7 @@ export const NonCompliantElementsForm = withForm({
 											title="Liste des contenus non soumis à l’obligation d’accessibilité, nouvelle fenêtre"
 										>
 											Liste des contenus non soumis à l’obligation
-											d’accessibilité ↗️
+											d’accessibilité
 										</a>
 										<br />
 										Format attendu : Listez les éléments exemptés les uns à la
@@ -346,7 +336,7 @@ export const NonCompliantElementsForm = withForm({
 											rel="noopener noreferrer"
 											title="Qu’est-ce qu’une charge disproportionnée ?, nouvelle fenêtre"
 										>
-											Qu’est-ce qu’une charge disproportionnée ? ↗️
+											Qu’est-ce qu’une charge disproportionnée ?
 										</a>
 										<br />
 										Renseigner, pour chaque élément, son nom, la raison de la

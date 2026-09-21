@@ -16,21 +16,20 @@ type SchemaFormApi = ComponentProps<typeof DeclarationSchemaForm>["form"];
 const SCHEMA_OPTIONS: SourceModeOption[] = [
 	{
 		value: "linked",
-		label: "Utiliser un schéma de ma bibliothèque",
-		hintText: "Réutilise un schéma enregistré, mis à jour automatiquement.",
+		label: "Utiliser un schéma pluriannuel existant",
+		hintText: "Enregistré dans vos documents.",
 		illustration: <DocumentSearch fontSize="3rem" />,
 	},
 	{
 		value: "custom",
-		label: "Définir un schéma pour cette déclaration",
-		hintText: "Renseignez un schéma propre à cette déclaration.",
+		label: "Définir un schéma pluriannuel",
 		illustration: <Calendar fontSize="3rem" />,
 	},
 	{
 		value: "skipped",
-		label: "Aucun schéma pour le moment",
+		label: "Renseigner un schéma pluriannuel plus tard",
 		hintText:
-			"Vous pourrez en ajouter un plus tard sans bloquer la publication.",
+			"Vous pouvez publier votre déclaration et renseigner votre schéma pluriannuel par la suite.",
 		illustration: <Error fontSize="3rem" />,
 	},
 ];

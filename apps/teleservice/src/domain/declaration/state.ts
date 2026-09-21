@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import type { EditingMode } from "./status";
 import { getDeclarationStatus } from "./status";
 import { validateDeclaration } from "./validate";
 
@@ -15,11 +16,26 @@ export type DeclarationState =
 	| "published-incomplete"
 	| "published-modified";
 
+/**
+ * Whether unfilled data is flagged "À compléter". The first pass only exists in
+ * the walkthrough: outside it, missing data is a regression to repair.
+ */
+export function isToCompleteRevealed(
+	mode: EditingMode,
+	hasVisitedBefore: boolean,
+): boolean {
+	return hasVisitedBefore || mode === "standalone";
+}
+
 /** Actions a notice may expose, in render order. Handlers are wired by the component. */
 export type StateAction = "revert" | "publish";
 
-/** Badge variants surfaced on `SideMenu` items. `modified` is not rendered yet. */
-export type BadgeVariant = "to-complete" | "to-verify" | "modified";
+/** Badge variants surfaced on SideMenu items and Section titles. `modified` is not rendered yet. */
+export type BadgeVariant =
+	| "to-complete"
+	| "to-verify"
+	| "modified"
+	| "not-applicable";
 
 export type StatePresentation = {
 	/** Card background — a `background.alt.<family>.default` decision token. */
@@ -79,7 +95,7 @@ export const STATE_PRESENTATION: Record<DeclarationState, StatePresentation> = {
 		},
 		heading: "Votre déclaration est incomplète.",
 		body: 'Certaines informations sont nécessaires pour pouvoir publier la déclaration. Veuillez renseigner les champs marqués "À compléter".',
-		actions: [],
+		actions: ["publish"],
 	},
 	ready: {
 		bgColor: fr.colors.decisions.background.alt.greenEmeraude.default,
@@ -131,4 +147,9 @@ export const SECTION_BADGE: Record<
 	"to-complete": STATE_PRESENTATION.incomplete.badge!,
 	"to-verify": STATE_PRESENTATION["to-verify"].badge!,
 	modified: STATE_PRESENTATION["published-modified"].badge!,
+	"not-applicable": {
+		label: "Non applicable",
+		color: fr.colors.decisions.text.label.grey.default,
+		bgColor: fr.colors.decisions.background.contrast.grey.default,
+	},
 };

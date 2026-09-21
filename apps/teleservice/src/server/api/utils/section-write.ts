@@ -91,7 +91,7 @@ const MERGERS: { [K in SectionKind]: SectionMerger<K> } = {
 				}),
 				// A fully conformant audit has no non-conformities to declare.
 				...(values.rate === 100 && { nonCompliantElements: null }),
-				// "Non réalisé" invalidates every audit detail; switching back starts blank.
+				// "Non réalisé" invalidates every audit detail on the row.
 				...(values.isRealised === false && NO_AUDIT),
 				toVerify: false,
 			},

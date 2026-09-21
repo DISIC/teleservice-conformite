@@ -4,6 +4,7 @@ import { useEffect, useId, useMemo, useState } from "react";
 import type { Schema } from "~/payload/payload-types";
 import { useModalReturnFocus } from "~/hooks/useModalReturnFocus";
 import { api } from "~/lib/api";
+import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { useAppForm } from "~/forms/context";
 import { SchemaForm as EntitySchemaForm } from "~/forms/schema/schemaForm";
 import { schemaFormOptions, type ZSchema } from "~/forms/schema/schemaSchema";
@@ -98,9 +99,13 @@ export function LibrarySchemaModal({ actions }: LibrarySchemaModalProps) {
 						doClosesModal: false,
 					},
 				]}
-				size="large"
-				title={editing ? "Modifier un schéma" : "Ajouter un schéma"}
+				title={
+					editing
+						? "Modifier un schéma pluriannuel"
+						: "Ajouter un schéma pluriannuel"
+				}
 			>
+				<RequiredFieldsNotice />
 				<EntitySchemaForm form={form} readOnly={false} />
 			</modal.Component>
 		</form>

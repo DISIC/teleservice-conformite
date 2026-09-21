@@ -90,10 +90,7 @@ export const stateNotice = (page: Page, state: DeclarationState) =>
 export async function expectPreview(page: Page) {
 	await page.waitForURL(/\/preview$/);
 	await expect(
-		page.getByRole("heading", {
-			level: 1,
-			name: "Votre déclaration est prête à être publiée",
-		}),
+		page.getByRole("heading", { level: 2, name: "Prévisualiser et publier" }),
 	).toBeVisible();
 }
 

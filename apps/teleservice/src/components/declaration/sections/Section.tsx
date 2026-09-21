@@ -14,7 +14,11 @@ import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { AuditNotice } from "~/components/ui/AuditNotice";
 import { useCommonStyles } from "~/components/ui/commonStyles";
 import { resolveSectionEditing } from "~/domain/declaration/sectionEditing";
-import { SECTIONS } from "~/domain/declaration/sections";
+import { SectionBadge } from "~/components/declaration/SectionBadge";
+import {
+	isSectionNotApplicable,
+	SECTIONS,
+} from "~/domain/declaration/sections";
 import { SOURCE_MODE_FIELD } from "~/domain/declaration/sourceMode";
 import type { EditingMode } from "~/domain/declaration/status";
 import { useAppForm } from "~/forms/context";
@@ -192,7 +196,7 @@ export function Section({
 						Pictogram={Error}
 						heading="Aucun schéma pluriannuel n’a été renseigné."
 					>
-						<span>
+						<span className={fr.cx("fr-text--sm")}>
 							Vous pouvez publier votre déclaration d’accessibilité, néanmoins
 							la loi fait obligation de publier un schéma pluriannuel d’une
 							durée de trois ans dans l’objectif d’informer le public des moyens
@@ -206,7 +210,7 @@ export function Section({
 							title="En savoir plus sur le schéma pluriannuel, nouvelle fenêtre"
 							style={{ width: "fit-content" }}
 						>
-							En savoir plus sur le schéma pluriannuel ↗️
+							En savoir plus sur le schéma pluriannuel
 						</a>
 					</AuditNotice>
 				);
@@ -215,56 +219,54 @@ export function Section({
 		}
 	})();
 
-	const sourcePicker =
-		library && source && editing.showRadio ? (
-			<div
-				className={
-					source.effectiveMode === "linked" ? classes.picker : undefined
-				}
-			>
-				<RadioButtons
-					legend={withRequiredMark(library.legend, true)}
-					disabled={readOnly}
-					state={sourceModeError ? "error" : "default"}
-					stateRelatedMessage={sourceModeError}
-					options={library.options
-						.filter((option) => editing.visibleOptions.includes(option.value))
-						.map((option) => ({
-							label: option.label,
-							hintText: option.hintText,
-							illustration: option.illustration,
-							nativeInputProps: {
-								name: SOURCE_MODE_FIELD[library.kind],
-								value: option.value,
-								checked: source.effectiveMode === option.value,
-								onChange: () => source.select(option.value),
-							},
-						}))}
-				/>
-				{source.effectiveMode === "linked" && (
-					<Select
-						label={source.libraryLink.label}
-						nativeSelectProps={{
-							value: source.libraryLink.linkedParentId ?? "",
-							onChange: (e) => {
-								if (e.target.value)
-									source.libraryLink.onSelect(Number(e.target.value));
-							},
-						}}
-					>
-						<option value="" disabled>
-							{source.libraryLink.placeholder}
+	// Read-only shows the chosen source through its body, not a frozen radio group.
+	const canPickSource = library && source && editing.showRadio && !readOnly;
+	const sourcePicker = canPickSource ? (
+		<div
+			className={source.effectiveMode === "linked" ? classes.picker : undefined}
+		>
+			<RadioButtons
+				legend={withRequiredMark(library.legend, true)}
+				state={sourceModeError ? "error" : "default"}
+				stateRelatedMessage={sourceModeError}
+				options={library.options
+					.filter((option) => editing.visibleOptions.includes(option.value))
+					.map((option) => ({
+						label: option.label,
+						hintText: option.hintText,
+						illustration: option.illustration,
+						nativeInputProps: {
+							name: SOURCE_MODE_FIELD[library.kind],
+							value: option.value,
+							checked: source.effectiveMode === option.value,
+							onChange: () => source.select(option.value),
+						},
+					}))}
+			/>
+			{source.effectiveMode === "linked" && (
+				<Select
+					label={source.libraryLink.label}
+					nativeSelectProps={{
+						value: source.libraryLink.linkedParentId ?? "",
+						onChange: (e) => {
+							if (e.target.value)
+								source.libraryLink.onSelect(Number(e.target.value));
+						},
+					}}
+				>
+					<option value="" disabled>
+						{source.libraryLink.placeholder}
+					</option>
+					{source.libraryLink.items.map((item) => (
+						<option key={item.id} value={item.id}>
+							{item.label}
+							{item.hint ? ` — ${item.hint}` : ""}
 						</option>
-						{source.libraryLink.items.map((item) => (
-							<option key={item.id} value={item.id}>
-								{item.label}
-								{item.hint ? ` — ${item.hint}` : ""}
-							</option>
-						))}
-					</Select>
-				)}
-			</div>
-		) : null;
+					))}
+				</Select>
+			)}
+		</div>
+	) : null;
 
 	const hideRequiredNotice =
 		!!library && editing.bodyMode !== "custom" && !editing.showRadio;
@@ -276,6 +278,11 @@ export function Section({
 			</Head>
 			<SectionShell
 				title={title}
+				badge={
+					isSectionNotApplicable(declaration, slug) ? (
+						<SectionBadge variant="not-applicable" />
+					) : undefined
+				}
 				isEditable={definition.isEditable?.(declaration) ?? true}
 				readOnly={readOnly}
 				onEnterEdit={() => setReadOnly(false)}

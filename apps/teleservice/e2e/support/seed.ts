@@ -103,6 +103,31 @@ async function publishedOn(
 	return getPopulatedDeclaration(updated);
 }
 
+/** A seeded row stands for a Declaration its owner has already worked on, so the
+ *  "À compléter" guidance is revealed as it would be on a return visit. */
+async function markVisited(
+	payload: Payload,
+	userId: number,
+	declarationId: number,
+): Promise<void> {
+	const { docs } = await payload.find({
+		collection: "access-rights",
+		where: {
+			declaration: { equals: declarationId },
+			user: { equals: userId },
+		},
+		limit: 1,
+		depth: 0,
+	});
+	const own = docs[0];
+	if (own)
+		await payload.update({
+			collection: "access-rights",
+			id: own.id,
+			data: { firstVisitedAt: new Date().toISOString() },
+		});
+}
+
 export async function seedDeclaration(
 	payload: Payload,
 	state: SeedState,
@@ -118,6 +143,7 @@ export async function seedDeclaration(
 		name,
 		entityId: entity.id,
 	});
+	await markVisited(payload, user.id, id);
 	const created = await loadOwnedDeclaration(payload, user.id, id);
 	const finished = await advance(payload, created, entity.id, state);
 	return { ...finished, name };

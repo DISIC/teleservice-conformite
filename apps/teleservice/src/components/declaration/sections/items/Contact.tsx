@@ -15,14 +15,13 @@ type ContactFormApi = ComponentProps<typeof ContactTypeForm>["form"];
 const CONTACT_OPTIONS: SourceModeOption[] = [
 	{
 		value: "linked",
-		label: "Utiliser un contact de ma bibliothèque",
-		hintText: "Réutilise un contact enregistré, mis à jour automatiquement.",
+		label: "Utiliser un contact existant",
+		hintText: "Enregistré dans vos documents.",
 		illustration: <DocumentSearch fontSize="3rem" />,
 	},
 	{
 		value: "custom",
-		label: "Définir un contact pour cette déclaration",
-		hintText: "Renseignez un contact propre à cette déclaration.",
+		label: "Définir un contact",
 		illustration: <Avatar fontSize="3rem" />,
 	},
 ];

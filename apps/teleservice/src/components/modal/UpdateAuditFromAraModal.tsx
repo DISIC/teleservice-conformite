@@ -6,6 +6,7 @@ import { useStore } from "@tanstack/react-form";
 import { useEffect, useId, useState } from "react";
 import { tss } from "tss-react";
 import z from "zod";
+import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { api, type RouterOutputs } from "~/lib/api";
 import { useAppForm } from "~/forms/context";
 
@@ -100,6 +101,7 @@ export function UpdateAuditFromAraModal({
 				]}
 				title="Mettre à jour depuis Ara"
 			>
+				<RequiredFieldsNotice />
 				<section id="modal-header" className={classes.modalHeader}>
 					{(isPending || isError) && (
 						<Alert
