@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import {
 	SideMenu as DsfrSideMenu,
 	type SideMenuProps as DsfrSideMenuProps,
@@ -7,12 +6,14 @@ import {
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { SectionBadge } from "~/components/declaration/SectionBadge";
 import { useShowToComplete } from "~/components/declaration/ToCompleteGuidance";
-import { SECTION_BADGE } from "~/domain/declaration/state";
+import type { BadgeVariant } from "~/domain/declaration/state";
 import {
 	isAuditSubSection,
 	isAuditToComplete,
 	isAuditToVerify,
+	isSectionNotApplicable,
 	isSectionToComplete,
 	isSectionToVerify,
 	SECTION_SLUGS,
@@ -33,44 +34,27 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	const isAuditCurrent = isAuditSubSection(currentSection);
 	const visibleAuditSubSections = SECTION_SLUGS.filter(isAuditSubSection);
 
-	const renderLabel = (
-		label: string,
-		opts: { toComplete?: boolean; toVerify?: boolean } = {},
-	): ReactNode => (
+	const renderLabel = (label: string, variants: BadgeVariant[]): ReactNode => (
 		<span className={classes.itemLabel}>
 			<span>{label}</span>
-			{opts.toComplete && (
-				<Badge
-					small
-					noIcon
-					style={{
-						color: SECTION_BADGE["to-complete"].color,
-						backgroundColor: SECTION_BADGE["to-complete"].bgColor,
-					}}
-				>
-					{SECTION_BADGE["to-complete"].label}
-				</Badge>
-			)}
-			{opts.toVerify && (
-				<Badge
-					small
-					noIcon
-					style={{
-						color: SECTION_BADGE["to-verify"].color,
-						backgroundColor: SECTION_BADGE["to-verify"].bgColor,
-					}}
-				>
-					{SECTION_BADGE["to-verify"].label}
-				</Badge>
-			)}
+			{variants.map((variant) => (
+				<SectionBadge key={variant} variant={variant} />
+			))}
 		</span>
 	);
 
+	const sectionBadges = (slug: SectionSlug): BadgeVariant[] => {
+		const variants: BadgeVariant[] = [];
+		if (showToComplete && isSectionToComplete(declaration, slug))
+			variants.push("to-complete");
+		if (isSectionToVerify(declaration, slug)) variants.push("to-verify");
+		if (isSectionNotApplicable(declaration, slug))
+			variants.push("not-applicable");
+		return variants;
+	};
+
 	const sectionItem = (slug: SectionSlug): DsfrSideMenuProps.Item.Link => ({
-		text: renderLabel(SECTION_TITLES[slug], {
-			toComplete: showToComplete && isSectionToComplete(declaration, slug),
-			toVerify: isSectionToVerify(declaration, slug),
-		}),
+		text: renderLabel(SECTION_TITLES[slug], sectionBadges(slug)),
 		linkProps: {
 			href: sectionHref(declarationId, slug),
 			scroll: false,
@@ -82,10 +66,12 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	const items: DsfrSideMenuProps.Item[] = [
 		sectionItem("infos"),
 		{
-			text: renderLabel("Audit", {
-				toComplete: showToComplete && isAuditToComplete(declaration),
-				toVerify: isAuditToVerify(declaration),
-			}),
+			text: renderLabel("Audit", [
+				...(showToComplete && isAuditToComplete(declaration)
+					? (["to-complete"] as const)
+					: []),
+				...(isAuditToVerify(declaration) ? (["to-verify"] as const) : []),
+			]),
 			linkProps: {
 				href: sectionHref(declarationId, "audit-general"),
 				scroll: false,
