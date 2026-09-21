@@ -5,7 +5,7 @@ import type { StatePresentation } from "./state";
 // A declaration must be republished every three years; past that it is deemed non compliant.
 export const OBSOLESCENCE_YEARS = 3;
 // The declarant is warned this long before the deadline.
-const EXPIRING_MONTHS = 3;
+export const EXPIRING_MONTHS = 3;
 
 /** Valide → Bientôt obsolète → Obsolète, read from the last publish date and today. Never stored. */
 export type Obsolescence = "valid" | "expiring" | "obsolete";

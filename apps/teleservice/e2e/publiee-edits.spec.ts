@@ -54,6 +54,8 @@ test("Publiée: an edit makes it Modifiée, revert restores it, republish clears
 	await expect(stateNotice(page, "published-modified")).toBeVisible();
 	await page.getByRole("button", { name: "Prévisualiser et publier" }).click();
 	await publishFromPreview(page);
+
+	await page.goto(`/dashboard/declarations/${declaration.id}`);
 	await expect(stateNotice(page, "published-modified")).toHaveCount(0);
 
 	await page.goto(`/declarations/${declaration.id}/publish`);

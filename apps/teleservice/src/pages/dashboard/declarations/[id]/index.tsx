@@ -1,9 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
@@ -43,17 +42,10 @@ export default function DeclarationPage({
 		apiUtils.library.listContacts.setData(undefined, libraryContacts ?? []);
 		apiUtils.library.listSchemas.setData(undefined, librarySchemas ?? []);
 	});
-	const { published, section: sectionQuery, field: fieldQuery } = router.query;
+	const { section: sectionQuery, field: fieldQuery } = router.query;
 	const currentSection = parseSectionFromQuery(sectionQuery);
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
-	const [showAlert, setShowAlert] = useState<boolean>(false);
-	const [alertDetails, setAlertDetails] = useState<{
-		title?: ReactNode;
-		description?: ReactNode;
-		severity: "info" | "success" | "warning" | "error";
-		autoDismiss: boolean;
-	}>({ title: "", description: "", severity: "info", autoDismiss: true });
 	const { classes } = useStyles();
 
 	const status = getDeclarationStatus(declaration);
@@ -77,31 +69,6 @@ export default function DeclarationPage({
 		[publishAttempted, declaration],
 	);
 
-	const showDeclarationAlert = ({
-		title,
-		description,
-		severity,
-		autoDismiss = true,
-	}: {
-		title?: ReactNode;
-		description?: ReactNode;
-		severity: "info" | "success" | "warning" | "error";
-		autoDismiss?: boolean;
-	}) => {
-		setAlertDetails({ title, description, severity, autoDismiss });
-		setShowAlert(true);
-	};
-
-	useEffect(() => {
-		if (!showAlert || !alertDetails.autoDismiss) return;
-
-		const timer = setTimeout(() => {
-			setShowAlert(false);
-		}, 5000);
-
-		return () => clearTimeout(timer);
-	}, [showAlert, alertDetails]);
-
 	// Focus the errored field on first mount, then drop the param so it neither
 	// lingers in the URL nor re-fires on later re-renders.
 	useEffect(() => {
@@ -116,30 +83,6 @@ export default function DeclarationPage({
 		const { field: _field, ...query } = router.query;
 		router.replace({ query }, undefined, { shallow: true, scroll: false });
 	}, [fieldQuery, currentSection, router]);
-
-	useEffect(() => {
-		if (published === "true") {
-			showDeclarationAlert({
-				title: "Votre déclaration est en ligne.",
-				description: (
-					<a
-						href={`/declarations/${declaration.id}/publish`}
-						target="_blank"
-						rel="noopener noreferrer"
-						title={`Voir la déclaration ${declaration.name}, nouvelle fenêtre`}
-					>
-						Voir la déclaration
-					</a>
-				),
-				severity: "success",
-				autoDismiss: false,
-			});
-
-			router.replace(`/dashboard/declarations/${declaration.id}`, undefined, {
-				shallow: true,
-			});
-		}
-	}, [published]);
 
 	const heading = (
 		<>
@@ -178,19 +121,6 @@ export default function DeclarationPage({
 				className={fr.cx("fr-container", "fr-mt-10v")}
 			>
 				<ToCompleteGuidance show={showToComplete}>
-					{showAlert && (
-						<div className={classes.alertWrapper}>
-							<Alert
-								small
-								severity={alertDetails.severity}
-								title={alertDetails?.title ?? ""}
-								description={alertDetails?.description ?? ""}
-								closable
-								isClosed={!showAlert}
-								onClose={() => setShowAlert(false)}
-							/>
-						</div>
-					)}
 					<StateNotice
 						declaration={declaration}
 						onPublishAttempt={() => setPublishAttempted(true)}
@@ -256,14 +186,6 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 	tabContent: {
 		paddingTop: fr.spacing("6v"),
 		paddingBottom: fr.spacing("16v"),
-	},
-	alertWrapper: {
-		width: "100%",
-		display: "flex",
-		marginBottom: fr.spacing("6v"),
-		"& div": {
-			width: "100%",
-		},
 	},
 });
 
