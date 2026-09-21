@@ -4,13 +4,13 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { tss } from "tss-react";
 import PublishedTemplate, {
 	extractDeclarationContentToPublish,
 } from "~/components/declaration/PublishedTemplate";
 import { DeclarationHeading } from "~/components/declaration/DeclarationHeading";
+import { PublishSuccess } from "~/components/declaration/PublishSuccess";
 import type { Entity, User } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
@@ -31,7 +31,6 @@ export default function DeclarationPreviewPage({
 	declaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
-	const { push } = useRouter();
 
 	// Publishing stamps today, so the preview must not inherit an old, possibly obsolete, date.
 	const publishedDeclarationContent: PublishedDeclaration =
@@ -42,10 +41,14 @@ export default function DeclarationPreviewPage({
 	const [publishError, setPublishError] = useState<
 		"incomplete" | "generic" | null
 	>(null);
+	// Set once the server has published: the confirmation replaces the preview at the same URL.
+	const [publishedAt, setPublishedAt] = useState<Date | null>(null);
 
 	const { mutate: publishDeclaration } = api.declaration.publish.useMutation({
-		onSuccess: () => {
-			push(`/dashboard/declarations/${declaration.id}?published=true`);
+		onSuccess: ({ data }) => {
+			setPublishedAt(
+				data.published_at ? new Date(data.published_at) : new Date(),
+			);
 		},
 		onError: (error) => {
 			setPublishError(
@@ -59,14 +62,35 @@ export default function DeclarationPreviewPage({
 		publishDeclaration({ declarationId: declaration.id });
 	};
 
+	const head = (
+		<Head>
+			<title>
+				{publishedAt
+					? "Votre déclaration a été publiée"
+					: "Votre déclaration est prête à être publiée"}{" "}
+				- Déclaration de {declaration.name} - Téléservice Conformité
+			</title>
+		</Head>
+	);
+
+	if (publishedAt) {
+		return (
+			<>
+				{head}
+				<DeclarationHeading declaration={declaration} />
+				<section
+					id="declaration-published"
+					className={fr.cx("fr-container", "fr-mt-10v")}
+				>
+					<PublishSuccess declaration={declaration} publishedAt={publishedAt} />
+				</section>
+			</>
+		);
+	}
+
 	return (
 		<>
-			<Head>
-				<title>
-					Votre déclaration est prête à être publiée - Déclaration de{" "}
-					{declaration.name} - Téléservice Conformité
-				</title>
-			</Head>
+			{head}
 			<DeclarationHeading declaration={declaration} />
 			<div className={classes.band}>
 				<section id="declaration-preview" className={fr.cx("fr-container")}>

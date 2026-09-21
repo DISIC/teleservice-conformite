@@ -91,6 +91,9 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 	await expectPreview(page);
 	await a11y.check("preview page");
 	await publishFromPreview(page);
+	await a11y.check("publication confirmation screen");
+
+	await page.goto(`/dashboard/declarations/${id}`);
 	await a11y.check("details page after publishing");
 
 	// Publiée: standalone mode, no notice, public page live, list badge swapped.

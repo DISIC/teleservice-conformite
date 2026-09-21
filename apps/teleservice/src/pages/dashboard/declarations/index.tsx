@@ -5,6 +5,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import type { GetServerSideProps } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { useDeclarationColumns } from "~/components/declaration/tableColumns";
@@ -36,6 +37,7 @@ type AlertDetailsProps = {
 export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { firstPage, entity } = props;
 	const { classes } = useStyles();
+	const router = useRouter();
 	const [page, setPage] = useState(1);
 
 	const { data } = api.declaration.list.useQuery(
@@ -97,6 +99,15 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	useEffect(() => {
 		if (showAlert) alertRef.current?.focus();
 	}, [showAlert, alertDetails]);
+
+	// Entry point for "Ajouter une déclaration" from outside the list, where the modal cannot live.
+	useEffect(() => {
+		if (router.query.create !== "true") return;
+
+		createModalActions.open?.();
+		const { create: _create, ...query } = router.query;
+		router.replace({ query }, undefined, { shallow: true });
+	}, [router, createModalActions]);
 
 	return (
 		<>
