@@ -1,6 +1,10 @@
+import type { Appendix } from "@rgaa/content";
+import type { TopicSidebarItem } from "../TopicSidebarList";
+
 export type Test = {
 	number: string;
 	label: string;
+	conditions: string[];
 	methodologies?: string[];
 };
 
@@ -8,6 +12,7 @@ export type Criterium = {
 	number: string;
 	title: string;
 	tests: Test[];
+	appendix?: Appendix;
 };
 
 export type Criteria = {
@@ -22,30 +27,14 @@ export type Topic = {
 };
 
 export type Criterias = {
-	reference: string;
+	referentiel: string;
 	topics: Topic[];
 };
 
-export const DEFAULT_TOPICS = [
-	"Images",
-	"Cadres",
-	"Couleurs",
-	"Multimédia",
-	"Tableaux",
-	"Liens",
-	"Scripts et composants interactifs",
-	"Éléments obligatoires",
-	"Structuration de l’information",
-	"Présentation de l’information",
-	"Formulaires",
-	"Navigation",
-	"Consultation",
-	"Documentation et fonctionnalités d’accessibilité",
-	"Outils d’édition",
-	"Services d’assistance",
-	"Communication en temps réel",
-];
-
-export function getAllTopicNames(criterias: Criterias): string[] {
-	return criterias.topics.map((topic) => topic.topic);
+export function getTopicSidebarItem(criterias: Criterias): TopicSidebarItem[] {
+	return criterias.topics.map((topic) => ({
+		topic: topic.topic,
+		number: topic.number,
+		notApplicable: !topic.criteria.length,
+	}));
 }

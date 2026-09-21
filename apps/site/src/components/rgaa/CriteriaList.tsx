@@ -7,52 +7,42 @@ import { useRef, useState } from "react";
 import { tss } from "tss-react";
 import AccordionList from "./AccordionList";
 import { setCollapsesExpanded } from "./helpers/collapse";
-import { type Criterias, getAllTopicNames } from "./helpers/topics";
-import exampleCriterias from "./reference-criterias.json";
-import type { ReferenceId } from "./references";
+import { type Criterias, getTopicSidebarItem } from "./helpers/topics";
+import { getReferentielStyle, type ReferentielInfos } from "./referentiels";
 import TopicSidebarList from "./TopicSidebarList";
 
-const colors = {
-	web: {
-		backgroundColor: fr.colors.decisions.background.alt.pinkMacaron.default,
-		color: fr.colors.decisions.text.actionHigh.pinkMacaron.default,
-	},
-	mobile: {
-		backgroundColor: fr.colors.decisions.background.alt.yellowTournesol.default,
-		color: fr.colors.decisions.text.actionHigh.yellowTournesol.default,
-	},
-	bureautique: {
-		backgroundColor: fr.colors.decisions.background.alt.greenEmeraude.default,
-		color: fr.colors.decisions.text.actionHigh.greenEmeraude.default,
-	},
-};
-
 interface CriteriaListProps {
-	reference: ReferenceId;
-	criterias?: Criterias;
+	referentiel: ReferentielInfos;
+	criterias: Criterias;
 }
 
 export default function CriteriaList({
-	reference,
-	criterias = exampleCriterias,
+	referentiel,
+	criterias,
 }: CriteriaListProps) {
-	const { classes } = useStyles(colors[reference]);
+	const allTopics = getTopicSidebarItem(criterias);
+	const { badgeBackgroundColor, badgeColor } = getReferentielStyle(
+		referentiel.id,
+	);
 
-	const allTopics = getAllTopicNames(criterias);
+	const { classes } = useStyles({
+		backgroundColor: badgeBackgroundColor,
+		color: badgeColor,
+	});
 
 	const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>(
-		() => Object.fromEntries(allTopics.map((topic) => [topic, true])),
+		() => Object.fromEntries(allTopics.map((topic) => [topic.topic, true])),
 	);
 
 	const topicsRef = useRef<HTMLDivElement>(null);
 
-	const allExpanded = allTopics.every((topic) => expandedTopics[topic]);
+	const allExpanded = allTopics.every((topic) => expandedTopics[topic.topic]);
 
 	const toggleAll = () => {
 		setExpandedTopics(
 			allExpanded
 				? {}
-				: Object.fromEntries(allTopics.map((topic) => [topic, true])),
+				: Object.fromEntries(allTopics.map((topic) => [topic.topic, true])),
 		);
 		setCollapsesExpanded(
 			topicsRef.current?.querySelectorAll(
@@ -65,7 +55,7 @@ export default function CriteriaList({
 	return (
 		<div className={classes.grid}>
 			<div className={classes.leftSidebar}>
-				<Badge className={classes.badge}>{criterias.reference}</Badge>
+				<Badge className={classes.badge}>{criterias.referentiel}</Badge>
 				<TopicSidebarList topics={allTopics} />
 			</div>
 			<div className={classes.rightContent} ref={topicsRef}>
@@ -79,7 +69,7 @@ export default function CriteriaList({
 					{allExpanded ? "Tout replier" : "Tout déplier"}
 				</Button>
 				<AccordionList
-					reference={reference}
+					referentiel={referentiel}
 					criterias={criterias}
 					expandedTopics={expandedTopics}
 					onTopicExpandedChange={(topic, expanded) =>
@@ -97,17 +87,28 @@ const useStyles = tss
 	.create(({ backgroundColor, color }) => ({
 		grid: {
 			display: "grid",
-			gridTemplateColumns: "1fr 2fr",
+			gridTemplateColumns: "minmax(0, 1fr) minmax(0, 2fr)",
 			gap: fr.spacing("4w"),
+			[fr.breakpoints.down("md")]: {
+				gridTemplateColumns: "minmax(0, 1fr)",
+				gridAutoFlow: "row",
+			},
 		},
 		badge: {
+			alignSelf: "left",
 			backgroundColor,
 			color,
+			[fr.breakpoints.down("md")]: {
+				alignSelf: "center",
+			},
 		},
 		leftSidebar: {
 			display: "flex",
 			flexDirection: "column",
 			gap: fr.spacing("3w"),
+			[fr.breakpoints.down("md")]: {
+				flexDirection: "column-reverse",
+			},
 		},
 		rightContent: {
 			display: "flex",
