@@ -196,7 +196,7 @@ export function Section({
 						Pictogram={Error}
 						heading="Aucun schéma pluriannuel n’a été renseigné."
 					>
-						<span>
+						<span className={fr.cx("fr-text--sm")}>
 							Vous pouvez publier votre déclaration d’accessibilité, néanmoins
 							la loi fait obligation de publier un schéma pluriannuel d’une
 							durée de trois ans dans l’objectif d’informer le public des moyens
