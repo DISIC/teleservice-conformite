@@ -82,7 +82,8 @@ export function ConfirmationModal({ actions }: ConfirmationModalProps) {
 
 	return (
 		<modal.Component
-			title={params?.title ?? ""}
+			// The dialog stays mounted before its first open, so its heading always carries a label.
+			title={params?.title ?? "Confirmation"}
 			className={classes.modal}
 			buttons={[
 				{
