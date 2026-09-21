@@ -62,6 +62,15 @@ export const AccessRights: CollectionConfig = {
 			},
 		},
 		{
+			name: "firstVisitedAt",
+			label: "Date de première ouverture de la déclaration",
+			type: "date",
+			admin: {
+				readOnly: true,
+				position: "sidebar",
+			},
+		},
+		{
 			name: "inviteTokenHash",
 			type: "text",
 			admin: {

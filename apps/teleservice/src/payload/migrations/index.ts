@@ -5,6 +5,7 @@ import * as migration_20260907_100108_app_kind_optional from './20260907_100108_
 import * as migration_20260907_125149_first_published_at from './20260907_125149_first_published_at';
 import * as migration_20260917_094822_settings_global from './20260917_094822_settings_global';
 import * as migration_20260917_122400_faq_answer_richtext from './20260917_122400_faq_answer_richtext';
+import * as migration_20260921_090533_first_visited_at from './20260921_090533_first_visited_at';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20260917_122400_faq_answer_richtext.up,
     down: migration_20260917_122400_faq_answer_richtext.down,
-    name: '20260917_122400_faq_answer_richtext'
+    name: '20260917_122400_faq_answer_richtext',
+  },
+  {
+    up: migration_20260921_090533_first_visited_at.up,
+    down: migration_20260921_090533_first_visited_at.down,
+    name: '20260921_090533_first_visited_at'
   },
 ];

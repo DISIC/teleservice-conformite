@@ -7,6 +7,7 @@ import {
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { useShowToComplete } from "~/components/declaration/ToCompleteGuidance";
 import { SECTION_BADGE } from "~/domain/declaration/state";
 import {
 	isAuditSubSection,
@@ -26,6 +27,7 @@ type SideMenuProps = {
 };
 
 export function SideMenu({ declaration, currentSection }: SideMenuProps) {
+	const showToComplete = useShowToComplete();
 	const { classes } = useStyles();
 	const declarationId = declaration.id;
 	const isAuditCurrent = isAuditSubSection(currentSection);
@@ -66,7 +68,7 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 
 	const sectionItem = (slug: SectionSlug): DsfrSideMenuProps.Item.Link => ({
 		text: renderLabel(SECTION_TITLES[slug], {
-			toComplete: isSectionToComplete(declaration, slug),
+			toComplete: showToComplete && isSectionToComplete(declaration, slug),
 			toVerify: isSectionToVerify(declaration, slug),
 		}),
 		linkProps: {
@@ -81,7 +83,7 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 		sectionItem("infos"),
 		{
 			text: renderLabel("Audit", {
-				toComplete: isAuditToComplete(declaration),
+				toComplete: showToComplete && isAuditToComplete(declaration),
 				toVerify: isAuditToVerify(declaration),
 			}),
 			linkProps: {

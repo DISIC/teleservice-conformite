@@ -3,7 +3,10 @@ import config from "@payload-config";
 import type { GetServerSidePropsContext, Redirect } from "next";
 import { getPayload } from "payload";
 import type { Contact, Entity, Schema } from "~/payload/payload-types";
-import { loadOwnedDeclaration } from "~/server/api/utils/declaration-access";
+import {
+	loadOwnedDeclaration,
+	trackDeclarationVisit,
+} from "~/server/api/utils/declaration-access";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { authPages } from "~/lib/auth";
 
@@ -13,6 +16,11 @@ export interface DeclarationParams extends ParsedUrlQuery {
 
 export interface DeclarationProps {
 	declaration: PopulatedDeclaration;
+}
+
+export interface VisitProps {
+	/** The declarant has already opened this declaration once and come back. */
+	hasVisitedBefore: boolean;
 }
 
 export interface LibraryProps {
@@ -72,12 +80,15 @@ export async function guardDeclaration(
 		redirectUrl?: string;
 		trash?: boolean;
 		includeLibrary?: boolean;
+		/** Marks this visit and returns `hasVisitedBefore` alongside the declaration. */
+		trackVisit?: boolean;
 	},
 ) {
 	const {
 		redirectUrl = "/dashboard/declarations",
 		trash = false,
 		includeLibrary = false,
+		trackVisit = false,
 	} = options ?? {};
 
 	const redirect: Redirect = {
@@ -92,7 +103,16 @@ export async function guardDeclaration(
 
 	if (!session || !declaration) return { redirect };
 
-	const props: DeclarationProps & Partial<LibraryProps> = { declaration };
+	const props: DeclarationProps & Partial<LibraryProps> & Partial<VisitProps> =
+		{ declaration };
+
+	if (trackVisit) {
+		props.hasVisitedBefore = await trackDeclarationVisit(
+			payload,
+			Number(session.user.id),
+			declaration.id,
+		);
+	}
 
 	if (includeLibrary) {
 		const userId = Number(session.user.id);
