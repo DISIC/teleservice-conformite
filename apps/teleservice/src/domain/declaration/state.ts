@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import type { EditingMode } from "./status";
 import { getDeclarationStatus } from "./status";
 import { validateDeclaration } from "./validate";
 
@@ -15,10 +16,21 @@ export type DeclarationState =
 	| "published-incomplete"
 	| "published-modified";
 
+/**
+ * Whether unfilled data is flagged "À compléter". The first pass only exists in
+ * the walkthrough: outside it, missing data is a regression to repair.
+ */
+export function isToCompleteRevealed(
+	mode: EditingMode,
+	hasVisitedBefore: boolean,
+): boolean {
+	return hasVisitedBefore || mode === "standalone";
+}
+
 /** Actions a notice may expose, in render order. Handlers are wired by the component. */
 export type StateAction = "revert" | "publish";
 
-/** Badge variants surfaced on `SideMenu` items. `modified` is not rendered yet. */
+/** Badge variants surfaced on SideMenu items and Section titles. `modified` is not rendered yet. */
 export type BadgeVariant =
 	| "to-complete"
 	| "to-verify"

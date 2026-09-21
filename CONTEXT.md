@@ -98,13 +98,16 @@ The `isAuditRealised` boolean on the Declaration's `audit` group. When `false`, 
 
 ### À compléter / À vérifier
 
-Status badges shown on `SideMenu` items (and historically on the Démarche page tiles):
+Status badges shown on `SideMenu` items and on the Section's own title (and historically on the Démarche page tiles):
 
 - **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit, `Réalisation de l'audit` is flagged until the realisation question is answered; the other Sub-sections are flagged per-slice (e.g. an empty `usedTools` or `testEnvironments` list for Outils) **only once the audit is declared realised** — before that answer they stay quiet. The Audit parent is flagged when any of its Sub-sections is.
 - **À vérifier** — the Section's `toVerify` flag is `true`, set when content was AI-generated and needs human review. Tracked at Section level only; not fanned out to Sub-sections.
+- **Non applicable** — the declarant's answers put the Section out of scope, so there is nothing to fill: the three realised-only Audit Sub-sections while the audit is declared "non réalisé". A Skipped [[schema|Schéma]] is _not_ flagged — skipping is a deliberate choice, not a loss of scope.
 - **Modifié** — _(future)_ a Section changed since the last publish. The badge **variant** exists in `SECTION_BADGE` but the per-section diff against `publishedContent` is not yet implemented; only [[declaration-state|Declaration state]] currently surfaces "Modifié", at the declaration level.
 
-**Single source of presentation:** which sections get a badge is decided by the per-section checks (`isSectionToComplete` / `isSectionToVerify`), but the badge **label + colours** are not defined here. They come from `SECTION_BADGE` in `state.ts` — a subset of `STATE_PRESENTATION` that references the existing `.badge` objects of the matching [[declaration-state|Declaration state]] (`to-complete`→`incomplete`, `to-verify`→`to-verify`, `modified`→`published-modified`). This keeps the SideMenu badges and the StateNotice card visually identical (same decision-token colours, same copy) with one source of truth. The per-section badge presentation is _not_ the same axis as `DeclarationState` itself (which is one declaration-wide value); only the presentation triple is shared.
+**When À compléter appears:** never during the declarant's first pass through the walkthrough — the form is being filled, not repaired, and flagging every untouched field would read as "only these are needed". It appears once they have left the Declaration and come back (their own `firstVisitedAt` on the access right, so co-declarants each get a first pass), and always outside the walkthrough, where missing data is a regression. The rule is `isToCompleteRevealed`; the page hands the answer to the Sections through one React context.
+
+**Single source of presentation:** which sections get a badge is decided by the per-section checks (`isSectionToComplete` / `isSectionToVerify` / `isSectionNotApplicable`), but the badge **label + colours** are not defined here. They come from `SECTION_BADGE` in `state.ts` — a subset of `STATE_PRESENTATION` that references the existing `.badge` objects of the matching [[declaration-state|Declaration state]] (`to-complete`→`incomplete`, `to-verify`→`to-verify`, `modified`→`published-modified`; `not-applicable` is a neutral grey pair of its own). This keeps the SideMenu badges and the StateNotice card visually identical (same decision-token colours, same copy) with one source of truth. The per-section badge presentation is _not_ the same axis as `DeclarationState` itself (which is one declaration-wide value); only the presentation triple is shared.
 
 **Avoid:** "À remplir" — older copy, replaced by "À compléter."
 

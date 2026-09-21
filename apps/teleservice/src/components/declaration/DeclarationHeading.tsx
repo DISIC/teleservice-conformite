@@ -5,6 +5,7 @@ import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react";
+import { logMutationError } from "~/components/declaration/logMutationError";
 import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
 import { StatusBadge } from "~/components/declaration/StatusBadge";
 import { PageHeading } from "~/components/layout/PageHeading";
@@ -29,7 +30,10 @@ export function DeclarationHeading({
 }) {
 	const router = useRouter();
 	const { classes } = useStyles();
-	const [linkCopied, setLinkCopied] = useState(false);
+	const [notice, setNotice] = useState<{
+		severity: "success" | "error";
+		description: string;
+	} | null>(null);
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 
 	const isPublished = getDeclarationStatus(declaration) === "published";
@@ -40,15 +44,21 @@ export function DeclarationHeading({
 			router.push(DECLARATIONS_LIST);
 		},
 		onError: (error) => {
-			console.error("Error deleting declaration:", error);
+			logMutationError("deleting declaration", declaration.id)(error);
+			setNotice({
+				severity: "error",
+				description:
+					"La suppression de la déclaration a échoué. Veuillez réessayer.",
+			});
 		},
 	});
 
+	// A failure stays until dismissed; a confirmation fades.
 	useEffect(() => {
-		if (!linkCopied) return;
-		const timer = setTimeout(() => setLinkCopied(false), 5000);
+		if (notice?.severity !== "success") return;
+		const timer = setTimeout(() => setNotice(null), 5000);
 		return () => clearTimeout(timer);
-	}, [linkCopied]);
+	}, [notice]);
 
 	const confirmDelete = () =>
 		confirmationModalActions.open?.({
@@ -117,7 +127,12 @@ export function DeclarationHeading({
 									onClick={() =>
 										copyToClipboard(
 											`${process.env.NEXT_PUBLIC_FRONT_URL}${publicHref}`,
-											() => setLinkCopied(true),
+											() =>
+												setNotice({
+													severity: "success",
+													description:
+														"Lien de la déclaration publiée copié dans le presse-papier",
+												}),
 										)
 									}
 								>
@@ -139,14 +154,14 @@ export function DeclarationHeading({
 					</>
 				}
 			/>
-			{linkCopied && (
+			{notice && (
 				<div className={fr.cx("fr-container", "fr-mt-4v")}>
 					<Alert
 						small
-						severity="success"
-						description="Lien de la déclaration publiée copié dans le presse-papier"
+						severity={notice.severity}
+						description={notice.description}
 						closable
-						onClose={() => setLinkCopied(false)}
+						onClose={() => setNotice(null)}
 					/>
 				</div>
 			)}
