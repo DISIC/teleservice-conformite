@@ -89,9 +89,11 @@ export const stateNotice = (page: Page, state: DeclarationState) =>
 
 export async function expectPreview(page: Page) {
 	await page.waitForURL(/\/preview$/);
+	// The page's h1 is the declaration's own heading band; the preview's own
+	// title sits under it.
 	await expect(
 		page.getByRole("heading", {
-			level: 1,
+			level: 2,
 			name: "Votre déclaration est prête à être publiée",
 		}),
 	).toBeVisible();
