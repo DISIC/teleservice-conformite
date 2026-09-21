@@ -90,6 +90,7 @@ export const auditGeneralSection = auditSubSection<
 					date: value.date,
 					realisedBy: value.realisedBy,
 					rgaa_version: value.rgaa_version,
+					hasBlockingElements: value.hasBlockingElements,
 					rate: value.rate,
 				},
 	requiresRealised: false,
@@ -148,6 +149,7 @@ export const auditNonConformitesSection = auditSubSection<
 	schema: auditNonConformities,
 	toValues: auditToNonConformitiesValues,
 	toPatch: (value) => ({
+		blockingElements: value.blockingElements,
 		nonCompliantElements: value.nonCompliantElements,
 		optionalElements: value.optionalElements,
 		disproportionnedCharge: value.disproportionnedCharge,
@@ -159,6 +161,7 @@ export const auditNonConformitesSection = auditSubSection<
 			readOnly={readOnly}
 			showNotice={!isRealised(declaration)}
 			showNonConformities={declaration.audit?.rate !== 100}
+			showBlockingElements={declaration.audit?.hasBlockingElements === true}
 		/>
 	),
 });

@@ -99,6 +99,25 @@ export const AuditGeneralForm = withForm({
 										/>
 									)}
 								</form.AppField>
+								<form.Subscribe selector={(state) => state.values.rgaa_version}>
+									{(rgaaVersion) =>
+										rgaaVersion === "rgaa_5" && (
+											<form.AppField name="hasBlockingElements">
+												{(field) => (
+													<field.RadioField
+														legend="L’audit a-t-il remonté des éléments bloquants ?"
+														options={[
+															{ label: "Oui", value: true },
+															{ label: "Non", value: false },
+														]}
+														readOnlyField={readOnly}
+														required
+													/>
+												)}
+											</form.AppField>
+										)
+									}
+								</form.Subscribe>
 								<form.AppField name="rate">
 									{(field) => (
 										<field.NumberField
@@ -253,41 +272,67 @@ export const CompliantElementsForm = withForm({
 
 export const NonCompliantElementsForm = withForm({
 	...auditNonConformitiesFormOptions,
-	props: { readOnly: false, showNotice: false, showNonConformities: true },
-	render: function Render({ form, readOnly, showNotice, showNonConformities }) {
+	props: {
+		readOnly: false,
+		showNotice: false,
+		showNonConformities: true,
+		showBlockingElements: false,
+	},
+	render: function Render({
+		form,
+		readOnly,
+		showNotice,
+		showNonConformities,
+		showBlockingElements,
+	}) {
 		if (showNotice) return <AuditNotRealisedNotice />;
 		return (
 			<>
-				{showNonConformities && (
+				{(showNonConformities || showBlockingElements) && (
 					<Part readOnly={readOnly} title="Non conformités" grid={false}>
-						<form.AppField name="nonCompliantElements">
-							{(field) => (
-								<field.TextField
-									label={
-										!readOnly
-											? "Éléments non conformes (facultatif)"
-											: undefined
-									}
-									textArea
-									hintText={
-										<>
-											Exemples : Vidéo sans transcription, navigation au clavier
-											impossible, ...
-											<br />
-											Précisez les points non conformes et leur volume en
-											utilisant les mentions “quelques / la plupart des /
-											aucun(e)”. Vous pouvez trouver ces informations dans votre
-											déclaration existante ou votre audit.
-											<br />
-											Exemples :
-											<br />- Aucune image n’a de texte équivalent
-											<br />- Quelques vidéos n’ont pas de sous-titres
-										</>
-									}
-									readOnlyField={readOnly}
-								/>
-							)}
-						</form.AppField>
+						{showBlockingElements && (
+							<form.AppField name="blockingElements">
+								{(field) => (
+									<field.TextField
+										label={!readOnly ? "Éléments bloquants" : undefined}
+										textArea
+										hintText="Décrivez les éléments qui empêchent totalement l’utilisation du service."
+										readOnlyField={readOnly}
+										required
+									/>
+								)}
+							</form.AppField>
+						)}
+						{showNonConformities && (
+							<form.AppField name="nonCompliantElements">
+								{(field) => (
+									<field.TextField
+										label={
+											!readOnly
+												? "Éléments non conformes (facultatif)"
+												: undefined
+										}
+										textArea
+										hintText={
+											<>
+												Exemples : Vidéo sans transcription, navigation au
+												clavier impossible, ...
+												<br />
+												Précisez les points non conformes et leur volume en
+												utilisant les mentions “quelques / la plupart des /
+												aucun(e)”. Vous pouvez trouver ces informations dans
+												votre déclaration existante ou votre audit.
+												<br />
+												Exemples :
+												<br />- Aucune image n’a de texte équivalent
+												<br />- Quelques vidéos n’ont pas de sous-titres
+											</>
+										}
+										readOnlyField={readOnly}
+									/>
+								)}
+							</form.AppField>
+						)}
 					</Part>
 				)}
 				<Part readOnly={readOnly} title="Dérogations" grid={false}>

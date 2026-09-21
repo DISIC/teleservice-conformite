@@ -27,6 +27,7 @@ export const auditGeneral = z
 		date: z.iso.date().optional().or(z.literal("")),
 		realisedBy: z.string().optional(),
 		rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
+		hasBlockingElements: z.boolean().optional(),
 		rate: z.number().nullable(),
 	})
 	.superRefine((data, ctx) => {
@@ -59,6 +60,17 @@ export const auditGeneral = z
 					path: ["rate"],
 				});
 			}
+			// Blocking elements only exist in RGAA 5.
+			if (
+				data.rgaa_version === "rgaa_5" &&
+				data.hasBlockingElements === undefined
+			) {
+				ctx.addIssue({
+					code: "custom",
+					message: "La question des éléments bloquants est requise",
+					path: ["hasBlockingElements"],
+				});
+			}
 		}
 	});
 
@@ -69,6 +81,7 @@ export const auditGeneralDefaultValues: ZAuditGeneral = {
 	date: "",
 	realisedBy: "",
 	rgaa_version: "rgaa_4",
+	hasBlockingElements: undefined,
 	rate: null,
 };
 
@@ -85,6 +98,7 @@ export function auditToGeneralValues(audit: Audit): ZAuditGeneral {
 		rgaa_version:
 			rgaaVersionOptions.find((opt) => opt.value === audit?.rgaa_version)
 				?.value ?? "rgaa_4",
+		hasBlockingElements: audit?.hasBlockingElements ?? undefined,
 		rate: audit?.rate ?? null,
 	};
 }
@@ -150,15 +164,31 @@ export function auditToContentsValues(audit: Audit): ZAuditContents {
 }
 
 // ── Non conformités & dérogations (slug `audit-non-conformites`) ────────────
-export const auditNonConformities = z.object({
-	nonCompliantElements: z.string().optional(),
-	optionalElements: z.string().optional(),
-	disproportionnedCharge: z.string().optional(),
-});
+export const auditNonConformities = z
+	.object({
+		// Carried from the `audit-general` answer, never edited here: it decides
+		// whether the blocking elements must be described.
+		hasBlockingElements: z.boolean().optional(),
+		blockingElements: z.string().optional(),
+		nonCompliantElements: z.string().optional(),
+		optionalElements: z.string().optional(),
+		disproportionnedCharge: z.string().optional(),
+	})
+	.superRefine((data, ctx) => {
+		if (data.hasBlockingElements === true && !data.blockingElements?.trim()) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Les éléments bloquants sont requis",
+				path: ["blockingElements"],
+			});
+		}
+	});
 
 export type ZAuditNonConformities = z.infer<typeof auditNonConformities>;
 
 export const auditNonConformitiesDefaultValues: ZAuditNonConformities = {
+	hasBlockingElements: undefined,
+	blockingElements: "",
 	nonCompliantElements: "",
 	optionalElements: "",
 	disproportionnedCharge: "",
@@ -173,6 +203,8 @@ export function auditToNonConformitiesValues(
 	audit: Audit,
 ): ZAuditNonConformities {
 	return {
+		hasBlockingElements: audit?.hasBlockingElements ?? undefined,
+		blockingElements: audit?.blockingElements ?? "",
 		nonCompliantElements: audit?.nonCompliantElements ?? "",
 		optionalElements: audit?.optionalElements ?? "",
 		disproportionnedCharge: audit?.disproportionnedCharge ?? "",
