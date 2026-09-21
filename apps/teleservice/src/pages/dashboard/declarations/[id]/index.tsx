@@ -9,6 +9,7 @@ import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
 import { DeclarationHeading } from "~/components/declaration/DeclarationHeading";
 import { StateNotice } from "~/components/declaration/StateNotice";
+import { isToCompleteRevealed } from "~/domain/declaration/state";
 import { ToCompleteGuidance } from "~/components/declaration/ToCompleteGuidance";
 import { ObsolescenceInterstitial } from "~/components/declaration/ObsolescenceInterstitial";
 import {
@@ -57,9 +58,7 @@ export default function DeclarationPage({
 
 	const status = getDeclarationStatus(declaration);
 	const editingMode = getEditingMode(status);
-	// The first pass only exists in the walkthrough: outside it, missing data is
-	// a regression to repair and is always flagged.
-	const showToComplete = hasVisitedBefore || editingMode === "standalone";
+	const showToComplete = isToCompleteRevealed(editingMode, !!hasVisitedBefore);
 
 	// The interstitial gates an unchanged, ageing publication until the declarant
 	// starts updating it; once the row is Modifiée they are already acting.

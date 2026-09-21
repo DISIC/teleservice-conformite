@@ -57,13 +57,8 @@ export async function loadOwnedDeclaration(
 	return getPopulatedDeclaration(declaration);
 }
 
-/**
- * Records that the declarant has seen the declaration and answers whether they
- * had already left it once: the "À compléter" guidance appears only from the
- * second visit on, never during the first pass through the walkthrough. The
- * mark lives on the caller's own access right, so co-declarants each get a
- * first pass.
- */
+/** The mark lives on the caller's own access right, so co-declarants each get
+ *  their own first pass through the walkthrough. */
 export async function trackDeclarationVisit(
 	payload: Payload,
 	userId: number,

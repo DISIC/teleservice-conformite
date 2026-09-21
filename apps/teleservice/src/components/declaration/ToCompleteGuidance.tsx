@@ -2,11 +2,8 @@ import { createContext, type ReactNode, useContext } from "react";
 
 const ToCompleteContext = createContext(false);
 
-/**
- * Whether unfilled data is flagged "À compléter". A first pass through the
- * walkthrough shows no such flag: the declarant is filling the form, not
- * repairing it. Set once per page from the declarant's own visit history.
- */
+/** A first pass through the walkthrough flags nothing "À compléter": the
+ *  declarant is filling the form, not repairing it. */
 export function ToCompleteGuidance({
 	show,
 	children,
