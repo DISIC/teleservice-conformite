@@ -11,15 +11,18 @@
 	"referentiels": [
 		{
 			"id": "web",
-			"title": "Sites web"
+			"title": "Référentiel web",
+			"description": "Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 		},
 		{
 			"id": "mobile",
-			"title": "Applications mobiles"
+			"title": "Référentiel application mobile",
+			"description": "Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 		},
 		{
 			"id": "bureautique",
-			"title": "Logiciels bureautiques"
+			"title": "Référentiel bureautique",
+			"description": "Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 		}
 	],
 	"topics": [
@@ -29,7 +32,7 @@
 			"criteria": [
 				{
 					"number": "1.1",
-					"title": "Chaque [image porteuse d’information](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-porteuse-d-information) a-t-elle une [alternative textuelle](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#alternative-textuelle-image) ?",
+					"title": "Chaque [image porteuse d’information](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-porteuse-d-information) a-t-elle une [alternative textuelle](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#alternative-textuelle-image) ?",
 					"referentiels": {
 						"web": {
 							"tests": [
