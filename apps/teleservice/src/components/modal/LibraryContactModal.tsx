@@ -9,6 +9,7 @@ import {
 	contactFormOptions,
 	type ZContactForm,
 } from "~/forms/contact/contactSchema";
+import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { useAppForm } from "~/forms/context";
 
 export type LibraryContactModalActions = {
@@ -98,9 +99,9 @@ export function LibraryContactModal({ actions }: LibraryContactModalProps) {
 						doClosesModal: false,
 					},
 				]}
-				size="large"
 				title={editing ? "Modifier un contact" : "Ajouter un contact"}
 			>
+				<RequiredFieldsNotice />
 				<ContactTypeForm form={form} readOnly={false} />
 			</modal.Component>
 		</form>

@@ -6,6 +6,7 @@ import { TRPCClientError } from "@trpc/client";
 import { useEffect, useId, useState } from "react";
 import { tss } from "tss-react";
 import z from "zod";
+import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { api } from "~/lib/api";
 import { useAppForm } from "~/forms/context";
 import HelpingMessage from "../ui/HelpingMessage";
@@ -111,6 +112,7 @@ export function InviteMembersModal({
 					</section>
 				}
 			>
+				<RequiredFieldsNotice />
 				<div className={classes.helpingMessageContainer}>
 					<HelpingMessage
 						image={<Information fontSize="5rem" />}
