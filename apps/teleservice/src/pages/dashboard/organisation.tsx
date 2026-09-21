@@ -54,7 +54,7 @@ export default function EntityDeclarationsPage({
 			appKindColumn,
 			statusColumn,
 			conformityRateColumn,
-			publicActionsColumn({ onCopySuccess, withPreview: true }),
+			publicActionsColumn({ onCopySuccess }),
 		],
 		[
 			nameColumn,

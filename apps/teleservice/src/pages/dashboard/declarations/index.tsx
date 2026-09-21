@@ -82,7 +82,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 			appKindColumn,
 			statusColumn,
 			conformityRateColumn,
-			publicActionsColumn({ onCopySuccess, withPreview: false }),
+			publicActionsColumn({ onCopySuccess }),
 		],
 		[
 			nameColumn,

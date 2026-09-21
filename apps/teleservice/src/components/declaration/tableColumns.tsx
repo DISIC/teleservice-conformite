@@ -84,10 +84,10 @@ function buildColumns(
 	// Public actions only exist once a public page does.
 	const publicActionsColumn = (options: {
 		onCopySuccess: (declarationName: string) => void;
-		withPreview: boolean;
 	}) =>
 		columnHelper.display({
 			id: "actions",
+			header: () => <span className={fr.cx("fr-sr-only")}>Actions</span>,
 			cell: (info) => {
 				const declaration = info.row.original;
 				if (getDeclarationStatus(declaration) !== "published") return null;
@@ -107,19 +107,17 @@ function buildColumns(
 								)
 							}
 						/>
-						{options.withPreview && (
-							<Button
-								iconId="fr-icon-eye-line"
-								priority="secondary"
-								size="small"
-								title={`Voir la déclaration ${declaration.name}, nouvelle fenêtre`}
-								linkProps={{
-									href: publicUrl(declaration),
-									target: "_blank",
-									rel: "noopener noreferrer",
-								}}
-							/>
-						)}
+						<Button
+							iconId="fr-icon-eye-line"
+							priority="secondary"
+							size="small"
+							title={`Voir la déclaration ${declaration.name}, nouvelle fenêtre`}
+							linkProps={{
+								href: publicUrl(declaration),
+								target: "_blank",
+								rel: "noopener noreferrer",
+							}}
+						/>
 					</div>
 				);
 			},
