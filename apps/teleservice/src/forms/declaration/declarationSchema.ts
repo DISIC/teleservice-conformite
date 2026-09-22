@@ -94,7 +94,7 @@ export function declarationToGeneralValues(
 			mobilePlatform: declaration.mobile_platform ?? undefined,
 			name: declaration.name ?? "",
 			url: declaration.url ?? "",
-			domain: declaration.entity?.kind ?? "",
+			domain: declaration.domain ?? "",
 			firstPublishedAt: declaration.first_published_at
 				? declaration.first_published_at.slice(0, 10)
 				: "",

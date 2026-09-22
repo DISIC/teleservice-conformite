@@ -6,6 +6,7 @@ import { schemaGroup } from "../fields/schema";
 import {
 	appKindOptions,
 	declarationStatusOptions,
+	kindOptions,
 	mobilePlatformOptions,
 	sourceOptions,
 } from "../selectOptions";
@@ -96,6 +97,12 @@ export const Declarations: CollectionConfig = {
 			name: "url",
 			type: "text",
 			label: { fr: "URL du service numérique" },
+		},
+		{
+			name: "domain",
+			type: "select",
+			label: { fr: "Secteur d'activité du service concerné" },
+			options: [...kindOptions],
 		},
 		{
 			name: "publishedContent",

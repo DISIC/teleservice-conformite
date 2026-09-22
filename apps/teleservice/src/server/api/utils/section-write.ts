@@ -10,6 +10,7 @@ import { contactDraft } from "~/forms/contact/contactSchema";
 import { declarationGeneral } from "~/forms/declaration/declarationSchema";
 import { schemaDraft } from "~/forms/schema/schemaSchema";
 import type { Declaration } from "~/payload/payload-types";
+import { kindOptions } from "~/payload/selectOptions";
 import {
 	getPopulatedDeclaration,
 	type PopulatedDeclaration,
@@ -61,6 +62,9 @@ const MERGERS: { [K in SectionKind]: SectionMerger<K> } = {
 	infos: (current, general) => ({
 		// Sequential autosave persists partials: a cleared required field keeps its saved value.
 		...(general.name ? { name: general.name } : {}),
+		...(kindOptions.some((option) => option.value === general.domain)
+			? { domain: general.domain as Declaration["domain"] }
+			: {}),
 		...(general.kind
 			? {
 					app_kind: general.kind,

@@ -26,11 +26,7 @@ describe("loadOwnedDeclaration", () => {
 		const declaration = await loadOwnedDeclaration(payload, CALLER, 1);
 
 		expect(declaration.id).toBe(1);
-		expect(declaration.entity).toEqual({
-			id: 1,
-			name: "DINUM",
-			kind: "Protection sociale",
-		});
+		expect(declaration.entity).toEqual({ id: 1, name: "DINUM" });
 	});
 
 	it("rejects a caller without any access right", async () => {

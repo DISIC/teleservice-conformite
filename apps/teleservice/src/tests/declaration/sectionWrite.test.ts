@@ -226,19 +226,30 @@ describe("infos merge rules", () => {
 		firstPublishedAt: "2026-08-01",
 	};
 
-	it("keeps the saved name and type when autosave sends them empty", async () => {
+	it("writes the domain on the declaration row", async () => {
+		const declaration = completeDeclaration({ domain: null });
+		const { payload } = seeded(declaration);
+
+		const result = await saveSection(payload, declaration, "infos", general);
+
+		expect(result.domain).toBe("Protection sociale");
+	});
+
+	it("keeps the saved name, type and domain when autosave sends them empty", async () => {
 		const declaration = completeDeclaration();
 		const { payload } = seeded(declaration);
 
 		const result = await saveSection(payload, declaration, "infos", {
 			...general,
 			name: "",
+			domain: "",
 			url: "",
 		});
 
 		expect(result).toMatchObject({
 			name: "Mon service",
 			app_kind: "website",
+			domain: "Protection sociale",
 			url: "",
 		});
 	});

@@ -1,11 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import type { Payload } from "payload";
 import type z from "zod";
-import {
-	appKindOptions,
-	kindOptions,
-	rgaaVersionOptions,
-} from "~/payload/selectOptions";
+import { appKindOptions, rgaaVersionOptions } from "~/payload/selectOptions";
 import {
 	getDefaultDeclarationName,
 	getPopulatedDeclaration,
@@ -60,8 +56,6 @@ const createDeclarationFromImportedData = async (
 			: fallbackName;
 
 		const entity = await getUserEntity(payload, userId);
-		// Imports never infer the entity's sector: it stays empty until the user
-		// picks one on the general Section.
 		const entityId =
 			entity?.id ??
 			(
@@ -292,16 +286,11 @@ export const updateDeclaration = async (
 	declaration: PopulatedDeclaration,
 	general: DeclarationGeneralUpdateInput,
 ) => {
-	const { organisation, domain, entityId } = general;
+	const { organisation, entityId } = general;
 
-	// Sequential autosave persists partials: skip empty required fields so a
-	// cleared value keeps its previously saved content instead of blanking it.
-	const domainKind = kindOptions.find((field) => field.value === domain)?.value;
-	const entityData = {
-		...(organisation ? { name: organisation } : {}),
-		...(domainKind ? { kind: domainKind } : {}),
-	};
-	if (Object.keys(entityData).length > 0)
+	// Sequential autosave persists partials: a cleared name keeps its saved value.
+	const entityData = organisation ? { name: organisation } : {};
+	if (organisation)
 		await payload.update({
 			collection: "entities",
 			id: entityId,
