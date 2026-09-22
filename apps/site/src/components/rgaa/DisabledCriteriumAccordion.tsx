@@ -19,7 +19,7 @@ export default function DisabledCriteriumAccordion({
 	return (
 		<div id={number} className={classes.root}>
 			<h3 className={classes.title}>
-				<span>{number}. </span>
+				<span>{number} </span>
 				<span>{renderMarkdownInline(title)}</span>
 				<Badge small noIcon className={classes.badge}>
 					Non applicable

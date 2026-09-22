@@ -107,7 +107,9 @@ export default function TopicCriteria({
 										key={`${test.label} ${test.number}`}
 										as="h5"
 										titleAs="h6"
+										id={testNumber}
 										number={testNumber}
+										showLinkIcon={true}
 										conditions={test.conditions}
 										label={test.label}
 										accordionLabel={`Méthodologie du test ${testNumber}`}
@@ -134,6 +136,8 @@ const useStyles = tss
 	.withParams<{ testAccordionBackgroundColor: string }>()
 	.create(({ testAccordionBackgroundColor }) => ({
 		criteriaAccordion: {
+			marginLeft: fr.spacing("9v"),
+
 			"& > .fr-accordion__title > .fr-accordion__btn": {
 				fontFamily: "Marianne",
 				fontWeight: 700,

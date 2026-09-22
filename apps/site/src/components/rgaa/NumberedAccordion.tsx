@@ -48,12 +48,12 @@ export default function NumberedAccordion({
 	return (
 		<div id={id} className={classes.numberedAccordion}>
 			<HtmlTag className={headingClassName}>
-				<span>{number}. </span>
+				<span>{number} </span>
 				<span>{renderMarkdownInline(label)}</span>
 				{showLinkIcon && (
 					<Button
 						iconId="fr-icon-links-fill"
-						title={`Lien vers ${number}. ${toPlainText(label)}`}
+						title={`Lien vers ${number} ${toPlainText(label)}`}
 						priority="tertiary no outline"
 						linkProps={{ href: `${pathname}#${number}` }}
 						className={classes.link}
