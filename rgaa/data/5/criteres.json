@@ -32,7 +32,7 @@
 			"criteria": [
 				{
 					"number": "1.1",
-					"title": "Chaque [image porteuse d’information](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-porteuse-d-information) a-t-elle une [alternative textuelle](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#alternative-textuelle-image) ?",
+					"title": "Chaque [image porteuse d’information](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#image-porteuse-d-information) a-t-elle une [alternative textuelle](https://accessibilite.numerique.gouv.fr/rgaa/glossaire#alternative-textuelle-image) ?",
 					"referentiels": {
 						"web": {
 							"tests": [

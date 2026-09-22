@@ -10,7 +10,7 @@ import type { Criterias } from "./helpers/topics";
 import { getReferentielStyle, type ReferentielId } from "./referentiels";
 import DisabledCriteriumAccordion from "./DisabledCriteriumAccordion";
 import CriteriumAppendix from "./CriteriumAppendix";
-import { renderMarkdownInline } from "./helpers/markdown";
+import { renderMarkdown } from "./helpers/markdown";
 
 type TopicCriteriaProps = {
 	referentielId: ReferentielId;
@@ -83,11 +83,13 @@ export default function TopicCriteria({
 						<NumberedAccordion
 							key={`${criterium.title} ${criterium.number}`}
 							as="h3"
+							titleAs="h4"
 							id={criteriumNumber}
 							number={criteriumNumber}
 							label={criterium.title}
 							accordionLabel={`Tests et références du critère ${criteriumNumber}`}
 							showLinkIcon={true}
+							headingClassName={fr.cx("fr-h4")}
 							className={classes.criteriaAccordion}
 							defaultExpanded={expandedCriteria[criterium.number] ?? false}
 							onExpandedChange={(expanded) =>
@@ -103,20 +105,18 @@ export default function TopicCriteria({
 								return (
 									<NumberedAccordion
 										key={`${test.label} ${test.number}`}
-										as="p"
+										as="h5"
+										titleAs="h6"
 										number={testNumber}
-										conditions={test?.conditions}
+										conditions={test.conditions}
 										label={test.label}
 										accordionLabel={`Méthodologie du test ${testNumber}`}
+										headingClassName={fr.cx("fr-text--lg")}
 										className={classes.testAccordion}
 									>
-										{!!test?.methodologies?.length && (
-											<div className={classes.methodologies}>
-												{test.methodologies?.map((methodology, index) => (
-													<p key={index}>{renderMarkdownInline(methodology)}</p>
-												))}
-											</div>
-										)}
+										<div className={classes.methodologies}>
+											{renderMarkdown(test.methodology)}
+										</div>
 									</NumberedAccordion>
 								);
 							})}
@@ -187,8 +187,12 @@ const useStyles = tss
 			fontWeight: 500,
 			color: fr.colors.decisions.text.default.grey.default,
 
-			"& p": {
+			"& p, & ol, & ul": {
 				marginBottom: fr.spacing("1w"),
+			},
+			"& li > ul": {
+				marginTop: fr.spacing("1v"),
+				marginBottom: 0,
 			},
 		},
 	}));

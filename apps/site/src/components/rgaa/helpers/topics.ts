@@ -5,7 +5,7 @@ export type Test = {
 	number: string;
 	label: string;
 	conditions: string[];
-	methodologies?: string[];
+	methodology: string;
 };
 
 export type Criterium = {

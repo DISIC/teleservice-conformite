@@ -7,6 +7,10 @@ import { tss } from "tss-react";
 // Every published string (titles, conditions, méthodologies, annexes) is markdown: links, inline code, bold, lists.
 const INLINE = /\[([^\]]+)\]\(([^)]+)\)|`([^`]+)`|\*\*([^*]+)\*\*/g;
 const LIST_ITEM = /^[-*]\s+/;
+const ORDERED_ITEM = /^\d+\.\s+/;
+
+type ListItem = { text: string; children: string[] };
+type List = { ordered: boolean; items: ListItem[] };
 
 // Attributes and accessible names take text, never elements.
 export function toPlainText(source: string): string {
@@ -40,11 +44,11 @@ export function renderMarkdownInline(text: string): ReactNode[] {
 	return nodes;
 }
 
+// Méthodologies are numbered steps whose sub-points are indented bullets: one nesting level, no deeper.
 export function renderMarkdown(source: string): ReactNode[] {
 	const blocks: ReactNode[] = [];
-	const lines = source.split("\n").map((line) => line.trim());
 	let paragraph: string[] = [];
-	let items: string[] = [];
+	let list: List | undefined;
 
 	const flush = () => {
 		if (paragraph.length)
@@ -53,29 +57,63 @@ export function renderMarkdown(source: string): ReactNode[] {
 					{renderMarkdownInline(paragraph.join(" "))}
 				</p>,
 			);
-		if (items.length)
+		if (list) {
+			const ListTag = list.ordered ? "ol" : "ul";
 			blocks.push(
-				<ul key={`ul${blocks.length}`}>
-					{items.map((item, index) => (
-						<li key={index}>{renderMarkdownInline(item)}</li>
+				<ListTag key={`${ListTag}${blocks.length}`}>
+					{list.items.map((item, index) => (
+						<li key={index}>
+							{renderMarkdownInline(item.text)}
+							{item.children.length > 0 && (
+								<ul>
+									{item.children.map((child, childIndex) => (
+										<li key={childIndex}>{renderMarkdownInline(child)}</li>
+									))}
+								</ul>
+							)}
+						</li>
 					))}
-				</ul>,
+				</ListTag>,
 			);
+		}
 		paragraph = [];
-		items = [];
+		list = undefined;
 	};
 
-	for (const line of lines) {
+	const pushItem = (ordered: boolean, text: string) => {
+		if (paragraph.length || (list && list.ordered !== ordered)) flush();
+		list ??= { ordered, items: [] };
+		list.items.push({ text, children: [] });
+	};
+
+	for (const raw of source.split("\n")) {
+		const line = raw.trim();
+		const indented = raw.length > line.length && /^\s/.test(raw);
+		const lastItem = list?.items.at(-1);
+
 		if (!line) {
 			flush();
 			continue;
 		}
-		if (LIST_ITEM.test(line)) {
-			if (paragraph.length) flush();
-			items.push(line.replace(LIST_ITEM, ""));
+		if (indented && lastItem && LIST_ITEM.test(line)) {
+			lastItem.children.push(line.replace(LIST_ITEM, ""));
 			continue;
 		}
-		if (items.length) flush();
+		if (indented && lastItem) {
+			const { children } = lastItem;
+			if (children.length) children[children.length - 1] += ` ${line}`;
+			else lastItem.text += ` ${line}`;
+			continue;
+		}
+		if (ORDERED_ITEM.test(line)) {
+			pushItem(true, line.replace(ORDERED_ITEM, ""));
+			continue;
+		}
+		if (LIST_ITEM.test(line)) {
+			pushItem(false, line.replace(LIST_ITEM, ""));
+			continue;
+		}
+		if (list) flush();
 		paragraph.push(line);
 	}
 

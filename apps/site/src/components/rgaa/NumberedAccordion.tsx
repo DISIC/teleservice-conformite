@@ -8,14 +8,19 @@ import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import { renderMarkdownInline, toPlainText } from "./helpers/markdown";
 
+type HeadingTag = `h${3 | 4 | 5 | 6}`;
+
 type NumberedAccordionProps = {
-	as: "h3" | "p";
+	as: HeadingTag;
+	// The accordion title sits under the heading above it, one level down.
+	titleAs: HeadingTag;
 	id?: string;
 	number: string;
 	label: string;
 	accordionLabel: string;
 	children: ReactNode;
 	showLinkIcon?: boolean;
+	headingClassName?: string;
 	className?: string;
 	defaultExpanded?: boolean;
 	conditions?: string[];
@@ -24,12 +29,14 @@ type NumberedAccordionProps = {
 
 export default function NumberedAccordion({
 	as: HtmlTag,
+	titleAs,
 	id,
 	number,
 	label,
 	accordionLabel,
 	children,
 	showLinkIcon = false,
+	headingClassName,
 	className,
 	defaultExpanded = false,
 	conditions,
@@ -40,7 +47,7 @@ export default function NumberedAccordion({
 
 	return (
 		<div id={id} className={classes.numberedAccordion}>
-			<HtmlTag className={HtmlTag === "p" ? classes.heading : undefined}>
+			<HtmlTag className={headingClassName}>
 				<span>{number}. </span>
 				<span>{renderMarkdownInline(label)}</span>
 				{showLinkIcon && (
@@ -60,6 +67,7 @@ export default function NumberedAccordion({
 			</ul>
 			{children && (
 				<Accordion
+					titleAs={titleAs}
 					label={accordionLabel}
 					className={className}
 					defaultExpanded={defaultExpanded}
@@ -75,17 +83,6 @@ export default function NumberedAccordion({
 export const useNumberedAccordionStyles = tss
 	.withName("NumberedAccordion")
 	.create({
-		heading: {
-			display: "flex",
-			alignItems: "baseline",
-			gap: fr.spacing("1v"),
-			fontFamily: "Marianne",
-			fontWeight: 700,
-			fontSize: "18px",
-			lineHeight: "28px",
-			letterSpacing: 0,
-			marginBottom: 0,
-		},
 		link: {
 			"&&": {
 				color: fr.colors.decisions.text.mention.grey.default,

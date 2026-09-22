@@ -34,7 +34,7 @@ export default function CriteriumAppendix({
 	const { references = [], techniques = [], technicalNotes } = appendix;
 	const groups = groupByStandard(references);
 	const orphanTechniques =
-		techniques.length && !groups.some(([standard]) => isWcag(standard));
+		techniques.length > 0 && !groups.some(([standard]) => isWcag(standard));
 
 	return (
 		<div className={classes.root}>

@@ -29,10 +29,7 @@ function toTests(declinaison: Declinaison): Test[] {
 		number: lastSegment(test.number),
 		label: test.title,
 		conditions: test.conditions ?? [],
-		methodologies: test.methodology
-			.split("\n")
-			.map((line) => line.trim())
-			.filter(Boolean),
+		methodology: test.methodology,
 	}));
 }
 
