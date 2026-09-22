@@ -3,6 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import Button from "@codegouvfr/react-dsfr/Button";
+import Image, { type StaticImageData } from "next/image";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import BetaBadge from "./BetaBadge";
@@ -15,7 +16,16 @@ export type LinkButtonsProps = Pick<
 	"id" | "title" | "iconId" | "href"
 >;
 
-type PageHeroProps = {
+// The hero illustration is either one of our named pictograms or an image asset, never both.
+type HeroIllustration =
+	| { pictogram: PictogramId; imageSrc?: never; imageAlt?: never }
+	| {
+			imageSrc: string | StaticImageData;
+			imageAlt?: string;
+			pictogram?: never;
+	  };
+
+type PageHeroProps = HeroIllustration & {
 	breadcrumbCurrentPageLabel: ReactNode;
 	breadcrumbSegments: {
 		label: string;
@@ -25,7 +35,6 @@ type PageHeroProps = {
 	}[];
 	title: string;
 	description: string;
-	pictogram: PictogramId;
 	linkButtons?: LinkButtonsProps[];
 	badgeColor?: string;
 	badgeBackgroundColor?: string;
@@ -40,6 +49,8 @@ export default function PageHero(props: PageHeroProps) {
 		title,
 		description,
 		pictogram,
+		imageSrc,
+		imageAlt,
 		linkButtons,
 		badgeColor,
 		badgeBackgroundColor,
@@ -61,7 +72,17 @@ export default function PageHero(props: PageHeroProps) {
 				<div className={classes.heroContent}>
 					<div className={classes.heroIllustrationWrapper}>
 						<div className={classes.heroIllustration}>
-							<Pictogram id={pictogram} fontSize="inherit" />
+							{imageSrc ? (
+								<Image
+									className={classes.image}
+									src={imageSrc}
+									alt={imageAlt ?? ""}
+									width={216}
+									height={216}
+								/>
+							) : (
+								pictogram && <Pictogram id={pictogram} fontSize="inherit" />
+							)}
 						</div>
 					</div>
 					<div className={classes.heroText}>
@@ -178,6 +199,11 @@ const useStyles = tss
 					height: "118px",
 				},
 			},
+		},
+		image: {
+			width: "60%",
+			height: "auto",
+			objectFit: "contain",
 		},
 		heroIllustration: {
 			position: "relative",

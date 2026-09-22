@@ -31,7 +31,7 @@ export default function LegalObligationsPage() {
 				badgeColor={fr.colors.decisions.border.default.blueEcume.default}
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
 			/>
-			<div className={fr.cx("fr-container", "fr-my-6w")}>
+			<div className={fr.cx("fr-container", "fr-my-8w")}>
 				<div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
 					<div className={fr.cx("fr-col-12", "fr-col-md-4")}>
 						<SectionSidebarList sections={headings} />
