@@ -1,4 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import { Part } from "~/components/form/Part";
+import { RequiredMark } from "~/components/form/RequiredField";
 import { withForm } from "../context";
 import { contactFormOptions } from "./contactSchema";
 
@@ -18,6 +20,12 @@ export const ContactTypeForm = withForm({
 						/>
 					)}
 				</form.AppField>
+				{!readOnly && (
+					<p className={fr.cx("fr-text--bold", "fr-mb-2w")}>
+						Saisir au moins un moyen de contact.
+						<RequiredMark />
+					</p>
+				)}
 				<form.AppField name="email">
 					{(field) => (
 						<field.TextField
