@@ -27,8 +27,8 @@ type PageHeroProps = {
 	description: string;
 	pictogram: PictogramId;
 	linkButtons?: LinkButtonsProps[];
-	badgeColor: string;
-	badgeBackgroundColor: string;
+	badgeColor?: string;
+	badgeBackgroundColor?: string;
 	backgroundColor: string;
 	ellipseColor: string;
 };
@@ -47,6 +47,7 @@ export default function PageHero(props: PageHeroProps) {
 		ellipseColor,
 	} = props;
 	const { classes } = useStyles({ backgroundColor, ellipseColor });
+	const hasBadge = badgeColor && badgeBackgroundColor;
 
 	return (
 		<div className={classes.hero}>
@@ -64,10 +65,12 @@ export default function PageHero(props: PageHeroProps) {
 						</div>
 					</div>
 					<div className={classes.heroText}>
-						<BetaBadge
-							color={badgeColor}
-							backgroundColor={badgeBackgroundColor}
-						/>
+						{hasBadge && (
+							<BetaBadge
+								color={badgeColor}
+								backgroundColor={badgeBackgroundColor}
+							/>
+						)}
 						<h1 className={classes.title}>{title}</h1>
 						<p className={classes.description}>{description} </p>
 						<ul className={classes.referentialTags}>
