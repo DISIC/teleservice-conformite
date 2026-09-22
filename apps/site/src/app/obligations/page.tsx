@@ -30,6 +30,9 @@ export default function LegalObligationsPage() {
 				}
 				badgeColor={fr.colors.decisions.text.actionHigh.blueEcume.default}
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
+				ellipseColor={
+					fr.colors.decisions.background.actionLow.blueEcume.default
+				}
 			/>
 			<div className={fr.cx("fr-container", "fr-my-8w")}>
 				<div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
