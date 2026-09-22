@@ -15,6 +15,7 @@ type NumberedAccordionProps = {
 	// The accordion title sits under the heading above it, one level down.
 	titleAs: HeadingTag;
 	id?: string;
+	dataAccordion?: string;
 	number: string;
 	label: string;
 	accordionLabel: string;
@@ -31,6 +32,7 @@ export default function NumberedAccordion({
 	as: HtmlTag,
 	titleAs,
 	id,
+	dataAccordion,
 	number,
 	label,
 	accordionLabel,
@@ -46,7 +48,11 @@ export default function NumberedAccordion({
 	const pathname = usePathname();
 
 	return (
-		<div id={id} className={classes.numberedAccordion}>
+		<div
+			id={id}
+			data-accordion={dataAccordion}
+			className={classes.numberedAccordion}
+		>
 			<HtmlTag className={headingClassName}>
 				<span>{number} </span>
 				<span>{renderMarkdownInline(label)}</span>

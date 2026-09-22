@@ -2,14 +2,26 @@
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
-import Button from "@codegouvfr/react-dsfr/Button";
 import { useRef, useState } from "react";
 import { tss } from "tss-react";
 import AccordionList from "./AccordionList";
 import { setCollapsesExpanded } from "./helpers/collapse";
 import { type Criterias, getTopicSidebarItem } from "./helpers/topics";
+import PopoverButton, { type DisplayOption } from "./PopoverButton";
 import { getReferentielStyle, type ReferentielInfos } from "./referentiels";
 import TopicSidebarList from "./TopicSidebarList";
+
+const TOPIC_COLLAPSE = "[data-topic-accordion] > .fr-accordion > .fr-collapse";
+const CRITERIUM_COLLAPSE =
+	'[data-accordion="criterium"] > .fr-accordion > .fr-collapse';
+const TEST_COLLAPSE = '[data-accordion="test"] > .fr-accordion > .fr-collapse';
+
+// Each option opens its own level and the levels above it, otherwise what it opens stays out of sight.
+const DISPLAY_OPTION_SELECTORS: Record<DisplayOption, string[]> = {
+	all: [TOPIC_COLLAPSE, CRITERIUM_COLLAPSE, TEST_COLLAPSE],
+	tests: [TOPIC_COLLAPSE, CRITERIUM_COLLAPSE],
+	methodologies: [TOPIC_COLLAPSE, CRITERIUM_COLLAPSE, TEST_COLLAPSE],
+};
 
 interface CriteriaListProps {
 	referentiel: ReferentielInfos;
@@ -33,23 +45,20 @@ export default function CriteriaList({
 	const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>(
 		() => Object.fromEntries(allTopics.map((topic) => [topic.topic, true])),
 	);
-
 	const topicsRef = useRef<HTMLDivElement>(null);
 
-	const allExpanded = allTopics.every((topic) => expandedTopics[topic.topic]);
+	const applyDisplayOption = (option: DisplayOption) => {
+		const root = topicsRef.current;
 
-	const toggleAll = () => {
+		if (!root) return;
+
 		setExpandedTopics(
-			allExpanded
-				? {}
-				: Object.fromEntries(allTopics.map((topic) => [topic.topic, true])),
+			Object.fromEntries(allTopics.map((topic) => [topic.topic, true])),
 		);
-		setCollapsesExpanded(
-			topicsRef.current?.querySelectorAll(
-				"[data-topic-accordion] > .fr-accordion > .fr-collapse",
-			) ?? [],
-			!allExpanded,
-		);
+
+		for (const selector of DISPLAY_OPTION_SELECTORS[option]) {
+			setCollapsesExpanded(root.querySelectorAll(selector), true);
+		}
 	};
 
 	return (
@@ -59,15 +68,7 @@ export default function CriteriaList({
 				<TopicSidebarList topics={allTopics} />
 			</div>
 			<div className={classes.rightContent} ref={topicsRef}>
-				<Button
-					className={classes.toggleButton}
-					iconId={allExpanded ? "ri-arrow-up-s-line" : "ri-arrow-down-s-line"}
-					iconPosition="right"
-					onClick={toggleAll}
-					priority="secondary"
-				>
-					{allExpanded ? "Tout replier" : "Tout déplier"}
-				</Button>
+				<PopoverButton onValidate={applyDisplayOption} />
 				<AccordionList
 					referentiel={referentiel}
 					criterias={criterias}
@@ -114,8 +115,5 @@ const useStyles = tss
 			display: "flex",
 			flexDirection: "column",
 			gap: fr.spacing("5w"),
-		},
-		toggleButton: {
-			alignSelf: "flex-end",
 		},
 	}));

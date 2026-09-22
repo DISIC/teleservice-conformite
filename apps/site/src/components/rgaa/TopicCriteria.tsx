@@ -83,6 +83,7 @@ export default function TopicCriteria({
 							as="h3"
 							titleAs="h4"
 							id={criteriumNumber}
+							dataAccordion="criterium"
 							number={criteriumNumber}
 							label={criterium.title}
 							accordionLabel={`Tests et références du critère ${criteriumNumber}`}
@@ -106,6 +107,7 @@ export default function TopicCriteria({
 										as="h5"
 										titleAs="h6"
 										id={testNumber}
+										dataAccordion="test"
 										number={testNumber}
 										showLinkIcon={true}
 										conditions={test.conditions}
