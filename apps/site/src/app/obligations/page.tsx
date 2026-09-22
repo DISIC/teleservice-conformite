@@ -28,7 +28,7 @@ export default function LegalObligationsPage() {
 				badgeBackgroundColor={
 					fr.colors.decisions.background.alt.blueEcume.active
 				}
-				badgeColor={fr.colors.decisions.border.default.blueEcume.default}
+				badgeColor={fr.colors.decisions.text.actionHigh.blueEcume.default}
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
 			/>
 			<div className={fr.cx("fr-container", "fr-my-8w")}>
