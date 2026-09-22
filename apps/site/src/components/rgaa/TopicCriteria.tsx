@@ -56,14 +56,12 @@ export default function TopicCriteria({
 		<>
 			<Button
 				className={classes.toggleButton}
-				iconId={allExpanded ? "ri-arrow-up-s-line" : "ri-arrow-down-s-line"}
+				iconId="fr-icon-expand-up-down-fill"
 				iconPosition="right"
 				onClick={toggleAll}
 				priority="secondary"
 			>
-				{allExpanded
-					? "Replier tous les critères"
-					: "Déplier tous les critères"}
+				{allExpanded ? "Replier tous les tests" : "Déplier tous les tests"}
 			</Button>
 			<div ref={criteriaRef}>
 				{topic.criteria.map(({ criterium }) => {

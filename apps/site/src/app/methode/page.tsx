@@ -39,6 +39,9 @@ export default function TechnicalMethodPage() {
 					fr.colors.decisions.background.alt.blueEcume.active
 				}
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
+				ellipseColor={
+					fr.colors.decisions.background.actionLow.blueEcume.default
+				}
 			/>
 			<TechnicalMethodSections referentiels={getAllReferentiels()} />
 		</>

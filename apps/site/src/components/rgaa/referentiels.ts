@@ -46,7 +46,7 @@ export const REFERENTIEL_STYLES: ReferentielStyle[] = [
 		heroPagebackgroundColor:
 			fr.colors.decisions.background.alt.pinkMacaron.default,
 		circleBackgroundColor:
-			fr.colors.decisions.background.alt.pinkMacaron.active,
+			fr.colors.decisions.background.actionLow.pinkMacaron.default,
 		badgeColor: fr.colors.decisions.text.label.purpleGlycine.default,
 		badgeBackgroundColor:
 			fr.colors.decisions.background.contrast.pinkMacaron.default,
@@ -63,7 +63,7 @@ export const REFERENTIEL_STYLES: ReferentielStyle[] = [
 		heroPagebackgroundColor:
 			fr.colors.decisions.background.alt.yellowTournesol.default,
 		circleBackgroundColor:
-			fr.colors.decisions.background.alt.yellowTournesol.active,
+			fr.colors.decisions.background.actionLow.yellowTournesol.default,
 		badgeColor: fr.colors.decisions.text.label.yellowTournesol.default,
 		badgeBackgroundColor:
 			fr.colors.decisions.background.actionLow.yellowTournesol.default,
@@ -80,7 +80,7 @@ export const REFERENTIEL_STYLES: ReferentielStyle[] = [
 		heroPagebackgroundColor:
 			fr.colors.decisions.background.alt.greenEmeraude.default,
 		circleBackgroundColor:
-			fr.colors.decisions.background.alt.greenEmeraude.active,
+			fr.colors.decisions.background.contrast.greenEmeraude.default,
 		badgeColor: fr.colors.decisions.text.label.greenEmeraude.default,
 		badgeBackgroundColor:
 			fr.colors.decisions.background.contrast.greenEmeraude.default,

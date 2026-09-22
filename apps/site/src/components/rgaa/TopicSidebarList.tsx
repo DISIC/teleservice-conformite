@@ -23,16 +23,11 @@ export default function TopicSidebarList({ topics }: TopicSidebarListProps) {
 	const [selectedNumber, setSelectedNumber] = useState(topics[0]?.number);
 
 	const items = topics.map((topic) => {
-		const isActive = topic.number === selectedNumber;
-
 		return {
-			isActive,
+			isActive: topic.number === selectedNumber,
 			text: (
 				<div className={classes.menuItem}>
 					{`${topic.number}. ${topic.topic}`}
-					{isActive && (
-						<span className={classes.selectedLabel}>(sélectionné)</span>
-					)}
 					{topic.notApplicable && (
 						<Badge small noIcon className={classes.badge}>
 							Non applicable
@@ -58,10 +53,6 @@ export default function TopicSidebarList({ topics }: TopicSidebarListProps) {
 }
 
 const useStyles = tss.withName(TopicSidebarList.name).create({
-	selectedLabel: {
-		fontWeight: 400,
-		marginLeft: fr.spacing("1v"),
-	},
 	badge: {
 		marginLeft: fr.spacing("2v"),
 	},

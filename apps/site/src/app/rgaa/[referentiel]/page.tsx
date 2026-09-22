@@ -69,6 +69,7 @@ export default async function ReferentielsPage({
 				badgeColor={referentielStyle.badgeColor}
 				badgeBackgroundColor={referentielStyle.badgeBackgroundColor}
 				backgroundColor={referentielStyle.heroPagebackgroundColor}
+				ellipseColor={referentielStyle.circleBackgroundColor}
 			/>
 			<section
 				className={fr.cx("fr-container", "fr-px-0", "fr-px-md-2w", "fr-py-8w")}
