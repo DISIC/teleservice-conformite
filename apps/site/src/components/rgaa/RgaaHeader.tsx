@@ -196,12 +196,5 @@ export default function RgaaHeader() {
 }
 
 const useStyles = tss.withName(RgaaHeader.name).create({
-	main: {
-		"h5.fr-mega-menu__category.fr-nav__link": {
-			fontWeight: "bold !important",
-		},
-		"h5.fr-mega-menu__category > a.fr-nav__link": {
-			fontSize: "1.25rem",
-		},
-	},
+	main: {},
 });
