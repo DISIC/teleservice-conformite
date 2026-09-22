@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { EmotionCacheProvider } from "~/components/EmotionCacheProvider";
 import RgaaHeader from "~/components/rgaa/RgaaHeader";
+import { readVersionedMarkdown, splitSections } from "~/lib/content";
 import { DsfrProvider } from "~/dsfr-bootstrap";
 import {
 	DsfrHead,
@@ -19,6 +20,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
 	const lang = "fr";
+	const releaseNotes = splitSections(
+		readVersionedMarkdown("notes-de-version"),
+	).map(({ id, label }) => ({ text: label, href: `/notes#${id}` }));
 
 	return (
 		<html lang={lang} {...getHtmlAttributes({ lang })}>
@@ -42,7 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 								{ anchor: "#footer", label: "Pied de page" },
 							]}
 						/>
-						<RgaaHeader />
+						<RgaaHeader releaseNotes={releaseNotes} />
 						<main id="contenu" style={{ flex: 1 }}>
 							{children}
 						</main>
