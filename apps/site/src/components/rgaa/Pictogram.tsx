@@ -6,6 +6,7 @@ import Search from "@codegouvfr/react-dsfr/picto/Search";
 import TechnicalError from "@codegouvfr/react-dsfr/picto/TechnicalError";
 import type { PictoProps } from "@codegouvfr/react-dsfr/picto/utils/PictoWrapper";
 import JusticeScales from "@codegouvfr/react-dsfr/picto/JusticeScales";
+import Coding from "@codegouvfr/react-dsfr/picto/Coding";
 
 // Pictograms are named, not passed as components: server pages can only hand serialisable props to client components.
 const PICTOGRAMS = {
@@ -14,6 +15,7 @@ const PICTOGRAMS = {
 	search: Search,
 	"technical-error": TechnicalError,
 	"justice-scales": JusticeScales,
+	coding: Coding,
 };
 
 export type PictogramId = keyof typeof PICTOGRAMS;
