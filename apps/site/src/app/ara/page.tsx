@@ -23,6 +23,9 @@ export default function AraPage() {
 				imageSrc={araLogo}
 				imageAlt="Ara"
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
+				ellipseColor={
+					fr.colors.decisions.background.actionLow.blueEcume.default
+				}
 			/>
 			<div className={fr.cx("fr-container", "fr-my-10v")}>
 				<div className={fr.cx("fr-grid-row", "fr-grid-row--center")}>

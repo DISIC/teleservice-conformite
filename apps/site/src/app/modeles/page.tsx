@@ -21,6 +21,9 @@ export default function TemplatesPage() {
 				description="La partie «Évaluation de la conformité à la norme» du RGAA contient les instructions pour mener à bien l’audit d’un site internet, intranet ou extranet (échantillonnage des pages, critères applicables, taux de conformité…).Voici en complément, des modèles de documents pour réaliser un audit."
 				pictogram="coding"
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
+				ellipseColor={
+					fr.colors.decisions.background.actionLow.blueEcume.default
+				}
 			/>
 			<div className={fr.cx("fr-container", "fr-my-10v")}>
 				<div className={fr.cx("fr-grid-row", "fr-grid-row--center")}>
