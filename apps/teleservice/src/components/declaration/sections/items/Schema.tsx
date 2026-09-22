@@ -1,7 +1,7 @@
 import Calendar from "@codegouvfr/react-dsfr/picto/Calendar";
-import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
 import Error from "@codegouvfr/react-dsfr/picto/Error";
 import type { ComponentProps } from "react";
+import DocumentCalendar from "~/components/ui/picto/DocumentCalendar";
 import { SchemaForm as DeclarationSchemaForm } from "~/forms/schema/schemaForm";
 import {
 	declarationToSchemaValues,
@@ -18,7 +18,7 @@ const SCHEMA_OPTIONS: SourceModeOption[] = [
 		value: "linked",
 		label: "Utiliser un schéma pluriannuel existant",
 		hintText: "Enregistré dans vos documents.",
-		illustration: <DocumentSearch fontSize="3rem" />,
+		illustration: <DocumentCalendar fontSize="3rem" viewBox="0 0 56 56" />,
 	},
 	{
 		value: "custom",

@@ -1,6 +1,6 @@
 import Avatar from "@codegouvfr/react-dsfr/picto/Avatar";
-import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
 import type { ComponentProps } from "react";
+import DocumentUser from "~/components/ui/picto/DocumentUser";
 import { ContactTypeForm } from "~/forms/contact/contactForm";
 import {
 	contactForm,
@@ -17,7 +17,7 @@ const CONTACT_OPTIONS: SourceModeOption[] = [
 		value: "linked",
 		label: "Utiliser un contact existant",
 		hintText: "Enregistré dans vos documents.",
-		illustration: <DocumentSearch fontSize="3rem" />,
+		illustration: <DocumentUser fontSize="3rem" viewBox="0 0 56 56" />,
 	},
 	{
 		value: "custom",
