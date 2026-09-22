@@ -23,15 +23,6 @@ function AuditNotRealisedNotice() {
 				S’il n’existe aucun résultat d’audit en cours de validité permettant de
 				mesurer le respect des critères, le service est réputé non conforme.
 			</span>
-			<a
-				href="https://www.numerique.gouv.fr/publications/rgaa-accessibilite/conformite/#audit"
-				target="_blank"
-				rel="noopener noreferrer"
-				title="Lien vers le texte de loi, nouvelle fenêtre"
-				style={{ width: "fit-content" }}
-			>
-				Lien vers le texte de loi
-			</a>
 		</AuditNotice>
 	);
 }
