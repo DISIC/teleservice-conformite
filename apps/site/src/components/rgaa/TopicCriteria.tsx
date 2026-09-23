@@ -9,6 +9,7 @@ import CriteriumReference from "./CriteriumReference";
 import CriteriumTests from "./CriteriumTests";
 import DisabledCriteriumAccordion from "./DisabledCriteriumAccordion";
 import { renderMarkdownInline } from "./helpers/markdown";
+import { useNumberedHeadingStyles } from "./helpers/styles";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { usePathname } from "next/navigation";
 
@@ -24,6 +25,7 @@ export default function TopicCriteria({
 	const pathname = usePathname();
 	const { testAccordionBackgroundColor } = getReferentielStyle(referentielId);
 	const { classes, cx } = useStyles();
+	const { classes: headingClasses } = useNumberedHeadingStyles();
 	const [expandedCriteria, setExpandedCriteria] = useState<
 		Record<string, boolean>
 	>({});
@@ -53,14 +55,14 @@ export default function TopicCriteria({
 						className={classes.criteriumContainer}
 					>
 						<h3 className={cx("fr-h4")}>
-							<span className={classes.number}>{criteriumNumber}</span>
+							<span className={headingClasses.number}>{criteriumNumber}</span>
 							<span>{renderMarkdownInline(criterium.title)}</span>
 							<Button
 								iconId="fr-icon-links-fill"
 								title={`Lien vers ${criteriumNumber} ${criterium.title}`}
 								priority="tertiary no outline"
 								linkProps={{ href: `${pathname}#${criteriumNumber}` }}
-								className={classes.link}
+								className={headingClasses.link}
 							/>
 						</h3>
 						<CriteriumTests
@@ -106,29 +108,5 @@ const useStyles = tss.withName(TopicCriteria.name).create({
 	},
 	criteriumContainer: {
 		marginBottom: fr.spacing("12v"),
-	},
-	link: {
-		"&&": {
-			color: fr.colors.decisions.text.mention.grey.default,
-			backgroundColor: "transparent",
-			"--hover-tint": "transparent",
-			"--active-tint": "transparent",
-
-			"&:hover, &:active": {
-				color: fr.colors.decisions.text.title.grey.default,
-			},
-		},
-	},
-	titleContainer: {
-		marginBottom: fr.spacing("6v"),
-		display: "flex",
-		alignItems: "center",
-
-		"& > h3": {
-			marginBottom: 0,
-		},
-	},
-	number: {
-		marginRight: fr.spacing("3v"),
 	},
 });

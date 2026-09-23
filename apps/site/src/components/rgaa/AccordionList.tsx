@@ -6,6 +6,7 @@ import { tss } from "tss-react";
 import DisabledTopicAccordion from "./DisabledTopicAccordion";
 import TopicCriteria from "./TopicCriteria";
 import { type Criterias } from "./helpers/topics";
+import { useNumberedHeadingStyles } from "./helpers/styles";
 import { getReferentielStyle } from "./referentiels";
 import { usePathname } from "next/navigation";
 import type { ReferentielInfos } from "./referentiels";
@@ -21,6 +22,7 @@ export default function AccordionList({
 }: AccordionListProps) {
 	const { topicAccordionBackgroundColor } = getReferentielStyle(referentiel.id);
 	const { classes } = useStyles({ topicAccordionBackgroundColor });
+	const { classes: headingClasses } = useNumberedHeadingStyles();
 	const pathname = usePathname();
 
 	return (
@@ -44,14 +46,14 @@ export default function AccordionList({
 						className={classes.topicAnchor}
 					>
 						<h2 className={classes.title}>
-							<span className={classes.number}>{topic.number}.</span>
+							<span className={headingClasses.number}>{topic.number}.</span>
 							<span>{topic.topic}</span>
 							<Button
 								iconId="fr-icon-links-fill"
 								title={`Lien vers ${topic.number} ${topic.topic}`}
 								priority="tertiary no outline"
 								linkProps={{ href: `${pathname}#${topic.number}` }}
-								className={classes.link}
+								className={headingClasses.link}
 							/>
 						</h2>
 						<TopicCriteria referentielId={referentiel.id} topic={topic} />
@@ -81,20 +83,5 @@ const useStyles = tss
 			paddingRight: fr.spacing("4v"),
 			paddingLeft: fr.spacing("6v"),
 			marginBottom: 0,
-		},
-		link: {
-			"&&": {
-				color: fr.colors.decisions.text.mention.grey.default,
-				backgroundColor: "transparent",
-				"--hover-tint": "transparent",
-				"--active-tint": "transparent",
-
-				"&:hover, &:active": {
-					color: fr.colors.decisions.text.title.grey.default,
-				},
-			},
-		},
-		number: {
-			marginRight: fr.spacing("3v"),
 		},
 	}));
