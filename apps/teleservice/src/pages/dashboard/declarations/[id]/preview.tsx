@@ -17,6 +17,7 @@ import { api } from "~/lib/api";
 import { guardDeclaration } from "~/lib/server-guards";
 import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
 import { getDeclarationState } from "~/domain/declaration/state";
+import { getObsolescence } from "~/domain/declaration/obsolescence";
 
 // Only entity and created_by remain nullable relations for the preview.
 type RequiredPopulatedDeclaration = Omit<
@@ -194,8 +195,11 @@ export const getServerSideProps = (async (context) => {
 		};
 	}
 
-	// Nothing to preview when the public page already matches the row.
-	if (getDeclarationState(declaration) === null) {
+	// Nothing to preview when the public page already matches the row, unless it is ageing out.
+	if (
+		getDeclarationState(declaration) === null &&
+		getObsolescence(declaration, new Date()) === "valid"
+	) {
 		return {
 			redirect: {
 				destination: `/dashboard/declarations/${declaration.id}`,
