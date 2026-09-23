@@ -2,6 +2,7 @@
 
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { fr } from "@codegouvfr/react-dsfr";
+import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { renderMarkdownInline } from "./helpers/markdown";
 import { useNumberedHeadingStyles } from "./helpers/styles";
@@ -28,15 +29,37 @@ export default function CriteriumTests({
 	const { classes, cx } = useStyles({ accordionBackgroundColor });
 	const { classes: headingClasses } = useNumberedHeadingStyles();
 	const pathname = usePathname();
+	const [expanded, setExpanded] = useState(defaultExpanded);
+	const wrapperRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const wrapper = wrapperRef.current;
+
+		if (!wrapper) return;
+
+		const onDisclose = () => setExpanded(true);
+		const onConceal = () => setExpanded(false);
+
+		wrapper.addEventListener("dsfr.disclose", onDisclose);
+		wrapper.addEventListener("dsfr.conceal", onConceal);
+
+		return () => {
+			wrapper.removeEventListener("dsfr.disclose", onDisclose);
+			wrapper.removeEventListener("dsfr.conceal", onConceal);
+		};
+	}, []);
 
 	return (
-		<div data-accordion="test">
+		<div data-accordion="test" ref={wrapperRef}>
 			<Accordion
 				titleAs="h4"
 				label={`Tests du critère ${criteriumNumber}`}
 				className={classes.criteriaAccordion}
-				defaultExpanded={defaultExpanded}
-				onExpandedChange={(value) => onExpandedChange?.(value)}
+				expanded={expanded}
+				onExpandedChange={(value) => {
+					setExpanded(value);
+					onExpandedChange?.(value);
+				}}
 			>
 				{tests.map((test) => {
 					const testNumber = `${criteriumNumber}.${test.number}`;
