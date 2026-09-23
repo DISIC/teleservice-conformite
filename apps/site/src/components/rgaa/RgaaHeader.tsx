@@ -37,51 +37,11 @@ const NAVIGATION: NavEntry[] = [
 			{ text: "Référentiel application mobile", href: "/rgaa/mobile" },
 		],
 	},
-	// {
-	// 	text: "Ressources",
-	// 	leader: {
-	// 		title: "Ressources",
-	// 	},
-	// 	categories: [
-	// 		{
-	// 			categoryMainLink: {
-	// 				text: "Documentation",
-	// 			},
-	// 			// TODO: add links
-	// 			links: [
-	// 				{ text: "Référentiel web", href: "#" },
-	// 				{ text: "Référentiel bureautique", href: "#" },
-	// 				{ text: "Référentiel application mobile", href: "#" },
-	// 			],
-	// 		},
-	// 		{
-	// 			categoryMainLink: {
-	// 				text: "Outils",
-	// 			},
-	// 			// TODO: add links
-	// 			links: [
-	// 				{ text: "Ara - Outil d’audit d’accessibilité", href: "#" },
-	// 				{ text: "Kit d’audit", href: "#" },
-	// 			],
-	// 		},
-	// 		{
-	// 			categoryMainLink: {
-	// 				text: "Notes de version",
-	// 			},
-	// 			// TODO: add links
-	// 			links: [
-	// 				{ text: "Note de version du RGAA 5", href: "#" },
-	// 				{ text: "Note de version du RGAA 4.12", href: "#" },
-	// 				{ text: "Notes de révision du RGAA 4.1", href: "#" },
-	// 			],
-	// 		},
-	// 	],
-	// },
 	{
 		text: "Ressources",
 		links: [
-			{ text: "Documents de référence", href: "" },
-			{ text: "Critères AAA", href: "" },
+			{ text: "Documents de référence", href: "#" },
+			{ text: "Critères AAA", href: "#" },
 			{ text: "Ara - Outil d’audit d’accessibilité", href: "/ara" },
 			{ text: "Modèles à télécharger", href: "/modeles" },
 			{ text: "Note de révision du RGAA 4.12 vers le RGAA 5", href: "/notes" },
