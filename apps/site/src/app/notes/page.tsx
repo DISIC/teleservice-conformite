@@ -3,14 +3,15 @@ import type { Metadata } from "next";
 import MarkdownSections from "~/components/rgaa/MarkdownSections";
 import SectionSidebarList from "~/components/rgaa/SectionSidebarList";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
-import { readVersionedMarkdown, splitSections } from "~/lib/content";
+import { readMarkdownPage, splitSections } from "~/lib/content";
 import PageHero from "~/components/rgaa/PageHero";
 import CurrentSectionLabel from "~/components/rgaa/CurrentSectionLabel";
 
 export const metadata: Metadata = { title: "Notes de version" };
 
 export default function ReleaseNotesPage() {
-	const sections = splitSections(readVersionedMarkdown("notes-de-version"));
+	const content = readMarkdownPage("notes-de-version");
+	const sections = splitSections(content);
 	const headings = sections.map(({ id, label }) => ({ id, label }));
 
 	return (
@@ -19,10 +20,11 @@ export default function ReleaseNotesPage() {
 			<PageHero
 				breadcrumbCurrentPageLabel={<CurrentSectionLabel sections={headings} />}
 				breadcrumbSegments={[
-					{ label: "Notes de version", linkProps: { href: "/notes" } },
+					// TODO: add link
+					{ label: "Ressources", linkProps: { href: "#" } },
 				]}
-				title="Notes de version"
-				description="Lorem ipsum"
+				title="Notes de révision du RGAA 4.1.2 vers 5.0"
+				description="Cette édition comporte les apportés à la version 5 du Référentiel général d’amélioration de l’accessibilité (RGAA). Ils n’invalident pas les audits déjà réalisés."
 				pictogram="catalog"
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
 				ellipseColor={
