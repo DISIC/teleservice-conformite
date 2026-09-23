@@ -16,10 +16,29 @@ export default function AraPage() {
 			<PageHero
 				breadcrumbCurrentPageLabel="Ara - Outil d’audit d’accessibilité"
 				breadcrumbSegments={[
-					{ label: "Ressources", linkProps: { href: "/ressources" } },
+					// TODO: add link
+					{ label: "Ressources", linkProps: { href: "#" } },
 				]}
 				title="Ara, outil d’audit d’accessibilité"
-				description="Ara est l’outil développé par la direction interministérielle du numérique (DINUM) pour réaliser des audits de conformité au Référentiel Général d’Amélioration de l’Accessibilité (RGAA)."
+				description={
+					<>
+						<span
+							style={{
+								textDecoration: "underline",
+								textUnderlineOffset: "2px",
+							}}
+						>
+							Ara
+						</span>{" "}
+						est l’outil développé par la direction interministérielle du
+						numérique (DINUM) pour réaliser des{" "}
+						<b>
+							audits de conformité au Référentiel Général d’Amélioration de
+							l’Accessibilité (RGAA)
+						</b>
+						.
+					</>
+				}
 				imageSrc={araLogo}
 				imageAlt="Ara"
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}

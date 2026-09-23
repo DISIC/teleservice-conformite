@@ -35,7 +35,7 @@ type PageHeroProps = HeroIllustration & {
 		};
 	}[];
 	title: string;
-	description: string;
+	description: string | ReactNode;
 	linkButtons?: LinkButtonsProps[];
 	badgeColor?: string;
 	badgeBackgroundColor?: string;
@@ -94,7 +94,7 @@ export default function PageHero(props: PageHeroProps) {
 							/>
 						)}
 						<h1 className={classes.title}>{title}</h1>
-						<p className={classes.description}>{description} </p>
+						<p className={classes.description}>{description}</p>
 						<ul className={classes.referentialTags}>
 							{linkButtons?.length &&
 								linkButtons.map(({ id, title, iconId, href }) => (
