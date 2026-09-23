@@ -37,6 +37,8 @@ export function getCriterias(reference: ReferentielId): Criterias {
 	const { referentiels, topics } = readCriteresFile();
 	const referentiel = referentiels.find(({ id }) => id === reference);
 
+	if (!referentiel) throw new Error(`Référentiel inconnu: ${reference}`);
+
 	const mapped: Topic[] = topics.map((topic) => {
 		const criteria = topic.criteria.flatMap((critere) => {
 			const declinaison = critere.referentiels[reference];
@@ -66,7 +68,7 @@ export function getCriterias(reference: ReferentielId): Criterias {
 		};
 	});
 
-	return { referentiel: referentiel?.title ?? "", topics: mapped };
+	return { referentiel: referentiel.title, topics: mapped };
 }
 
 export function getReferentiel(reference: ReferentielId) {
