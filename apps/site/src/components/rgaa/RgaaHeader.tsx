@@ -30,67 +30,61 @@ const NAVIGATION: NavEntry[] = [
 	{ text: "Obligations légales", href: "/obligations" },
 	{
 		text: "Méthode technique",
-		leader: {
-			title: "Méthode technique",
-			paragraph:
-				"La version 5 du RGAA n’est pas encore applicable. Vous pouvez lorem ipsum dolor sit amet",
-			link: {
-				text: "RGAA4 - Version en vigueur",
-				href: RGAA4_URL,
-			},
-		},
-		categories: [
-			{
-				categoryMainLink: {
-					text: "Critères et tests",
-					href: "/methode",
-				},
-				links: [
-					{ text: "Référentiel web", href: "/rgaa/web" },
-					{ text: "Référentiel bureautique", href: "/rgaa/bureautique" },
-					{ text: "Référentiel application mobile", href: "/rgaa/mobile" },
-				],
-			},
+		links: [
+			{ text: "Introduction", href: "/methode" },
+			{ text: "Référentiel web", href: "/rgaa/web" },
+			{ text: "Référentiel bureautique", href: "/rgaa/bureautique" },
+			{ text: "Référentiel application mobile", href: "/rgaa/mobile" },
 		],
 	},
+	// {
+	// 	text: "Ressources",
+	// 	leader: {
+	// 		title: "Ressources",
+	// 	},
+	// 	categories: [
+	// 		{
+	// 			categoryMainLink: {
+	// 				text: "Documentation",
+	// 			},
+	// 			// TODO: add links
+	// 			links: [
+	// 				{ text: "Référentiel web", href: "#" },
+	// 				{ text: "Référentiel bureautique", href: "#" },
+	// 				{ text: "Référentiel application mobile", href: "#" },
+	// 			],
+	// 		},
+	// 		{
+	// 			categoryMainLink: {
+	// 				text: "Outils",
+	// 			},
+	// 			// TODO: add links
+	// 			links: [
+	// 				{ text: "Ara - Outil d’audit d’accessibilité", href: "#" },
+	// 				{ text: "Kit d’audit", href: "#" },
+	// 			],
+	// 		},
+	// 		{
+	// 			categoryMainLink: {
+	// 				text: "Notes de version",
+	// 			},
+	// 			// TODO: add links
+	// 			links: [
+	// 				{ text: "Note de version du RGAA 5", href: "#" },
+	// 				{ text: "Note de version du RGAA 4.12", href: "#" },
+	// 				{ text: "Notes de révision du RGAA 4.1", href: "#" },
+	// 			],
+	// 		},
+	// 	],
+	// },
 	{
 		text: "Ressources",
-		leader: {
-			title: "Ressources",
-		},
-		categories: [
-			{
-				categoryMainLink: {
-					text: "Documentation",
-				},
-				// TODO: add links
-				links: [
-					{ text: "Référentiel web", href: "#" },
-					{ text: "Référentiel bureautique", href: "#" },
-					{ text: "Référentiel application mobile", href: "#" },
-				],
-			},
-			{
-				categoryMainLink: {
-					text: "Outils",
-				},
-				// TODO: add links
-				links: [
-					{ text: "Ara - Outil d’audit d’accessibilité", href: "#" },
-					{ text: "Kit d’audit", href: "#" },
-				],
-			},
-			{
-				categoryMainLink: {
-					text: "Notes de version",
-				},
-				// TODO: add links
-				links: [
-					{ text: "Note de version du RGAA 5", href: "#" },
-					{ text: "Note de version du RGAA 4.12", href: "#" },
-					{ text: "Notes de révision du RGAA 4.1", href: "#" },
-				],
-			},
+		links: [
+			{ text: "Documents de référence", href: "" },
+			{ text: "Critères AAA", href: "" },
+			{ text: "Ara - Outil d’audit d’accessibilité", href: "/ara" },
+			{ text: "Modèles à télécharger", href: "/modeles" },
+			{ text: "Note de révision du RGAA 4.12 vers le RGAA 5", href: "/notes" },
 		],
 	},
 ];
