@@ -3,20 +3,24 @@ import type { Metadata } from "next";
 import CriteriaList from "~/components/rgaa/CriteriaList";
 import PageHero from "~/components/rgaa/PageHero";
 import {
-	getReference,
-	REFERENCE_IDS,
-	REFERENCES,
-	type ReferenceId,
-} from "~/components/rgaa/references";
+	REFERENTIELS_IDS,
+	getReferentielStyle,
+	type ReferentielId,
+} from "~/components/rgaa/referentiels";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
+import {
+	getAllReferentiels,
+	getCriterias,
+	getReferentiel,
+} from "~/lib/rgaa-data";
 
-type Params = { referentiel: ReferenceId };
+type Params = { referentiel: ReferentielId };
 
 // Static export: the three referentiel pages are rendered at build time, nothing else exists.
 export const dynamicParams = false;
 
 export function generateStaticParams(): Params[] {
-	return REFERENCE_IDS.map((referentiel) => ({ referentiel }));
+	return REFERENTIELS_IDS.map((referentiel) => ({ referentiel }));
 }
 
 export async function generateMetadata({
@@ -25,17 +29,30 @@ export async function generateMetadata({
 	params: Promise<Params>;
 }): Promise<Metadata> {
 	const { referentiel } = await params;
-	return { title: getReference(referentiel).pageTitle };
+	return { title: getReferentiel(referentiel).title };
 }
 
-export default async function ReferencePage({
+export default async function ReferentielsPage({
 	params,
 }: {
 	params: Promise<Params>;
 }) {
 	const { referentiel } = await params;
-	const reference = getReference(referentiel);
-	const otherReferences = REFERENCES.filter(({ id }) => id !== referentiel);
+	const referentielStyle = getReferentielStyle(referentiel);
+	const referentielInfos = getReferentiel(referentiel);
+	const criterias = getCriterias(referentiel);
+	const otherReferentiels = getAllReferentiels()
+		.filter(({ id }) => id !== referentiel)
+		.map((referentiel) => {
+			const { iconId, href } = getReferentielStyle(referentiel.id);
+
+			return {
+				id: referentiel.id,
+				title: referentiel.title,
+				iconId,
+				href,
+			};
+		});
 
 	return (
 		<>
@@ -45,19 +62,20 @@ export default async function ReferencePage({
 				breadcrumbSegments={[
 					{ label: "Méthode technique", linkProps: { href: "/methode" } },
 				]}
-				title={reference.pageTitle}
-				description="Ici un texte décrivant le référentiel et son périmètre d’application : Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Certains critères ne sont pas applicables……"
-				pictogram={reference.pictogram}
-				references={otherReferences}
-				badgeColor={reference.badgeColor}
-				badgeBackgroundColor={reference.badgeBackgroundColor}
-				backgroundColor={reference.background}
+				title={referentielInfos.title}
+				description={referentielInfos.description}
+				pictogram={referentielStyle.pictogram}
+				referentiels={otherReferentiels}
+				badgeColor={referentielStyle.badgeColor}
+				badgeBackgroundColor={referentielStyle.badgeBackgroundColor}
+				backgroundColor={referentielStyle.heroPagebackgroundColor}
+				ellipseColor={referentielStyle.circleBackgroundColor}
 			/>
-			{referentiel === "web" && (
-				<section className={fr.cx("fr-container", "fr-py-8w")}>
-					<CriteriaList reference={referentiel} />
-				</section>
-			)}
+			<section
+				className={fr.cx("fr-container", "fr-px-0", "fr-px-md-2w", "fr-py-8w")}
+			>
+				<CriteriaList referentiel={referentielInfos} criterias={criterias} />
+			</section>
 		</>
 	);
 }

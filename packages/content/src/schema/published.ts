@@ -4,10 +4,29 @@ export const REFERENTIEL_IDS = ["web", "mobile", "bureautique"] as const;
 export const ReferentielId = z.enum(REFERENTIEL_IDS);
 export type ReferentielId = z.infer<typeof ReferentielId>;
 
-export const REFERENTIEL_TITLES: Record<ReferentielId, string> = {
-	web: "Sites web",
-	mobile: "Applications mobiles",
-	bureautique: "Logiciels bureautiques",
+export const Referentiel = z.object({
+	id: ReferentielId,
+	title: z.string().min(1),
+	description: z.string(),
+});
+export type Referentiel = z.infer<typeof Referentiel>;
+
+export const REFERENTIELS: Record<ReferentielId, Omit<Referentiel, "id">> = {
+	web: {
+		title: "Référentiel web",
+		description:
+			"Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+	},
+	mobile: {
+		title: "Référentiel application mobile",
+		description:
+			"Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+	},
+	bureautique: {
+		title: "Référentiel bureautique",
+		description:
+			"Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+	},
 };
 
 export const Reference = z.object({
@@ -71,9 +90,7 @@ const Header = z.object({
 
 export const CriteresFile = Header.extend({
 	urls: z.object({ criterion: z.string(), test: z.string(), term: z.string() }),
-	referentiels: z.array(
-		z.object({ id: ReferentielId, title: z.string().min(1) }),
-	),
+	referentiels: z.array(Referentiel),
 	topics: z.array(Thematique),
 });
 export type CriteresFile = z.infer<typeof CriteresFile>;

@@ -5,30 +5,30 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { tss } from "tss-react";
-import { DEFAULT_TOPICS } from "./helpers/topics";
 import SideMenu from "@codegouvfr/react-dsfr/SideMenu";
 
+export type TopicSidebarItem = {
+	number: number;
+	topic: string;
+	notApplicable: boolean;
+};
+
 interface TopicSidebarListProps {
-	topics: string[];
+	topics: TopicSidebarItem[];
 }
 
 export default function TopicSidebarList({ topics }: TopicSidebarListProps) {
 	const { classes } = useStyles();
 	const pathname = usePathname();
-	const [selectedTopic, setSelectedTopic] = useState(DEFAULT_TOPICS[0]);
+	const [selectedNumber, setSelectedNumber] = useState(topics[0]?.number);
 
-	const items = DEFAULT_TOPICS.map((topic, index) => {
-		const isActive = topic === selectedTopic;
-
+	const items = topics.map((topic) => {
 		return {
-			isActive,
+			isActive: topic.number === selectedNumber,
 			text: (
 				<div className={classes.menuItem}>
-					{`${index + 1}. ${topic}`}
-					{isActive && (
-						<span className={classes.selectedLabel}>(sélectionné)</span>
-					)}
-					{!topics.includes(topic) && (
+					{`${topic.number}. ${topic.topic}`}
+					{topic.notApplicable && (
 						<Badge small noIcon className={classes.badge}>
 							Non applicable
 						</Badge>
@@ -36,8 +36,8 @@ export default function TopicSidebarList({ topics }: TopicSidebarListProps) {
 				</div>
 			),
 			linkProps: {
-				href: `${pathname}#${index + 1}`,
-				onClick: () => setSelectedTopic(topic),
+				href: `${pathname}#${topic.number}`,
+				onClick: () => setSelectedNumber(topic.number),
 			},
 		};
 	});
@@ -45,7 +45,7 @@ export default function TopicSidebarList({ topics }: TopicSidebarListProps) {
 	return (
 		<SideMenu
 			title="Thématiques"
-			burgerMenuButtonText="Thématiques"
+			burgerMenuButtonText="Dans cette rubrique"
 			items={items}
 			sticky
 		/>
@@ -53,10 +53,6 @@ export default function TopicSidebarList({ topics }: TopicSidebarListProps) {
 }
 
 const useStyles = tss.withName(TopicSidebarList.name).create({
-	selectedLabel: {
-		fontWeight: 400,
-		marginLeft: fr.spacing("1v"),
-	},
 	badge: {
 		marginLeft: fr.spacing("2v"),
 	},
