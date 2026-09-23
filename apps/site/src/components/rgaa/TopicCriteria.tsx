@@ -54,16 +54,18 @@ export default function TopicCriteria({
 						key={`${criterium.title} ${criteriumNumber}`}
 						className={classes.criteriumContainer}
 					>
-						<h3 className={cx("fr-h4")}>
+						<h3 className={cx("fr-h4", headingClasses.title)}>
 							<span className={headingClasses.number}>{criteriumNumber}</span>
-							<span>{renderMarkdownInline(criterium.title)}</span>
-							<Button
-								iconId="fr-icon-links-fill"
-								title={`Lien vers ${criteriumNumber} ${criterium.title}`}
-								priority="tertiary no outline"
-								linkProps={{ href: `${pathname}#${criteriumNumber}` }}
-								className={headingClasses.link}
-							/>
+							<span>
+								{renderMarkdownInline(criterium.title)}
+								<Button
+									iconId="fr-icon-links-fill"
+									title={`Lien vers ${criteriumNumber} ${criterium.title}`}
+									priority="tertiary no outline"
+									linkProps={{ href: `${pathname}#${criteriumNumber}` }}
+									className={headingClasses.link}
+								/>
+							</span>
 						</h3>
 						<CriteriumTests
 							criteriumNumber={criteriumNumber}

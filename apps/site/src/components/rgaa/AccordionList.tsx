@@ -21,7 +21,7 @@ export default function AccordionList({
 	criterias,
 }: AccordionListProps) {
 	const { topicAccordionBackgroundColor } = getReferentielStyle(referentiel.id);
-	const { classes } = useStyles({ topicAccordionBackgroundColor });
+	const { classes, cx } = useStyles({ topicAccordionBackgroundColor });
 	const { classes: headingClasses } = useNumberedHeadingStyles();
 	const pathname = usePathname();
 
@@ -45,16 +45,18 @@ export default function AccordionList({
 						data-topic-accordion
 						className={classes.topicAnchor}
 					>
-						<h2 className={classes.title}>
+						<h2 className={cx(classes.title, headingClasses.title)}>
 							<span className={headingClasses.number}>{topic.number}.</span>
-							<span>{topic.topic}</span>
-							<Button
-								iconId="fr-icon-links-fill"
-								title={`Lien vers ${topic.number} ${topic.topic}`}
-								priority="tertiary no outline"
-								linkProps={{ href: `${pathname}#${topic.number}` }}
-								className={headingClasses.link}
-							/>
+							<span>
+								{topic.topic}
+								<Button
+									iconId="fr-icon-links-fill"
+									title={`Lien vers ${topic.number} ${topic.topic}`}
+									priority="tertiary no outline"
+									linkProps={{ href: `${pathname}#${topic.number}` }}
+									className={headingClasses.link}
+								/>
+							</span>
 						</h2>
 						<TopicCriteria referentielId={referentiel.id} topic={topic} />
 					</div>

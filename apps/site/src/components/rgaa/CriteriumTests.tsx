@@ -43,17 +43,26 @@ export default function CriteriumTests({
 
 					return (
 						<div key={`${test.label} ${testNumber}`} className={classes.test}>
-							<h5 className={cx("fr-text--lg")}>
+							<h5 className={cx("fr-text--lg", headingClasses.title)}>
 								<span className={headingClasses.number}>{testNumber}</span>
-								<span>{renderMarkdownInline(test.label)}</span>
-								<Button
-									iconId="fr-icon-links-fill"
-									title={`Lien vers ${testNumber} ${test.label}`}
-									priority="tertiary no outline"
-									linkProps={{ href: `${pathname}#${testNumber}` }}
-									className={headingClasses.link}
-								/>
+								<span>
+									{renderMarkdownInline(test.label)}
+									<Button
+										iconId="fr-icon-links-fill"
+										title={`Lien vers ${testNumber} ${test.label}`}
+										priority="tertiary no outline"
+										linkProps={{ href: `${pathname}#${testNumber}` }}
+										className={headingClasses.link}
+									/>
+								</span>
 							</h5>
+							{test?.conditions && (
+								<ul>
+									{test?.conditions?.map((condition, index) => (
+										<li key={index}>{renderMarkdownInline(condition)}</li>
+									))}
+								</ul>
+							)}
 							{test.methodology && (
 								<TestMethodology
 									testNumber={testNumber}
@@ -98,5 +107,17 @@ const useStyles = tss
 		},
 		test: {
 			marginBottom: fr.spacing("8v"),
+
+			"& > h5": {
+				marginBottom: 0,
+			},
+
+			"& > ul": {
+				marginLeft: fr.spacing("13v"),
+
+				[fr.breakpoints.down("md")]: {
+					marginLeft: 0,
+				},
+			},
 		},
 	}));

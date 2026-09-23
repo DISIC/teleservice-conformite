@@ -18,4 +18,7 @@ export const useNumberedHeadingStyles = tss.withName("NumberedHeading").create({
 	number: {
 		marginRight: fr.spacing("3v"),
 	},
+	title: {
+		display: "flex",
+	},
 });
