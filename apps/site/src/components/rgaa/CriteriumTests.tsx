@@ -49,7 +49,7 @@ export default function CriteriumTests({
 									{renderMarkdownInline(test.label)}
 									<Button
 										iconId="fr-icon-links-fill"
-										title={`Lien vers ${testNumber} ${test.label}`}
+										title={`Lien vers ${testNumber} ${renderMarkdownInline(test.label)}`}
 										priority="tertiary no outline"
 										linkProps={{ href: `${pathname}#${testNumber}` }}
 										className={headingClasses.link}

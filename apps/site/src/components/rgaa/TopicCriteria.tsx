@@ -60,7 +60,7 @@ export default function TopicCriteria({
 								{renderMarkdownInline(criterium.title)}
 								<Button
 									iconId="fr-icon-links-fill"
-									title={`Lien vers ${criteriumNumber} ${criterium.title}`}
+									title={`Lien vers ${criteriumNumber} ${renderMarkdownInline(criterium.title)}`}
 									priority="tertiary no outline"
 									linkProps={{ href: `${pathname}#${criteriumNumber}` }}
 									className={headingClasses.link}
