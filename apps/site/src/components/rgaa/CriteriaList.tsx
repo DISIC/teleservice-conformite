@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { tss } from "tss-react";
 import AccordionList from "./AccordionList";
 import { setCollapsesExpanded } from "./helpers/collapse";
@@ -12,15 +12,26 @@ import { getReferentielStyle, type ReferentielInfos } from "./referentiels";
 import TopicSidebarList from "./TopicSidebarList";
 
 const TOPIC_COLLAPSE = "[data-topic-accordion] > .fr-accordion > .fr-collapse";
-const CRITERIUM_COLLAPSE =
-	'[data-accordion="criterium"] > .fr-accordion > .fr-collapse';
 const TEST_COLLAPSE = '[data-accordion="test"] > .fr-accordion > .fr-collapse';
+const REFERENCE_COLLAPSE =
+	'[data-accordion="reference"] > .fr-accordion > .fr-collapse';
 
-// Each option opens its own level and the levels above it, otherwise what it opens stays out of sight.
-const DISPLAY_OPTION_SELECTORS: Record<DisplayOption, string[]> = {
-	all: [TOPIC_COLLAPSE, CRITERIUM_COLLAPSE, TEST_COLLAPSE],
-	tests: [TOPIC_COLLAPSE, CRITERIUM_COLLAPSE],
-	methodologies: [TOPIC_COLLAPSE, CRITERIUM_COLLAPSE, TEST_COLLAPSE],
+const DISPLAY_OPTION_SELECTORS: Record<
+	DisplayOption,
+	{ expand: string[]; collapse: string[] }
+> = {
+	all: {
+		expand: [TOPIC_COLLAPSE, TEST_COLLAPSE, REFERENCE_COLLAPSE],
+		collapse: [],
+	},
+	tests: {
+		expand: [TOPIC_COLLAPSE, TEST_COLLAPSE],
+		collapse: [REFERENCE_COLLAPSE],
+	},
+	references: {
+		expand: [TOPIC_COLLAPSE, REFERENCE_COLLAPSE],
+		collapse: [TEST_COLLAPSE],
+	},
 };
 
 interface CriteriaListProps {
@@ -42,9 +53,6 @@ export default function CriteriaList({
 		color: badgeColor,
 	});
 
-	const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>(
-		() => Object.fromEntries(allTopics.map((topic) => [topic.topic, true])),
-	);
 	const topicsRef = useRef<HTMLDivElement>(null);
 
 	const applyDisplayOption = (option: DisplayOption) => {
@@ -52,12 +60,13 @@ export default function CriteriaList({
 
 		if (!root) return;
 
-		setExpandedTopics(
-			Object.fromEntries(allTopics.map((topic) => [topic.topic, true])),
-		);
+		const { expand, collapse } = DISPLAY_OPTION_SELECTORS[option];
 
-		for (const selector of DISPLAY_OPTION_SELECTORS[option]) {
+		for (const selector of expand) {
 			setCollapsesExpanded(root.querySelectorAll(selector), true);
+		}
+		for (const selector of collapse) {
+			setCollapsesExpanded(root.querySelectorAll(selector), false);
 		}
 	};
 
@@ -69,14 +78,7 @@ export default function CriteriaList({
 			</div>
 			<div className={classes.rightContent} ref={topicsRef}>
 				<PopoverButton onValidate={applyDisplayOption} />
-				<AccordionList
-					referentiel={referentiel}
-					criterias={criterias}
-					expandedTopics={expandedTopics}
-					onTopicExpandedChange={(topic, expanded) =>
-						setExpandedTopics((value) => ({ ...value, [topic]: expanded }))
-					}
-				/>
+				<AccordionList referentiel={referentiel} criterias={criterias} />
 			</div>
 		</div>
 	);

@@ -1,16 +1,16 @@
 "use client";
 
-import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
 import { useRef, useState } from "react";
 import { tss } from "tss-react";
-import NumberedAccordion from "./NumberedAccordion";
-import { setCollapsesExpanded } from "./helpers/collapse";
 import type { Criterias } from "./helpers/topics";
 import { getReferentielStyle, type ReferentielId } from "./referentiels";
+import CriteriumReference from "./CriteriumReference";
+import CriteriumTests from "./CriteriumTests";
 import DisabledCriteriumAccordion from "./DisabledCriteriumAccordion";
-import CriteriumAppendix from "./CriteriumAppendix";
-import { renderMarkdown } from "./helpers/markdown";
+import { renderMarkdownInline } from "./helpers/markdown";
+import Button from "@codegouvfr/react-dsfr/Button";
+import { usePathname } from "next/navigation";
 
 type TopicCriteriaProps = {
 	referentielId: ReferentielId;
@@ -21,75 +21,51 @@ export default function TopicCriteria({
 	referentielId,
 	topic,
 }: TopicCriteriaProps) {
+	const pathname = usePathname();
 	const { testAccordionBackgroundColor } = getReferentielStyle(referentielId);
-	const { classes } = useStyles({ testAccordionBackgroundColor });
+	const { classes, cx } = useStyles();
 	const [expandedCriteria, setExpandedCriteria] = useState<
+		Record<string, boolean>
+	>({});
+	const [expandedReferences, setExpandedReferences] = useState<
 		Record<string, boolean>
 	>({});
 	const criteriaRef = useRef<HTMLDivElement>(null);
 
-	const expandableCriteria = topic.criteria.filter(
-		({ criterium }) => criterium.tests.length > 0,
-	);
-
-	const allExpanded = expandableCriteria.every(
-		({ criterium }) => expandedCriteria[criterium.number],
-	);
-
-	const toggleAll = () => {
-		setExpandedCriteria(
-			allExpanded
-				? {}
-				: Object.fromEntries(
-						expandableCriteria.map(({ criterium }) => [criterium.number, true]),
-					),
-		);
-		setCollapsesExpanded(
-			criteriaRef.current?.querySelectorAll(
-				":scope > div > .fr-accordion > .fr-collapse",
-			) ?? [],
-			!allExpanded,
-		);
-	};
-
 	return (
-		<>
-			<Button
-				className={classes.toggleButton}
-				iconId="fr-icon-expand-up-down-fill"
-				iconPosition="right"
-				onClick={toggleAll}
-				priority="secondary"
-			>
-				{allExpanded ? "Replier tous les tests" : "Déplier tous les tests"}
-			</Button>
-			<div ref={criteriaRef}>
-				{topic.criteria.map(({ criterium }) => {
-					const criteriumNumber = `${topic.number}.${criterium.number}`;
+		<div ref={criteriaRef} className={classes.topicCriteria}>
+			{topic.criteria.map(({ criterium }) => {
+				const criteriumNumber = `${topic.number}.${criterium.number}`;
 
-					if (!criterium.tests.length) {
-						return (
-							<DisabledCriteriumAccordion
-								key={`${criterium.title} ${criterium.number}`}
-								title={criterium.title}
-								number={criteriumNumber}
-							/>
-						);
-					}
-
+				if (!criterium.tests.length) {
 					return (
-						<NumberedAccordion
+						<DisabledCriteriumAccordion
 							key={`${criterium.title} ${criterium.number}`}
-							as="h3"
-							titleAs="h4"
-							id={criteriumNumber}
-							dataAccordion="criterium"
+							title={criterium.title}
 							number={criteriumNumber}
-							label={criterium.title}
-							accordionLabel={`Tests et références du critère ${criteriumNumber}`}
-							showLinkIcon={true}
-							headingClassName={fr.cx("fr-h4")}
-							className={classes.criteriaAccordion}
+						/>
+					);
+				}
+
+				return (
+					<div
+						key={`${criterium.title} ${criteriumNumber}`}
+						className={classes.criteriumContainer}
+					>
+						<h3 className={cx("fr-h4")}>
+							<span className={classes.number}>{criteriumNumber}</span>
+							<span>{renderMarkdownInline(criterium.title)}</span>
+							<Button
+								iconId="fr-icon-links-fill"
+								title={`Lien vers ${criteriumNumber} ${criterium.title}`}
+								priority="tertiary no outline"
+								linkProps={{ href: `${pathname}#${criteriumNumber}` }}
+								className={classes.link}
+							/>
+						</h3>
+						<CriteriumTests
+							criteriumNumber={criteriumNumber}
+							tests={criterium.tests}
 							defaultExpanded={expandedCriteria[criterium.number] ?? false}
 							onExpandedChange={(expanded) =>
 								setExpandedCriteria((value) => ({
@@ -97,106 +73,62 @@ export default function TopicCriteria({
 									[criterium.number]: expanded,
 								}))
 							}
-						>
-							{criterium.tests.map((test) => {
-								const testNumber = `${criteriumNumber}.${test.number}`;
-
-								return (
-									<NumberedAccordion
-										key={`${test.label} ${test.number}`}
-										as="h5"
-										titleAs="h6"
-										id={testNumber}
-										dataAccordion="test"
-										number={testNumber}
-										showLinkIcon={true}
-										conditions={test.conditions}
-										label={test.label}
-										accordionLabel={`Méthodologie du test ${testNumber}`}
-										headingClassName={fr.cx("fr-text--lg")}
-										className={classes.testAccordion}
-									>
-										<div className={classes.methodologies}>
-											{renderMarkdown(test.methodology)}
-										</div>
-									</NumberedAccordion>
-								);
-							})}
-							<CriteriumAppendix appendix={criterium.appendix} />
-						</NumberedAccordion>
-					);
-				})}
-			</div>
-		</>
+							accordionBackgroundColor={testAccordionBackgroundColor}
+						/>
+						<CriteriumReference
+							criteriumNumber={criteriumNumber}
+							appendix={criterium.appendix}
+							defaultExpanded={expandedReferences[criterium.number] ?? false}
+							onExpandedChange={(expanded) =>
+								setExpandedReferences((value) => ({
+									...value,
+									[criterium.number]: expanded,
+								}))
+							}
+							accordionBackgroundColor={testAccordionBackgroundColor}
+						/>
+					</div>
+				);
+			})}
+		</div>
 	);
 }
 
-const useStyles = tss
-	.withName(TopicCriteria.name)
-	.withParams<{ testAccordionBackgroundColor: string }>()
-	.create(({ testAccordionBackgroundColor }) => ({
-		criteriaAccordion: {
-			marginLeft: fr.spacing("9v"),
+const useStyles = tss.withName(TopicCriteria.name).create({
+	topicCriteria: {
+		marginLeft: fr.spacing("6v"),
+		marginBlock: fr.spacing("6v"),
 
-			"& > .fr-accordion__title > .fr-accordion__btn": {
-				fontFamily: "Marianne",
-				fontWeight: 700,
-				fontSize: "20px",
-				lineHeight: "32px",
-				letterSpacing: 0,
-				backgroundColor: testAccordionBackgroundColor,
+		[fr.breakpoints.down("md")]: {
+			marginInline: fr.spacing("4v"),
+			marginBlock: fr.spacing("6v"),
+		},
+	},
+	criteriumContainer: {
+		marginBottom: fr.spacing("12v"),
+	},
+	link: {
+		"&&": {
+			color: fr.colors.decisions.text.mention.grey.default,
+			backgroundColor: "transparent",
+			"--hover-tint": "transparent",
+			"--active-tint": "transparent",
+
+			"&:hover, &:active": {
 				color: fr.colors.decisions.text.title.grey.default,
-
-				"--hover-tint": testAccordionBackgroundColor,
-				"--active-tint": testAccordionBackgroundColor,
-			},
-
-			"& > .fr-collapse": {
-				margin: 0,
-				backgroundColor: fr.colors.decisions.background.alt.grey.default,
 			},
 		},
-		testAccordion: {
-			marginLeft: fr.spacing("5w"),
+	},
+	titleContainer: {
+		marginBottom: fr.spacing("6v"),
+		display: "flex",
+		alignItems: "center",
 
-			"& > .fr-accordion__title > .fr-accordion__btn": {
-				fontFamily: "Marianne",
-				fontWeight: 700,
-				fontSize: "18px",
-				lineHeight: "28px",
-				letterSpacing: 0,
-				backgroundColor: fr.colors.decisions.background.default.grey.default,
-				color: fr.colors.decisions.text.title.grey.default,
-
-				"--hover-tint": fr.colors.decisions.background.default.grey.default,
-				"--active-tint": fr.colors.decisions.background.default.grey.default,
-			},
-
-			"& > .fr-collapse": {
-				margin: 0,
-				backgroundColor: fr.colors.decisions.background.default.grey.default,
-			},
+		"& > h3": {
+			marginBottom: 0,
 		},
-		toggleButton: {
-			display: "flex",
-			marginLeft: "auto",
-			marginBottom: fr.spacing("3w"),
-		},
-		methodologies: {
-			backgroundColor: fr.colors.decisions.background.default.grey.default,
-			fontFamily: "Marianne",
-			fontSize: "16px",
-			lineHeight: "24px",
-			letterSpacing: "0%",
-			fontWeight: 500,
-			color: fr.colors.decisions.text.default.grey.default,
-
-			"& p, & ol, & ul": {
-				marginBottom: fr.spacing("1w"),
-			},
-			"& li > ul": {
-				marginTop: fr.spacing("1v"),
-				marginBottom: 0,
-			},
-		},
-	}));
+	},
+	number: {
+		marginRight: fr.spacing("3v"),
+	},
+});

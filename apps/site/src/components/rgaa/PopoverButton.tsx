@@ -6,7 +6,7 @@ import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import { useEffect, useId, useRef, useState } from "react";
 import { tss } from "tss-react";
 
-export type DisplayOption = "all" | "tests" | "methodologies";
+export type DisplayOption = "all" | "tests" | "references";
 
 interface PopoverButtonProps {
 	onValidate: (option: DisplayOption) => void;
@@ -28,6 +28,7 @@ export default function PopoverButton({ onValidate }: PopoverButtonProps) {
 
 	const onClosePopover = () => {
 		setOpen(false);
+		setValue(undefined);
 		toggleButtonRef.current?.focus();
 	};
 
@@ -88,17 +89,17 @@ export default function PopoverButton({ onValidate }: PopoverButtonProps) {
 							},
 						},
 						{
-							label: "Déplier les tests et références",
+							label: "Déplier les tests",
 							nativeInputProps: {
 								checked: value === "tests",
 								onChange: () => setValue("tests"),
 							},
 						},
 						{
-							label: "Déplier les méthodologies de test",
+							label: "Déplier les références et notes",
 							nativeInputProps: {
-								checked: value === "methodologies",
-								onChange: () => setValue("methodologies"),
+								checked: value === "references",
+								onChange: () => setValue("references"),
 							},
 						},
 					]}
