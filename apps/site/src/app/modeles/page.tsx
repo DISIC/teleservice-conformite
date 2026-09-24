@@ -1,14 +1,14 @@
-"use client";
-
 import { fr } from "@codegouvfr/react-dsfr";
+import type { Metadata } from "next";
 import DownloadCard from "~/components/rgaa/DownloadCard";
 import PageHero from "~/components/rgaa/PageHero";
+import TemplateContent from "~/components/rgaa/TemplateContent";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
-import { tss } from "tss-react";
+import { readMarkdownFile } from "~/lib/content";
+
+export const metadata: Metadata = { title: "Modèles à télécharger" };
 
 export default function TemplatesPage() {
-	const { classes, cx } = useStyles();
-
 	return (
 		<>
 			<StartDsfrOnHydration />
@@ -28,10 +28,17 @@ export default function TemplatesPage() {
 			<div className={fr.cx("fr-container", "fr-my-10v")}>
 				<div className={fr.cx("fr-grid-row", "fr-grid-row--center")}>
 					<div
-						className={cx(
-							fr.cx("fr-col-12", "fr-col-sm-12", "fr-col-md-10", "fr-col-lg-8"),
-							classes.content,
+						className={fr.cx(
+							"fr-col-12",
+							"fr-col-sm-12",
+							"fr-col-md-10",
+							"fr-col-lg-8",
 						)}
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							gap: fr.spacing("6v"),
+						}}
 					>
 						<DownloadCard
 							title="Grille d’audit"
@@ -61,34 +68,17 @@ export default function TemplatesPage() {
 								},
 							]}
 						/>
-						<DownloadCard
-							title="Déclaration d’accessibilité"
-							downloadProps={[
-								{
-									label: "Au format ODT",
-									detail: "61,88 Ko",
-									// TODO: add link
-									href: "#",
-								},
-								{
-									label: "Au format PDF",
-									detail: "61,88 Ko",
-									// TODO: add link
-									href: "#",
-								},
-							]}
-						/>
+						<DownloadCard title="Déclaration d’accessibilité">
+							<TemplateContent
+								declarationExample={readMarkdownFile(
+									"modeles",
+									"declaration-accessibilite",
+								)}
+							/>
+						</DownloadCard>
 					</div>
 				</div>
 			</div>
 		</>
 	);
 }
-
-const useStyles = tss.withName(TemplatesPage.name).create({
-	content: {
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("6v"),
-	},
-});

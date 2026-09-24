@@ -36,6 +36,10 @@ export function splitSections(markdown: string): MarkdownSection[] {
 	});
 }
 
+export function readMarkdownFile(dir: string, name: string): string {
+	return readFileSync(path.join(CONTENT_DIR, dir, `${name}.md`), "utf8");
+}
+
 // Release notes are one file per version, named …-4-1-2.md; a missing segment means 0 (4.1 is 4.1.0).
 const FILE_VERSION = /(\d+(?:-\d+)*)\.md$/;
 
