@@ -90,16 +90,19 @@ export const stateNotice = (page: Page, state: DeclarationState) =>
 export async function expectPreview(page: Page) {
 	await page.waitForURL(/\/preview$/);
 	await expect(
-		page.getByRole("heading", {
-			level: 1,
-			name: "Votre déclaration est prête à être publiée",
-		}),
+		page.getByRole("heading", { level: 2, name: "Prévisualiser et publier" }),
 	).toBeVisible();
 }
 
+/** Publishes and asserts the confirmation screen; the caller navigates on from there. */
 export async function publishFromPreview(page: Page) {
 	await page.getByRole("button", { name: "Publier la déclaration" }).click();
-	await expect(page.getByText("Votre déclaration est en ligne.")).toBeVisible();
+	await expect(
+		page.getByRole("heading", {
+			level: 2,
+			name: "Votre déclaration a été publiée sur le téléservice.",
+		}),
+	).toBeVisible();
 }
 
 export const obsolescenceNotice = (

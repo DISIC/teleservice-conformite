@@ -3,10 +3,14 @@ import type { Field } from "payload";
 import { rgaaVersionOptions } from "../selectOptions";
 import { toVerifyField } from "./common";
 
-const isRealised = (
-	_: unknown,
-	siblingData: { isRealised?: boolean } | undefined,
-) => Boolean(siblingData?.isRealised);
+type AuditSiblingData = {
+	isRealised?: boolean;
+	rgaa_version?: string;
+	hasBlockingElements?: boolean;
+};
+
+const isRealised = (_: unknown, siblingData: AuditSiblingData | undefined) =>
+	Boolean(siblingData?.isRealised);
 
 /**
  * Audit content folded onto the declaration row as a 1:1 group. Conditions read
@@ -59,6 +63,27 @@ export const auditGroup: Field = {
 			type: "textarea",
 			label: { fr: "Éléments ayant fait l’objet de vérification" },
 			admin: { condition: isRealised },
+		},
+		{
+			// Blocking elements are an RGAA 5 notion only; RGAA 4 audits leave it null.
+			name: "hasBlockingElements",
+			type: "checkbox",
+			label: { fr: "Audit ayant remonté des éléments bloquants" },
+			admin: {
+				condition: (_, siblingData: AuditSiblingData | undefined) =>
+					Boolean(siblingData?.isRealised) &&
+					siblingData?.rgaa_version === "rgaa_5",
+			},
+		},
+		{
+			name: "blockingElements",
+			type: "textarea",
+			label: { fr: "Éléments bloquants" },
+			admin: {
+				condition: (_, siblingData: AuditSiblingData | undefined) =>
+					Boolean(siblingData?.isRealised) &&
+					Boolean(siblingData?.hasBlockingElements),
+			},
 		},
 		{
 			name: "nonCompliantElements",

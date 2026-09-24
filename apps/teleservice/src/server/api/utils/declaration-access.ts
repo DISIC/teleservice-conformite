@@ -56,3 +56,33 @@ export async function loadOwnedDeclaration(
 
 	return getPopulatedDeclaration(declaration);
 }
+
+/** The mark lives on the caller's own access right, so co-declarants each get
+ *  their own first pass through the walkthrough. */
+export async function trackDeclarationVisit(
+	payload: Payload,
+	userId: number,
+	declarationId: number,
+): Promise<boolean> {
+	const accessRight = await payload.find({
+		collection: "access-rights",
+		where: {
+			declaration: { equals: declarationId },
+			user: { equals: userId },
+			status: { equals: "approved" },
+		},
+		limit: 1,
+		depth: 0,
+	});
+
+	const own = accessRight.docs[0];
+	if (!own) return false;
+	if (own.firstVisitedAt) return true;
+
+	await payload.update({
+		collection: "access-rights",
+		id: own.id,
+		data: { firstVisitedAt: new Date().toISOString() },
+	});
+	return false;
+}

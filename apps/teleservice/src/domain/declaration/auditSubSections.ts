@@ -82,7 +82,9 @@ export const AUDIT_SUB_SECTIONS: Record<
 	},
 	"audit-non-conformites": {
 		title: "Non conformités & dérogations",
-		isToComplete: () => false,
+		// Only the blocking elements are mandatory here, and only once the audit reported some.
+		isToComplete: (d) =>
+			d.audit?.hasBlockingElements === true && !d.audit?.blockingElements,
 		validation: {
 			schema: auditNonConformities,
 			fromDeclaration: (d) => auditToNonConformitiesValues(d.audit),

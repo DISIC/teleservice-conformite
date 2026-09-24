@@ -33,7 +33,7 @@ export default function TechnicalMethodPage() {
 				title="Critères et tests"
 				description="Ici un texte décrivant le fait que le RGAA s’appuie désormais sur 3 référentiels. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa."
 				pictogram="technical-error"
-				referentiels={referentiels}
+				linkButtons={referentiels}
 				badgeColor={fr.colors.decisions.text.actionHigh.blueEcume.default}
 				badgeBackgroundColor={
 					fr.colors.decisions.background.alt.blueEcume.active

@@ -26,8 +26,12 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 	// Sequential mode: every Section is editable in place, nothing to toggle.
 	await expect(sectionHeading(page, "infos")).toBeVisible();
 	await expect(page.getByRole("button", { name: "Modifier" })).toHaveCount(0);
-	await expect(stateNotice(page, "incomplete")).toBeVisible();
+	// A first pass flags nothing: the guidance waits for the declarant to come back.
+	await expect(stateNotice(page, "incomplete")).toHaveCount(0);
 	await a11y.check("details page in sequential mode");
+
+	await page.reload();
+	await expect(stateNotice(page, "incomplete")).toBeVisible();
 
 	// The sector lives on the entity shared by every UI-created row: always set it.
 	await checkRadio(page, /^Site web/);
@@ -51,7 +55,7 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 	await goToNextSection(page, "audit-non-conformites");
 
 	await goToNextSection(page, "schema");
-	await checkRadio(page, /^Aucun schéma pour le moment/);
+	await checkRadio(page, /^Renseigner un schéma pluriannuel plus tard/);
 	await waitForSave(page, "schema.skip");
 
 	// Contact without a channel: the one thing left for the gate to catch.
@@ -87,6 +91,9 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 	await expectPreview(page);
 	await a11y.check("preview page");
 	await publishFromPreview(page);
+	await a11y.check("publication confirmation screen");
+
+	await page.goto(`/dashboard/declarations/${id}`);
 	await a11y.check("details page after publishing");
 
 	// Publiée: standalone mode, no notice, public page live, list badge swapped.

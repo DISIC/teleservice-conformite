@@ -3,19 +3,30 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import Button from "@codegouvfr/react-dsfr/Button";
+import Image, { type StaticImageData } from "next/image";
+import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import BetaBadge from "./BetaBadge";
 import Pictogram, { type PictogramId } from "./Pictogram";
 import type { ReferentielCard } from "./referentiels";
 import ellipse from "../../assets/ellipse.svg";
 
-export type referentielLinkButtonsProps = Pick<
+export type LinkButtonsProps = Pick<
 	ReferentielCard,
 	"id" | "title" | "iconId" | "href"
 >;
 
-type PageHeroProps = {
-	breadcrumbCurrentPageLabel: string;
+// The hero illustration is either one of our named pictograms or an image asset, never both.
+type HeroIllustration =
+	| { pictogram: PictogramId; imageSrc?: never; imageAlt?: never }
+	| {
+			imageSrc: string | StaticImageData;
+			imageAlt?: string;
+			pictogram?: never;
+	  };
+
+type PageHeroProps = HeroIllustration & {
+	breadcrumbCurrentPageLabel: ReactNode;
 	breadcrumbSegments: {
 		label: string;
 		linkProps: {
@@ -23,11 +34,10 @@ type PageHeroProps = {
 		};
 	}[];
 	title: string;
-	description: string;
-	pictogram: PictogramId;
-	referentiels: referentielLinkButtonsProps[];
-	badgeColor: string;
-	badgeBackgroundColor: string;
+	description: string | ReactNode;
+	linkButtons?: LinkButtonsProps[];
+	badgeColor?: string;
+	badgeBackgroundColor?: string;
 	backgroundColor: string;
 	ellipseColor: string;
 };
@@ -39,13 +49,16 @@ export default function PageHero(props: PageHeroProps) {
 		title,
 		description,
 		pictogram,
-		referentiels,
+		imageSrc,
+		imageAlt,
+		linkButtons,
 		badgeColor,
 		badgeBackgroundColor,
 		backgroundColor,
 		ellipseColor,
 	} = props;
 	const { classes } = useStyles({ backgroundColor, ellipseColor });
+	const hasBadge = badgeColor && badgeBackgroundColor;
 
 	return (
 		<div className={classes.hero}>
@@ -59,30 +72,43 @@ export default function PageHero(props: PageHeroProps) {
 				<div className={classes.heroContent}>
 					<div className={classes.heroIllustrationWrapper}>
 						<div className={classes.heroIllustration}>
-							<Pictogram id={pictogram} fontSize="inherit" />
+							{imageSrc ? (
+								<Image
+									className={classes.image}
+									src={imageSrc}
+									alt={imageAlt ?? ""}
+									width={216}
+									height={216}
+								/>
+							) : (
+								pictogram && <Pictogram id={pictogram} fontSize="inherit" />
+							)}
 						</div>
 					</div>
 					<div className={classes.heroText}>
-						<BetaBadge
-							color={badgeColor}
-							backgroundColor={badgeBackgroundColor}
-						/>
+						{hasBadge && (
+							<BetaBadge
+								color={badgeColor}
+								backgroundColor={badgeBackgroundColor}
+							/>
+						)}
 						<h1 className={classes.title}>{title}</h1>
-						<p className={classes.description}>{description} </p>
+						<p className={classes.description}>{description}</p>
 						<ul className={classes.referentialTags}>
-							{referentiels.map(({ id, title, iconId, href }) => (
-								<li key={id}>
-									<Button
-										priority="secondary"
-										size="small"
-										iconId={iconId as never}
-										iconPosition="left"
-										linkProps={{ href }}
-									>
-										{title}
-									</Button>
-								</li>
-							))}
+							{linkButtons?.length &&
+								linkButtons.map(({ id, title, iconId, href }) => (
+									<li key={id}>
+										<Button
+											priority="secondary"
+											size="small"
+											iconId={iconId as never}
+											iconPosition="left"
+											linkProps={{ href }}
+										>
+											{title}
+										</Button>
+									</li>
+								))}
 						</ul>
 					</div>
 				</div>
@@ -173,6 +199,11 @@ const useStyles = tss
 					height: "118px",
 				},
 			},
+		},
+		image: {
+			width: "60%",
+			height: "auto",
+			objectFit: "contain",
 		},
 		heroIllustration: {
 			position: "relative",

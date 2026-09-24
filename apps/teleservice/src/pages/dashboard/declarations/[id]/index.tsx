@@ -1,33 +1,23 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react";
-import { PageHeading } from "~/components/layout/PageHeading";
-import { BackButton } from "~/components/ui/BackButton";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
+import { DeclarationHeading } from "~/components/declaration/DeclarationHeading";
 import { StateNotice } from "~/components/declaration/StateNotice";
-import {
-	ConfirmationModal,
-	type ConfirmationModalActions,
-} from "~/components/modal/ConfirmationModal";
+import { isToCompleteRevealed } from "~/domain/declaration/state";
+import { ToCompleteGuidance } from "~/components/declaration/ToCompleteGuidance";
 import { ObsolescenceInterstitial } from "~/components/declaration/ObsolescenceInterstitial";
-import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
-import { StatusBadge } from "~/components/declaration/StatusBadge";
 import {
 	getDeclarationStatus,
 	getEditingMode,
 } from "~/domain/declaration/status";
-import { StatsCards } from "~/components/declaration/StatsCards";
 import { SectionContent } from "~/components/declaration/sections/Content";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
-import { copyToClipboard } from "~/lib/clipboard";
 import { parseSectionFromQuery } from "~/domain/declaration/sections";
 import { getObsolescence } from "~/domain/declaration/obsolescence";
 import { validateDeclaration } from "~/domain/declaration/validate";
@@ -35,12 +25,14 @@ import {
 	type DeclarationProps,
 	guardDeclaration,
 	type LibraryProps,
+	type VisitProps,
 } from "~/lib/server-guards";
 
 export default function DeclarationPage({
 	declaration: initialDeclaration,
 	libraryContacts,
 	librarySchemas,
+	hasVisitedBefore,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const router = useRouter();
 	const apiUtils = api.useUtils();
@@ -50,22 +42,15 @@ export default function DeclarationPage({
 		apiUtils.library.listContacts.setData(undefined, libraryContacts ?? []);
 		apiUtils.library.listSchemas.setData(undefined, librarySchemas ?? []);
 	});
-	const { published, section: sectionQuery, field: fieldQuery } = router.query;
+	const { section: sectionQuery, field: fieldQuery } = router.query;
 	const currentSection = parseSectionFromQuery(sectionQuery);
 	const [declaration, setDeclaration] =
 		useState<PopulatedDeclaration>(initialDeclaration);
-	const [showAlert, setShowAlert] = useState<boolean>(false);
-	const [alertDetails, setAlertDetails] = useState<{
-		title?: ReactNode;
-		description?: ReactNode;
-		severity: "info" | "success" | "warning" | "error";
-		autoDismiss: boolean;
-	}>({ title: "", description: "", severity: "info", autoDismiss: true });
 	const { classes } = useStyles();
 
 	const status = getDeclarationStatus(declaration);
 	const editingMode = getEditingMode(status);
-	const isPublished = status === "published";
+	const showToComplete = isToCompleteRevealed(editingMode, !!hasVisitedBefore);
 
 	// The interstitial gates an unchanged, ageing publication until the declarant
 	// starts updating it; once the row is Modifiée they are already acting.
@@ -84,69 +69,6 @@ export default function DeclarationPage({
 		[publishAttempted, declaration],
 	);
 
-	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
-	const { mutate: deleteDeclaration } = api.declaration.delete.useMutation({
-		onSuccess: async () => {
-			router.push("/dashboard/declarations");
-		},
-		onError: (error) => {
-			console.error("Error deleting declaration:", error);
-		},
-	});
-
-	const confirmDelete = () =>
-		confirmationModalActions.open?.({
-			title: "Supprimer la déclaration",
-			confirmLabel: "Supprimer",
-			confirmIconId: "fr-icon-delete-fill",
-			description: (
-				<div className={classes.emptyStateContainer}>
-					<Binders fontSize="250px" />
-					<div>
-						<p>
-							Cette action est irréversible et entrainera la suppression de la
-							page publique de la déclaration.
-						</p>
-						<p>
-							Nous vous rappelons que chaque site doit fournir une déclaration
-							d'accessibilité accessible aux usagers.
-						</p>
-						<p>
-							Si votre déclaration arrive en fin de validité, vous pouvez la
-							mettre à jour depuis l'onglet « Déclaration » de votre
-							déclaration.
-						</p>
-					</div>
-				</div>
-			),
-			onConfirm: () => deleteDeclaration({ declarationId: declaration.id }),
-		});
-
-	const showDeclarationAlert = ({
-		title,
-		description,
-		severity,
-		autoDismiss = true,
-	}: {
-		title?: ReactNode;
-		description?: ReactNode;
-		severity: "info" | "success" | "warning" | "error";
-		autoDismiss?: boolean;
-	}) => {
-		setAlertDetails({ title, description, severity, autoDismiss });
-		setShowAlert(true);
-	};
-
-	useEffect(() => {
-		if (!showAlert || !alertDetails.autoDismiss) return;
-
-		const timer = setTimeout(() => {
-			setShowAlert(false);
-		}, 5000);
-
-		return () => clearTimeout(timer);
-	}, [showAlert, alertDetails]);
-
 	// Focus the errored field on first mount, then drop the param so it neither
 	// lingers in the URL nor re-fires on later re-renders.
 	useEffect(() => {
@@ -162,30 +84,6 @@ export default function DeclarationPage({
 		router.replace({ query }, undefined, { shallow: true, scroll: false });
 	}, [fieldQuery, currentSection, router]);
 
-	useEffect(() => {
-		if (published === "true") {
-			showDeclarationAlert({
-				title: "Votre déclaration est en ligne.",
-				description: (
-					<a
-						href={`/declarations/${declaration.id}/publish`}
-						target="_blank"
-						rel="noopener noreferrer"
-						title={`Voir la déclaration ${declaration.name}, nouvelle fenêtre`}
-					>
-						Voir la déclaration
-					</a>
-				),
-				severity: "success",
-				autoDismiss: false,
-			});
-
-			router.replace(`/dashboard/declarations/${declaration.id}`, undefined, {
-				shallow: true,
-			});
-		}
-	}, [published]);
-
 	const heading = (
 		<>
 			<Head>
@@ -193,71 +91,7 @@ export default function DeclarationPage({
 					Déclaration de {declaration.name} - Téléservice Conformité
 				</title>
 			</Head>
-			<PageHeading
-				title={declaration.name}
-				entityName={declaration.entity?.name}
-				subline={<ObsolescenceLine declaration={declaration} />}
-				backButton={
-					<BackButton href="/dashboard/declarations">
-						Retourner à la liste de mes déclarations
-					</BackButton>
-				}
-				badge={<StatusBadge declaration={declaration} />}
-				actions={
-					<>
-						{isPublished && (
-							<>
-								<Button
-									priority="tertiary"
-									size="small"
-									linkProps={{
-										href: `/declarations/${declaration.id}/publish`,
-										target: "_blank",
-										rel: "noopener noreferrer",
-										title: `Voir la déclaration ${declaration.name}, nouvelle fenêtre`,
-									}}
-								>
-									Voir la déclaration
-								</Button>
-								<Button
-									priority="tertiary"
-									iconId="ri-file-copy-line"
-									size="small"
-									nativeButtonProps={{
-										"aria-label":
-											"Copier le lien web de la déclaration publiée",
-									}}
-									onClick={() =>
-										copyToClipboard(
-											`${process.env.NEXT_PUBLIC_FRONT_URL}/declarations/${declaration.id}/publish`,
-											() =>
-												showDeclarationAlert({
-													description:
-														"Lien de la déclaration publiée copié dans le presse-papier",
-													severity: "success",
-												}),
-										)
-									}
-								>
-									Copier le lien
-								</Button>
-							</>
-						)}
-						<Button
-							iconId="fr-icon-delete-line"
-							priority="tertiary"
-							onClick={confirmDelete}
-							size="small"
-							nativeButtonProps={{
-								"aria-label": "Supprimer la déclaration",
-							}}
-						>
-							Supprimer
-						</Button>
-					</>
-				}
-			/>
-			<ConfirmationModal actions={confirmationModalActions} />
+			<DeclarationHeading declaration={declaration} />
 		</>
 	);
 
@@ -286,73 +120,50 @@ export default function DeclarationPage({
 				id="declaration-page"
 				className={fr.cx("fr-container", "fr-mt-10v")}
 			>
-				{showAlert && (
-					<div className={classes.alertWrapper}>
-						<Alert
-							small
-							severity={alertDetails.severity}
-							title={alertDetails?.title ?? ""}
-							description={alertDetails?.description ?? ""}
-							closable
-							isClosed={!showAlert}
-							onClose={() => setShowAlert(false)}
-						/>
-					</div>
-				)}
-				<div className={classes.stateNoticeWrapper}>
+				<ToCompleteGuidance show={showToComplete}>
 					<StateNotice
 						declaration={declaration}
 						onPublishAttempt={() => setPublishAttempted(true)}
 						onReverted={() => router.reload()}
 					/>
-				</div>
 
-				<div className={classes.statsWrapper}>
-					<StatsCards declaration={declaration} />
-				</div>
-
-				<div className={classes.tabContent}>
-					{declarationErrors.length > 0 && (
-						<div className={classes.errorSummaryWrapper}>
-							<ErrorSummary
-								declarationId={declaration.id}
-								errors={declarationErrors}
-							/>
-						</div>
-					)}
-					<div
-						className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
-						role="presentation"
-					>
-						<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
-							<SideMenu
-								declaration={declaration}
-								currentSection={currentSection}
-							/>
-						</aside>
-						<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
-							<SectionContent
-								declaration={declaration}
-								currentSection={currentSection}
-								onDeclarationChange={setDeclaration}
-								mode={editingMode}
-								onPublishAttempt={() => setPublishAttempted(true)}
-							/>
+					<div className={classes.tabContent}>
+						{declarationErrors.length > 0 && (
+							<div className={classes.errorSummaryWrapper}>
+								<ErrorSummary
+									declarationId={declaration.id}
+									errors={declarationErrors}
+								/>
+							</div>
+						)}
+						<div
+							className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
+							role="presentation"
+						>
+							<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
+								<SideMenu
+									declaration={declaration}
+									currentSection={currentSection}
+								/>
+							</aside>
+							<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
+								<SectionContent
+									declaration={declaration}
+									currentSection={currentSection}
+									onDeclarationChange={setDeclaration}
+									mode={editingMode}
+									onPublishAttempt={() => setPublishAttempted(true)}
+								/>
+							</div>
 						</div>
 					</div>
-				</div>
+				</ToCompleteGuidance>
 			</section>
 		</>
 	);
 }
 
 const useStyles = tss.withName(DeclarationPage.name).create({
-	statsWrapper: {
-		marginBottom: fr.spacing("8v"),
-	},
-	stateNoticeWrapper: {
-		marginBottom: fr.spacing("6v"),
-	},
 	errorSummaryWrapper: {
 		marginBottom: fr.spacing("6v"),
 	},
@@ -376,17 +187,12 @@ const useStyles = tss.withName(DeclarationPage.name).create({
 		paddingTop: fr.spacing("6v"),
 		paddingBottom: fr.spacing("16v"),
 	},
-	alertWrapper: {
-		width: "100%",
-		display: "flex",
-		marginBottom: fr.spacing("6v"),
-		"& div": {
-			width: "100%",
-		},
-	},
 });
 
 export const getServerSideProps = (async (context) =>
 	guardDeclaration(context, {
 		includeLibrary: true,
-	})) satisfies GetServerSideProps<DeclarationProps & Partial<LibraryProps>>;
+		trackVisit: true,
+	})) satisfies GetServerSideProps<
+	DeclarationProps & Partial<LibraryProps> & Partial<VisitProps>
+>;

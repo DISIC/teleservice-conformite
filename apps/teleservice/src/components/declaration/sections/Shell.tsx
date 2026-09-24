@@ -10,6 +10,8 @@ import type { EditingMode } from "~/domain/declaration/status";
 
 export type SectionShellProps = {
 	title: string;
+	/** Status flag shown next to the title (e.g. "Non applicable"). */
+	badge?: ReactNode;
 	/**
 	 * Whether the underlying data already exists (and therefore can be toggled
 	 * between read-only and edit). When false, the section is in initial-fill
@@ -44,6 +46,7 @@ export type SectionShellProps = {
 
 export function SectionShell({
 	title,
+	badge,
 	isEditable,
 	readOnly,
 	onEnterEdit,
@@ -72,7 +75,10 @@ export function SectionShell({
 	return (
 		<section className={classes.root}>
 			<header className={classes.header}>
-				<h2 className={cx(classes.title, fr.cx("fr-h3"))}>{title}</h2>
+				<h2 className={cx(classes.title, fr.cx("fr-h3"))}>
+					{title}
+					{badge}
+				</h2>
 				<div className={classes.headerActions}>
 					{!isSequential && !hideActions && isEditable && readOnly && (
 						<Button
@@ -186,6 +192,10 @@ const useStyles = tss.withName(SectionShell.name).create({
 	},
 	title: {
 		margin: 0,
+		display: "flex",
+		alignItems: "center",
+		gap: fr.spacing("2v"),
+		flexWrap: "wrap",
 	},
 	headerActions: {
 		display: "flex",

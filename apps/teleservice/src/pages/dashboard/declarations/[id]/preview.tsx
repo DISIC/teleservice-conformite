@@ -4,12 +4,13 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { tss } from "tss-react";
 import PublishedTemplate, {
 	extractDeclarationContentToPublish,
 } from "~/components/declaration/PublishedTemplate";
+import { DeclarationHeading } from "~/components/declaration/DeclarationHeading";
+import { PublishSuccess } from "~/components/declaration/PublishSuccess";
 import type { Entity, User } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
@@ -30,7 +31,6 @@ export default function DeclarationPreviewPage({
 	declaration,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
-	const { push, back } = useRouter();
 
 	// Publishing stamps today, so the preview must not inherit an old, possibly obsolete, date.
 	const publishedDeclarationContent: PublishedDeclaration =
@@ -41,10 +41,14 @@ export default function DeclarationPreviewPage({
 	const [publishError, setPublishError] = useState<
 		"incomplete" | "generic" | null
 	>(null);
+	// Set once the server has published: the confirmation replaces the preview at the same URL.
+	const [publishedAt, setPublishedAt] = useState<Date | null>(null);
 
 	const { mutate: publishDeclaration } = api.declaration.publish.useMutation({
-		onSuccess: () => {
-			push(`/dashboard/declarations/${declaration.id}?published=true`);
+		onSuccess: ({ data }) => {
+			setPublishedAt(
+				data.published_at ? new Date(data.published_at) : new Date(),
+			);
 		},
 		onError: (error) => {
 			setPublishError(
@@ -58,79 +62,100 @@ export default function DeclarationPreviewPage({
 		publishDeclaration({ declarationId: declaration.id });
 	};
 
+	const head = (
+		<Head>
+			<title>
+				{publishedAt
+					? "Votre déclaration a été publiée"
+					: "Votre déclaration est prête à être publiée"}{" "}
+				- Déclaration de {declaration.name} - Téléservice Conformité
+			</title>
+		</Head>
+	);
+
+	if (publishedAt) {
+		return (
+			<>
+				{head}
+				<DeclarationHeading declaration={declaration} />
+				<section
+					id="declaration-published"
+					className={fr.cx("fr-container", "fr-mt-10v")}
+				>
+					<PublishSuccess declaration={declaration} publishedAt={publishedAt} />
+				</section>
+			</>
+		);
+	}
+
 	return (
 		<>
-			<Head>
-				<title>
-					Votre déclaration est prête à être publiée - Déclaration de{" "}
-					{declaration.name} - Téléservice Conformité
-				</title>
-			</Head>
-			<section id="declaration-preview" className={fr.cx("fr-container")}>
-				<div className={classes.main}>
-					<h1>Votre déclaration est prête à être publiée</h1>
-					<p>
-						Voici un aperçu de votre déclaration. Publiez-la pour la rendre
-						accessible en ligne, puis partagez-la via le bouton ”Publier la
-						déclaration”.
-					</p>
-					<div className={classes.declarationPreview}>
-						<PublishedTemplate
-							declaration={publishedDeclarationContent}
-							mode="preview"
-						/>
+			{head}
+			<DeclarationHeading declaration={declaration} />
+			<div className={classes.band}>
+				<section id="declaration-preview" className={fr.cx("fr-container")}>
+					<div className={classes.main}>
+						<h2 className={fr.cx("fr-h1", "fr-mb-4v")}>
+							Prévisualiser et publier
+						</h2>
+						<p className={fr.cx("fr-mb-0", "fr-text--xl")}>
+							Voici un aperçu de votre déclaration, telle qu’elle sera
+							consultable une fois publiée.
+							<br />
+							Nous vous invitons à la relire pour validation avant publication.
+						</p>
+						<div className={classes.declarationPreview}>
+							<PublishedTemplate
+								declaration={publishedDeclarationContent}
+								mode="preview"
+							/>
+						</div>
+						{publishError && (
+							<Alert
+								className={fr.cx("fr-mb-3v")}
+								severity="error"
+								title="Publication impossible"
+								description={
+									publishError === "incomplete" ? (
+										<>
+											La déclaration ne peut pas être publiée car elle est
+											incomplète.{" "}
+											<Link href={`/dashboard/declarations/${declaration.id}`}>
+												Retournez à la déclaration
+											</Link>{" "}
+											pour compléter les sections manquantes.
+										</>
+									) : (
+										"Une erreur est survenue lors de la publication. Veuillez réessayer."
+									)
+								}
+							/>
+						)}
+						<div className={classes.buttonsContainer}>
+							<Button
+								priority="secondary"
+								size="large"
+								linkProps={{
+									href: `/dashboard/declarations/${declaration.id}`,
+								}}
+							>
+								Revenir au formulaire
+							</Button>
+							<Button priority="primary" size="large" onClick={onPublish}>
+								Publier la déclaration
+							</Button>
+						</div>
 					</div>
-					{publishError && (
-						<Alert
-							className={fr.cx("fr-mb-3v")}
-							severity="error"
-							title="Publication impossible"
-							description={
-								publishError === "incomplete" ? (
-									<>
-										La déclaration ne peut pas être publiée car elle est
-										incomplète.{" "}
-										<Link href={`/dashboard/declarations/${declaration.id}`}>
-											Retournez à la déclaration
-										</Link>{" "}
-										pour compléter les sections manquantes.
-									</>
-								) : (
-									"Une erreur est survenue lors de la publication. Veuillez réessayer."
-								)
-							}
-						/>
-					)}
-					<div className={classes.buttonsContainer}>
-						<Button
-							priority="tertiary"
-							onClick={() => back()}
-							nativeButtonProps={{
-								"aria-label": "Retour à l'étape précédente",
-							}}
-						>
-							Retour
-						</Button>
-						<Button
-							priority="secondary"
-							title="Retour à la page de la déclaration sans publication"
-							linkProps={{
-								href: `/dashboard/declarations/${declaration.id}`,
-							}}
-						>
-							Continuer sans publier
-						</Button>
-						<Button priority="primary" onClick={onPublish}>
-							Publier la déclaration
-						</Button>
-					</div>
-				</div>
-			</section>
+				</section>
+			</div>
 		</>
 	);
 }
 
 const useStyles = tss.withName(DeclarationPreviewPage.name).create({
+	band: {
+		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+	},
 	main: {
 		display: "flex",
 		flexDirection: "column",
@@ -146,12 +171,10 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 		marginBottom: fr.spacing("6v"),
 	},
 	buttonsContainer: {
-		display: "grid",
+		display: "flex",
+		flexWrap: "wrap",
+		justifyContent: "space-between",
 		gap: fr.spacing("4v"),
-
-		"@media (min-width: 600px)": {
-			gridTemplateColumns: "1fr auto auto",
-		},
 	},
 });
 

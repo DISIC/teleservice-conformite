@@ -27,7 +27,7 @@ function groupByStandard(references: Reference[]) {
 export default function CriteriumAppendix({
 	appendix,
 }: CriteriumAppendixProps) {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 
 	if (!appendix) return null;
 
@@ -43,7 +43,9 @@ export default function CriteriumAppendix({
 					<AppendixTitle icon="fr-icon-book-2-line" title="Références" />
 					{groups.map(([standard, group]) => (
 						<div key={standard} className={classes.group}>
-							<p className={classes.standard}>{standard}</p>
+							<h6 className={cx(classes.standard, "fr-text--md")}>
+								{standard}
+							</h6>
 							<div className={classes.groupBody}>
 								<TagField label="Critère(s) de succès :">
 									{group.map(({ reference, level }) => (
@@ -127,7 +129,7 @@ function AppendixTitle({ icon, title }: { icon: string; title: string }) {
 	return (
 		<div className={classes.title}>
 			<span className={cx(icon, classes.titleIcon)} aria-hidden />
-			<p className={classes.titleText}>{title}</p>
+			<h5 className={cx(classes.titleText, "fr-text--lg")}>{title}</h5>
 		</div>
 	);
 }

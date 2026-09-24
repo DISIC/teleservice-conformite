@@ -3,7 +3,10 @@ import {
 	completeDeclaration,
 	publishedDeclaration,
 } from "./declaration.fixture";
-import { getDeclarationState } from "~/domain/declaration/state";
+import {
+	getDeclarationState,
+	isToCompleteRevealed,
+} from "~/domain/declaration/state";
 
 describe("getDeclarationState", () => {
 	it("renders no notice for a clean published declaration", () => {
@@ -50,5 +53,19 @@ describe("getDeclarationState", () => {
 			contact: {},
 		} as never);
 		expect(getDeclarationState(d)).toBe("published-incomplete");
+	});
+});
+
+describe("isToCompleteRevealed", () => {
+	it("hides the guidance through the first pass of the walkthrough", () => {
+		expect(isToCompleteRevealed("sequential", false)).toBe(false);
+	});
+
+	it("reveals it once the declarant has come back", () => {
+		expect(isToCompleteRevealed("sequential", true)).toBe(true);
+	});
+
+	it("always reveals it outside the walkthrough", () => {
+		expect(isToCompleteRevealed("standalone", false)).toBe(true);
 	});
 });

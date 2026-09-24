@@ -12,6 +12,8 @@ export const NO_AUDIT = {
 	rgaa_version: null,
 	realisedBy: null,
 	rate: null,
+	hasBlockingElements: null,
+	blockingElements: null,
 	compliantElements: null,
 	nonCompliantElements: null,
 	disproportionnedCharge: null,

@@ -3,6 +3,7 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import {
 	auditContents,
 	auditGeneral,
+	auditNonConformities,
 	auditGeneralDefaultValues,
 	auditToGeneralValues,
 	auditTools,
@@ -69,6 +70,49 @@ describe("auditGeneral", () => {
 				rgaa_version: "rgaa_4",
 				rate: null,
 			}).success,
+		).toBe(true);
+	});
+
+	it("requires the blocking-elements answer on an RGAA 5 audit", () => {
+		const base = {
+			isAuditRealised: true,
+			date: "",
+			realisedBy: "DINUM",
+			rate: 80,
+		};
+		expect(
+			auditGeneral
+				.safeParse({ ...base, rgaa_version: "rgaa_5" })
+				.error?.issues.map((i) => i.path),
+		).toEqual([["hasBlockingElements"]]);
+		expect(
+			auditGeneral.safeParse({
+				...base,
+				rgaa_version: "rgaa_5",
+				hasBlockingElements: false,
+			}).success,
+		).toBe(true);
+		expect(
+			auditGeneral.safeParse({ ...base, rgaa_version: "rgaa_4" }).success,
+		).toBe(true);
+	});
+});
+
+describe("auditNonConformities", () => {
+	it("requires the blocking elements once the audit reported some", () => {
+		expect(
+			auditNonConformities
+				.safeParse({ hasBlockingElements: true, blockingElements: "  " })
+				.error?.issues.map((i) => i.path),
+		).toEqual([["blockingElements"]]);
+		expect(
+			auditNonConformities.safeParse({
+				hasBlockingElements: true,
+				blockingElements: "Navigation au clavier impossible",
+			}).success,
+		).toBe(true);
+		expect(
+			auditNonConformities.safeParse({ hasBlockingElements: false }).success,
 		).toBe(true);
 	});
 });

@@ -65,7 +65,7 @@ export default async function ReferentielsPage({
 				title={referentielInfos.title}
 				description={referentielInfos.description}
 				pictogram={referentielStyle.pictogram}
-				referentiels={otherReferentiels}
+				linkButtons={otherReferentiels}
 				badgeColor={referentielStyle.badgeColor}
 				badgeBackgroundColor={referentielStyle.badgeBackgroundColor}
 				backgroundColor={referentielStyle.heroPagebackgroundColor}

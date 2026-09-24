@@ -25,6 +25,8 @@ export const auditPatch = z.object({
 	realisedBy: z.string().optional(),
 	rgaa_version: z.enum(["rgaa_4", "rgaa_5"]).optional(),
 	rate: z.number().nullable().optional(),
+	hasBlockingElements: z.boolean().optional(),
+	blockingElements: z.string().optional(),
 	compliantElements: z.string().optional(),
 	nonCompliantElements: z.string().optional(),
 	disproportionnedCharge: z.string().optional(),
@@ -91,7 +93,15 @@ const MERGERS: { [K in SectionKind]: SectionMerger<K> } = {
 				}),
 				// A fully conformant audit has no non-conformities to declare.
 				...(values.rate === 100 && { nonCompliantElements: null }),
-				// "Non réalisé" invalidates every audit detail; switching back starts blank.
+				// Blocking elements are an RGAA 5 notion: RGAA 4 drops the answer with it.
+				...(values.rgaa_version === "rgaa_4" && {
+					hasBlockingElements: null,
+					blockingElements: null,
+				}),
+				...(values.hasBlockingElements === false && {
+					blockingElements: null,
+				}),
+				// "Non réalisé" invalidates every audit detail on the row.
 				...(values.isRealised === false && NO_AUDIT),
 				toVerify: false,
 			},

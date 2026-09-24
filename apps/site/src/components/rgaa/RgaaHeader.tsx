@@ -24,7 +24,7 @@ type NavEntry =
 	| { text: string; links: NavLink[] }
 	| { text: string; categories: NavCategory[]; leader?: NavLeader };
 
-const NAVIGATION: NavEntry[] = [
+const buildNavigation = (releaseNotes: NavLink[]): NavEntry[] => [
 	// TODO: add link
 	{ text: "Accueil", href: "/" },
 	{ text: "Obligations légales", href: "/obligations" },
@@ -65,20 +65,27 @@ const normalize = (pathname: string) =>
 	pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
 
 // TODO: add link
-const getActiveHref = (pathname: string) =>
-	NAVIGATION.flatMap(entryHrefs)
+const getActiveHref = (navigation: NavEntry[], pathname: string) =>
+	navigation
+		.flatMap(entryHrefs)
 		.filter(
 			(href) =>
 				pathname === href || (href !== "#" && pathname.startsWith(`${href}/`)),
 		)
 		.sort((a, b) => b.length - a.length)[0] ?? "";
 
-export default function RgaaHeader() {
+interface RgaaHeaderProps {
+	// Read from the markdown release notes at build time; the header cannot touch the filesystem.
+	releaseNotes: NavLink[];
+}
+
+export default function RgaaHeader({ releaseNotes }: RgaaHeaderProps) {
 	const { classes } = useStyles();
 	const pathname = normalize(usePathname());
-	const activeHref = getActiveHref(pathname);
+	const entries = buildNavigation(releaseNotes);
+	const activeHref = getActiveHref(entries, pathname);
 
-	const navigation: MainNavigationProps.Item[] = NAVIGATION.map((entry) => {
+	const navigation: MainNavigationProps.Item[] = entries.map((entry) => {
 		if ("href" in entry) {
 			return {
 				text: entry.text,
@@ -196,12 +203,5 @@ export default function RgaaHeader() {
 }
 
 const useStyles = tss.withName(RgaaHeader.name).create({
-	main: {
-		"h5.fr-mega-menu__category.fr-nav__link": {
-			fontWeight: "bold !important",
-		},
-		"h5.fr-mega-menu__category > a.fr-nav__link": {
-			fontSize: "1.25rem",
-		},
-	},
+	main: {},
 });
