@@ -5,6 +5,7 @@ import PageHero from "~/components/rgaa/PageHero";
 import { REFERENTIEL_IDS, type ReferentielId } from "@rgaa/content";
 import { getReferentielStyle } from "~/components/rgaa/referentiels";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
+import { getPageDescription } from "~/lib/navigation";
 import {
 	getAllReferentiels,
 	getCriterias,
@@ -60,7 +61,7 @@ export default async function ReferentielsPage({
 					{ label: "Méthode technique", linkProps: { href: "/methode" } },
 				]}
 				title={referentielInfos.title}
-				description={referentielInfos.description}
+				description={getPageDescription(referentielStyle.href)}
 				pictogram={referentielStyle.pictogram}
 				linkButtons={otherReferentiels}
 				badgeColor={referentielStyle.badgeColor}

@@ -5,6 +5,7 @@ import SectionSidebarList from "~/components/rgaa/SectionSidebarList";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
 import { fr } from "@codegouvfr/react-dsfr";
 import { readMarkdownPage, splitSections } from "~/lib/content";
+import { getPageDescription } from "~/lib/navigation";
 
 export const metadata: Metadata = { title: "Obligations légales" };
 
@@ -20,7 +21,7 @@ export default function LegalObligationsPage() {
 				breadcrumbCurrentPageLabel="Obligations légales"
 				breadcrumbSegments={[]}
 				title="Obligations légales"
-				description="Lorem ipsum"
+				description={getPageDescription("/obligations")}
 				pictogram="justice-scales"
 				badgeBackgroundColor={
 					fr.colors.decisions.background.alt.blueEcume.active

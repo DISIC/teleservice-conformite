@@ -5,6 +5,7 @@ import PageHero from "~/components/rgaa/PageHero";
 import TemplateContent from "~/components/rgaa/TemplateContent";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
 import { readMarkdownFile } from "~/lib/content";
+import { getPageDescription } from "~/lib/navigation";
 
 export const metadata: Metadata = { title: "Modèles à télécharger" };
 
@@ -18,7 +19,7 @@ export default function TemplatesPage() {
 					{ label: "Ressources", linkProps: { href: "/ressources" } },
 				]}
 				title="Modèles à télécharger"
-				description="La partie «Évaluation de la conformité à la norme» du RGAA contient les instructions pour mener à bien l’audit d’un site internet, intranet ou extranet (échantillonnage des pages, critères applicables, taux de conformité…).Voici en complément, des modèles de documents pour réaliser un audit."
+				description={getPageDescription("/modeles")}
 				pictogram="coding"
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
 				ellipseColor={

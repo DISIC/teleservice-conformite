@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import type { Metadata } from "next";
 import PageHero from "~/components/rgaa/PageHero";
+import { getPageDescription } from "~/lib/navigation";
 import { getAllReferentiels } from "~/lib/rgaa-data";
 import TechnicalMethodSections from "~/components/rgaa/TechnicalMethodSections";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
@@ -33,7 +34,7 @@ export default function TechnicalMethodPage() {
 					{ label: "Méthode technique", linkProps: { href: "/methode" } },
 				]}
 				title="Critères et tests"
-				description="Ici un texte décrivant le fait que le RGAA s’appuie désormais sur 3 référentiels. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa."
+				description={getPageDescription("/methode/introduction")}
 				pictogram="technical-error"
 				linkButtons={referentiels}
 				badgeColor={fr.colors.decisions.text.actionHigh.blueEcume.default}

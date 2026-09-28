@@ -4,6 +4,7 @@ import MarkdownSections from "~/components/rgaa/MarkdownSections";
 import SectionSidebarList from "~/components/rgaa/SectionSidebarList";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
 import { readMarkdownPage, splitSections } from "~/lib/content";
+import { getPageDescription } from "~/lib/navigation";
 import PageHero from "~/components/rgaa/PageHero";
 import CurrentSectionLabel from "~/components/rgaa/CurrentSectionLabel";
 
@@ -23,7 +24,7 @@ export default function ReleaseNotesPage() {
 					{ label: "Ressources", linkProps: { href: "/ressources" } },
 				]}
 				title="Notes de révision du RGAA 4.1.2 vers 5.0"
-				description="Cette édition comporte les apportés à la version 5 du Référentiel général d’amélioration de l’accessibilité (RGAA). Ils n’invalident pas les audits déjà réalisés."
+				description={getPageDescription("/notes")}
 				pictogram="catalog"
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
 				ellipseColor={
