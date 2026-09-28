@@ -13,25 +13,16 @@ const TELESERVICE_URL = process.env.NEXT_PUBLIC_TELESERVICE_URL ?? "/";
 const RGAA4_URL = "https://accessibilite.numerique.gouv.fr";
 
 type NavLink = { text: string; href: string };
-type NavCategory = {
-	categoryMainLink: { text: string; href?: string };
-	links: NavLink[];
-};
-type NavLeader = { title: string; paragraph?: string; link?: NavLink };
+type NavEntry = NavLink | { text: string; links: NavLink[] };
 
-type NavEntry =
-	| NavLink
-	| { text: string; links: NavLink[] }
-	| { text: string; categories: NavCategory[]; leader?: NavLeader };
-
-const buildNavigation = (releaseNotes: NavLink[]): NavEntry[] => [
+const NAVIGATION: NavEntry[] = [
 	// TODO: add link
 	{ text: "Accueil", href: "/" },
 	{ text: "Obligations légales", href: "/obligations" },
 	{
 		text: "Méthode technique",
 		links: [
-			{ text: "Introduction", href: "/methode" },
+			{ text: "Introduction", href: "/methode/introduction" },
 			{ text: "Référentiel web", href: "/rgaa/web" },
 			{ text: "Référentiel bureautique", href: "/rgaa/bureautique" },
 			{ text: "Référentiel application mobile", href: "/rgaa/mobile" },
@@ -50,98 +41,41 @@ const buildNavigation = (releaseNotes: NavLink[]): NavEntry[] => [
 ];
 
 const entryHrefs = (entry: NavEntry): string[] =>
-	"href" in entry
-		? [entry.href]
-		: "categories" in entry
-			? entry.categories.flatMap((category) => [
-					...(category.categoryMainLink.href
-						? [category.categoryMainLink.href]
-						: []),
-					...category.links.map((link) => link.href),
-				])
-			: entry.links.map((link) => link.href);
+	"href" in entry ? [entry.href] : entry.links.map((link) => link.href);
 
 const normalize = (pathname: string) =>
 	pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
 
 // TODO: add link
-const getActiveHref = (navigation: NavEntry[], pathname: string) =>
-	navigation
-		.flatMap(entryHrefs)
+const getActiveHref = (pathname: string) =>
+	NAVIGATION.flatMap(entryHrefs)
 		.filter(
 			(href) =>
 				pathname === href || (href !== "#" && pathname.startsWith(`${href}/`)),
 		)
 		.sort((a, b) => b.length - a.length)[0] ?? "";
 
-interface RgaaHeaderProps {
-	// Read from the markdown release notes at build time; the header cannot touch the filesystem.
-	releaseNotes: NavLink[];
-}
-
-export default function RgaaHeader({ releaseNotes }: RgaaHeaderProps) {
+export default function RgaaHeader() {
 	const { classes } = useStyles();
-	const pathname = normalize(usePathname());
-	const entries = buildNavigation(releaseNotes);
-	const activeHref = getActiveHref(entries, pathname);
+	const activeHref = getActiveHref(normalize(usePathname()));
 
-	const navigation: MainNavigationProps.Item[] = entries.map((entry) => {
-		if ("href" in entry) {
-			return {
-				text: entry.text,
-				isActive: entry.href === activeHref,
-				linkProps: { href: entry.href },
-			};
-		}
-
-		if ("categories" in entry) {
-			return {
-				text: entry.text,
-				isActive: entryHrefs(entry).includes(activeHref),
-				megaMenu: {
-					leader: entry.leader
-						? {
-								title: entry.leader.title,
-								paragraph: entry.leader.paragraph,
-								...(entry.leader.link
-									? {
-											link: {
-												text: entry.leader.link.text,
-												linkProps: { href: entry.leader.link.href },
-											},
-										}
-									: {}),
-							}
-						: undefined,
-					categories: entry.categories.map((category) => ({
-						...(category.categoryMainLink.href
-							? {
-									categoryMainLink: {
-										text: category.categoryMainLink.text,
-										linkProps: { href: category.categoryMainLink.href },
-									},
-								}
-							: { categoryMainText: category.categoryMainLink.text }),
-						links: category.links.map((link) => ({
-							text: link.text,
-							linkProps: { href: link.href },
-							isActive: link.href === activeHref,
-						})),
+	const navigation: MainNavigationProps.Item[] = NAVIGATION.map((entry) =>
+		"href" in entry
+			? {
+					text: entry.text,
+					isActive: entry.href === activeHref,
+					linkProps: { href: entry.href },
+				}
+			: {
+					text: entry.text,
+					isActive: entry.links.some((link) => link.href === activeHref),
+					menuLinks: entry.links.map((link) => ({
+						text: link.text,
+						linkProps: { href: link.href },
+						isActive: link.href === activeHref,
 					})),
 				},
-			};
-		}
-
-		return {
-			text: entry.text,
-			isActive: entry.links.some((link) => link.href === activeHref),
-			menuLinks: entry.links.map((link) => ({
-				text: link.text,
-				linkProps: { href: link.href },
-				isActive: link.href === activeHref,
-			})),
-		};
-	});
+	);
 
 	return (
 		<>

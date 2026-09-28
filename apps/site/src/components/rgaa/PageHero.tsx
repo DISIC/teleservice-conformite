@@ -17,8 +17,9 @@ export type LinkButtonsProps = Pick<
 > &
 	Pick<ReferentielStyle, "iconId" | "href">;
 
-// The hero illustration is either one of our named pictograms or an image asset, never both.
+// The hero illustration is optional, and is either one of our named pictograms or an image asset, never both.
 type HeroIllustration =
+	| { pictogram?: never; imageSrc?: never; imageAlt?: never }
 	| { pictogram: PictogramId; imageSrc?: never; imageAlt?: never }
 	| {
 			imageSrc: string | StaticImageData;
@@ -35,12 +36,12 @@ type PageHeroProps = HeroIllustration & {
 		};
 	}[];
 	title: string;
-	description: string | ReactNode;
+	description?: string | ReactNode;
 	linkButtons?: LinkButtonsProps[];
 	badgeColor?: string;
 	badgeBackgroundColor?: string;
 	backgroundColor: string;
-	ellipseColor: string;
+	ellipseColor?: string;
 };
 
 export default function PageHero(props: PageHeroProps) {
@@ -71,21 +72,23 @@ export default function PageHero(props: PageHeroProps) {
 					segments={breadcrumbSegments}
 				/>
 				<div className={classes.heroContent}>
-					<div className={classes.heroIllustrationWrapper}>
-						<div className={classes.heroIllustration}>
-							{imageSrc ? (
-								<Image
-									className={classes.image}
-									src={imageSrc}
-									alt={imageAlt ?? ""}
-									width={216}
-									height={216}
-								/>
-							) : (
-								pictogram && <Pictogram id={pictogram} fontSize="inherit" />
-							)}
+					{(imageSrc || pictogram) && (
+						<div className={classes.heroIllustrationWrapper}>
+							<div className={classes.heroIllustration}>
+								{imageSrc ? (
+									<Image
+										className={classes.image}
+										src={imageSrc}
+										alt={imageAlt ?? ""}
+										width={216}
+										height={216}
+									/>
+								) : (
+									pictogram && <Pictogram id={pictogram} fontSize="inherit" />
+								)}
+							</div>
 						</div>
-					</div>
+					)}
 					<div className={classes.heroText}>
 						{hasBadge && (
 							<BetaBadge
@@ -94,7 +97,9 @@ export default function PageHero(props: PageHeroProps) {
 							/>
 						)}
 						<h1 className={classes.title}>{title}</h1>
-						<p className={classes.description}>{description}</p>
+						{description && (
+							<p className={classes.description}>{description}</p>
+						)}
 						<ul className={classes.referentialTags}>
 							{linkButtons?.length &&
 								linkButtons.map(({ id, title, iconId, href }) => (
@@ -120,7 +125,7 @@ export default function PageHero(props: PageHeroProps) {
 
 const useStyles = tss
 	.withName(PageHero.name)
-	.withParams<{ backgroundColor: string; ellipseColor: string }>()
+	.withParams<{ backgroundColor: string; ellipseColor?: string }>()
 	.create(({ backgroundColor, ellipseColor }) => ({
 		hero: {
 			backgroundColor,
