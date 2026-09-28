@@ -20,8 +20,7 @@ export default function ReleaseNotesPage() {
 			<PageHero
 				breadcrumbCurrentPageLabel={<CurrentSectionLabel sections={headings} />}
 				breadcrumbSegments={[
-					// TODO: add link
-					{ label: "Ressources", linkProps: { href: "#" } },
+					{ label: "Ressources", linkProps: { href: "/ressources" } },
 				]}
 				title="Notes de révision du RGAA 4.1.2 vers 5.0"
 				description="Cette édition comporte les apportés à la version 5 du Référentiel général d’amélioration de l’accessibilité (RGAA). Ils n’invalident pas les audits déjà réalisés."

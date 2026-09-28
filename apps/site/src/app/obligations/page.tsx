@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import MarkdownSections from "~/components/rgaa/MarkdownSections";
-import CurrentSectionLabel from "~/components/rgaa/CurrentSectionLabel";
 import PageHero from "~/components/rgaa/PageHero";
 import SectionSidebarList from "~/components/rgaa/SectionSidebarList";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
@@ -18,12 +17,10 @@ export default function LegalObligationsPage() {
 		<>
 			<StartDsfrOnHydration />
 			<PageHero
-				breadcrumbCurrentPageLabel={<CurrentSectionLabel sections={headings} />}
-				breadcrumbSegments={[
-					{ label: "Obligations légales", linkProps: { href: "/obligations" } },
-				]}
+				breadcrumbCurrentPageLabel="Obligations légales"
+				breadcrumbSegments={[]}
 				title="Obligations légales"
-				description="lorem ipsum"
+				description="Lorem ipsum"
 				pictogram="justice-scales"
 				badgeBackgroundColor={
 					fr.colors.decisions.background.alt.blueEcume.active

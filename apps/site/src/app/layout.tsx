@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { EmotionCacheProvider } from "~/components/EmotionCacheProvider";
 import RgaaHeader from "~/components/rgaa/RgaaHeader";
 import { DsfrProvider } from "~/dsfr-bootstrap";
+import { NAVIGATION } from "~/lib/navigation";
 import {
 	DsfrHead,
 	getHtmlAttributes,
@@ -42,7 +43,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 								{ anchor: "#footer", label: "Pied de page" },
 							]}
 						/>
-						<RgaaHeader />
+						<RgaaHeader navigation={NAVIGATION} />
 						<main id="contenu" style={{ flex: 1 }}>
 							{children}
 						</main>

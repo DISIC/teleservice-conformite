@@ -21,7 +21,7 @@ export default function TileGrid({ tiles }: TileGridProps) {
 		<div className={classes.tilesContainer}>
 			{tiles.map(({ title, description, href }) => (
 				<Tile
-					key={href}
+					key={title}
 					enlargeLinkOrButton
 					imageSvg
 					linkProps={{ href }}

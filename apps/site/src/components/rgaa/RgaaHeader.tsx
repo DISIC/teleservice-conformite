@@ -7,38 +7,11 @@ import type { MainNavigationProps } from "@codegouvfr/react-dsfr/MainNavigation"
 import Notice from "@codegouvfr/react-dsfr/Notice";
 import { usePathname } from "next/navigation";
 import { tss } from "tss-react";
+import type { NavEntry } from "~/lib/navigation";
 
 // The two spaces live on two hosts; the switch button is a plain link between them.
 const TELESERVICE_URL = process.env.NEXT_PUBLIC_TELESERVICE_URL ?? "/";
 const RGAA4_URL = "https://accessibilite.numerique.gouv.fr";
-
-type NavLink = { text: string; href: string };
-type NavEntry = NavLink | { text: string; links: NavLink[] };
-
-const NAVIGATION: NavEntry[] = [
-	// TODO: add link
-	{ text: "Accueil", href: "/" },
-	{ text: "Obligations légales", href: "/obligations" },
-	{
-		text: "Méthode technique",
-		links: [
-			{ text: "Introduction", href: "/methode/introduction" },
-			{ text: "Référentiel web", href: "/rgaa/web" },
-			{ text: "Référentiel bureautique", href: "/rgaa/bureautique" },
-			{ text: "Référentiel application mobile", href: "/rgaa/mobile" },
-		],
-	},
-	{
-		text: "Ressources",
-		links: [
-			{ text: "Documents de référence", href: "#" },
-			{ text: "Critères AAA", href: "#" },
-			{ text: "Ara - Outil d’audit d’accessibilité", href: "/ara" },
-			{ text: "Modèles à télécharger", href: "/modeles" },
-			{ text: "Note de révision du RGAA 4.12 vers le RGAA 5", href: "/notes" },
-		],
-	},
-];
 
 const entryHrefs = (entry: NavEntry): string[] =>
 	"href" in entry ? [entry.href] : entry.links.map((link) => link.href);
@@ -47,19 +20,24 @@ const normalize = (pathname: string) =>
 	pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
 
 // TODO: add link
-const getActiveHref = (pathname: string) =>
-	NAVIGATION.flatMap(entryHrefs)
+const getActiveHref = (navigation: NavEntry[], pathname: string) =>
+	navigation
+		.flatMap(entryHrefs)
 		.filter(
 			(href) =>
 				pathname === href || (href !== "#" && pathname.startsWith(`${href}/`)),
 		)
 		.sort((a, b) => b.length - a.length)[0] ?? "";
 
-export default function RgaaHeader() {
-	const { classes } = useStyles();
-	const activeHref = getActiveHref(normalize(usePathname()));
+interface RgaaHeaderProps {
+	navigation: NavEntry[];
+}
 
-	const navigation: MainNavigationProps.Item[] = NAVIGATION.map((entry) =>
+export default function RgaaHeader({ navigation: entries }: RgaaHeaderProps) {
+	const { classes } = useStyles();
+	const activeHref = getActiveHref(entries, normalize(usePathname()));
+
+	const navigation: MainNavigationProps.Item[] = entries.map((entry) =>
 		"href" in entry
 			? {
 					text: entry.text,

@@ -16,8 +16,7 @@ export default function AraPage() {
 			<PageHero
 				breadcrumbCurrentPageLabel="Ara - Outil d’audit d’accessibilité"
 				breadcrumbSegments={[
-					// TODO: add link
-					{ label: "Ressources", linkProps: { href: "#" } },
+					{ label: "Ressources", linkProps: { href: "/ressources" } },
 				]}
 				title="Ara, outil d’audit d’accessibilité"
 				description={
