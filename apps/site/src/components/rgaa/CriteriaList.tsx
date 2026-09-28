@@ -11,7 +11,6 @@ import PopoverButton, { type DisplayOption } from "./PopoverButton";
 import { getReferentielStyle, type ReferentielInfos } from "./referentiels";
 import TopicSidebarList from "./TopicSidebarList";
 
-const TOPIC_COLLAPSE = "[data-topic-accordion] > .fr-accordion > .fr-collapse";
 const TEST_COLLAPSE = '[data-accordion="test"] > .fr-accordion > .fr-collapse';
 const REFERENCE_COLLAPSE =
 	'[data-accordion="reference"] > .fr-accordion > .fr-collapse';
@@ -21,15 +20,15 @@ const DISPLAY_OPTION_SELECTORS: Record<
 	{ expand: string[]; collapse: string[] }
 > = {
 	all: {
-		expand: [TOPIC_COLLAPSE, TEST_COLLAPSE, REFERENCE_COLLAPSE],
+		expand: [TEST_COLLAPSE, REFERENCE_COLLAPSE],
 		collapse: [],
 	},
 	tests: {
-		expand: [TOPIC_COLLAPSE, TEST_COLLAPSE],
+		expand: [TEST_COLLAPSE],
 		collapse: [REFERENCE_COLLAPSE],
 	},
 	references: {
-		expand: [TOPIC_COLLAPSE, REFERENCE_COLLAPSE],
+		expand: [REFERENCE_COLLAPSE],
 		collapse: [TEST_COLLAPSE],
 	},
 };
