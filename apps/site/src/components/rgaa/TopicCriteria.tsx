@@ -1,7 +1,6 @@
 "use client";
 
 import { fr } from "@codegouvfr/react-dsfr";
-import { useRef, useState } from "react";
 import { tss } from "tss-react";
 import type { Criterias } from "./helpers/topics";
 import { getReferentielStyle, type ReferentielId } from "./referentiels";
@@ -26,16 +25,9 @@ export default function TopicCriteria({
 	const { testAccordionBackgroundColor } = getReferentielStyle(referentielId);
 	const { classes, cx } = useStyles();
 	const { classes: headingClasses } = useNumberedHeadingStyles();
-	const [expandedCriteria, setExpandedCriteria] = useState<
-		Record<string, boolean>
-	>({});
-	const [expandedReferences, setExpandedReferences] = useState<
-		Record<string, boolean>
-	>({});
-	const criteriaRef = useRef<HTMLDivElement>(null);
 
 	return (
-		<div ref={criteriaRef} className={classes.topicCriteria}>
+		<div className={classes.topicCriteria}>
 			{topic.criteria.map(({ criterium }) => {
 				const criteriumNumber = `${topic.number}.${criterium.number}`;
 
@@ -70,25 +62,11 @@ export default function TopicCriteria({
 						<CriteriumTests
 							criteriumNumber={criteriumNumber}
 							tests={criterium.tests}
-							defaultExpanded={expandedCriteria[criterium.number] ?? false}
-							onExpandedChange={(expanded) =>
-								setExpandedCriteria((value) => ({
-									...value,
-									[criterium.number]: expanded,
-								}))
-							}
 							accordionBackgroundColor={testAccordionBackgroundColor}
 						/>
 						<CriteriumReference
 							criteriumNumber={criteriumNumber}
 							appendix={criterium.appendix}
-							defaultExpanded={expandedReferences[criterium.number] ?? false}
-							onExpandedChange={(expanded) =>
-								setExpandedReferences((value) => ({
-									...value,
-									[criterium.number]: expanded,
-								}))
-							}
 							accordionBackgroundColor={testAccordionBackgroundColor}
 						/>
 					</div>

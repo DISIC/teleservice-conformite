@@ -14,22 +14,18 @@ import TestMethodology from "./TestMethodology";
 type CriteriumTestsProps = {
 	criteriumNumber: string;
 	tests: Test[];
-	defaultExpanded?: boolean;
 	accordionBackgroundColor: string;
-	onExpandedChange?: (expanded: boolean) => void;
 };
 
 export default function CriteriumTests({
 	criteriumNumber,
 	tests,
-	defaultExpanded = false,
 	accordionBackgroundColor,
-	onExpandedChange,
 }: CriteriumTestsProps) {
 	const { classes, cx } = useStyles({ accordionBackgroundColor });
 	const { classes: headingClasses } = useNumberedHeadingStyles();
 	const pathname = usePathname();
-	const [expanded, setExpanded] = useState(defaultExpanded);
+	const [expanded, setExpanded] = useState(false);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -56,10 +52,7 @@ export default function CriteriumTests({
 				label={`Tests du critère ${criteriumNumber}`}
 				className={classes.criteriaAccordion}
 				expanded={expanded}
-				onExpandedChange={(value) => {
-					setExpanded(value);
-					onExpandedChange?.(value);
-				}}
+				onExpandedChange={setExpanded}
 			>
 				{tests.map((test) => {
 					const testNumber = `${criteriumNumber}.${test.number}`;

@@ -9,17 +9,13 @@ import { fr } from "@codegouvfr/react-dsfr";
 type CriteriumReferenceProps = {
 	criteriumNumber: string;
 	appendix?: Appendix;
-	defaultExpanded?: boolean;
 	accordionBackgroundColor: string;
-	onExpandedChange?: (expanded: boolean) => void;
 };
 
 export default function CriteriumReference({
 	criteriumNumber,
 	appendix,
 	accordionBackgroundColor,
-	defaultExpanded = false,
-	onExpandedChange,
 }: CriteriumReferenceProps) {
 	const { classes } = useStyles({ accordionBackgroundColor });
 
@@ -31,8 +27,6 @@ export default function CriteriumReference({
 				titleAs="h4"
 				label={`Notes et références du critère ${criteriumNumber}`}
 				className={classes.referenceAccordion}
-				defaultExpanded={defaultExpanded}
-				onExpandedChange={(value) => onExpandedChange?.(value)}
 			>
 				<CriteriumAppendix appendix={appendix} />
 			</Accordion>
