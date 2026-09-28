@@ -1,12 +1,13 @@
 "use client";
 
 import Markdown from "markdown-to-jsx";
+import { compiler as markdownToHtml } from "markdown-to-jsx/html";
 import { tss } from "tss-react";
 import { fr } from "@codegouvfr/react-dsfr";
 import Download from "@codegouvfr/react-dsfr/Download";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 const DECLARATION_EXAMPLE_OVERRIDES = {
 	h1: { component: "h4" },
@@ -22,17 +23,15 @@ export default function TemplateContent({
 	declarationExample,
 }: TemplateContentProps) {
 	const { classes } = useStyles();
-	const declarationRef = useRef<HTMLDivElement>(null);
 	const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "error">(
 		"idle",
 	);
 
 	const copyHtml = async () => {
-		const html = declarationRef.current?.innerHTML;
-		if (!html) return;
-
 		try {
-			await navigator.clipboard.writeText(html);
+			await navigator.clipboard.writeText(
+				markdownToHtml(declarationExample, { wrapper: null }),
+			);
 			setCopyStatus("copied");
 		} catch {
 			setCopyStatus("error");
@@ -85,11 +84,9 @@ export default function TemplateContent({
 					</div>
 					<div>
 						<h3>Exemple de déclaration d’accessibilité</h3>
-						<div ref={declarationRef}>
-							<Markdown options={{ overrides: DECLARATION_EXAMPLE_OVERRIDES }}>
-								{declarationExample}
-							</Markdown>
-						</div>
+						<Markdown options={{ overrides: DECLARATION_EXAMPLE_OVERRIDES }}>
+							{declarationExample}
+						</Markdown>
 					</div>
 				</div>
 			</li>

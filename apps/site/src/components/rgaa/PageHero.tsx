@@ -11,10 +11,7 @@ import Pictogram, { type PictogramId } from "./Pictogram";
 import type { ReferentielInfos, ReferentielStyle } from "./referentiels";
 import ellipse from "../../assets/ellipse.svg";
 
-export type LinkButtonsProps = Pick<
-	ReferentielInfos,
-	"id" | "title"
-> &
+export type LinkButtonsProps = Pick<ReferentielInfos, "id" | "title"> &
 	Pick<ReferentielStyle, "iconId" | "href">;
 
 // The hero illustration is optional, and is either one of our named pictograms or an image asset, never both.
@@ -100,9 +97,9 @@ export default function PageHero(props: PageHeroProps) {
 						{description && (
 							<p className={classes.description}>{description}</p>
 						)}
-						<ul className={classes.referentialTags}>
-							{linkButtons?.length &&
-								linkButtons.map(({ id, title, iconId, href }) => (
+						{linkButtons?.length && (
+							<ul className={classes.referentialTags}>
+								{linkButtons.map(({ id, title, iconId, href }) => (
 									<li key={id}>
 										<Button
 											priority="secondary"
@@ -115,7 +112,8 @@ export default function PageHero(props: PageHeroProps) {
 										</Button>
 									</li>
 								))}
-						</ul>
+							</ul>
+						)}
 					</div>
 				</div>
 			</div>

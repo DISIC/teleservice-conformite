@@ -4,7 +4,7 @@ import { getAllReferentiels } from "~/lib/rgaa-data";
 export type NavLink = { text: string; href: string; description: string };
 export type NavEntry =
 	| NavLink
-	| { text: string; description?: string; links: NavLink[] };
+	| { text: string; href: string; description?: string; links: NavLink[] };
 
 const PLACEHOLDER_DESCRIPTION =
 	"Ici un texte décrivant le fait que le RGAA s’appuie désormais sur 3 référentiels  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. ";
@@ -59,17 +59,19 @@ export const NAVIGATION: NavEntry[] = [
 	},
 	{
 		text: "Méthode technique",
+		href: "/methode",
 		links: METHODE_LINKS,
 	},
 	{
 		text: "Ressources",
+		href: "/ressources",
 		links: RESSOURCES_LINKS,
 	},
 ];
 
 export function getPageDescription(href: string): string {
 	const link = NAVIGATION.flatMap((entry) =>
-		"href" in entry ? [entry] : entry.links,
+		"links" in entry ? entry.links : [entry],
 	).find((link) => link.href === href);
 	if (!link) throw new Error(`No navigation entry for ${href}`);
 	return link.description;
