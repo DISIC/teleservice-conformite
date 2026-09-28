@@ -66,10 +66,14 @@ const useStyles = tss.withName(TemplateContent.name).create({
 		gap: fr.spacing("6v"),
 		display: "flex",
 		flexDirection: "column",
-		"& highlight": {
+		"& mark": {
 			backgroundColor:
 				fr.colors.decisions.background.alt.yellowTournesol.default,
+			color: "inherit",
 			margin: fr.spacing("1v"),
+		},
+		"& p.fr-badge": {
+			marginBottom: fr.spacing("4v"),
 		},
 	},
 });

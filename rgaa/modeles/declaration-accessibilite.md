@@ -1,54 +1,54 @@
-# <highlight>Nom de la déclaration</highlight>
+# <mark>Nom de la déclaration</mark>
 
-**<highlight>[Nom de l’administration]</highlight>** s’engage à rendre ses sites internet, intranet, extranet et ses progiciels accessibles (et ses applications mobiles et mobilier urbain numérique) conformément à l’article 47 de la loi n°2005-102 du 11 février 2005.
+**<mark>[Nom de l’administration]</mark>** s’engage à rendre ses sites internet, intranet, extranet et ses progiciels accessibles (et ses applications mobiles et mobilier urbain numérique) conformément à l’article 47 de la loi n°2005-102 du 11 février 2005.
 
-À cette fin, **<highlight>[Nom de l’administration]</highlight>** met en œuvre la stratégie et les actions suivantes :
+À cette fin, **<mark>[Nom de l’administration]</mark>** met en œuvre la stratégie et les actions suivantes :
 
-- **<highlight>[Nom du schéma pluriannuel]</highlight>** : **<highlight>[URL]</highlight>**;
-- **<highlight>[Nom du plan d’actions]</highlight>** : **<highlight>[URL]</highlight>**;
+- **<mark>[Nom du schéma pluriannuel]</mark>** : **<mark>[URL]</mark>**;
+- **<mark>[Nom du plan d’actions]</mark>** : **<mark>[URL]</mark>**;
 
-Cette déclaration d’accessibilité s’applique au **<highlight>[Type de produit numérique]</highlight> <highlight>[URL]</highlight>**
+Cette déclaration d’accessibilité s’applique au **<mark>[Type de produit numérique]</mark> <mark>[URL]</mark>**
 
 ## État de conformité
 
 <p class="fr-badge fr-badge--info fr-badge--sm fr-badge--no-icon">**[statut dérivé du Taux de conformité]**</p>
 
-**<highlight>[sujet dérivé du Type de produit numérique]</highlight>** du **<highlight>[Type de produit numérique]</highlight>** **<highlight>[Nom de la déclaration]</highlight> <highlight>[URL]</highlight>** est **<highlight>[Taux de conformité]</highlight>** avec le référentiel général d’amélioration de l’accessibilité (RGAA), version **<highlight>[Version RGAA]</highlight>**.
+**<mark>[sujet dérivé du Type de produit numérique]</mark>** du **<mark>[Type de produit numérique]</mark>** **<mark>[Nom de la déclaration]</mark> <mark>[URL]</mark>** est **<mark>[Taux de conformité]</mark>** avec le référentiel général d’amélioration de l’accessibilité (RGAA), version **<mark>[Version RGAA]</mark>**.
 
 ### Résultats des tests
 
-L’audit de conformité réalisé par **<highlight>[Entité ou personne ayant réalisé l’audit]</highlight>** révèle que **<highlight>[Taux de conformité]</highlight>%** des critères du **RGAA version <highlight>[Version RGAA]</highlight>** sont respectés.
+L’audit de conformité réalisé par **<mark>[Entité ou personne ayant réalisé l’audit]</mark>** révèle que **<mark>[Taux de conformité]</mark>%** des critères du **RGAA version <mark>[Version RGAA]</mark>** sont respectés.
 
 ## Contenus non accessibles
 
 ### Non-conformités
 
-**<highlight>[Éléments non conformes]</highlight>**
+**<mark>[Éléments non conformes]</mark>**
 
 ## Établissement de cette déclaration d’accessibilité
 
-Cette déclaration a été établie le **<highlight>[Date de publication initiale]</highlight>**. Elle a été mise à jour le **<highlight>[Date de publication]</highlight>**.
+Cette déclaration a été établie le **<mark>[Date de publication initiale]</mark>**. Elle a été mise à jour le **<mark>[Date de publication]</mark>**.
 
 ### Environnement de test
 
 Les vérifications de restitution de contenus ont été réalisées sur la base de la combinaison fournie par la base de référence du RGAA, avec les versions suivantes :
 
-- **<highlight>[Nom de l’environnement de test]</highlight>**
+- **<mark>[Nom de l’environnement de test]</mark>**
 
 ### Outils pour évaluer l’accessibilité
 
-- **<highlight>[Nom de l’outil]</highlight>**
+- **<mark>[Nom de l’outil]</mark>**
 
 ### Pages du site ayant fait l’objet de la vérification de conformité
 
-**<highlight>[Éléments ayant fait l’objet de vérification]</highlight>**
+**<mark>[Éléments ayant fait l’objet de vérification]</mark>**
 
 ## Retour d’information et contact
 
-Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de **<highlight>[Nom de la déclaration]</highlight>** pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.
+Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de **<mark>[Nom de la déclaration]</mark>** pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.
 
-- Envoyer un message sur le formulaire : **<highlight>[URL]</highlight>**;
-- Contacter le responsable de l’accessibilité : **<highlight>[Email de contact]</highlight>**
+- Envoyer un message sur le formulaire : **<mark>[URL]</mark>**;
+- Contacter le responsable de l’accessibilité : **<mark>[Email de contact]</mark>**
 
 ### Voies de recours
 
