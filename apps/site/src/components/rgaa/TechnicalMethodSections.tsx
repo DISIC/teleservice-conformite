@@ -5,14 +5,26 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Card from "@codegouvfr/react-dsfr/Card";
 import { tss } from "tss-react";
 import Pictogram from "./Pictogram";
-import type { Reference } from "./references";
+import { getReferentielStyle, type ReferentielInfos } from "./referentiels";
 
 export default function TechnicalMethodSections({
-	references,
+	referentiels,
 }: {
-	references: Reference[];
+	referentiels: ReferentielInfos[];
 }) {
 	const { classes, cx } = useStyles();
+	const cards = referentiels.map((referentiel) => {
+		const { href, heroPagebackgroundColor, circleBackgroundColor, pictogram } =
+			getReferentielStyle(referentiel.id);
+
+		return {
+			...referentiel,
+			href,
+			heroPagebackgroundColor,
+			circleBackgroundColor,
+			pictogram,
+		};
+	});
 
 	return (
 		<>
@@ -29,23 +41,27 @@ export default function TechnicalMethodSections({
 
 			<section className={cx(fr.cx("fr-container"), classes.cardsSection)}>
 				<div className={classes.cardsGrid}>
-					{references.map((reference) => (
+					{cards.map((referentiel) => (
 						<Card
-							key={reference.id}
-							title={reference.title}
-							desc={reference.description}
+							key={referentiel.id}
+							title={referentiel.title}
+							desc={referentiel.description}
 							enlargeLink
-							linkProps={{ href: reference.href }}
+							linkProps={{ href: referentiel.href }}
 							imageComponent={
 								<div
 									className={classes.cardMedia}
-									style={{ backgroundColor: reference.background }}
+									style={{
+										backgroundColor: referentiel.heroPagebackgroundColor,
+									}}
 								>
 									<div
 										className={classes.cardMediaCircle}
-										style={{ backgroundColor: reference.circleBackground }}
+										style={{
+											backgroundColor: referentiel.circleBackgroundColor,
+										}}
 									>
-										<Pictogram id={reference.pictogram} fontSize="4.5rem" />
+										<Pictogram id={referentiel.pictogram} fontSize="4.5rem" />
 									</div>
 								</div>
 							}
@@ -64,12 +80,13 @@ export default function TechnicalMethodSections({
 						Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
 						Nulla consequat massa quis enim.
 					</p>
+					{/* // TODO: add link */}
 					<Button
 						priority="secondary"
 						size="large"
 						iconId="fr-icon-arrow-right-line"
 						iconPosition="right"
-						linkProps={{ href: "/" }}
+						linkProps={{ href: "#" }}
 					>
 						Voir les notes de version
 					</Button>

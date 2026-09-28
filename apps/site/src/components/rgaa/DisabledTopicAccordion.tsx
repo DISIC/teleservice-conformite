@@ -7,13 +7,13 @@ import { tss } from "tss-react";
 interface DisabledTopicAccordionProps {
 	topicName: string;
 	topicIndex: number;
-	referenceName: string;
+	referentielName: string;
 }
 
 export default function DisabledTopicAccordion({
 	topicName,
 	topicIndex,
-	referenceName,
+	referentielName,
 }: DisabledTopicAccordionProps) {
 	const { classes, cx } = useStyles();
 
@@ -27,7 +27,7 @@ export default function DisabledTopicAccordion({
 				</Badge>
 			</div>
 			<p className={classes.description}>
-				{`Cette thématique n’est pas applicable au référentiel ${referenceName}.`}
+				{`Cette thématique n’est pas applicable au référentiel ${referentielName}.`}
 			</p>
 		</div>
 	);
@@ -48,12 +48,12 @@ const useStyles = tss.withName(DisabledTopicAccordion.name).create({
 		display: "inline",
 		margin: 0,
 		marginRight: fr.spacing("2v"),
-		color: fr.colors.decisions.text.disabled.grey.default,
+		color: fr.colors.decisions.text.mention.grey.default,
 	},
 	icon: {
 		display: "inline",
 		marginRight: fr.spacing("2v"),
-		color: fr.colors.decisions.text.disabled.grey.default,
+		color: fr.colors.decisions.text.mention.grey.default,
 
 		"&::before": {
 			"--icon-size": "1.5rem",

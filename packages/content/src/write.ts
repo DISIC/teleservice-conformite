@@ -7,7 +7,7 @@ import {
 	type Declinaison,
 	GlossaireFile,
 	REFERENTIEL_IDS,
-	REFERENTIEL_TITLES,
+	REFERENTIELS,
 	type Test,
 	type Thematique,
 } from "./schema/published";
@@ -61,7 +61,8 @@ export function toPublished(
 			},
 			referentiels: REFERENTIEL_IDS.map((id) => ({
 				id,
-				title: REFERENTIEL_TITLES[id],
+				title: REFERENTIELS[id].title,
+				description: REFERENTIELS[id].description,
 			})),
 			topics: model.topics.map((topic) => publishTopic(topic, absolutize)),
 		}),

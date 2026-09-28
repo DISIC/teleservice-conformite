@@ -11,15 +11,18 @@
 	"referentiels": [
 		{
 			"id": "web",
-			"title": "Sites web"
+			"title": "Référentiel web",
+			"description": "Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 		},
 		{
 			"id": "mobile",
-			"title": "Applications mobiles"
+			"title": "Référentiel application mobile",
+			"description": "Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 		},
 		{
 			"id": "bureautique",
-			"title": "Logiciels bureautiques"
+			"title": "Référentiel bureautique",
+			"description": "Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 		}
 	],
 	"topics": [
