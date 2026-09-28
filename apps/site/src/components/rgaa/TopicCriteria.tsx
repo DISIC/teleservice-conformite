@@ -3,7 +3,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import type { Criterias } from "./helpers/topics";
-import { getReferentielStyle, type ReferentielId } from "./referentiels";
+import type { ReferentielId } from "@rgaa/content";
+import { getReferentielStyle } from "./referentiels";
 import CriteriumReference from "./CriteriumReference";
 import CriteriumTests from "./CriteriumTests";
 import DisabledCriteriumAccordion from "./DisabledCriteriumAccordion";

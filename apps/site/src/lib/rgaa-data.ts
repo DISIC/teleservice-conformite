@@ -2,9 +2,12 @@ import "server-only";
 
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { CriteresFile, type Declinaison } from "@rgaa/content";
+import {
+	CriteresFile,
+	type Declinaison,
+	type ReferentielId,
+} from "@rgaa/content";
 import type { Criterias, Test, Topic } from "~/components/rgaa/helpers/topics";
-import type { ReferentielId } from "~/components/rgaa/referentiels";
 
 const RGAA_VERSION = "5";
 

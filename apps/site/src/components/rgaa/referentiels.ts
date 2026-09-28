@@ -1,9 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import type { ReferentielId } from "@rgaa/content";
 import type { PictogramId } from "./Pictogram";
-
-export const REFERENTIELS_IDS = ["web", "mobile", "bureautique"] as const;
-
-export type ReferentielId = (typeof REFERENTIELS_IDS)[number];
 
 export type ReferentielStyle = {
 	id: ReferentielId;
@@ -18,23 +15,10 @@ export type ReferentielStyle = {
 	testAccordionBackgroundColor: string;
 };
 
-// The shape both the hero buttons and the méthode cards are built from; each picks its own subset.
-// The published identity of a référentiel, read from rgaa/data/ and passed down as props.
 export type ReferentielInfos = {
 	id: ReferentielId;
 	title: string;
 	description: string;
-};
-
-export type ReferentielCard = {
-	id: ReferentielId;
-	title: string;
-	description: string;
-	iconId: string;
-	pictogram: PictogramId;
-	href: string;
-	heroPagebackgroundColor: string;
-	circleBackgroundColor: string;
 };
 
 export const REFERENTIEL_STYLES: ReferentielStyle[] = [

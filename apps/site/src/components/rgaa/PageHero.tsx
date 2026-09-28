@@ -6,13 +6,14 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { tss } from "tss-react";
 import BetaBadge from "./BetaBadge";
 import Pictogram, { type PictogramId } from "./Pictogram";
-import type { ReferentielCard } from "./referentiels";
+import type { ReferentielInfos, ReferentielStyle } from "./referentiels";
 import ellipse from "../../assets/ellipse.svg";
 
-export type referentielLinkButtonsProps = Pick<
-	ReferentielCard,
-	"id" | "title" | "iconId" | "href"
->;
+export type ReferentielLinkButtonsProps = Pick<
+	ReferentielInfos,
+	"id" | "title"
+> &
+	Pick<ReferentielStyle, "iconId" | "href">;
 
 type PageHeroProps = {
 	breadcrumbCurrentPageLabel: string;
@@ -25,7 +26,7 @@ type PageHeroProps = {
 	title: string;
 	description: string;
 	pictogram: PictogramId;
-	referentiels: referentielLinkButtonsProps[];
+	referentiels: ReferentielLinkButtonsProps[];
 	badgeColor: string;
 	badgeBackgroundColor: string;
 	backgroundColor: string;

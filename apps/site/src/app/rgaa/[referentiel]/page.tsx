@@ -2,11 +2,8 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type { Metadata } from "next";
 import CriteriaList from "~/components/rgaa/CriteriaList";
 import PageHero from "~/components/rgaa/PageHero";
-import {
-	REFERENTIELS_IDS,
-	getReferentielStyle,
-	type ReferentielId,
-} from "~/components/rgaa/referentiels";
+import { REFERENTIEL_IDS, type ReferentielId } from "@rgaa/content";
+import { getReferentielStyle } from "~/components/rgaa/referentiels";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
 import {
 	getAllReferentiels,
@@ -20,7 +17,7 @@ type Params = { referentiel: ReferentielId };
 export const dynamicParams = false;
 
 export function generateStaticParams(): Params[] {
-	return REFERENTIELS_IDS.map((referentiel) => ({ referentiel }));
+	return REFERENTIEL_IDS.map((referentiel) => ({ referentiel }));
 }
 
 export async function generateMetadata({
