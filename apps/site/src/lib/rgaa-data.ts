@@ -43,21 +43,17 @@ export function getCriterias(reference: ReferentielId): Criterias {
 	if (!referentiel) throw new Error(`Référentiel inconnu: ${reference}`);
 
 	const mapped: Topic[] = topics.map((topic) => {
-		const criteria = topic.criteria.flatMap((critere) => {
+		const criteria = topic.criteria.map((critere) => {
 			const declinaison = critere.referentiels[reference];
-			const number = lastSegment(critere.number);
 
-			return [
-				{
-					number,
-					criterium: {
-						number,
-						title: critere.title,
-						tests: !declinaison ? [] : toTests(declinaison),
-						appendix: declinaison?.appendix,
-					},
+			return {
+				criterium: {
+					number: lastSegment(critere.number),
+					title: critere.title,
+					tests: !declinaison ? [] : toTests(declinaison),
+					appendix: declinaison?.appendix,
 				},
-			];
+			};
 		});
 
 		const hasTests = criteria.some(

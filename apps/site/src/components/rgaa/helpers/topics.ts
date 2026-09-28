@@ -16,7 +16,6 @@ export type Criterium = {
 };
 
 export type Criteria = {
-	number: string;
 	criterium: Criterium;
 };
 

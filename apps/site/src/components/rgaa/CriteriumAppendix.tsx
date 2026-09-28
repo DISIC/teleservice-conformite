@@ -61,42 +61,14 @@ export default function CriteriumAppendix({
 									))}
 								</TagField>
 								{isWcag(standard) && techniques.length > 0 && (
-									<TagField label="Technique(s) suffisante(s) et/ou échec(s) (en anglais) :">
-										{techniques.map((technique) => (
-											// TODO: add link
-											<Tag
-												key={technique}
-												linkProps={{
-													href: "#",
-												}}
-												iconId="ri-external-link-fill"
-												className={classes.tag}
-											>
-												{technique}
-											</Tag>
-										))}
-									</TagField>
+									<TechniquesField techniques={techniques} />
 								)}
 							</div>
 						</div>
 					))}
 					{orphanTechniques && (
 						<div className={classes.groupBody}>
-							<TagField label="Technique(s) suffisante(s) et/ou échec(s) (en anglais) :">
-								{techniques.map((technique) => (
-									// TODO: add link
-									<Tag
-										key={technique}
-										linkProps={{
-											href: "#",
-										}}
-										iconId="ri-external-link-fill"
-										className={classes.tag}
-									>
-										{technique}
-									</Tag>
-								))}
-							</TagField>
+							<TechniquesField techniques={techniques} />
 						</div>
 					)}
 				</section>
@@ -140,6 +112,28 @@ function TagField({ label, children }: { label: string; children: ReactNode }) {
 			<p className={classes.fieldLabel}>{label}</p>
 			<div className={classes.tags}>{children}</div>
 		</div>
+	);
+}
+
+function TechniquesField({ techniques }: { techniques: string[] }) {
+	const { classes } = useStyles();
+
+	return (
+		<TagField label="Technique(s) suffisante(s) et/ou échec(s) (en anglais) :">
+			{techniques.map((technique) => (
+				// TODO: add link
+				<Tag
+					key={technique}
+					linkProps={{
+						href: "#",
+					}}
+					iconId="ri-external-link-fill"
+					className={classes.tag}
+				>
+					{technique}
+				</Tag>
+			))}
+		</TagField>
 	);
 }
 

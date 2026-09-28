@@ -11,16 +11,13 @@ export const metadata: Metadata = {
 
 export default function TechnicalMethodPage() {
 	const referentiels = getAllReferentiels().map((referentiel) => {
-		const { iconId, href, heroPagebackgroundColor, circleBackgroundColor } =
-			getReferentielStyle(referentiel.id);
+		const { iconId, href } = getReferentielStyle(referentiel.id);
 
 		return {
 			id: referentiel.id,
 			title: referentiel.title,
 			iconId,
 			href,
-			heroPagebackgroundColor,
-			circleBackgroundColor,
 		};
 	});
 

@@ -34,7 +34,7 @@ export default function CriteriumReference({
 	);
 }
 
-export const useStyles = tss
+const useStyles = tss
 	.withName(CriteriumReference.name)
 	.withParams<{ accordionBackgroundColor: string }>()
 	.create(({ accordionBackgroundColor }) => ({
