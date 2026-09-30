@@ -14,9 +14,7 @@ const TELESERVICE_URL = process.env.NEXT_PUBLIC_TELESERVICE_URL ?? "/";
 const RGAA4_URL = "https://accessibilite.numerique.gouv.fr";
 
 const entryHrefs = (entry: NavEntry): string[] =>
-	"links" in entry
-		? [entry.href, ...entry.links.map((link) => link.href)]
-		: [entry.href];
+	"links" in entry ? entry.links.map((link) => link.href) : [entry.href];
 
 const normalize = (pathname: string) =>
 	pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
@@ -44,10 +42,7 @@ export default function RgaaHeader({ navigation: entries }: RgaaHeaderProps) {
 			? {
 					text: entry.text,
 					isActive: entryHrefs(entry).includes(activeHref),
-					menuLinks: [
-						{ text: entry.text, href: entry.href },
-						...entry.links,
-					].map((link) => ({
+					menuLinks: entry.links.map((link) => ({
 						text: link.text,
 						linkProps: { href: link.href },
 						isActive: link.href === activeHref,

@@ -2,9 +2,7 @@ import { getReferentielStyle } from "~/components/rgaa/referentiels";
 import { getAllReferentiels } from "~/lib/rgaa-data";
 
 export type NavLink = { text: string; href: string; description: string };
-export type NavEntry =
-	| NavLink
-	| { text: string; href: string; description?: string; links: NavLink[] };
+export type NavEntry = NavLink | { text: string; links: NavLink[] };
 
 const PLACEHOLDER_DESCRIPTION =
 	"Ici un texte décrivant le fait que le RGAA s’appuie désormais sur 3 référentiels  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. ";
@@ -20,6 +18,16 @@ export const METHODE_LINKS: NavLink[] = [
 		href: getReferentielStyle(id).href,
 		description,
 	})),
+	{
+		text: "Glossaire",
+		href: "/glossaire",
+		description: PLACEHOLDER_DESCRIPTION,
+	},
+	{
+		text: "Environnement de test",
+		href: "/environnement",
+		description: PLACEHOLDER_DESCRIPTION,
+	},
 ];
 
 export const RESSOURCES_LINKS: NavLink[] = [
@@ -57,16 +65,8 @@ export const NAVIGATION: NavEntry[] = [
 		href: "/obligations",
 		description: PLACEHOLDER_DESCRIPTION,
 	},
-	{
-		text: "Méthode technique",
-		href: "/methode",
-		links: METHODE_LINKS,
-	},
-	{
-		text: "Ressources",
-		href: "/ressources",
-		links: RESSOURCES_LINKS,
-	},
+	{ text: "Méthode technique", links: METHODE_LINKS },
+	{ text: "Ressources", links: RESSOURCES_LINKS },
 ];
 
 export function getPageDescription(href: string): string {
