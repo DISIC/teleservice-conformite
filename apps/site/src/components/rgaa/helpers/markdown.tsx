@@ -1,13 +1,13 @@
-"use client";
-
-import { fr } from "@codegouvfr/react-dsfr";
 import type { ReactNode } from "react";
-import { tss } from "tss-react";
+import { slugify } from "~/lib/slugify";
+import Code from "./Code";
 
 // Every published string (titles, conditions, méthodologies, annexes) is markdown: links, inline code, bold, lists.
 const INLINE = /\[([^\]]+)\]\(([^)]+)\)|`([^`]+)`|\*\*([^*]+)\*\*/g;
 const LIST_ITEM = /^[-*]\s+/;
 const ORDERED_ITEM = /^\d+\.\s+/;
+// Editorial pages split on h2 upstream, so only sub-headings reach the renderer.
+const HEADING = /^(#{3,6})\s+(.+)$/;
 
 type ListItem = { text: string; children: string[] };
 type List = { ordered: boolean; items: ListItem[] };
@@ -43,6 +43,8 @@ export function renderMarkdownInline(text: string): ReactNode[] {
 	if (cursor < text.length) nodes.push(text.slice(cursor));
 	return nodes;
 }
+
+type HeadingTag = "h3" | "h4" | "h5" | "h6";
 
 // Méthodologies are numbered steps whose sub-points are indented bullets: one nesting level, no deeper.
 export function renderMarkdown(source: string): ReactNode[] {
@@ -105,6 +107,18 @@ export function renderMarkdown(source: string): ReactNode[] {
 			else lastItem.text += ` ${line}`;
 			continue;
 		}
+		const heading = HEADING.exec(line);
+		if (heading) {
+			flush();
+			const [, hashes = "###", text = ""] = heading;
+			const Tag = `h${hashes.length}` as HeadingTag;
+			blocks.push(
+				<Tag key={`h${blocks.length}`} id={slugify(text)}>
+					{renderMarkdownInline(text)}
+				</Tag>,
+			);
+			continue;
+		}
 		if (ORDERED_ITEM.test(line)) {
 			pushItem(true, line.replace(ORDERED_ITEM, ""));
 			continue;
@@ -120,16 +134,3 @@ export function renderMarkdown(source: string): ReactNode[] {
 	flush();
 	return blocks;
 }
-
-function Code({ children }: { children: string }) {
-	const { classes } = useStyles();
-
-	return <code className={classes.code}>{children}</code>;
-}
-
-const useStyles = tss.withName("Markdown").create({
-	code: {
-		border: `1px solid ${fr.colors.decisions.border.default.beigeGrisGalet.default}`,
-		padding: fr.spacing("1v"),
-	},
-});

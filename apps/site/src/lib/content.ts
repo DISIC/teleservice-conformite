@@ -2,7 +2,7 @@ import "server-only";
 
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { slugify } from "markdown-to-jsx";
+import { slugify } from "~/lib/slugify";
 
 // Editorial pages are markdown in rgaa/<name>/<name>.md, read at build time by the static export.
 const CONTENT_DIR = path.join(process.cwd(), "..", "..", "rgaa");
@@ -19,7 +19,7 @@ export function readMarkdownPage(name: string): string {
 	return readFileSync(file, "utf8").replace(LEADING_TITLE, "");
 }
 
-// Each h2 becomes its own section; anchors use the ids markdown-to-jsx derives from the same headings.
+// Each h2 becomes its own section, anchored by its slug.
 export function splitSections(markdown: string): MarkdownSection[] {
 	const titles = [...markdown.matchAll(SECTION_TITLE)];
 

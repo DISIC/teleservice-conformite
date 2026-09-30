@@ -6,7 +6,7 @@ import { tss } from "tss-react";
 
 export type TileGridItem = {
 	title: string;
-	description: string;
+	description?: string;
 	href: string;
 };
 
