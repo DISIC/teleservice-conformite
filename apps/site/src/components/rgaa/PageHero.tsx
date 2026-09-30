@@ -13,7 +13,6 @@ import ellipse from "../../assets/ellipse.svg";
 export type LinkButtonsProps = Pick<ReferentielInfos, "id" | "title"> &
 	Pick<ReferentielStyle, "iconId" | "href">;
 
-// The hero illustration is optional, and is either one of our named pictograms or an image asset, never both.
 type HeroIllustration =
 	| { pictogram?: never; imageSrc?: never; imageAlt?: never }
 	| { pictogram: PictogramId; imageSrc?: never; imageAlt?: never }
