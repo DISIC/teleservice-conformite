@@ -6,7 +6,6 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Image, { type StaticImageData } from "next/image";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
-import BetaBadge from "./BetaBadge";
 import Pictogram, { type PictogramId } from "./Pictogram";
 import type { ReferentielInfos, ReferentielStyle } from "./referentiels";
 import ellipse from "../../assets/ellipse.svg";
@@ -35,8 +34,6 @@ type PageHeroProps = HeroIllustration & {
 	title: string;
 	description?: string | ReactNode;
 	linkButtons?: LinkButtonsProps[];
-	badgeColor?: string;
-	badgeBackgroundColor?: string;
 	backgroundColor: string;
 	ellipseColor?: string;
 };
@@ -51,13 +48,10 @@ export default function PageHero(props: PageHeroProps) {
 		imageSrc,
 		imageAlt,
 		linkButtons,
-		badgeColor,
-		badgeBackgroundColor,
 		backgroundColor,
 		ellipseColor,
 	} = props;
 	const { classes } = useStyles({ backgroundColor, ellipseColor });
-	const hasBadge = badgeColor && badgeBackgroundColor;
 
 	return (
 		<div className={classes.hero}>
@@ -88,12 +82,6 @@ export default function PageHero(props: PageHeroProps) {
 						</div>
 					)}
 					<div className={classes.heroText}>
-						{hasBadge && (
-							<BetaBadge
-								color={badgeColor}
-								backgroundColor={badgeBackgroundColor}
-							/>
-						)}
 						<h1 className={classes.title}>{title}</h1>
 						{description && (
 							<p className={classes.description}>{description}</p>
@@ -151,10 +139,6 @@ const useStyles = tss
 			flexDirection: "column",
 			alignItems: "flex-start",
 			gap: fr.spacing("3v"),
-
-			"& > span": {
-				marginBottom: fr.spacing("3v"),
-			},
 		},
 		title: {
 			marginBottom: 0,

@@ -37,10 +37,6 @@ export default function TechnicalMethodPage() {
 				description={getPageDescription("/methode/introduction")}
 				pictogram="technical-error"
 				linkButtons={referentiels}
-				badgeColor={fr.colors.decisions.text.actionHigh.blueEcume.default}
-				badgeBackgroundColor={
-					fr.colors.decisions.background.alt.blueEcume.active
-				}
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
 				ellipseColor={
 					fr.colors.decisions.background.actionLow.blueEcume.default

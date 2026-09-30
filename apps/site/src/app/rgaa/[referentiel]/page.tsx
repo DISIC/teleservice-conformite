@@ -64,8 +64,6 @@ export default async function ReferentielsPage({
 				description={getPageDescription(referentielStyle.href)}
 				pictogram={referentielStyle.pictogram}
 				linkButtons={otherReferentiels}
-				badgeColor={referentielStyle.badgeColor}
-				badgeBackgroundColor={referentielStyle.badgeBackgroundColor}
 				backgroundColor={referentielStyle.heroPagebackgroundColor}
 				ellipseColor={referentielStyle.circleBackgroundColor}
 			/>

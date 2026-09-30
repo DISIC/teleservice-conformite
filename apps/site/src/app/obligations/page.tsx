@@ -23,10 +23,6 @@ export default function LegalObligationsPage() {
 				title="Obligations légales"
 				description={getPageDescription("/obligations")}
 				pictogram="justice-scales"
-				badgeBackgroundColor={
-					fr.colors.decisions.background.alt.blueEcume.active
-				}
-				badgeColor={fr.colors.decisions.text.actionHigh.blueEcume.default}
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
 				ellipseColor={
 					fr.colors.decisions.background.actionLow.blueEcume.default
