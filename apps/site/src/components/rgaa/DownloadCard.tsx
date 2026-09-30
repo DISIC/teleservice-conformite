@@ -2,29 +2,31 @@
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Download } from "@codegouvfr/react-dsfr/Download";
-import type { ReactNode } from "react";
 import { tss } from "tss-react";
+import CallOut, { type CallOutProps } from "@codegouvfr/react-dsfr/CallOut";
 
 interface DownloadCardProps {
 	title: string;
-	downloadProps?: {
+	downloadProps: {
 		label: string;
 		detail: string;
 		href: string;
 	}[];
-	children?: ReactNode;
+	callOutProps?: Omit<CallOutProps, "children"> & { description: string };
 }
 
 export default function DownloadCard({
 	title,
 	downloadProps,
-	children,
+	callOutProps,
 }: DownloadCardProps) {
 	const { classes, cx } = useStyles();
+	const { description, ...callOut } = callOutProps ?? {};
 
 	return (
 		<div className={classes.cardStyle}>
 			<h2 className={cx("fr-h4")}>{title}</h2>
+			{callOutProps && <CallOut {...callOut}>{description}</CallOut>}
 			{downloadProps && (
 				<ul>
 					{downloadProps.map(({ label, detail, href }) => (
@@ -34,7 +36,6 @@ export default function DownloadCard({
 					))}
 				</ul>
 			)}
-			{children}
 		</div>
 	);
 }

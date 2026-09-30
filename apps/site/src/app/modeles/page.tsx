@@ -2,9 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type { Metadata } from "next";
 import DownloadCard from "~/components/rgaa/DownloadCard";
 import PageHero from "~/components/rgaa/PageHero";
-import TemplateContent from "~/components/rgaa/TemplateContent";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
-import { readMarkdownFile } from "~/lib/content";
 import { getPageDescription } from "~/lib/navigation";
 
 export const metadata: Metadata = { title: "Modèles à télécharger" };
@@ -69,14 +67,39 @@ export default function TemplatesPage() {
 								},
 							]}
 						/>
-						<DownloadCard title="Déclaration d’accessibilité">
-							<TemplateContent
-								declarationExample={readMarkdownFile(
-									"modeles",
-									"declaration-accessibilite",
-								)}
-							/>
-						</DownloadCard>
+						<DownloadCard
+							title="Déclaration d’accessibilité"
+							callOutProps={{
+								title: "Vous êtes un service public ?",
+								description:
+									"Tous les services publics numériques publics doivent déposer via le téléservice.",
+								buttonProps: {
+									children: "Accéder au téléservice",
+									linkProps: { href: "#" },
+								},
+								iconId: "ri-error-warning-line",
+							}}
+							downloadProps={[
+								{
+									label: "Au format ODT",
+									detail: "61,88 Ko",
+									// TODO: add link
+									href: "#",
+								},
+								{
+									label: "Au format PDF",
+									detail: "61,88 Ko",
+									// TODO: add link
+									href: "#",
+								},
+								{
+									label: "Au format HTML",
+									detail: "61,88 Ko",
+									// TODO: add link
+									href: "#",
+								},
+							]}
+						/>
 					</div>
 				</div>
 			</div>
