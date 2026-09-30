@@ -2,21 +2,19 @@
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
-import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import { useEffect, useId, useRef, useState } from "react";
 import { tss } from "tss-react";
 
 export type DisplayOption = "all" | "tests" | "references";
 
 interface PopoverButtonProps {
-	onValidate: (option: DisplayOption) => void;
+	onSelect: (option: DisplayOption) => void;
 }
 
-export default function PopoverButton({ onValidate }: PopoverButtonProps) {
+export default function PopoverButton({ onSelect }: PopoverButtonProps) {
 	const { classes, cx } = useStyles();
 
 	const [open, setOpen] = useState<boolean>(false);
-	const [value, setValue] = useState<DisplayOption>();
 
 	const popoverRef = useRef<HTMLDivElement>(null);
 	const toggleButtonRef = useRef<HTMLButtonElement>(null);
@@ -26,17 +24,10 @@ export default function PopoverButton({ onValidate }: PopoverButtonProps) {
 		setOpen((value) => !value);
 	};
 
-	const onClosePopover = () => {
+	const onSelectOption = (option: DisplayOption) => {
+		onSelect(option);
 		setOpen(false);
-		setValue(undefined);
 		toggleButtonRef.current?.focus();
-	};
-
-	const onValidatePopover = () => {
-		if (!value) return;
-
-		onValidate(value);
-		onClosePopover();
 	};
 
 	useEffect(() => {
@@ -79,37 +70,28 @@ export default function PopoverButton({ onValidate }: PopoverButtonProps) {
 				Options d’affichage
 			</Button>
 			<div className={classes.popover} id={popoverId} hidden={!open}>
-				<RadioButtons
-					options={[
-						{
-							label: "Tout déplier",
-							nativeInputProps: {
-								checked: value === "all",
-								onChange: () => setValue("all"),
-							},
-						},
-						{
-							label: "Déplier les tests",
-							nativeInputProps: {
-								checked: value === "tests",
-								onChange: () => setValue("tests"),
-							},
-						},
-						{
-							label: "Déplier les références et notes",
-							nativeInputProps: {
-								checked: value === "references",
-								onChange: () => setValue("references"),
-							},
-						},
-					]}
+				<Button onClick={() => onSelectOption("all")}>
+					Tout déplier/replier
+				</Button>
+				<div
+					style={{
+						width: "100%",
+						height: "1px",
+						backgroundColor: fr.colors.decisions.border.default.grey.default,
+					}}
 				/>
-				<Button
-					onClick={onValidatePopover}
-					priority="secondary"
-					className={classes.validateButton}
-				>
-					Valider
+				<Button onClick={() => onSelectOption("tests")}>
+					Déplier/replier les tests
+				</Button>
+				<div
+					style={{
+						width: "100%",
+						height: "1px",
+						backgroundColor: fr.colors.decisions.border.default.grey.default,
+					}}
+				/>
+				<Button onClick={() => onSelectOption("references")}>
+					Déplier/replier les notes et références
 				</Button>
 			</div>
 		</div>
@@ -135,16 +117,22 @@ const useStyles = tss.withName(PopoverButton.name).create({
 		flexDirection: "column",
 		alignItems: "flex-start",
 		minWidth: "18rem",
-		padding: fr.spacing("3v"),
 		backgroundColor: fr.colors.decisions.background.overlap.grey.default,
 		border: `1px solid ${fr.colors.decisions.border.active.blueFrance.default}`,
 		boxShadow: "0px 4px 12px 0px #00001229",
 		"&[hidden]": {
 			display: "none",
 		},
-	},
-	validateButton: {
-		width: "100%",
-		justifyContent: "center",
+		"& > button": {
+			paddingBlock: fr.spacing("3v"),
+			paddingInline: fr.spacing("4v"),
+			width: "100%",
+			textAlign: "left",
+			backgroundColor: "inherit",
+			color: fr.colors.decisions.text.actionHigh.grey.default,
+			display: "inline",
+			"--hover-tint": fr.colors.decisions.background.default.grey.hover,
+			"--active-tint": fr.colors.decisions.background.default.grey.hover,
+		},
 	},
 });
