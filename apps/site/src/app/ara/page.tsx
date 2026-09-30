@@ -1,9 +1,14 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import type { Metadata } from "next";
 import AraContent from "~/components/rgaa/AraContent";
 import PageHero from "~/components/rgaa/PageHero";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
 import { getPageDescription } from "~/lib/navigation";
 import araLogo from "~/assets/ara-logo.svg";
+
+export const metadata: Metadata = {
+	title: "Ara - Outil d’audit d’accessibilité",
+};
 
 export default function AraPage() {
 	return (

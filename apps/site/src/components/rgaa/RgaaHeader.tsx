@@ -6,10 +6,8 @@ import { Header } from "@codegouvfr/react-dsfr/Header";
 import type { MainNavigationProps } from "@codegouvfr/react-dsfr/MainNavigation";
 import Notice from "@codegouvfr/react-dsfr/Notice";
 import { usePathname } from "next/navigation";
-import { tss } from "tss-react";
 import type { NavEntry } from "~/lib/navigation";
 
-// The two spaces live on two hosts; the switch button is a plain link between them.
 const TELESERVICE_URL = process.env.NEXT_PUBLIC_TELESERVICE_URL ?? "/";
 const RGAA4_URL = "https://accessibilite.numerique.gouv.fr";
 
@@ -34,7 +32,6 @@ interface RgaaHeaderProps {
 }
 
 export default function RgaaHeader({ navigation: entries }: RgaaHeaderProps) {
-	const { classes } = useStyles();
 	const activeHref = getActiveHref(entries, normalize(usePathname()));
 
 	const navigation: MainNavigationProps.Item[] = entries.map((entry) =>
@@ -99,7 +96,6 @@ export default function RgaaHeader({ navigation: entries }: RgaaHeaderProps) {
 					</>
 				}
 				serviceTagline="Référentiel général d’amélioration de l’accessibilité"
-				className={classes.main}
 			/>
 			<Notice
 				title="Version bêta"
@@ -113,7 +109,3 @@ export default function RgaaHeader({ navigation: entries }: RgaaHeaderProps) {
 		</>
 	);
 }
-
-const useStyles = tss.withName(RgaaHeader.name).create({
-	main: {},
-});
