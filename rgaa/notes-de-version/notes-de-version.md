@@ -10,8 +10,6 @@ Les différentes sources de cette mise à jour sont :
 - Des modifications actées sur la plateforme évolution RGAA qui n’ont pas été reportées lors de la consolidation du référentiel ; ces modifications sont signalées par la mention “évolution RGAA” ;
 - Des retours internes concernant des modifications de forme comme de fond ; dans ce dernier cas, ce sont des remarques de fond ne faisant pas question qui ont été corrigées ; ces modifications sont signalées par la mention “retour interne”.
 
-<h2 class="fr-mt-4w" id="criteres">Critères</h2>
- 
 ### Critère 1.1
 
 Modification du test 1.1.4 afin de tenir compte de mécanismes autres que des liens (par exemple, les options d’un élément select) pour assurer l’alternative à une zone réactive (retour interne) :
@@ -416,8 +414,6 @@ Ajout d’une note technique manquante concernant les précisions sur les types 
 
 - Une fenêtre modale permettant d’annuler l’action après son achèvement ;
 - Pour une fonction de glisser/déposer, le fait d’abandonner l’action si l’utilisateur relâche l’élément en dehors de la zone cible.”
-
-<h2 class="fr-mt-4w" id="glossaire">Glossaire</h2>
 
 ### Accéder à chaque page de la collection de pages
 

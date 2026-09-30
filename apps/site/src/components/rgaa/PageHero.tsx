@@ -86,7 +86,7 @@ export default function PageHero(props: PageHeroProps) {
 						{description && (
 							<p className={classes.description}>{description}</p>
 						)}
-						{linkButtons?.length && (
+						{linkButtons && linkButtons.length > 0 && (
 							<ul className={classes.referentielTags}>
 								{linkButtons.map(({ id, title, iconId, href }) => (
 									<li key={id}>
@@ -125,8 +125,8 @@ const useStyles = tss
 		heroContent: {
 			display: "flex",
 			flexDirection: "row-reverse",
-			alignItems: "flex-start",
-			gap: fr.spacing("4w"),
+			alignItems: "center",
+			gap: fr.spacing("13w"),
 			[fr.breakpoints.down("md")]: {
 				flexDirection: "column",
 				alignItems: "stretch",
