@@ -1,8 +1,11 @@
 import { getReferentielStyle } from "~/components/rgaa/referentiels";
 import { getAllReferentiels } from "~/lib/rgaa-data";
 
-export type NavLink = { text: string; href: string; description: string };
-export type NavEntry = NavLink | { text: string; links: NavLink[] };
+export type NavItem = { text: string; href: string };
+export type NavLink = NavItem & { description?: string };
+export type NavEntry<Link extends NavItem = NavLink> =
+	| Link
+	| { text: string; links: Link[] };
 
 const PLACEHOLDER_DESCRIPTION =
 	"Ici un texte décrivant le fait que le RGAA s’appuie désormais sur 3 référentiels  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. ";
@@ -59,7 +62,7 @@ export const RESSOURCES_LINKS: NavLink[] = [
 
 export const NAVIGATION: NavEntry[] = [
 	// TODO: add link
-	{ text: "Accueil", href: "/", description: PLACEHOLDER_DESCRIPTION },
+	{ text: "Accueil", href: "/" },
 	{
 		text: "Obligations légales",
 		href: "/obligations",
@@ -69,7 +72,15 @@ export const NAVIGATION: NavEntry[] = [
 	{ text: "Ressources", links: RESSOURCES_LINKS },
 ];
 
-export function getPageDescription(href: string): string {
+const toNavItem = ({ text, href }: NavLink): NavItem => ({ text, href });
+
+export const HEADER_NAVIGATION: NavEntry<NavItem>[] = NAVIGATION.map((entry) =>
+	"links" in entry
+		? { text: entry.text, links: entry.links.map(toNavItem) }
+		: toNavItem(entry),
+);
+
+export function getPageDescription(href: string): string | undefined {
 	const link = NAVIGATION.flatMap((entry) =>
 		"links" in entry ? entry.links : [entry],
 	).find((link) => link.href === href);

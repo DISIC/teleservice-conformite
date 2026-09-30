@@ -6,19 +6,19 @@ import { Header } from "@codegouvfr/react-dsfr/Header";
 import type { MainNavigationProps } from "@codegouvfr/react-dsfr/MainNavigation";
 import Notice from "@codegouvfr/react-dsfr/Notice";
 import { usePathname } from "next/navigation";
-import type { NavEntry } from "~/lib/navigation";
+import type { NavEntry, NavItem } from "~/lib/navigation";
 
 const TELESERVICE_URL = process.env.NEXT_PUBLIC_TELESERVICE_URL ?? "/";
 const RGAA4_URL = "https://accessibilite.numerique.gouv.fr";
 
-const entryHrefs = (entry: NavEntry): string[] =>
+const entryHrefs = (entry: NavEntry<NavItem>): string[] =>
 	"links" in entry ? entry.links.map((link) => link.href) : [entry.href];
 
 const normalize = (pathname: string) =>
 	pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
 
 // TODO: add link
-const getActiveHref = (navigation: NavEntry[], pathname: string) =>
+const getActiveHref = (navigation: NavEntry<NavItem>[], pathname: string) =>
 	navigation
 		.flatMap(entryHrefs)
 		.filter(
@@ -28,7 +28,7 @@ const getActiveHref = (navigation: NavEntry[], pathname: string) =>
 		.sort((a, b) => b.length - a.length)[0] ?? "";
 
 interface RgaaHeaderProps {
-	navigation: NavEntry[];
+	navigation: NavEntry<NavItem>[];
 }
 
 export default function RgaaHeader({ navigation: entries }: RgaaHeaderProps) {
