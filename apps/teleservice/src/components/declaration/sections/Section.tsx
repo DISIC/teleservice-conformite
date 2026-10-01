@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { logMutationError } from "~/components/declaration/logMutationError";
+import { EditActionSlot } from "~/components/form/Part";
 import { withRequiredMark } from "~/components/form/RequiredField";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { AuditNotice } from "~/components/ui/AuditNotice";
@@ -177,7 +178,7 @@ export function Section({
 			case "custom":
 				return renderForm(readOnly);
 			case "linked":
-				if (!source?.isLinked) return null;
+				if (!source?.isLinked) return <EditActionSlot />;
 				return (
 					<div className={classes.linkedWrapper}>
 						{source.linkedCount !== undefined && (
@@ -192,30 +193,33 @@ export function Section({
 				);
 			case "skipped":
 				return (
-					<AuditNotice
-						Pictogram={Error}
-						heading="Aucun schéma pluriannuel n’a été renseigné."
-					>
-						<span className={fr.cx("fr-text--sm")}>
-							Vous pouvez publier votre déclaration d’accessibilité, néanmoins
-							la loi fait obligation de publier un schéma pluriannuel d’une
-							durée de trois ans dans l’objectif d’informer le public des moyens
-							et actions mises en place pour rendre les sites et applications
-							accessibles à tous.
-						</span>
-						<a
-							href="https://accessibilite.numerique.gouv.fr/obligations/schema-pluriannuel/"
-							target="_blank"
-							rel="noopener noreferrer"
-							title="En savoir plus sur le schéma pluriannuel, nouvelle fenêtre"
-							style={{ width: "fit-content" }}
+					<>
+						<AuditNotice
+							Pictogram={Error}
+							heading="Aucun schéma pluriannuel n’a été renseigné."
 						>
-							En savoir plus sur le schéma pluriannuel
-						</a>
-					</AuditNotice>
+							<span className={fr.cx("fr-text--sm")}>
+								Vous pouvez publier votre déclaration d’accessibilité, néanmoins
+								la loi fait obligation de publier un schéma pluriannuel d’une
+								durée de trois ans dans l’objectif d’informer le public des
+								moyens et actions mises en place pour rendre les sites et
+								applications accessibles à tous.
+							</span>
+							<a
+								href="https://accessibilite.numerique.gouv.fr/obligations/schema-pluriannuel/"
+								target="_blank"
+								rel="noopener noreferrer"
+								title="En savoir plus sur le schéma pluriannuel, nouvelle fenêtre"
+								style={{ width: "fit-content" }}
+							>
+								En savoir plus sur le schéma pluriannuel
+							</a>
+						</AuditNotice>
+						<EditActionSlot />
+					</>
 				);
 			default:
-				return null;
+				return <EditActionSlot />;
 		}
 	})();
 

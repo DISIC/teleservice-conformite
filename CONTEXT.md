@@ -50,7 +50,7 @@ When `audit.isRealised === false`, only "Réalisation de l'audit" is meaningful;
 
 ### Part
 
-A titled grouping of one or more related fields **inside** a [[sub-section]]'s body. A Sub-section contains one or more Parts; each Part has its own heading and is visually a self-contained bordered card.
+A titled grouping of one or more related fields **inside** a [[sub-section]]'s body. A Sub-section contains one or more Parts; each Part has its own heading and is visually a self-contained bordered card. In standalone read-only mode each card hosts the Section's Modifier button — several Parts mean several buttons, all entering edit for the whole Section.
 
 Examples: the **Outils et environnements** Sub-section has two Parts — "Outils d'assistances" (`usedTools`) and "Environnements de tests" (`testEnvironments`). **Non conformités & dérogations** has two Parts — "Non conformités" (`nonCompliantElements`) and "Dérogations" (`optionalElements` + `disproportionnedCharge`). Single-Part Sub-sections (e.g. **Contenus vérifiés**) have exactly one Part.
 
@@ -82,7 +82,7 @@ Transitions:
 How the declaration details page presents its [[section]]s for editing. Derived from [[status]], but a distinct concept — it describes _interaction_, not lifecycle.
 
 - **Sequential** — used while the Declaration is **Brouillon** (never published). The [[section]]s are chained into one guided walkthrough: every section renders permanently editable (no read-only toggle, no per-section Modifier/Annuler/Enregistrer). Edits **autosave** as they happen (silent on success, a DSFR Alert on failure), so a partially-filled section persists and navigation never blocks. The footer is plain "Suivant" section-to-section movement — it neither saves nor validates. The final section (Contact) ends the walkthrough with a completeness gate ("Prévisualiser et publier") that validates _all_ sections against their schemas and surfaces a single, live, page-level error summary (ADR-0006).
-- **Standalone** — used once the Declaration has been published (**Publiée**, clean or Modifiée). Each [[section]] is edited on its own via its top-right Modifier → Annuler/Enregistrer toggle, independent of the others (the ADR-0002 model). Footer navigation is plain section-to-section movement.
+- **Standalone** — used once the Declaration has been published (**Publiée**, clean or Modifiée). Each [[section]] is edited on its own, independent of the others (the ADR-0002 model): read-only, every [[part]] card carries a Modifier button (a body without Parts shows it underneath); editing, the footer swaps Précédent/Suivant for Enregistrer/Annuler until the edit is saved or cancelled. Read-only footer navigation is plain section-to-section movement.
 
 The two modes select different behaviors of the same `Section` runtime and `sections/Shell`; the active mode is decided once per page load from `status === "Brouillon"`, and `resolveSectionEditing` turns it into the per-Section behaviour (autosave, starts read-only, terminal publish gate).
 
