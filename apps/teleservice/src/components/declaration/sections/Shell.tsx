@@ -6,18 +6,14 @@ import type {
 } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
+import { EditActionProvider } from "~/components/form/Part";
 import type { EditingMode } from "~/domain/declaration/status";
 
 export type SectionShellProps = {
 	title: string;
 	/** Status flag shown next to the title (e.g. "Non applicable"). */
 	badge?: ReactNode;
-	/**
-	 * Whether the underlying data already exists (and therefore can be toggled
-	 * between read-only and edit). When false, the section is in initial-fill
-	 * mode: `readOnly` should also be false, and the top-right shows only
-	 * "Enregistrer" (no "Annuler" — nothing to revert to).
-	 */
+	/** False while the data doesn't exist yet: no "Annuler", nothing to revert to. */
 	isEditable: boolean;
 	readOnly: boolean;
 	onEnterEdit: () => void;
@@ -31,12 +27,7 @@ export type SectionShellProps = {
 	/** Override the "Suivant" label (e.g. "Prévisualiser et publier" on the last section). */
 	nextLabel?: string;
 	nextIcon?: FrIconClassName | RiIconClassName;
-	/**
-	 * Hide the top-right action buttons (Modifier/Annuler/Enregistrer) and keep
-	 * footer navigation enabled — for purely informational sections that have
-	 * nothing to save (e.g. an audit sub-section shown before the audit is
-	 * declared as realised).
-	 */
+	/** Nothing to save (e.g. an audit sub-section before the audit is realised). */
 	hideActions?: boolean;
 	/** Sequential keeps every section editable and commits via the footer;
 	 *  standalone toggles edit/read-only per section. */
@@ -57,20 +48,33 @@ export function SectionShell({
 	prevHref,
 	nextHref,
 	nextLabel = "Suivant",
-	nextIcon = "fr-icon-arrow-right-s-line",
+	nextIcon = "fr-icon-arrow-right-line",
 	hideActions = false,
 	mode = "standalone",
 	children,
 }: SectionShellProps) {
 	const isEditing = !readOnly;
 	const isSequential = mode === "sequential";
+	const hasStandaloneActions = !isSequential && !hideActions;
 	// Standalone has no autosave, so navigating mid-edit would discard the section;
-	// block footer nav until the edit is saved or cancelled.
-	const navDisabled = !isSequential && isEditing && !hideActions;
+	// the footer carries only the commit actions until the edit is saved or cancelled.
+	const showEditActions = hasStandaloneActions && isEditing;
 	// The last Section of the walkthrough ends with the declaration-wide publish
 	// gate instead of a "next" link.
 	const isTerminal = isSequential && !hideActions && !nextHref;
 	const { classes, cx } = useStyles();
+
+	const enterEditButton =
+		hasStandaloneActions && isEditable && readOnly ? (
+			<Button
+				priority="secondary"
+				iconId="fr-icon-edit-line"
+				onClick={onEnterEdit}
+				size="small"
+			>
+				Modifier
+			</Button>
+		) : null;
 
 	return (
 		<section className={classes.root}>
@@ -79,98 +83,83 @@ export function SectionShell({
 					{title}
 					{badge}
 				</h2>
-				<div className={classes.headerActions}>
-					{!isSequential && !hideActions && isEditable && readOnly && (
-						<Button
-							priority="secondary"
-							iconId="fr-icon-edit-line"
-							onClick={onEnterEdit}
-							size="small"
-						>
-							Modifier
-						</Button>
-					)}
-					{!isSequential && !hideActions && isEditable && isEditing && (
-						<Button priority="tertiary" onClick={onCancelEdit} size="small">
-							Annuler
-						</Button>
-					)}
-					{!isSequential && !hideActions && isEditing && (
+			</header>
+			<div className={classes.body}>
+				<EditActionProvider value={enterEditButton}>
+					{children}
+				</EditActionProvider>
+			</div>
+			<footer className={classes.footer}>
+				{showEditActions ? (
+					<div className={classes.footerSide}>
 						<Button
 							priority="primary"
-							iconId="fr-icon-check-line"
+							iconId="fr-icon-save-line"
 							onClick={onSave}
 							disabled={isSaving}
 							size="small"
 						>
 							Enregistrer
 						</Button>
-					)}
-				</div>
-			</header>
-			<div className={classes.body}>{children}</div>
-			<footer className={classes.footer}>
-				<div className={classes.footerSide}>
-					{prevHref &&
-						(navDisabled ? (
+						{isEditable && (
 							<Button
+								iconId="fr-icon-arrow-go-back-line"
 								priority="tertiary"
-								iconId="fr-icon-arrow-left-s-line"
-								nativeButtonProps={{ disabled: true, "aria-disabled": true }}
+								size="small"
+								onClick={onCancelEdit}
 							>
-								Précédent
+								Annuler
 							</Button>
-						) : (
-							<Button
-								priority="tertiary"
-								iconId="fr-icon-arrow-left-s-line"
-								linkProps={{
-									href: prevHref,
-									scroll: false,
-									shallow: true,
-								}}
-							>
-								Précédent
-							</Button>
-						))}
-				</div>
-				<div className={classes.footerSide}>
-					{isTerminal ? (
-						<Button
-							priority="primary"
-							iconId="fr-icon-upload-fill"
-							iconPosition="left"
-							onClick={onPublish ?? onSave}
-							disabled={isSaving}
-						>
-							Prévisualiser et publier
-						</Button>
-					) : nextHref ? (
-						navDisabled ? (
-							<Button
-								priority="primary"
-								iconId={nextIcon}
-								iconPosition="right"
-								nativeButtonProps={{ disabled: true, "aria-disabled": true }}
-							>
-								{nextLabel}
-							</Button>
-						) : (
-							<Button
-								priority="primary"
-								iconId={nextIcon}
-								iconPosition="right"
-								linkProps={{
-									href: nextHref,
-									scroll: false,
-									shallow: true,
-								}}
-							>
-								{nextLabel}
-							</Button>
-						)
-					) : null}
-				</div>
+						)}
+					</div>
+				) : (
+					<>
+						<div className={classes.footerSide}>
+							{prevHref && (
+								<Button
+									priority="tertiary"
+									iconId="fr-icon-arrow-left-line"
+									linkProps={{
+										href: prevHref,
+										scroll: false,
+										shallow: true,
+									}}
+									size="small"
+								>
+									Précédent
+								</Button>
+							)}
+						</div>
+						<div className={classes.footerSide}>
+							{isTerminal ? (
+								<Button
+									priority="primary"
+									iconId="fr-icon-upload-fill"
+									iconPosition="left"
+									onClick={onPublish ?? onSave}
+									disabled={isSaving}
+									size="small"
+								>
+									Prévisualiser et publier
+								</Button>
+							) : nextHref ? (
+								<Button
+									priority="primary"
+									iconId={nextIcon}
+									iconPosition="right"
+									linkProps={{
+										href: nextHref,
+										scroll: false,
+										shallow: true,
+									}}
+									size="small"
+								>
+									{nextLabel}
+								</Button>
+							) : null}
+						</div>
+					</>
+				)}
 			</footer>
 		</section>
 	);
@@ -197,12 +186,6 @@ const useStyles = tss.withName(SectionShell.name).create({
 		gap: fr.spacing("2v"),
 		flexWrap: "wrap",
 	},
-	headerActions: {
-		display: "flex",
-		flexDirection: "row",
-		gap: fr.spacing("3v"),
-		alignItems: "center",
-	},
 	body: {
 		display: "flex",
 		flexDirection: "column",
@@ -214,5 +197,6 @@ const useStyles = tss.withName(SectionShell.name).create({
 	},
 	footerSide: {
 		display: "flex",
+		gap: fr.spacing("3v"),
 	},
 });

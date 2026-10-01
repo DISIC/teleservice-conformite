@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import type { ReactNode } from "react";
+import { createContext, type ReactNode, useContext } from "react";
 import { tss } from "tss-react";
 
 interface PartProps {
@@ -13,6 +13,17 @@ interface PartProps {
 	 */
 	grid?: boolean;
 	children: ReactNode;
+}
+
+const EditActionContext = createContext<ReactNode>(null);
+
+export const EditActionProvider = EditActionContext.Provider;
+
+/** A read-only body without Parts places this itself, or it has no Modifier. */
+export function EditActionSlot({ className }: { className?: string }) {
+	const action = useContext(EditActionContext);
+	if (!action) return null;
+	return <div className={className}>{action}</div>;
 }
 
 /**
@@ -36,6 +47,7 @@ export function Part({ readOnly, title, grid = true, children }: PartProps) {
 				</h3>
 			)}
 			{children}
+			{readOnly && <EditActionSlot className={classes.editAction} />}
 		</div>
 	);
 }
@@ -74,5 +86,9 @@ const useStyles = tss
 			// In the read-only grid, span the title full width above the fields.
 			...(readOnly &&
 				grid && { gridColumn: "1 / -1", marginBottom: fr.spacing("2v") }),
+		},
+		editAction: {
+			display: "flex",
+			...(grid && { gridColumn: "1 / -1" }),
 		},
 	}));
