@@ -2,6 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-05-26
+- **Amended 2026-09-24:** the per-Section "Modifier" toggle is rendered in every read-only Part card of the Section rather than beside its title; a multi-Part Section shows one button per card, all entering edit for the whole Section.
 
 ## Context
 
