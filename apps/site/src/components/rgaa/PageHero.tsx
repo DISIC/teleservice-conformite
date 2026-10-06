@@ -3,20 +3,27 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import Button from "@codegouvfr/react-dsfr/Button";
+import Image, { type StaticImageData } from "next/image";
+import type { ReactNode } from "react";
 import { tss } from "tss-react";
-import BetaBadge from "./BetaBadge";
 import Pictogram, { type PictogramId } from "./Pictogram";
 import type { ReferentielInfos, ReferentielStyle } from "./referentiels";
 import ellipse from "../../assets/ellipse.svg";
 
-export type ReferentielLinkButtonsProps = Pick<
-	ReferentielInfos,
-	"id" | "title"
-> &
+export type LinkButtonsProps = Pick<ReferentielInfos, "id" | "title"> &
 	Pick<ReferentielStyle, "iconId" | "href">;
 
-type PageHeroProps = {
-	breadcrumbCurrentPageLabel: string;
+type HeroIllustration =
+	| { pictogram?: never; imageSrc?: never; imageAlt?: never }
+	| { pictogram: PictogramId; imageSrc?: never; imageAlt?: never }
+	| {
+			imageSrc: string | StaticImageData;
+			imageAlt?: string;
+			pictogram?: never;
+	  };
+
+type PageHeroProps = HeroIllustration & {
+	breadcrumbCurrentPageLabel: ReactNode;
 	breadcrumbSegments: {
 		label: string;
 		linkProps: {
@@ -24,13 +31,10 @@ type PageHeroProps = {
 		};
 	}[];
 	title: string;
-	description: string;
-	pictogram: PictogramId;
-	referentiels: ReferentielLinkButtonsProps[];
-	badgeColor: string;
-	badgeBackgroundColor: string;
+	description?: string | ReactNode;
+	linkButtons?: LinkButtonsProps[];
 	backgroundColor: string;
-	ellipseColor: string;
+	ellipseColor?: string;
 };
 
 export default function PageHero(props: PageHeroProps) {
@@ -40,9 +44,9 @@ export default function PageHero(props: PageHeroProps) {
 		title,
 		description,
 		pictogram,
-		referentiels,
-		badgeColor,
-		badgeBackgroundColor,
+		imageSrc,
+		imageAlt,
+		linkButtons,
 		backgroundColor,
 		ellipseColor,
 	} = props;
@@ -58,33 +62,46 @@ export default function PageHero(props: PageHeroProps) {
 					segments={breadcrumbSegments}
 				/>
 				<div className={classes.heroContent}>
-					<div className={classes.heroIllustrationWrapper}>
-						<div className={classes.heroIllustration}>
-							<Pictogram id={pictogram} fontSize="inherit" />
+					{(imageSrc || pictogram) && (
+						<div className={classes.heroIllustrationWrapper}>
+							<span className={classes.ellipse} aria-hidden="true" />
+							<div className={classes.heroIllustration}>
+								{imageSrc ? (
+									<Image
+										className={classes.image}
+										src={imageSrc}
+										alt={imageAlt ?? ""}
+										width={216}
+										height={216}
+									/>
+								) : (
+									pictogram && <Pictogram id={pictogram} fontSize="inherit" />
+								)}
+							</div>
 						</div>
-					</div>
+					)}
 					<div className={classes.heroText}>
-						<BetaBadge
-							color={badgeColor}
-							backgroundColor={badgeBackgroundColor}
-						/>
 						<h1 className={classes.title}>{title}</h1>
-						<p className={classes.description}>{description} </p>
-						<ul className={classes.referentialTags}>
-							{referentiels.map(({ id, title, iconId, href }) => (
-								<li key={id}>
-									<Button
-										priority="secondary"
-										size="small"
-										iconId={iconId as never}
-										iconPosition="left"
-										linkProps={{ href }}
-									>
-										{title}
-									</Button>
-								</li>
-							))}
-						</ul>
+						{description && (
+							<p className={classes.description}>{description}</p>
+						)}
+						{linkButtons && linkButtons.length > 0 && (
+							<ul className={classes.referentielTags}>
+								{linkButtons.map(({ id, title, iconId, href }) => (
+									<li key={id}>
+										<Button
+											priority="secondary"
+											size="small"
+											iconId={iconId as never}
+											iconPosition="left"
+											linkProps={{ href }}
+										>
+											{title}
+										</Button>
+									</li>
+								))}
+							</ul>
+						)}
 					</div>
 				</div>
 			</div>
@@ -94,7 +111,7 @@ export default function PageHero(props: PageHeroProps) {
 
 const useStyles = tss
 	.withName(PageHero.name)
-	.withParams<{ backgroundColor: string; ellipseColor: string }>()
+	.withParams<{ backgroundColor: string; ellipseColor?: string }>()
 	.create(({ backgroundColor, ellipseColor }) => ({
 		hero: {
 			backgroundColor,
@@ -108,8 +125,7 @@ const useStyles = tss
 			display: "flex",
 			flexDirection: "row-reverse",
 			alignItems: "center",
-			gap: fr.spacing("4w"),
-			marginTop: fr.spacing("4w"),
+			gap: fr.spacing("13w"),
 			[fr.breakpoints.down("md")]: {
 				flexDirection: "column",
 				alignItems: "stretch",
@@ -121,7 +137,7 @@ const useStyles = tss
 			minWidth: 0,
 			flexDirection: "column",
 			alignItems: "flex-start",
-			gap: fr.spacing("2w"),
+			gap: fr.spacing("3v"),
 		},
 		title: {
 			marginBottom: 0,
@@ -132,13 +148,14 @@ const useStyles = tss
 			color: fr.colors.decisions.text.default.grey.default,
 			marginBottom: 0,
 		},
-		referentialTags: {
+		referentielTags: {
 			display: "flex",
 			flexWrap: "wrap",
 			gap: fr.spacing("3v"),
 			listStyle: "none",
 			margin: 0,
 			padding: 0,
+			marginTop: fr.spacing("3v"),
 			[fr.breakpoints.down("md")]: {
 				alignSelf: "stretch",
 				flexDirection: "column",
@@ -152,32 +169,36 @@ const useStyles = tss
 		heroIllustrationWrapper: {
 			position: "relative",
 			flexShrink: 0,
-			"&::before": {
-				content: '""',
-				position: "absolute",
-				zIndex: 0,
-				top: "50%",
-				left: "50%",
-				transform: "translateY(-50%)",
-				width: "152px",
-				height: "256px",
-				backgroundColor: ellipseColor,
-				maskImage: `url(${ellipse.src})`,
-				maskRepeat: "no-repeat",
-				maskSize: "contain",
-				maskPosition: "center",
-			},
+			paddingLeft: "calc(216px / 2)",
 			[fr.breakpoints.down("md")]: {
 				alignSelf: "center",
-				"&::before": {
-					width: "70px",
-					height: "118px",
-				},
+				paddingLeft: "calc(100px / 2)",
 			},
 		},
+		ellipse: {
+			display: "block",
+			width: "152px",
+			height: "256px",
+			backgroundColor: ellipseColor,
+			maskImage: `url(${ellipse.src})`,
+			maskRepeat: "no-repeat",
+			maskSize: "contain",
+			maskPosition: "center",
+			[fr.breakpoints.down("md")]: {
+				width: "70px",
+				height: "118px",
+			},
+		},
+		image: {
+			width: "60%",
+			height: "auto",
+			objectFit: "contain",
+		},
 		heroIllustration: {
-			position: "relative",
-			zIndex: 1,
+			position: "absolute",
+			top: "50%",
+			left: 0,
+			transform: "translateY(-50%)",
 			display: "flex",
 			alignItems: "center",
 			justifyContent: "center",

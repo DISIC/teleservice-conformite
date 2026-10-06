@@ -1,16 +1,17 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import type { Metadata } from "next";
 import MarkdownSections from "~/components/rgaa/MarkdownSections";
-import PageHero from "~/components/rgaa/PageHero";
 import SectionSidebarList from "~/components/rgaa/SectionSidebarList";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
-import { fr } from "@codegouvfr/react-dsfr";
 import { readMarkdownPage, splitSections } from "~/lib/content";
 import { getPageDescription } from "~/lib/navigation";
+import PageHero from "~/components/rgaa/PageHero";
+import CurrentSectionLabel from "~/components/rgaa/CurrentSectionLabel";
 
-export const metadata: Metadata = { title: "Obligations légales" };
+export const metadata: Metadata = { title: "Notes de version" };
 
-export default function LegalObligationsPage() {
-	const content = readMarkdownPage("obligations-legales");
+export default function ReleaseNotesPage() {
+	const content = readMarkdownPage("notes-de-version");
 	const sections = splitSections(content);
 	const headings = sections.map(({ id, label }) => ({ id, label }));
 
@@ -18,11 +19,13 @@ export default function LegalObligationsPage() {
 		<>
 			<StartDsfrOnHydration />
 			<PageHero
-				breadcrumbCurrentPageLabel="Obligations légales"
-				breadcrumbSegments={[]}
-				title="Obligations légales"
-				description={getPageDescription("/obligations")}
-				pictogram="justice-scales"
+				breadcrumbCurrentPageLabel={<CurrentSectionLabel sections={headings} />}
+				breadcrumbSegments={[
+					{ label: "Ressources", linkProps: { href: "/ressources" } },
+				]}
+				title="Notes de révision du RGAA 4.1.2 vers 5.0"
+				description={getPageDescription("/notes")}
+				pictogram="catalog"
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
 				ellipseColor={
 					fr.colors.decisions.background.actionLow.blueEcume.default

@@ -15,22 +15,10 @@ const TEST_COLLAPSE = '[data-accordion="test"] > .fr-accordion > .fr-collapse';
 const REFERENCE_COLLAPSE =
 	'[data-accordion="reference"] > .fr-accordion > .fr-collapse';
 
-const DISPLAY_OPTION_SELECTORS: Record<
-	DisplayOption,
-	{ expand: string[]; collapse: string[] }
-> = {
-	all: {
-		expand: [TEST_COLLAPSE, REFERENCE_COLLAPSE],
-		collapse: [],
-	},
-	tests: {
-		expand: [TEST_COLLAPSE],
-		collapse: [REFERENCE_COLLAPSE],
-	},
-	references: {
-		expand: [REFERENCE_COLLAPSE],
-		collapse: [TEST_COLLAPSE],
-	},
+const DISPLAY_OPTION_SELECTORS: Record<DisplayOption, string> = {
+	all: `${TEST_COLLAPSE}, ${REFERENCE_COLLAPSE}`,
+	tests: TEST_COLLAPSE,
+	references: REFERENCE_COLLAPSE,
 };
 
 interface CriteriaListProps {
@@ -54,19 +42,20 @@ export default function CriteriaList({
 
 	const topicsRef = useRef<HTMLDivElement>(null);
 
-	const applyDisplayOption = (option: DisplayOption) => {
+	const toggleDisplayOption = (option: DisplayOption) => {
 		const root = topicsRef.current;
 
 		if (!root) return;
 
-		const { expand, collapse } = DISPLAY_OPTION_SELECTORS[option];
+		const collapses = [
+			...root.querySelectorAll(DISPLAY_OPTION_SELECTORS[option]),
+		];
 
-		for (const selector of expand) {
-			setCollapsesExpanded(root.querySelectorAll(selector), true);
-		}
-		for (const selector of collapse) {
-			setCollapsesExpanded(root.querySelectorAll(selector), false);
-		}
+		const allExpanded = collapses.every((collapse) =>
+			collapse.classList.contains("fr-collapse--expanded"),
+		);
+
+		setCollapsesExpanded(collapses, !allExpanded);
 	};
 
 	return (
@@ -76,7 +65,7 @@ export default function CriteriaList({
 				<TopicSidebarList topics={allTopics} />
 			</div>
 			<div className={classes.rightContent} ref={topicsRef}>
-				<PopoverButton onValidate={applyDisplayOption} />
+				<PopoverButton onSelect={toggleDisplayOption} />
 				<AccordionList referentiel={referentiel} criterias={criterias} />
 			</div>
 		</div>
