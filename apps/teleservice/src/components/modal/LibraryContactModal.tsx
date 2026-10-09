@@ -11,6 +11,7 @@ import {
 } from "~/forms/contact/contactSchema";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { useAppForm } from "~/forms/context";
+import { focusFirstInvalidField } from "~/components/form/focusFirstInvalidField";
 
 export type LibraryContactModalActions = {
 	open?: (contact?: Contact | null) => void;
@@ -83,12 +84,14 @@ export function LibraryContactModal({ actions }: LibraryContactModalProps) {
 
 	return (
 		<form
-			onSubmit={(e) => {
+			onSubmit={async (e) => {
 				e.preventDefault();
 				e.stopPropagation();
-				form.handleSubmit();
+				const formElement = e.currentTarget;
+				await form.handleSubmit();
+				if (!form.state.isValid) focusFirstInvalidField(formElement);
 			}}
-			onInvalid={() => form.validate("submit")}
+			noValidate
 		>
 			<modal.Component
 				buttons={[

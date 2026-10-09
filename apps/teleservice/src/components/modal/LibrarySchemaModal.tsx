@@ -8,6 +8,7 @@ import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { useAppForm } from "~/forms/context";
 import { SchemaForm as EntitySchemaForm } from "~/forms/schema/schemaForm";
 import { schemaFormOptions, type ZSchema } from "~/forms/schema/schemaSchema";
+import { focusFirstInvalidField } from "~/components/form/focusFirstInvalidField";
 
 export type LibrarySchemaModalActions = {
 	open?: (schema?: Schema | null) => void;
@@ -83,12 +84,14 @@ export function LibrarySchemaModal({ actions }: LibrarySchemaModalProps) {
 
 	return (
 		<form
-			onSubmit={(e) => {
+			onSubmit={async (e) => {
 				e.preventDefault();
 				e.stopPropagation();
-				form.handleSubmit();
+				const formElement = e.currentTarget;
+				await form.handleSubmit();
+				if (!form.state.isValid) focusFirstInvalidField(formElement);
 			}}
-			onInvalid={() => form.validate("submit")}
+			noValidate
 		>
 			<modal.Component
 				buttons={[

@@ -35,6 +35,7 @@ import { usePublishAttempt } from "./hooks/usePublishAttempt";
 import { useRevealSectionErrors } from "./hooks/useRevealSectionErrors";
 import { useSourceMode } from "./hooks/useSourceMode";
 import { SectionShell } from "./Shell";
+import { focusFirstInvalidField } from "~/components/form/focusFirstInvalidField";
 
 type SectionProps = {
 	definition: AnySectionDefinition;
@@ -306,11 +307,13 @@ export function Section({
 				{!readOnly && !hideRequiredNotice && <RequiredFieldsNotice />}
 				{sourcePicker}
 				<form
-					onSubmit={(e) => {
+					onSubmit={async (e) => {
 						e.preventDefault();
-						form.handleSubmit();
+						const formElement = e.currentTarget;
+						await form.handleSubmit();
+						if (!form.state.isValid) focusFirstInvalidField(formElement);
 					}}
-					onInvalid={() => form.validate("submit")}
+					noValidate
 				>
 					<div className={commonClasses.partStack}>{body}</div>
 				</form>
