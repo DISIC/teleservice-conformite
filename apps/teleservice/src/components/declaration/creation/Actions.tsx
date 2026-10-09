@@ -1,8 +1,7 @@
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useRouter } from "next/router";
-import { useCommonStyles } from "~/components/ui/commonStyles";
+import { tss } from "tss-react";
 
-/** Shared "Retour / Continuer" action bar for every creation path. */
+/** Shared "Continuer" action bar for every creation path. */
 export function Actions({
 	onContinue,
 	disabled,
@@ -10,19 +9,10 @@ export function Actions({
 	onContinue: () => void;
 	disabled?: boolean;
 }) {
-	const { back } = useRouter();
-	const { classes } = useCommonStyles();
+	const { classes } = useStyles();
 
 	return (
-		<div className={classes.actionButtonsContainer}>
-			<Button
-				type="button"
-				priority="tertiary"
-				onClick={() => back()}
-				aria-label="Retour à la liste des déclarations"
-			>
-				Retour
-			</Button>
+		<div className={classes.container}>
 			<Button
 				type="button"
 				onClick={onContinue}
@@ -35,3 +25,10 @@ export function Actions({
 		</div>
 	);
 }
+
+const useStyles = tss.withName(Actions.name).create({
+	container: {
+		display: "flex",
+		justifyContent: "flex-end",
+	},
+});
