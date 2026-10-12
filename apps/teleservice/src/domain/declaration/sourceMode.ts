@@ -17,6 +17,17 @@ export const SOURCE_MODE_FIELD: Record<LibrarySectionKind, string> = {
 	schema: "schema.sourceMode",
 };
 
+/** `name` of the Library item select; the gate error's `field` while Linked is chosen but nothing picked. */
+export const SOURCE_LINK_FIELD: Record<LibrarySectionKind, string> = {
+	contact: "contact.parent",
+	schema: "schema.parent",
+};
+
+/** Radio choices made in the UI but not persisted yet (Linked waits for an item). */
+export type PendingSourceModes = Partial<
+	Record<LibrarySectionKind, SourceModeValue>
+>;
+
 function hasParent(parent: unknown): boolean {
 	if (typeof parent === "number") return true;
 	return !!parent && typeof parent === "object" && "id" in parent;

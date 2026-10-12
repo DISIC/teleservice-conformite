@@ -20,7 +20,10 @@ import {
 	isSectionNotApplicable,
 	SECTIONS,
 } from "~/domain/declaration/sections";
-import { SOURCE_MODE_FIELD } from "~/domain/declaration/sourceMode";
+import {
+	SOURCE_LINK_FIELD,
+	SOURCE_MODE_FIELD,
+} from "~/domain/declaration/sourceMode";
 import type { EditingMode } from "~/domain/declaration/status";
 import { useAppForm } from "~/forms/context";
 import { sectionFormOptions } from "~/forms/formOptions";
@@ -160,6 +163,12 @@ export function Section({
 		(sourceModeRevealed || publishAttempted) && editing.bodyMode === null
 			? SECTIONS[slug].validation.sourceMode?.message
 			: undefined;
+	const linkError =
+		(sourceModeRevealed || publishAttempted) &&
+		source?.effectiveMode === "linked" &&
+		!source.isLinked
+			? SECTIONS[slug].validation.sourceMode?.linkMessage
+			: undefined;
 
 	// Realign the form only when a Library link/unlink/skip swaps the persisted
 	// source; a custom edit keeps its own live state (autosave + validation).
@@ -254,7 +263,10 @@ export function Section({
 			{source.effectiveMode === "linked" && (
 				<Select
 					label={source.libraryLink.label}
+					state={linkError ? "error" : "default"}
+					stateRelatedMessage={linkError}
 					nativeSelectProps={{
+						name: SOURCE_LINK_FIELD[library.kind],
 						value: source.libraryLink.linkedParentId ?? "",
 						onChange: (e) => {
 							if (e.target.value)

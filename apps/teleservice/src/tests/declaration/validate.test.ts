@@ -242,4 +242,45 @@ describe("validateDeclaration", () => {
 			},
 		]);
 	});
+
+	it("drops a saved custom draft's errors once Linked is chosen but not picked", () => {
+		const declaration = completeDeclaration({
+			contact: { email: "contact@example.fr" },
+		} as never);
+		expect(
+			errorsFor(
+				validateDeclaration(declaration, { contact: "linked" }),
+				"contact",
+			),
+		).toEqual([
+			{
+				section: "contact",
+				field: "contact.parent",
+				message: "Sélectionnez un contact existant",
+			},
+		]);
+	});
+
+	it("runs the field schema once Custom is chosen, even before anything is typed", () => {
+		const errors = errorsFor(
+			validateDeclaration(completeDeclaration({ contact: {} } as never), {
+				contact: "custom",
+			}),
+			"contact",
+		);
+		expect(errors.map((e) => e.field)).toEqual(["name", "email", "url"]);
+	});
+
+	it("still asks for an item when Linked replaces a Skipped schema", () => {
+		const errors = errorsFor(
+			validateDeclaration(
+				completeDeclaration({ schema: { skipped: true } } as never),
+				{ schema: "linked" },
+			),
+			"schema",
+		);
+		expect(errors.map((e) => e.message)).toEqual([
+			"Sélectionnez un schéma pluriannuel existant",
+		]);
+	});
 });
