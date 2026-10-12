@@ -23,7 +23,7 @@ export function PublishedHeader({
 			}
 			homeLinkProps={{
 				href: "/",
-				title: "Accueil Téléservice Conformité",
+				title: "Accueil Téléservice de déclaration d’accessibilité numérique",
 			}}
 			serviceTitle={PUBLISHED_HEADER_TITLE}
 			serviceTagline={[declaration.name, declaration.url]

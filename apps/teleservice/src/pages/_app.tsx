@@ -142,7 +142,8 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 						}
 						homeLinkProps={{
 							href: "/",
-							title: "Accueil Téléservice Conformité",
+							title:
+								"Accueil Téléservice de déclaration d’accessibilité numérique, Beta",
 						}}
 						quickAccessItems={quickAccessItems}
 						navigation={navigation}
@@ -163,6 +164,10 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 				</main>
 				<Footer
 					id="footer"
+					homeLinkProps={{
+						href: "/",
+						title: "République française, Accueil Téléservice Conformité",
+					}}
 					accessibility="non compliant"
 					bottomItems={[headerFooterDisplayItem]}
 				/>
