@@ -1,28 +1,21 @@
-import { useRouter } from "next/router";
-
 import { AdvantagesSection } from "~/components/home/AdvantagesSection";
 import { AraSection } from "~/components/home/AraSection";
 import { FaqSection } from "~/components/home/FaqSection";
 import { Hero } from "~/components/home/Hero";
 import { WhySection } from "~/components/home/WhySection";
-import { authClient, signInWithProConnect } from "~/lib/auth-client";
+import { authClient } from "~/lib/auth-client";
 
 const DASHBOARD_HREF = "/dashboard/declarations";
 
 export default function Home() {
-	const router = useRouter();
 	const { data: authSession } = authClient.useSession();
-
-	const start = () =>
-		authSession
-			? router.push(DASHBOARD_HREF)
-			: signInWithProConnect(DASHBOARD_HREF);
+	const startHref = authSession ? DASHBOARD_HREF : "/api/connexion";
 
 	return (
 		<>
-			<Hero onStart={start} />
+			<Hero startHref={startHref} />
 			<WhySection />
-			<AdvantagesSection onStart={start} />
+			<AdvantagesSection startHref={startHref} />
 			<AraSection />
 			<FaqSection />
 		</>

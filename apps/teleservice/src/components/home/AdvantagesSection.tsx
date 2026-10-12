@@ -25,10 +25,10 @@ const ADVANTAGES = [
 ];
 
 type AdvantagesSectionProps = {
-	onStart: () => void;
+	startHref: string;
 };
 
-export function AdvantagesSection({ onStart }: AdvantagesSectionProps) {
+export function AdvantagesSection({ startHref }: AdvantagesSectionProps) {
 	const { classes, cx } = useStyles();
 
 	return (
@@ -49,7 +49,7 @@ export function AdvantagesSection({ onStart }: AdvantagesSectionProps) {
 						/>
 					))}
 				</div>
-				<Button onClick={onStart} size="large">
+				<Button linkProps={{ href: startHref }} size="large">
 					Commencer
 				</Button>
 			</div>
