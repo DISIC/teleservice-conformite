@@ -1,6 +1,11 @@
 import z from "zod";
 import { submitFormOptions } from "~/forms/formOptions";
-import { optionalUrlIssue, requiredIssue } from "~/forms/rules";
+import {
+	notFutureDateIssue,
+	optionalDateField,
+	optionalUrlIssue,
+	requiredIssue,
+} from "~/forms/rules";
 import { appKindOptions, mobilePlatformOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
@@ -15,7 +20,7 @@ const generalFields = z.object({
 	name: z.string(),
 	url: z.string(),
 	domain: z.string().meta({ kind: "select" }),
-	firstPublishedAt: z.iso.date().or(z.literal("")),
+	firstPublishedAt: optionalDateField,
 });
 
 export const declarationGeneral = z.object({ general: generalFields });
@@ -55,6 +60,12 @@ export const declarationGeneralRefined = declarationGeneral.superRefine(
 			["general", "firstPublishedAt"],
 			g.firstPublishedAt,
 			"La date de publication initiale est requise",
+		);
+		notFutureDateIssue(
+			ctx,
+			["general", "firstPublishedAt"],
+			g.firstPublishedAt,
+			"La date de publication initiale ne peut pas être postérieure à la date du jour",
 		);
 		if (g.kind === "mobile_app" && !g.mobilePlatform)
 			ctx.addIssue({

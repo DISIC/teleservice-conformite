@@ -26,6 +26,7 @@ import { api } from "~/lib/api";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import type { SectionPatch } from "~/server/api/utils/section-write";
 import { defineSection, type SectionRenderArgs } from "../defineSection";
+import { isValidDate } from "~/forms/rules";
 
 type Audit = PopulatedDeclaration["audit"];
 
@@ -87,7 +88,11 @@ export const auditGeneralSection = auditSubSection<
 			? { isRealised: false }
 			: {
 					isRealised: true,
-					date: value.date,
+					// An impossible date is left out so the saved one stays; "" still clears it.
+					date:
+						value.date === "" || isValidDate(value.date)
+							? value.date
+							: undefined,
 					realisedBy: value.realisedBy,
 					rgaa_version: value.rgaa_version,
 					hasBlockingElements: value.hasBlockingElements,
