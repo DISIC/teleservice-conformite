@@ -7,8 +7,24 @@ export type DeclarationError = {
 	section: SectionSlug;
 	/** Dot-joined Zod path within the section's form values (e.g. `general.name`). */
 	field: string;
+	/** Visible label of the field, when the Section declares one. */
+	label?: string;
 	message: string;
 };
+
+// An array item's label is numbered from 1 so two items with the same error stay distinct.
+function fieldLabel(
+	labels: Record<string, string>,
+	path: PropertyKey[],
+): string | undefined {
+	const key = path
+		.map((s) => (typeof s === "number" ? "*" : String(s)))
+		.join(".");
+	const label = labels[key];
+	if (!label) return undefined;
+	const index = path.find((s) => typeof s === "number");
+	return typeof index === "number" ? `${label} ${index + 1}` : label;
+}
 
 /**
  * Runs `schema` against `values` and flattens any issues into ordered
@@ -18,12 +34,14 @@ function runSchema(
 	section: SectionSlug,
 	schema: z.ZodType,
 	values: unknown,
+	labels: Record<string, string>,
 ): DeclarationError[] {
 	const result = schema.safeParse(values);
 	if (result.success) return [];
 	return result.error.issues.map((issue) => ({
 		section,
 		field: issue.path.join("."),
+		label: fieldLabel(labels, issue.path),
 		message: issue.message,
 	}));
 }
@@ -47,6 +65,7 @@ function validateSection(
 		slug,
 		validation.schema,
 		validation.fromDeclaration(declaration),
+		validation.fieldLabels,
 	);
 }
 
