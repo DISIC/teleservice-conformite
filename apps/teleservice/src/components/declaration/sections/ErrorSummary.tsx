@@ -67,8 +67,6 @@ const useStyles = tss.withName(ErrorSummary.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("1v"),
-		maxHeight: 200,
-		overflowY: "auto",
 	},
 	row: {
 		display: "flex",
