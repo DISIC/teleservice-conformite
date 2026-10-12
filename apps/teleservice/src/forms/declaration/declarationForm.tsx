@@ -5,6 +5,7 @@ import {
 	kindOptions,
 	mobilePlatformOptions,
 } from "~/payload/selectOptions";
+import { MIN_DATE, todayIsoDate } from "~/forms/rules";
 import { withForm } from "../context";
 import { declarationGeneralFormOptions } from "./declarationSchema";
 
@@ -26,11 +27,14 @@ export const DeclarationGeneralForm = withForm({
 										<br />
 										S’il s’agit d’une première publication, conservez la date du
 										jour.
+										<br />
+										La date ne peut pas être postérieure à la date du jour.
 									</>
 								}
 								nativeInputProps={{
 									type: "date",
-									max: new Date().toISOString().split("T")[0],
+									min: MIN_DATE,
+									max: todayIsoDate(),
 								}}
 								readOnlyField={readOnly}
 								required

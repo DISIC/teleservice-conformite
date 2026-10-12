@@ -71,6 +71,40 @@ describe("validateDeclaration", () => {
 		).toEqual([]);
 	});
 
+	it("rejects an initial publication date in the future", () => {
+		expect(
+			errorsFor(
+				validateDeclaration(
+					completeDeclaration({
+						first_published_at: "2999-01-01T00:00:00.000Z",
+					}),
+				),
+				"infos",
+			),
+		).toEqual([
+			{
+				section: "infos",
+				field: "general.firstPublishedAt",
+				label: "Date de publication initiale de la déclaration",
+				message:
+					"La date de publication initiale ne peut pas être postérieure à la date du jour",
+			},
+		]);
+	});
+
+	it("rejects an implausibly old initial publication date as invalid", () => {
+		expect(
+			errorsFor(
+				validateDeclaration(
+					completeDeclaration({
+						first_published_at: "0030-01-20T00:00:00.000Z",
+					}),
+				),
+				"infos",
+			).map((e) => e.message),
+		).toEqual(["Date invalide"]);
+	});
+
 	it("requires the platform once the service is a mobile app", () => {
 		const errors = errorsFor(
 			validateDeclaration(
@@ -188,6 +222,25 @@ describe("validateDeclaration", () => {
 		]);
 		// Non-conformités stay all-optional: applicable yet error-free.
 		expect(errorsFor(errors, "audit-non-conformites")).toEqual([]);
+	});
+
+	it("rejects an audit date in the future", () => {
+		const errors = validateDeclaration(
+			completeDeclaration({
+				audit: { isRealised: true, date: "2999-01-01T00:00:00.000Z" },
+			} as never),
+		);
+		expect(
+			errorsFor(errors, "audit-general").filter((e) => e.field === "date"),
+		).toEqual([
+			{
+				section: "audit-general",
+				field: "date",
+				label: "Date de réalisation de l’audit",
+				message:
+					"La date de réalisation de l'audit ne peut pas être postérieure à la date du jour",
+			},
+		]);
 	});
 
 	it("validates the persisted row, so an unanswered audit blocks publish", () => {

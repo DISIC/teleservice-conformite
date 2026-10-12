@@ -57,6 +57,7 @@ export const AUDIT_SUB_SECTIONS: Record<
 			fieldLabels: {
 				isAuditRealised:
 					"Avez-vous réalisé un audit d’accessibilité de votre service numérique ?",
+				date: "Date de réalisation de l’audit",
 				realisedBy: "Entité ou personne ayant réalisé l’audit",
 				rate: "Taux de conformité global",
 				hasBlockingElements: "L’audit a-t-il remonté des éléments bloquants ?",
