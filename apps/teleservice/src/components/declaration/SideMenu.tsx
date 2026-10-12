@@ -90,6 +90,7 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 			align="left"
 			sticky
 			burgerMenuButtonText="Sections de la déclaration"
+			{...{ "aria-label": "Sections de la déclaration" }}
 			items={items}
 			classes={{ root: classes.root }}
 		/>
