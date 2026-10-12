@@ -5,7 +5,7 @@ import {
 	kindOptions,
 	mobilePlatformOptions,
 } from "~/payload/selectOptions";
-import { MIN_DATE, todayIsoDate } from "~/forms/rules";
+import { DATE_FORMAT_HINT, MIN_DATE, todayIsoDate } from "~/forms/rules";
 import { withForm } from "../context";
 import { declarationGeneralFormOptions } from "./declarationSchema";
 
@@ -29,6 +29,8 @@ export const DeclarationGeneralForm = withForm({
 										jour.
 										<br />
 										La date ne peut pas être postérieure à la date du jour.
+										<br />
+										{DATE_FORMAT_HINT}
 									</>
 								}
 								nativeInputProps={{
