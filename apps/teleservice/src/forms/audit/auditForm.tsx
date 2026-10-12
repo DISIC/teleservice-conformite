@@ -258,7 +258,9 @@ export const CompliantElementsForm = withForm({
 									si elle ne peut pas être communiquée pour des raisons de
 									sécurité.
 									<br />
-									Exemple : 'Accueil - https://www.nomdelapage/accueil'
+									Exemples :
+									<br />- Accueil - https://www.example.fr/accueil
+									<br />- Contact - https://www.example.fr/contact
 								</>
 							}
 							readOnlyField={readOnly}
