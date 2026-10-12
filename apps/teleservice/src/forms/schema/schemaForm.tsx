@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
+import { useRef } from "react";
 import { tss } from "tss-react";
 import { Part } from "~/components/form/Part";
 import { withForm } from "../context";
@@ -10,6 +11,8 @@ export const SchemaForm = withForm({
 	props: { readOnly: true },
 	render: function Render({ form, readOnly }) {
 		const { classes } = useStyles();
+		const plansRef = useRef<HTMLDivElement>(null);
+
 		return (
 			<Part readOnly={readOnly} grid={false}>
 				<form.AppField name="name">
@@ -41,7 +44,7 @@ export const SchemaForm = withForm({
 				<hr className={classes.separator} />
 				<form.Field name="actionPlanUrls" mode="array">
 					{(arrayField) => (
-						<div>
+						<div ref={plansRef}>
 							<p className="fr-text--bold fr-mb-6v">Plans d'actions associés</p>
 							{arrayField.state.value.map((_, index) => (
 								<fieldset
@@ -90,7 +93,19 @@ export const SchemaForm = withForm({
 									priority="secondary"
 									iconId="fr-icon-add-line"
 									iconPosition="left"
-									onClick={() => arrayField.pushValue({ name: "", url: "" })}
+									onClick={() => {
+										const index = arrayField.state.value.length;
+
+										arrayField.pushValue({ name: "", url: "" });
+
+										requestAnimationFrame(() =>
+											plansRef.current
+												?.querySelector<HTMLInputElement>(
+													`[name="actionPlanUrls[${index}].name"]`,
+												)
+												?.focus(),
+										);
+									}}
 									size="small"
 								>
 									Ajouter un plan d'action
