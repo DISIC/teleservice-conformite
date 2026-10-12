@@ -54,6 +54,13 @@ export const AUDIT_SUB_SECTIONS: Record<
 		validation: {
 			schema: auditGeneral,
 			fromDeclaration: (d) => auditToGeneralValues(d.audit),
+			fieldLabels: {
+				isAuditRealised:
+					"Avez-vous réalisé un audit d’accessibilité de votre service numérique ?",
+				realisedBy: "Entité ou personne ayant réalisé l’audit",
+				rate: "Taux de conformité global",
+				hasBlockingElements: "L’audit a-t-il remonté des éléments bloquants ?",
+			},
 		},
 	},
 	"audit-outils": {
@@ -66,6 +73,11 @@ export const AUDIT_SUB_SECTIONS: Record<
 		validation: {
 			schema: auditTools,
 			fromDeclaration: (d) => auditToToolsValues(d.audit),
+			fieldLabels: {
+				usedTools: "Liste des outils utilisés pour évaluer l’accessibilité",
+				testEnvironments:
+					"Liste des environnements utilisés pour évaluer l’accessibilité",
+			},
 			isApplicable: (d) => d.audit?.isRealised === true,
 		},
 	},
@@ -77,6 +89,10 @@ export const AUDIT_SUB_SECTIONS: Record<
 		validation: {
 			schema: auditContents,
 			fromDeclaration: (d) => auditToContentsValues(d.audit),
+			fieldLabels: {
+				compliantElements:
+					"Éléments ayant fait l’objet de la vérification de conformité",
+			},
 			isApplicable: (d) => d.audit?.isRealised === true,
 		},
 	},
@@ -88,6 +104,7 @@ export const AUDIT_SUB_SECTIONS: Record<
 		validation: {
 			schema: auditNonConformities,
 			fromDeclaration: (d) => auditToNonConformitiesValues(d.audit),
+			fieldLabels: { blockingElements: "Éléments bloquants" },
 			isApplicable: (d) => d.audit?.isRealised === true,
 		},
 	},

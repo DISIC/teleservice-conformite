@@ -34,6 +34,7 @@ describe("validateDeclaration", () => {
 			{
 				section: "infos",
 				field: "general.kind",
+				label: "Type de service",
 				message: "Le type de service est requis",
 			},
 		]);
@@ -52,6 +53,7 @@ describe("validateDeclaration", () => {
 				{
 					section: "infos",
 					field: "general.firstPublishedAt",
+					label: "Date de publication initiale de la déclaration",
 					message: "La date de publication initiale est requise",
 				},
 			]);
@@ -83,6 +85,7 @@ describe("validateDeclaration", () => {
 			{
 				section: "infos",
 				field: "general.mobilePlatform",
+				label: "Plateforme mobile",
 				message: "La plateforme mobile est requise",
 			},
 		]);
@@ -124,7 +127,12 @@ describe("validateDeclaration", () => {
 			"contact",
 		);
 		expect(errors).toEqual([
-			{ section: "contact", field: "email", message: "Email invalide" },
+			{
+				section: "contact",
+				field: "email",
+				label: "Email de contact",
+				message: "Email invalide",
+			},
 		]);
 	});
 
@@ -152,6 +160,7 @@ describe("validateDeclaration", () => {
 			{
 				section: "audit-general",
 				field: "realisedBy",
+				label: "Entité ou personne ayant réalisé l’audit",
 				message: "L'organisation ayant réalisé l'audit est requise",
 			},
 		]);
@@ -159,6 +168,7 @@ describe("validateDeclaration", () => {
 			{
 				section: "audit-contenus",
 				field: "compliantElements",
+				label: "Éléments ayant fait l’objet de la vérification de conformité",
 				message: "Les éléments conformes sont requis",
 			},
 		]);
@@ -166,11 +176,13 @@ describe("validateDeclaration", () => {
 			{
 				section: "audit-outils",
 				field: "usedTools",
+				label: "Liste des outils utilisés pour évaluer l’accessibilité",
 				message: "Au moins un outil d'assistance est requis",
 			},
 			{
 				section: "audit-outils",
 				field: "testEnvironments",
+				label: "Liste des environnements utilisés pour évaluer l’accessibilité",
 				message: "Au moins un environnement de test est requis",
 			},
 		]);
@@ -186,7 +198,47 @@ describe("validateDeclaration", () => {
 			{
 				section: "audit-general",
 				field: "isAuditRealised",
+				label:
+					"Avez-vous réalisé un audit d’accessibilité de votre service numérique ?",
 				message: "La question de la réalisation de l'audit est requise",
+			},
+		]);
+	});
+
+	it("labels each field so errors sharing a message stay distinct", () => {
+		const errors = errorsFor(
+			validateDeclaration(
+				completeDeclaration({ contact: { name: "Référent" } } as never),
+			),
+			"contact",
+		);
+		expect(errors.map((e) => e.label)).toEqual([
+			"Email de contact",
+			"Lien URL du formulaire",
+		]);
+	});
+
+	it("numbers array items from 1 in their label", () => {
+		const errors = errorsFor(
+			validateDeclaration(
+				completeDeclaration({
+					schema: {
+						name: "Schéma 2024",
+						actionPlanUrls: [
+							{ name: "Plan 2024", url: "https://example.fr" },
+							{ name: "", url: "https://example.fr" },
+						],
+					},
+				} as never),
+			),
+			"schema",
+		);
+		expect(errors).toEqual([
+			{
+				section: "schema",
+				field: "actionPlanUrls.1.name",
+				label: "Nom du plan d'actions 2",
+				message: "Le nom du plan d'actions est requis",
 			},
 		]);
 	});

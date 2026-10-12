@@ -10,6 +10,8 @@ export type SectionValidation<TSchema extends z.ZodType = z.ZodType> = {
 	 * but their fields are not applicable yet.
 	 */
 	isApplicable?: (declaration: PopulatedDeclaration) => boolean;
+	/** Field labels shown in the error summary, keyed by path; `*` stands for an array index. */
+	fieldLabels: Record<string, string>;
 	/**
 	 * Source-mode sections (contact/schema) require an explicit choice before
 	 * their field schema runs; while undecided the gate targets the radio

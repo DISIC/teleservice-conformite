@@ -47,6 +47,7 @@ export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
 							>
 								<span className={classes.section}>
 									{SECTION_TITLES[error.section]}
+									{error.label && ` › ${error.label}`}
 								</span>
 								<span>{error.message}</span>
 							</button>
