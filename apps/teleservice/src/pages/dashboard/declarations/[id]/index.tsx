@@ -153,6 +153,7 @@ export default function DeclarationPage({
 									onDeclarationChange={setDeclaration}
 									mode={editingMode}
 									onPublishAttempt={() => setPublishAttempted(true)}
+									publishAttempted={publishAttempted}
 								/>
 							</div>
 						</div>

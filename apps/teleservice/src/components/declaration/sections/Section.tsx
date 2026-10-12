@@ -46,6 +46,8 @@ type SectionProps = {
 	nextHref: string | null;
 	/** Flips the page's "publish attempted" flag so the error summary appears. */
 	onPublishAttempt: () => void;
+	/** Once a publish was attempted, every Section reveals its errors on mount. */
+	publishAttempted: boolean;
 };
 
 /**
@@ -60,6 +62,7 @@ export function Section({
 	prevHref,
 	nextHref,
 	onPublishAttempt,
+	publishAttempted,
 }: SectionProps) {
 	const { slug, library } = definition;
 	const title = SECTIONS[slug].title;
@@ -143,7 +146,7 @@ export function Section({
 		values,
 		save,
 	});
-	useRevealSectionErrors(form);
+	useRevealSectionErrors(form, publishAttempted);
 
 	// A `?field=` naming the source radio means the publish gate routed here. The
 	// page strips the param once it has focused the field, so latch the reveal.
@@ -154,7 +157,7 @@ export function Section({
 		}
 	}, [router.query.field, library]);
 	const sourceModeError =
-		sourceModeRevealed && editing.bodyMode === null
+		(sourceModeRevealed || publishAttempted) && editing.bodyMode === null
 			? SECTIONS[slug].validation.sourceMode?.message
 			: undefined;
 
