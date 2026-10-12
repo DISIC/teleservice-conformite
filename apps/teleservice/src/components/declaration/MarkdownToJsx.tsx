@@ -81,6 +81,21 @@ const useStyles = tss.withName(MarkdownToJsx.name).create({
 		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},
 	markdownContainer: {
+		minWidth: 0,
+		maxWidth: "100%",
+		overflowWrap: "anywhere",
+		"pre, code": {
+			whiteSpace: "pre-wrap",
+		},
+		"img, video, iframe": {
+			maxWidth: "100%",
+			height: "auto",
+		},
+		table: {
+			display: "block",
+			maxWidth: "100%",
+			overflowX: "auto",
+		},
 		"p, ul, ol": {
 			marginTop: 0,
 			marginBottom: fr.spacing("6v"),
