@@ -17,7 +17,7 @@ import { AlertHost } from "~/components/alert/AlertHost";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
-import { authClient, signInWithProConnect } from "~/lib/auth-client";
+import { authClient } from "~/lib/auth-client";
 
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
 	interface RegisterLink {
@@ -71,8 +71,8 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 				{
 					iconId: "fr-icon-account-line",
 					text: "Se connecter",
-					buttonProps: {
-						onClick: () => signInWithProConnect(),
+					linkProps: {
+						href: "/api/connexion",
 						className: fr.cx("fr-btn--tertiary"),
 					},
 				},
