@@ -21,7 +21,6 @@ import { analyzeUrlWithAlbert } from "../albert";
 import {
 	fetchAraReport,
 	getUserEntity,
-	hostnameOf,
 	type ImportedDeclarationData,
 	normalizeAlbertResponse,
 	normalizeAraReport,
@@ -48,12 +47,11 @@ const createDeclarationFromImportedData = async (
 	}
 
 	try {
-		const fallbackName =
-			hostnameOf(data.service.url) ??
-			(await getDefaultDeclarationName(payload, userId));
-		const declarationName = data.service.name?.trim()
-			? data.service.name
-			: fallbackName;
+		// An AI-extracted name is unreliable (often the URL itself): the user names the declaration.
+		const declarationName =
+			source === "ara" && data.service.name?.trim()
+				? data.service.name
+				: await getDefaultDeclarationName(payload, userId);
 
 		const entity = await getUserEntity(payload, userId);
 		const entityId =
