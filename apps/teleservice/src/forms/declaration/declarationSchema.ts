@@ -52,7 +52,7 @@ export const declarationGeneralRefined = declarationGeneral.superRefine(
 			ctx,
 			["general", "domain"],
 			g.domain,
-			"Le domaine est requis",
+			"Le secteur d’activité est requis",
 		);
 		optionalUrlIssue(ctx, ["general", "url"], g.url);
 		requiredIssue(
