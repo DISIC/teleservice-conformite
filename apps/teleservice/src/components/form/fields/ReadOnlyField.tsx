@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
-import { useInDefinitionList } from "~/components/form/Part";
+import { useDefinitionList } from "~/components/form/Part";
 import type { DefaultFieldProps } from "~/forms/context";
 
 interface ReadOnlyFieldProps extends DefaultFieldProps {
@@ -24,7 +24,8 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 		link = false,
 	} = props;
 	const valueIsArray = Array.isArray(value);
-	const inDefinitionList = useInDefinitionList();
+	const definitionList = useDefinitionList();
+	const term = label || definitionList?.fallbackTerm;
 
 	const { classes } = useStyles({
 		valueIsArray,
@@ -46,10 +47,10 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 		value || placeholder
 	);
 
-	if (inDefinitionList) {
+	if (definitionList && term) {
 		return (
 			<div className={classes.fieldContainer}>
-				<dt className={classes.label}>{label}</dt>
+				<dt className={classes.label}>{term}</dt>
 				<dd className={classes.value}>{valueContent}</dd>
 			</div>
 		);

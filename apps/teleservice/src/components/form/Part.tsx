@@ -21,10 +21,13 @@ const EditActionContext = createContext<ReactNode>(null);
 
 export const EditActionProvider = EditActionContext.Provider;
 
-const DefinitionListContext = createContext(false);
+const DefinitionListContext = createContext<{ fallbackTerm: ReactNode } | null>(
+	null,
+);
 
-/** True inside a read-only Part rendered as a `<dl>`: fields render as `dt`/`dd`. */
-export const useInDefinitionList = () => useContext(DefinitionListContext);
+/** Set inside a read-only Part rendered as a `<dl>`: fields render as `dt`/`dd`.
+ *  An unlabelled field takes the Part title as its term, since that title is what labels it. */
+export const useDefinitionList = () => useContext(DefinitionListContext);
 
 /** A read-only body without Parts places this itself, or it has no Modifier. */
 export function EditActionSlot({ className }: { className?: string }) {
@@ -61,7 +64,7 @@ export function Part({
 				</h3>
 			)}
 			{asDefinitionList ? (
-				<DefinitionListContext.Provider value>
+				<DefinitionListContext.Provider value={{ fallbackTerm: title }}>
 					<dl className={classes.definitionList}>{children}</dl>
 				</DefinitionListContext.Provider>
 			) : (
