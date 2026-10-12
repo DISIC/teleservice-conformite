@@ -18,6 +18,7 @@ export function AraSection() {
 							href="https://ara.numerique.gouv.fr"
 							target="_blank"
 							rel="noopener noreferrer"
+							title="Ara, nouvelle fenêtre"
 						>
 							Ara
 						</a>{" "}

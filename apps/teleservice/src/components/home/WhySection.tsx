@@ -39,6 +39,7 @@ export function WhySection() {
 							href={href}
 							target="_blank"
 							rel="noopener noreferrer"
+							title={`${linkLabel}, nouvelle fenêtre`}
 							className={cx(fr.cx("fr-link", "fr-link--sm"), classes.cardLink)}
 						>
 							{linkLabel}
