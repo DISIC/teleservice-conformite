@@ -9,11 +9,7 @@ export function AraSection() {
 	return (
 		<section className={fr.cx("fr-container")}>
 			<div className={classes.block}>
-				<Image
-					src={AraLogo}
-					alt="Logo de l'outil Ara"
-					className={classes.artwork}
-				/>
+				<Image src={AraLogo} alt="" className={classes.artwork} />
 				<div className={classes.content}>
 					<h2 className={classes.heading}>En un clic avec Ara</h2>
 					<p className={classes.text}>

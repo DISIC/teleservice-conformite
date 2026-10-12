@@ -40,7 +40,7 @@ export default function ErrorPage({ deleted }: { deleted?: boolean }) {
 				</div>
 				<div className={classes.errorIllustration}>
 					<div>
-						<Image src={blob} alt="Illustration d'une page d'erreur 404" />
+						<Image src={blob} alt="" />
 					</div>
 					<div className={classes.technicalErrorIcon}>
 						<TechnicalError fontSize="6.625rem" />
