@@ -46,46 +46,54 @@ export const SchemaForm = withForm({
 					{(arrayField) => (
 						<div ref={plansRef}>
 							<p className="fr-text--bold fr-mb-6v">Plans d'actions associés</p>
-							{arrayField.state.value.map((_, index) => (
-								<fieldset
-									key={`action-plan-${index}`}
-									className={classes.plan}
-									aria-label={`Plan d'actions ${index + 1}`}
+							{arrayField.state.value.length > 0 && (
+								<ul
+									className={classes.plans}
+									aria-label="Liste des plans d'actions associés"
 								>
-									{!readOnly && (
-										<Button
-											className={classes.planRemove}
-											type="button"
-											priority="secondary"
-											iconId="fr-icon-delete-line"
-											title={`Supprimer le plan d'actions ${index + 1}`}
-											onClick={() => arrayField.removeValue(index)}
-											size="small"
-										/>
-									)}
-									<form.AppField name={`actionPlanUrls[${index}].name`}>
-										{(field) => (
-											<field.TextField
-												label="Nom du plan d'actions"
-												hintText="Ce nom vous aidera à identifier ce plan d'actions"
-												readOnlyField={readOnly}
-												required
-											/>
-										)}
-									</form.AppField>
-									<form.AppField name={`actionPlanUrls[${index}].url`}>
-										{(field) => (
-											<field.TextField
-												label="Lien du plan d'actions"
-												hintText="Format attendu : https://www.example.fr"
-												nativeInputProps={{ type: "url" }}
-												readOnlyField={readOnly}
-												required
-											/>
-										)}
-									</form.AppField>
-								</fieldset>
-							))}
+									{arrayField.state.value.map((_, index) => (
+										<li key={`action-plan-${index}`}>
+											<fieldset
+												className={classes.plan}
+												aria-label={`Plan d'actions ${index + 1}`}
+											>
+												{!readOnly && (
+													<Button
+														className={classes.planRemove}
+														type="button"
+														priority="secondary"
+														iconId="fr-icon-delete-line"
+														title={`Supprimer le plan d'actions ${index + 1}`}
+														onClick={() => arrayField.removeValue(index)}
+														size="small"
+													/>
+												)}
+												<form.AppField name={`actionPlanUrls[${index}].name`}>
+													{(field) => (
+														<field.TextField
+															label="Nom du plan d'actions"
+															hintText="Ce nom vous aidera à identifier ce plan d'actions"
+															readOnlyField={readOnly}
+															required
+														/>
+													)}
+												</form.AppField>
+												<form.AppField name={`actionPlanUrls[${index}].url`}>
+													{(field) => (
+														<field.TextField
+															label="Lien du plan d'actions"
+															hintText="Format attendu : https://www.example.fr"
+															nativeInputProps={{ type: "url" }}
+															readOnlyField={readOnly}
+															required
+														/>
+													)}
+												</form.AppField>
+											</fieldset>
+										</li>
+									))}
+								</ul>
+							)}
 							{!readOnly && (
 								<Button
 									className={fr.cx("fr-mt-2v")}
@@ -126,6 +134,11 @@ const useStyles = tss.withName("SchemaForm").create({
 		padding: 0,
 		marginTop: fr.spacing("2v"),
 		marginBottom: fr.spacing("6v"),
+	},
+	plans: {
+		listStyle: "none",
+		margin: 0,
+		padding: 0,
 	},
 	plan: {
 		position: "relative",
