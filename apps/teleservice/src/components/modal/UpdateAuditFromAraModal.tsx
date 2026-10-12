@@ -9,7 +9,7 @@ import z from "zod";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { api, type RouterOutputs } from "~/lib/api";
 import { useAppForm } from "~/forms/context";
-import { focusFirstInvalidField } from "~/components/form/focusFirstInvalidField";
+import { submitForm } from "~/components/form/submitForm";
 
 export type UpdateAuditFromAraModalActions = {
 	open?: () => void;
@@ -82,16 +82,7 @@ export function UpdateAuditFromAraModal({
 	});
 
 	return (
-		<form
-			onSubmit={async (e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				const formElement = e.currentTarget;
-				await form.handleSubmit();
-				if (!form.state.isValid) focusFirstInvalidField(formElement);
-			}}
-			noValidate
-		>
+		<form onSubmit={submitForm(form)} noValidate>
 			<modal.Component
 				buttons={[
 					{ children: "Annuler", type: "button", disabled: isPending },

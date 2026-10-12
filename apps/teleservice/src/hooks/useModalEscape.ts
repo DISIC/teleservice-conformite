@@ -4,7 +4,8 @@ import { useEffect } from "react";
 type Modal = ReturnType<typeof createModal>;
 
 // DSFR ignores Escape while focus is on a form field, which traps keyboard users inside the dialog.
-const FIELD_TAGS = new Set(["INPUT", "LABEL", "TEXTAREA", "SELECT"]);
+// A select is left out: its open picker may receive the same Escape to close itself.
+const FIELD_TAGS = new Set(["INPUT", "LABEL", "TEXTAREA"]);
 
 export function useModalEscape(modal: Modal) {
 	useEffect(() => {

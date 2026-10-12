@@ -8,7 +8,7 @@ import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { useAppForm } from "~/forms/context";
 import { SchemaForm as EntitySchemaForm } from "~/forms/schema/schemaForm";
 import { schemaFormOptions, type ZSchema } from "~/forms/schema/schemaSchema";
-import { focusFirstInvalidField } from "~/components/form/focusFirstInvalidField";
+import { submitForm } from "~/components/form/submitForm";
 
 export type LibrarySchemaModalActions = {
 	open?: (schema?: Schema | null) => void;
@@ -83,16 +83,7 @@ export function LibrarySchemaModal({ actions }: LibrarySchemaModalProps) {
 	});
 
 	return (
-		<form
-			onSubmit={async (e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				const formElement = e.currentTarget;
-				await form.handleSubmit();
-				if (!form.state.isValid) focusFirstInvalidField(formElement);
-			}}
-			noValidate
-		>
+		<form onSubmit={submitForm(form)} noValidate>
 			<modal.Component
 				buttons={[
 					{ children: "Annuler", type: "button" },

@@ -10,7 +10,7 @@ import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { api } from "~/lib/api";
 import { useAppForm } from "~/forms/context";
 import HelpingMessage from "../ui/HelpingMessage";
-import { focusFirstInvalidField } from "~/components/form/focusFirstInvalidField";
+import { submitForm } from "~/components/form/submitForm";
 
 export type InviteMembersModalActions = {
 	open?: () => void;
@@ -90,16 +90,7 @@ export function InviteMembersModal({
 	});
 
 	return (
-		<form
-			onSubmit={async (e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				const formElement = e.currentTarget;
-				await form.handleSubmit();
-				if (!form.state.isValid) focusFirstInvalidField(formElement);
-			}}
-			noValidate
-		>
+		<form onSubmit={submitForm(form)} noValidate>
 			<modal.Component
 				buttons={[
 					{ children: "Annuler", type: "button" },
