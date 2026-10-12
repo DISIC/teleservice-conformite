@@ -10,7 +10,7 @@ export const ContactTypeForm = withForm({
 	props: { readOnly: false },
 	render: function Render({ form, readOnly }) {
 		return (
-			<Part readOnly={readOnly}>
+			<Part readOnly={readOnly} definitionList>
 				<form.AppField name="name">
 					{(field) => (
 						<field.TextField

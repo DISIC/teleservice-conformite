@@ -12,12 +12,19 @@ interface PartProps {
 	 * Defaults to true.
 	 */
 	grid?: boolean;
+	/** Read-only fields render as a `<dl>` of label/value pairs. */
+	definitionList?: boolean;
 	children: ReactNode;
 }
 
 const EditActionContext = createContext<ReactNode>(null);
 
 export const EditActionProvider = EditActionContext.Provider;
+
+const DefinitionListContext = createContext(false);
+
+/** True inside a read-only Part rendered as a `<dl>`: fields render as `dt`/`dd`. */
+export const useInDefinitionList = () => useContext(DefinitionListContext);
 
 /** A read-only body without Parts places this itself, or it has no Modifier. */
 export function EditActionSlot({ className }: { className?: string }) {
@@ -34,8 +41,15 @@ export function EditActionSlot({ className }: { className?: string }) {
  * separating it from a preceding Part so multi-Part bodies read as distinct
  * groups while editing. The optional title renders in both modes.
  */
-export function Part({ readOnly, title, grid = true, children }: PartProps) {
-	const { classes, cx } = useStyles({ readOnly, grid });
+export function Part({
+	readOnly,
+	title,
+	grid = true,
+	definitionList = false,
+	children,
+}: PartProps) {
+	const asDefinitionList = readOnly && definitionList;
+	const { classes, cx } = useStyles({ readOnly, grid, asDefinitionList });
 
 	return (
 		<div className={classes.root}>
@@ -46,7 +60,13 @@ export function Part({ readOnly, title, grid = true, children }: PartProps) {
 					{title}
 				</h3>
 			)}
-			{children}
+			{asDefinitionList ? (
+				<DefinitionListContext.Provider value>
+					<dl className={classes.definitionList}>{children}</dl>
+				</DefinitionListContext.Provider>
+			) : (
+				children
+			)}
 			{readOnly && <EditActionSlot className={classes.editAction} />}
 		</div>
 	);
@@ -54,41 +74,56 @@ export function Part({ readOnly, title, grid = true, children }: PartProps) {
 
 const useStyles = tss
 	.withName(Part.name)
-	.withParams<{ readOnly: boolean; grid: boolean }>()
-	.create(({ readOnly, grid }) => ({
-		root: !readOnly
+	.withParams<{
+		readOnly: boolean;
+		grid: boolean;
+		asDefinitionList: boolean;
+	}>()
+	.create(({ readOnly, grid, asDefinitionList }) => {
+		const fieldsLayout = grid
 			? {
-					display: "flex",
-					flexDirection: "column",
-					// Separate consecutive editable Parts with a top rule.
-					"&:not(:first-of-type)": {
-						borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-						paddingTop: fr.spacing("6v"),
+					display: "grid",
+					gridTemplateColumns: "repeat(2, 1fr)",
+					"@media (max-width: 1024px)": {
+						gridTemplateColumns: "1fr",
 					},
 				}
-			: {
-					border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-					padding: fr.spacing("6v"),
-					gap: fr.spacing("6v"),
-					backgroundColor: fr.colors.decisions.background.raised.grey.default,
-					...(grid
-						? {
-								display: "grid",
-								gridTemplateColumns: "repeat(2, 1fr)",
-								"@media (max-width: 1024px)": {
-									gridTemplateColumns: "1fr",
-								},
-							}
-						: { display: "flex", flexDirection: "column" }),
-				},
-		title: {
-			margin: 0,
-			// In the read-only grid, span the title full width above the fields.
-			...(readOnly &&
-				grid && { gridColumn: "1 / -1", marginBottom: fr.spacing("2v") }),
-		},
-		editAction: {
-			display: "flex",
-			...(grid && { gridColumn: "1 / -1" }),
-		},
-	}));
+			: { display: "flex", flexDirection: "column" as const };
+
+		return {
+			root: !readOnly
+				? {
+						display: "flex",
+						flexDirection: "column",
+						// Separate consecutive editable Parts with a top rule.
+						"&:not(:first-of-type)": {
+							borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+							paddingTop: fr.spacing("6v"),
+						},
+					}
+				: {
+						border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+						padding: fr.spacing("6v"),
+						gap: fr.spacing("6v"),
+						backgroundColor: fr.colors.decisions.background.raised.grey.default,
+						...(asDefinitionList
+							? { display: "flex", flexDirection: "column" as const }
+							: fieldsLayout),
+					},
+			definitionList: {
+				...fieldsLayout,
+				gap: fr.spacing("6v"),
+				margin: 0,
+			},
+			title: {
+				margin: 0,
+				// In the read-only grid, span the title full width above the fields.
+				...(readOnly &&
+					grid && { gridColumn: "1 / -1", marginBottom: fr.spacing("2v") }),
+			},
+			editAction: {
+				display: "flex",
+				...(grid && { gridColumn: "1 / -1" }),
+			},
+		};
+	});
