@@ -43,6 +43,9 @@ export function requiredIssue(
 
 export const INVALID_DATE_MESSAGE = "Date invalide";
 
+export const DATE_FORMAT_HINT =
+	"Format attendu : jj/mm/aaaa, par exemple 06/06/2026.";
+
 /** Earliest accepted date: a typed year like `0030` is a typo, and Postgres cannot read it back. */
 export const MIN_DATE = "1900-01-01";
 
