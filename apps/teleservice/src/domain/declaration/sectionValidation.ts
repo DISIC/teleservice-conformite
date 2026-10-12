@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import type { LibrarySectionKind } from "./sourceMode";
 
 export type SectionValidation<TSchema extends z.ZodType = z.ZodType> = {
 	schema: TSchema;
@@ -18,8 +19,11 @@ export type SectionValidation<TSchema extends z.ZodType = z.ZodType> = {
 	 * instead of emitting per-field errors.
 	 */
 	sourceMode?: {
+		kind: LibrarySectionKind;
 		field: string;
 		isUndecided: (declaration: PopulatedDeclaration) => boolean;
 		message: string;
+		/** Error once Linked is chosen while no Library item is picked yet. */
+		linkMessage: string;
 	};
 };

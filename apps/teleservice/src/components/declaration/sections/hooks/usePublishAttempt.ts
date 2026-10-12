@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { sectionHref } from "~/domain/declaration/sections";
 import { validateDeclaration } from "~/domain/declaration/validate";
+import { usePendingSourceModes } from "../PendingSourceModes";
 
 type UsePublishAttemptArgs = {
 	declaration: PopulatedDeclaration;
@@ -20,6 +21,7 @@ export function usePublishAttempt({
 	onPublishAttempt,
 }: UsePublishAttemptArgs) {
 	const router = useRouter();
+	const { pending } = usePendingSourceModes();
 
 	const goToPreview = useCallback(() => {
 		router.push(`/dashboard/declarations/${declaration.id}/preview`);
@@ -28,7 +30,10 @@ export function usePublishAttempt({
 	const attemptPublish = useCallback(
 		(override?: Partial<PopulatedDeclaration>) => {
 			onPublishAttempt?.();
-			const [firstError] = validateDeclaration({ ...declaration, ...override });
+			const [firstError] = validateDeclaration(
+				{ ...declaration, ...override },
+				pending,
+			);
 			if (!firstError) {
 				goToPreview();
 				return;
@@ -39,7 +44,7 @@ export function usePublishAttempt({
 				{ shallow: true, scroll: false },
 			);
 		},
-		[declaration, onPublishAttempt, goToPreview, router],
+		[declaration, pending, onPublishAttempt, goToPreview, router],
 	);
 
 	return { attemptPublish };

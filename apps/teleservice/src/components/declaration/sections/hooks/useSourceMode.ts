@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { applySavedDeclaration } from "~/components/declaration/sections/applySavedDeclaration";
 import type { DeclarationChangeFn } from "~/components/declaration/sections/defineSection";
 import {
@@ -8,6 +7,7 @@ import {
 } from "~/domain/declaration/sourceMode";
 import { api } from "~/lib/api";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { usePendingSourceModes } from "../PendingSourceModes";
 import { type LibraryLink, useLibraryLink } from "./useLibraryLink";
 
 export type SourceModeController = {
@@ -36,7 +36,11 @@ export function useSourceMode({
 	declaration,
 	onDeclarationChange,
 }: UseSourceModeArgs): SourceModeController | null {
-	const [pending, setPending] = useState<SourceModeValue | null>(null);
+	const pendingSourceModes = usePendingSourceModes();
+	const pending = kind ? (pendingSourceModes.pending[kind] ?? null) : null;
+	const setPending = (value: SourceModeValue | null) => {
+		if (kind) pendingSourceModes.setPending(kind, value);
+	};
 
 	const derived = kind ? deriveSourceMode(kind, declaration) : null;
 	const libraryLink = useLibraryLink({
