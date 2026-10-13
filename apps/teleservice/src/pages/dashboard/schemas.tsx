@@ -18,6 +18,7 @@ import {
 	type LibrarySchemaModalActions,
 } from "~/components/modal/LibrarySchemaModal";
 import EmptyState from "~/components/ui/EmptyState";
+import { EmptyValue } from "~/components/ui/EmptyValue";
 import { Loader } from "~/components/ui/Loader";
 import type { Entity, Schema } from "~/payload/payload-types";
 import { api } from "~/lib/api";
@@ -152,7 +153,9 @@ export default function SchemasPage({
 											className={cx(classes.schemaRow, classes.schemaHeaderRow)}
 										>
 											<strong>{schema.name}</strong>
-											<span className={classes.hint}>{schema.url}</span>
+											<span className={classes.hint}>
+												{schema.url || <EmptyValue />}
+											</span>
 											<span className={classes.hint}>
 												Dernière mise à jour{" "}
 												<Tag small as="span">
@@ -173,8 +176,10 @@ export default function SchemasPage({
 												key={plan.id ?? plan.url}
 												className={cx(classes.schemaRow, classes.schemaPlanRow)}
 											>
-												<span>{plan.name}</span>
-												<span className={classes.hint}>{plan.url}</span>
+												<span>{plan.name || <EmptyValue />}</span>
+												<span className={classes.hint}>
+													{plan.url || <EmptyValue />}
+												</span>
 											</div>
 										))}
 									</li>

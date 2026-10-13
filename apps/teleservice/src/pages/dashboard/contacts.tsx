@@ -19,6 +19,7 @@ import {
 	type LibraryContactModalActions,
 } from "~/components/modal/LibraryContactModal";
 import EmptyState from "~/components/ui/EmptyState";
+import { EmptyValue } from "~/components/ui/EmptyValue";
 import { Loader } from "~/components/ui/Loader";
 import Table from "~/components/ui/Table";
 import type { Contact, Entity } from "~/payload/payload-types";
@@ -120,14 +121,22 @@ export default function ContactsPage({
 				id: "url",
 				cell: (info) => {
 					const url = info.row.original.url;
-					return url ? <span className={classes.hint}>{url}</span> : null;
+					return url ? (
+						<span className={classes.hint}>{url}</span>
+					) : (
+						<EmptyValue />
+					);
 				},
 			}),
 			columnHelper.display({
 				id: "email",
 				cell: (info) => {
 					const email = info.row.original.email;
-					return email ? <span className={classes.hint}>{email}</span> : null;
+					return email ? (
+						<span className={classes.hint}>{email}</span>
+					) : (
+						<EmptyValue />
+					);
 				},
 			}),
 			columnHelper.display({

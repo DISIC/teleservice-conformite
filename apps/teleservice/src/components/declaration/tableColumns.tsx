@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { tss } from "tss-react";
 import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
 import { StatusBadge } from "~/components/declaration/StatusBadge";
+import { EmptyValue } from "~/components/ui/EmptyValue";
 import {
 	formatRate,
 	getConformityStatus,
@@ -46,12 +47,12 @@ function buildColumns(
 
 	const appKindColumn = columnHelper.accessor("app_kind", {
 		header: "Type de service",
-		cell: (info) => (
-			<Tag small>
-				{appKindOptions.find((option) => option.value === info.getValue())
-					?.label ?? "—"}
-			</Tag>
-		),
+		cell: (info) => {
+			const label = appKindOptions.find(
+				(option) => option.value === info.getValue(),
+			)?.label;
+			return label ? <Tag small>{label}</Tag> : <EmptyValue />;
+		},
 	});
 
 	const statusColumn = columnHelper.accessor(
@@ -73,7 +74,7 @@ function buildColumns(
 		header: "Taux de conformité",
 		cell: (info) => {
 			const rate = info.getValue();
-			if (rate == null) return "—";
+			if (rate == null) return <EmptyValue />;
 			const conformity = getConformityStatus(rate);
 			return (
 				<div className={classes.rate}>
