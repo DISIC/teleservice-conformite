@@ -2,7 +2,7 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { useEffect, useId, useMemo, useState } from "react";
 import type { Contact } from "~/payload/payload-types";
-import { useModalReturnFocus } from "~/hooks/useModalReturnFocus";
+import { useAccessibleModal } from "~/hooks/useAccessibleModal";
 import { api } from "~/lib/api";
 import { ContactTypeForm } from "~/forms/contact/contactForm";
 import {
@@ -31,7 +31,7 @@ export function LibraryContactModal({ actions }: LibraryContactModalProps) {
 		}),
 	);
 
-	const openModal = useModalReturnFocus(modal);
+	const openModal = useAccessibleModal(modal);
 
 	const [editing, setEditing] = useState<Contact | null>(null);
 
