@@ -93,6 +93,7 @@ export default function EntityDeclarationsPage({
 					)}
 					{declarations.length ? (
 						<Table
+							caption="Liste des déclarations d’accessibilité de l’organisation"
 							columns={columns}
 							data={declarations}
 							numberPerPage={NUMBER_PER_PAGE}

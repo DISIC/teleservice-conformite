@@ -27,7 +27,8 @@ declare module "@tanstack/react-table" {
 type Props<TData> = {
 	columns: ColumnDef<TData, any>[];
 	data: TData[];
-	caption?: ReactNode;
+	/** Names the table for screen readers; hidden visually unless `noCaption` is false. */
+	caption: ReactNode;
 	noCaption?: boolean;
 	bordered?: boolean;
 	fixed?: boolean;
@@ -54,7 +55,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 		columns,
 		data,
 		caption,
-		noCaption = !caption,
+		noCaption = true,
 		bordered = true,
 		fixed,
 		noScroll,
@@ -188,6 +189,18 @@ const useStyles = tss.withName(Table.name).create(() => ({
 	table: {
 		marginTop: "0!important",
 		marginBottom: "0!important",
+		// DSFR only hides the caption in its newer markup, which react-dsfr does not render.
+		"&.fr-table--no-caption caption": {
+			position: "absolute",
+			width: 1,
+			height: 1,
+			padding: 0,
+			margin: -1,
+			overflow: "hidden",
+			clip: "rect(0, 0, 0, 0)",
+			whiteSpace: "nowrap",
+			border: 0,
+		},
 		table: {
 			display: "table",
 			width: "auto",

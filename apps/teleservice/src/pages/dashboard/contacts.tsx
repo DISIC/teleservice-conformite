@@ -196,6 +196,7 @@ export default function ContactsPage({
 						/>
 					) : (
 						<Table
+							caption="Liste de mes contacts"
 							columns={columns}
 							data={contacts}
 							numberPerPage={10}

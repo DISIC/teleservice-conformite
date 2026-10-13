@@ -138,39 +138,49 @@ export default function SchemasPage({
 							}}
 						/>
 					) : (
-						<ul className={classes.schemaList}>
-							{schemas.map((schema) => (
-								<li key={schema.id} className={classes.schemaCard}>
-									<div
-										className={cx(classes.schemaRow, classes.schemaHeaderRow)}
-									>
-										<strong>{schema.name}</strong>
-										<span className={classes.hint}>{schema.url}</span>
-										<span className={classes.hint}>
-											Dernière mise à jour{" "}
-											<Tag small as="span">
-												{new Date(schema.updatedAt).toLocaleDateString("fr-FR")}
-											</Tag>
-										</span>
-										<ItemActions
-											label={schema.name}
-											onEdit={() => schemaModalActions.open?.(schema)}
-											onDelete={() => confirmDelete(schema)}
-											deleteButtonId={deleteButtonId(schema)}
-										/>
-									</div>
-									{(schema.actionPlanUrls ?? []).map((plan) => (
+						<>
+							<h2 id="schemas-list-title" className={fr.cx("fr-sr-only")}>
+								Liste de mes schémas pluriannuels
+							</h2>
+							<ul
+								className={classes.schemaList}
+								aria-labelledby="schemas-list-title"
+							>
+								{schemas.map((schema) => (
+									<li key={schema.id} className={classes.schemaCard}>
 										<div
-											key={plan.id ?? plan.url}
-											className={cx(classes.schemaRow, classes.schemaPlanRow)}
+											className={cx(classes.schemaRow, classes.schemaHeaderRow)}
 										>
-											<span>{plan.name}</span>
-											<span className={classes.hint}>{plan.url}</span>
+											<strong>{schema.name}</strong>
+											<span className={classes.hint}>{schema.url}</span>
+											<span className={classes.hint}>
+												Dernière mise à jour{" "}
+												<Tag small as="span">
+													{new Date(schema.updatedAt).toLocaleDateString(
+														"fr-FR",
+													)}
+												</Tag>
+											</span>
+											<ItemActions
+												label={schema.name}
+												onEdit={() => schemaModalActions.open?.(schema)}
+												onDelete={() => confirmDelete(schema)}
+												deleteButtonId={deleteButtonId(schema)}
+											/>
 										</div>
-									))}
-								</li>
-							))}
-						</ul>
+										{(schema.actionPlanUrls ?? []).map((plan) => (
+											<div
+												key={plan.id ?? plan.url}
+												className={cx(classes.schemaRow, classes.schemaPlanRow)}
+											>
+												<span>{plan.name}</span>
+												<span className={classes.hint}>{plan.url}</span>
+											</div>
+										))}
+									</li>
+								))}
+							</ul>
+						</>
 					)}
 				</div>
 			</div>

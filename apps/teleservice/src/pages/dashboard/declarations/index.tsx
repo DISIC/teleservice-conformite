@@ -143,6 +143,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 					)}
 					{declarations.totalDocs ? (
 						<Table
+							caption="Liste de mes déclarations d’accessibilité"
 							columns={columns}
 							data={declarations.docs}
 							numberPerPage={declarations.limit}
