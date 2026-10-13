@@ -9,7 +9,9 @@ import z from "zod";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { api, type RouterOutputs } from "~/lib/api";
 import { useAppForm } from "~/forms/context";
-import { focusFirstInvalidField } from "~/components/form/focusFirstInvalidField";
+import { optionalUrlIssue, requiredIssue } from "~/forms/rules";
+import { handleFormSubmit } from "~/components/form/handleFormSubmit";
+import { useAccessibleModal } from "~/hooks/useAccessibleModal";
 
 export type UpdateAuditFromAraModalActions = {
 	open?: () => void;
@@ -18,9 +20,17 @@ export type UpdateAuditFromAraModalActions = {
 export type AraFetchedData =
 	RouterOutputs["declaration"]["getInfoFromAra"]["data"];
 
-const updateAuditFromAraFormSchema = z.object({
-	araUrl: z.string().min(1, { message: "L'URL de l'audit Ara est requise" }),
-});
+const updateAuditFromAraFormSchema = z
+	.object({ araUrl: z.string() })
+	.superRefine((data, ctx) => {
+		requiredIssue(
+			ctx,
+			["araUrl"],
+			data.araUrl,
+			"L'URL de l'audit Ara est requise",
+		);
+		optionalUrlIssue(ctx, ["araUrl"], data.araUrl);
+	});
 
 type UpdateAuditFromAraForm = z.infer<typeof updateAuditFromAraFormSchema>;
 
@@ -68,10 +78,12 @@ export function UpdateAuditFromAraModal({
 		(state) => state.isValid && !state.isPristine,
 	);
 
+	const openModal = useAccessibleModal(modal);
+
 	useEffect(() => {
 		actions.open = () => {
 			form.reset();
-			modal.open();
+			openModal();
 		};
 	}, []);
 
@@ -82,16 +94,7 @@ export function UpdateAuditFromAraModal({
 	});
 
 	return (
-		<form
-			onSubmit={async (e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				const formElement = e.currentTarget;
-				await form.handleSubmit();
-				if (!form.state.isValid) focusFirstInvalidField(formElement);
-			}}
-			noValidate
-		>
+		<form onSubmit={handleFormSubmit(form)} noValidate>
 			<modal.Component
 				buttons={[
 					{ children: "Annuler", type: "button", disabled: isPending },
