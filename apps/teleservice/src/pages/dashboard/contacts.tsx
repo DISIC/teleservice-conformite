@@ -103,10 +103,12 @@ export default function ContactsPage({
 		() => [
 			columnHelper.accessor("name", {
 				id: "name",
+				header: "Nom du contact",
 				cell: (info) => <strong>{info.getValue()}</strong>,
 			}),
 			columnHelper.display({
 				id: "kinds",
+				header: "Moyens de contact",
 				cell: (info) => {
 					const contact = info.row.original;
 					return (
@@ -119,6 +121,7 @@ export default function ContactsPage({
 			}),
 			columnHelper.display({
 				id: "url",
+				header: "Lien URL du formulaire",
 				cell: (info) => {
 					const url = info.row.original.url;
 					return url ? (
@@ -130,6 +133,7 @@ export default function ContactsPage({
 			}),
 			columnHelper.display({
 				id: "email",
+				header: "Email de contact",
 				cell: (info) => {
 					const email = info.row.original.email;
 					return email ? (
@@ -141,6 +145,7 @@ export default function ContactsPage({
 			}),
 			columnHelper.display({
 				id: "actions",
+				header: () => <span className={fr.cx("fr-sr-only")}>Actions</span>,
 				meta: { styles: { justifyContent: "flex-end" } },
 				cell: (info) => {
 					const contact = info.row.original;
@@ -209,7 +214,6 @@ export default function ContactsPage({
 							columns={columns}
 							data={contacts}
 							numberPerPage={10}
-							hideHeaders
 						/>
 					)}
 				</div>
