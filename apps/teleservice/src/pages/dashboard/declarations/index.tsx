@@ -8,7 +8,10 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
-import { useDeclarationColumns } from "~/components/declaration/tableColumns";
+import {
+	hasPublicActions,
+	useDeclarationColumns,
+} from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
 import {
 	CreateDeclarationModal,
@@ -78,15 +81,17 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		[showDeclarationAlert],
 	);
 
+	const withActions = hasPublicActions(declarations.docs);
 	const columns = useMemo(
 		() => [
 			nameColumn({ rowLink: true }),
 			appKindColumn,
 			statusColumn,
 			conformityRateColumn,
-			publicActionsColumn({ onCopySuccess }),
+			...(withActions ? [publicActionsColumn({ onCopySuccess })] : []),
 		],
 		[
+			withActions,
 			nameColumn,
 			appKindColumn,
 			statusColumn,
