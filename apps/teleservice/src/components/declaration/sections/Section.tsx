@@ -20,7 +20,10 @@ import {
 	isSectionNotApplicable,
 	SECTIONS,
 } from "~/domain/declaration/sections";
-import { SOURCE_MODE_FIELD } from "~/domain/declaration/sourceMode";
+import {
+	SOURCE_LINK_FIELD,
+	SOURCE_MODE_FIELD,
+} from "~/domain/declaration/sourceMode";
 import type { EditingMode } from "~/domain/declaration/status";
 import { useAppForm } from "~/forms/context";
 import { sectionFormOptions } from "~/forms/formOptions";
@@ -35,6 +38,7 @@ import { usePublishAttempt } from "./hooks/usePublishAttempt";
 import { useRevealSectionErrors } from "./hooks/useRevealSectionErrors";
 import { useSourceMode } from "./hooks/useSourceMode";
 import { SectionShell } from "./Shell";
+import { submitForm } from "~/components/form/submitForm";
 
 type SectionProps = {
 	definition: AnySectionDefinition;
@@ -45,6 +49,8 @@ type SectionProps = {
 	nextHref: string | null;
 	/** Flips the page's "publish attempted" flag so the error summary appears. */
 	onPublishAttempt: () => void;
+	/** Once a publish was attempted, every Section reveals its errors on mount. */
+	publishAttempted: boolean;
 };
 
 /**
@@ -59,6 +65,7 @@ export function Section({
 	prevHref,
 	nextHref,
 	onPublishAttempt,
+	publishAttempted,
 }: SectionProps) {
 	const { slug, library } = definition;
 	const title = SECTIONS[slug].title;
@@ -142,7 +149,7 @@ export function Section({
 		values,
 		save,
 	});
-	useRevealSectionErrors(form);
+	useRevealSectionErrors(form, publishAttempted);
 
 	// A `?field=` naming the source radio means the publish gate routed here. The
 	// page strips the param once it has focused the field, so latch the reveal.
@@ -153,8 +160,14 @@ export function Section({
 		}
 	}, [router.query.field, library]);
 	const sourceModeError =
-		sourceModeRevealed && editing.bodyMode === null
+		(sourceModeRevealed || publishAttempted) && editing.bodyMode === null
 			? SECTIONS[slug].validation.sourceMode?.message
+			: undefined;
+	const linkError =
+		(sourceModeRevealed || publishAttempted) &&
+		source?.effectiveMode === "linked" &&
+		!source.isLinked
+			? SECTIONS[slug].validation.sourceMode?.linkMessage
 			: undefined;
 
 	// Realign the form only when a Library link/unlink/skip swaps the persisted
@@ -250,7 +263,10 @@ export function Section({
 			{source.effectiveMode === "linked" && (
 				<Select
 					label={source.libraryLink.label}
+					state={linkError ? "error" : "default"}
+					stateRelatedMessage={linkError}
 					nativeSelectProps={{
+						name: SOURCE_LINK_FIELD[library.kind],
 						value: source.libraryLink.linkedParentId ?? "",
 						onChange: (e) => {
 							if (e.target.value)
@@ -278,7 +294,10 @@ export function Section({
 	return (
 		<>
 			<Head>
-				<title>{title} - Téléservice Conformité</title>
+				<title>
+					{declaration.name} - {title} - Téléservice de déclaration
+					d’accessibilité numérique
+				</title>
 			</Head>
 			<SectionShell
 				title={title}
@@ -305,13 +324,7 @@ export function Section({
 			>
 				{!readOnly && !hideRequiredNotice && <RequiredFieldsNotice />}
 				{sourcePicker}
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-					onInvalid={() => form.validate("submit")}
-				>
+				<form onSubmit={submitForm(form)} noValidate>
 					<div className={commonClasses.partStack}>{body}</div>
 				</form>
 			</SectionShell>

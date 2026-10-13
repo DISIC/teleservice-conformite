@@ -9,6 +9,7 @@ import z from "zod";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { api, type RouterOutputs } from "~/lib/api";
 import { useAppForm } from "~/forms/context";
+import { submitForm } from "~/components/form/submitForm";
 
 export type UpdateAuditFromAraModalActions = {
 	open?: () => void;
@@ -81,14 +82,7 @@ export function UpdateAuditFromAraModal({
 	});
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				form.handleSubmit();
-			}}
-			onInvalid={() => form.validate("submit")}
-		>
+		<form onSubmit={submitForm(form)} noValidate>
 			<modal.Component
 				buttons={[
 					{ children: "Annuler", type: "button", disabled: isPending },

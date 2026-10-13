@@ -1,12 +1,13 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
-import Tag from "@codegouvfr/react-dsfr/Tag";
+import type { TagProps } from "@codegouvfr/react-dsfr/Tag";
+import TagsGroup from "@codegouvfr/react-dsfr/TagsGroup";
 import NationalIdentityCard from "@codegouvfr/react-dsfr/picto/NationalIdentityCard";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
@@ -19,6 +20,7 @@ import {
 	type LibraryContactModalActions,
 } from "~/components/modal/LibraryContactModal";
 import EmptyState from "~/components/ui/EmptyState";
+import { EmptyValue } from "~/components/ui/EmptyValue";
 import { Loader } from "~/components/ui/Loader";
 import Table from "~/components/ui/Table";
 import type { Contact, Entity } from "~/payload/payload-types";
@@ -26,6 +28,9 @@ import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
 
 const columnHelper = createColumnHelper<Contact>();
+
+const ADD_CONTACT_BUTTON_ID = "add-contact-button";
+const deleteButtonId = (contact: Contact) => `delete-contact-${contact.id}`;
 
 export default function ContactsPage({
 	entity,
@@ -36,6 +41,7 @@ export default function ContactsPage({
 	const [contactModalActions] = useState<LibraryContactModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const focusAfterDeleteRef = useRef<string | null>(null);
 
 	const {
 		data: contacts = [],
@@ -45,8 +51,22 @@ export default function ContactsPage({
 
 	const { mutate: deleteContact } = api.library.deleteContact.useMutation({
 		onSuccess: () => utils.library.listContacts.invalidate(),
-		onError: (e) => setErrorMessage(e.message),
+		onError: (e) => {
+			focusAfterDeleteRef.current = null;
+			setErrorMessage(e.message);
+		},
 	});
+
+	// The deleted row's button is gone once the list reloads, so focus moves to a neighbour.
+	useEffect(() => {
+		const targetId = focusAfterDeleteRef.current;
+		if (isFetching || !targetId) return;
+		focusAfterDeleteRef.current = null;
+		(
+			document.getElementById(targetId) ??
+			document.getElementById(ADD_CONTACT_BUTTON_ID)
+		)?.focus();
+	}, [isFetching]);
 
 	const confirmDelete = useCallback(
 		(contact: Contact) =>
@@ -67,45 +87,74 @@ export default function ContactsPage({
 						</p>
 					</>
 				),
-				onConfirm: () => deleteContact({ id: contact.id }),
+				onConfirm: () => {
+					const index = contacts.findIndex(({ id }) => id === contact.id);
+					// The next row takes the focus, or the previous one when the last row is deleted.
+					const neighbour = contacts[index + 1] ?? contacts[index - 1];
+					focusAfterDeleteRef.current = neighbour
+						? deleteButtonId(neighbour)
+						: ADD_CONTACT_BUTTON_ID;
+					deleteContact({ id: contact.id });
+				},
 			}),
-		[confirmationModalActions, deleteContact],
+		[confirmationModalActions, deleteContact, contacts],
 	);
 
 	const columns = useMemo(
 		() => [
 			columnHelper.accessor("name", {
 				id: "name",
+				header: "Nom du contact",
 				cell: (info) => <strong>{info.getValue()}</strong>,
 			}),
 			columnHelper.display({
 				id: "kinds",
+				header: "Moyens de contact",
 				cell: (info) => {
-					const contact = info.row.original;
-					return (
-						<div className={classes.tags}>
-							{contact.email && <Tag small>Email</Tag>}
-							{contact.url && <Tag small>Formulaire</Tag>}
-						</div>
+					const { email, url } = info.row.original;
+					const tags: TagProps[] = [
+						...(email ? [{ children: "Email" }] : []),
+						...(url ? [{ children: "Formulaire" }] : []),
+					];
+					const [first, ...rest] = tags;
+					return first ? (
+						<TagsGroup
+							smallTags
+							tags={[first, ...rest]}
+							className={classes.tags}
+						/>
+					) : (
+						<EmptyValue />
 					);
 				},
 			}),
 			columnHelper.display({
 				id: "url",
+				header: "Lien URL du formulaire",
 				cell: (info) => {
 					const url = info.row.original.url;
-					return url ? <span className={classes.hint}>{url}</span> : null;
+					return url ? (
+						<span className={classes.hint}>{url}</span>
+					) : (
+						<EmptyValue />
+					);
 				},
 			}),
 			columnHelper.display({
 				id: "email",
+				header: "Email de contact",
 				cell: (info) => {
 					const email = info.row.original.email;
-					return email ? <span className={classes.hint}>{email}</span> : null;
+					return email ? (
+						<span className={classes.hint}>{email}</span>
+					) : (
+						<EmptyValue />
+					);
 				},
 			}),
 			columnHelper.display({
 				id: "actions",
+				header: () => <span className={fr.cx("fr-sr-only")}>Actions</span>,
 				meta: { styles: { justifyContent: "flex-end" } },
 				cell: (info) => {
 					const contact = info.row.original;
@@ -114,6 +163,7 @@ export default function ContactsPage({
 							label={contact.name}
 							onEdit={() => contactModalActions.open?.(contact)}
 							onDelete={() => confirmDelete(contact)}
+							deleteButtonId={deleteButtonId(contact)}
 						/>
 					);
 				},
@@ -127,14 +177,20 @@ export default function ContactsPage({
 	return (
 		<>
 			<Head>
-				<title>Mes contacts - Téléservice Conformité</title>
+				<title>
+					Mes contacts - Téléservice de déclaration d’accessibilité numérique
+				</title>
 			</Head>
 			<PageHeading
 				title="Mes contacts"
 				pictogram={<NationalIdentityCard fontSize="3.5rem" />}
 				entityName={entity.name}
 				actions={
-					<Button iconId="fr-icon-add-line" onClick={openCreate}>
+					<Button
+						iconId="fr-icon-add-line"
+						onClick={openCreate}
+						nativeButtonProps={{ id: ADD_CONTACT_BUTTON_ID }}
+					>
 						Ajouter un contact
 					</Button>
 				}
@@ -165,10 +221,10 @@ export default function ContactsPage({
 						/>
 					) : (
 						<Table
+							caption="Liste de mes contacts"
 							columns={columns}
 							data={contacts}
 							numberPerPage={10}
-							hideHeaders
 						/>
 					)}
 				</div>
@@ -184,9 +240,14 @@ const useStyles = tss.withName(ContactsPage.name).create({
 		paddingBlock: fr.spacing("12v"),
 	},
 	tags: {
-		display: "flex",
+		margin: 0,
 		gap: fr.spacing("1v"),
-		flexWrap: "wrap",
+		"& > li": {
+			lineHeight: "normal",
+		},
+		"& .fr-tag": {
+			margin: 0,
+		},
 	},
 	hint: {
 		fontSize: "0.875rem",

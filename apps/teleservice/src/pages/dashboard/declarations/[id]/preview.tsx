@@ -69,7 +69,8 @@ export default function DeclarationPreviewPage({
 				{publishedAt
 					? "Votre déclaration a été publiée"
 					: "Votre déclaration est prête à être publiée"}{" "}
-				- Déclaration de {declaration.name} - Téléservice Conformité
+				- Déclaration de {declaration.name} - Téléservice de déclaration
+				d’accessibilité numérique
 			</title>
 		</Head>
 	);
@@ -170,6 +171,10 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 		padding: fr.spacing("4w"),
 		marginTop: fr.spacing("10v"),
 		marginBottom: fr.spacing("6v"),
+		minWidth: 0,
+		"@media (max-width: 576px)": {
+			padding: fr.spacing("2w"),
+		},
 	},
 	buttonsContainer: {
 		display: "flex",

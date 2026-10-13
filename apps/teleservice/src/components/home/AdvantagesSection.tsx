@@ -25,10 +25,10 @@ const ADVANTAGES = [
 ];
 
 type AdvantagesSectionProps = {
-	onStart: () => void;
+	startHref: string;
 };
 
-export function AdvantagesSection({ onStart }: AdvantagesSectionProps) {
+export function AdvantagesSection({ startHref }: AdvantagesSectionProps) {
 	const { classes, cx } = useStyles();
 
 	return (
@@ -37,19 +37,20 @@ export function AdvantagesSection({ onStart }: AdvantagesSectionProps) {
 				<h2 className={classes.heading}>
 					Les avantages du téléservice de déclaration
 				</h2>
-				<div className={classes.tiles}>
+				<ul className={classes.tiles}>
 					{ADVANTAGES.map(({ title, desc, Picto }) => (
-						<Tile
-							key={title}
-							title={title}
-							titleAs="h3"
-							desc={desc}
-							pictogram={<Picto fontSize="5rem" />}
-							noIcon
-						/>
+						<li key={title}>
+							<Tile
+								title={title}
+								titleAs="h3"
+								desc={desc}
+								pictogram={<Picto fontSize="5rem" />}
+								noIcon
+							/>
+						</li>
 					))}
-				</div>
-				<Button onClick={onStart} size="large">
+				</ul>
+				<Button linkProps={{ href: startHref }} size="large">
 					Commencer
 				</Button>
 			</div>
@@ -77,7 +78,14 @@ const useStyles = tss.withName(AdvantagesSection.name).create({
 		display: "grid",
 		gridTemplateColumns: "repeat(3, 1fr)",
 		gap: fr.spacing("3w"),
+		listStyle: "none",
+		margin: 0,
+		padding: 0,
+		"& > li": {
+			padding: 0,
+		},
 		"& .fr-tile": {
+			height: "100%",
 			textAlign: "center",
 		},
 		"@media (max-width: 992px)": {

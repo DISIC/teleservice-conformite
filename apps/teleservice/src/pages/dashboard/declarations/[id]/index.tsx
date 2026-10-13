@@ -21,6 +21,12 @@ import { api } from "~/lib/api";
 import { parseSectionFromQuery } from "~/domain/declaration/sections";
 import { getObsolescence } from "~/domain/declaration/obsolescence";
 import { validateDeclaration } from "~/domain/declaration/validate";
+import { PendingSourceModesProvider } from "~/components/declaration/sections/PendingSourceModes";
+import type {
+	LibrarySectionKind,
+	PendingSourceModes,
+	SourceModeValue,
+} from "~/domain/declaration/sourceMode";
 import {
 	type DeclarationProps,
 	guardDeclaration,
@@ -63,10 +69,41 @@ export default function DeclarationPage({
 
 	// Armed by the terminal Section's "Prévisualiser et publier"; once armed, the
 	// error summary re-derives from the declaration on every save.
-	const [publishAttempted, setPublishAttempted] = useState(false);
+	// Counted, not a flag: every attempt moves the focus back to the error summary.
+	const [publishAttempts, setPublishAttempts] = useState(0);
+	const publishAttempted = publishAttempts > 0;
+	const onPublishAttempt = () => setPublishAttempts((count) => count + 1);
+	// Unsaved radio choices belong to one declaration: Next reuses this page across ids.
+	const [pendingByDeclaration, setPendingByDeclaration] = useState<{
+		declarationId: number;
+		modes: PendingSourceModes;
+	}>({ declarationId: declaration.id, modes: {} });
+	const pendingSourceModes =
+		pendingByDeclaration.declarationId === declaration.id
+			? pendingByDeclaration.modes
+			: {};
+	const pendingSourceModesValue = useMemo(
+		() => ({
+			pending: pendingSourceModes,
+			setPending: (kind: LibrarySectionKind, value: SourceModeValue | null) =>
+				setPendingByDeclaration((current) => {
+					const modes =
+						current.declarationId === declaration.id ? current.modes : {};
+					const { [kind]: _previous, ...rest } = modes;
+					return {
+						declarationId: declaration.id,
+						modes: value ? { ...rest, [kind]: value } : rest,
+					};
+				}),
+		}),
+		[pendingSourceModes, declaration.id],
+	);
 	const declarationErrors = useMemo(
-		() => (publishAttempted ? validateDeclaration(declaration) : []),
-		[publishAttempted, declaration],
+		() =>
+			publishAttempted
+				? validateDeclaration(declaration, pendingSourceModes)
+				: [],
+		[publishAttempted, declaration, pendingSourceModes],
 	);
 
 	// Focus the errored field on first mount, then drop the param so it neither
@@ -88,7 +125,8 @@ export default function DeclarationPage({
 		<>
 			<Head>
 				<title>
-					Déclaration de {declaration.name} - Téléservice Conformité
+					Déclaration de {declaration.name} - Téléservice de déclaration
+					d’accessibilité numérique
 				</title>
 			</Head>
 			<DeclarationHeading declaration={declaration} />
@@ -121,42 +159,46 @@ export default function DeclarationPage({
 				className={fr.cx("fr-container", "fr-mt-10v")}
 			>
 				<ToCompleteGuidance show={showToComplete}>
-					<StateNotice
-						declaration={declaration}
-						onPublishAttempt={() => setPublishAttempted(true)}
-						onReverted={() => router.reload()}
-					/>
+					<PendingSourceModesProvider value={pendingSourceModesValue}>
+						<StateNotice
+							declaration={declaration}
+							onPublishAttempt={onPublishAttempt}
+							onReverted={() => router.reload()}
+						/>
 
-					<div className={classes.tabContent}>
-						{declarationErrors.length > 0 && (
-							<div className={classes.errorSummaryWrapper}>
-								<ErrorSummary
-									declarationId={declaration.id}
-									errors={declarationErrors}
-								/>
-							</div>
-						)}
-						<div
-							className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
-							role="presentation"
-						>
-							<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
-								<SideMenu
-									declaration={declaration}
-									currentSection={currentSection}
-								/>
-							</aside>
-							<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
-								<SectionContent
-									declaration={declaration}
-									currentSection={currentSection}
-									onDeclarationChange={setDeclaration}
-									mode={editingMode}
-									onPublishAttempt={() => setPublishAttempted(true)}
-								/>
+						<div className={classes.tabContent}>
+							{declarationErrors.length > 0 && (
+								<div className={classes.errorSummaryWrapper}>
+									<ErrorSummary
+										declarationId={declaration.id}
+										errors={declarationErrors}
+										focusKey={publishAttempts}
+									/>
+								</div>
+							)}
+							<div
+								className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
+								role="presentation"
+							>
+								<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
+									<SideMenu
+										declaration={declaration}
+										currentSection={currentSection}
+									/>
+								</aside>
+								<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
+									<SectionContent
+										declaration={declaration}
+										currentSection={currentSection}
+										onDeclarationChange={setDeclaration}
+										mode={editingMode}
+										onPublishAttempt={onPublishAttempt}
+										publishAttempted={publishAttempted}
+									/>
+								</div>
 							</div>
 						</div>
-					</div>
+					</PendingSourceModesProvider>
 				</ToCompleteGuidance>
 			</section>
 		</>

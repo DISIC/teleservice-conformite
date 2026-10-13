@@ -8,6 +8,7 @@ import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { useAppForm } from "~/forms/context";
 import { SchemaForm as EntitySchemaForm } from "~/forms/schema/schemaForm";
 import { schemaFormOptions, type ZSchema } from "~/forms/schema/schemaSchema";
+import { submitForm } from "~/components/form/submitForm";
 
 export type LibrarySchemaModalActions = {
 	open?: (schema?: Schema | null) => void;
@@ -82,14 +83,7 @@ export function LibrarySchemaModal({ actions }: LibrarySchemaModalProps) {
 	});
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				form.handleSubmit();
-			}}
-			onInvalid={() => form.validate("submit")}
-		>
+		<form onSubmit={submitForm(form)} noValidate>
 			<modal.Component
 				buttons={[
 					{ children: "Annuler", type: "button" },

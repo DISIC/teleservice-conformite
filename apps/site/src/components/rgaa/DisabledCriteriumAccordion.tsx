@@ -21,7 +21,7 @@ export default function DisabledCriteriumAccordion({
 			<h3 className={classes.title}>
 				<span>{number} </span>
 				<span>{renderMarkdownInline(title)}</span>
-				<Badge small noIcon className={classes.badge}>
+				<Badge as="span" small noIcon className={classes.badge}>
 					Non applicable
 				</Badge>
 			</h3>

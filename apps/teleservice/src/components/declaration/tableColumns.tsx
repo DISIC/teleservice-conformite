@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { tss } from "tss-react";
 import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
 import { StatusBadge } from "~/components/declaration/StatusBadge";
+import { EmptyValue } from "~/components/ui/EmptyValue";
 import {
 	formatRate,
 	getConformityStatus,
@@ -20,6 +21,13 @@ const columnHelper = createColumnHelper<PopulatedDeclaration>();
 
 const publicUrl = (declaration: PopulatedDeclaration) =>
 	`/declarations/${declaration.id}/publish`;
+
+const hasPublicPage = (declaration: PopulatedDeclaration) =>
+	getDeclarationStatus(declaration) === "published";
+
+/** The actions column is left out when no listed declaration has one. */
+export const hasPublicActions = (declarations: PopulatedDeclaration[]) =>
+	declarations.some(hasPublicPage);
 
 export function useDeclarationColumns() {
 	const { classes } = useStyles();
@@ -39,12 +47,12 @@ function buildColumns(
 
 	const appKindColumn = columnHelper.accessor("app_kind", {
 		header: "Type de service",
-		cell: (info) => (
-			<Tag small>
-				{appKindOptions.find((option) => option.value === info.getValue())
-					?.label ?? "—"}
-			</Tag>
-		),
+		cell: (info) => {
+			const label = appKindOptions.find(
+				(option) => option.value === info.getValue(),
+			)?.label;
+			return label ? <Tag small>{label}</Tag> : <EmptyValue />;
+		},
 	});
 
 	const statusColumn = columnHelper.accessor(
@@ -66,7 +74,7 @@ function buildColumns(
 		header: "Taux de conformité",
 		cell: (info) => {
 			const rate = info.getValue();
-			if (rate == null) return "—";
+			if (rate == null) return <EmptyValue />;
 			const conformity = getConformityStatus(rate);
 			return (
 				<div className={classes.rate}>
@@ -90,7 +98,12 @@ function buildColumns(
 			header: () => <span className={fr.cx("fr-sr-only")}>Actions</span>,
 			cell: (info) => {
 				const declaration = info.row.original;
-				if (getDeclarationStatus(declaration) !== "published") return null;
+				if (!hasPublicPage(declaration))
+					return (
+						<span className={fr.cx("fr-sr-only")}>
+							Aucune action disponible
+						</span>
+					);
 				const copyTitle = `Copier le lien public de la déclaration ${declaration.name}`;
 				return (
 					<div className={classes.actions}>

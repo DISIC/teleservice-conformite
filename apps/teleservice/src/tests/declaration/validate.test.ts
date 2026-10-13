@@ -34,6 +34,7 @@ describe("validateDeclaration", () => {
 			{
 				section: "infos",
 				field: "general.kind",
+				label: "Type de service",
 				message: "Le type de service est requis",
 			},
 		]);
@@ -52,6 +53,7 @@ describe("validateDeclaration", () => {
 				{
 					section: "infos",
 					field: "general.firstPublishedAt",
+					label: "Date de publication initiale de la déclaration",
 					message: "La date de publication initiale est requise",
 				},
 			]);
@@ -69,6 +71,40 @@ describe("validateDeclaration", () => {
 		).toEqual([]);
 	});
 
+	it("rejects an initial publication date in the future", () => {
+		expect(
+			errorsFor(
+				validateDeclaration(
+					completeDeclaration({
+						first_published_at: "2999-01-01T00:00:00.000Z",
+					}),
+				),
+				"infos",
+			),
+		).toEqual([
+			{
+				section: "infos",
+				field: "general.firstPublishedAt",
+				label: "Date de publication initiale de la déclaration",
+				message:
+					"La date de publication initiale ne peut pas être postérieure à la date du jour",
+			},
+		]);
+	});
+
+	it("rejects an implausibly old initial publication date as invalid", () => {
+		expect(
+			errorsFor(
+				validateDeclaration(
+					completeDeclaration({
+						first_published_at: "0030-01-20T00:00:00.000Z",
+					}),
+				),
+				"infos",
+			).map((e) => e.message),
+		).toEqual(["Date invalide"]);
+	});
+
 	it("requires the platform once the service is a mobile app", () => {
 		const errors = errorsFor(
 			validateDeclaration(
@@ -83,6 +119,7 @@ describe("validateDeclaration", () => {
 			{
 				section: "infos",
 				field: "general.mobilePlatform",
+				label: "Plateforme mobile",
 				message: "La plateforme mobile est requise",
 			},
 		]);
@@ -124,7 +161,12 @@ describe("validateDeclaration", () => {
 			"contact",
 		);
 		expect(errors).toEqual([
-			{ section: "contact", field: "email", message: "Email invalide" },
+			{
+				section: "contact",
+				field: "email",
+				label: "Email de contact",
+				message: "Email invalide",
+			},
 		]);
 	});
 
@@ -152,6 +194,7 @@ describe("validateDeclaration", () => {
 			{
 				section: "audit-general",
 				field: "realisedBy",
+				label: "Entité ou personne ayant réalisé l’audit",
 				message: "L'organisation ayant réalisé l'audit est requise",
 			},
 		]);
@@ -159,6 +202,7 @@ describe("validateDeclaration", () => {
 			{
 				section: "audit-contenus",
 				field: "compliantElements",
+				label: "Éléments ayant fait l’objet de la vérification de conformité",
 				message: "Les éléments conformes sont requis",
 			},
 		]);
@@ -166,16 +210,37 @@ describe("validateDeclaration", () => {
 			{
 				section: "audit-outils",
 				field: "usedTools",
+				label: "Liste des outils utilisés pour évaluer l’accessibilité",
 				message: "Au moins un outil d'assistance est requis",
 			},
 			{
 				section: "audit-outils",
 				field: "testEnvironments",
+				label: "Liste des environnements utilisés pour évaluer l’accessibilité",
 				message: "Au moins un environnement de test est requis",
 			},
 		]);
 		// Non-conformités stay all-optional: applicable yet error-free.
 		expect(errorsFor(errors, "audit-non-conformites")).toEqual([]);
+	});
+
+	it("rejects an audit date in the future", () => {
+		const errors = validateDeclaration(
+			completeDeclaration({
+				audit: { isRealised: true, date: "2999-01-01T00:00:00.000Z" },
+			} as never),
+		);
+		expect(
+			errorsFor(errors, "audit-general").filter((e) => e.field === "date"),
+		).toEqual([
+			{
+				section: "audit-general",
+				field: "date",
+				label: "Date de réalisation de l’audit",
+				message:
+					"La date de réalisation de l'audit ne peut pas être postérieure à la date du jour",
+			},
+		]);
 	});
 
 	it("validates the persisted row, so an unanswered audit blocks publish", () => {
@@ -186,8 +251,89 @@ describe("validateDeclaration", () => {
 			{
 				section: "audit-general",
 				field: "isAuditRealised",
+				label:
+					"Avez-vous réalisé un audit d’accessibilité de votre service numérique ?",
 				message: "La question de la réalisation de l'audit est requise",
 			},
+		]);
+	});
+
+	it("labels each field so errors sharing a message stay distinct", () => {
+		const errors = errorsFor(
+			validateDeclaration(
+				completeDeclaration({ contact: { name: "Référent" } } as never),
+			),
+			"contact",
+		);
+		expect(errors.map((e) => e.label)).toEqual([
+			"Email de contact",
+			"Lien URL du formulaire",
+		]);
+	});
+
+	it("numbers array items from 1 in their label", () => {
+		const errors = errorsFor(
+			validateDeclaration(
+				completeDeclaration({
+					schema: {
+						name: "Schéma 2024",
+						actionPlanUrls: [
+							{ name: "Plan 2024", url: "https://example.fr" },
+							{ name: "", url: "https://example.fr" },
+						],
+					},
+				} as never),
+			),
+			"schema",
+		);
+		expect(errors).toEqual([
+			{
+				section: "schema",
+				field: "actionPlanUrls.1.name",
+				label: "Nom du plan d'actions 2",
+				message: "Le nom du plan d'actions est requis",
+			},
+		]);
+	});
+
+	it("drops a saved custom draft's errors once Linked is chosen but not picked", () => {
+		const declaration = completeDeclaration({
+			contact: { email: "contact@example.fr" },
+		} as never);
+		expect(
+			errorsFor(
+				validateDeclaration(declaration, { contact: "linked" }),
+				"contact",
+			),
+		).toEqual([
+			{
+				section: "contact",
+				field: "contact.parent",
+				message: "Sélectionnez un contact existant",
+			},
+		]);
+	});
+
+	it("runs the field schema once Custom is chosen, even before anything is typed", () => {
+		const errors = errorsFor(
+			validateDeclaration(completeDeclaration({ contact: {} } as never), {
+				contact: "custom",
+			}),
+			"contact",
+		);
+		expect(errors.map((e) => e.field)).toEqual(["name", "email", "url"]);
+	});
+
+	it("still asks for an item when Linked replaces a Skipped schema", () => {
+		const errors = errorsFor(
+			validateDeclaration(
+				completeDeclaration({ schema: { skipped: true } } as never),
+				{ schema: "linked" },
+			),
+			"schema",
+		);
+		expect(errors.map((e) => e.message)).toEqual([
+			"Sélectionnez un schéma pluriannuel existant",
 		]);
 	});
 });

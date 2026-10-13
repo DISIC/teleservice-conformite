@@ -4,7 +4,10 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
-import { useDeclarationColumns } from "~/components/declaration/tableColumns";
+import {
+	hasPublicActions,
+	useDeclarationColumns,
+} from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
 import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
@@ -48,15 +51,17 @@ export default function EntityDeclarationsPage({
 		if (alertMessage) alertRef.current?.focus();
 	}, [alertMessage]);
 
+	const withActions = hasPublicActions(declarations);
 	const columns = useMemo(
 		() => [
 			nameColumn({ rowLink: false }),
 			appKindColumn,
 			statusColumn,
 			conformityRateColumn,
-			publicActionsColumn({ onCopySuccess }),
+			...(withActions ? [publicActionsColumn({ onCopySuccess })] : []),
 		],
 		[
+			withActions,
 			nameColumn,
 			appKindColumn,
 			statusColumn,
@@ -70,7 +75,8 @@ export default function EntityDeclarationsPage({
 		<>
 			<Head>
 				<title>
-					Toutes les déclarations de l’organisation - Téléservice Conformité
+					Toutes les déclarations de l’organisation - Téléservice de déclaration
+					d’accessibilité numérique
 				</title>
 			</Head>
 			<PageHeading
@@ -93,6 +99,7 @@ export default function EntityDeclarationsPage({
 					)}
 					{declarations.length ? (
 						<Table
+							caption="Liste des déclarations d’accessibilité de l’organisation"
 							columns={columns}
 							data={declarations}
 							numberPerPage={NUMBER_PER_PAGE}

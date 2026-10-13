@@ -17,7 +17,7 @@ import { AlertHost } from "~/components/alert/AlertHost";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
-import { authClient, signInWithProConnect } from "~/lib/auth-client";
+import { authClient } from "~/lib/auth-client";
 
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
 	interface RegisterLink {
@@ -71,8 +71,8 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 				{
 					iconId: "fr-icon-account-line",
 					text: "Se connecter",
-					buttonProps: {
-						onClick: () => signInWithProConnect(),
+					linkProps: {
+						href: "/api/connexion",
 						className: fr.cx("fr-btn--tertiary"),
 					},
 				},
@@ -116,7 +116,7 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>Téléservice Conformité</title>
+				<title>Téléservice de déclaration d’accessibilité numérique</title>
 			</Head>
 			<div className={classes.mainContainer}>
 				<SkipLinks
@@ -142,7 +142,8 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 						}
 						homeLinkProps={{
 							href: "/",
-							title: "Accueil Téléservice Conformité",
+							title:
+								"Accueil Téléservice de déclaration d’accessibilité numérique, Beta",
 						}}
 						quickAccessItems={quickAccessItems}
 						navigation={navigation}
@@ -163,6 +164,10 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 				</main>
 				<Footer
 					id="footer"
+					homeLinkProps={{
+						href: "/",
+						title: "République française, Accueil Téléservice Conformité",
+					}}
 					accessibility="non compliant"
 					bottomItems={[headerFooterDisplayItem]}
 				/>

@@ -22,7 +22,6 @@ export default function AraPage() {
 				title="Ara, outil d’audit d’accessibilité"
 				description={getPageDescription("/ara")}
 				imageSrc={araLogo}
-				imageAlt="Ara"
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
 				ellipseColor={
 					fr.colors.decisions.background.actionLow.blueEcume.default

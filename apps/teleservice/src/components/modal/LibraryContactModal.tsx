@@ -11,6 +11,7 @@ import {
 } from "~/forms/contact/contactSchema";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { useAppForm } from "~/forms/context";
+import { submitForm } from "~/components/form/submitForm";
 
 export type LibraryContactModalActions = {
 	open?: (contact?: Contact | null) => void;
@@ -82,14 +83,7 @@ export function LibraryContactModal({ actions }: LibraryContactModalProps) {
 	});
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				form.handleSubmit();
-			}}
-			onInvalid={() => form.validate("submit")}
-		>
+		<form onSubmit={submitForm(form)} noValidate>
 			<modal.Component
 				buttons={[
 					{ children: "Annuler", type: "button" },

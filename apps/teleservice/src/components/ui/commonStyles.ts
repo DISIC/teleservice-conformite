@@ -15,10 +15,6 @@ export const useCommonStyles = tss.create({
 		flexDirection: "column",
 		gap: fr.spacing("6v"),
 	},
-	actionButtonsContainer: {
-		display: "flex",
-		justifyContent: "space-between",
-	},
 	shellFormWrapper: {
 		display: "flex",
 		flexDirection: "column",

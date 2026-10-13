@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
+import { EmptyValue } from "~/components/ui/EmptyValue";
 import { useState } from "react";
 import { tss } from "tss-react";
 import {
@@ -130,14 +131,18 @@ export default function Membres({ declaration }: MembresProps) {
 				/>
 			</div>
 			<Table
+				caption="Liste des membres ayant accès à la déclaration"
+				noCaption
 				bordered
 				className={classes.table}
 				data={accessRights.map((accessRight) => [
 					<div key={`user-${accessRight.id}`}>
-						{accessRight?.user?.name || "-"}
+						{accessRight?.user?.name || <EmptyValue />}
 					</div>,
 					<div key={`mail-${accessRight.id}`}>
-						{accessRight?.user?.email || accessRight.tmpUserEmail}
+						{accessRight?.user?.email || accessRight.tmpUserEmail || (
+							<EmptyValue />
+						)}
 					</div>,
 					<div key={`status-${accessRight.id}`}>
 						<StatusBadge role={accessRight.role} status={accessRight.status} />
@@ -192,6 +197,18 @@ const useStyles = tss.withName(Membres.name).create({
 	table: {
 		table: {
 			display: "table",
+		},
+		// DSFR only hides the caption in its newer markup, which react-dsfr does not render.
+		"&.fr-table--no-caption caption": {
+			position: "absolute",
+			width: 1,
+			height: 1,
+			padding: 0,
+			margin: -1,
+			overflow: "hidden",
+			clip: "rect(0, 0, 0, 0)",
+			whiteSpace: "nowrap",
+			border: 0,
 		},
 		"thead::after, tbody::after": {
 			backgroundImage: "none!important",

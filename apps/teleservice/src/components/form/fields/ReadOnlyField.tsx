@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
+import { useDefinitionList } from "~/components/form/Part";
 import type { DefaultFieldProps } from "~/forms/context";
 
 interface ReadOnlyFieldProps extends DefaultFieldProps {
@@ -23,6 +24,8 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 		link = false,
 	} = props;
 	const valueIsArray = Array.isArray(value);
+	const definitionList = useDefinitionList();
+	const term = label || definitionList?.fallbackTerm;
 
 	const { classes } = useStyles({
 		valueIsArray,
@@ -30,21 +33,36 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 		addSectionBorder,
 	});
 
+	const valueContent = valueIsArray ? (
+		<ul className={fr.cx("fr-ml-3v")}>
+			{value.map((item, index) => (
+				<li key={index}>
+					<span className={classes.value}>{item}</span>
+				</li>
+			))}
+		</ul>
+	) : link && value ? (
+		<a href={value}>{value}</a>
+	) : (
+		value || placeholder
+	);
+
+	if (definitionList && term) {
+		return (
+			<div className={classes.fieldContainer}>
+				<dt className={classes.label}>{term}</dt>
+				<dd className={classes.value}>{valueContent}</dd>
+			</div>
+		);
+	}
+
 	return (
 		<div className={classes.fieldContainer}>
 			{label && <p className={classes.label}>{label}</p>}
 			{valueIsArray ? (
-				<ul className={fr.cx("fr-ml-3v")}>
-					{value.map((item, index) => (
-						<li key={index}>
-							<span className={classes.value}>{item}</span>
-						</li>
-					))}
-				</ul>
+				valueContent
 			) : (
-				<p className={classes.value}>
-					{link && value ? <a href={value}>{value}</a> : value || placeholder}
-				</p>
+				<p className={classes.value}>{valueContent}</p>
 			)}
 		</div>
 	);
@@ -60,8 +78,9 @@ const useStyles = tss
 	.create(({ addSectionBorder, valueIsArray }) => ({
 		fieldContainer: {
 			gap: valueIsArray ? undefined : fr.spacing("2v"),
-			"& p": {
+			"& p, & dd": {
 				margin: 0,
+				padding: 0,
 			},
 			...(addSectionBorder && {
 				borderTop: `10px solid ${fr.colors.decisions.border.default.grey.default}`,

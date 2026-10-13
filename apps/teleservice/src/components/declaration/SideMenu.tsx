@@ -3,7 +3,7 @@ import {
 	SideMenu as DsfrSideMenu,
 	type SideMenuProps as DsfrSideMenuProps,
 } from "@codegouvfr/react-dsfr/SideMenu";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { SectionBadge } from "~/components/declaration/SectionBadge";
@@ -31,8 +31,25 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	const showToComplete = useShowToComplete();
 	const { classes } = useStyles();
 	const declarationId = declaration.id;
-	const isAuditCurrent = isAuditSubSection(currentSection);
 	const visibleAuditSubSections = SECTION_SLUGS.filter(isAuditSubSection);
+
+	// Answering the audit question flips the sub-section badges out of sight of
+	// screen reader users; announce the change, never the initial state.
+	const auditNotApplicable = isSectionNotApplicable(
+		declaration,
+		"audit-outils",
+	);
+	const previousAuditNotApplicable = useRef(auditNotApplicable);
+	const [announcement, setAnnouncement] = useState("");
+	useEffect(() => {
+		if (previousAuditNotApplicable.current === auditNotApplicable) return;
+		previousAuditNotApplicable.current = auditNotApplicable;
+		setAnnouncement(
+			auditNotApplicable
+				? "Les étapes de l’audit sont désormais marquées comme non applicables."
+				: "Les étapes de l’audit ne sont plus marquées comme non applicables.",
+		);
+	}, [auditNotApplicable]);
 
 	const renderLabel = (label: string, variants: BadgeVariant[]): ReactNode => (
 		<span className={classes.itemLabel}>
@@ -76,9 +93,10 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 				href: sectionHref(declarationId, "audit-general"),
 				scroll: false,
 				shallow: true,
+				className: fr.cx("fr-sidemenu__link"),
+				"aria-expanded": undefined,
+				"aria-controls": undefined,
 			},
-			isActive: isAuditCurrent,
-			expandedByDefault: isAuditCurrent,
 			items: visibleAuditSubSections.map(sectionItem),
 		},
 		sectionItem("schema"),
@@ -86,19 +104,30 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	];
 
 	return (
-		<DsfrSideMenu
-			align="left"
-			sticky
-			burgerMenuButtonText="Sections de la déclaration"
-			items={items}
-			classes={{ root: classes.root }}
-		/>
+		<>
+			<output aria-live="polite" className={fr.cx("fr-sr-only")}>
+				{announcement}
+			</output>
+			<DsfrSideMenu
+				align="left"
+				sticky
+				burgerMenuButtonText="Sections de la déclaration"
+				{...{ "aria-label": "Sections de la déclaration" }}
+				items={items}
+				classes={{ root: classes.root }}
+			/>
+		</>
 	);
 }
 
 const useStyles = tss.withName(SideMenu.name).create({
 	root: {
 		marginTop: 0,
+		"& .fr-sidemenu__item > .fr-collapse.fr-collapse": {
+			"--collapse-max-height": "none",
+			visibility: "visible",
+			"&::before": { marginTop: 0 },
+		},
 		[fr.breakpoints.up("md")]: {
 			top: fr.spacing("16v"),
 		},
