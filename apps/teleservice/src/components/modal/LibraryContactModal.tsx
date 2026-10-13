@@ -2,7 +2,7 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { useEffect, useId, useMemo, useState } from "react";
 import type { Contact } from "~/payload/payload-types";
-import { useModalReturnFocus } from "~/hooks/useModalReturnFocus";
+import { useAccessibleModal } from "~/hooks/useAccessibleModal";
 import { api } from "~/lib/api";
 import { ContactTypeForm } from "~/forms/contact/contactForm";
 import {
@@ -11,6 +11,7 @@ import {
 } from "~/forms/contact/contactSchema";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { useAppForm } from "~/forms/context";
+import { handleFormSubmit } from "~/components/form/handleFormSubmit";
 
 export type LibraryContactModalActions = {
 	open?: (contact?: Contact | null) => void;
@@ -30,7 +31,7 @@ export function LibraryContactModal({ actions }: LibraryContactModalProps) {
 		}),
 	);
 
-	const openModal = useModalReturnFocus(modal);
+	const openModal = useAccessibleModal(modal);
 
 	const [editing, setEditing] = useState<Contact | null>(null);
 
@@ -82,14 +83,7 @@ export function LibraryContactModal({ actions }: LibraryContactModalProps) {
 	});
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				form.handleSubmit();
-			}}
-			onInvalid={() => form.validate("submit")}
-		>
+		<form onSubmit={handleFormSubmit(form)} noValidate>
 			<modal.Component
 				buttons={[
 					{ children: "Annuler", type: "button" },

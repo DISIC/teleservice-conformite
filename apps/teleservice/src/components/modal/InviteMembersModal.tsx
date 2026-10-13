@@ -10,6 +10,8 @@ import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { api } from "~/lib/api";
 import { useAppForm } from "~/forms/context";
 import HelpingMessage from "../ui/HelpingMessage";
+import { handleFormSubmit } from "~/components/form/handleFormSubmit";
+import { useAccessibleModal } from "~/hooks/useAccessibleModal";
 
 export type InviteMembersModalActions = {
 	open?: () => void;
@@ -75,10 +77,12 @@ export function InviteMembersModal({
 		},
 	});
 
+	const openModal = useAccessibleModal(modal);
+
 	useEffect(() => {
 		actions.open = () => {
 			form.reset();
-			modal.open();
+			openModal();
 		};
 	}, []);
 
@@ -89,14 +93,7 @@ export function InviteMembersModal({
 	});
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				form.handleSubmit();
-			}}
-			onInvalid={() => form.validate("submit")}
-		>
+		<form onSubmit={handleFormSubmit(form)} noValidate>
 			<modal.Component
 				buttons={[
 					{ children: "Annuler", type: "button" },

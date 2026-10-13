@@ -2,12 +2,13 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { useEffect, useId, useMemo, useState } from "react";
 import type { Schema } from "~/payload/payload-types";
-import { useModalReturnFocus } from "~/hooks/useModalReturnFocus";
+import { useAccessibleModal } from "~/hooks/useAccessibleModal";
 import { api } from "~/lib/api";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { useAppForm } from "~/forms/context";
 import { SchemaForm as EntitySchemaForm } from "~/forms/schema/schemaForm";
 import { schemaFormOptions, type ZSchema } from "~/forms/schema/schemaSchema";
+import { handleFormSubmit } from "~/components/form/handleFormSubmit";
 
 export type LibrarySchemaModalActions = {
 	open?: (schema?: Schema | null) => void;
@@ -27,7 +28,7 @@ export function LibrarySchemaModal({ actions }: LibrarySchemaModalProps) {
 		}),
 	);
 
-	const openModal = useModalReturnFocus(modal);
+	const openModal = useAccessibleModal(modal);
 
 	const [editing, setEditing] = useState<Schema | null>(null);
 
@@ -82,14 +83,7 @@ export function LibrarySchemaModal({ actions }: LibrarySchemaModalProps) {
 	});
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				form.handleSubmit();
-			}}
-			onInvalid={() => form.validate("submit")}
-		>
+		<form onSubmit={handleFormSubmit(form)} noValidate>
 			<modal.Component
 				buttons={[
 					{ children: "Annuler", type: "button" },

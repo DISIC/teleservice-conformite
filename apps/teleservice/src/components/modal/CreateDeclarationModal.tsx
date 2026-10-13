@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useId, useState } from "react";
 import { PathPicker } from "~/components/declaration/creation/PathPicker";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
-import { useModalReturnFocus } from "~/hooks/useModalReturnFocus";
+import { useAccessibleModal } from "~/hooks/useAccessibleModal";
 import type { Entity } from "~/payload/payload-types";
 
 export type CreateDeclarationModalActions = {
@@ -27,7 +27,7 @@ export function CreateDeclarationModal({
 		}),
 	);
 
-	actions.open = useModalReturnFocus(modal);
+	actions.open = useAccessibleModal(modal);
 
 	return (
 		<modal.Component size="large" title="Créer une déclaration">

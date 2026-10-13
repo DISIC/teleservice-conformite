@@ -35,6 +35,7 @@ import { usePublishAttempt } from "./hooks/usePublishAttempt";
 import { useRevealSectionErrors } from "./hooks/useRevealSectionErrors";
 import { useSourceMode } from "./hooks/useSourceMode";
 import { SectionShell } from "./Shell";
+import { handleFormSubmit } from "~/components/form/handleFormSubmit";
 
 type SectionProps = {
 	definition: AnySectionDefinition;
@@ -305,13 +306,7 @@ export function Section({
 			>
 				{!readOnly && !hideRequiredNotice && <RequiredFieldsNotice />}
 				{sourcePicker}
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-					onInvalid={() => form.validate("submit")}
-				>
+				<form onSubmit={handleFormSubmit(form)} noValidate>
 					<div className={commonClasses.partStack}>{body}</div>
 				</form>
 			</SectionShell>

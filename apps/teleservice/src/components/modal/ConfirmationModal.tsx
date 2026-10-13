@@ -7,7 +7,7 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { tss } from "tss-react";
-import { useModalReturnFocus } from "~/hooks/useModalReturnFocus";
+import { useAccessibleModal } from "~/hooks/useAccessibleModal";
 
 export type ConfirmationModalParams = {
 	title: string;
@@ -54,7 +54,7 @@ export function ConfirmationModal({ actions }: ConfirmationModalProps) {
 		}),
 	);
 
-	const openModal = useModalReturnFocus(modal);
+	const openModal = useAccessibleModal(modal);
 
 	const [params, setParams] = useState<ConfirmationModalParams | undefined>(
 		undefined,

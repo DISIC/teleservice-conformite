@@ -5,6 +5,7 @@ import DeclarationLoader from "~/components/declaration/DeclarationLoader";
 import { useAppForm } from "~/forms/context";
 import { submitFormOptions } from "~/forms/formOptions";
 import { api } from "~/lib/api";
+import { handleFormSubmit } from "~/components/form/handleFormSubmit";
 import { Actions } from "./Actions";
 import { fr } from "@codegouvfr/react-dsfr";
 
@@ -46,12 +47,7 @@ export function AraPath({
 	if (isPending) return <DeclarationLoader duration={2000} />;
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				form.handleSubmit();
-			}}
-		>
+		<form onSubmit={handleFormSubmit(form)} noValidate>
 			{hasFailed && (
 				<Alert
 					severity="error"
@@ -71,7 +67,7 @@ export function AraPath({
 					/>
 				)}
 			</form.AppField>
-			<Actions onContinue={form.handleSubmit} />
+			<Actions />
 		</form>
 	);
 }

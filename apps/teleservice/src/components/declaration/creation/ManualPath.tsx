@@ -2,6 +2,7 @@ import { z } from "zod";
 import { useAppForm } from "~/forms/context";
 import { submitFormOptions } from "~/forms/formOptions";
 import { api } from "~/lib/api";
+import { handleFormSubmit } from "~/components/form/handleFormSubmit";
 import { Actions } from "./Actions";
 
 const manualSchema = z.object({
@@ -36,12 +37,7 @@ export function ManualPath({
 	});
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				form.handleSubmit();
-			}}
-		>
+		<form onSubmit={handleFormSubmit(form)} noValidate>
 			<form.AppField name="name">
 				{(field) => (
 					<field.TextField
@@ -58,7 +54,7 @@ export function ManualPath({
 					/>
 				)}
 			</form.AppField>
-			<Actions onContinue={form.handleSubmit} disabled={isPending} />
+			<Actions disabled={isPending} />
 		</form>
 	);
 }
