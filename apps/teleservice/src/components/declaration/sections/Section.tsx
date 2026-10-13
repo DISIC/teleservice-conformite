@@ -294,7 +294,9 @@ export function Section({
 	return (
 		<>
 			<Head>
-				<title>{title} - Téléservice Conformité</title>
+				<title>
+					{declaration.name} - {title} - Téléservice Conformité
+				</title>
 			</Head>
 			<SectionShell
 				title={title}
