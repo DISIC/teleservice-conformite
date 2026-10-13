@@ -336,4 +336,15 @@ describe("validateDeclaration", () => {
 			"Sélectionnez un schéma pluriannuel existant",
 		]);
 	});
+
+	it("runs the field schema when Custom replaces a Skipped schema", () => {
+		const errors = errorsFor(
+			validateDeclaration(
+				completeDeclaration({ schema: { skipped: true } } as never),
+				{ schema: "custom" },
+			),
+			"schema",
+		);
+		expect(errors.map((e) => e.field)).toEqual(["name"]);
+	});
 });

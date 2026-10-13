@@ -73,7 +73,13 @@ function validateSection(
 			},
 		];
 	}
-	if (validation.isApplicable?.(declaration) === false) return [];
+	// Choosing Custom supersedes a saved skip, which stays persisted until the first custom save.
+	const overridesSkip =
+		sourceMode &&
+		pending === "custom" &&
+		deriveSourceMode(sourceMode.kind, declaration) === "skipped";
+	if (!overridesSkip && validation.isApplicable?.(declaration) === false)
+		return [];
 	if (pending !== "custom" && sourceMode?.isUndecided(declaration)) {
 		return [
 			{
