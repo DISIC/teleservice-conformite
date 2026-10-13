@@ -5,6 +5,7 @@ import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react";
+import { showAlert } from "~/components/alert/alertEvents";
 import { logMutationError } from "~/components/declaration/logMutationError";
 import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
 import { StatusBadge } from "~/components/declaration/StatusBadge";
@@ -41,6 +42,10 @@ export function DeclarationHeading({
 
 	const { mutate: deleteDeclaration } = api.declaration.delete.useMutation({
 		onSuccess: () => {
+			showAlert({
+				severity: "success",
+				title: `La déclaration « ${declaration.name} » a bien été supprimée.`,
+			});
 			router.push(DECLARATIONS_LIST);
 		},
 		onError: (error) => {
