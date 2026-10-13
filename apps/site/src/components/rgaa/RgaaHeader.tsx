@@ -64,7 +64,7 @@ export default function RgaaHeader({ navigation: entries }: RgaaHeaderProps) {
 				}
 				homeLinkProps={{
 					href: "/",
-					title: "Accueil - RGAA 5",
+					title: "Accueil RGAA - Version 5, Beta",
 				}}
 				quickAccessItems={[
 					<Button
