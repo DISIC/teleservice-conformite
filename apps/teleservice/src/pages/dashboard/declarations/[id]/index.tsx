@@ -70,30 +70,18 @@ export default function DeclarationPage({
 	// Armed by the terminal Section's "Prévisualiser et publier"; once armed, the
 	// error summary re-derives from the declaration on every save.
 	const [publishAttempted, setPublishAttempted] = useState(false);
-	// Unsaved radio choices belong to one declaration: Next reuses this page across ids.
-	const [pendingByDeclaration, setPendingByDeclaration] = useState<{
-		declarationId: number;
-		modes: PendingSourceModes;
-	}>({ declarationId: declaration.id, modes: {} });
-	const pendingSourceModes =
-		pendingByDeclaration.declarationId === declaration.id
-			? pendingByDeclaration.modes
-			: {};
+	const [pendingSourceModes, setPendingSourceModes] =
+		useState<PendingSourceModes>({});
 	const pendingSourceModesValue = useMemo(
 		() => ({
 			pending: pendingSourceModes,
 			setPending: (kind: LibrarySectionKind, value: SourceModeValue | null) =>
-				setPendingByDeclaration((current) => {
-					const modes =
-						current.declarationId === declaration.id ? current.modes : {};
-					const { [kind]: _previous, ...rest } = modes;
-					return {
-						declarationId: declaration.id,
-						modes: value ? { ...rest, [kind]: value } : rest,
-					};
+				setPendingSourceModes((current) => {
+					const { [kind]: _previous, ...rest } = current;
+					return value ? { ...rest, [kind]: value } : rest;
 				}),
 		}),
-		[pendingSourceModes, declaration.id],
+		[pendingSourceModes],
 	);
 	const declarationErrors = useMemo(
 		() =>
