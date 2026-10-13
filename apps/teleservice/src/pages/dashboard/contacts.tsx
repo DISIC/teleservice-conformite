@@ -177,7 +177,9 @@ export default function ContactsPage({
 	return (
 		<>
 			<Head>
-				<title>Mes contacts - Téléservice Conformité</title>
+				<title>
+					Mes contacts - Téléservice de déclaration d’accessibilité numérique
+				</title>
 			</Head>
 			<PageHeading
 				title="Mes contacts"

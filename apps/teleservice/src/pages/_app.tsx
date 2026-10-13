@@ -116,7 +116,7 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>Téléservice Conformité</title>
+				<title>Téléservice de déclaration d’accessibilité numérique</title>
 			</Head>
 			<div className={classes.mainContainer}>
 				<SkipLinks

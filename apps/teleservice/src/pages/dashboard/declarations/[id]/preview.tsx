@@ -69,7 +69,8 @@ export default function DeclarationPreviewPage({
 				{publishedAt
 					? "Votre déclaration a été publiée"
 					: "Votre déclaration est prête à être publiée"}{" "}
-				- Déclaration de {declaration.name} - Téléservice Conformité
+				- Déclaration de {declaration.name} - Téléservice de déclaration
+				d’accessibilité numérique
 			</title>
 		</Head>
 	);

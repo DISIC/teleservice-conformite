@@ -75,7 +75,8 @@ export default function EntityDeclarationsPage({
 		<>
 			<Head>
 				<title>
-					Toutes les déclarations de l’organisation - Téléservice Conformité
+					Toutes les déclarations de l’organisation - Téléservice de déclaration
+					d’accessibilité numérique
 				</title>
 			</Head>
 			<PageHeading

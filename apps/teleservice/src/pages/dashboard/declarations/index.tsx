@@ -117,7 +117,10 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	return (
 		<>
 			<Head>
-				<title>Mes déclarations - Téléservice Conformité</title>
+				<title>
+					Mes déclarations - Téléservice de déclaration d’accessibilité
+					numérique
+				</title>
 			</Head>
 			<PageHeading
 				title="Mes déclarations d’accessibilité"
