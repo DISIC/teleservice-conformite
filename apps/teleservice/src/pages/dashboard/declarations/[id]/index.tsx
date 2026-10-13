@@ -122,7 +122,8 @@ export default function DeclarationPage({
 		<>
 			<Head>
 				<title>
-					Déclaration de {declaration.name} - Téléservice Conformité
+					Déclaration de {declaration.name} - Téléservice de déclaration
+					d’accessibilité numérique
 				</title>
 			</Head>
 			<DeclarationHeading declaration={declaration} />

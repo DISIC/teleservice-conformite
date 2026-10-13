@@ -98,7 +98,9 @@ export default function SchemasPage({
 	return (
 		<>
 			<Head>
-				<title>Mes schémas - Téléservice Conformité</title>
+				<title>
+					Mes schémas - Téléservice de déclaration d’accessibilité numérique
+				</title>
 			</Head>
 			<PageHeading
 				title="Mes schémas"

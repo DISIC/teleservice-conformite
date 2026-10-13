@@ -295,7 +295,8 @@ export function Section({
 		<>
 			<Head>
 				<title>
-					{declaration.name} - {title} - Téléservice Conformité
+					{declaration.name} - {title} - Téléservice de déclaration
+					d’accessibilité numérique
 				</title>
 			</Head>
 			<SectionShell

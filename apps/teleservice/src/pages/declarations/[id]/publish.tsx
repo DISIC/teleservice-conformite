@@ -31,7 +31,8 @@ const PublishPage: PageWithHeader<PublishPageProps> = ({
 		<>
 			<Head>
 				<title>
-					Déclaration de {publishedContent.name} - Téléservice Conformité
+					Déclaration de {publishedContent.name} - Téléservice de déclaration
+					d’accessibilité numérique
 				</title>
 			</Head>
 			<section
