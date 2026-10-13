@@ -5,7 +5,7 @@ import { type BadgeVariant, SECTION_BADGE } from "~/domain/declaration/state";
 export function SectionBadge({ variant }: { variant: BadgeVariant }) {
 	const { label, color, bgColor } = SECTION_BADGE[variant];
 	return (
-		<Badge small noIcon style={{ color, backgroundColor: bgColor }}>
+		<Badge as="span" small noIcon style={{ color, backgroundColor: bgColor }}>
 			{label}
 		</Badge>
 	);
