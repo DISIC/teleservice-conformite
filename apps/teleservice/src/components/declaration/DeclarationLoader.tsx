@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import System from "@codegouvfr/react-dsfr/picto/System";
 import { LinearProgress } from "@mui/material";
+import { useEffect, useState } from "react";
 import { tss } from "tss-react";
 import { useProgress } from "~/hooks/useProgress";
 
@@ -12,16 +13,26 @@ export default function DeclarationLoader({
 	duration = 1500,
 }: DeclarationLoaderProps) {
 	const { classes, cx } = useStyles();
+	const [status, setStatus] = useState("");
 
 	const progress = useProgress({
 		duration: duration + 500,
 	});
+
+	useEffect(() => {
+		const timeout = setTimeout(
+			() => setStatus("Création de votre déclaration en cours"),
+			100,
+		);
+		return () => clearTimeout(timeout);
+	}, []);
 
 	return (
 		<div className={cx(classes.loaderContainer)}>
 			<div className={fr.cx("fr-container")}>
 				<System fontSize="6rem" />
 				<h1 className={classes.title}>Création de votre déclaration</h1>
+				<output className={fr.cx("fr-sr-only")}>{status}</output>
 				<p className={cx(fr.cx("fr-mb-2v"), classes.description)}>
 					Merci de vérifier les informations récupérées et de les modifier si
 					nécessaire
