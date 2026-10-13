@@ -127,7 +127,9 @@ const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
 		);
 	}
 
-	const status = getConformityStatus(d.audit.rate);
+	const status = getConformityStatus(d.audit.rate, {
+		hasBlockingElements: hasText(d.audit.blockingElements),
+	});
 	const sentence = obsolete
 		? `Conformément à la législation, cette déclaration ayant été publiée il y a plus de ${OBSOLESCENCE_YEARS} ans, ${subject.charAt(0).toLowerCase()}${subject.slice(1)} est réputé **non conforme** ${rgaa}${version}`
 		: `${subject} est **${status.label.toLowerCase()}** ${rgaa}${version}`;
@@ -149,6 +151,7 @@ const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
 const nonAccessibleContent = (d: PublishedDeclaration): string[] => {
 	if (!d.audit.isRealised) return [];
 	const parts = [
+		["### Éléments bloquants", d.audit.blockingElements],
 		["### Non-conformités", d.audit.nonCompliantElements],
 		[
 			"### Dérogations pour charge disproportionnée",

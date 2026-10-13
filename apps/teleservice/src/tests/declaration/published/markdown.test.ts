@@ -37,6 +37,7 @@ function publishedDeclaration(
 			rgaa_version: "RGAA 5",
 			realised_by: "Orion audit",
 			rate: 74,
+			blockingElements: null,
 			nonCompliantElements: [
 				"- La vidéo de présentation de la demande d’aide n’a pas de transcription.",
 				"- Le bouton d’envoi du formulaire de déclaration contient un intitulé « Retour » au lieu de « Envoi »",
@@ -81,6 +82,7 @@ describe("buildPublishedMarkdown", () => {
 						rgaa_version: "RGAA 4",
 						realised_by: "",
 						rate: 0,
+						blockingElements: null,
 						nonCompliantElements: "",
 						disproportionnedCharge: "",
 						optionalElements: "",
@@ -148,6 +150,24 @@ describe("buildPublishedMarkdown", () => {
 			).toContain("fr-badge--success");
 		});
 
+		it("deems a declaration with blocking elements non compliant whatever its rate", () => {
+			const md = buildPublishedMarkdown(
+				publishedDeclaration({
+					audit: {
+						...publishedDeclaration().audit,
+						rate: 100,
+						blockingElements: "Navigation au clavier impossible",
+					},
+				}),
+				{ today: TODAY },
+			);
+			expect(md).toContain(
+				'<p class="fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon">Non conforme</p>',
+			);
+			expect(md).toContain("est **non conforme**");
+			expect(md).toContain("**100%**");
+		});
+
 		it("deems an obsolete declaration non compliant whatever its rate", () => {
 			const md = buildPublishedMarkdown(
 				publishedDeclaration({
@@ -176,6 +196,33 @@ describe("buildPublishedMarkdown", () => {
 			expect(md).not.toContain("Contenus non accessibles");
 			expect(md).not.toContain("Environnement de test");
 			expect(md).not.toContain("Pages du site");
+		});
+	});
+
+	describe("non-accessible contents", () => {
+		it("lists the blocking elements before the non-conformities", () => {
+			const md = buildPublishedMarkdown(
+				publishedDeclaration({
+					audit: {
+						...publishedDeclaration().audit,
+						blockingElements: "Navigation au clavier impossible",
+					},
+				}),
+				{ today: TODAY },
+			);
+			const contents = md.indexOf("## Contenus non accessibles");
+			const blocking = md.indexOf(
+				"### Éléments bloquants\n\nNavigation au clavier impossible",
+			);
+			expect(contents).toBeGreaterThan(-1);
+			expect(blocking).toBeGreaterThan(contents);
+			expect(md.indexOf("### Non-conformités")).toBeGreaterThan(blocking);
+		});
+
+		it("omits the heading when there are no blocking elements", () => {
+			expect(
+				buildPublishedMarkdown(publishedDeclaration(), { today: TODAY }),
+			).not.toContain("Éléments bloquants");
 		});
 	});
 

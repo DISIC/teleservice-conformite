@@ -7,6 +7,7 @@ import {
 } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
+import { hasBlockingElements } from "~/domain/declaration/conformity";
 
 type OptionLabel<T extends readonly { label: string }[]> = T[number]["label"];
 
@@ -36,6 +37,8 @@ export const publishedDeclarationSchema = z.object({
 		rgaa_version: z.enum(rgaaVersionLabels),
 		realised_by: z.string(),
 		rate: z.number(),
+		// Snapshots published before blocking elements existed carry none.
+		blockingElements: z.string().nullable().default(null),
 		nonCompliantElements: z.string().nullable(),
 		disproportionnedCharge: z.string().nullable(),
 		optionalElements: z.string().nullable(),
@@ -108,6 +111,9 @@ export const extractDeclarationContentToPublish = (
 					?.label ?? "RGAA 4",
 			realised_by: audit.realisedBy ?? "",
 			rate: audit.rate ?? 0,
+			blockingElements: hasBlockingElements(audit)
+				? (audit.blockingElements ?? null)
+				: null,
 			nonCompliantElements: audit.nonCompliantElements ?? "",
 			disproportionnedCharge: audit.disproportionnedCharge ?? "",
 			optionalElements: audit.optionalElements ?? "",

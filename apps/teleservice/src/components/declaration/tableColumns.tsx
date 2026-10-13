@@ -10,6 +10,7 @@ import { StatusBadge } from "~/components/declaration/StatusBadge";
 import {
 	formatRate,
 	getConformityStatus,
+	hasBlockingElements,
 } from "~/domain/declaration/conformity";
 import { getDeclarationStatus } from "~/domain/declaration/status";
 import { copyToClipboard } from "~/lib/clipboard";
@@ -67,7 +68,11 @@ function buildColumns(
 		cell: (info) => {
 			const rate = info.getValue();
 			if (rate == null) return "—";
-			const conformity = getConformityStatus(rate);
+
+			const conformity = getConformityStatus(rate, {
+				hasBlockingElements: hasBlockingElements(info.row.original.audit),
+			});
+
 			return (
 				<div className={classes.rate}>
 					<Badge noIcon small severity={conformity.severity}>
