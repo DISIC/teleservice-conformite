@@ -345,7 +345,7 @@ export const NonCompliantElementsForm = withForm({
 								label={
 									!readOnly
 										? "Éléments non soumis à l’obligation d’accessibilité (si concerné)"
-										: "Dérogations pour charge disproportionnée"
+										: "Contenus non soumis à l’obligation d’accessibilité"
 								}
 								textArea
 								hintText={
@@ -374,7 +374,7 @@ export const NonCompliantElementsForm = withForm({
 								label={
 									!readOnly
 										? "Éléments avec dérogation pour charge disproportionnée (si concerné)"
-										: "Contenus non soumis à l’obligation d’accessibilité"
+										: "Dérogations pour charge disproportionnée"
 								}
 								hintText={
 									<>
