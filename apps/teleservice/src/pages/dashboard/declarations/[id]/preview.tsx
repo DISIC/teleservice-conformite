@@ -170,6 +170,10 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 		padding: fr.spacing("4w"),
 		marginTop: fr.spacing("10v"),
 		marginBottom: fr.spacing("6v"),
+		minWidth: 0,
+		"@media (max-width: 576px)": {
+			padding: fr.spacing("2w"),
+		},
 	},
 	buttonsContainer: {
 		display: "flex",
