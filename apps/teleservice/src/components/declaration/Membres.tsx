@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
+import { EmptyValue } from "~/components/ui/EmptyValue";
 import { useState } from "react";
 import { tss } from "tss-react";
 import {
@@ -136,10 +137,12 @@ export default function Membres({ declaration }: MembresProps) {
 				className={classes.table}
 				data={accessRights.map((accessRight) => [
 					<div key={`user-${accessRight.id}`}>
-						{accessRight?.user?.name || "-"}
+						{accessRight?.user?.name || <EmptyValue />}
 					</div>,
 					<div key={`mail-${accessRight.id}`}>
-						{accessRight?.user?.email || accessRight.tmpUserEmail}
+						{accessRight?.user?.email || accessRight.tmpUserEmail || (
+							<EmptyValue />
+						)}
 					</div>,
 					<div key={`status-${accessRight.id}`}>
 						<StatusBadge role={accessRight.role} status={accessRight.status} />
