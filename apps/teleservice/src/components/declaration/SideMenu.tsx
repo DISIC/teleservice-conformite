@@ -31,7 +31,6 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	const showToComplete = useShowToComplete();
 	const { classes } = useStyles();
 	const declarationId = declaration.id;
-	const isAuditCurrent = isAuditSubSection(currentSection);
 	const visibleAuditSubSections = SECTION_SLUGS.filter(isAuditSubSection);
 
 	// Answering the audit question flips the sub-section badges out of sight of
@@ -94,9 +93,10 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 				href: sectionHref(declarationId, "audit-general"),
 				scroll: false,
 				shallow: true,
+				className: fr.cx("fr-sidemenu__link"),
+				"aria-expanded": undefined,
+				"aria-controls": undefined,
 			},
-			isActive: isAuditCurrent,
-			expandedByDefault: isAuditCurrent,
 			items: visibleAuditSubSections.map(sectionItem),
 		},
 		sectionItem("schema"),
@@ -123,6 +123,11 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 const useStyles = tss.withName(SideMenu.name).create({
 	root: {
 		marginTop: 0,
+		"& .fr-sidemenu__item > .fr-collapse.fr-collapse": {
+			"--collapse-max-height": "none",
+			visibility: "visible",
+			"&::before": { marginTop: 0 },
+		},
 		[fr.breakpoints.up("md")]: {
 			top: fr.spacing("16v"),
 		},
