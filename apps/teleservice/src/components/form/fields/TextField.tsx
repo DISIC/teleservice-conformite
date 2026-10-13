@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Input, type InputProps } from "@codegouvfr/react-dsfr/Input";
-import type { InputHTMLAttributes } from "react";
+import { type InputHTMLAttributes, useLayoutEffect, useRef } from "react";
 import { tss } from "tss-react";
 import {
 	type DefaultFieldProps,
@@ -30,6 +30,16 @@ export function TextField(props: TextFieldProps) {
 	} = props;
 	const field = useFieldContext<string>();
 	const { classes } = useStyles();
+	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+	// Grows with its content, never below its `rows`, so no text hides behind a scrollbar.
+	useLayoutEffect(() => {
+		const textArea = textAreaRef.current;
+		if (!textArea) return;
+		textArea.style.height = "auto";
+		const borders = textArea.offsetHeight - textArea.clientHeight;
+		textArea.style.height = `${textArea.scrollHeight + borders}px`;
+	}, [field.state.value]);
 
 	if (readOnlyField) {
 		let value: string | string[] = field.state.value || "";
@@ -64,7 +74,9 @@ export function TextField(props: TextFieldProps) {
 					{...getFieldState(field.state.meta)}
 					textArea={textArea}
 					nativeTextAreaProps={{
+						rows: 3,
 						...nativeTextAreaProps,
+						ref: textAreaRef,
 						required: nativeTextAreaProps?.required ?? required,
 						...customNativeProps,
 					}}
