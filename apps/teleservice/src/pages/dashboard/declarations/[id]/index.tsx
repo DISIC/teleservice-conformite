@@ -69,7 +69,10 @@ export default function DeclarationPage({
 
 	// Armed by the terminal Section's "Prévisualiser et publier"; once armed, the
 	// error summary re-derives from the declaration on every save.
-	const [publishAttempted, setPublishAttempted] = useState(false);
+	// Counted, not a flag: every attempt moves the focus back to the error summary.
+	const [publishAttempts, setPublishAttempts] = useState(0);
+	const publishAttempted = publishAttempts > 0;
+	const onPublishAttempt = () => setPublishAttempts((count) => count + 1);
 	// Unsaved radio choices belong to one declaration: Next reuses this page across ids.
 	const [pendingByDeclaration, setPendingByDeclaration] = useState<{
 		declarationId: number;
@@ -159,7 +162,7 @@ export default function DeclarationPage({
 					<PendingSourceModesProvider value={pendingSourceModesValue}>
 						<StateNotice
 							declaration={declaration}
-							onPublishAttempt={() => setPublishAttempted(true)}
+							onPublishAttempt={onPublishAttempt}
 							onReverted={() => router.reload()}
 						/>
 
@@ -169,6 +172,7 @@ export default function DeclarationPage({
 									<ErrorSummary
 										declarationId={declaration.id}
 										errors={declarationErrors}
+										focusKey={publishAttempts}
 									/>
 								</div>
 							)}
@@ -188,7 +192,7 @@ export default function DeclarationPage({
 										currentSection={currentSection}
 										onDeclarationChange={setDeclaration}
 										mode={editingMode}
-										onPublishAttempt={() => setPublishAttempted(true)}
+										onPublishAttempt={onPublishAttempt}
 										publishAttempted={publishAttempted}
 									/>
 								</div>
