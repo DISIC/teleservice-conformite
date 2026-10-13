@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
 	formatRate,
 	getConformityStatus,
+	hasBlockingElements,
 } from "~/domain/declaration/conformity";
 
 describe("getConformityStatus", () => {
@@ -32,6 +33,31 @@ describe("getConformityStatus", () => {
 			label: "Conforme",
 			severity: "success",
 		});
+	});
+});
+
+describe("hasBlockingElements", () => {
+	const audit = {
+		rgaa_version: "rgaa_5",
+		hasBlockingElements: true,
+		blockingElements: "Navigation au clavier impossible",
+	};
+
+	it("counts described blocking elements of an RGAA 5 audit", () => {
+		expect(hasBlockingElements(audit)).toBe(true);
+	});
+
+	it("ignores them on RGAA 4, when not reported, or not yet described", () => {
+		expect(hasBlockingElements({ ...audit, rgaa_version: "rgaa_4" })).toBe(
+			false,
+		);
+		expect(hasBlockingElements({ ...audit, hasBlockingElements: false })).toBe(
+			false,
+		);
+		expect(hasBlockingElements({ ...audit, blockingElements: "  " })).toBe(
+			false,
+		);
+		expect(hasBlockingElements(null)).toBe(false);
 	});
 });
 

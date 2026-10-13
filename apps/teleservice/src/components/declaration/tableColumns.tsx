@@ -10,6 +10,7 @@ import { StatusBadge } from "~/components/declaration/StatusBadge";
 import {
 	formatRate,
 	getConformityStatus,
+	hasBlockingElements,
 } from "~/domain/declaration/conformity";
 import { getDeclarationStatus } from "~/domain/declaration/status";
 import { copyToClipboard } from "~/lib/clipboard";
@@ -68,12 +69,8 @@ function buildColumns(
 			const rate = info.getValue();
 			if (rate == null) return "—";
 
-			const audit = info.row.original.audit;
-
 			const conformity = getConformityStatus(rate, {
-				hasBlockingElements:
-					audit?.rgaa_version === "rgaa_5" &&
-					audit.hasBlockingElements === true,
+				hasBlockingElements: hasBlockingElements(info.row.original.audit),
 			});
 
 			return (

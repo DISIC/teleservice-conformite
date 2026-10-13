@@ -7,6 +7,7 @@ import {
 } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
+import { hasBlockingElements } from "~/domain/declaration/conformity";
 
 type OptionLabel<T extends readonly { label: string }[]> = T[number]["label"];
 
@@ -110,13 +111,9 @@ export const extractDeclarationContentToPublish = (
 					?.label ?? "RGAA 4",
 			realised_by: audit.realisedBy ?? "",
 			rate: audit.rate ?? 0,
-			// Blocking elements are an RGAA 5 notion only.
-			blockingElements:
-				audit.rgaa_version === "rgaa_5" &&
-				audit.hasBlockingElements === true &&
-				audit.blockingElements?.trim()
-					? audit.blockingElements
-					: null,
+			blockingElements: hasBlockingElements(audit)
+				? (audit.blockingElements ?? null)
+				: null,
 			nonCompliantElements: audit.nonCompliantElements ?? "",
 			disproportionnedCharge: audit.disproportionnedCharge ?? "",
 			optionalElements: audit.optionalElements ?? "",
