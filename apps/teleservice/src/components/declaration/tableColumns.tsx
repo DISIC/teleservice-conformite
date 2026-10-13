@@ -67,7 +67,15 @@ function buildColumns(
 		cell: (info) => {
 			const rate = info.getValue();
 			if (rate == null) return "—";
-			const conformity = getConformityStatus(rate);
+
+			const audit = info.row.original.audit;
+
+			const conformity = getConformityStatus(rate, {
+				hasBlockingElements:
+					audit?.rgaa_version === "rgaa_5" &&
+					audit.hasBlockingElements === true,
+			});
+
 			return (
 				<div className={classes.rate}>
 					<Badge noIcon small severity={conformity.severity}>

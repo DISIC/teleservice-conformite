@@ -20,6 +20,13 @@ describe("getConformityStatus", () => {
 		});
 	});
 
+	it("is non conforme with blocking elements, whatever the rate", () => {
+		expect(getConformityStatus(100, { hasBlockingElements: true })).toEqual({
+			label: "Non conforme",
+			severity: "error",
+		});
+	});
+
 	it("is conforme at 100 %", () => {
 		expect(getConformityStatus(100)).toEqual({
 			label: "Conforme",

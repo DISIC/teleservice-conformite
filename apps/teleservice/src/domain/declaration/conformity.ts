@@ -1,10 +1,12 @@
 export type ConformitySeverity = "success" | "info" | "warning" | "error";
 
 // RGAA thresholds: below 50 % non conforme, 50–99 % partiellement conforme, 100 % conforme.
+// Any blocking element makes the service non conforme whatever its rate.
 export const getConformityStatus = (
 	rate: number,
+	{ hasBlockingElements = false }: { hasBlockingElements?: boolean } = {},
 ): { label: string; severity: ConformitySeverity } => {
-	if (rate < 50) {
+	if (hasBlockingElements || rate < 50) {
 		return { label: "Non conforme", severity: "error" };
 	}
 	if (rate >= 50 && rate <= 99) {

@@ -84,6 +84,7 @@ describe("extractDeclarationContentToPublish", () => {
 			rgaa_version: "RGAA 4",
 			realised_by: "",
 			rate: 0,
+			blockingElements: null,
 			nonCompliantElements: "",
 			disproportionnedCharge: "",
 			optionalElements: "",
@@ -92,6 +93,24 @@ describe("extractDeclarationContentToPublish", () => {
 			testEnvironments: [],
 			usedTools: [],
 		});
+	});
+
+	it("publishes the blocking elements of an RGAA 5 audit only", () => {
+		const audit = {
+			isRealised: true,
+			rgaa_version: "rgaa_5",
+			hasBlockingElements: true,
+			blockingElements: "Navigation au clavier impossible",
+		};
+		const blockingElementsOf = (overrides: object) =>
+			extractDeclarationContentToPublish(
+				completeDeclaration({ audit: { ...audit, ...overrides } } as never),
+			).audit.blockingElements;
+
+		expect(blockingElementsOf({})).toBe("Navigation au clavier impossible");
+		expect(blockingElementsOf({ rgaa_version: "rgaa_4" })).toBeNull();
+		expect(blockingElementsOf({ hasBlockingElements: false })).toBeNull();
+		expect(blockingElementsOf({ blockingElements: "  " })).toBeNull();
 	});
 
 	it("records whether an audit was performed", () => {
@@ -117,6 +136,19 @@ describe("parsePublishedDeclaration", () => {
 		expect(parsePublishedDeclaration(JSON.stringify(snapshot))).toEqual(
 			snapshot,
 		);
+	});
+
+	it("reads a snapshot published before blocking elements existed", () => {
+		const { blockingElements: _, ...legacyAudit } =
+			extractDeclarationContentToPublish(completeDeclaration()).audit;
+		const snapshot = extractDeclarationContentToPublish(completeDeclaration(), {
+			publishedAt: new Date("2026-08-27T09:30:00.000Z"),
+		});
+		expect(
+			parsePublishedDeclaration(
+				JSON.stringify({ ...snapshot, audit: legacyAudit }),
+			)?.audit.blockingElements,
+		).toBeNull();
 	});
 
 	it("treats anything off-contract as no snapshot", () => {
