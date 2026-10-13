@@ -5,7 +5,7 @@ import Tag from "@codegouvfr/react-dsfr/Tag";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
@@ -23,6 +23,9 @@ import type { Entity, Schema } from "~/payload/payload-types";
 import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
 
+const ADD_SCHEMA_BUTTON_ID = "add-schema-button";
+const deleteButtonId = (schema: Schema) => `delete-schema-${schema.id}`;
+
 export default function SchemasPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -32,6 +35,7 @@ export default function SchemasPage({
 	const [schemaModalActions] = useState<LibrarySchemaModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const focusAfterDeleteRef = useRef<string | null>(null);
 
 	const {
 		data: schemas = [],
@@ -41,8 +45,22 @@ export default function SchemasPage({
 
 	const { mutate: deleteSchema } = api.library.deleteSchema.useMutation({
 		onSuccess: () => utils.library.listSchemas.invalidate(),
-		onError: (e) => setErrorMessage(e.message),
+		onError: (e) => {
+			focusAfterDeleteRef.current = null;
+			setErrorMessage(e.message);
+		},
 	});
+
+	// The deleted schema's button is gone once the list reloads, so focus moves to a neighbour.
+	useEffect(() => {
+		const targetId = focusAfterDeleteRef.current;
+		if (isFetching || !targetId) return;
+		focusAfterDeleteRef.current = null;
+		(
+			document.getElementById(targetId) ??
+			document.getElementById(ADD_SCHEMA_BUTTON_ID)
+		)?.focus();
+	}, [isFetching]);
 
 	const confirmDelete = (schema: Schema) =>
 		confirmationModalActions.open?.({
@@ -63,7 +81,15 @@ export default function SchemasPage({
 					</p>
 				</>
 			),
-			onConfirm: () => deleteSchema({ id: schema.id }),
+			onConfirm: () => {
+				const index = schemas.findIndex(({ id }) => id === schema.id);
+				// The next schema takes the focus, or the previous one when the last is deleted.
+				const neighbour = schemas[index + 1] ?? schemas[index - 1];
+				focusAfterDeleteRef.current = neighbour
+					? deleteButtonId(neighbour)
+					: ADD_SCHEMA_BUTTON_ID;
+				deleteSchema({ id: schema.id });
+			},
 		});
 
 	const openCreate = () => schemaModalActions.open?.();
@@ -78,7 +104,11 @@ export default function SchemasPage({
 				pictogram={<DataVisualization fontSize="3.5rem" />}
 				entityName={entity.name}
 				actions={
-					<Button iconId="fr-icon-add-line" onClick={openCreate}>
+					<Button
+						iconId="fr-icon-add-line"
+						onClick={openCreate}
+						nativeButtonProps={{ id: ADD_SCHEMA_BUTTON_ID }}
+					>
 						Ajouter un schéma pluriannuel
 					</Button>
 				}
@@ -126,6 +156,7 @@ export default function SchemasPage({
 											label={schema.name}
 											onEdit={() => schemaModalActions.open?.(schema)}
 											onDelete={() => confirmDelete(schema)}
+											deleteButtonId={deleteButtonId(schema)}
 										/>
 									</div>
 									{(schema.actionPlanUrls ?? []).map((plan) => (

@@ -6,10 +6,12 @@ export function ItemActions({
 	label,
 	onEdit,
 	onDelete,
+	deleteButtonId,
 }: {
 	label: string;
 	onEdit: () => void;
 	onDelete: () => void;
+	deleteButtonId?: string;
 }) {
 	const { classes } = useStyles();
 	return (
@@ -27,6 +29,7 @@ export function ItemActions({
 				title={`Supprimer ${label}`}
 				size="small"
 				onClick={onDelete}
+				nativeButtonProps={{ id: deleteButtonId }}
 			/>
 		</div>
 	);

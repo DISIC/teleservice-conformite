@@ -6,7 +6,7 @@ import NationalIdentityCard from "@codegouvfr/react-dsfr/picto/NationalIdentityC
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
@@ -27,6 +27,9 @@ import { loadEntityForPage } from "~/lib/server-guards";
 
 const columnHelper = createColumnHelper<Contact>();
 
+const ADD_CONTACT_BUTTON_ID = "add-contact-button";
+const deleteButtonId = (contact: Contact) => `delete-contact-${contact.id}`;
+
 export default function ContactsPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -36,6 +39,7 @@ export default function ContactsPage({
 	const [contactModalActions] = useState<LibraryContactModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const focusAfterDeleteRef = useRef<string | null>(null);
 
 	const {
 		data: contacts = [],
@@ -45,8 +49,22 @@ export default function ContactsPage({
 
 	const { mutate: deleteContact } = api.library.deleteContact.useMutation({
 		onSuccess: () => utils.library.listContacts.invalidate(),
-		onError: (e) => setErrorMessage(e.message),
+		onError: (e) => {
+			focusAfterDeleteRef.current = null;
+			setErrorMessage(e.message);
+		},
 	});
+
+	// The deleted row's button is gone once the list reloads, so focus moves to a neighbour.
+	useEffect(() => {
+		const targetId = focusAfterDeleteRef.current;
+		if (isFetching || !targetId) return;
+		focusAfterDeleteRef.current = null;
+		(
+			document.getElementById(targetId) ??
+			document.getElementById(ADD_CONTACT_BUTTON_ID)
+		)?.focus();
+	}, [isFetching]);
 
 	const confirmDelete = useCallback(
 		(contact: Contact) =>
@@ -67,9 +85,17 @@ export default function ContactsPage({
 						</p>
 					</>
 				),
-				onConfirm: () => deleteContact({ id: contact.id }),
+				onConfirm: () => {
+					const index = contacts.findIndex(({ id }) => id === contact.id);
+					// The next row takes the focus, or the previous one when the last row is deleted.
+					const neighbour = contacts[index + 1] ?? contacts[index - 1];
+					focusAfterDeleteRef.current = neighbour
+						? deleteButtonId(neighbour)
+						: ADD_CONTACT_BUTTON_ID;
+					deleteContact({ id: contact.id });
+				},
 			}),
-		[confirmationModalActions, deleteContact],
+		[confirmationModalActions, deleteContact, contacts],
 	);
 
 	const columns = useMemo(
@@ -114,6 +140,7 @@ export default function ContactsPage({
 							label={contact.name}
 							onEdit={() => contactModalActions.open?.(contact)}
 							onDelete={() => confirmDelete(contact)}
+							deleteButtonId={deleteButtonId(contact)}
 						/>
 					);
 				},
@@ -134,7 +161,11 @@ export default function ContactsPage({
 				pictogram={<NationalIdentityCard fontSize="3.5rem" />}
 				entityName={entity.name}
 				actions={
-					<Button iconId="fr-icon-add-line" onClick={openCreate}>
+					<Button
+						iconId="fr-icon-add-line"
+						onClick={openCreate}
+						nativeButtonProps={{ id: ADD_CONTACT_BUTTON_ID }}
+					>
 						Ajouter un contact
 					</Button>
 				}
