@@ -1,7 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
-import Tag from "@codegouvfr/react-dsfr/Tag";
+import type { TagProps } from "@codegouvfr/react-dsfr/Tag";
+import TagsGroup from "@codegouvfr/react-dsfr/TagsGroup";
 import NationalIdentityCard from "@codegouvfr/react-dsfr/picto/NationalIdentityCard";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
@@ -110,12 +111,20 @@ export default function ContactsPage({
 				id: "kinds",
 				header: "Moyens de contact",
 				cell: (info) => {
-					const contact = info.row.original;
-					return (
-						<div className={classes.tags}>
-							{contact.email && <Tag small>Email</Tag>}
-							{contact.url && <Tag small>Formulaire</Tag>}
-						</div>
+					const { email, url } = info.row.original;
+					const tags: TagProps[] = [
+						...(email ? [{ children: "Email" }] : []),
+						...(url ? [{ children: "Formulaire" }] : []),
+					];
+					const [first, ...rest] = tags;
+					return first ? (
+						<TagsGroup
+							smallTags
+							tags={[first, ...rest]}
+							className={classes.tags}
+						/>
+					) : (
+						<EmptyValue />
 					);
 				},
 			}),
@@ -229,9 +238,14 @@ const useStyles = tss.withName(ContactsPage.name).create({
 		paddingBlock: fr.spacing("12v"),
 	},
 	tags: {
-		display: "flex",
+		margin: 0,
 		gap: fr.spacing("1v"),
-		flexWrap: "wrap",
+		"& > li": {
+			lineHeight: "normal",
+		},
+		"& .fr-tag": {
+			margin: 0,
+		},
 	},
 	hint: {
 		fontSize: "0.875rem",
