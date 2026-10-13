@@ -56,7 +56,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 									FRANÇAISE
 								</>
 							}
-							homeLinkProps={{ href: "/", title: "Accueil - RGAA 5" }}
+							homeLinkProps={{
+								href: "/",
+								title: "République française, Accueil RGAA - Version 5",
+							}}
 							accessibility="non compliant"
 							bottomItems={[headerFooterDisplayItem]}
 						/>
