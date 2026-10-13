@@ -5,6 +5,7 @@ import DeclarationLoader from "~/components/declaration/DeclarationLoader";
 import { useAppForm } from "~/forms/context";
 import { submitFormOptions } from "~/forms/formOptions";
 import { api } from "~/lib/api";
+import { handleFormSubmit } from "~/components/form/handleFormSubmit";
 import { Actions } from "./Actions";
 
 const aiSchema = z.object({
@@ -44,12 +45,7 @@ export function AiPath({
 	if (isPending) return <DeclarationLoader duration={15000} />;
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				form.handleSubmit();
-			}}
-		>
+		<form onSubmit={handleFormSubmit(form)} noValidate>
 			{hasFailed && (
 				<Alert
 					severity="error"
@@ -68,7 +64,7 @@ export function AiPath({
 					/>
 				)}
 			</form.AppField>
-			<Actions onContinue={form.handleSubmit} />
+			<Actions />
 		</form>
 	);
 }
