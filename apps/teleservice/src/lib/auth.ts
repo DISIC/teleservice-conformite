@@ -132,7 +132,7 @@ const baseConfig = {
 	},
 	advanced: {
 		database: {
-			useNumberId: true,
+			generateId: "serial" as const,
 		},
 		cookies: {
 			state: {

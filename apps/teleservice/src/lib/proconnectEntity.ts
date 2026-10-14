@@ -1,4 +1,4 @@
-import { createAuthMiddleware } from "better-auth/plugins";
+import { createAuthMiddleware } from "better-auth/api";
 import { getPayload } from "payload";
 import payloadConfig from "~/payload/payload.config";
 import type { Entity } from "~/payload/payload-types";
