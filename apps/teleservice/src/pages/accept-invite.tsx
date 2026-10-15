@@ -4,6 +4,7 @@ import getPayloadClient from "~/payload/payloadClient";
 import { appRouter } from "~/server/api/root";
 import { createTRPCCallerFactory } from "~/server/api/trpc";
 import { authPages } from "~/lib/auth";
+import { readPageSession } from "~/lib/server-guards";
 
 interface Params extends ParsedUrlQuery {
 	token: string;
@@ -34,9 +35,7 @@ export const getServerSideProps = (async (context) => {
 		seed: false,
 	});
 
-	const session = await authPages.api.getSession({
-		headers: context.req.headers as HeadersInit,
-	});
+	const session = await readPageSession(context);
 
 	const createCaller = createTRPCCallerFactory(appRouter);
 

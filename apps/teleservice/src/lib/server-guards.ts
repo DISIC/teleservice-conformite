@@ -1,5 +1,6 @@
 import type { ParsedUrlQuery } from "node:querystring";
 import config from "@payload-config";
+import { getSessionCookie } from "better-auth/cookies";
 import type { GetServerSidePropsContext, Redirect } from "next";
 import { getPayload } from "payload";
 import type { Contact, Entity, Schema } from "~/payload/payload-types";
@@ -28,10 +29,29 @@ export interface LibraryProps {
 	librarySchemas: Schema[];
 }
 
+// The proxy only checks that a session cookie exists, so a cookie without a live session must be dropped here.
+const expiredSessionCookies = [
+	"better-auth.session_token=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax",
+	"__Secure-better-auth.session_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax",
+];
+
+export async function readPageSession(context: GetServerSidePropsContext) {
+	const requestHeaders = new Headers(context.req.headers as HeadersInit);
+	const { headers, response } = await authPages.api.getSession({
+		headers: requestHeaders,
+		returnHeaders: true,
+	});
+	const setCookie = headers.getSetCookie();
+	if (!response && getSessionCookie(requestHeaders))
+		setCookie.push(...expiredSessionCookies);
+	if (setCookie.length > 0) context.res.setHeader("Set-Cookie", setCookie);
+	return response;
+}
+
 export async function loadEntityForPage(context: GetServerSidePropsContext) {
 	const [payload, session] = await Promise.all([
 		getPayload({ config }),
-		authPages.api.getSession({ headers: context.req.headers as HeadersInit }),
+		readPageSession(context),
 	]);
 
 	if (!session) return { payload, session: null, entity: null };
@@ -58,7 +78,7 @@ export async function loadDeclarationForPage(
 
 	const [payload, session] = await Promise.all([
 		getPayload({ config }),
-		authPages.api.getSession({ headers: context.req.headers as HeadersInit }),
+		readPageSession(context),
 	]);
 
 	if (!session || Number.isNaN(declarationId))

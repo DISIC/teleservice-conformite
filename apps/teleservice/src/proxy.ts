@@ -1,7 +1,7 @@
+import { getSessionCookie } from "better-auth/cookies";
 import { type NextRequest, NextResponse } from "next/server";
-import { auth } from "~/lib/auth";
 
-export async function proxy(request: NextRequest) {
+export function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 
 	// Bypass middleware for admin and admin API routes
@@ -10,15 +10,13 @@ export async function proxy(request: NextRequest) {
 
 	if (isAdminShell || isApi) return NextResponse.next();
 
-	// Classic middleware
-	const authSession = await auth.api.getSession({
-		headers: request.headers,
-	});
-
 	if (pathname.endsWith("/publish") || pathname.endsWith("/accept-invite"))
 		return NextResponse.next();
 
-	if (authSession) {
+	// Cookie presence only: pages validate the session against the database themselves.
+	const hasSessionCookie = getSessionCookie(request) !== null;
+
+	if (hasSessionCookie) {
 		if (!pathname.startsWith("/dashboard")) {
 			return NextResponse.redirect(new URL("/dashboard", request.url));
 		}
