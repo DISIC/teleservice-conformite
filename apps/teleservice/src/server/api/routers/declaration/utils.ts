@@ -132,6 +132,16 @@ export const getUserEntity = async (payload: Payload, userId: number) => {
 	return typeof user?.entity === "object" ? user.entity : null;
 };
 
+/** Best-effort hostname of a URL, used as an entity-name fallback. */
+export const hostnameOf = (url: string | null): string | null => {
+	if (!url) return null;
+	try {
+		return new URL(url).hostname;
+	} catch {
+		return null;
+	}
+};
+
 /** Extracts the ARA report id from a report URL, validating it is present. */
 export const parseAraReportId = (araUrl: string): string => {
 	const id = araUrl.slice(araUrl.lastIndexOf("/") + 1).trim();

@@ -21,6 +21,7 @@ import { analyzeUrlWithAlbert } from "../albert";
 import {
 	fetchAraReport,
 	getUserEntity,
+	hostnameOf,
 	type ImportedDeclarationData,
 	normalizeAlbertResponse,
 	normalizeAraReport,
@@ -60,7 +61,13 @@ const createDeclarationFromImportedData = async (
 				await payload.create({
 					collection: "entities",
 					draft: true,
-					data: { name: data.responsibleEntity?.trim() || declarationName },
+					// The generated declaration name is a placeholder, not an entity name.
+					data: {
+						name:
+							data.responsibleEntity?.trim() ||
+							hostnameOf(data.service.url) ||
+							declarationName,
+					},
 					req: { transactionID },
 				})
 			).id;
