@@ -149,7 +149,7 @@ export function Section({
 		values,
 		save,
 	});
-	useRevealSectionErrors(form, publishAttempted);
+	useRevealSectionErrors(form, publishAttempted, editing.bodyMode);
 
 	// A `?field=` naming the source radio means the publish gate routed here. The
 	// page strips the param once it has focused the field, so latch the reveal.
