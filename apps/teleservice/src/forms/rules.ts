@@ -70,6 +70,16 @@ export function todayIsoDate(now = new Date()): string {
 	return DATE.format(now);
 }
 
+/** Format rule for a date whose field is only shown conditionally; the schema decides when it applies. */
+export function invalidDateIssue(
+	ctx: IssueCtx,
+	path: IssuePath,
+	value: string,
+) {
+	if (value && !isValidDate(value))
+		ctx.addIssue({ code: "custom", path, message: INVALID_DATE_MESSAGE });
+}
+
 export function notFutureDateIssue(
 	ctx: IssueCtx,
 	path: IssuePath,

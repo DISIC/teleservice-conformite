@@ -1,7 +1,7 @@
 import z from "zod";
 
 import { submitFormOptions } from "~/forms/formOptions";
-import { notFutureDateIssue, optionalDateField } from "~/forms/rules";
+import { invalidDateIssue, notFutureDateIssue } from "~/forms/rules";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
@@ -25,7 +25,7 @@ type Audit = PopulatedDeclaration["audit"];
 export const auditGeneral = z
 	.object({
 		isAuditRealised: z.boolean().optional(),
-		date: optionalDateField.optional(),
+		date: z.string().optional(),
 		realisedBy: z.string().optional(),
 		rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
 		hasBlockingElements: z.boolean().optional(),
@@ -41,6 +41,7 @@ export const auditGeneral = z
 		}
 
 		if (data.isAuditRealised === true) {
+			invalidDateIssue(ctx, ["date"], data.date ?? "");
 			notFutureDateIssue(
 				ctx,
 				["date"],
