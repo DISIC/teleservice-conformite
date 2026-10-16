@@ -38,18 +38,17 @@ export const schemaGroup: Field = {
 			access: {
 				update: readOnlyWhenLibraryParentSet("schema"),
 			},
+			// Rows are autosaved while being typed; completeness is checked at the publish gate.
 			fields: [
 				{
 					name: "name",
 					type: "text",
 					label: { fr: "Nom du plan d'actions" },
-					required: true,
 				},
 				{
 					name: "url",
 					type: "text",
 					label: { fr: "Lien du plan d'actions" },
-					required: true,
 				},
 			],
 		},
