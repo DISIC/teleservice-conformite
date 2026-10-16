@@ -78,6 +78,16 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 		validation: {
 			schema: declarationGeneralRefined,
 			fromDeclaration: declarationToGeneralValues,
+			fieldLabels: {
+				"general.organisation": "Organisation",
+				"general.firstPublishedAt":
+					"Date de publication initiale de la déclaration",
+				"general.name": "Nom du service numérique concerné",
+				"general.kind": "Type de service",
+				"general.mobilePlatform": "Plateforme mobile",
+				"general.url": "URL de la page d’accueil du site audité",
+				"general.domain": "Secteur d’activité du service concerné",
+			},
 		},
 	},
 	...auditSubSectionEntries,
@@ -88,11 +98,18 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 		validation: {
 			schema: schemaForm,
 			fromDeclaration: declarationToSchemaValues,
+			fieldLabels: {
+				name: "Nom du schéma pluriannuel",
+				url: "Lien du schéma pluriannuel",
+				"actionPlanUrls.*.name": "Nom du plan d'actions",
+				"actionPlanUrls.*.url": "Lien du plan d'actions",
+			},
 			isApplicable: (d) => d.schema?.skipped !== true,
 			sourceMode: {
+				kind: "schema",
 				field: SOURCE_MODE_FIELD.schema,
-				isUndecided: (d) => isSourceModeUndecided("schema", d),
 				message: "Sélectionnez une option pour le schéma pluriannuel",
+				linkMessage: "Sélectionnez un schéma pluriannuel existant",
 			},
 		},
 	},
@@ -103,10 +120,16 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 		validation: {
 			schema: contactForm,
 			fromDeclaration: declarationToContactValues,
+			fieldLabels: {
+				name: "Nom du contact",
+				email: "Email de contact",
+				url: "Lien URL du formulaire",
+			},
 			sourceMode: {
+				kind: "contact",
 				field: SOURCE_MODE_FIELD.contact,
-				isUndecided: (d) => isSourceModeUndecided("contact", d),
 				message: "Sélectionnez une option pour le contact",
+				linkMessage: "Sélectionnez un contact existant",
 			},
 		},
 	},

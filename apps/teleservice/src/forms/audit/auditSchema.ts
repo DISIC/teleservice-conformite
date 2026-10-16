@@ -1,6 +1,7 @@
 import z from "zod";
 
 import { submitFormOptions } from "~/forms/formOptions";
+import { invalidDateIssue, notFutureDateIssue } from "~/forms/rules";
 import {
 	rgaaVersionOptions,
 	testEnvironmentOptions,
@@ -24,7 +25,7 @@ type Audit = PopulatedDeclaration["audit"];
 export const auditGeneral = z
 	.object({
 		isAuditRealised: z.boolean().optional(),
-		date: z.iso.date().optional().or(z.literal("")),
+		date: z.string().optional(),
 		realisedBy: z.string().optional(),
 		rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
 		hasBlockingElements: z.boolean().optional(),
@@ -40,6 +41,13 @@ export const auditGeneral = z
 		}
 
 		if (data.isAuditRealised === true) {
+			invalidDateIssue(ctx, ["date"], data.date ?? "");
+			notFutureDateIssue(
+				ctx,
+				["date"],
+				data.date ?? "",
+				"La date de réalisation de l'audit ne peut pas être postérieure à la date du jour",
+			);
 			if (!data.realisedBy || data.realisedBy.trim() === "") {
 				ctx.addIssue({
 					code: "custom",

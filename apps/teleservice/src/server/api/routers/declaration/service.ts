@@ -48,12 +48,11 @@ const createDeclarationFromImportedData = async (
 	}
 
 	try {
-		const fallbackName =
-			hostnameOf(data.service.url) ??
-			(await getDefaultDeclarationName(payload, userId));
-		const declarationName = data.service.name?.trim()
-			? data.service.name
-			: fallbackName;
+		// An AI-extracted name is unreliable (often the URL itself): the user names the declaration.
+		const declarationName =
+			source === "ara" && data.service.name?.trim()
+				? data.service.name
+				: await getDefaultDeclarationName(payload, userId);
 
 		const entity = await getUserEntity(payload, userId);
 		const entityId =
@@ -62,7 +61,13 @@ const createDeclarationFromImportedData = async (
 				await payload.create({
 					collection: "entities",
 					draft: true,
-					data: { name: data.responsibleEntity?.trim() || declarationName },
+					// The generated declaration name is a placeholder, not an entity name.
+					data: {
+						name:
+							data.responsibleEntity?.trim() ||
+							hostnameOf(data.service.url) ||
+							declarationName,
+					},
 					req: { transactionID },
 				})
 			).id;

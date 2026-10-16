@@ -15,6 +15,7 @@ import {
 	getPopulatedDeclaration,
 	type PopulatedDeclaration,
 } from "./payload-helper";
+import { optionalDateField } from "~/forms/rules";
 
 /** The four data groups a Section save writes; Audit Sub-sections are slices of one. */
 export type SectionKind = "infos" | "audit" | LibrarySectionKind;
@@ -22,7 +23,7 @@ export type SectionKind = "infos" | "audit" | LibrarySectionKind;
 // Any one Sub-section slice may arrive alone; `isRealised` is never inferred from other fields.
 export const auditPatch = z.object({
 	isRealised: z.boolean().optional(),
-	date: z.iso.date().optional().or(z.literal("")),
+	date: optionalDateField.optional(),
 	realisedBy: z.string().optional(),
 	rgaa_version: z.enum(["rgaa_4", "rgaa_5"]).optional(),
 	rate: z.number().nullable().optional(),
