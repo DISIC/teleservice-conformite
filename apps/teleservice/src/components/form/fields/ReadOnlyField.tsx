@@ -47,7 +47,8 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 		value || placeholder
 	);
 
-	if (definitionList && term) {
+	// A <dl> only admits dt/dd groups, so a term-less field still renders as one.
+	if (definitionList) {
 		return (
 			<div className={classes.fieldContainer}>
 				<dt className={classes.label}>{term}</dt>
