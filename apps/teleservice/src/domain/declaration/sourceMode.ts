@@ -66,6 +66,22 @@ export function deriveSourceMode(
 	return null;
 }
 
+/** What the publish gate must do for a Library Section: ask for a choice, ask for an item, skip it, or check its content. */
+export type SourceGate = "undecided" | "unlinked" | "skipped" | "content";
+
+/** An unsaved radio choice supersedes the persisted mode, but only a persisted parent counts as linked. */
+export function resolveSourceGate(
+	kind: LibrarySectionKind,
+	declaration: PopulatedDeclaration,
+	pending: SourceModeValue | null | undefined,
+): SourceGate {
+	const derived = deriveSourceMode(kind, declaration);
+	const mode = pending ?? derived;
+	if (mode === null) return "undecided";
+	if (mode === "linked") return derived === "linked" ? "content" : "unlinked";
+	return mode === "skipped" ? "skipped" : "content";
+}
+
 export function isSourceModeUndecided(
 	kind: LibrarySectionKind,
 	declaration: PopulatedDeclaration,

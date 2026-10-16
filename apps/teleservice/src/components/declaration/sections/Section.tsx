@@ -159,14 +159,14 @@ export function Section({
 			setSourceModeRevealed(true);
 		}
 	}, [router.query.field, library]);
+	const revealSource =
+		(sourceModeRevealed || publishAttempted) && editing.showRadio;
 	const sourceModeError =
-		(sourceModeRevealed || publishAttempted) && editing.bodyMode === null
+		revealSource && source?.gate === "undecided"
 			? SECTIONS[slug].validation.sourceMode?.message
 			: undefined;
 	const linkError =
-		(sourceModeRevealed || publishAttempted) &&
-		source?.effectiveMode === "linked" &&
-		!source.isLinked
+		revealSource && source?.gate === "unlinked"
 			? SECTIONS[slug].validation.sourceMode?.linkMessage
 			: undefined;
 

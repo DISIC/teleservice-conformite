@@ -108,7 +108,6 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 			sourceMode: {
 				kind: "schema",
 				field: SOURCE_MODE_FIELD.schema,
-				isUndecided: (d) => isSourceModeUndecided("schema", d),
 				message: "Sélectionnez une option pour le schéma pluriannuel",
 				linkMessage: "Sélectionnez un schéma pluriannuel existant",
 			},
@@ -129,7 +128,6 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 			sourceMode: {
 				kind: "contact",
 				field: SOURCE_MODE_FIELD.contact,
-				isUndecided: (d) => isSourceModeUndecided("contact", d),
 				message: "Sélectionnez une option pour le contact",
 				linkMessage: "Sélectionnez un contact existant",
 			},

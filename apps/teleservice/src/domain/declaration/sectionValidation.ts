@@ -21,7 +21,6 @@ export type SectionValidation<TSchema extends z.ZodType = z.ZodType> = {
 	sourceMode?: {
 		kind: LibrarySectionKind;
 		field: string;
-		isUndecided: (declaration: PopulatedDeclaration) => boolean;
 		message: string;
 		/** Error once Linked is chosen while no Library item is picked yet. */
 		linkMessage: string;

@@ -2,8 +2,8 @@ import type { z } from "zod";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { SECTION_SLUGS, SECTIONS, type SectionSlug } from "./sections";
 import {
-	deriveSourceMode,
 	type PendingSourceModes,
+	resolveSourceGate,
 	SOURCE_LINK_FIELD,
 } from "./sourceMode";
 
@@ -58,37 +58,26 @@ function validateSection(
 ): DeclarationError[] {
 	const { validation } = SECTIONS[slug];
 	const { sourceMode } = validation;
-	const pending = sourceMode && pendingSourceModes[sourceMode.kind];
-	// Choosing Linked supersedes any saved custom draft: only the missing item counts.
-	if (
-		sourceMode &&
-		pending === "linked" &&
-		deriveSourceMode(sourceMode.kind, declaration) !== "linked"
-	) {
-		return [
-			{
-				section: slug,
-				field: SOURCE_LINK_FIELD[sourceMode.kind],
-				message: sourceMode.linkMessage,
-			},
-		];
-	}
-	// Choosing Custom supersedes a saved skip, which stays persisted until the first custom save.
-	const overridesSkip =
-		sourceMode &&
-		pending === "custom" &&
-		deriveSourceMode(sourceMode.kind, declaration) === "skipped";
-	if (!overridesSkip && validation.isApplicable?.(declaration) === false)
-		return [];
-	if (pending !== "custom" && sourceMode?.isUndecided(declaration)) {
-		return [
-			{
-				section: slug,
-				field: sourceMode.field,
-				message: sourceMode.message,
-			},
-		];
-	}
+	if (sourceMode) {
+		const gate = resolveSourceGate(
+			sourceMode.kind,
+			declaration,
+			pendingSourceModes[sourceMode.kind],
+		);
+		if (gate === "skipped") return [];
+		if (gate === "undecided")
+			return [
+				{ section: slug, field: sourceMode.field, message: sourceMode.message },
+			];
+		if (gate === "unlinked")
+			return [
+				{
+					section: slug,
+					field: SOURCE_LINK_FIELD[sourceMode.kind],
+					message: sourceMode.linkMessage,
+				},
+			];
+	} else if (validation.isApplicable?.(declaration) === false) return [];
 	return runSchema(
 		slug,
 		validation.schema,

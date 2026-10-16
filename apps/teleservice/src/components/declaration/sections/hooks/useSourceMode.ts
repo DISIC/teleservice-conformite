@@ -3,6 +3,8 @@ import type { DeclarationChangeFn } from "~/components/declaration/sections/defi
 import {
 	deriveSourceMode,
 	type LibrarySectionKind,
+	resolveSourceGate,
+	type SourceGate,
 	type SourceModeValue,
 } from "~/domain/declaration/sourceMode";
 import { api } from "~/lib/api";
@@ -16,6 +18,8 @@ export type SourceModeController = {
 	/** What the radio shows: a pending local choice, else the derived mode. */
 	effectiveMode: SourceModeValue | null;
 	isLinked: boolean;
+	/** The same verdict the publish gate reaches for this Section. */
+	gate: SourceGate;
 	libraryLink: LibraryLink;
 	/** Declarations sharing the linked parent (incl. this one); undefined until loaded. */
 	linkedCount: number | undefined;
@@ -77,6 +81,7 @@ export function useSourceMode({
 		derived,
 		effectiveMode: pending ?? derived,
 		isLinked: derived === "linked",
+		gate: resolveSourceGate(kind, declaration, pending),
 		libraryLink,
 		linkedCount: parentId !== null ? countQuery.data?.length : undefined,
 		select,
