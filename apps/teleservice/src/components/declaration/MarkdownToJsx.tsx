@@ -1,9 +1,26 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import Markdown from "react-markdown";
+import Markdown, { type Options } from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 import { tss } from "tss-react";
 import { OBSOLETE_NOTICE_CLASS } from "~/domain/declaration/published/markdown";
+
+// Declarants' texts reach this HTML: only the markup the templates emit survives.
+const SANITIZE_SCHEMA = {
+	...defaultSchema,
+	tagNames: [...(defaultSchema.tagNames ?? []), "small"],
+	attributes: {
+		...defaultSchema.attributes,
+		p: [...(defaultSchema.attributes?.p ?? []), "className"],
+		div: [...(defaultSchema.attributes?.div ?? []), "className"],
+	},
+};
+
+export const REHYPE_PLUGINS: Options["rehypePlugins"] = [
+	rehypeRaw,
+	[rehypeSanitize, SANITIZE_SCHEMA],
+];
 
 type HeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
@@ -67,7 +84,7 @@ export default function MarkdownToJsx({
 		<div className={classes.markdownContainer}>
 			<Markdown
 				remarkPlugins={[remarkGfm]}
-				rehypePlugins={[rehypeRaw]}
+				rehypePlugins={REHYPE_PLUGINS}
 				components={components}
 			>
 				{content}

@@ -20,17 +20,23 @@ type TemplateValues = Record<string, string | number | boolean>;
 const isSet = (value: TemplateValues[string] | undefined) =>
 	value !== undefined && value !== false && value !== "";
 
-/** Unknown names are left as written, so a typo shows on the page rather than vanishing. */
+/** Unknown names, blocks included, are left as written, so a typo shows on the page rather than hiding content. */
 export const renderTemplate = (
 	template: string,
 	values: TemplateValues,
 ): string => {
-	const block = /\{\{([#^])(\w+)\}\}([\s\S]*?)\{\{\/\2\}\}/;
+	const block = /\{\{([#^])(\w+)\}\}([\s\S]*?)\{\{\/\2\}\}/g;
 	let rendered = template;
-	for (let match = block.exec(rendered); match; match = block.exec(rendered)) {
-		const [whole, kind, name = "", content = ""] = match;
-		const keep = kind === "#" ? isSet(values[name]) : !isSet(values[name]);
-		rendered = rendered.replace(whole, () => (keep ? content : ""));
+	for (let previous = ""; previous !== rendered; ) {
+		previous = rendered;
+		rendered = rendered.replace(
+			block,
+			(whole, kind: string, name: string, content: string) => {
+				if (!(name in values)) return whole;
+				const keep = kind === "#" ? isSet(values[name]) : !isSet(values[name]);
+				return keep ? content : "";
+			},
+		);
 	}
 	return rendered.replace(/\{\{(\w+)\}\}/g, (whole, name: string) =>
 		name in values ? String(values[name]) : whole,

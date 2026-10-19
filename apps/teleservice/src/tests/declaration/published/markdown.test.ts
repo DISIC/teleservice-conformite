@@ -365,6 +365,21 @@ describe("renderTemplate", () => {
 	it("leaves unknown names as written", () => {
 		expect(renderTemplate("{{typo}}", {})).toBe("{{typo}}");
 	});
+
+	it("leaves blocks with unknown names as written", () => {
+		expect(renderTemplate("{{#typo}}hidden?{{/typo}}", {})).toBe(
+			"{{#typo}}hidden?{{/typo}}",
+		);
+	});
+
+	it("resolves nested blocks", () => {
+		expect(
+			renderTemplate("{{#a}}A{{#b}}B{{/b}}{{^b}}!B{{/b}}{{/a}}", {
+				a: true,
+				b: false,
+			}),
+		).toBe("A!B");
+	});
 });
 
 describe("publicationLabel", () => {
