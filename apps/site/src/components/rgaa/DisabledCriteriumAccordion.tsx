@@ -14,11 +14,11 @@ export default function DisabledCriteriumAccordion({
 	number,
 	title,
 }: DisabledCriteriumAccordionProps) {
-	const { classes } = useStyles();
+	const { classes, cx } = useStyles();
 
 	return (
 		<div id={number} className={classes.root}>
-			<h3 className={classes.title}>
+			<h3 className={cx(fr.cx("fr-h4"), classes.title)}>
 				<span>{number} </span>
 				<span>{renderMarkdownInline(title)}</span>
 				<Badge small noIcon className={classes.badge}>

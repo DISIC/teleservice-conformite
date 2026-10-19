@@ -92,7 +92,7 @@ describe("readSources", () => {
 		});
 	});
 
-	it("requires a one-paragraph title, a methodology and a definition", () => {
+	it("requires a one-paragraph title and a definition", () => {
 		const problems = problemsOf({
 			"criteres/1.2/index.md": "Un titre.\n\nUn second paragraphe.\n",
 			"criteres/1.2/web/tests/1.md": "---\ntitle: Test.\n---\n",
@@ -100,7 +100,6 @@ describe("readSources", () => {
 		});
 		expect(problems.map((p) => p.message)).toEqual([
 			"l'intitulé du Critère tient en un seul paragraphe",
-			"méthodologie manquante : le corps du fichier décrit comment vérifier le test",
 			"définition manquante : le corps du fichier définit le Terme",
 		]);
 	});

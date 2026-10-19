@@ -1,1 +1,1 @@
-Chaque image [porteuse d’information](#image-porteuse-d-information) a-t-elle, si nécessaire, une [description détaillée](#description-detaillee-image) ?
+Chaque image texte informative est, en l'absence d'un mécanisme de remplacement, remplacée par du texte stylé (hors cas particuliers)

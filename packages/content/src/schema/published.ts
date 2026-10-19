@@ -49,7 +49,7 @@ export const Test = z.object({
 	number: z.string().regex(/^\d+\.\d+\.\d+$/),
 	title: z.string().min(1),
 	conditions: z.array(z.string().min(1)).min(1).optional(),
-	methodology: z.string().min(1),
+	methodology: z.string().min(1).optional(),
 });
 export type Test = z.infer<typeof Test>;
 

@@ -125,7 +125,7 @@ function publishTest(test: Test, absolutize: Absolutize): Test {
 		...test,
 		title: absolutize(test.title),
 		...(test.conditions ? { conditions: test.conditions.map(absolutize) } : {}),
-		methodology: absolutize(test.methodology),
+		...(test.methodology ? { methodology: absolutize(test.methodology) } : {}),
 	};
 }
 

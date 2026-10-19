@@ -1,0 +1,1 @@
+Si cela ne gêne pas le fonctionnement de ce type de cadre, et dans le cas où le contenu du cadre n'apporte aucune information spécifique, il est possible de les rendre indisponibles aux technologies d’assistance en utilisant display none ou avec l’attribut WAI-ARIA aria-hidden="true". Dans ce cas le critère 2.1 et le critère 2.2 seront non applicables.
