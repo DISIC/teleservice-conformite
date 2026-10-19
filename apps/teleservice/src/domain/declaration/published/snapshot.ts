@@ -36,6 +36,9 @@ export const publishedDeclarationSchema = z.object({
 		isRealised: z.boolean(),
 		rgaa_version: z.enum(rgaaVersionLabels),
 		realised_by: z.string(),
+		// Snapshots published before the audit date and report carry neither.
+		date: z.iso.date().nullable().default(null),
+		auditReport: z.string().nullable().default(null),
 		rate: z.number(),
 		// Snapshots published before blocking elements existed carry none.
 		blockingElements: z.string().nullable().default(null),
@@ -110,6 +113,8 @@ export const extractDeclarationContentToPublish = (
 				rgaaVersionOptions.find((option) => option.value === audit.rgaa_version)
 					?.label ?? "RGAA 4",
 			realised_by: audit.realisedBy ?? "",
+			date: toIsoDate(audit.date),
+			auditReport: audit.auditReport?.trim() || null,
 			rate: audit.rate ?? 0,
 			blockingElements: hasBlockingElements(audit)
 				? (audit.blockingElements ?? null)

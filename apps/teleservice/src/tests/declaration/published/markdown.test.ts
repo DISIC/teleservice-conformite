@@ -4,6 +4,7 @@ import {
 	buildPublishedMarkdown,
 	publicationLabel,
 } from "~/domain/declaration/published/markdown";
+import { renderTemplate } from "~/domain/declaration/published/markdownRgaa5";
 
 const TODAY = new Date("2026-09-07T12:00:00.000Z");
 
@@ -34,8 +35,10 @@ function publishedDeclaration(
 		publishedAt: "2025-03-27",
 		audit: {
 			isRealised: true,
-			rgaa_version: "RGAA 5",
+			rgaa_version: "RGAA 4",
 			realised_by: "Orion audit",
+			date: "2026-02-03",
+			auditReport: "https://www.impots.gouv.fr/rapport-audit.pdf",
 			rate: 74,
 			blockingElements: null,
 			nonCompliantElements: [
@@ -81,6 +84,8 @@ describe("buildPublishedMarkdown", () => {
 						isRealised: false,
 						rgaa_version: "RGAA 4",
 						realised_by: "",
+						date: null,
+						auditReport: null,
 						rate: 0,
 						blockingElements: null,
 						nonCompliantElements: "",
@@ -259,6 +264,106 @@ describe("buildPublishedMarkdown", () => {
 			"- **Schéma pluriannuel de mise en accessibilité** : https://schema.gouv.fr ;",
 		);
 		expect(md).toContain("- **Plan d’actions** : https://plan.gouv.fr");
+	});
+});
+
+describe("buildPublishedMarkdown with RGAA 5", () => {
+	const rgaa5 = (overrides: Partial<PublishedDeclaration> = {}) => {
+		const base = publishedDeclaration(overrides);
+		return {
+			...base,
+			audit: { ...base.audit, rgaa_version: "RGAA 5" as const },
+		};
+	};
+
+	it("renders the full, republished declaration", async () => {
+		await expect(
+			buildPublishedMarkdown(rgaa5(), { today: TODAY }),
+		).toMatchFileSnapshot(snapshot("rgaa5-full-republished"));
+	});
+
+	it("renders an obsolete declaration", async () => {
+		await expect(
+			buildPublishedMarkdown(
+				rgaa5({ firstPublishedAt: "2023-03-24", publishedAt: "2023-03-24" }),
+				{ today: TODAY },
+			),
+		).toMatchFileSnapshot(snapshot("rgaa5-obsolete"));
+	});
+
+	it("uses the RGAA 5 wording, not the RGAA 4 one", () => {
+		const md = buildPublishedMarkdown(rgaa5(), { today: TODAY });
+		expect(md).toContain("## Voies de recours\n\n### Contacter l’Arcom");
+		expect(md).not.toContain("Établissement de cette déclaration");
+	});
+
+	it("fills every placeholder of the template", () => {
+		for (const declaration of [
+			rgaa5(),
+			rgaa5({ firstPublishedAt: "2023-03-24", publishedAt: "2023-03-24" }),
+			rgaa5({ audit: { ...publishedDeclaration().audit, isRealised: false } }),
+		]) {
+			expect(buildPublishedMarkdown(declaration, { today: TODAY })).not.toMatch(
+				/\{\{/,
+			);
+		}
+	});
+
+	it("dates the audit and links its report when known", () => {
+		const md = buildPublishedMarkdown(rgaa5(), { today: TODAY });
+		expect(md).toContain(
+			"réalisé par **Orion audit**, le 03/02/2026, révèle que :",
+		);
+		expect(md).toContain(
+			"  - **Rapport de test** https://www.impots.gouv.fr/rapport-audit.pdf",
+		);
+
+		const bare = buildPublishedMarkdown(
+			rgaa5({
+				audit: {
+					...publishedDeclaration().audit,
+					date: null,
+					auditReport: null,
+				},
+			}),
+			{ today: TODAY },
+		);
+		expect(bare).toContain("réalisé par **Orion audit** révèle que :");
+		expect(bare).not.toContain("Rapport de test");
+	});
+
+	it("states the same facts as the RGAA 4 declaration", () => {
+		const md = buildPublishedMarkdown(rgaa5(), { today: TODAY });
+		for (const fact of [
+			"La Direction Générale des Finances (DGFIP)",
+			"https://www.lienschemapluriannuel.gouv.fr",
+			"Partiellement conforme",
+			"Orion audit",
+			"**74%**",
+			"Publiée le 24/03/2025",
+			"Mise à jour le 27/03/2025",
+			"Firefox et NVDA",
+			"Web Developer Toolbar",
+			"contact@impotsparticuliers.com",
+		]) {
+			expect(md).toContain(fact);
+		}
+	});
+});
+
+describe("renderTemplate", () => {
+	it("inserts values and keeps blocks by their value", () => {
+		expect(
+			renderTemplate("{{#a}}A={{a}}{{/a}}{{^b}} no b{{/b}}{{#c}}C{{/c}}", {
+				a: 1,
+				b: false,
+				c: "",
+			}),
+		).toBe("A=1 no b");
+	});
+
+	it("leaves unknown names as written", () => {
+		expect(renderTemplate("{{typo}}", {})).toBe("{{typo}}");
 	});
 });
 

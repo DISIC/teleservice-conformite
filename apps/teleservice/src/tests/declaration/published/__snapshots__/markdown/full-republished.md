@@ -14,11 +14,11 @@ Cette déclaration d’accessibilité s’applique au **site web www.impotsppart
 
 <p class="fr-badge fr-badge--info fr-badge--sm fr-badge--no-icon">Partiellement conforme</p>
 
-Le site **Impôts particulier (SIP) www.impotspparticulier.gouv.fr** est **partiellement conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 5.
+Le site **Impôts particulier (SIP) www.impotspparticulier.gouv.fr** est **partiellement conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 4.
 
 ### Résultats des tests
 
-L’audit de conformité réalisé par **Orion audit** révèle que **74%** des critères du **RGAA version 5** sont respectés.
+L’audit de conformité réalisé par **Orion audit** révèle que **74%** des critères du **RGAA version 4** sont respectés.
 
 ## Contenus non accessibles
 
