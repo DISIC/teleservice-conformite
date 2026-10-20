@@ -1,13 +1,15 @@
-import { useState } from "react";
 import { applySavedDeclaration } from "~/components/declaration/sections/applySavedDeclaration";
 import type { DeclarationChangeFn } from "~/components/declaration/sections/defineSection";
 import {
 	deriveSourceMode,
 	type LibrarySectionKind,
+	resolveSourceGate,
+	type SourceGate,
 	type SourceModeValue,
 } from "~/domain/declaration/sourceMode";
 import { api } from "~/lib/api";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { usePendingSourceModes } from "../PendingSourceModes";
 import { type LibraryLink, useLibraryLink } from "./useLibraryLink";
 
 export type SourceModeController = {
@@ -16,6 +18,8 @@ export type SourceModeController = {
 	/** What the radio shows: a pending local choice, else the derived mode. */
 	effectiveMode: SourceModeValue | null;
 	isLinked: boolean;
+	/** The same verdict the publish gate reaches for this Section. */
+	gate: SourceGate;
 	libraryLink: LibraryLink;
 	/** Declarations sharing the linked parent (incl. this one); undefined until loaded. */
 	linkedCount: number | undefined;
@@ -36,7 +40,11 @@ export function useSourceMode({
 	declaration,
 	onDeclarationChange,
 }: UseSourceModeArgs): SourceModeController | null {
-	const [pending, setPending] = useState<SourceModeValue | null>(null);
+	const pendingSourceModes = usePendingSourceModes();
+	const pending = kind ? (pendingSourceModes.pending[kind] ?? null) : null;
+	const setPending = (value: SourceModeValue | null) => {
+		if (kind) pendingSourceModes.setPending(kind, value);
+	};
 
 	const derived = kind ? deriveSourceMode(kind, declaration) : null;
 	const libraryLink = useLibraryLink({
@@ -73,6 +81,7 @@ export function useSourceMode({
 		derived,
 		effectiveMode: pending ?? derived,
 		isLinked: derived === "linked",
+		gate: resolveSourceGate(kind, declaration, pending),
 		libraryLink,
 		linkedCount: parentId !== null ? countQuery.data?.length : undefined,
 		select,

@@ -96,6 +96,31 @@ describe("auditGeneral", () => {
 			auditGeneral.safeParse({ ...base, rgaa_version: "rgaa_4" }).success,
 		).toBe(true);
 	});
+
+	it("rejects an impossible date while the audit is realised", () => {
+		const result = auditGeneral.safeParse({
+			isAuditRealised: true,
+			date: "0030-01-20",
+			realisedBy: "DINUM",
+			rgaa_version: "rgaa_4",
+			rate: 80,
+		});
+		expect(result.error?.issues.map((i) => i.message)).toEqual([
+			"Date invalide",
+		]);
+	});
+
+	it("ignores a stale impossible date once the audit is not realised", () => {
+		expect(
+			auditGeneral.safeParse({
+				isAuditRealised: false,
+				date: "0030-01-20",
+				realisedBy: "",
+				rgaa_version: "rgaa_4",
+				rate: null,
+			}).success,
+		).toBe(true);
+	});
 });
 
 describe("auditNonConformities", () => {

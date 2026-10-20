@@ -3,6 +3,7 @@ import { completeDeclaration } from "./declaration.fixture";
 import {
 	deriveSourceMode,
 	isSourceModeUndecided,
+	resolveSourceGate,
 } from "~/domain/declaration/sourceMode";
 
 describe("deriveSourceMode", () => {
@@ -65,5 +66,31 @@ describe("deriveSourceMode", () => {
 			contact: { name: "", email: "", url: "" },
 		} as never);
 		expect(deriveSourceMode("contact", d)).toBeNull();
+	});
+});
+
+describe("resolveSourceGate", () => {
+	const undecided = completeDeclaration({ contact: {}, schema: {} } as never);
+	const custom = completeDeclaration({ contact: { email: "c@e.fr" } } as never);
+	const linked = completeDeclaration({ contact: { parent: 3 } } as never);
+	const skipped = completeDeclaration({ schema: { skipped: true } } as never);
+
+	it("reads the persisted state when nothing is pending", () => {
+		expect(resolveSourceGate("contact", undecided, null)).toBe("undecided");
+		expect(resolveSourceGate("contact", custom, null)).toBe("content");
+		expect(resolveSourceGate("contact", linked, null)).toBe("content");
+		expect(resolveSourceGate("schema", skipped, null)).toBe("skipped");
+	});
+
+	it("lets an unsaved choice supersede the persisted one", () => {
+		expect(resolveSourceGate("contact", custom, "linked")).toBe("unlinked");
+		expect(resolveSourceGate("schema", skipped, "custom")).toBe("content");
+		expect(resolveSourceGate("contact", undecided, "custom")).toBe("content");
+		expect(resolveSourceGate("schema", undecided, "skipped")).toBe("skipped");
+	});
+
+	it("counts Linked as satisfied only once a parent is persisted", () => {
+		expect(resolveSourceGate("contact", linked, "linked")).toBe("content");
+		expect(resolveSourceGate("contact", undecided, "linked")).toBe("unlinked");
 	});
 });

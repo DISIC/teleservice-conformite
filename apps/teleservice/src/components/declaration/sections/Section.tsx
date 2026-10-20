@@ -20,7 +20,10 @@ import {
 	isSectionNotApplicable,
 	SECTIONS,
 } from "~/domain/declaration/sections";
-import { SOURCE_MODE_FIELD } from "~/domain/declaration/sourceMode";
+import {
+	SOURCE_LINK_FIELD,
+	SOURCE_MODE_FIELD,
+} from "~/domain/declaration/sourceMode";
 import type { EditingMode } from "~/domain/declaration/status";
 import { useAppForm } from "~/forms/context";
 import { sectionFormOptions } from "~/forms/formOptions";
@@ -46,6 +49,8 @@ type SectionProps = {
 	nextHref: string | null;
 	/** Flips the page's "publish attempted" flag so the error summary appears. */
 	onPublishAttempt: () => void;
+	/** Once a publish was attempted, every Section reveals its errors on mount. */
+	publishAttempted: boolean;
 };
 
 /**
@@ -60,6 +65,7 @@ export function Section({
 	prevHref,
 	nextHref,
 	onPublishAttempt,
+	publishAttempted,
 }: SectionProps) {
 	const { slug, library } = definition;
 	const title = SECTIONS[slug].title;
@@ -143,7 +149,7 @@ export function Section({
 		values,
 		save,
 	});
-	useRevealSectionErrors(form);
+	useRevealSectionErrors(form, publishAttempted, editing.bodyMode);
 
 	// A `?field=` naming the source radio means the publish gate routed here. The
 	// page strips the param once it has focused the field, so latch the reveal.
@@ -153,9 +159,15 @@ export function Section({
 			setSourceModeRevealed(true);
 		}
 	}, [router.query.field, library]);
+	const revealSource =
+		(sourceModeRevealed || publishAttempted) && editing.showRadio;
 	const sourceModeError =
-		sourceModeRevealed && editing.bodyMode === null
+		revealSource && source?.gate === "undecided"
 			? SECTIONS[slug].validation.sourceMode?.message
+			: undefined;
+	const linkError =
+		revealSource && source?.gate === "unlinked"
+			? SECTIONS[slug].validation.sourceMode?.linkMessage
 			: undefined;
 
 	// Realign the form only when a Library link/unlink/skip swaps the persisted
@@ -251,7 +263,10 @@ export function Section({
 			{source.effectiveMode === "linked" && (
 				<Select
 					label={source.libraryLink.label}
+					state={linkError ? "error" : "default"}
+					stateRelatedMessage={linkError}
 					nativeSelectProps={{
+						name: SOURCE_LINK_FIELD[library.kind],
 						value: source.libraryLink.linkedParentId ?? "",
 						onChange: (e) => {
 							if (e.target.value)

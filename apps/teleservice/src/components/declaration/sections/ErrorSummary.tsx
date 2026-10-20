@@ -47,6 +47,7 @@ export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
 							>
 								<span className={classes.section}>
 									{SECTION_TITLES[error.section]}
+									{error.label && ` › ${error.label}`}
 								</span>
 								<span>{error.message}</span>
 							</button>
@@ -66,8 +67,6 @@ const useStyles = tss.withName(ErrorSummary.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("1v"),
-		maxHeight: 200,
-		overflowY: "auto",
 	},
 	row: {
 		display: "flex",

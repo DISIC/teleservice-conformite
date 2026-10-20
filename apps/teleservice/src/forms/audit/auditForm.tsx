@@ -13,6 +13,7 @@ import {
 	auditNonConformitiesFormOptions,
 	auditToolsFormOptions,
 } from "./auditSchema";
+import { DATE_FORMAT_HINT, MIN_DATE, todayIsoDate } from "~/forms/rules";
 
 // A Sub-section that requires a realised audit stays in the SideMenu but has nothing to fill.
 function AuditNotRealisedNotice() {
@@ -59,9 +60,18 @@ export const AuditGeneralForm = withForm({
 									{(field) => (
 										<field.TextField
 											label={`Date de réalisation de l'audit ${!readOnly ? "(facultatif)" : ""}`}
+											hintText={
+												<>
+													La date ne peut pas être postérieure à la date du
+													jour.
+													<br />
+													{DATE_FORMAT_HINT}
+												</>
+											}
 											nativeInputProps={{
 												type: "date",
-												max: new Date().toISOString().split("T")[0],
+												min: MIN_DATE,
+												max: todayIsoDate(),
 											}}
 											readOnlyField={readOnly}
 										/>
@@ -248,7 +258,9 @@ export const CompliantElementsForm = withForm({
 									si elle ne peut pas être communiquée pour des raisons de
 									sécurité.
 									<br />
-									Exemple : 'Accueil - https://www.nomdelapage/accueil'
+									Exemples :
+									<br />- Accueil - https://www.example.fr/accueil
+									<br />- Contact - https://www.example.fr/contact
 								</>
 							}
 							readOnlyField={readOnly}

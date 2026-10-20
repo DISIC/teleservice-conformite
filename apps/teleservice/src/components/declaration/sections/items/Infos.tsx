@@ -5,6 +5,7 @@ import {
 	declarationToGeneralValues,
 	type ZDeclarationGeneral,
 } from "~/forms/declaration/declarationSchema";
+import { isValidDate } from "~/forms/rules";
 import { api } from "~/lib/api";
 import { defineSection } from "../defineSection";
 
@@ -21,7 +22,14 @@ export const infosSection = defineSection<ZDeclarationGeneral, InfosFormApi>({
 			save: (value) =>
 				mutateAsync({
 					declarationId: declaration.id,
-					general: { ...value.general, entityId: declaration.entity?.id ?? -1 },
+					general: {
+						...value.general,
+						// An empty date keeps the saved one; an impossible date must not reach the server.
+						firstPublishedAt: isValidDate(value.general.firstPublishedAt)
+							? value.general.firstPublishedAt
+							: "",
+						entityId: declaration.entity?.id ?? -1,
+					},
 				}),
 			isPending,
 		};

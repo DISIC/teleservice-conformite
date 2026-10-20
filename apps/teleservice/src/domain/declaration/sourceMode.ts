@@ -17,6 +17,17 @@ export const SOURCE_MODE_FIELD: Record<LibrarySectionKind, string> = {
 	schema: "schema.sourceMode",
 };
 
+/** `name` of the Library item select; the gate error's `field` while Linked is chosen but nothing picked. */
+export const SOURCE_LINK_FIELD: Record<LibrarySectionKind, string> = {
+	contact: "contact.parent",
+	schema: "schema.parent",
+};
+
+/** Radio choices made in the UI but not persisted yet (Linked waits for an item). */
+export type PendingSourceModes = Partial<
+	Record<LibrarySectionKind, SourceModeValue>
+>;
+
 function hasParent(parent: unknown): boolean {
 	if (typeof parent === "number") return true;
 	return !!parent && typeof parent === "object" && "id" in parent;
@@ -53,6 +64,22 @@ export function deriveSourceMode(
 	if (kind === "schema" && declaration.schema?.skipped) return "skipped";
 	if (hasCustomContent(kind, declaration)) return "custom";
 	return null;
+}
+
+/** What the publish gate must do for a Library Section: ask for a choice, ask for an item, skip it, or check its content. */
+export type SourceGate = "undecided" | "unlinked" | "skipped" | "content";
+
+/** An unsaved radio choice supersedes the persisted mode, but only a persisted parent counts as linked. */
+export function resolveSourceGate(
+	kind: LibrarySectionKind,
+	declaration: PopulatedDeclaration,
+	pending: SourceModeValue | null | undefined,
+): SourceGate {
+	const derived = deriveSourceMode(kind, declaration);
+	const mode = pending ?? derived;
+	if (mode === null) return "undecided";
+	if (mode === "linked") return derived === "linked" ? "content" : "unlinked";
+	return mode === "skipped" ? "skipped" : "content";
 }
 
 export function isSourceModeUndecided(

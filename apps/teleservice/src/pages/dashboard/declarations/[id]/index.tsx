@@ -21,6 +21,12 @@ import { api } from "~/lib/api";
 import { parseSectionFromQuery } from "~/domain/declaration/sections";
 import { getObsolescence } from "~/domain/declaration/obsolescence";
 import { validateDeclaration } from "~/domain/declaration/validate";
+import { PendingSourceModesProvider } from "~/components/declaration/sections/PendingSourceModes";
+import type {
+	LibrarySectionKind,
+	PendingSourceModes,
+	SourceModeValue,
+} from "~/domain/declaration/sourceMode";
 import {
 	type DeclarationProps,
 	guardDeclaration,
@@ -64,9 +70,25 @@ export default function DeclarationPage({
 	// Armed by the terminal Section's "Prévisualiser et publier"; once armed, the
 	// error summary re-derives from the declaration on every save.
 	const [publishAttempted, setPublishAttempted] = useState(false);
+	const [pendingSourceModes, setPendingSourceModes] =
+		useState<PendingSourceModes>({});
+	const pendingSourceModesValue = useMemo(
+		() => ({
+			pending: pendingSourceModes,
+			setPending: (kind: LibrarySectionKind, value: SourceModeValue | null) =>
+				setPendingSourceModes((current) => {
+					const { [kind]: _previous, ...rest } = current;
+					return value ? { ...rest, [kind]: value } : rest;
+				}),
+		}),
+		[pendingSourceModes],
+	);
 	const declarationErrors = useMemo(
-		() => (publishAttempted ? validateDeclaration(declaration) : []),
-		[publishAttempted, declaration],
+		() =>
+			publishAttempted
+				? validateDeclaration(declaration, pendingSourceModes)
+				: [],
+		[publishAttempted, declaration, pendingSourceModes],
 	);
 
 	// Focus the errored field on first mount, then drop the param so it neither
@@ -121,42 +143,45 @@ export default function DeclarationPage({
 				className={fr.cx("fr-container", "fr-mt-10v")}
 			>
 				<ToCompleteGuidance show={showToComplete}>
-					<StateNotice
-						declaration={declaration}
-						onPublishAttempt={() => setPublishAttempted(true)}
-						onReverted={() => router.reload()}
-					/>
+					<PendingSourceModesProvider value={pendingSourceModesValue}>
+						<StateNotice
+							declaration={declaration}
+							onPublishAttempt={() => setPublishAttempted(true)}
+							onReverted={() => router.reload()}
+						/>
 
-					<div className={classes.tabContent}>
-						{declarationErrors.length > 0 && (
-							<div className={classes.errorSummaryWrapper}>
-								<ErrorSummary
-									declarationId={declaration.id}
-									errors={declarationErrors}
-								/>
-							</div>
-						)}
-						<div
-							className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
-							role="presentation"
-						>
-							<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
-								<SideMenu
-									declaration={declaration}
-									currentSection={currentSection}
-								/>
-							</aside>
-							<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
-								<SectionContent
-									declaration={declaration}
-									currentSection={currentSection}
-									onDeclarationChange={setDeclaration}
-									mode={editingMode}
-									onPublishAttempt={() => setPublishAttempted(true)}
-								/>
+						<div className={classes.tabContent}>
+							{declarationErrors.length > 0 && (
+								<div className={classes.errorSummaryWrapper}>
+									<ErrorSummary
+										declarationId={declaration.id}
+										errors={declarationErrors}
+									/>
+								</div>
+							)}
+							<div
+								className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
+								role="presentation"
+							>
+								<aside className={fr.cx("fr-col-12", "fr-col-md-4")}>
+									<SideMenu
+										declaration={declaration}
+										currentSection={currentSection}
+									/>
+								</aside>
+								<div className={fr.cx("fr-col-12", "fr-col-md-8")}>
+									<SectionContent
+										declaration={declaration}
+										currentSection={currentSection}
+										onDeclarationChange={setDeclaration}
+										mode={editingMode}
+										onPublishAttempt={() => setPublishAttempted(true)}
+										publishAttempted={publishAttempted}
+									/>
+								</div>
 							</div>
 						</div>
-					</div>
+					</PendingSourceModesProvider>
 				</ToCompleteGuidance>
 			</section>
 		</>

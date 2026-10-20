@@ -132,7 +132,7 @@ export const getUserEntity = async (payload: Payload, userId: number) => {
 	return typeof user?.entity === "object" ? user.entity : null;
 };
 
-/** Best-effort hostname of a URL, used as a declaration-name fallback. */
+/** Best-effort hostname of a URL, used as an entity-name fallback. */
 export const hostnameOf = (url: string | null): string | null => {
 	if (!url) return null;
 	try {
