@@ -20,5 +20,7 @@ export const useNumberedHeadingStyles = tss.withName("NumberedHeading").create({
 	},
 	title: {
 		display: "flex",
+		// The anchor button is taller than a text line: align on the first baseline, not the box top.
+		alignItems: "baseline",
 	},
 });

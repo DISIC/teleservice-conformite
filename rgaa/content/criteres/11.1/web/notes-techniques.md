@@ -1,0 +1,1 @@
+Un libellé identique mais rendu visible à l’aide de techniques différentes suivant p. ex. l’état de focus du champ est acceptable au regard du critère. Notamment la combinason d’un texte de placeholder qui joue le rôle d’étiquette visible qui disparaît au focus et d’une étiquette rendue visible au focus respecte l’attendu.

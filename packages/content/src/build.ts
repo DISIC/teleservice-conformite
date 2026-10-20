@@ -130,7 +130,9 @@ function checkDeclinaison(
 	for (const test of declinaison.tests) {
 		checkLinks(
 			ctx,
-			[test.title, ...(test.conditions ?? []), test.methodology].join("\n"),
+			[test.title, ...(test.conditions ?? []), test.methodology ?? ""].join(
+				"\n",
+			),
 			test.file,
 			[id],
 		);
@@ -216,7 +218,7 @@ function toDeclinaison(
 			number: `${critereNumber}.${test.number}`,
 			title: test.title,
 			...(test.conditions ? { conditions: test.conditions } : {}),
-			methodology: test.methodology,
+			...(test.methodology ? { methodology: test.methodology } : {}),
 		})),
 		...(Object.keys(appendix).length ? { appendix } : {}),
 	};

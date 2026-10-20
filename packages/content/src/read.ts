@@ -17,14 +17,14 @@ z.config(z.locales.fr());
 const CRITERE_DIR = /^[1-9]\d*\.[1-9]\d*$/;
 const TEST_FILE = /^([1-9]\d*)\.md$/;
 const SLUG_FILE = /^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
-const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/;
+const FRONTMATTER = /^---\r?\n(?:([\s\S]*?)\r?\n)?---(?:\r?\n|$)([\s\S]*)$/;
 
 export type SourceTest = {
 	number: string;
 	file: string;
 	title: string;
 	conditions?: string[];
-	methodology: string;
+	methodology?: string;
 };
 
 export type SourceDeclinaison = {
@@ -339,21 +339,12 @@ function readTests(ctx: Ctx, dir: string): SourceTest[] | undefined {
 			failed = true;
 			continue;
 		}
-		if (!doc.body) {
-			fail(
-				ctx,
-				file,
-				"méthodologie manquante : le corps du fichier décrit comment vérifier le test",
-			);
-			failed = true;
-			continue;
-		}
 		tests.push({
 			number: match[1] ?? "",
 			file,
 			title: doc.data.title,
 			...(doc.data.conditions ? { conditions: doc.data.conditions } : {}),
-			methodology: doc.body,
+			...(doc.body ? { methodology: doc.body } : {}),
 		});
 	}
 	if (failed) return undefined;

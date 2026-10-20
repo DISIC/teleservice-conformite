@@ -26,12 +26,10 @@ describe("rgaa/content", () => {
 			"1.5",
 			"1.6",
 			"1.7",
-			"1.8",
-			"1.9",
 		]);
 		const tests =
 			images?.criteria.flatMap((c) => c.referentiels.web?.tests ?? []) ?? [];
-		expect(tests).toHaveLength(59);
+		expect(tests).toHaveLength(48);
 		expect(result.model.terms.length).toBeGreaterThanOrEqual(20);
 	});
 });

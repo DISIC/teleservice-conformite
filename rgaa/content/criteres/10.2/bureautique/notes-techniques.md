@@ -1,0 +1,1 @@
+Les informations importantes, notamment si elles sont contenues dans les en-têtes et les pieds de page, doivent être restituées aux technologies d'assistance par exemple en étant aussi présentes au moins une fois dans le corps du document.
