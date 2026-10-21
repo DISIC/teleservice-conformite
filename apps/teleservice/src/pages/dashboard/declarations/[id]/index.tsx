@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
@@ -33,6 +33,25 @@ import {
 	type LibraryProps,
 	type VisitProps,
 } from "~/lib/server-guards";
+
+const NO_PENDING_MODES: PendingSourceModes = {};
+
+// Next reuses this page across declaration ids: state tied to one declaration starts over on the next.
+function useDeclarationScopedState<T>(declarationId: number, initial: T) {
+	const [scoped, setScoped] = useState({ declarationId, value: initial });
+	const value = scoped.declarationId === declarationId ? scoped.value : initial;
+	const update = useCallback(
+		(next: (current: T) => T) =>
+			setScoped((current) => ({
+				declarationId,
+				value: next(
+					current.declarationId === declarationId ? current.value : initial,
+				),
+			})),
+		[declarationId, initial],
+	);
+	return [value, update] as const;
+}
 
 export default function DeclarationPage({
 	declaration: initialDeclaration,
@@ -70,33 +89,29 @@ export default function DeclarationPage({
 	// Armed by the terminal Section's "Prévisualiser et publier"; once armed, the
 	// error summary re-derives from the declaration on every save.
 	// Counted, not a flag: every attempt moves the focus back to the error summary.
-	const [publishAttempts, setPublishAttempts] = useState(0);
+	const [publishAttempts, updatePublishAttempts] = useDeclarationScopedState(
+		declaration.id,
+		0,
+	);
 	const publishAttempted = publishAttempts > 0;
-	const onPublishAttempt = () => setPublishAttempts((count) => count + 1);
-	// Unsaved radio choices belong to one declaration: Next reuses this page across ids.
-	const [pendingByDeclaration, setPendingByDeclaration] = useState<{
-		declarationId: number;
-		modes: PendingSourceModes;
-	}>({ declarationId: declaration.id, modes: {} });
-	const pendingSourceModes =
-		pendingByDeclaration.declarationId === declaration.id
-			? pendingByDeclaration.modes
-			: {};
+	const onPublishAttempt = () => updatePublishAttempts((count) => count + 1);
+	const errorSummaryRef = useRef<HTMLElement>(null);
+	// Only an attempt moves the focus: a summary reappearing after a save leaves it in the field being edited.
+	useEffect(() => {
+		if (publishAttempts > 0) errorSummaryRef.current?.focus();
+	}, [publishAttempts]);
+
+	const [pendingSourceModes, updatePendingSourceModes] =
+		useDeclarationScopedState(declaration.id, NO_PENDING_MODES);
 	const pendingSourceModesValue = useMemo(
 		() => ({
 			pending: pendingSourceModes,
 			setPending: (kind: LibrarySectionKind, value: SourceModeValue | null) =>
-				setPendingByDeclaration((current) => {
-					const modes =
-						current.declarationId === declaration.id ? current.modes : {};
-					const { [kind]: _previous, ...rest } = modes;
-					return {
-						declarationId: declaration.id,
-						modes: value ? { ...rest, [kind]: value } : rest,
-					};
-				}),
+				updatePendingSourceModes(({ [kind]: _previous, ...rest }) =>
+					value ? { ...rest, [kind]: value } : rest,
+				),
 		}),
-		[pendingSourceModes, declaration.id],
+		[pendingSourceModes, updatePendingSourceModes],
 	);
 	const declarationErrors = useMemo(
 		() =>
@@ -172,7 +187,7 @@ export default function DeclarationPage({
 									<ErrorSummary
 										declarationId={declaration.id}
 										errors={declarationErrors}
-										focusKey={publishAttempts}
+										ref={errorSummaryRef}
 									/>
 								</div>
 							)}

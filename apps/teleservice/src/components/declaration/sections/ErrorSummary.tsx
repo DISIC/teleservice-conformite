@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Link from "next/link";
-import { useEffect, useId, useRef } from "react";
+import { type Ref, useId } from "react";
 import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { SECTION_TITLES, sectionHref } from "~/domain/declaration/sections";
@@ -10,8 +10,8 @@ import type { DeclarationError } from "~/domain/declaration/validate";
 type ErrorSummaryProps = {
 	declarationId: PopulatedDeclaration["id"];
 	errors: DeclarationError[];
-	/** Each new value moves the focus to the summary, so screen readers read it. */
-	focusKey: number;
+	/** The page focuses the summary on each publish attempt, so screen readers read it. */
+	ref?: Ref<HTMLElement>;
 };
 
 /**
@@ -22,19 +22,14 @@ type ErrorSummaryProps = {
 export function ErrorSummary({
 	declarationId,
 	errors,
-	focusKey,
+	ref,
 }: ErrorSummaryProps) {
 	const { classes } = useStyles();
-	const containerRef = useRef<HTMLElement>(null);
 	const titleId = useId();
-
-	useEffect(() => {
-		containerRef.current?.focus();
-	}, [focusKey]);
 
 	return (
 		<section
-			ref={containerRef}
+			ref={ref}
 			tabIndex={-1}
 			aria-labelledby={titleId}
 			className={classes.container}
