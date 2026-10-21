@@ -16,8 +16,11 @@ export default function MarkdownSections({ sections }: MarkdownSectionsProps) {
 					</h2>
 					{renderMarkdown(body)}
 					<div
-						className={fr.cx("fr-mb-4w")}
-						style={{ display: "flex", justifyContent: "flex-end" }}
+						style={{
+							display: "flex",
+							justifyContent: "flex-end",
+							marginBlock: fr.spacing("9w"),
+						}}
 					>
 						<a
 							href="#contenu"
