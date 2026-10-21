@@ -75,7 +75,7 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 	await expect(summary).toBeVisible();
 	await a11y.check("error summary after a blocked gate");
 	await page
-		.getByRole("button", { name: /Renseignez au moins un email/ })
+		.getByRole("link", { name: /Renseignez au moins un email/ })
 		.first()
 		.click();
 	await page.getByLabel("Email de contact").fill("a11y@example.fr");
