@@ -7,7 +7,7 @@ import NationalIdentityCard from "@codegouvfr/react-dsfr/picto/NationalIdentityC
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
@@ -22,6 +22,7 @@ import {
 import EmptyState from "~/components/ui/EmptyState";
 import { EmptyValue } from "~/components/ui/EmptyValue";
 import { Loader } from "~/components/ui/Loader";
+import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import Table from "~/components/ui/Table";
 import type { Contact, Entity } from "~/payload/payload-types";
 import { api } from "~/lib/api";
@@ -30,7 +31,6 @@ import { loadEntityForPage } from "~/lib/server-guards";
 const columnHelper = createColumnHelper<Contact>();
 
 const ADD_CONTACT_BUTTON_ID = "add-contact-button";
-const deleteButtonId = (contact: Contact) => `delete-contact-${contact.id}`;
 
 export default function ContactsPage({
 	entity,
@@ -41,32 +41,25 @@ export default function ContactsPage({
 	const [contactModalActions] = useState<LibraryContactModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
-	const focusAfterDeleteRef = useRef<string | null>(null);
 
 	const {
 		data: contacts = [],
 		isLoading,
 		isFetching,
 	} = api.library.listContacts.useQuery();
+	const { deleteButtonId, rememberNeighbour, forget } = useFocusAfterDelete({
+		idPrefix: "delete-contact-",
+		fallbackId: ADD_CONTACT_BUTTON_ID,
+		isFetching,
+	});
 
 	const { mutate: deleteContact } = api.library.deleteContact.useMutation({
 		onSuccess: () => utils.library.listContacts.invalidate(),
 		onError: (e) => {
-			focusAfterDeleteRef.current = null;
+			forget();
 			setErrorMessage(e.message);
 		},
 	});
-
-	// The deleted row's button is gone once the list reloads, so focus moves to a neighbour.
-	useEffect(() => {
-		const targetId = focusAfterDeleteRef.current;
-		if (isFetching || !targetId) return;
-		focusAfterDeleteRef.current = null;
-		(
-			document.getElementById(targetId) ??
-			document.getElementById(ADD_CONTACT_BUTTON_ID)
-		)?.focus();
-	}, [isFetching]);
 
 	const confirmDelete = useCallback(
 		(contact: Contact) =>
@@ -88,16 +81,11 @@ export default function ContactsPage({
 					</>
 				),
 				onConfirm: () => {
-					const index = contacts.findIndex(({ id }) => id === contact.id);
-					// The next row takes the focus, or the previous one when the last row is deleted.
-					const neighbour = contacts[index + 1] ?? contacts[index - 1];
-					focusAfterDeleteRef.current = neighbour
-						? deleteButtonId(neighbour)
-						: ADD_CONTACT_BUTTON_ID;
+					rememberNeighbour(contact.id);
 					deleteContact({ id: contact.id });
 				},
 			}),
-		[confirmationModalActions, deleteContact, contacts],
+		[confirmationModalActions, deleteContact, rememberNeighbour],
 	);
 
 	const columns = useMemo(
@@ -163,13 +151,19 @@ export default function ContactsPage({
 							label={contact.name}
 							onEdit={() => contactModalActions.open?.(contact)}
 							onDelete={() => confirmDelete(contact)}
-							deleteButtonId={deleteButtonId(contact)}
+							deleteButtonId={deleteButtonId(contact.id)}
 						/>
 					);
 				},
 			}),
 		],
-		[classes.hint, classes.tags, confirmDelete, contactModalActions],
+		[
+			classes.hint,
+			classes.tags,
+			confirmDelete,
+			contactModalActions,
+			deleteButtonId,
+		],
 	);
 
 	const openCreate = () => contactModalActions.open?.();
