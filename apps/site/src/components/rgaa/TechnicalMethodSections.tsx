@@ -6,6 +6,11 @@ import Card from "@codegouvfr/react-dsfr/Card";
 import { tss } from "tss-react";
 import Pictogram from "./Pictogram";
 import { getReferentielStyle, type ReferentielInfos } from "./referentiels";
+import ellipse from "../../assets/ellipse.svg";
+
+// Same illustration as the hero, scaled from its 216px circle and 152x256 half-circle.
+const CIRCLE_SIZE = "10rem";
+const scaled = (heroPx: number) => `calc(${CIRCLE_SIZE} * ${heroPx} / 216)`;
 
 export default function TechnicalMethodSections({
 	referentiels,
@@ -55,13 +60,17 @@ export default function TechnicalMethodSections({
 										backgroundColor: referentiel.heroPagebackgroundColor,
 									}}
 								>
-									<div
-										className={classes.cardMediaCircle}
-										style={{
-											backgroundColor: referentiel.circleBackgroundColor,
-										}}
-									>
-										<Pictogram id={referentiel.pictogram} fontSize="4.5rem" />
+									<div className={classes.cardIllustration}>
+										<span
+											className={classes.ellipse}
+											style={{
+												backgroundColor: referentiel.circleBackgroundColor,
+											}}
+											aria-hidden="true"
+										/>
+										<div className={classes.cardMediaCircle}>
+											<Pictogram id={referentiel.pictogram} fontSize="4.5rem" />
+										</div>
 									</div>
 								</div>
 							}
@@ -124,13 +133,31 @@ const useStyles = tss.withName(TechnicalMethodSections.name).create({
 		justifyContent: "center",
 		aspectRatio: "368 / 216",
 	},
+	cardIllustration: {
+		position: "relative",
+		paddingLeft: `calc(${CIRCLE_SIZE} / 2)`,
+	},
+	ellipse: {
+		display: "block",
+		width: scaled(152),
+		height: scaled(256),
+		maskImage: `url(${ellipse.src})`,
+		maskRepeat: "no-repeat",
+		maskSize: "contain",
+		maskPosition: "center",
+	},
 	cardMediaCircle: {
+		position: "absolute",
+		top: "50%",
+		left: 0,
+		transform: "translateY(-50%)",
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",
-		width: "10rem",
-		height: "10rem",
+		width: CIRCLE_SIZE,
+		height: CIRCLE_SIZE,
 		borderRadius: "50%",
+		backgroundColor: fr.colors.decisions.background.default.grey.default,
 	},
 	changeSection: {
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
