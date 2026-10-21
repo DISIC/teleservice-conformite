@@ -3,6 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { tss } from "tss-react";
+import { belowStickyTopicHeading } from "./helpers/styles";
 import { renderMarkdownInline } from "./helpers/markdown";
 
 interface DisabledCriteriumAccordionProps {
@@ -31,7 +32,7 @@ export default function DisabledCriteriumAccordion({
 
 const useStyles = tss.withName(DisabledCriteriumAccordion.name).create({
 	root: {
-		scrollMarginTop: fr.spacing("2w"),
+		scrollMarginTop: belowStickyTopicHeading,
 		marginBottom: fr.spacing("6w"),
 		background: "inherit",
 	},

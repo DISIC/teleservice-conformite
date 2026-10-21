@@ -5,7 +5,10 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { renderMarkdownInline, toPlainText } from "./helpers/markdown";
-import { useNumberedHeadingStyles } from "./helpers/styles";
+import {
+	belowStickyTopicHeading,
+	useNumberedHeadingStyles,
+} from "./helpers/styles";
 import type { Test } from "./helpers/topics";
 import AnchorLinkButton from "./AnchorLinkButton";
 import TestMethodology from "./TestMethodology";
@@ -121,7 +124,7 @@ const useStyles = tss
 			},
 		},
 		test: {
-			scrollMarginTop: fr.spacing("2w"),
+			scrollMarginTop: belowStickyTopicHeading,
 			marginBottom: fr.spacing("8v"),
 
 			"& > h5": {

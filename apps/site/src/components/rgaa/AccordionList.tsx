@@ -1,6 +1,7 @@
 "use client";
 
 import { fr } from "@codegouvfr/react-dsfr";
+import { useEffect, useRef } from "react";
 import { tss } from "tss-react";
 import AnchorLinkButton from "./AnchorLinkButton";
 import DisabledTopicAccordion from "./DisabledTopicAccordion";
@@ -22,9 +23,31 @@ export default function AccordionList({
 	const { topicAccordionBackgroundColor } = getReferentielStyle(referentiel.id);
 	const { classes, cx } = useStyles({ topicAccordionBackgroundColor });
 	const { classes: headingClasses } = useNumberedHeadingStyles();
+	const listRef = useRef<HTMLDivElement>(null);
+
+	// Titles wrap differently per width, so each topic publishes its sticky heading's real height.
+	useEffect(() => {
+		const headings = listRef.current?.querySelectorAll<HTMLElement>(
+			"[data-topic-accordion] > h2",
+		);
+		if (!headings) return;
+
+		const observer = new ResizeObserver((entries) => {
+			for (const { target } of entries) {
+				const heading = target as HTMLElement;
+				heading.parentElement?.style.setProperty(
+					"--topic-heading-height",
+					`${heading.offsetHeight}px`,
+				);
+			}
+		});
+		for (const heading of headings) observer.observe(heading);
+
+		return () => observer.disconnect();
+	}, []);
 
 	return (
-		<div className={classes.list}>
+		<div className={classes.list} ref={listRef}>
 			{criterias.topics.map((topic) => {
 				if (!topic.criteria.length)
 					return (
@@ -75,6 +98,9 @@ const useStyles = tss
 			borderLeft: `4px solid ${topicAccordionBackgroundColor}`,
 		},
 		title: {
+			position: "sticky",
+			top: 0,
+			zIndex: 1,
 			backgroundColor: topicAccordionBackgroundColor,
 			paddingBlock: fr.spacing("4v"),
 			paddingRight: fr.spacing("4v"),

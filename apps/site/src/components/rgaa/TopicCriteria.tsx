@@ -10,7 +10,10 @@ import CriteriumReference from "./CriteriumReference";
 import CriteriumTests from "./CriteriumTests";
 import DisabledCriteriumAccordion from "./DisabledCriteriumAccordion";
 import { renderMarkdownInline, toPlainText } from "./helpers/markdown";
-import { useNumberedHeadingStyles } from "./helpers/styles";
+import {
+	belowStickyTopicHeading,
+	useNumberedHeadingStyles,
+} from "./helpers/styles";
 
 type TopicCriteriaProps = {
 	referentielId: ReferentielId;
@@ -84,7 +87,7 @@ const useStyles = tss.withName(TopicCriteria.name).create({
 		},
 	},
 	criteriumContainer: {
-		scrollMarginTop: fr.spacing("2w"),
+		scrollMarginTop: belowStickyTopicHeading,
 		marginBottom: fr.spacing("12v"),
 	},
 });

@@ -1,6 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 
+// Set by each topic on its block: anchors inside it must clear its sticky heading.
+export const belowStickyTopicHeading = `calc(var(--topic-heading-height, 0px) + ${fr.spacing("2w")})`;
+
 // Shared by every numbered heading (topic, criterium, test) that pairs a number with a "link to anchor" button.
 export const useNumberedHeadingStyles = tss.withName("NumberedHeading").create({
 	link: {
