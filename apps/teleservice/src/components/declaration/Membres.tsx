@@ -3,6 +3,7 @@ import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { EmptyValue } from "~/components/ui/EmptyValue";
+import { hiddenCaption } from "~/components/ui/Table";
 import { useState } from "react";
 import { tss } from "tss-react";
 import {
@@ -198,18 +199,7 @@ const useStyles = tss.withName(Membres.name).create({
 		table: {
 			display: "table",
 		},
-		// DSFR only hides the caption in its newer markup, which react-dsfr does not render.
-		"&.fr-table--no-caption caption": {
-			position: "absolute",
-			width: 1,
-			height: 1,
-			padding: 0,
-			margin: -1,
-			overflow: "hidden",
-			clip: "rect(0, 0, 0, 0)",
-			whiteSpace: "nowrap",
-			border: 0,
-		},
+		...hiddenCaption,
 		"thead::after, tbody::after": {
 			backgroundImage: "none!important",
 		},

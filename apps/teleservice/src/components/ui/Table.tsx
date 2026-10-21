@@ -185,22 +185,26 @@ export const Table = <TData,>(props: Props<TData>) => {
 	);
 };
 
+// DSFR only hides the caption in its newer markup, which react-dsfr does not render.
+export const hiddenCaption = {
+	"&.fr-table--no-caption caption": {
+		position: "absolute",
+		width: 1,
+		height: 1,
+		padding: 0,
+		margin: -1,
+		overflow: "hidden",
+		clip: "rect(0, 0, 0, 0)",
+		whiteSpace: "nowrap",
+		border: 0,
+	},
+} as const;
+
 const useStyles = tss.withName(Table.name).create(() => ({
 	table: {
 		marginTop: "0!important",
 		marginBottom: "0!important",
-		// DSFR only hides the caption in its newer markup, which react-dsfr does not render.
-		"&.fr-table--no-caption caption": {
-			position: "absolute",
-			width: 1,
-			height: 1,
-			padding: 0,
-			margin: -1,
-			overflow: "hidden",
-			clip: "rect(0, 0, 0, 0)",
-			whiteSpace: "nowrap",
-			border: 0,
-		},
+		...hiddenCaption,
 		table: {
 			display: "table",
 			width: "auto",
