@@ -18,11 +18,27 @@ export default function GlossarySections({ letters }: GlossarySectionsProps) {
 
 	return (
 		<>
-			{letters.map(({ letter, terms }) => (
+			{letters.map(({ letter, terms }, index) => (
 				<section key={letter} className={classes.section}>
-					<h2 id={glossaryLetterId(letter)} className={classes.letter}>
-						{letter}
-					</h2>
+					<div className={classes.letterRow}>
+						<h2 id={glossaryLetterId(letter)} className={classes.letter}>
+							{letter}
+						</h2>
+						{/* The first letter sits right under the alphabet: nothing to go back up to. */}
+						{index > 0 && (
+							<a
+								href="#contenu"
+								className={fr.cx(
+									"fr-link",
+									"fr-link--lg",
+									"fr-icon-arrow-up-fill",
+									"fr-link--icon-left",
+								)}
+							>
+								Haut de page
+							</a>
+						)}
+					</div>
 					{terms.map(({ slug, title, definition }) => (
 						<div key={slug} className={classes.term}>
 							<h3 id={slug} className={classes.termTitle}>
@@ -50,14 +66,21 @@ const useStyles = tss.withName(GlossarySections.name).create({
 	section: {
 		marginTop: fr.spacing("10v"),
 	},
+	letterRow: {
+		display: "flex",
+		flexWrap: "wrap",
+		alignItems: "center",
+		justifyContent: "space-between",
+		gap: fr.spacing("4v"),
+		paddingBottom: fr.spacing("4v"),
+		marginBottom: fr.spacing("7v"),
+		borderBottom: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
+	},
 	letter: {
-		backgroundColor: fr.colors.decisions.background.alt.grey.default,
-		paddingBlock: fr.spacing("4v"),
-		paddingInline: fr.spacing("6v"),
-		marginBottom: fr.spacing("8v"),
+		marginBottom: 0,
 	},
 	term: {
-		marginBottom: fr.spacing("10v"),
+		marginBottom: fr.spacing("7v"),
 	},
 	termTitle: {
 		display: "flex",
