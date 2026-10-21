@@ -1,6 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Input, type InputProps } from "@codegouvfr/react-dsfr/Input";
-import { type InputHTMLAttributes, useLayoutEffect, useRef } from "react";
+import {
+	type InputHTMLAttributes,
+	useCallback,
+	useLayoutEffect,
+	useRef,
+} from "react";
 import { tss } from "tss-react";
 import {
 	type DefaultFieldProps,
@@ -9,6 +14,15 @@ import {
 } from "~/forms/context";
 import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
+
+// Grows with its content, never below its `rows`, so no text hides behind a scrollbar.
+function fitToContent(textArea: HTMLTextAreaElement) {
+	// A textarea laid out while hidden has no width to measure; it is fitted once shown.
+	if (!textArea.clientWidth) return;
+	textArea.style.height = "auto";
+	const borders = textArea.offsetHeight - textArea.clientHeight;
+	textArea.style.height = `${textArea.scrollHeight + borders}px`;
+}
 
 interface TextFieldProps
 	extends
@@ -30,16 +44,38 @@ export function TextField(props: TextFieldProps) {
 	} = props;
 	const field = useFieldContext<string>();
 	const { classes } = useStyles();
-	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+	const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+	const callerRef = nativeTextAreaProps?.ref;
 
-	// Grows with its content, never below its `rows`, so no text hides behind a scrollbar.
 	useLayoutEffect(() => {
-		const textArea = textAreaRef.current;
-		if (!textArea) return;
-		textArea.style.height = "auto";
-		const borders = textArea.offsetHeight - textArea.clientHeight;
-		textArea.style.height = `${textArea.scrollHeight + borders}px`;
+		if (textAreaRef.current) fitToContent(textAreaRef.current);
 	}, [field.state.value]);
+
+	// A new width re-wraps the text (resize, zoom, rotation) and showing a hidden textarea gives it one.
+	const attachTextArea = useCallback(
+		(textArea: HTMLTextAreaElement) => {
+			textAreaRef.current = textArea;
+			if (typeof callerRef === "function") callerRef(textArea);
+			else if (callerRef) callerRef.current = textArea;
+
+			let width = textArea.clientWidth;
+			fitToContent(textArea);
+			const observer = new ResizeObserver(() => {
+				if (textArea.clientWidth === width) return;
+				width = textArea.clientWidth;
+				fitToContent(textArea);
+			});
+			observer.observe(textArea);
+
+			return () => {
+				observer.disconnect();
+				textAreaRef.current = null;
+				if (typeof callerRef === "function") callerRef(null);
+				else if (callerRef) callerRef.current = null;
+			};
+		},
+		[callerRef],
+	);
 
 	if (readOnlyField) {
 		let value: string | string[] = field.state.value || "";
@@ -76,7 +112,7 @@ export function TextField(props: TextFieldProps) {
 					nativeTextAreaProps={{
 						rows: 3,
 						...nativeTextAreaProps,
-						ref: textAreaRef,
+						ref: attachTextArea,
 						required: nativeTextAreaProps?.required ?? required,
 						...customNativeProps,
 					}}
