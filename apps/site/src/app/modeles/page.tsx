@@ -7,6 +7,8 @@ import { getPageDescription } from "~/lib/navigation";
 
 export const metadata: Metadata = { title: "Modèles à télécharger" };
 
+const TELESERVICE_URL = process.env.NEXT_PUBLIC_TELESERVICE_URL ?? "/";
+
 export default function TemplatesPage() {
 	return (
 		<>
@@ -75,7 +77,7 @@ export default function TemplatesPage() {
 									"Tous les services publics numériques publics doivent déposer via le téléservice.",
 								buttonProps: {
 									children: "Accéder au téléservice",
-									linkProps: { href: "#" },
+									linkProps: { href: TELESERVICE_URL },
 								},
 								iconId: "ri-error-warning-line",
 							}}

@@ -35,8 +35,12 @@ export default function AraContent() {
 					<CallOut
 						buttonProps={{
 							children: "Je réalise un audit",
-							//TODO: add link
-							linkProps: { href: "#" },
+							linkProps: {
+								href: "https://ara.numerique.gouv.fr",
+								target: "_blank",
+								rel: "noopener",
+								title: "Je réalise un audit - nouvelle fenêtre",
+							},
 							iconId: "ri-share-box-line",
 							iconPosition: "right",
 						}}

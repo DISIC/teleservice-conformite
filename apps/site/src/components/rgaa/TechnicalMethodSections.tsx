@@ -89,13 +89,12 @@ export default function TechnicalMethodSections({
 						Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
 						Nulla consequat massa quis enim.
 					</p>
-					{/* // TODO: add link */}
 					<Button
 						priority="secondary"
 						size="large"
 						iconId="fr-icon-arrow-right-line"
 						iconPosition="right"
-						linkProps={{ href: "#" }}
+						linkProps={{ href: "/notes" }}
 					>
 						Voir les notes de version
 					</Button>

@@ -62,7 +62,6 @@ export const RESSOURCES_LINKS: NavLink[] = [
 ];
 
 export const NAVIGATION: NavEntry[] = [
-	// TODO: add link
 	{ text: "Accueil", href: "/" },
 	{
 		text: "Obligations légales",
