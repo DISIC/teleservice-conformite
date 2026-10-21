@@ -166,7 +166,8 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 					id="footer"
 					homeLinkProps={{
 						href: "/",
-						title: "République française, Accueil Téléservice Conformité",
+						title:
+							"République française, Accueil Téléservice de déclaration d’accessibilité numérique",
 					}}
 					accessibility="non compliant"
 					bottomItems={[headerFooterDisplayItem]}
