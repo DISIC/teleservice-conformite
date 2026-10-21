@@ -1,14 +1,13 @@
 "use client";
 
-import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
+import AnchorLinkButton from "./AnchorLinkButton";
 import DisabledTopicAccordion from "./DisabledTopicAccordion";
 import TopicCriteria from "./TopicCriteria";
 import { type Criterias } from "./helpers/topics";
 import { useNumberedHeadingStyles } from "./helpers/styles";
 import { getReferentielStyle } from "./referentiels";
-import { usePathname } from "next/navigation";
 import type { ReferentielInfos } from "./referentiels";
 
 interface AccordionListProps {
@@ -23,7 +22,6 @@ export default function AccordionList({
 	const { topicAccordionBackgroundColor } = getReferentielStyle(referentiel.id);
 	const { classes, cx } = useStyles({ topicAccordionBackgroundColor });
 	const { classes: headingClasses } = useNumberedHeadingStyles();
-	const pathname = usePathname();
 
 	return (
 		<div className={classes.list}>
@@ -49,12 +47,9 @@ export default function AccordionList({
 							<span className={headingClasses.number}>{topic.number}.</span>
 							<span>
 								{topic.topic}
-								<Button
-									iconId="fr-icon-links-fill"
+								<AnchorLinkButton
+									targetId={`${topic.number}`}
 									title={`Lien vers ${topic.number} ${topic.topic}`}
-									priority="tertiary no outline"
-									linkProps={{ href: `${pathname}#${topic.number}` }}
-									className={headingClasses.link}
 								/>
 							</span>
 						</h2>

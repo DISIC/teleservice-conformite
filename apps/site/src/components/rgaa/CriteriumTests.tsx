@@ -4,11 +4,10 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { fr } from "@codegouvfr/react-dsfr";
 import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
-import { renderMarkdownInline } from "./helpers/markdown";
+import { renderMarkdownInline, toPlainText } from "./helpers/markdown";
 import { useNumberedHeadingStyles } from "./helpers/styles";
 import type { Test } from "./helpers/topics";
-import Button from "@codegouvfr/react-dsfr/Button";
-import { usePathname } from "next/navigation";
+import AnchorLinkButton from "./AnchorLinkButton";
 import TestMethodology from "./TestMethodology";
 
 type CriteriumTestsProps = {
@@ -24,7 +23,6 @@ export default function CriteriumTests({
 }: CriteriumTestsProps) {
 	const { classes, cx } = useStyles({ accordionBackgroundColor });
 	const { classes: headingClasses } = useNumberedHeadingStyles();
-	const pathname = usePathname();
 	const [expanded, setExpanded] = useState(false);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -58,17 +56,18 @@ export default function CriteriumTests({
 					const testNumber = `${criteriumNumber}.${test.number}`;
 
 					return (
-						<div key={`${test.label} ${testNumber}`} className={classes.test}>
+						<div
+							key={`${test.label} ${testNumber}`}
+							id={testNumber}
+							className={classes.test}
+						>
 							<h5 className={cx("fr-text--lg", headingClasses.title)}>
 								<span className={headingClasses.number}>{testNumber}</span>
 								<span>
 									{renderMarkdownInline(test.label)}
-									<Button
-										iconId="fr-icon-links-fill"
-										title={`Lien vers ${testNumber} ${renderMarkdownInline(test.label)}`}
-										priority="tertiary no outline"
-										linkProps={{ href: `${pathname}#${testNumber}` }}
-										className={headingClasses.link}
+									<AnchorLinkButton
+										targetId={testNumber}
+										title={`Lien vers ${testNumber} ${toPlainText(test.label)}`}
 									/>
 								</span>
 							</h5>
@@ -122,6 +121,7 @@ const useStyles = tss
 			},
 		},
 		test: {
+			scrollMarginTop: fr.spacing("2w"),
 			marginBottom: fr.spacing("8v"),
 
 			"& > h5": {
