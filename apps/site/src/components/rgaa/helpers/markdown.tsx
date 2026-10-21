@@ -3,7 +3,9 @@ import { slugify } from "~/lib/slugify";
 import Code from "./Code";
 
 // Every published string (titles, conditions, méthodologies, annexes) is markdown: links, inline code, bold, lists.
-const INLINE = /\[([^\]]+)\]\(([^)]+)\)|`([^`]+)`|\*\*([^*]+)\*\*/g;
+// Glossary definitions also carry language spans and bare autolinks.
+const INLINE =
+	/\[([^\]]+)\]\(([^)]+)\)|`([^`]+)`|\*\*([^*]+)\*\*|<span lang="([^"]+)">(.+?)<\/span>|<(https?:\/\/[^>\s]+)>/g;
 const LIST_ITEM = /^[-*]\s+/;
 const ORDERED_ITEM = /^\d+\.\s+/;
 // Editorial pages split on h2 upstream, so only sub-headings reach the renderer.
@@ -14,8 +16,12 @@ type List = { ordered: boolean; items: ListItem[] };
 
 // Attributes and accessible names take text, never elements.
 export function toPlainText(source: string): string {
-	return source.replace(INLINE, (_, linkText, __, code, bold) =>
-		[linkText, code, bold].find((value) => value !== undefined),
+	return source.replace(
+		INLINE,
+		(_, linkText, __, code, bold, ___, spanText, autolink) =>
+			[linkText, code, bold, spanText && toPlainText(spanText), autolink].find(
+				(value) => value !== undefined,
+			),
 	);
 }
 
@@ -24,7 +30,7 @@ export function renderMarkdownInline(text: string): ReactNode[] {
 	let cursor = 0;
 
 	for (const match of text.matchAll(INLINE)) {
-		const [raw, linkText, href, code, bold] = match;
+		const [raw, linkText, href, code, bold, lang, spanText, autolink] = match;
 		const start = match.index;
 
 		if (start > cursor) nodes.push(text.slice(cursor, start));
@@ -36,6 +42,18 @@ export function renderMarkdownInline(text: string): ReactNode[] {
 			);
 		else if (code) nodes.push(<Code key={`${start}`}>{code}</Code>);
 		else if (bold) nodes.push(<strong key={`${start}`}>{bold}</strong>);
+		else if (lang && spanText)
+			nodes.push(
+				<span key={`${start}`} lang={lang}>
+					{renderMarkdownInline(spanText)}
+				</span>,
+			);
+		else if (autolink)
+			nodes.push(
+				<a key={`${start}`} href={autolink}>
+					{autolink}
+				</a>,
+			);
 
 		cursor = start + raw.length;
 	}

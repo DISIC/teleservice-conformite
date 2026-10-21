@@ -8,6 +8,7 @@ import type { PictoProps } from "@codegouvfr/react-dsfr/picto/utils/PictoWrapper
 import JusticeScales from "@codegouvfr/react-dsfr/picto/JusticeScales";
 import Coding from "@codegouvfr/react-dsfr/picto/Coding";
 import Catalog from "@codegouvfr/react-dsfr/picto/Catalog";
+import Archive from "@codegouvfr/react-dsfr/picto/Archive";
 
 // Pictograms are named, not passed as components: server pages can only hand serialisable props to client components.
 const PICTOGRAMS = {
@@ -18,6 +19,7 @@ const PICTOGRAMS = {
 	"justice-scales": JusticeScales,
 	coding: Coding,
 	catalog: Catalog,
+	archive: Archive,
 };
 
 export type PictogramId = keyof typeof PICTOGRAMS;

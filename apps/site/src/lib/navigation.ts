@@ -24,7 +24,8 @@ export const METHODE_LINKS: NavLink[] = [
 	{
 		text: "Glossaire",
 		href: "/glossaire",
-		description: PLACEHOLDER_DESCRIPTION,
+		description:
+			"Tous les termes du glossaire du référentiel général d'amélioration de l'accessibilité.",
 	},
 	{
 		text: "Environnement de test",
