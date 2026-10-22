@@ -5,7 +5,9 @@ import path from "node:path";
 import {
 	CriteresFile,
 	type Declinaison,
+	GlossaireFile,
 	type ReferentielId,
+	type Terme,
 } from "@rgaa/content";
 import type { Criterias, Test, Topic } from "~/components/rgaa/helpers/topics";
 
@@ -80,4 +82,32 @@ export function getReferentiel(reference: ReferentielId) {
 
 export function getAllReferentiels() {
 	return readCriteresFile().referentiels;
+}
+
+let glossaireCache: GlossaireFile | undefined;
+
+function readGlossaireFile(): GlossaireFile {
+	if (glossaireCache) return glossaireCache;
+	const file = path.join(DATA_DIR, RGAA_VERSION, "glossaire.json");
+	glossaireCache = GlossaireFile.parse(JSON.parse(readFileSync(file, "utf8")));
+	return glossaireCache;
+}
+
+const initial = (title: string) =>
+	title.normalize("NFD").charAt(0).toUpperCase();
+
+export type GlossaryLetter = { letter: string; terms: Terme[] };
+
+export function getGlossaryByLetter(): GlossaryLetter[] {
+	const byLetter = new Map<string, Terme[]>();
+	for (const term of readGlossaireFile().terms) {
+		const letter = initial(term.title);
+		byLetter.set(letter, [...(byLetter.get(letter) ?? []), term]);
+	}
+	return [...byLetter]
+		.sort(([a], [b]) => a.localeCompare(b))
+		.map(([letter, terms]) => ({
+			letter,
+			terms: terms.sort((a, b) => a.title.localeCompare(b.title, "fr")),
+		}));
 }
