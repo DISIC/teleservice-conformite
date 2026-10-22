@@ -67,6 +67,8 @@ describe("extractDeclarationContentToPublish", () => {
 				audit: {
 					isRealised: false,
 					realisedBy: "Orion",
+					date: "2026-02-03T00:00:00.000Z",
+					auditReport: "https://example.fr/rapport.pdf",
 					rate: 74,
 					rgaa_version: "rgaa_5",
 					compliantElements: "Accueil",
@@ -83,7 +85,10 @@ describe("extractDeclarationContentToPublish", () => {
 			isRealised: false,
 			rgaa_version: "RGAA 4",
 			realised_by: "",
+			date: null,
+			auditReport: null,
 			rate: 0,
+			blockingElements: null,
 			nonCompliantElements: "",
 			disproportionnedCharge: "",
 			optionalElements: "",
@@ -92,6 +97,46 @@ describe("extractDeclarationContentToPublish", () => {
 			testEnvironments: [],
 			usedTools: [],
 		});
+	});
+
+	it("publishes the blocking elements of an RGAA 5 audit only", () => {
+		const audit = {
+			isRealised: true,
+			rgaa_version: "rgaa_5",
+			hasBlockingElements: true,
+			blockingElements: "Navigation au clavier impossible",
+		};
+		const blockingElementsOf = (overrides: object) =>
+			extractDeclarationContentToPublish(
+				completeDeclaration({ audit: { ...audit, ...overrides } } as never),
+			).audit.blockingElements;
+
+		expect(blockingElementsOf({})).toBe("Navigation au clavier impossible");
+		expect(blockingElementsOf({ rgaa_version: "rgaa_4" })).toBeNull();
+		expect(blockingElementsOf({ hasBlockingElements: false })).toBeNull();
+		expect(blockingElementsOf({ blockingElements: "  " })).toBeNull();
+	});
+
+	it("publishes the audit date and report of a realised audit", () => {
+		const { audit } = extractDeclarationContentToPublish(
+			completeDeclaration({
+				audit: {
+					isRealised: true,
+					date: "2026-02-03T00:00:00.000Z",
+					auditReport: " https://example.fr/rapport.pdf ",
+				},
+			} as never),
+		);
+		expect(audit.date).toBe("2026-02-03");
+		expect(audit.auditReport).toBe("https://example.fr/rapport.pdf");
+
+		const bare = extractDeclarationContentToPublish(
+			completeDeclaration({
+				audit: { isRealised: true, auditReport: "  " },
+			} as never),
+		).audit;
+		expect(bare.date).toBeNull();
+		expect(bare.auditReport).toBeNull();
 	});
 
 	it("records whether an audit was performed", () => {
@@ -117,6 +162,24 @@ describe("parsePublishedDeclaration", () => {
 		expect(parsePublishedDeclaration(JSON.stringify(snapshot))).toEqual(
 			snapshot,
 		);
+	});
+
+	it("reads a snapshot published before blocking elements, audit date and report existed", () => {
+		const {
+			blockingElements: _blocking,
+			date: _date,
+			auditReport: _report,
+			...legacyAudit
+		} = extractDeclarationContentToPublish(completeDeclaration()).audit;
+		const snapshot = extractDeclarationContentToPublish(completeDeclaration(), {
+			publishedAt: new Date("2026-08-27T09:30:00.000Z"),
+		});
+		const audit = parsePublishedDeclaration(
+			JSON.stringify({ ...snapshot, audit: legacyAudit }),
+		)?.audit;
+		expect(audit?.blockingElements).toBeNull();
+		expect(audit?.date).toBeNull();
+		expect(audit?.auditReport).toBeNull();
 	});
 
 	it("treats anything off-contract as no snapshot", () => {

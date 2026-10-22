@@ -1,31 +1,32 @@
-import { appKindOptions } from "~/payload/selectOptions";
 import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
 import { getConformityStatus } from "~/domain/declaration/conformity";
 import {
 	OBSOLESCENCE_YEARS,
 	obsolescenceOf,
-	obsoleteSince,
 } from "~/domain/declaration/obsolescence";
+import {
+	CONFORMITY_BADGE_SEVERITY,
+	DEFENSEUR_URL,
+	DELEGUE_URL,
+	appKindOf,
+	badge,
+	bulletList,
+	formatFrDate,
+	hasText,
+	obsoleteSinceDay,
+	rgaaVersionNumber,
+	section,
+	serviceName,
+	serviceSubject,
+} from "~/domain/declaration/published/markdownParts";
+import { buildRgaa5Markdown } from "~/domain/declaration/published/markdownRgaa5";
 
-/** Snapshot dates are calendar dates (YYYY-MM-DD), as the Zod contract enforces. */
-type IsoDate = string;
+export { formatFrDate };
 
 export type PublishedMarkdownOptions = {
 	/** Obsolescence is a fact about the reading day, not the snapshot. */
 	today: Date;
 };
-
-const DEFENSEUR_URL =
-	"https://formulaire.defenseurdesdroits.fr/formulaire_saisine/";
-const DELEGUE_URL = "https://www.defenseurdesdroits.fr/saisir/delegues";
-
-export const formatFrDate = (date: IsoDate): string => {
-	const [year, month, day] = date.split("-");
-	return `${day}/${month}/${year}`;
-};
-
-const obsoleteSinceDay = (publishedAt: IsoDate): IsoDate =>
-	obsoleteSince(new Date(publishedAt)).toISOString().slice(0, 10);
 
 export const publicationLabel = (
 	d: Pick<PublishedDeclaration, "firstPublishedAt" | "publishedAt">,
@@ -33,45 +34,6 @@ export const publicationLabel = (
 	d.publishedAt === d.firstPublishedAt
 		? `Publiée le ${formatFrDate(d.publishedAt)}`
 		: `Mise à jour : ${formatFrDate(d.publishedAt)}`;
-
-const hasText = (value: string | null | undefined): value is string =>
-	!!value && value.trim().length > 0;
-
-const badge = (label: string, severity: "success" | "info" | "error") =>
-	`<p class="fr-badge fr-badge--${severity} fr-badge--sm fr-badge--no-icon">${label}</p>`;
-
-const CONFORMITY_BADGE_SEVERITY: Record<string, "success" | "info" | "error"> =
-	{
-		Conforme: "success",
-		"Partiellement conforme": "info",
-		"Non conforme": "error",
-	};
-
-const serviceSubject = (appKindLabel: PublishedDeclaration["appKindLabel"]) => {
-	const kind = appKindOptions.find((o) => o.label === appKindLabel)?.value;
-	switch (kind) {
-		case "website":
-			return "Le site";
-		case "mobile_app":
-			return "L’application mobile";
-		default:
-			return "Le service";
-	}
-};
-
-const serviceName = (d: PublishedDeclaration) =>
-	`**${[d.name, d.url].filter(hasText).join(" ")}**`;
-
-const rgaaVersionNumber = (label: string) => label.replace(/^RGAA\s*/, "");
-
-const bulletList = (items: string[]) => items.map((item) => `- ${item}`);
-
-const section = (heading: string, ...lines: (string | null)[]) => [
-	heading,
-	"",
-	...lines.filter((line): line is string => line !== null),
-	"",
-];
 
 const introduction = (d: PublishedDeclaration): string[] => {
 	const entity = `**${d.entityName}**`;
@@ -87,7 +49,7 @@ const introduction = (d: PublishedDeclaration): string[] => {
 			),
 	].filter((line): line is string => line !== null);
 
-	const kind = appKindOptions.find((o) => o.label === d.appKindLabel)?.value;
+	const kind = appKindOf(d.appKindLabel);
 	const scope =
 		kind && kind !== "other"
 			? `Cette déclaration d’accessibilité s’applique au **${d.appKindLabel.toLowerCase()} ${d.url}**`
@@ -127,7 +89,9 @@ const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
 		);
 	}
 
-	const status = getConformityStatus(d.audit.rate);
+	const status = getConformityStatus(d.audit.rate, {
+		hasBlockingElements: hasText(d.audit.blockingElements),
+	});
 	const sentence = obsolete
 		? `Conformément à la législation, cette déclaration ayant été publiée il y a plus de ${OBSOLESCENCE_YEARS} ans, ${subject.charAt(0).toLowerCase()}${subject.slice(1)} est réputé **non conforme** ${rgaa}${version}`
 		: `${subject} est **${status.label.toLowerCase()}** ${rgaa}${version}`;
@@ -149,6 +113,7 @@ const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
 const nonAccessibleContent = (d: PublishedDeclaration): string[] => {
 	if (!d.audit.isRealised) return [];
 	const parts = [
+		["### Éléments bloquants", d.audit.blockingElements],
 		["### Non-conformités", d.audit.nonCompliantElements],
 		[
 			"### Dérogations pour charge disproportionnée",
@@ -255,6 +220,17 @@ const feedbackAndContact = (d: PublishedDeclaration): string[] => {
 	];
 };
 
+const rgaa4Sections = (
+	d: PublishedDeclaration,
+	obsolete: boolean,
+): string[] => [
+	...introduction(d),
+	...conformity(d, obsolete),
+	...nonAccessibleContent(d),
+	...establishment(d, obsolete),
+	...feedbackAndContact(d),
+];
+
 export const OBSOLETE_NOTICE_CLASS = "declaration-obsolete";
 
 const obsoleteNotice = () =>
@@ -274,16 +250,22 @@ export function buildPublishedMarkdown(
 		hasText(declaration.publishedAt) &&
 		obsolescenceOf(new Date(declaration.publishedAt), today) === "obsolete";
 
-	return [
-		`# ${declaration.name}`,
-		"",
-		...(obsolete ? [obsoleteNotice(), ""] : []),
-		...introduction(declaration),
-		...conformity(declaration, obsolete),
-		...nonAccessibleContent(declaration),
-		...establishment(declaration, obsolete),
-		...feedbackAndContact(declaration),
-	]
+	const lines =
+		declaration.audit.rgaa_version === "RGAA 5"
+			? [
+					buildRgaa5Markdown(declaration, {
+						obsolete,
+						obsoleteNotice: obsolete ? obsoleteNotice() : "",
+					}),
+				]
+			: [
+					`# ${declaration.name}`,
+					"",
+					...(obsolete ? [obsoleteNotice(), ""] : []),
+					...rgaa4Sections(declaration, obsolete),
+				];
+
+	return lines
 		.join("\n")
 		.replace(/\n{3,}/g, "\n\n")
 		.trimEnd()
