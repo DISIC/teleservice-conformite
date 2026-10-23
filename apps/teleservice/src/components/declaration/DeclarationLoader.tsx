@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { tss } from "tss-react";
 import { useProgress } from "~/hooks/useProgress";
 
+// A live region only announces changes: the <output> must be in the DOM, empty, before its text is set.
+const STATUS_ANNOUNCE_DELAY_MS = 100;
+
 interface DeclarationLoaderProps {
 	duration?: number;
 }
@@ -22,7 +25,7 @@ export default function DeclarationLoader({
 	useEffect(() => {
 		const timeout = setTimeout(
 			() => setStatus("Création de votre déclaration en cours"),
-			100,
+			STATUS_ANNOUNCE_DELAY_MS,
 		);
 		return () => clearTimeout(timeout);
 	}, []);
