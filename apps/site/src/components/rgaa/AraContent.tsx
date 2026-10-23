@@ -38,8 +38,8 @@ export default function AraContent() {
 							linkProps: {
 								href: "https://ara.numerique.gouv.fr",
 								target: "_blank",
-								rel: "noopener",
-								title: "Je réalise un audit - nouvelle fenêtre",
+								rel: "noopener noreferrer",
+								title: "Je réalise un audit, nouvelle fenêtre",
 							},
 							iconId: "ri-share-box-line",
 							iconPosition: "right",
