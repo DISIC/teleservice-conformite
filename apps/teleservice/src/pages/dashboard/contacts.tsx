@@ -31,6 +31,8 @@ import { pageTitle } from "~/lib/serviceName";
 
 const columnHelper = createColumnHelper<Contact>();
 
+const isNonEmpty = <T,>(items: T[]): items is [T, ...T[]] => items.length > 0;
+
 export default function ContactsPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -95,13 +97,8 @@ export default function ContactsPage({
 						...(email ? [{ children: "Email" }] : []),
 						...(url ? [{ children: "Formulaire" }] : []),
 					];
-					const [first, ...rest] = tags;
-					return first ? (
-						<TagsGroup
-							smallTags
-							tags={[first, ...rest]}
-							className={classes.tags}
-						/>
+					return isNonEmpty(tags) ? (
+						<TagsGroup smallTags tags={tags} className={classes.tags} />
 					) : (
 						<EmptyValue />
 					);
