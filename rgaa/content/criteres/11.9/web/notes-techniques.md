@@ -1,0 +1,1 @@
+Le test 11.9.1 et le test 11.9.2 traitent des champs de manière indépendante, néanmoins, il faut garantir que la méthode choisie pour avertir les utilisateurs (champs obligatoires ou champs facultatifs) soit cohérente sur l’ensemble du formulaire.

@@ -29,13 +29,13 @@ export default function TechnicalMethodPage() {
 		<>
 			<StartDsfrOnHydration />
 			<PageHero
-				breadcrumbCurrentPageLabel="Critères et tests"
+				breadcrumbCurrentPageLabel="Introduction"
 				breadcrumbSegments={[
 					{ label: "Méthode technique", linkProps: { href: "/methode" } },
 				]}
 				title="Critères et tests"
 				description={getPageDescription("/methode/introduction")}
-				pictogram="technical-error"
+				pictogram="accessibility"
 				linkButtons={referentiels}
 				backgroundColor={fr.colors.decisions.background.alt.blueEcume.default}
 				ellipseColor={

@@ -5,13 +5,15 @@ import { tss } from "tss-react";
 import type { Criterias } from "./helpers/topics";
 import type { ReferentielId } from "@rgaa/content";
 import { getReferentielStyle } from "./referentiels";
+import AnchorLinkButton from "./AnchorLinkButton";
 import CriteriumReference from "./CriteriumReference";
 import CriteriumTests from "./CriteriumTests";
 import DisabledCriteriumAccordion from "./DisabledCriteriumAccordion";
-import { renderMarkdownInline } from "./helpers/markdown";
-import { useNumberedHeadingStyles } from "./helpers/styles";
-import Button from "@codegouvfr/react-dsfr/Button";
-import { usePathname } from "next/navigation";
+import { renderMarkdownInline, toPlainText } from "./helpers/markdown";
+import {
+	belowStickyTopicHeading,
+	useNumberedHeadingStyles,
+} from "./helpers/styles";
 
 type TopicCriteriaProps = {
 	referentielId: ReferentielId;
@@ -22,7 +24,6 @@ export default function TopicCriteria({
 	referentielId,
 	topic,
 }: TopicCriteriaProps) {
-	const pathname = usePathname();
 	const { testAccordionBackgroundColor } = getReferentielStyle(referentielId);
 	const { classes, cx } = useStyles();
 	const { classes: headingClasses } = useNumberedHeadingStyles();
@@ -45,18 +46,18 @@ export default function TopicCriteria({
 				return (
 					<div
 						key={`${criterium.title} ${criteriumNumber}`}
+						id={criteriumNumber}
 						className={classes.criteriumContainer}
 					>
 						<h3 className={cx("fr-h4", headingClasses.title)}>
-							<span className={headingClasses.number}>{criteriumNumber}</span>
+							<span className={headingClasses.number}>
+								{criteriumNumber}&nbsp;
+							</span>
 							<span>
 								{renderMarkdownInline(criterium.title)}
-								<Button
-									iconId="fr-icon-links-fill"
-									title={`Lien vers ${criteriumNumber} ${renderMarkdownInline(criterium.title)}`}
-									priority="tertiary no outline"
-									linkProps={{ href: `${pathname}#${criteriumNumber}` }}
-									className={headingClasses.link}
+								<AnchorLinkButton
+									targetId={criteriumNumber}
+									title={`Lien vers ${criteriumNumber} ${toPlainText(criterium.title)}`}
 								/>
 							</span>
 						</h3>
@@ -88,6 +89,7 @@ const useStyles = tss.withName(TopicCriteria.name).create({
 		},
 	},
 	criteriumContainer: {
+		scrollMarginTop: belowStickyTopicHeading,
 		marginBottom: fr.spacing("12v"),
 	},
 });

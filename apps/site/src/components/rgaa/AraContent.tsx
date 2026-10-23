@@ -35,12 +35,17 @@ export default function AraContent() {
 					<CallOut
 						buttonProps={{
 							children: "Je réalise un audit",
-							//TODO: add link
-							linkProps: { href: "#" },
+							linkProps: {
+								href: "https://ara.numerique.gouv.fr",
+								target: "_blank",
+								rel: "noopener noreferrer",
+								title: "Je réalise un audit, nouvelle fenêtre",
+							},
 							iconId: "ri-share-box-line",
 							iconPosition: "right",
 						}}
 						title="Réalisez vos audits d’accessibilité numérique"
+						titleAs="h2"
 					>
 						Ara n’audite pas automatiquement votre site et nécessite une bonne
 						connaissance de la méthode technique du RGAA.

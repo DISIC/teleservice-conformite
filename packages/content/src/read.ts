@@ -208,6 +208,32 @@ function readProse(ctx: Ctx, file: string): string | undefined {
 	return body;
 }
 
+// The site titles each appendix file itself, so a label line inside one means misplaced text.
+const SECTION_LABELS = [
+	{ pattern: /^notes? techniques?\s*:?$/i, file: "notes-techniques.md" },
+	{ pattern: /^cas particuliers?\s*:?$/i, file: "cas-particuliers.md" },
+];
+
+function readAppendixProse(ctx: Ctx, file: string): string | undefined {
+	const body = readProse(ctx, file);
+	if (body === undefined) return undefined;
+	const lines = (readText(ctx, file) ?? "").split("\n");
+	lines.forEach((raw, index) => {
+		const line = raw.trim();
+		const label = SECTION_LABELS.find(({ pattern }) => pattern.test(line));
+		if (!label) return;
+		fail(
+			ctx,
+			file,
+			file.endsWith(`/${label.file}`)
+				? `« ${line} » est un intitulé de section, déjà affiché par le site : supprimer cette ligne`
+				: `« ${line} » est un intitulé de section : déplacer le texte qui suit dans ${label.file}`,
+			index + 1,
+		);
+	});
+	return body;
+}
+
 function readThematiques(ctx: Ctx): SourceThematique[] {
 	const file = "thematiques.yml";
 	const text = readText(ctx, file);
@@ -274,10 +300,10 @@ function readDeclinaison(ctx: Ctx, dir: string): SourceDeclinaison | undefined {
 		fail(ctx, dir, "annexe.md manquant (références et techniques)");
 	else annexe = readAnnexe(ctx, `${dir}/annexe.md`);
 	const particularCases = entries.includes("cas-particuliers.md")
-		? readProse(ctx, `${dir}/cas-particuliers.md`)
+		? readAppendixProse(ctx, `${dir}/cas-particuliers.md`)
 		: undefined;
 	const technicalNotes = entries.includes("notes-techniques.md")
-		? readProse(ctx, `${dir}/notes-techniques.md`)
+		? readAppendixProse(ctx, `${dir}/notes-techniques.md`)
 		: undefined;
 	let tests: SourceTest[] | undefined;
 	if (!entries.includes("tests") || !isDirectory(ctx, `${dir}/tests`))

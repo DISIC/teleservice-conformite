@@ -133,4 +133,18 @@ describe("readSources", () => {
 			"criteres/1.1/web : annexe.md manquant (références et techniques)",
 		]);
 	});
+
+	it("refuses a section label written inside another section's file", () => {
+		const problems = problemsOf({
+			"criteres/1.1/web/cas-particuliers.md":
+				"Un cas particulier.\n\nNote technique\n\nUne note.\n",
+			"criteres/1.1/web/notes-techniques.md":
+				"Notes techniques\n\nUne note.\n\nCas particulier :\n\nUn cas.\n",
+		});
+		expect(problems.map((p) => `${p.file}:${p.line} : ${p.message}`)).toEqual([
+			"criteres/1.1/web/cas-particuliers.md:3 : « Note technique » est un intitulé de section : déplacer le texte qui suit dans notes-techniques.md",
+			"criteres/1.1/web/notes-techniques.md:1 : « Notes techniques » est un intitulé de section, déjà affiché par le site : supprimer cette ligne",
+			"criteres/1.1/web/notes-techniques.md:5 : « Cas particulier : » est un intitulé de section : déplacer le texte qui suit dans cas-particuliers.md",
+		]);
+	});
 });

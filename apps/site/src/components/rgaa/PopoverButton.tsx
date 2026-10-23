@@ -2,30 +2,33 @@
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
-import { useEffect, useId, useRef, useState } from "react";
+import { Fragment, useEffect, useId, useRef, useState } from "react";
 import { tss } from "tss-react";
 
-export type DisplayOption = "all" | "tests" | "references";
+export type DisplayOption = { label: string; onSelect: () => void };
 
 interface PopoverButtonProps {
-	onSelect: (option: DisplayOption) => void;
+	getOptions: () => DisplayOption[];
 }
 
-export default function PopoverButton({ onSelect }: PopoverButtonProps) {
+export default function PopoverButton({ getOptions }: PopoverButtonProps) {
 	const { classes, cx } = useStyles();
 
 	const [open, setOpen] = useState<boolean>(false);
+	const [options, setOptions] = useState<DisplayOption[]>([]);
 
 	const popoverRef = useRef<HTMLDivElement>(null);
 	const toggleButtonRef = useRef<HTMLButtonElement>(null);
 	const popoverId = useId();
 
+	// Options depend on which accordions are open, which only changes while the popover is closed.
 	const onOpenPopover = () => {
-		setOpen((value) => !value);
+		if (!open) setOptions(getOptions());
+		setOpen(!open);
 	};
 
 	const onSelectOption = (option: DisplayOption) => {
-		onSelect(option);
+		option.onSelect();
 		setOpen(false);
 		toggleButtonRef.current?.focus();
 	};
@@ -70,29 +73,14 @@ export default function PopoverButton({ onSelect }: PopoverButtonProps) {
 				Options d’affichage
 			</Button>
 			<div className={classes.popover} id={popoverId} hidden={!open}>
-				<Button onClick={() => onSelectOption("all")}>
-					Tout déplier/replier
-				</Button>
-				<div
-					style={{
-						width: "100%",
-						height: "1px",
-						backgroundColor: fr.colors.decisions.border.default.grey.default,
-					}}
-				/>
-				<Button onClick={() => onSelectOption("tests")}>
-					Déplier/replier les tests
-				</Button>
-				<div
-					style={{
-						width: "100%",
-						height: "1px",
-						backgroundColor: fr.colors.decisions.border.default.grey.default,
-					}}
-				/>
-				<Button onClick={() => onSelectOption("references")}>
-					Déplier/replier les notes et références
-				</Button>
+				{options.map((option, index) => (
+					<Fragment key={option.label}>
+						{index > 0 && <div className={classes.separator} />}
+						<Button onClick={() => onSelectOption(option)}>
+							{option.label}
+						</Button>
+					</Fragment>
+				))}
 			</div>
 		</div>
 	);
@@ -102,11 +90,17 @@ const useStyles = tss.withName(PopoverButton.name).create({
 	root: {
 		position: "relative",
 		alignSelf: "flex-end",
+		zIndex: 3,
 	},
 	toggleButtonOpen: {
 		"&&": {
 			backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
 		},
+	},
+	separator: {
+		width: "100%",
+		height: "1px",
+		backgroundColor: fr.colors.decisions.border.default.grey.default,
 	},
 	popover: {
 		position: "absolute",

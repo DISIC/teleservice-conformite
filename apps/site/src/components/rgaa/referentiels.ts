@@ -24,7 +24,7 @@ export type ReferentielInfos = {
 export const REFERENTIEL_STYLES: ReferentielStyle[] = [
 	{
 		id: "web",
-		iconId: "ri-search-line",
+		iconId: "ri-computer-line",
 		pictogram: "search",
 		href: "/rgaa/web",
 		heroPagebackgroundColor:

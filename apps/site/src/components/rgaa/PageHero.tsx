@@ -57,8 +57,7 @@ export default function PageHero(props: PageHeroProps) {
 			<div className={fr.cx("fr-container")}>
 				<Breadcrumb
 					currentPageLabel={breadcrumbCurrentPageLabel}
-					// TODO: add link
-					homeLinkProps={{ href: "#" }}
+					homeLinkProps={{ href: "/" }}
 					segments={breadcrumbSegments}
 				/>
 				<div className={classes.heroContent}>

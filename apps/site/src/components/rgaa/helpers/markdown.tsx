@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { slugify } from "~/lib/slugify";
 import Code from "./Code";
 
@@ -10,6 +10,12 @@ const LIST_ITEM = /^[-*]\s+/;
 const ORDERED_ITEM = /^\d+\.\s+/;
 // Editorial pages split on h2 upstream, so only sub-headings reach the renderer.
 const HEADING = /^(#{3,6})\s+(.+)$/;
+// Markdown hard line break: a trailing backslash or two trailing spaces.
+const HARD_BREAK = /\\$|\s{2,}$/;
+// A line holding only {{name}} is replaced by the matching block from the caller.
+const BLOCK_PLACEHOLDER = /^\{\{\s*([a-z0-9-]+)\s*\}\}$/;
+// Editors style a paragraph with a DSFR class (e.g. fr-text--lead) by writing it as one-line HTML.
+const CLASSED_PARAGRAPH = /^<p class="([^"]+)">(.*)<\/p>$/;
 
 type ListItem = { text: string; children: string[] };
 type List = { ordered: boolean; items: ListItem[] };
@@ -25,7 +31,18 @@ export function toPlainText(source: string): string {
 	);
 }
 
+// Joined source lines keep a "\n" where the author asked for a hard break.
+const joinLines = (text: string, next: string) =>
+	text.endsWith("\n") ? text + next : `${text} ${next}`;
+
 export function renderMarkdownInline(text: string): ReactNode[] {
+	const lines = text.replace(/\n+$/, "").split("\n");
+	if (lines.length > 1)
+		return lines.flatMap((line, index) => [
+			...(index > 0 ? [<br key={`br${index}`} />] : []),
+			<Fragment key={`line${index}`}>{renderMarkdownInline(line)}</Fragment>,
+		]);
+
 	const nodes: ReactNode[] = [];
 	let cursor = 0;
 
@@ -65,7 +82,10 @@ export function renderMarkdownInline(text: string): ReactNode[] {
 type HeadingTag = "h3" | "h4" | "h5" | "h6";
 
 // Méthodologies are numbered steps whose sub-points are indented bullets: one nesting level, no deeper.
-export function renderMarkdown(source: string): ReactNode[] {
+export function renderMarkdown(
+	source: string,
+	namedBlocks: Record<string, ReactNode> = {},
+): ReactNode[] {
 	const blocks: ReactNode[] = [];
 	let paragraph: string[] = [];
 	let list: List | undefined;
@@ -74,7 +94,7 @@ export function renderMarkdown(source: string): ReactNode[] {
 		if (paragraph.length)
 			blocks.push(
 				<p key={`p${blocks.length}`}>
-					{renderMarkdownInline(paragraph.join(" "))}
+					{renderMarkdownInline(paragraph.reduce(joinLines))}
 				</p>,
 			);
 		if (list) {
@@ -106,8 +126,11 @@ export function renderMarkdown(source: string): ReactNode[] {
 		list.items.push({ text, children: [] });
 	};
 
-	for (const raw of source.split("\n")) {
+	for (const raw of source.split(/\r?\n/)) {
 		const line = raw.trim();
+		const text = HARD_BREAK.test(raw)
+			? `${line.replace(/\\$/, "").trimEnd()}\n`
+			: line;
 		const indented = raw.length > line.length && /^\s/.test(raw);
 		const lastItem = list?.items.at(-1);
 
@@ -116,13 +139,38 @@ export function renderMarkdown(source: string): ReactNode[] {
 			continue;
 		}
 		if (indented && lastItem && LIST_ITEM.test(line)) {
-			lastItem.children.push(line.replace(LIST_ITEM, ""));
+			lastItem.children.push(text.replace(LIST_ITEM, ""));
 			continue;
 		}
 		if (indented && lastItem) {
 			const { children } = lastItem;
-			if (children.length) children[children.length - 1] += ` ${line}`;
-			else lastItem.text += ` ${line}`;
+			const last = children.length - 1;
+			if (last >= 0) children[last] = joinLines(children[last] ?? "", text);
+			else lastItem.text = joinLines(lastItem.text, text);
+			continue;
+		}
+		const placeholder = BLOCK_PLACEHOLDER.exec(line);
+		if (placeholder) {
+			const [, name = ""] = placeholder;
+			if (!(name in namedBlocks))
+				throw new Error(
+					`Bloc inconnu {{${name}}} : blocs disponibles ${Object.keys(namedBlocks).join(", ") || "aucun"}`,
+				);
+			flush();
+			blocks.push(
+				<Fragment key={`b${blocks.length}`}>{namedBlocks[name]}</Fragment>,
+			);
+			continue;
+		}
+		const classed = CLASSED_PARAGRAPH.exec(line);
+		if (classed) {
+			flush();
+			const [, className, text = ""] = classed;
+			blocks.push(
+				<p key={`p${blocks.length}`} className={className}>
+					{renderMarkdownInline(text)}
+				</p>,
+			);
 			continue;
 		}
 		const heading = HEADING.exec(line);
@@ -138,15 +186,15 @@ export function renderMarkdown(source: string): ReactNode[] {
 			continue;
 		}
 		if (ORDERED_ITEM.test(line)) {
-			pushItem(true, line.replace(ORDERED_ITEM, ""));
+			pushItem(true, text.replace(ORDERED_ITEM, ""));
 			continue;
 		}
 		if (LIST_ITEM.test(line)) {
-			pushItem(false, line.replace(LIST_ITEM, ""));
+			pushItem(false, text.replace(LIST_ITEM, ""));
 			continue;
 		}
 		if (list) flush();
-		paragraph.push(line);
+		paragraph.push(text);
 	}
 
 	flush();

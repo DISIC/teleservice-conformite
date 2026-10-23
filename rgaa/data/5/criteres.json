@@ -282,7 +282,8 @@
 								}
 							],
 							"appendix": {
-								"particularCases": "Il existe une gestion de cas particuliers lorsque l’image est utilisée comme CAPTCHA ou comme image-test. Dans cette situation, où il n’est pas possible de donner une alternative pertinente sans détruire l’objet du CAPTCHA ou du test, le critère est non applicable.\n\nNote : le cas des CAPTCHA et des images-test est traité de manière spécifique par le critère 16.1\n\nNote technique\n\nPour s'assurer de la pertinence de l'alternative textuelle, il est possible de se référer à l'arbre de décision https://www.w3.org/WAI/tutorials/images/decision-tree/fr"
+								"particularCases": "Il existe une gestion de cas particuliers lorsque l’image est utilisée comme CAPTCHA ou comme image-test. Dans cette situation, où il n’est pas possible de donner une alternative pertinente sans détruire l’objet du CAPTCHA ou du test, le critère est non applicable.\n\nNote : le cas des CAPTCHA et des images-test est traité de manière spécifique par le critère 16.1",
+								"technicalNotes": "Pour s'assurer de la pertinence de l'alternative textuelle, il est possible de se référer à l'arbre de décision https://www.w3.org/WAI/tutorials/images/decision-tree/fr"
 							}
 						},
 						"mobile": {
@@ -536,7 +537,8 @@
 								}
 							],
 							"appendix": {
-								"particularCases": "Pour ce critère, il existe une gestion de cas particulier lorsque le texte fait partie du logo, d’une dénomination commerciale, d’un CAPTCHA, d’une image-test ou d’une image dont l’exactitude graphique serait considérée comme essentielle à la bonne transmission de l’information véhiculée par l’image. Dans ces situations, le critère est non applicable pour ces éléments.\n\nNote technique\n\nLe texte dans les images vectorielles étant du texte réel, il n’est pas concerné par ce critère."
+								"particularCases": "Pour ce critère, il existe une gestion de cas particulier lorsque le texte fait partie du logo, d’une dénomination commerciale, d’un CAPTCHA, d’une image-test ou d’une image dont l’exactitude graphique serait considérée comme essentielle à la bonne transmission de l’information véhiculée par l’image. Dans ces situations, le critère est non applicable pour ces éléments.",
+								"technicalNotes": "Le texte dans les images vectorielles étant du texte réel, il n’est pas concerné par ce critère."
 							}
 						},
 						"mobile": {
@@ -622,8 +624,8 @@
 									"number": "1.7.1",
 									"title": "Chaque légende associée à une image vérifie-t-elle ces conditions",
 									"conditions": [
-										"* La légende est adjacente à l’image.",
-										"* L’alternative de l’image contient une référence explicite à la légende"
+										"La légende est adjacente à l’image.",
+										"L’alternative de l’image contient une référence explicite à la légende"
 									]
 								}
 							]
@@ -837,7 +839,8 @@
 								}
 							],
 							"appendix": {
-								"particularCases": "Dans ces situations, les critères sont non applicables pour ces éléments :\n\n- Le texte fait partie d’un logo ou d’un nom de marque d’un organisme ou d’une société ;\n\n- Le texte ou l’image de texte est purement décoratif ;\n\n- Le texte fait partie d’une image informative mais le texte lui-même n’apporte aucune information essentielle ;\n\n- Le texte ou l’image de texte fait partie d’un élément d’interface sur lequel aucune action n’est possible (par exemple un bouton avec l’attribut disabled).\n\nNote technique\n\nSi les modes clair et sombre sont mis à disposition (prefers-color-scheme: dark/light), alors les deux modes doivent être vérifiés et conformes. Les préférences configurées par la personne utilisatrice ne sont pas concernées."
+								"particularCases": "Dans ces situations, les critères sont non applicables pour ces éléments :\n\n- Le texte fait partie d’un logo ou d’un nom de marque d’un organisme ou d’une société ;\n\n- Le texte ou l’image de texte est purement décoratif ;\n\n- Le texte fait partie d’une image informative mais le texte lui-même n’apporte aucune information essentielle ;\n\n- Le texte ou l’image de texte fait partie d’un élément d’interface sur lequel aucune action n’est possible (par exemple un bouton avec l’attribut disabled).",
+								"technicalNotes": "Si les modes clair et sombre sont mis à disposition (prefers-color-scheme: dark/light), alors les deux modes doivent être vérifiés et conformes. Les préférences configurées par la personne utilisatrice ne sont pas concernées."
 							}
 						},
 						"mobile": {
@@ -1355,7 +1358,8 @@
 								}
 							],
 							"appendix": {
-								"technicalNotes": "Note technique\n\n- Les contenus des sous-titres et de la piste audio (y compris les bruitages et autres informations sonores) sont identiques ou sont une traduction fidèle\n\n- Le contraste du texte sur le fond est suffisant et la police utilisée est lisible,\n\n- Le découpage grammatical est pertinent,\n\n- La vitesse d’affichage est adaptée.\n\n- Le positionnement des sous-titres ne masque aucune information importante contenue dans la vidéo\n\nCas particulier\n\nVoir cas particuliers du critère 4.5"
+								"particularCases": "Voir cas particuliers du critère 4.5",
+								"technicalNotes": "- Les contenus des sous-titres et de la piste audio (y compris les bruitages et autres informations sonores) sont identiques ou sont une traduction fidèle\n\n- Le contraste du texte sur le fond est suffisant et la police utilisée est lisible,\n\n- Le découpage grammatical est pertinent,\n\n- La vitesse d’affichage est adaptée.\n\n- Le positionnement des sous-titres ne masque aucune information importante contenue dans la vidéo"
 							}
 						},
 						"mobile": {
@@ -2112,7 +2116,8 @@
 								}
 							],
 							"appendix": {
-								"particularCases": "Il existe une gestion de cas particuliers pour les tests 6.1.1, 6.1.2, 6.1.3 et 6.1.4 lorsque le lien est ambigu pour tout le monde. Dans cette situation, où il n’est pas possible de rendre le lien explicite dans son contexte, le critère est non applicable.\n\nIl existe une gestion de cas particuliers pour le test 6.1.5 lorsque :\n\nLa ponctuation et les lettres majuscules sont présentes dans le texte de l’intitulé visible : elles peuvent être ignorées dans le nom accessible sans porter à conséquence ;\n\nLe texte de l’intitulé visible sert de symbole : le texte ne doit pas être interprété littéralement au niveau du nom accessible. Le nom doit exprimer la fonction véhiculée par le symbole (par exemple, « B » au niveau d’un éditeur de texte aura pour nom accessible « Mettre en gras », le signe « > » en fonction du contexte signifiera « Suivant » ou « Lancer la vidéo »). Le cas des symboles mathématiques fait cependant exception (voir la note ci-dessous).\n\nNote : si l’étiquette visible représente une expression mathématique, les symboles mathématiques peuvent être repris littéralement pour servir d’étiquette au nom accessible (ex. : « A > B »). Il est laissé à la personne utilisatrice le soin d’opérer la correspondance entre l’expression et ce qu’il doit épeler compte tenu de la connaissance qu’il a du fonctionnement de son logiciel de saisie vocale (« A plus grand que B » ou « A supérieur à B »).\n\nNotes techniques\n\nLorsque l’intitulé visible est complété par une autre expression dans le nom accessible :\n\nWCAG insiste sur le placement de l’intitulé visible au début du nom accessible sans toutefois réserver l’exclusivité de cet emplacement ;\n\nWCAG considère comme un cas d’échec une correspondance non exacte de la chaîne de caractères de l’intitulé visible au sein du nom accessible.\n\nPar exemple, si l’on considère l’intitulé visible « Commander maintenant » complété dans le nom accessible par l’expression « produit X», on peut avoir les différents cas suivants :\n\n« Commander maintenant produit X » est valide (bonne pratique) ;\n\n« Produit X : commander maintenant » est valide ;\n\n« Commander produit X maintenant » est non valide."
+								"particularCases": "Il existe une gestion de cas particuliers pour les tests 6.1.1, 6.1.2, 6.1.3 et 6.1.4 lorsque le lien est ambigu pour tout le monde. Dans cette situation, où il n’est pas possible de rendre le lien explicite dans son contexte, le critère est non applicable.\n\nIl existe une gestion de cas particuliers pour le test 6.1.5 lorsque :\n\nLa ponctuation et les lettres majuscules sont présentes dans le texte de l’intitulé visible : elles peuvent être ignorées dans le nom accessible sans porter à conséquence ;\n\nLe texte de l’intitulé visible sert de symbole : le texte ne doit pas être interprété littéralement au niveau du nom accessible. Le nom doit exprimer la fonction véhiculée par le symbole (par exemple, « B » au niveau d’un éditeur de texte aura pour nom accessible « Mettre en gras », le signe « > » en fonction du contexte signifiera « Suivant » ou « Lancer la vidéo »). Le cas des symboles mathématiques fait cependant exception (voir la note ci-dessous).\n\nNote : si l’étiquette visible représente une expression mathématique, les symboles mathématiques peuvent être repris littéralement pour servir d’étiquette au nom accessible (ex. : « A > B »). Il est laissé à la personne utilisatrice le soin d’opérer la correspondance entre l’expression et ce qu’il doit épeler compte tenu de la connaissance qu’il a du fonctionnement de son logiciel de saisie vocale (« A plus grand que B » ou « A supérieur à B »).",
+								"technicalNotes": "Lorsque l’intitulé visible est complété par une autre expression dans le nom accessible :\n\nWCAG insiste sur le placement de l’intitulé visible au début du nom accessible sans toutefois réserver l’exclusivité de cet emplacement ;\n\nWCAG considère comme un cas d’échec une correspondance non exacte de la chaîne de caractères de l’intitulé visible au sein du nom accessible.\n\nPar exemple, si l’on considère l’intitulé visible « Commander maintenant » complété dans le nom accessible par l’expression « produit X», on peut avoir les différents cas suivants :\n\n« Commander maintenant produit X » est valide (bonne pratique) ;\n\n« Produit X : commander maintenant » est valide ;\n\n« Commander produit X maintenant » est non valide."
 							}
 						},
 						"bureautique": {
@@ -2183,7 +2188,8 @@
 								}
 							],
 							"appendix": {
-								"particularCases": "Il existe une gestion de cas particuliers pour le test 7.1.3 lorsque :\n\nLa ponctuation et les lettres majuscules sont présentes dans le texte de l’intitulé visible : elles peuvent être ignorées dans le nom accessible sans porter à conséquence ;\n\nLe texte de l’intitulé visible sert de symbole : le texte ne doit pas être interprété littéralement au niveau du nom accessible. Le nom doit exprimer la fonction véhiculée par le symbole (par exemple, “B” au niveau d’un éditeur de texte aura pour nom accessible “Mettre en gras”, le signe “>” en fonction du contexte signifiera “Suivant” ou “Lancer la vidéo”). Le cas des symboles mathématiques fait cependant exception (voir la note ci-dessous).\n\nNote : si l’étiquette visible représente une expression mathématique, les symboles mathématiques peuvent être repris littéralement pour servir d’étiquette au nom accessible (ex. : “A>B”). Il est laissé à l’utilisateur le soin d’opérer la correspondance entre l’expression et ce qu’il doit épeler compte tenu de la connaissance qu’il a du fonctionnement de son logiciel de saisie vocale (“A plus grand que B” ou “A supérieur à B”).\n\nNotes techniques\n\nLe critère 7.1 implémente la notion de « compatible avec les technologies d’assistance » telle que définie par les WCAG, ainsi que le recours à WAI-ARIA pour rendre un composant ou une fonctionnalité accessible. Le bon usage de WAI-ARIA est vérifié via les tests 7.1.1, 7.1.2, 7.1.3.\n\nNote importante : dans un environnement HTML5, beaucoup de composants peuvent nécessiter JavaScript pour fonctionner ; en conséquence la fourniture d’une alternative à un composant JavaScript qui ne pourrait pas être rendu accessible devra bénéficier d’une méthode spécifique au composant en cause, permettant de le remplacer par une alternative accessible (et de le réactiver). Cela signifie que la désactivation de JavaScript pour l’ensemble de la page ne sera pas acceptée comme une méthode valable, à moins qu’elle ne remette pas en cause l’utilisation des autres composants."
+								"particularCases": "Il existe une gestion de cas particuliers pour le test 7.1.3 lorsque :\n\nLa ponctuation et les lettres majuscules sont présentes dans le texte de l’intitulé visible : elles peuvent être ignorées dans le nom accessible sans porter à conséquence ;\n\nLe texte de l’intitulé visible sert de symbole : le texte ne doit pas être interprété littéralement au niveau du nom accessible. Le nom doit exprimer la fonction véhiculée par le symbole (par exemple, “B” au niveau d’un éditeur de texte aura pour nom accessible “Mettre en gras”, le signe “>” en fonction du contexte signifiera “Suivant” ou “Lancer la vidéo”). Le cas des symboles mathématiques fait cependant exception (voir la note ci-dessous).\n\nNote : si l’étiquette visible représente une expression mathématique, les symboles mathématiques peuvent être repris littéralement pour servir d’étiquette au nom accessible (ex. : “A>B”). Il est laissé à l’utilisateur le soin d’opérer la correspondance entre l’expression et ce qu’il doit épeler compte tenu de la connaissance qu’il a du fonctionnement de son logiciel de saisie vocale (“A plus grand que B” ou “A supérieur à B”).",
+								"technicalNotes": "Le critère 7.1 implémente la notion de « compatible avec les technologies d’assistance » telle que définie par les WCAG, ainsi que le recours à WAI-ARIA pour rendre un composant ou une fonctionnalité accessible. Le bon usage de WAI-ARIA est vérifié via les tests 7.1.1, 7.1.2, 7.1.3.\n\nNote importante : dans un environnement HTML5, beaucoup de composants peuvent nécessiter JavaScript pour fonctionner ; en conséquence la fourniture d’une alternative à un composant JavaScript qui ne pourrait pas être rendu accessible devra bénéficier d’une méthode spécifique au composant en cause, permettant de le remplacer par une alternative accessible (et de le réactiver). Cela signifie que la désactivation de JavaScript pour l’ensemble de la page ne sera pas acceptée comme une méthode valable, à moins qu’elle ne remette pas en cause l’utilisation des autres composants."
 							}
 						},
 						"mobile": {
@@ -2307,7 +2313,8 @@
 								}
 							],
 							"appendix": {
-								"particularCases": "Il existe une gestion de cas particuliers lorsque la fonctionnalité dépend de l’utilisation d’un gestionnaire d’événement sans équivalent universel ; par exemple, une application de dessin à main levée ne pourra pas être rendue contrôlable au clavier. Dans ces situations, le critère est non applicable.\n\nNotes techniques\n\nLe test 7.3.5 adresse les situations où un contenu additionnel contient des composants d’interface avec lesquels il doit être possible d’interagir au clavier. Par exemple, une infobulle personnalisée qui propose un lien dans son contenu."
+								"particularCases": "Il existe une gestion de cas particuliers lorsque la fonctionnalité dépend de l’utilisation d’un gestionnaire d’événement sans équivalent universel ; par exemple, une application de dessin à main levée ne pourra pas être rendue contrôlable au clavier. Dans ces situations, le critère est non applicable.",
+								"technicalNotes": "Le test 7.3.5 adresse les situations où un contenu additionnel contient des composants d’interface avec lesquels il doit être possible d’interagir au clavier. Par exemple, une infobulle personnalisée qui propose un lien dans son contenu."
 							}
 						},
 						"mobile": {
@@ -2439,8 +2446,8 @@
 									"number": "8.2.1",
 									"title": "L’indication de langue par défaut vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"*L’indication de la langue de la page (attribut lang et/ou xml:lang) est donnée pour l’élément html.",
-										"* L’indication de la langue de la page (attribut lang et/ou xml:lang) est donnée sur chaque élément de texte ou sur l’un des éléments parents."
+										"L’indication de la langue de la page (attribut lang et/ou xml:lang) est donnée pour l’élément html.",
+										"L’indication de la langue de la page (attribut lang et/ou xml:lang) est donnée sur chaque élément de texte ou sur l’un des éléments parents."
 									]
 								}
 							]
@@ -2459,9 +2466,9 @@
 									"number": "8.2.1",
 									"title": "Pour chaque document, l'une de ces conditions est-elle respectée :",
 									"conditions": [
-										"* Les textes sont restitués par les technologies d’assistance dans la langue principale du document",
-										"* Le code de langue est correctement défini dans le code source du document",
-										"* La langue par défaut du document est défini dans les propriétés globales du document"
+										"Les textes sont restitués par les technologies d’assistance dans la langue principale du document",
+										"Le code de langue est correctement défini dans le code source du document",
+										"La langue par défaut du document est défini dans les propriétés globales du document"
 									]
 								}
 							]
@@ -2685,21 +2692,21 @@
 									"number": "9.2.1",
 									"title": "Les zones principales, si elles existent, de la page constituant la structure du document vérifient-elles ces conditions ?",
 									"conditions": [
-										"* L’élément contenant la zone d’en-tête de la page a un rôle calculé de banner.",
-										"* Les éléments contenant les zones de navigation principales et secondaires ont un rôle calculé de navigation.",
-										"* L’élément contenant la zone de moteur de recherche a un rôle calculé de search.",
-										"* L’élément contenant la zone de contenu principal a un rôle calculé de main.",
-										"* L’élément contenant la zone d'apparté (contenu complémentaire) a un rôle calculé de complementary.",
-										"* L’élément contenant la zone de pied de page a un rôle calculé de contentinfo."
+										"L’élément contenant la zone d’en-tête de la page a un rôle calculé de banner.",
+										"Les éléments contenant les zones de navigation principales et secondaires ont un rôle calculé de navigation.",
+										"L’élément contenant la zone de moteur de recherche a un rôle calculé de search.",
+										"L’élément contenant la zone de contenu principal a un rôle calculé de main.",
+										"L’élément contenant la zone d'apparté (contenu complémentaire) a un rôle calculé de complementary.",
+										"L’élément contenant la zone de pied de page a un rôle calculé de contentinfo."
 									]
 								},
 								{
 									"number": "9.2.2",
 									"title": "La structure du document vérifie-t-elle ces conditions?",
 									"conditions": [
-										"* La structure du document utilise un seul élément visible avec le rôle calculé de main.",
-										"* La structure du document utilise un seul élément visible avec le rôle calculé de banner.",
-										"* La structure du document utilise un seul élément visible avec le rôle calculé de contentinfo."
+										"La structure du document utilise un seul élément visible avec le rôle calculé de main.",
+										"La structure du document utilise un seul élément visible avec le rôle calculé de banner.",
+										"La structure du document utilise un seul élément visible avec le rôle calculé de contentinfo."
 									]
 								},
 								{
@@ -2732,16 +2739,16 @@
 									"number": "9.3.1",
 									"title": "Les informations regroupées visuellement sous forme de liste non ordonnée vérifient-elles une de ces conditions ?",
 									"conditions": [
-										"* La liste utilise les balises HTML `<ul>` et `<li>`.",
-										"* La liste utilise les attributs WAI-ARIA role=\"list\" et role=\"listitem\"."
+										"La liste utilise les balises HTML `<ul>` et `<li>`.",
+										"La liste utilise les attributs WAI-ARIA role=\"list\" et role=\"listitem\"."
 									]
 								},
 								{
 									"number": "9.3.2",
 									"title": "Les informations regroupées visuellement sous forme de liste ordonnée vérifient-elles une de ces conditions ?",
 									"conditions": [
-										"* La liste utilise les balises HTML `<ol>` et `<li>`.",
-										"* La liste utilise les attributs WAI-ARIA role=\"list\" et role=\"listitem\"."
+										"La liste utilise les balises HTML `<ol>` et `<li>`.",
+										"La liste utilise les attributs WAI-ARIA role=\"list\" et role=\"listitem\"."
 									]
 								},
 								{
@@ -3287,7 +3294,8 @@
 								}
 							],
 							"appendix": {
-								"particularCases": "L’objectif de ce critère est de garantir un défilement dans une unique direction pour une lecture facilitée selon le sens de l’écriture.\n\nFont exception à ce critère, les contenus dont l’agencement requiert deux dimensions pour être compris ou utilisés comme :\n\nLes images, les graphiques ou les vidéos ;\n\nLes jeux (jeux de plateforme, par exemple) ;\n\nLes présentations (type diaporama, par exemple) ;\n\nLes tableaux de données ;\n\nLes interfaces où il est nécessaire d’avoir un ascenseur horizontal lors de la manipulation de l’interface.\n\nNote : la majorité des navigateurs sur les systèmes d’exploitation sur mobile (Android, iOS) ne gère pas correctement la redistribution en cas de zoom. Dans ce contexte, le critère sera considéré comme non applicable sur ces environnements.\n\nNote technique\n\n320 pixels CSS équivaut à une largeur d’affichage initiale de 1280 pixels CSS avec un zoom de 400 %. Pour un contenu Web conçu pour défiler horizontalement (par exemple, avec du texte vertical), la valeur de 256 pixels CSS équivaut à une hauteur d’affichage initiale de 1024 pixels CSS avec un zoom de 400 %.\n\nNote technique\n\nLorsqu’il est ici question de pixel, il s’agit du pixel CSS tel que défini par le W3C https://www.w3.org/TR/css3-values/"
+								"particularCases": "L’objectif de ce critère est de garantir un défilement dans une unique direction pour une lecture facilitée selon le sens de l’écriture.\n\nFont exception à ce critère, les contenus dont l’agencement requiert deux dimensions pour être compris ou utilisés comme :\n\nLes images, les graphiques ou les vidéos ;\n\nLes jeux (jeux de plateforme, par exemple) ;\n\nLes présentations (type diaporama, par exemple) ;\n\nLes tableaux de données ;\n\nLes interfaces où il est nécessaire d’avoir un ascenseur horizontal lors de la manipulation de l’interface.\n\nNote : la majorité des navigateurs sur les systèmes d’exploitation sur mobile (Android, iOS) ne gère pas correctement la redistribution en cas de zoom. Dans ce contexte, le critère sera considéré comme non applicable sur ces environnements.",
+								"technicalNotes": "320 pixels CSS équivaut à une largeur d’affichage initiale de 1280 pixels CSS avec un zoom de 400 %. Pour un contenu Web conçu pour défiler horizontalement (par exemple, avec du texte vertical), la valeur de 256 pixels CSS équivaut à une hauteur d’affichage initiale de 1024 pixels CSS avec un zoom de 400 %.\n\nLorsqu’il est ici question de pixel, il s’agit du pixel CSS tel que défini par le W3C https://www.w3.org/TR/css3-values/"
 							}
 						}
 					}
@@ -3302,10 +3310,10 @@
 									"number": "10.12.1",
 									"title": "le texte reste-t-il lisible lorsque l’affichage est modifié selon ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* L’espacement entre les lignes (line-height) est défini à au moins 1,5 fois la taille de la police.",
-										"* L’espacement suivant les paragraphes (balise `<p>`) est défini à au moins 2 fois la taille de la police.",
-										"* L’espacement des lettres (letter-spacing) est défini à au moins 0,12 fois la taille de la police.",
-										"* L’espacement des mots (word-spacing) est défini à au moins 0,16 fois la taille de la police."
+										"L’espacement entre les lignes (line-height) est défini à au moins 1,5 fois la taille de la police.",
+										"L’espacement suivant les paragraphes (balise `<p>`) est défini à au moins 2 fois la taille de la police.",
+										"L’espacement des lettres (letter-spacing) est défini à au moins 0,12 fois la taille de la police.",
+										"L’espacement des mots (word-spacing) est défini à au moins 0,16 fois la taille de la police."
 									]
 								}
 							],
@@ -3319,10 +3327,10 @@
 									"number": "10.12.1",
 									"title": "le texte reste-t-il lisible lorsque l’affichage est modifié selon ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* L’espacement entre les lignes (line-height) est défini à au moins 1,5 fois la taille de la police.",
-										"* L’espacement suivant les paragraphes (balise `<p>`) est défini à au moins 2 fois la taille de la police.",
-										"* L’espacement des lettres (letter-spacing) est défini à au moins 0,12 fois la taille de la police.",
-										"* L’espacement des mots (word-spacing) est défini à au moins 0,16 fois la taille de la police."
+										"L’espacement entre les lignes (line-height) est défini à au moins 1,5 fois la taille de la police.",
+										"L’espacement suivant les paragraphes (balise `<p>`) est défini à au moins 2 fois la taille de la police.",
+										"L’espacement des lettres (letter-spacing) est défini à au moins 0,12 fois la taille de la police.",
+										"L’espacement des mots (word-spacing) est défini à au moins 0,16 fois la taille de la police."
 									]
 								}
 							]
@@ -3378,27 +3386,27 @@
 									"number": "11.1.1",
 									"title": "Chaque champ de formulaire permettant de connaître la nature, le type ou le format des informations attendues possède-t-il une étiquette visible en vérifiant une de ces conditions ?",
 									"conditions": [
-										"* Un passage de texte visible adjacent est présent",
-										"* Un bouton visible adjacent est présent",
-										"* Un label visible adjacent est présent"
+										"Un passage de texte visible adjacent est présent",
+										"Un bouton visible adjacent est présent",
+										"Un label visible adjacent est présent"
 									]
 								},
 								{
 									"number": "11.1.2",
 									"title": "Chaque champ de formulaire vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* Le champ de formulaire possède un attribut WAI-ARIA aria-labelledby référençant un passage de texte identifié.",
-										"* Le champ de formulaire possède un attribut WAI-ARIA aria-label.",
-										"* Un élément `<label>` ayant un attribut for est associé au champ de formulaire.",
-										"* Le champ de formulaire est imbriqué dans l’élément `<label>`."
+										"Le champ de formulaire possède un attribut WAI-ARIA aria-labelledby référençant un passage de texte identifié.",
+										"Le champ de formulaire possède un attribut WAI-ARIA aria-label.",
+										"Un élément `<label>` ayant un attribut for est associé au champ de formulaire.",
+										"Le champ de formulaire est imbriqué dans l’élément `<label>`."
 									]
 								},
 								{
 									"number": "11.1.3",
 									"title": "Chaque champ de formulaire associé à une balise `<label>` ayant un attribut for, vérifie-t-il ces conditions ?",
 									"conditions": [
-										"* Le champ de formulaire possède un attribut id.",
-										"* La valeur de l’attribut for est égale à la valeur de l’attribut id du champ de formulaire associé"
+										"Le champ de formulaire possède un attribut id.",
+										"La valeur de l’attribut for est égale à la valeur de l’attribut id du champ de formulaire associé"
 									]
 								}
 							],
@@ -3412,9 +3420,9 @@
 									"number": "11.1.1",
 									"title": "Chaque champ de formulaire permettant de connaître la nature, le type ou le format des informations attendues possède-t-il une étiquette visible en vérifiant une de ces conditions ?",
 									"conditions": [
-										"* Un passage de texte visible adjacent est présent",
-										"* Un bouton visible adjacent est présent",
-										"* Un label visible adjacent est présent"
+										"Un passage de texte visible adjacent est présent",
+										"Un bouton visible adjacent est présent",
+										"Un label visible adjacent est présent"
 									]
 								},
 								{
@@ -3480,21 +3488,21 @@
 									"number": "11.3.2",
 									"title": "Chaque étiquette accolée à un champ (à l’exception des cases à cocher, bouton radio ou balises ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\"), vérifie-t-elle ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* L’étiquette est visuellement accolée immédiatement au-dessus ou à gauche du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de gauche à droite.",
-										"* L’étiquette est visuellement accolée immédiatement au-dessus ou à droite du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de droite à gauche."
+										"L’étiquette est visuellement accolée immédiatement au-dessus ou à gauche du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de gauche à droite.",
+										"L’étiquette est visuellement accolée immédiatement au-dessus ou à droite du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de droite à gauche."
 									]
 								},
 								{
 									"number": "11.3.3",
 									"title": "Chaque étiquette accolée à un champ de type checkbox ou radio ou à une balise ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\", vérifie-t-elle ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* L’étiquette est visuellement accolée immédiatement au-dessous ou à droite du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de gauche à droite.",
-										"* L’étiquette est visuellement accolée immédiatement au-dessous ou à gauche du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de droite à gauche."
+										"L’étiquette est visuellement accolée immédiatement au-dessous ou à droite du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de gauche à droite.",
+										"L’étiquette est visuellement accolée immédiatement au-dessous ou à gauche du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de droite à gauche."
 									]
 								}
 							],
 							"appendix": {
-								"particularCases": "Les tests 11.3.2 et 11.3.3 seront considérés comme non applicables :\n\n\\*Dans le cas où l’étiquette mélange une portion de texte qui se lit de droite à gauche avec une portion de texte qui se lit de gauche à droite ;\n\n- Dans le cas où un formulaire contient des labels de plusieurs langues qui se liraient de droite à gauche et inversement. Par exemple, un formulaire de commande en arabe qui propose une liste de cases à cocher de produit en langue française ou mixant des produits en langue arabe ou en langue française ;\n\n- Dans le cas où les champs de type radio ou checkbox et les balises ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\" ne sont pas visuellement présentés sous forme de bouton radio ou de case à cocher ;\n\n- Dans le cas où les champs seraient utilisés dans un contexte où il pourrait être légitime, du point de vue de l’expérience utilisateur, de placer les étiquettes de manière différente à celle requise dans les tests 11.3.2 et 11.3.3."
+								"particularCases": "Les tests 11.3.2 et 11.3.3 seront considérés comme non applicables :\n\n- Dans le cas où l’étiquette mélange une portion de texte qui se lit de droite à gauche avec une portion de texte qui se lit de gauche à droite ;\n\n- Dans le cas où un formulaire contient des labels de plusieurs langues qui se liraient de droite à gauche et inversement. Par exemple, un formulaire de commande en arabe qui propose une liste de cases à cocher de produit en langue française ou mixant des produits en langue arabe ou en langue française ;\n\n- Dans le cas où les champs de type radio ou checkbox et les balises ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\" ne sont pas visuellement présentés sous forme de bouton radio ou de case à cocher ;\n\n- Dans le cas où les champs seraient utilisés dans un contexte où il pourrait être légitime, du point de vue de l’expérience utilisateur, de placer les étiquettes de manière différente à celle requise dans les tests 11.3.2 et 11.3.3."
 							}
 						},
 						"mobile": {
@@ -3507,21 +3515,21 @@
 									"number": "11.3.2",
 									"title": "Chaque étiquette accolée à un champ (à l’exception des cases à cocher, bouton radio), vérifie-t-elle ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* L’étiquette est visuellement accolée immédiatement au-dessus ou à gauche du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de gauche à droite.",
-										"* L’étiquette est visuellement accolée immédiatement au-dessus ou à droite du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de droite à gauche."
+										"L’étiquette est visuellement accolée immédiatement au-dessus ou à gauche du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de gauche à droite.",
+										"L’étiquette est visuellement accolée immédiatement au-dessus ou à droite du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de droite à gauche."
 									]
 								},
 								{
 									"number": "11.3.3",
 									"title": "Chaque étiquette accolée à un champ de type checkbox ou radio vérifie-t-elle ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* L’étiquette est visuellement accolée immédiatement au-dessous ou à droite du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de gauche à droite.",
-										"* L’étiquette est visuellement accolée immédiatement au-dessous ou à gauche du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de droite à gauche."
+										"L’étiquette est visuellement accolée immédiatement au-dessous ou à droite du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de gauche à droite.",
+										"L’étiquette est visuellement accolée immédiatement au-dessous ou à gauche du champ de formulaire lorsque le sens de lecture de la langue de l’étiquette est de droite à gauche."
 									]
 								}
 							],
 							"appendix": {
-								"particularCases": "Les tests 11.3.2 et 11.3.3 seront considérés comme non applicables :\n\n\\*Dans le cas où l’étiquette mélange une portion de texte qui se lit de droite à gauche avec une portion de texte qui se lit de gauche à droite ;\n\n- Dans le cas où un formulaire contient des labels de plusieurs langues qui se liraient de droite à gauche et inversement. Par exemple, un formulaire de commande en arabe qui propose une liste de cases à cocher de produit en langue française ou mixant des produits en langue arabe ou en langue française ;\n\n- Dans le cas où les champs de type radio ou checkbox et les balises ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\" ne sont pas visuellement présentés sous forme de bouton radio ou de case à cocher ;\n\n- Dans le cas où les champs seraient utilisés dans un contexte où il pourrait être légitime, du point de vue de l’expérience utilisateur, de placer les étiquettes de manière différente à celle requise dans les tests 11.3.2 et 11.3.3."
+								"particularCases": "Les tests 11.3.2 et 11.3.3 seront considérés comme non applicables :\n\n- Dans le cas où l’étiquette mélange une portion de texte qui se lit de droite à gauche avec une portion de texte qui se lit de gauche à droite ;\n\n- Dans le cas où un formulaire contient des labels de plusieurs langues qui se liraient de droite à gauche et inversement. Par exemple, un formulaire de commande en arabe qui propose une liste de cases à cocher de produit en langue française ou mixant des produits en langue arabe ou en langue française ;\n\n- Dans le cas où les champs de type radio ou checkbox et les balises ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\" ne sont pas visuellement présentés sous forme de bouton radio ou de case à cocher ;\n\n- Dans le cas où les champs seraient utilisés dans un contexte où il pourrait être légitime, du point de vue de l’expérience utilisateur, de placer les étiquettes de manière différente à celle requise dans les tests 11.3.2 et 11.3.3."
 							}
 						}
 					}
@@ -3536,9 +3544,9 @@
 									"number": "11.4.1",
 									"title": "Les champs de même nature vérifient-ils l’une de ces conditions, si nécessaire ?",
 									"conditions": [
-										"* Les champs de même nature sont regroupés dans une balise `<fieldset>`.",
-										"* Les champs de même nature sont regroupés dans une balise possédant un attribut WAI-ARIA role=\"group\".",
-										"* Les champs de même nature de type radio (`<input type=\"radio\">`) ou balises possédant un attribut WAI-ARIA role=\"radio\") sont regroupés dans une balise possédant un attribut WAI-ARIA role=\"radiogroup\" ou role=\"group\"."
+										"Les champs de même nature sont regroupés dans une balise `<fieldset>`.",
+										"Les champs de même nature sont regroupés dans une balise possédant un attribut WAI-ARIA role=\"group\".",
+										"Les champs de même nature de type radio (`<input type=\"radio\">`) ou balises possédant un attribut WAI-ARIA role=\"radio\") sont regroupés dans une balise possédant un attribut WAI-ARIA role=\"radiogroup\" ou role=\"group\"."
 									]
 								}
 							]
@@ -3639,40 +3647,40 @@
 									"number": "11.8.1",
 									"title": "L’intitulé de chaque bouton vérifie-t-il ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent.",
-										"* S’il est présent, le passage de texte lié au bouton via un attribut WAI-ARIA aria-labelledby est pertinent.",
-										"* S’il est présent, le contenu de l’attribut value d’une balise `<input>` de type submit, reset ou button est pertinent.",
-										"* S’il est présent, le contenu de la balise `<button>` est pertinent.",
-										"* S’il est présent, le contenu de l’attribut alt d’une balise `<input>` de type image est pertinent."
+										"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent.",
+										"S’il est présent, le passage de texte lié au bouton via un attribut WAI-ARIA aria-labelledby est pertinent.",
+										"S’il est présent, le contenu de l’attribut value d’une balise `<input>` de type submit, reset ou button est pertinent.",
+										"S’il est présent, le contenu de la balise `<button>` est pertinent.",
+										"S’il est présent, le contenu de l’attribut alt d’une balise `<input>` de type image est pertinent."
 									]
 								},
 								{
 									"number": "11.8.2",
 									"title": "Chaque bouton affichant un intitulé visible vérifie-t-il ces conditions (hors cas particuliers)",
 									"conditions": [
-										"* S’il est présent, le contenu de l’attribut WAI-ARIA aria-label contient au moins l’intitulé visible.",
-										"* S’il est présent, le passage de texte lié au bouton via un attribut WAI-ARIA aria-labelledby contient au moins l’intitulé visible.",
-										"* S’il est présent, le contenu de l’attribut value d’une balise `<input>` de type submit, reset ou button contient au moins l’intitulé visible.",
-										"* S’il est présent, le contenu de la balise `<button>` contient au moins l’intitulé visible.",
-										"* S’il est présent, le contenu de l’attribut alt d’une balise `<input>` de type image contient au moins l’intitulé visible."
+										"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label contient au moins l’intitulé visible.",
+										"S’il est présent, le passage de texte lié au bouton via un attribut WAI-ARIA aria-labelledby contient au moins l’intitulé visible.",
+										"S’il est présent, le contenu de l’attribut value d’une balise `<input>` de type submit, reset ou button contient au moins l’intitulé visible.",
+										"S’il est présent, le contenu de la balise `<button>` contient au moins l’intitulé visible.",
+										"S’il est présent, le contenu de l’attribut alt d’une balise `<input>` de type image contient au moins l’intitulé visible."
 									]
 								},
 								{
 									"number": "11.8.3",
 									"title": "Chaque bouton de type image (balise `<input>` avec l’attribut type=\"image\") porteur d’information, qui nécessite une description détaillée, vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image.",
-										"* Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée.",
-										"* Il existe un attribut WAI-ARIA aria-describedby associant un passage de texte faisant office de description détaillée."
+										"Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image.",
+										"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée.",
+										"Il existe un attribut WAI-ARIA aria-describedby associant un passage de texte faisant office de description détaillée."
 									]
 								},
 								{
 									"number": "11.8.4",
 									"title": "Chaque bouton de type image (balise `<input>` avec l’attribut type=\"image\") porteur d’information, ayant une description détaillée, vérifie-t-il ces conditions ?",
 									"conditions": [
-										"* La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
-										"* La description détaillée via un lien ou un bouton adjacent est pertinente.",
-										"* Le passage de texte associé via l’attribut WAI-ARIA aria-describedby est pertinent."
+										"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
+										"La description détaillée via un lien ou un bouton adjacent est pertinente.",
+										"Le passage de texte associé via l’attribut WAI-ARIA aria-describedby est pertinent."
 									]
 								},
 								{
@@ -3698,16 +3706,16 @@
 									"number": "11.8.3",
 									"title": "Chaque bouton de type image qui nécessite une description détaillée, vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image.",
-										"* Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée."
+										"Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image.",
+										"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée."
 									]
 								},
 								{
 									"number": "11.8.4",
 									"title": "Chaque bouton de type image ayant une description détaillée, vérifie-t-il ces conditions ?",
 									"conditions": [
-										"* La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
-										"* La description détaillée via un lien ou un bouton adjacent est pertinente."
+										"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
+										"La description détaillée via un lien ou un bouton adjacent est pertinente."
 									]
 								}
 							]
@@ -3724,33 +3732,34 @@
 									"number": "11.9.1",
 									"title": "Les indications du caractère obligatoire ou facultatif de la saisie des champs vérifient-elles une de ces conditions (hors cas particuliers)",
 									"conditions": [
-										"* Pour tous les champs obligatoires une indication de champ obligatoire est visible et accessible aux technologies d’assistance et permet d’identifier nommément le champ concerné avant sa saisie.",
-										"* Pour tous les champs facultatifs une indication de champ facultatif est visible et accessible aux technologies d’assistance et permet d’identifier nommément le champ concerné avant sa saisie.",
-										"* Une indication générale du caractère facultatif ou obligatoire applicable à la totalité des champs, positionnée avant ceux-ci, est visible et accessible aux technologies d’assistance."
+										"Pour tous les champs obligatoires une indication de champ obligatoire est visible et accessible aux technologies d’assistance et permet d’identifier nommément le champ concerné avant sa saisie.",
+										"Pour tous les champs facultatifs une indication de champ facultatif est visible et accessible aux technologies d’assistance et permet d’identifier nommément le champ concerné avant sa saisie.",
+										"Une indication générale du caractère facultatif ou obligatoire applicable à la totalité des champs, positionnée avant ceux-ci, est visible et accessible aux technologies d’assistance."
 									]
 								},
 								{
 									"number": "11.9.2",
 									"title": "Les champs obligatoires ayant l’attribut aria-required=\"true\" ou required vérifient-ils une de ces conditions ?",
 									"conditions": [
-										"* Une indication de champ obligatoire est visible et accessible aux technologies d’assistance et permet d’identifier nommément le champ concerné avant sa saisie.",
-										"* Une indication de champ obligatoire est visible et accessible aux technologies d’assistance et située dans l’étiquette associée au champ avant sa saisie.",
-										"* Une indication de champ obligatoire est visible et accessible aux technologies d’assistance et située dans le passage de texte associé au champ avant sa saisie.",
-										"* Une indication de champ obligatoire est visible et accessible aux technologies d’assistance et située dans la légende associée au groupe de champs avant sa saisie"
+										"Une indication de champ obligatoire est visible et accessible aux technologies d’assistance et permet d’identifier nommément le champ concerné avant sa saisie.",
+										"Une indication de champ obligatoire est visible et accessible aux technologies d’assistance et située dans l’étiquette associée au champ avant sa saisie.",
+										"Une indication de champ obligatoire est visible et accessible aux technologies d’assistance et située dans le passage de texte associé au champ avant sa saisie.",
+										"Une indication de champ obligatoire est visible et accessible aux technologies d’assistance et située dans la légende associée au groupe de champs avant sa saisie"
 									]
 								},
 								{
 									"number": "11.9.3",
 									"title": "Les champs ayant l’attribut aria-invalid=\"true\" dont la saisie requiert un type de données et/ou de format obligatoires vérifient-ils une de ces conditions ?",
 									"conditions": [
-										"* Une instruction ou une indication du type de données et/ou de format obligatoire est visible et accessible aux technologies d’assistance et est située dans la balise `<label>` associée au champ.",
-										"* Une instruction ou une indication du type de données et/ou de format obligatoire est visible et accessible aux technologies d’assistance et est située dans le passage de texte associé au champ.",
-										"* Le message d’erreur indiquant le caractère invalide de la saisie est situé dans le groupe de champs."
+										"Une instruction ou une indication du type de données et/ou de format obligatoire est visible et accessible aux technologies d’assistance et est située dans la balise `<label>` associée au champ.",
+										"Une instruction ou une indication du type de données et/ou de format obligatoire est visible et accessible aux technologies d’assistance et est située dans le passage de texte associé au champ.",
+										"Le message d’erreur indiquant le caractère invalide de la saisie est situé dans le groupe de champs."
 									]
 								}
 							],
 							"appendix": {
-								"particularCases": "Le test 11.9.1 et le test 11.9.2 seront considérés comme non applicables lorsque :\n\n- le formulaire comporte un seul champ de formulaire ;\n\n- le formulaire comporte uniquement un champ d’identifiant et un champ de mot de passe (dans le cas d’un formulaire d’identification).\n\nDans le cas où l’ensemble des champs d’un formulaire sont obligatoires, les tests 11.9.1 et 11.9.2 restent applicables.\n\nNote technique\n\nLe test 11.9.1 et le test 11.9.2 traitent des champs de manière indépendante, néanmoins, il faut garantir que la méthode choisie pour avertir les utilisateurs (champs obligatoires ou champs facultatifs) soit cohérente sur l’ensemble du formulaire."
+								"particularCases": "Le test 11.9.1 et le test 11.9.2 seront considérés comme non applicables lorsque :\n\n- le formulaire comporte un seul champ de formulaire ;\n\n- le formulaire comporte uniquement un champ d’identifiant et un champ de mot de passe (dans le cas d’un formulaire d’identification).\n\nDans le cas où l’ensemble des champs d’un formulaire sont obligatoires, les tests 11.9.1 et 11.9.2 restent applicables.",
+								"technicalNotes": "Le test 11.9.1 et le test 11.9.2 traitent des champs de manière indépendante, néanmoins, il faut garantir que la méthode choisie pour avertir les utilisateurs (champs obligatoires ou champs facultatifs) soit cohérente sur l’ensemble du formulaire."
 							}
 						},
 						"mobile": {
@@ -3759,18 +3768,18 @@
 									"number": "11.9.1",
 									"title": "Les indications du caractère obligatoire ou facultatif de la saisie des champs vérifient-elles une de ces conditions (hors cas particuliers)",
 									"conditions": [
-										"* Pour tous les champs obligatoires une indication de champ obligatoire est visible et accessible aux technologies d’assistance et permet d’identifier nommément le champ concerné avant sa saisie.",
-										"* Pour tous les champs facultatifs une indication de champ facultatif est visible et accessible aux technologies d’assistance et permet d’identifier nommément le champ concerné avant sa saisie.",
-										"* Une indication générale du caractère facultatif ou obligatoire applicable à la totalité des champs, positionnée avant ceux-ci, est visible et accessible aux technologies d’assistance."
+										"Pour tous les champs obligatoires une indication de champ obligatoire est visible et accessible aux technologies d’assistance et permet d’identifier nommément le champ concerné avant sa saisie.",
+										"Pour tous les champs facultatifs une indication de champ facultatif est visible et accessible aux technologies d’assistance et permet d’identifier nommément le champ concerné avant sa saisie.",
+										"Une indication générale du caractère facultatif ou obligatoire applicable à la totalité des champs, positionnée avant ceux-ci, est visible et accessible aux technologies d’assistance."
 									]
 								},
 								{
 									"number": "11.9.2",
 									"title": "Les champs en erreur et dont la saisie requiert un type de données et/ou de format obligatoires vérifient-ils une de ces conditions ?",
 									"conditions": [
-										"* Une instruction ou une indication du type de données et/ou de format obligatoire est visible et accessible aux technologies d’assistance et est située dans le libellé associé au champ.",
-										"* Une instruction ou une indication du type de données et/ou de format obligatoire est visible et accessible aux technologies d’assistance et est située dans le passage de texte associé au champ.",
-										"* Le message d’erreur indiquant le caractère invalide de la saisie est situé dans le groupe de champs."
+										"Une instruction ou une indication du type de données et/ou de format obligatoire est visible et accessible aux technologies d’assistance et est située dans le libellé associé au champ.",
+										"Une instruction ou une indication du type de données et/ou de format obligatoire est visible et accessible aux technologies d’assistance et est située dans le passage de texte associé au champ.",
+										"Le message d’erreur indiquant le caractère invalide de la saisie est situé dans le groupe de champs."
 									]
 								}
 							]
@@ -3787,8 +3796,8 @@
 									"number": "11.10.1",
 									"title": "Chaque champ (ou groupe de champs) de formulaire qui attend un type de données et/ou un format spécifique respecte-t-il ces conditions ?",
 									"conditions": [
-										"* Le type de données et/ou de format est visible avant la saisie ;",
-										"* Le type de données et/ou de format est disponible aux technologies d’assistance avant la saisie."
+										"Le type de données et/ou de format est visible avant la saisie ;",
+										"Le type de données et/ou de format est disponible aux technologies d’assistance avant la saisie."
 									]
 								}
 							]
@@ -3799,8 +3808,8 @@
 									"number": "11.10.1",
 									"title": "Chaque champ (ou groupe de champs) de formulaire qui attend un type de données et/ou un format spécifique respecte-t-il ces conditions ?",
 									"conditions": [
-										"* Le type de données et/ou de format est visible avant la saisie ;",
-										"* Le type de données et/ou de format est disponible aux technologies d’assistance avant la saisie."
+										"Le type de données et/ou de format est visible avant la saisie ;",
+										"Le type de données et/ou de format est disponible aux technologies d’assistance avant la saisie."
 									]
 								}
 							]
@@ -3817,9 +3826,9 @@
 									"number": "11.11.1",
 									"title": "Chaque champ de formulaire dont l’objet se rapporte à une information concernant la personne utilisatrice vérifie-t-il ces conditions ?",
 									"conditions": [
-										"* Le champ de formulaire possède un attribut autocomplete ;",
-										"* L’attribut autocomplete est pourvu d’une valeur présente dans la liste des valeurs possibles pour l’attribut autocomplete associés à un champ de formulaire ;",
-										"* La valeur indiquée pour l’attribut autocomplete est pertinente au regard du type d’information attendu."
+										"Le champ de formulaire possède un attribut autocomplete ;",
+										"L’attribut autocomplete est pourvu d’une valeur présente dans la liste des valeurs possibles pour l’attribut autocomplete associés à un champ de formulaire ;",
+										"La valeur indiquée pour l’attribut autocomplete est pertinente au regard du type d’information attendu."
 									]
 								}
 							],
@@ -3833,8 +3842,8 @@
 									"number": "11.11.1",
 									"title": "Chaque champ qui attend une donnée personnelle de la personne utilisatrice respecte-t-il ces conditions ?",
 									"conditions": [
-										"* Les contrôles natifs adéquats de la plateforme sont présentés à l’utilisateur ;",
-										"* Le champ est compatible avec une fonctionnalité de remplissage automatique."
+										"Les contrôles natifs adéquats de la plateforme sont présentés à l’utilisateur ;",
+										"Le champ est compatible avec une fonctionnalité de remplissage automatique."
 									]
 								}
 							]
@@ -3851,8 +3860,8 @@
 									"number": "11.12.1",
 									"title": "Les informations précédemment saisies par la personne utilisatrice ou fournies à la personne utilisatrice, et qui doivent être à nouveau saisies dans le même processus sont-elles soit :",
 									"conditions": [
-										"* préremplies, ou",
-										"* disponibles pour être sélectionnées par la personne utilisatrice."
+										"préremplies, ou",
+										"disponibles pour être sélectionnées par la personne utilisatrice."
 									]
 								}
 							],
@@ -3866,8 +3875,8 @@
 									"number": "11.12.1",
 									"title": "Les informations précédemment saisies par la personne utilisatrice ou fournies à la personne utilisatrice, et qui doivent être à nouveau saisies dans le même processus sont-elles soit :",
 									"conditions": [
-										"* préremplies, ou",
-										"* disponibles pour être sélectionnées par la personne utilisatrice."
+										"préremplies, ou",
+										"disponibles pour être sélectionnées par la personne utilisatrice."
 									]
 								}
 							]
@@ -3884,24 +3893,24 @@
 									"number": "11.13.1",
 									"title": "Les messages d’erreurs fournissant une instruction ou une indication du type de données et/ou de format attendu des champs vérifient-ils une de ces conditions ?",
 									"conditions": [
-										"* Le message d’erreur fournissant une instruction ou une indication du type de données et/ou de format attendu est visible et identifie le champ concerné.",
-										"* Le champ dispose de l’attribut aria-invalid=\"true\"."
+										"Le message d’erreur fournissant une instruction ou une indication du type de données et/ou de format attendu est visible et identifie le champ concerné.",
+										"Le champ dispose de l’attribut aria-invalid=\"true\"."
 									]
 								},
 								{
 									"number": "11.13.2",
 									"title": "Les messages d’erreur indiquant l’absence de saisie d’un champ obligatoire vérifient-ils une de ces conditions ?",
 									"conditions": [
-										"* Le message d’erreur indiquant l’absence de saisie d’un champ obligatoire est visible et permet d’identifier nommément le champ concerné.",
-										"* Le champ obligatoire dispose de l’attribut aria-invalid=\"true\"."
+										"Le message d’erreur indiquant l’absence de saisie d’un champ obligatoire est visible et permet d’identifier nommément le champ concerné.",
+										"Le champ obligatoire dispose de l’attribut aria-invalid=\"true\"."
 									]
 								},
 								{
 									"number": "11.13.3",
 									"title": "Les champs ayant l’attribut aria-invalid=\"true\" vérifient-ils une de ces conditions ?",
 									"conditions": [
-										"* Le message d’erreur indiquant le caractère invalide de la saisie est visible et situé dans l’étiquette associée au champ.",
-										"* Le message d’erreur indiquant le caractère invalide de la saisie est visible et situé dans le passage de texte associé au champ."
+										"Le message d’erreur indiquant le caractère invalide de la saisie est visible et situé dans l’étiquette associée au champ.",
+										"Le message d’erreur indiquant le caractère invalide de la saisie est visible et situé dans le passage de texte associé au champ."
 									]
 								}
 							]
@@ -3939,17 +3948,17 @@
 									"number": "11.15.1",
 									"title": "Pour chaque formulaire qui modifie ou supprime des données, ou qui transmet des réponses à un test ou un examen, ou dont la validation a des conséquences financières ou juridiques, la saisie des données vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"* L’utilisateur peut modifier ou annuler les données et les actions effectuées sur ces données après la validation du formulaire ;",
-										"* L’utilisateur peut vérifier et corriger les données avant la validation d’un formulaire en plusieurs étapes ;",
-										"* Un mécanisme de confirmation explicite, via une case à cocher (balise `<input>` de type checkbox ou balise ayant un attribut WAI-ARIA role=\"checkbox\") ou une étape supplémentaire, est présent."
+										"L’utilisateur peut modifier ou annuler les données et les actions effectuées sur ces données après la validation du formulaire ;",
+										"L’utilisateur peut vérifier et corriger les données avant la validation d’un formulaire en plusieurs étapes ;",
+										"Un mécanisme de confirmation explicite, via une case à cocher (balise `<input>` de type checkbox ou balise ayant un attribut WAI-ARIA role=\"checkbox\") ou une étape supplémentaire, est présent."
 									]
 								},
 								{
 									"number": "11.15.2",
 									"title": "Chaque formulaire dont la validation modifie ou supprime des données à caractère financier, juridique ou personnel vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* Un mécanisme permet de récupérer les données supprimées ou modifiées par l’utilisateur ;",
-										"* Un mécanisme de demande de confirmation explicite de la suppression ou de la modification, via un champ de formulaire ou une étape supplémentaire, est proposé"
+										"Un mécanisme permet de récupérer les données supprimées ou modifiées par l’utilisateur ;",
+										"Un mécanisme de demande de confirmation explicite de la suppression ou de la modification, via un champ de formulaire ou une étape supplémentaire, est proposé"
 									]
 								}
 							]
@@ -3972,9 +3981,9 @@
 									"number": "12.1.1",
 									"title": "Chaque ensemble de pages vérifie-t-il une de ces conditions (hors cas particuliers)",
 									"conditions": [
-										"* Un menu de navigation et un plan du site sont présents.",
-										"* Un menu de navigation et un moteur de recherche sont présents.",
-										"* Un moteur de recherche et un plan du site sont présents."
+										"Un menu de navigation et un plan du site sont présents.",
+										"Un menu de navigation et un moteur de recherche sont présents.",
+										"Un moteur de recherche et un plan du site sont présents."
 									]
 								}
 							],
@@ -3994,8 +4003,8 @@
 									"number": "12.2.1",
 									"title": "Dans chaque ensemble de pages, chaque page disposant d’un menu ou de barres de navigation (ou des deux) vérifie-t-elle ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* Le menu et les barres de navigation sont toujours à la même place dans la présentation.",
-										"* Le menu et les barres de navigation se présentent toujours dans le même ordre relatif dans le code source."
+										"Le menu et les barres de navigation sont toujours à la même place dans la présentation.",
+										"Le menu et les barres de navigation se présentent toujours dans le même ordre relatif dans le code source."
 									]
 								},
 								{
@@ -4033,8 +4042,8 @@
 									"number": "12.2.1",
 									"title": "Dans chaque ensemble de pages, chaque page disposant d’un menu ou de barres de navigation (ou des deux) vérifie-t-elle ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* Le menu et les barres de navigation sont toujours à la même place dans la présentation.",
-										"* Le menu et les barres de navigation se présentent toujours dans le même ordre relatif dans le code source."
+										"Le menu et les barres de navigation sont toujours à la même place dans la présentation.",
+										"Le menu et les barres de navigation se présentent toujours dans le même ordre relatif dans le code source."
 									]
 								},
 								{
@@ -4063,18 +4072,18 @@
 									"number": "12.3.1",
 									"title": "Le mécanisme d'aide vérifie-t-il ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* Le mécanisme d'aide est situé à la même place dans la présentation ;",
-										"* Le mécanisme d'aide se présente toujours dans le même ordre relatif dans le code source"
+										"Le mécanisme d'aide est situé à la même place dans la présentation ;",
+										"Le mécanisme d'aide se présente toujours dans le même ordre relatif dans le code source"
 									]
 								},
 								{
 									"number": "12.3.2",
 									"title": "Dans chaque ensemble de pages, le lien vers le mécanisme d'aide vérifie-t-il ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* Le lien vers le mécanisme d'aide est situé à la même place dans la présentation ;",
-										"* Le lien vers le mécanisme d'aide se présente toujours dans le même ordre relatif dans le code source ;",
-										"* Le lien vers le mécanisme d'aide est visible ou, à défaut, visible à la prise de focus ;",
-										"* Le lien vers le mécanisme d'aide est fonctionnel."
+										"Le lien vers le mécanisme d'aide est situé à la même place dans la présentation ;",
+										"Le lien vers le mécanisme d'aide se présente toujours dans le même ordre relatif dans le code source ;",
+										"Le lien vers le mécanisme d'aide est visible ou, à défaut, visible à la prise de focus ;",
+										"Le lien vers le mécanisme d'aide est fonctionnel."
 									]
 								}
 							],
@@ -4088,18 +4097,18 @@
 									"number": "12.3.1",
 									"title": "Le mécanisme d'aide vérifie-t-il ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* Le mécanisme d'aide est situé à la même place dans la présentation ;",
-										"* Le mécanisme d'aide se présente toujours dans le même ordre relatif pour les technologies d'assistance"
+										"Le mécanisme d'aide est situé à la même place dans la présentation ;",
+										"Le mécanisme d'aide se présente toujours dans le même ordre relatif pour les technologies d'assistance"
 									]
 								},
 								{
 									"number": "12.3.2",
 									"title": "Dans chaque ensemble de pages, le lien vers le mécanisme d'aide vérifie-t-il ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* Le lien vers le mécanisme d'aide est situé à la même place dans la présentation ;",
-										"* Le lien vers le mécanisme d'aide se présente toujours dans le même ordre relatif pour les technologies d'assistance ;",
-										"* Le lien vers le mécanisme d'aide est visible ou, à défaut, visible à la prise de focus ;",
-										"* Le lien vers le mécanisme d'aide est fonctionnel."
+										"Le lien vers le mécanisme d'aide est situé à la même place dans la présentation ;",
+										"Le lien vers le mécanisme d'aide se présente toujours dans le même ordre relatif pour les technologies d'assistance ;",
+										"Le lien vers le mécanisme d'aide est visible ou, à défaut, visible à la prise de focus ;",
+										"Le lien vers le mécanisme d'aide est fonctionnel."
 									]
 								}
 							]
@@ -4142,10 +4151,10 @@
 									"number": "12.5.2",
 									"title": "Dans chaque ensemble de pages, le lien d’évitement ou d’accès rapide à la zone de contenu principal vérifie-t-il ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* Le lien est situé à la même place dans la présentation ;",
-										"* Le lien se présente toujours dans le même ordre relatif dans le code source ;",
-										"* Le lien est visible ou, à défaut, visible à la prise de focus ;",
-										"* Le lien est fonctionnel."
+										"Le lien est situé à la même place dans la présentation ;",
+										"Le lien se présente toujours dans le même ordre relatif dans le code source ;",
+										"Le lien est visible ou, à défaut, visible à la prise de focus ;",
+										"Le lien est fonctionnel."
 									]
 								}
 							],
@@ -4165,11 +4174,11 @@
 									"number": "12.6.1",
 									"title": "Les zones de regroupement de contenus présentes dans plusieurs pages web (à l’exception des zones principales constituant la structure du document) respectent-elles au moins une de ces conditions, si nécessaire ?",
 									"conditions": [
-										"* La zone possède un rôle calculé correspondant à sa nature.",
-										"* La zone possède un titre dont le contenu permet de comprendre la nature du contenu de la zone.",
-										"* La zone peut être masquée par le biais d’un bouton précédent directement la zone dans l’ordre du code source.",
-										"* La zone peut être évitée par le biais d’un lien d’évitement précédent directement la zone dans l’ordre du code source.",
-										"* La zone peut être atteinte par le biais d’un lien d’accès rapide visible ou, à défaut, visible à la prise de focus."
+										"La zone possède un rôle calculé correspondant à sa nature.",
+										"La zone possède un titre dont le contenu permet de comprendre la nature du contenu de la zone.",
+										"La zone peut être masquée par le biais d’un bouton précédent directement la zone dans l’ordre du code source.",
+										"La zone peut être évitée par le biais d’un lien d’évitement précédent directement la zone dans l’ordre du code source.",
+										"La zone peut être atteinte par le biais d’un lien d’accès rapide visible ou, à défaut, visible à la prise de focus."
 									]
 								}
 							]
@@ -4216,8 +4225,8 @@
 									"number": "12.8.1",
 									"title": "Chaque élément recevant le focus vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* Il est possible d’atteindre l’élément suivant ou précédent pouvant recevoir le focus avec la touche de tabulation.",
-										"* La personne utilisatrice est informée d’un mécanisme fonctionnel permettant d’atteindre au clavier l’élément suivant ou précédent pouvant recevoir le focus."
+										"Il est possible d’atteindre l’élément suivant ou précédent pouvant recevoir le focus avec la touche de tabulation.",
+										"La personne utilisatrice est informée d’un mécanisme fonctionnel permettant d’atteindre au clavier l’élément suivant ou précédent pouvant recevoir le focus."
 									]
 								}
 							]
@@ -4228,8 +4237,8 @@
 									"number": "12.8.1",
 									"title": "Chaque élément recevant le focus vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* Il est possible d’atteindre l’élément suivant ou précédent pouvant recevoir le focus avec la touche de tabulation.",
-										"* La personne utilisatrice est informée d’un mécanisme fonctionnel permettant d’atteindre au clavier l’élément suivant ou précédent pouvant recevoir le focus."
+										"Il est possible d’atteindre l’élément suivant ou précédent pouvant recevoir le focus avec la touche de tabulation.",
+										"La personne utilisatrice est informée d’un mécanisme fonctionnel permettant d’atteindre au clavier l’élément suivant ou précédent pouvant recevoir le focus."
 									]
 								}
 							]
@@ -4246,9 +4255,9 @@
 									"number": "12.9.1",
 									"title": "Chaque raccourci clavier n’utilisant qu’une seule touche (lettre minuscule ou majuscule, ponctuation, chiffre ou symbole) vérifie-t-il l’une de ces conditions ?",
 									"conditions": [
-										"* Un mécanisme est disponible pour désactiver le raccourci clavier.",
-										"* Un mécanisme est disponible pour configurer la touche de raccourci clavier au moyen des touches de modification (Ctrl, Alt, Maj, etc.).",
-										"* Dans le cas d’un composant d’interface utilisateur, le raccourci clavier qui lui est associé ne peut être activé que si le focus clavier est sur ce composant."
+										"Un mécanisme est disponible pour désactiver le raccourci clavier.",
+										"Un mécanisme est disponible pour configurer la touche de raccourci clavier au moyen des touches de modification (Ctrl, Alt, Maj, etc.).",
+										"Dans le cas d’un composant d’interface utilisateur, le raccourci clavier qui lui est associé ne peut être activé que si le focus clavier est sur ce composant."
 									]
 								}
 							]
@@ -4259,9 +4268,9 @@
 									"number": "12.9.1",
 									"title": "Chaque raccourci clavier n’utilisant qu’une seule touche (lettre minuscule ou majuscule, ponctuation, chiffre ou symbole) vérifie-t-il l’une de ces conditions ?",
 									"conditions": [
-										"* Un mécanisme est disponible pour désactiver le raccourci clavier.",
-										"* Un mécanisme est disponible pour configurer la touche de raccourci clavier au moyen des touches de modification (Ctrl, Alt, Maj, etc.).",
-										"* Dans le cas d’un composant d’interface utilisateur, le raccourci clavier qui lui est associé ne peut être activé que si le focus clavier est sur ce composant."
+										"Un mécanisme est disponible pour désactiver le raccourci clavier.",
+										"Un mécanisme est disponible pour configurer la touche de raccourci clavier au moyen des touches de modification (Ctrl, Alt, Maj, etc.).",
+										"Dans le cas d’un composant d’interface utilisateur, le raccourci clavier qui lui est associé ne peut être activé que si le focus clavier est sur ce composant."
 									]
 								}
 							]
@@ -4326,10 +4335,10 @@
 									"number": "13.1.1",
 									"title": "Chaque procédé de rafraîchissement (p. ex. balise `<object>`, balise `<embed>`, balise `<svg>`, balise `<canvas>`, balise `<meta>`) vérifie-t-il une de ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* La personne utilisatrice peut arrêter ou relancer le rafraîchissement.",
-										"* La personne utilisatrice peut augmenter la limite de temps entre deux rafraîchissements de dix fois, au moins.",
-										"* La personne utilisatrice est averti de l’imminence du rafraîchissement et dispose de vingt secondes, au moins, pour augmenter la limite de temps avant le prochain rafraîchissement.",
-										"* La limite de temps entre deux rafraîchissements est de vingt heures, au moins."
+										"La personne utilisatrice peut arrêter ou relancer le rafraîchissement.",
+										"La personne utilisatrice peut augmenter la limite de temps entre deux rafraîchissements de dix fois, au moins.",
+										"La personne utilisatrice est averti de l’imminence du rafraîchissement et dispose de vingt secondes, au moins, pour augmenter la limite de temps avant le prochain rafraîchissement.",
+										"La limite de temps entre deux rafraîchissements est de vingt heures, au moins."
 									]
 								},
 								{
@@ -4340,19 +4349,19 @@
 									"number": "13.1.3",
 									"title": "Chaque procédé de redirection effectué via un script vérifie-t-il une de ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* La personne utilisatrice peut arrêter ou relancer la redirection.",
-										"* La personne utilisatrice peut augmenter la limite de temps avant la redirection de dix fois, au moins.",
-										"* La personne utilisatrice est averti de l’imminence de la redirection et dispose de vingt secondes, au moins, pour augmenter la limite de temps avant la prochaine redirection.",
-										"* La limite de temps avant la redirection est de vingt heures, au moins."
+										"La personne utilisatrice peut arrêter ou relancer la redirection.",
+										"La personne utilisatrice peut augmenter la limite de temps avant la redirection de dix fois, au moins.",
+										"La personne utilisatrice est averti de l’imminence de la redirection et dispose de vingt secondes, au moins, pour augmenter la limite de temps avant la prochaine redirection.",
+										"La limite de temps avant la redirection est de vingt heures, au moins."
 									]
 								},
 								{
 									"number": "13.1.4",
 									"title": "Chaque procédé limitant le temps d’une session vérifie-t-il une de ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* La personne utilisatrice peut supprimer la limite de temps.",
-										"* La personne utilisatrice peut augmenter la limite de temps.",
-										"* La limite de temps avant la fin de la session est de vingt heures au moins."
+										"La personne utilisatrice peut supprimer la limite de temps.",
+										"La personne utilisatrice peut augmenter la limite de temps.",
+										"La limite de temps avant la fin de la session est de vingt heures au moins."
 									]
 								}
 							],
@@ -4366,19 +4375,19 @@
 									"number": "13.1.1",
 									"title": "Chaque limite de temps imposée à la personne utilisatrice respecte-t-elle une de ces conditions",
 									"conditions": [
-										"* La personne utilisatrice peut arrêter ou relancer le rafraîchissement ;",
-										"* La personne utilisatrice peut augmenter la limite de temps entre deux rafraîchissements de dix fois, au moins ;",
-										"* La personne utilisatrice est avertie de l’imminence du rafraîchissement et dispose de vingt secondes, au moins, pour augmenter la limite de temps avant le prochain rafraîchissement ;",
-										"* La limite de temps entre deux rafraîchissements est de vingt heures, au moins."
+										"La personne utilisatrice peut arrêter ou relancer le rafraîchissement ;",
+										"La personne utilisatrice peut augmenter la limite de temps entre deux rafraîchissements de dix fois, au moins ;",
+										"La personne utilisatrice est avertie de l’imminence du rafraîchissement et dispose de vingt secondes, au moins, pour augmenter la limite de temps avant le prochain rafraîchissement ;",
+										"La limite de temps entre deux rafraîchissements est de vingt heures, au moins."
 									]
 								},
 								{
 									"number": "13.1.2",
 									"title": "Chaque procédé limitant le temps d’une session respecte-t-il une de ces conditions ?",
 									"conditions": [
-										"* La personne utilisatrice peut supprimer la limite de temps ;",
-										"* La personne utilisatrice peut augmenter la limite de temps ;",
-										"* La limite de temps avant la fin de la session est de vingt heures au moins"
+										"La personne utilisatrice peut supprimer la limite de temps ;",
+										"La personne utilisatrice peut augmenter la limite de temps ;",
+										"La limite de temps avant la fin de la session est de vingt heures au moins"
 									]
 								}
 							]
@@ -4417,9 +4426,9 @@
 									"number": "13.3.1",
 									"title": "Chaque fonctionnalité de téléchargement d’un document bureautique vérifie-t-elle une de ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* Le document en téléchargement est compatible avec l’accessibilité ;",
-										"* Il en existe une version alternative en téléchargement compatible avec l’accessibilité ;",
-										"* Il en existe une version alternative au format HTML compatible avec l’accessibilité."
+										"Le document en téléchargement est compatible avec l’accessibilité ;",
+										"Il en existe une version alternative en téléchargement compatible avec l’accessibilité ;",
+										"Il en existe une version alternative au format HTML compatible avec l’accessibilité."
 									]
 								}
 							],
@@ -4433,9 +4442,9 @@
 									"number": "13.3.1",
 									"title": "Chaque fonctionnalité de téléchargement d’un document bureautique vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"* Le document en téléchargement est compatible avec l’accessibilité ;",
-										"* Il en existe une version alternative en téléchargement compatible avec l’accessibilité ;",
-										"* Il en existe une version alternative au format HTML compatible avec l’accessibilité."
+										"Le document en téléchargement est compatible avec l’accessibilité ;",
+										"Il en existe une version alternative en téléchargement compatible avec l’accessibilité ;",
+										"Il en existe une version alternative au format HTML compatible avec l’accessibilité."
 									]
 								}
 							]
@@ -4446,8 +4455,8 @@
 									"number": "13.3.1",
 									"title": "Chaque fonctionnalité qui met à disposition un document bureautique (téléchargement, courriel, clef USB…) vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"* Le document mis à disposition est compatible avec l’accessibilité ;",
-										"* Il en existe une version alternative fournie conjointement par le même canal compatible avec l’accessibilité ."
+										"Le document mis à disposition est compatible avec l’accessibilité ;",
+										"Il en existe une version alternative fournie conjointement par le même canal compatible avec l’accessibilité ."
 									]
 								}
 							]
@@ -4522,8 +4531,8 @@
 									"number": "13.6.1",
 									"title": "Chaque contenu cryptique informatif vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La signification du contenu est donnée dans le contexte adjacent.",
-										"* La signification du contenu est mise à disposition par une méthode compatible avec l’accessibilité."
+										"La signification du contenu est donnée dans le contexte adjacent.",
+										"La signification du contenu est mise à disposition par une méthode compatible avec l’accessibilité."
 									]
 								},
 								{
@@ -4538,8 +4547,8 @@
 									"number": "13.6.1",
 									"title": "Chaque contenu cryptique informatif vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La signification du contenu est donnée dans le contexte adjacent.",
-										"* La signification du contenu est mise à disposition par une méthode compatible avec l’accessibilité."
+										"La signification du contenu est donnée dans le contexte adjacent.",
+										"La signification du contenu est mise à disposition par une méthode compatible avec l’accessibilité."
 									]
 								},
 								{
@@ -4554,8 +4563,8 @@
 									"number": "13.6.1",
 									"title": "Chaque contenu cryptique informatif vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La signification du contenu est donnée dans le contexte adjacent.",
-										"* La signification du contenu est mise à disposition par une méthode compatible avec l’accessibilité."
+										"La signification du contenu est donnée dans le contexte adjacent.",
+										"La signification du contenu est mise à disposition par une méthode compatible avec l’accessibilité."
 									]
 								},
 								{
@@ -4576,8 +4585,8 @@
 									"number": "13.7.1",
 									"title": "L'alternative de chaque contenu cryptique informatif vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"* La signification donnée dans le contexte adjacent est pertinente.",
-										"* La signification mise à disposition par une méthode compatible avec l’accessibilité est pertinente."
+										"La signification donnée dans le contexte adjacent est pertinente.",
+										"La signification mise à disposition par une méthode compatible avec l’accessibilité est pertinente."
 									]
 								}
 							]
@@ -4588,8 +4597,8 @@
 									"number": "13.7.1",
 									"title": "L'alternative de chaque contenu cryptique informatif vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"* La signification donnée dans le contexte adjacent est pertinente.",
-										"* La signification mise à disposition par une méthode compatible avec l’accessibilité est pertinente."
+										"La signification donnée dans le contexte adjacent est pertinente.",
+										"La signification mise à disposition par une méthode compatible avec l’accessibilité est pertinente."
 									]
 								}
 							]
@@ -4600,8 +4609,8 @@
 									"number": "13.7.1",
 									"title": "L'alternative de chaque contenu cryptique informatif vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"* La signification donnée dans le contexte adjacent est pertinente.",
-										"* La signification mise à disposition par une méthode compatible avec l’accessibilité est pertinente."
+										"La signification donnée dans le contexte adjacent est pertinente.",
+										"La signification mise à disposition par une méthode compatible avec l’accessibilité est pertinente."
 									]
 								}
 							]
@@ -4618,24 +4627,24 @@
 									"number": "13.8.1",
 									"title": "Chaque image ou élément multimédia (balise `<video>`, balise `<img>`, balise `<svg>`, balise `<canvas>`, balise `<embed>` ou balise `<object>`) qui provoque un changement brusque de luminosité ou un effet de flash vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La fréquence de l’effet est inférieure à 3 par seconde ;",
-										"* La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
+										"La fréquence de l’effet est inférieure à 3 par seconde ;",
+										"La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
 									]
 								},
 								{
 									"number": "13.8.2",
 									"title": "Chaque script qui provoque un changement brusque de luminosité ou un effet de flash vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La fréquence de l’effet est inférieure à 3 par seconde ;",
-										"* La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
+										"La fréquence de l’effet est inférieure à 3 par seconde ;",
+										"La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
 									]
 								},
 								{
 									"number": "13.8.3",
 									"title": "Chaque mise en forme CSS qui provoque un changement brusque de luminosité ou un effet de flash vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La fréquence de l’effet est inférieure ou égale à 3 par seconde.",
-										"* La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
+										"La fréquence de l’effet est inférieure ou égale à 3 par seconde.",
+										"La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
 									]
 								}
 							]
@@ -4646,8 +4655,8 @@
 									"number": "13.8.1",
 									"title": "Chaque animation (image, élément multimédia, etc.) qui provoque un changement brusque de luminosité ou un effet de flash vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La fréquence de l’effet est inférieure à 3 par seconde ;",
-										"* La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
+										"La fréquence de l’effet est inférieure à 3 par seconde ;",
+										"La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
 									]
 								}
 							]
@@ -4658,8 +4667,8 @@
 									"number": "13.8.1",
 									"title": "Chaque animation (image, élément multimédia, etc.) qui provoque un changement brusque de luminosité ou un effet de flash vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La fréquence de l’effet est inférieure à 3 par seconde ;",
-										"* La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
+										"La fréquence de l’effet est inférieure à 3 par seconde ;",
+										"La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
 									]
 								}
 							]
@@ -4676,20 +4685,20 @@
 									"number": "13.9.1",
 									"title": "Chaque contenu en mouvement déclenché automatiquement, vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La durée du mouvement est inférieure ou égale à 5 secondes ;",
-										"* La personne utilisatrice peut arrêter et relancer le mouvement ;",
-										"* La personne utilisatrice peut afficher et masquer le contenu en mouvement ;",
-										"* La personne utilisatrice peut afficher la totalité de l’information sans le mouvement."
+										"La durée du mouvement est inférieure ou égale à 5 secondes ;",
+										"La personne utilisatrice peut arrêter et relancer le mouvement ;",
+										"La personne utilisatrice peut afficher et masquer le contenu en mouvement ;",
+										"La personne utilisatrice peut afficher la totalité de l’information sans le mouvement."
 									]
 								},
 								{
 									"number": "13.9.2",
 									"title": "Chaque contenu clignotant, vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La durée du mouvement est inférieure ou égale à 5 secondes ;",
-										"* La personne utilisatrice peut arrêter et relancer le clignotement ;",
-										"* La personne utilisatrice peut afficher et masquer le contenu clignotant ;",
-										"* La personne utilisatrice peut afficher la totalité de l’information sans le clignotement."
+										"La durée du mouvement est inférieure ou égale à 5 secondes ;",
+										"La personne utilisatrice peut arrêter et relancer le clignotement ;",
+										"La personne utilisatrice peut afficher et masquer le contenu clignotant ;",
+										"La personne utilisatrice peut afficher la totalité de l’information sans le clignotement."
 									]
 								}
 							],
@@ -4703,20 +4712,20 @@
 									"number": "13.9.1",
 									"title": "Chaque contenu en mouvement déclenché automatiquement, vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La durée du mouvement est inférieure ou égale à 5 secondes ;",
-										"* La personne utilisatrice peut arrêter et relancer le mouvement ;",
-										"* La personne utilisatrice peut afficher et masquer le contenu en mouvement ;",
-										"* La personne utilisatrice peut afficher la totalité de l’information sans le mouvement."
+										"La durée du mouvement est inférieure ou égale à 5 secondes ;",
+										"La personne utilisatrice peut arrêter et relancer le mouvement ;",
+										"La personne utilisatrice peut afficher et masquer le contenu en mouvement ;",
+										"La personne utilisatrice peut afficher la totalité de l’information sans le mouvement."
 									]
 								},
 								{
 									"number": "13.9.2",
 									"title": "Chaque contenu clignotant, vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La durée du mouvement est inférieure ou égale à 5 secondes ;",
-										"* La personne utilisatrice peut arrêter et relancer le clignotement ;",
-										"* La personne utilisatrice peut afficher et masquer le contenu clignotant ;",
-										"* La personne utilisatrice peut afficher la totalité de l’information sans le clignotement."
+										"La durée du mouvement est inférieure ou égale à 5 secondes ;",
+										"La personne utilisatrice peut arrêter et relancer le clignotement ;",
+										"La personne utilisatrice peut afficher et masquer le contenu clignotant ;",
+										"La personne utilisatrice peut afficher la totalité de l’information sans le clignotement."
 									]
 								}
 							]
@@ -4727,20 +4736,20 @@
 									"number": "13.9.1",
 									"title": "Chaque contenu en mouvement déclenché automatiquement, vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La durée du mouvement est inférieure ou égale à 5 secondes ;",
-										"* La personne utilisatrice peut arrêter et relancer le mouvement ;",
-										"* La personne utilisatrice peut afficher et masquer le contenu en mouvement ;",
-										"* La personne utilisatrice peut afficher la totalité de l’information sans le mouvement."
+										"La durée du mouvement est inférieure ou égale à 5 secondes ;",
+										"La personne utilisatrice peut arrêter et relancer le mouvement ;",
+										"La personne utilisatrice peut afficher et masquer le contenu en mouvement ;",
+										"La personne utilisatrice peut afficher la totalité de l’information sans le mouvement."
 									]
 								},
 								{
 									"number": "13.9.2",
 									"title": "Chaque contenu clignotant, vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"* La durée du mouvement est inférieure ou égale à 5 secondes ;",
-										"* La personne utilisatrice peut arrêter et relancer le clignotement ;",
-										"* La personne utilisatrice peut afficher et masquer le contenu clignotant ;",
-										"* La personne utilisatrice peut afficher la totalité de l’information sans le clignotement."
+										"La durée du mouvement est inférieure ou égale à 5 secondes ;",
+										"La personne utilisatrice peut arrêter et relancer le clignotement ;",
+										"La personne utilisatrice peut afficher et masquer le contenu clignotant ;",
+										"La personne utilisatrice peut afficher la totalité de l’information sans le clignotement."
 									]
 								}
 							]
@@ -4757,8 +4766,8 @@
 									"number": "13.10.1",
 									"title": "Chaque contenu vérifie-t-il ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* La consultation est possible, quel que soit le mode d’orientation de l’écran.",
-										"* Le contenu proposé reste le même, quel que soit le mode d’orientation de l’écran utilisé même si sa présentation et le moyen d’y accéder peuvent différer."
+										"La consultation est possible, quel que soit le mode d’orientation de l’écran.",
+										"Le contenu proposé reste le même, quel que soit le mode d’orientation de l’écran utilisé même si sa présentation et le moyen d’y accéder peuvent différer."
 									]
 								}
 							],
@@ -4772,8 +4781,8 @@
 									"number": "13.10.1",
 									"title": "Chaque contenu vérifie-t-il ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* La consultation est possible, quel que soit le mode d’orientation de l’écran.",
-										"* Le contenu proposé reste le même, quel que soit le mode d’orientation de l’écran utilisé même si sa présentation et le moyen d’y accéder peuvent différer."
+										"La consultation est possible, quel que soit le mode d’orientation de l’écran.",
+										"Le contenu proposé reste le même, quel que soit le mode d’orientation de l’écran utilisé même si sa présentation et le moyen d’y accéder peuvent différer."
 									]
 								}
 							]
@@ -4873,14 +4882,15 @@
 									"number": "13.14.1",
 									"title": "Les actions déclenchées au moyen d’un dispositif de pointage à contact unique de l’écran vérifient-elles l’une de ces conditions (hors cas particuliers)",
 									"conditions": [
-										"* L’action est déclenchée au moment où le dispositif de pointage est relâché ou relevé.",
-										"* L’action est déclenchée au moment où le dispositif de pointage est pressé ou posé puis annulée lorsque le dispositif de pointage est relâché ou relevé.",
-										"* Un mécanisme est disponible pour abandonner (avant achèvement de l’action) ou annuler (après achèvement) l’exécution de l’action."
+										"L’action est déclenchée au moment où le dispositif de pointage est relâché ou relevé.",
+										"L’action est déclenchée au moment où le dispositif de pointage est pressé ou posé puis annulée lorsque le dispositif de pointage est relâché ou relevé.",
+										"Un mécanisme est disponible pour abandonner (avant achèvement de l’action) ou annuler (après achèvement) l’exécution de l’action."
 									]
 								}
 							],
 							"appendix": {
-								"particularCases": "Il existe une gestion de cas particulier lorsque la fonctionnalité nécessite que le comportement attendu soit réalisé lors d’un événement descendant, par exemple, un émulateur de clavier dont les touches doivent s’activer à la pression comme sur un clavier physique. Dans ces situations, le critère est non applicable.\n\nNotes techniques\n\nLe point de contact est unique par opposition à contact multipoint mais cela n’implique pas qu’il soit fixe sur l’écran.\n\nDeux exemples de mécanisme mis en place pour annuler ou abandonner une action déclenchée au moyen d’un dispositif de pointage sur un point de contact unique de l’écran :\n\n- Une fenêtre modale permettant d’annuler l’action après son achèvement ;\n\n- Pour une fonction de glisser/déposer, le fait d’abandonner l’action si l’utilisateur relâche l’élément en dehors de la zone cible."
+								"particularCases": "Il existe une gestion de cas particulier lorsque la fonctionnalité nécessite que le comportement attendu soit réalisé lors d’un événement descendant, par exemple, un émulateur de clavier dont les touches doivent s’activer à la pression comme sur un clavier physique. Dans ces situations, le critère est non applicable.",
+								"technicalNotes": "Le point de contact est unique par opposition à contact multipoint mais cela n’implique pas qu’il soit fixe sur l’écran.\n\nDeux exemples de mécanisme mis en place pour annuler ou abandonner une action déclenchée au moyen d’un dispositif de pointage sur un point de contact unique de l’écran :\n\n- Une fenêtre modale permettant d’annuler l’action après son achèvement ;\n\n- Pour une fonction de glisser/déposer, le fait d’abandonner l’action si l’utilisateur relâche l’élément en dehors de la zone cible."
 							}
 						},
 						"mobile": {
@@ -4889,9 +4899,9 @@
 									"number": "13.14.1",
 									"title": "Les actions déclenchées au moyen d’un dispositif de pointage sur un point unique de l’écran vérifient-elles l’une de ces conditions (hors cas particuliers)",
 									"conditions": [
-										"* L’action est déclenchée au moment où le dispositif de pointage est relâché ou relevé.",
-										"* L’action est déclenchée au moment où le dispositif de pointage est pressé ou posé puis annulée lorsque le dispositif de pointage est relâché ou relevé.",
-										"* Un mécanisme est disponible pour abandonner (avant achèvement de l’action) ou annuler (après achèvement) l’exécution de l’action."
+										"L’action est déclenchée au moment où le dispositif de pointage est relâché ou relevé.",
+										"L’action est déclenchée au moment où le dispositif de pointage est pressé ou posé puis annulée lorsque le dispositif de pointage est relâché ou relevé.",
+										"Un mécanisme est disponible pour abandonner (avant achèvement de l’action) ou annuler (après achèvement) l’exécution de l’action."
 									]
 								}
 							]
@@ -4949,8 +4959,8 @@
 									"number": "13.16.1",
 									"title": "Chaque fonctionnalité d’identification ou de contrôle qui repose sur l’utilisation de caractéristiques biologiques de la personne utilisatrice respecte-t-elle une de ces conditions ?",
 									"conditions": [
-										"* Il existe une alternative qui ne repose pas sur une caractéristique biologique de la personne utilisatrice.",
-										"* Il existe une alternative reposant sur une caractéristique biologique de la personne utilisatrice qui est suffisamment différente de la caractéristique biologique initialement demandée."
+										"Il existe une alternative qui ne repose pas sur une caractéristique biologique de la personne utilisatrice.",
+										"Il existe une alternative reposant sur une caractéristique biologique de la personne utilisatrice qui est suffisamment différente de la caractéristique biologique initialement demandée."
 									]
 								}
 							]
@@ -4961,8 +4971,8 @@
 									"number": "13.16.1",
 									"title": "Chaque fonctionnalité d’identification ou de contrôle qui repose sur l’utilisation de caractéristiques biologiques de la personne utilisatrice respecte-t-elle une de ces conditions ?",
 									"conditions": [
-										"* Il existe une alternative qui ne repose pas sur une caractéristique biologique de la personne utilisatrice.",
-										"* Il existe une alternative reposant sur une caractéristique biologique de la personne utilisatrice qui est suffisamment différente de la caractéristique biologique initialement demandée."
+										"Il existe une alternative qui ne repose pas sur une caractéristique biologique de la personne utilisatrice.",
+										"Il existe une alternative reposant sur une caractéristique biologique de la personne utilisatrice qui est suffisamment différente de la caractéristique biologique initialement demandée."
 									]
 								}
 							]
@@ -4979,8 +4989,8 @@
 									"number": "13.17.1",
 									"title": "Pour chaque application qui intègre une fonctionnalité de répétition des touches, les conditions suivantes sont-elles respectées ?",
 									"conditions": [
-										"* Le délai de déclenchement de la fonction de répétition peut être paramétré à 2 secondes au moins ;",
-										"* Le délai entre deux répétitions peut être paramétré au moins à 2 secondes"
+										"Le délai de déclenchement de la fonction de répétition peut être paramétré à 2 secondes au moins ;",
+										"Le délai entre deux répétitions peut être paramétré au moins à 2 secondes"
 									]
 								}
 							],
@@ -4994,8 +5004,8 @@
 									"number": "13.17.1",
 									"title": "Pour chaque application qui intègre une fonctionnalité de répétition des touches, les conditions suivantes sont-elles respectées ?",
 									"conditions": [
-										"* Le délai de déclenchement de la fonction de répétition peut être paramétré à 2 secondes au moins ;",
-										"* Le délai entre deux répétitions peut être paramétré au moins à 2 secondes"
+										"Le délai de déclenchement de la fonction de répétition peut être paramétré à 2 secondes au moins ;",
+										"Le délai entre deux répétitions peut être paramétré au moins à 2 secondes"
 									]
 								}
 							]
@@ -5012,8 +5022,8 @@
 									"number": "13.18.1",
 									"title": "Chaque composant de verrouillage ou à bascule vérifie-t-il dans un mode opératoire ces conditions :",
 									"conditions": [
-										"* L'état est restitué de manière visible",
-										"* L'état est restitué de manière haptique ou sonore"
+										"L'état est restitué de manière visible",
+										"L'état est restitué de manière haptique ou sonore"
 									]
 								}
 							]
@@ -5024,8 +5034,8 @@
 									"number": "13.18.1",
 									"title": "Chaque composant de verrouillage ou à bascule vérifie-t-il dans un mode opératoire ces conditions :",
 									"conditions": [
-										"* L'état est restitué de manière visible",
-										"* L'état est restitué de manière haptique ou sonore"
+										"L'état est restitué de manière visible",
+										"L'état est restitué de manière haptique ou sonore"
 									]
 								}
 							]
@@ -5409,10 +5419,10 @@
 									"number": "16.3.1",
 									"title": "Si une étape de processus d'authentification requiert un test cognitif alors au moins une de ces conditions est-elle respectée ?",
 									"conditions": [
-										"* une autre méthode d’authentification, qui ne repose pas sur un test cognitif, est proposée",
-										"* un mécanisme est disponible pour aider la personne utilisatrice à compléter le test cognitif",
-										"* le test cognitif consiste à reconnaître des objets",
-										"* le test cognitif consiste à identifier un contenu cryptique ou non textutel que la personne utilisatrice a fourni au site web"
+										"une autre méthode d’authentification, qui ne repose pas sur un test cognitif, est proposée",
+										"un mécanisme est disponible pour aider la personne utilisatrice à compléter le test cognitif",
+										"le test cognitif consiste à reconnaître des objets",
+										"le test cognitif consiste à identifier un contenu cryptique ou non textutel que la personne utilisatrice a fourni au site web"
 									]
 								}
 							],
@@ -5426,10 +5436,10 @@
 									"number": "16.3.1",
 									"title": "Si une étape de processus d'authentification requiert un test cognitif alors au moins une de ces conditions est-elle respectée ?",
 									"conditions": [
-										"* une autre méthode d’authentification, qui ne repose pas sur un test cognitif, est proposée",
-										"* un mécanisme est disponible pour aider la personne utilisatrice à compléter le test cognitif",
-										"* le test cognitif consiste à reconnaître des objets",
-										"* le test cognitif consiste à identifier un contenu cryptique ou non textutel que la personne utilisatrice a fourni au site web"
+										"une autre méthode d’authentification, qui ne repose pas sur un test cognitif, est proposée",
+										"un mécanisme est disponible pour aider la personne utilisatrice à compléter le test cognitif",
+										"le test cognitif consiste à reconnaître des objets",
+										"le test cognitif consiste à identifier un contenu cryptique ou non textutel que la personne utilisatrice a fourni au site web"
 									]
 								}
 							]
@@ -5452,8 +5462,8 @@
 									"number": "17.1.1",
 									"title": "Chaque application permettant une communication orale bidirectionnelle respecte-t-elle une de ces conditions (hors cas particuliers)?",
 									"conditions": [
-										"* L’application dispose d’une fonctionnalité intégrée de communication écrite en temps réel ;",
-										"* L’application peut être connectée à un appareil qui intègre une fonctionnalité de communication écrite en temps réel."
+										"L’application dispose d’une fonctionnalité intégrée de communication écrite en temps réel ;",
+										"L’application peut être connectée à un appareil qui intègre une fonctionnalité de communication écrite en temps réel."
 									]
 								}
 							],
@@ -5467,8 +5477,8 @@
 									"number": "17.1.1",
 									"title": "Chaque application qui permet une communication orale bidirectionnelle respecte-t-elle une de ces conditions ?",
 									"conditions": [
-										"* L’application dispose d’une fonctionnalité intégrée de communication écrite en temps réel ;",
-										"* L’application peut être connectée à un appareil qui intègre une fonctionnalité de communication écrite en temps réel."
+										"L’application dispose d’une fonctionnalité intégrée de communication écrite en temps réel ;",
+										"L’application peut être connectée à un appareil qui intègre une fonctionnalité de communication écrite en temps réel."
 									]
 								}
 							]
@@ -5485,8 +5495,8 @@
 									"number": "17.2.1",
 									"title": "Pour chaque fonctionnalité de communication écrite en temps réel, les messages respectent-ils ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* Les messages reçus et envoyés sont présentés sous forme de blocs séparés dans la présentation ;",
-										"* Les messages reçus et envoyés sont classés par ordre chronologique."
+										"Les messages reçus et envoyés sont présentés sous forme de blocs séparés dans la présentation ;",
+										"Les messages reçus et envoyés sont classés par ordre chronologique."
 									]
 								}
 							],
@@ -5500,8 +5510,8 @@
 									"number": "17.2.1",
 									"title": "Pour chaque fonctionnalité de communication écrite en temps réel, les messages respectent-ils ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"* Les messages reçus et envoyés sont présentés sous forme de blocs séparés dans la présentation ;",
-										"* Les messages reçus et envoyés sont classés par ordre chronologique."
+										"Les messages reçus et envoyés sont présentés sous forme de blocs séparés dans la présentation ;",
+										"Les messages reçus et envoyés sont classés par ordre chronologique."
 									]
 								}
 							]
@@ -5518,11 +5528,11 @@
 									"number": "17.3.1",
 									"title": "Pour chaque fonctionnalité de communication écrite en temps réel, les messages respectent-ils ces conditions ?",
 									"conditions": [
-										"* Les messages reçus et envoyés sont séparés dans la présentation ;",
-										"* La présentation permet d’identifier la nature du message (reçu ou envoyé) ;",
-										"* La nature du message (reçu ou envoyé) est accessible aux technologies d’assistance ;",
-										"* La présentation permet d’identifier la source du message ;",
-										"* La source du message est accessible aux technologies d’assistance ;"
+										"Les messages reçus et envoyés sont séparés dans la présentation ;",
+										"La présentation permet d’identifier la nature du message (reçu ou envoyé) ;",
+										"La nature du message (reçu ou envoyé) est accessible aux technologies d’assistance ;",
+										"La présentation permet d’identifier la source du message ;",
+										"La source du message est accessible aux technologies d’assistance ;"
 									]
 								}
 							],
@@ -5536,9 +5546,9 @@
 									"number": "17.3.1",
 									"title": "Pour chaque fonctionnalité de communication écrite en temps réel, les messages respectent-ils ces conditions ?",
 									"conditions": [
-										"* Les messages reçus et envoyés sont séparés dans la présentation ;",
-										"* La présentation permet d’identifier la nature du message (reçu ou envoyé) ;",
-										"* La nature du message (reçu ou envoyé) est accessible aux technologies d’assistance."
+										"Les messages reçus et envoyés sont séparés dans la présentation ;",
+										"La présentation permet d’identifier la nature du message (reçu ou envoyé) ;",
+										"La nature du message (reçu ou envoyé) est accessible aux technologies d’assistance."
 									]
 								}
 							]
@@ -5701,8 +5711,8 @@
 									"number": "17.9.1",
 									"title": "Pour chaque fonctionnalité de communication écrite en temps réel utilisée avec une fonctionnalité de communication orale bidirectionnelle qui identifie les personnes intervenantes, les messages respectent-ils ces conditions ?",
 									"conditions": [
-										"* La présentation permet d’identifier les personnes émettrices des messages ;",
-										"* L’identification de la personne émettrice du message est accessible aux technologies d’assistance."
+										"La présentation permet d’identifier les personnes émettrices des messages ;",
+										"L’identification de la personne émettrice du message est accessible aux technologies d’assistance."
 									]
 								}
 							]
@@ -5713,8 +5723,8 @@
 									"number": "17.9.1",
 									"title": "Pour chaque fonctionnalité de communication écrite en temps réel utilisée avec une fonctionnalité de communication orale bidirectionnelle qui identifie les intervenants, les messages respectent-ils ces conditions ?",
 									"conditions": [
-										"* La présentation permet d’identifier les auteurs des messages ;",
-										"* L’identification de l’auteur du message est accessible aux technologies d’assistance."
+										"La présentation permet d’identifier les auteurs des messages ;",
+										"L’identification de l’auteur du message est accessible aux technologies d’assistance."
 									]
 								}
 							]
@@ -5731,8 +5741,8 @@
 									"number": "17.10.1",
 									"title": "Pour chaque application web de télécommunication qui fournit l’identification de l’interlocuteur, l’identification respecte-t-elle ces conditions ?",
 									"conditions": [
-										"* L’identification de l’interlocuteur est présentée sous forme de texte ;",
-										"* L’identification de l’interlocuteur est accessible aux technologies d’assistance."
+										"L’identification de l’interlocuteur est présentée sous forme de texte ;",
+										"L’identification de l’interlocuteur est accessible aux technologies d’assistance."
 									]
 								}
 							]
@@ -5743,8 +5753,8 @@
 									"number": "17.10.1",
 									"title": "Pour chaque applicatio de télécommunication qui fournit l’identification de l’appel, l’identification respecte-t-elle ces conditions ?",
 									"conditions": [
-										"* L’identification de l’appel est présentée sous forme de texte ;",
-										"* L’identification de l’appel est accessible aux technologies d’assistance."
+										"L’identification de l’appel est présentée sous forme de texte ;",
+										"L’identification de l’appel est accessible aux technologies d’assistance."
 									]
 								}
 							]
@@ -5786,9 +5796,9 @@
 									"number": "17.12.1",
 									"title": "Pour chaque application web de communication orale bidirectionnelle qui dispose d’une vidéo en temps réel, les conditions suivantes sont-elles respectées ?",
 									"conditions": [
-										"* La résolution de la vidéo répond à la norme QVGA au moins (320×240 pixels) ;",
-										"* La fréquence des images est de 20 images par seconde au moins ;",
-										"* Le décalage entre la vidéo et les paroles ne doit pas être supérieur à 100 ms."
+										"La résolution de la vidéo répond à la norme QVGA au moins (320×240 pixels) ;",
+										"La fréquence des images est de 20 images par seconde au moins ;",
+										"Le décalage entre la vidéo et les paroles ne doit pas être supérieur à 100 ms."
 									]
 								}
 							]
@@ -5799,9 +5809,9 @@
 									"number": "17.12.1",
 									"title": "Pour chaque application de communication orale bidirectionnelle qui dispose d’une vidéo en temps réel, les conditions suivantes sont-elles respectées ?",
 									"conditions": [
-										"* La résolution de la vidéo répond à la norme QVGA au moins ;",
-										"* La fréquence des images est de 20 images par seconde au moins ;",
-										"* Le décalage entre la vidéo et les paroles ne doit pas être supérieur à 100 ms."
+										"La résolution de la vidéo répond à la norme QVGA au moins ;",
+										"La fréquence des images est de 20 images par seconde au moins ;",
+										"Le décalage entre la vidéo et les paroles ne doit pas être supérieur à 100 ms."
 									]
 								}
 							]

@@ -1,6 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import type { MarkdownSection } from "~/lib/content";
 import { renderMarkdown } from "./helpers/markdown";
+import PublishDeclarationCallOut from "./PublishDeclarationCallOut";
+
+const MARKDOWN_BLOCKS = {
+	"publier-declaration": <PublishDeclarationCallOut />,
+};
 
 interface MarkdownSectionsProps {
 	sections: MarkdownSection[];
@@ -14,10 +19,13 @@ export default function MarkdownSections({ sections }: MarkdownSectionsProps) {
 					<h2 id={id} className={fr.cx("fr-mb-5w")}>
 						{label}
 					</h2>
-					{renderMarkdown(body)}
+					{renderMarkdown(body, MARKDOWN_BLOCKS)}
 					<div
-						className={fr.cx("fr-mb-4w")}
-						style={{ display: "flex", justifyContent: "flex-end" }}
+						style={{
+							display: "flex",
+							justifyContent: "flex-end",
+							marginBlock: fr.spacing("9w"),
+						}}
 					>
 						<a
 							href="#contenu"

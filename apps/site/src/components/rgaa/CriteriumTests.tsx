@@ -4,12 +4,17 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { fr } from "@codegouvfr/react-dsfr";
 import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
-import { renderMarkdownInline } from "./helpers/markdown";
-import { useNumberedHeadingStyles } from "./helpers/styles";
+import { renderMarkdownInline, toPlainText } from "./helpers/markdown";
+import {
+	belowStickyTopicHeading,
+	useNumberedHeadingStyles,
+} from "./helpers/styles";
 import type { Test } from "./helpers/topics";
-import Button from "@codegouvfr/react-dsfr/Button";
-import { usePathname } from "next/navigation";
+import AnchorLinkButton from "./AnchorLinkButton";
 import TestMethodology from "./TestMethodology";
+import { discloseWhenReady } from "./helpers/collapse";
+
+const TEST_COLLAPSE = ":scope > .fr-accordion > .fr-collapse";
 
 type CriteriumTestsProps = {
 	criteriumNumber: string;
@@ -24,7 +29,6 @@ export default function CriteriumTests({
 }: CriteriumTestsProps) {
 	const { classes, cx } = useStyles({ accordionBackgroundColor });
 	const { classes: headingClasses } = useNumberedHeadingStyles();
-	const pathname = usePathname();
 	const [expanded, setExpanded] = useState(false);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -45,6 +49,52 @@ export default function CriteriumTests({
 		};
 	}, []);
 
+	// A link to one test unfolds its criterium's tests, leaving the others folded.
+	useEffect(() => {
+		const wrapper = wrapperRef.current;
+
+		if (!wrapper) return;
+
+		let reveal: AbortController | undefined;
+
+		const revealTarget = () => {
+			const target = document.getElementById(
+				decodeURIComponent(window.location.hash.slice(1)),
+			);
+			const collapse = wrapper.querySelector(TEST_COLLAPSE);
+
+			if (!target || !collapse?.contains(target)) return;
+
+			reveal?.abort();
+			reveal = new AbortController();
+			const { signal } = reveal;
+			const scroll = () => target.scrollIntoView({ block: "start" });
+
+			signal.addEventListener("abort", discloseWhenReady(collapse));
+			wrapper.addEventListener("dsfr.disclose", scroll, { once: true, signal });
+			// The page is still settling while the accordion unfolds: land again once it is open.
+			collapse.addEventListener(
+				"transitionend",
+				(event) => {
+					if (event.target !== collapse) return;
+					scroll();
+					reveal?.abort();
+				},
+				{ signal },
+			);
+			wrapper.addEventListener("dsfr.conceal", () => reveal?.abort(), {
+				signal,
+			});
+		};
+
+		revealTarget();
+		window.addEventListener("hashchange", revealTarget);
+		return () => {
+			window.removeEventListener("hashchange", revealTarget);
+			reveal?.abort();
+		};
+	}, []);
+
 	return (
 		<div data-accordion="test" ref={wrapperRef}>
 			<Accordion
@@ -58,17 +108,20 @@ export default function CriteriumTests({
 					const testNumber = `${criteriumNumber}.${test.number}`;
 
 					return (
-						<div key={`${test.label} ${testNumber}`} className={classes.test}>
+						<div
+							key={`${test.label} ${testNumber}`}
+							id={testNumber}
+							className={classes.test}
+						>
 							<h5 className={cx("fr-text--lg", headingClasses.title)}>
-								<span className={headingClasses.number}>{testNumber}</span>
+								<span className={headingClasses.number}>
+									{testNumber}&nbsp;
+								</span>
 								<span>
 									{renderMarkdownInline(test.label)}
-									<Button
-										iconId="fr-icon-links-fill"
-										title={`Lien vers ${testNumber} ${renderMarkdownInline(test.label)}`}
-										priority="tertiary no outline"
-										linkProps={{ href: `${pathname}#${testNumber}` }}
-										className={headingClasses.link}
+									<AnchorLinkButton
+										targetId={testNumber}
+										title={`Lien vers ${testNumber} ${toPlainText(test.label)}`}
 									/>
 								</span>
 							</h5>
@@ -122,6 +175,7 @@ const useStyles = tss
 			},
 		},
 		test: {
+			scrollMarginTop: belowStickyTopicHeading,
 			marginBottom: fr.spacing("8v"),
 
 			"& > h5": {

@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { tss } from "tss-react";
 import AccordionList from "./AccordionList";
 import { setCollapsesExpanded } from "./helpers/collapse";
@@ -15,11 +15,23 @@ const TEST_COLLAPSE = '[data-accordion="test"] > .fr-accordion > .fr-collapse';
 const REFERENCE_COLLAPSE =
 	'[data-accordion="reference"] > .fr-accordion > .fr-collapse';
 
-const DISPLAY_OPTION_SELECTORS: Record<DisplayOption, string> = {
-	all: `${TEST_COLLAPSE}, ${REFERENCE_COLLAPSE}`,
-	tests: TEST_COLLAPSE,
-	references: REFERENCE_COLLAPSE,
-};
+const COLLAPSE_GROUPS = [
+	{
+		selector: `${TEST_COLLAPSE}, ${REFERENCE_COLLAPSE}`,
+		expandLabel: "Tout déplier",
+		collapseLabel: "Tout replier",
+	},
+	{
+		selector: TEST_COLLAPSE,
+		expandLabel: "Déplier les tests",
+		collapseLabel: "Replier les tests",
+	},
+	{
+		selector: REFERENCE_COLLAPSE,
+		expandLabel: "Déplier les notes et références",
+		collapseLabel: "Replier les notes et références",
+	},
+];
 
 interface CriteriaListProps {
 	referentiel: ReferentielInfos;
@@ -30,7 +42,7 @@ export default function CriteriaList({
 	referentiel,
 	criterias,
 }: CriteriaListProps) {
-	const allTopics = getTopicSidebarItem(criterias);
+	const allTopics = useMemo(() => getTopicSidebarItem(criterias), [criterias]);
 	const { badgeBackgroundColor, badgeColor } = getReferentielStyle(
 		referentiel.id,
 	);
@@ -42,20 +54,23 @@ export default function CriteriaList({
 
 	const topicsRef = useRef<HTMLDivElement>(null);
 
-	const toggleDisplayOption = (option: DisplayOption) => {
+	const getDisplayOptions = (): DisplayOption[] => {
 		const root = topicsRef.current;
 
-		if (!root) return;
+		if (!root) return [];
 
-		const collapses = [
-			...root.querySelectorAll(DISPLAY_OPTION_SELECTORS[option]),
-		];
+		// A group still unfolds while any of its accordions is folded.
+		return COLLAPSE_GROUPS.map(({ selector, expandLabel, collapseLabel }) => {
+			const collapses = [...root.querySelectorAll(selector)];
+			const allExpanded = collapses.every((collapse) =>
+				collapse.classList.contains("fr-collapse--expanded"),
+			);
 
-		const allExpanded = collapses.every((collapse) =>
-			collapse.classList.contains("fr-collapse--expanded"),
-		);
-
-		setCollapsesExpanded(collapses, !allExpanded);
+			return {
+				label: allExpanded ? collapseLabel : expandLabel,
+				onSelect: () => setCollapsesExpanded(collapses, !allExpanded),
+			};
+		});
 	};
 
 	return (
@@ -67,7 +82,7 @@ export default function CriteriaList({
 				<TopicSidebarList topics={allTopics} />
 			</div>
 			<div className={classes.rightContent} ref={topicsRef}>
-				<PopoverButton onSelect={toggleDisplayOption} />
+				<PopoverButton getOptions={getDisplayOptions} />
 				<AccordionList referentiel={referentiel} criterias={criterias} />
 			</div>
 		</div>
