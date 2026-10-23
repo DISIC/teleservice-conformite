@@ -23,12 +23,11 @@ const columnHelper = createColumnHelper<PopulatedDeclaration>();
 const publicUrl = (declaration: PopulatedDeclaration) =>
 	`/declarations/${declaration.id}/publish`;
 
-const hasPublicPage = (declaration: PopulatedDeclaration) =>
-	getDeclarationStatus(declaration) === "published";
-
 /** The actions column is left out when no listed declaration has one. */
 export const hasPublicActions = (declarations: PopulatedDeclaration[]) =>
-	declarations.some(hasPublicPage);
+	declarations.some(
+		(declaration) => getDeclarationStatus(declaration) === "published",
+	);
 
 export function useDeclarationColumns() {
 	const { classes } = useStyles();
@@ -99,7 +98,7 @@ function buildColumns(
 			header: () => <span className={fr.cx("fr-sr-only")}>Actions</span>,
 			cell: (info) => {
 				const declaration = info.row.original;
-				if (!hasPublicPage(declaration))
+				if (getDeclarationStatus(declaration) !== "published")
 					return (
 						<span className={fr.cx("fr-sr-only")}>
 							Aucune action disponible
