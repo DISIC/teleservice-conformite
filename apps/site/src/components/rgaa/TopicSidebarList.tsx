@@ -51,7 +51,7 @@ export default function TopicSidebarList({ topics }: TopicSidebarListProps) {
 			isActive: topic.number === selectedNumber,
 			text: (
 				<div className={classes.menuItem}>
-					{`${topic.number}. ${topic.topic}`}
+					{`${topic.number}.\u00A0${topic.topic}`}
 					{topic.notApplicable && (
 						<Badge as="span" small noIcon className={classes.badge}>
 							Non applicable

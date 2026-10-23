@@ -19,7 +19,7 @@ export const useNumberedHeadingStyles = tss.withName("NumberedHeading").create({
 		},
 	},
 	number: {
-		marginRight: fr.spacing("3v"),
+		marginRight: `calc(${fr.spacing("3v")} - 0.27em)`,
 	},
 	title: {
 		display: "flex",

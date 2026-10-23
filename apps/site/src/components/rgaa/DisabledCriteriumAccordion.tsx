@@ -20,7 +20,7 @@ export default function DisabledCriteriumAccordion({
 	return (
 		<div id={number} className={classes.root}>
 			<h3 className={cx(fr.cx("fr-h4"), classes.title)}>
-				<span>{number} </span>
+				<span>{number}&nbsp;</span>
 				<span>{renderMarkdownInline(title)}</span>
 				<Badge as="span" small noIcon className={classes.badge}>
 					Non applicable

@@ -114,7 +114,9 @@ export default function CriteriumTests({
 							className={classes.test}
 						>
 							<h5 className={cx("fr-text--lg", headingClasses.title)}>
-								<span className={headingClasses.number}>{testNumber}</span>
+								<span className={headingClasses.number}>
+									{testNumber}&nbsp;
+								</span>
 								<span>
 									{renderMarkdownInline(test.label)}
 									<AnchorLinkButton

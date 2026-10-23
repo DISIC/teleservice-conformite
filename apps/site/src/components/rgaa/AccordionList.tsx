@@ -67,7 +67,9 @@ export default function AccordionList({
 						className={classes.topicAnchor}
 					>
 						<h2 className={cx(classes.title, headingClasses.title)}>
-							<span className={headingClasses.number}>{topic.number}.</span>
+							<span className={headingClasses.number}>
+								{topic.number}.&nbsp;
+							</span>
 							<span>
 								{topic.topic}
 								<AnchorLinkButton

@@ -50,7 +50,9 @@ export default function TopicCriteria({
 						className={classes.criteriumContainer}
 					>
 						<h3 className={cx("fr-h4", headingClasses.title)}>
-							<span className={headingClasses.number}>{criteriumNumber}</span>
+							<span className={headingClasses.number}>
+								{criteriumNumber}&nbsp;
+							</span>
 							<span>
 								{renderMarkdownInline(criterium.title)}
 								<AnchorLinkButton
