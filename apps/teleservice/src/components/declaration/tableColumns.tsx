@@ -23,16 +23,37 @@ const columnHelper = createColumnHelper<PopulatedDeclaration>();
 const publicUrl = (declaration: PopulatedDeclaration) =>
 	`/declarations/${declaration.id}/publish`;
 
-/** The actions column is left out when no listed declaration has one. */
-export const hasPublicActions = (declarations: PopulatedDeclaration[]) =>
-	declarations.some(
+export function useDeclarationColumns({
+	declarations,
+	rowLink,
+	onCopySuccess,
+}: {
+	declarations: PopulatedDeclaration[];
+	rowLink: boolean;
+	onCopySuccess: (declarationName: string) => void;
+}) {
+	const { classes } = useStyles();
+	// The actions column is left out when no listed declaration has one.
+	const withActions = declarations.some(
 		(declaration) => getDeclarationStatus(declaration) === "published",
 	);
 
-export function useDeclarationColumns() {
-	const { classes } = useStyles();
-
-	return useMemo(() => buildColumns(classes), [classes]);
+	return useMemo(() => {
+		const {
+			nameColumn,
+			appKindColumn,
+			statusColumn,
+			conformityRateColumn,
+			publicActionsColumn,
+		} = buildColumns(classes);
+		return [
+			nameColumn({ rowLink }),
+			appKindColumn,
+			statusColumn,
+			conformityRateColumn,
+			...(withActions ? [publicActionsColumn({ onCopySuccess })] : []),
+		];
+	}, [classes, rowLink, withActions, onCopySuccess]);
 }
 
 function buildColumns(

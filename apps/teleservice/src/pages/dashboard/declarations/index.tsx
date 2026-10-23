@@ -6,12 +6,9 @@ import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
-import {
-	hasPublicActions,
-	useDeclarationColumns,
-} from "~/components/declaration/tableColumns";
+import { useDeclarationColumns } from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
 import {
 	CreateDeclarationModal,
@@ -50,13 +47,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	);
 	const declarations = page === 1 ? firstPage : (data ?? firstPage);
 
-	const {
-		nameColumn,
-		appKindColumn,
-		statusColumn,
-		conformityRateColumn,
-		publicActionsColumn,
-	} = useDeclarationColumns();
 	const [createModalActions] = useState<CreateDeclarationModalActions>({});
 	const alertRef = useRef<HTMLDivElement>(null);
 	const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -82,25 +72,11 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		[showDeclarationAlert],
 	);
 
-	const withActions = hasPublicActions(declarations.docs);
-	const columns = useMemo(
-		() => [
-			nameColumn({ rowLink: true }),
-			appKindColumn,
-			statusColumn,
-			conformityRateColumn,
-			...(withActions ? [publicActionsColumn({ onCopySuccess })] : []),
-		],
-		[
-			withActions,
-			nameColumn,
-			appKindColumn,
-			statusColumn,
-			conformityRateColumn,
-			publicActionsColumn,
-			onCopySuccess,
-		],
-	);
+	const columns = useDeclarationColumns({
+		declarations: declarations.docs,
+		rowLink: true,
+		onCopySuccess,
+	});
 
 	useEffect(() => {
 		if (showAlert) alertRef.current?.focus();

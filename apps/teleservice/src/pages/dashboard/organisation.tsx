@@ -2,12 +2,9 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
-import {
-	hasPublicActions,
-	useDeclarationColumns,
-} from "~/components/declaration/tableColumns";
+import { useDeclarationColumns } from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
 import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
@@ -29,13 +26,6 @@ export default function EntityDeclarationsPage({
 	declarations,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
-	const {
-		nameColumn,
-		appKindColumn,
-		statusColumn,
-		conformityRateColumn,
-		publicActionsColumn,
-	} = useDeclarationColumns();
 
 	const alertRef = useRef<HTMLDivElement>(null);
 	const [alertMessage, setAlertMessage] = useState<string | null>(null);
@@ -52,25 +42,11 @@ export default function EntityDeclarationsPage({
 		if (alertMessage) alertRef.current?.focus();
 	}, [alertMessage]);
 
-	const withActions = hasPublicActions(declarations);
-	const columns = useMemo(
-		() => [
-			nameColumn({ rowLink: false }),
-			appKindColumn,
-			statusColumn,
-			conformityRateColumn,
-			...(withActions ? [publicActionsColumn({ onCopySuccess })] : []),
-		],
-		[
-			withActions,
-			nameColumn,
-			appKindColumn,
-			statusColumn,
-			conformityRateColumn,
-			publicActionsColumn,
-			onCopySuccess,
-		],
-	);
+	const columns = useDeclarationColumns({
+		declarations,
+		rowLink: false,
+		onCopySuccess,
+	});
 
 	return (
 		<>

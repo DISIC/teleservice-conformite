@@ -26,8 +26,6 @@ import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
 
-const ADD_SCHEMA_BUTTON_ID = "add-schema-button";
-
 export default function SchemasPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -43,18 +41,13 @@ export default function SchemasPage({
 		isLoading,
 		isFetching,
 	} = api.library.listSchemas.useQuery();
-	const { deleteButtonId, rememberNeighbour, forget } = useFocusAfterDelete({
-		idPrefix: "delete-schema-",
-		fallbackId: ADD_SCHEMA_BUTTON_ID,
+	const { addButtonId, deleteButtonId, deleteItem } = useFocusAfterDelete({
+		itemName: "schema",
 		isFetching,
-	});
-
-	const { mutate: deleteSchema } = api.library.deleteSchema.useMutation({
-		onSuccess: () => utils.library.listSchemas.invalidate(),
-		onError: (e) => {
-			forget();
-			setErrorMessage(e.message);
-		},
+		deleteMutation: api.library.deleteSchema.useMutation({
+			onSuccess: () => utils.library.listSchemas.invalidate(),
+			onError: (e) => setErrorMessage(e.message),
+		}),
 	});
 
 	const confirmDelete = (schema: Schema) =>
@@ -76,10 +69,7 @@ export default function SchemasPage({
 					</p>
 				</>
 			),
-			onConfirm: () => {
-				rememberNeighbour(schema.id);
-				deleteSchema({ id: schema.id });
-			},
+			onConfirm: () => deleteItem(schema.id),
 		});
 
 	const openCreate = () => schemaModalActions.open?.();
@@ -97,7 +87,7 @@ export default function SchemasPage({
 					<Button
 						iconId="fr-icon-add-line"
 						onClick={openCreate}
-						nativeButtonProps={{ id: ADD_SCHEMA_BUTTON_ID }}
+						nativeButtonProps={{ id: addButtonId }}
 					>
 						Ajouter un schéma pluriannuel
 					</Button>

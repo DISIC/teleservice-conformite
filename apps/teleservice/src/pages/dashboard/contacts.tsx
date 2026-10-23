@@ -31,8 +31,6 @@ import { pageTitle } from "~/lib/serviceName";
 
 const columnHelper = createColumnHelper<Contact>();
 
-const ADD_CONTACT_BUTTON_ID = "add-contact-button";
-
 export default function ContactsPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -48,18 +46,13 @@ export default function ContactsPage({
 		isLoading,
 		isFetching,
 	} = api.library.listContacts.useQuery();
-	const { deleteButtonId, rememberNeighbour, forget } = useFocusAfterDelete({
-		idPrefix: "delete-contact-",
-		fallbackId: ADD_CONTACT_BUTTON_ID,
+	const { addButtonId, deleteButtonId, deleteItem } = useFocusAfterDelete({
+		itemName: "contact",
 		isFetching,
-	});
-
-	const { mutate: deleteContact } = api.library.deleteContact.useMutation({
-		onSuccess: () => utils.library.listContacts.invalidate(),
-		onError: (e) => {
-			forget();
-			setErrorMessage(e.message);
-		},
+		deleteMutation: api.library.deleteContact.useMutation({
+			onSuccess: () => utils.library.listContacts.invalidate(),
+			onError: (e) => setErrorMessage(e.message),
+		}),
 	});
 
 	const confirmDelete = useCallback(
@@ -81,12 +74,9 @@ export default function ContactsPage({
 						</p>
 					</>
 				),
-				onConfirm: () => {
-					rememberNeighbour(contact.id);
-					deleteContact({ id: contact.id });
-				},
+				onConfirm: () => deleteItem(contact.id),
 			}),
-		[confirmationModalActions, deleteContact, rememberNeighbour],
+		[confirmationModalActions, deleteItem],
 	);
 
 	const columns = useMemo(
@@ -182,7 +172,7 @@ export default function ContactsPage({
 					<Button
 						iconId="fr-icon-add-line"
 						onClick={openCreate}
-						nativeButtonProps={{ id: ADD_CONTACT_BUTTON_ID }}
+						nativeButtonProps={{ id: addButtonId }}
 					>
 						Ajouter un contact
 					</Button>
