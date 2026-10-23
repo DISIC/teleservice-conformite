@@ -182,7 +182,7 @@ export const ToolsForm = withForm({
 									{!readOnly && (
 										<field.TagGroupField
 											label="Ajouter un outil"
-											initialTags={extraTools}
+											tags={extraTools}
 										/>
 									)}
 								</>
@@ -214,7 +214,7 @@ export const ToolsForm = withForm({
 									{!readOnly && (
 										<field.TagGroupField
 											label="Ajouter un environnement"
-											initialTags={extraTestEnvironments}
+											tags={extraTestEnvironments}
 										/>
 									)}
 								</>

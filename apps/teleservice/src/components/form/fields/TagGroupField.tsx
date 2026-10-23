@@ -12,7 +12,8 @@ interface TagGroupFieldProps
 	extends
 		DefaultFieldProps,
 		Omit<InputProps.Common, "state" | "stateRelatedMessage"> {
-	initialTags?: string[];
+	/** The chips to show, when the field also holds values shown elsewhere (e.g. checkboxes). */
+	tags?: string[];
 	nativeInputProps?: InputProps.RegularInput["nativeInputProps"];
 }
 
@@ -20,16 +21,15 @@ export function TagGroupField(props: TagGroupFieldProps) {
 	const {
 		readOnlyField,
 		required,
-		initialTags,
+		tags: shownTags,
 		nativeInputProps,
 		...commonProps
 	} = props;
 	const { classes, cx } = useStyles();
 	const field = useFieldContext<string[]>();
 	const [tagInput, setTagInput] = useState<string>("");
-	const [tags, setTags] = useState<string[]>(
-		initialTags ?? field.state.value ?? [],
-	);
+	const values = field.state.value ?? [];
+	const tags = shownTags ?? values;
 
 	if (readOnlyField) {
 		const value = tags.filter((tag) => tag.trim() !== "").join(", ");
@@ -41,12 +41,11 @@ export function TagGroupField(props: TagGroupFieldProps) {
 
 		if (!tagInput) return;
 
-		const newTags = tagInput.split(",").map((input) => input.trim());
-		const allTags = new Set([...tags, ...newTags]);
-
-		setTags([...allTags]);
-
-		field.setValue([...new Set([...(field.state.value ?? []), ...allTags])]);
+		const newTags = tagInput
+			.split(",")
+			.map((input) => input.trim())
+			.filter(Boolean);
+		field.setValue([...new Set([...values, ...newTags])]);
 
 		setTagInput("");
 	};
@@ -81,11 +80,8 @@ export function TagGroupField(props: TagGroupFieldProps) {
 								iconId="fr-icon-close-line"
 								nativeButtonProps={{
 									type: "button",
-									onClick: () => {
-										const newTags = tags.filter((t) => t !== tag);
-										setTags(newTags);
-										field.setValue(newTags);
-									},
+									onClick: () =>
+										field.setValue(values.filter((value) => value !== tag)),
 								}}
 							>
 								{tag}
