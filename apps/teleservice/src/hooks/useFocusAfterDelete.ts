@@ -1,18 +1,12 @@
 import { useCallback, useEffect, useRef } from "react";
 
 type FocusAfterDeleteOptions = {
-	/** Prefix of every delete button's id; the item id completes it. */
 	idPrefix: string;
-	/** Focused when no other delete button is left on screen. */
 	fallbackId: string;
-	/** The list query's fetching flag: the focus moves once the reloaded list is rendered. */
 	isFetching: boolean;
 };
 
-/**
- * A deleted item's button disappears with it, so the focus moves to the next
- * delete button on screen, or the previous one when the last is deleted.
- */
+// A deleted item's button goes with it: focus the next one on screen, or the previous after the last.
 export function useFocusAfterDelete({
 	idPrefix,
 	fallbackId,
