@@ -114,6 +114,17 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		router.replace({ query }, undefined, { shallow: true });
 	}, [router, createModalActions]);
 
+	useEffect(() => {
+		const { deleted, ...query } = router.query;
+		if (typeof deleted !== "string") return;
+
+		showDeclarationAlert({
+			description: `La déclaration « ${deleted} » a bien été supprimée.`,
+			severity: "success",
+		});
+		router.replace({ query }, undefined, { shallow: true });
+	}, [router, showDeclarationAlert]);
+
 	return (
 		<>
 			<Head>

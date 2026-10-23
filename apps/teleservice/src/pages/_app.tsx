@@ -13,7 +13,6 @@ import { useMemo } from "react";
 import { tss } from "tss-react";
 import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 
-import { AlertHost } from "~/components/alert/AlertHost";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
@@ -159,7 +158,6 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 					/>
 				)}
 				<main id="contenu" className={classes.main} style={{ flex: 1 }}>
-					<AlertHost />
 					<Component {...pageProps} />
 				</main>
 				<Footer
