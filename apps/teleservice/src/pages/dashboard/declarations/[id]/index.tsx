@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
@@ -34,25 +34,9 @@ import {
 	type VisitProps,
 } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
+import { useScopedState } from "~/hooks/useScopedState";
 
 const NO_PENDING_MODES: PendingSourceModes = {};
-
-// Next reuses this page across declaration ids: state tied to one declaration starts over on the next.
-function useDeclarationScopedState<T>(declarationId: number, initial: T) {
-	const [scoped, setScoped] = useState({ declarationId, value: initial });
-	const value = scoped.declarationId === declarationId ? scoped.value : initial;
-	const update = useCallback(
-		(next: (current: T) => T) =>
-			setScoped((current) => ({
-				declarationId,
-				value: next(
-					current.declarationId === declarationId ? current.value : initial,
-				),
-			})),
-		[declarationId, initial],
-	);
-	return [value, update] as const;
-}
 
 export default function DeclarationPage({
 	declaration: initialDeclaration,
@@ -89,7 +73,7 @@ export default function DeclarationPage({
 
 	// Counted, not a flag: each "Prévisualiser et publier" refocuses the error summary,
 	// which from the first attempt on re-derives from the declaration on every save.
-	const [publishAttempts, updatePublishAttempts] = useDeclarationScopedState(
+	const [publishAttempts, updatePublishAttempts] = useScopedState(
 		declaration.id,
 		0,
 	);
@@ -101,8 +85,10 @@ export default function DeclarationPage({
 		if (publishAttempts > 0) errorSummaryRef.current?.focus();
 	}, [publishAttempts]);
 
-	const [pendingSourceModes, updatePendingSourceModes] =
-		useDeclarationScopedState(declaration.id, NO_PENDING_MODES);
+	const [pendingSourceModes, updatePendingSourceModes] = useScopedState(
+		declaration.id,
+		NO_PENDING_MODES,
+	);
 	const pendingSourceModesValue = useMemo(
 		() => ({
 			pending: pendingSourceModes,
