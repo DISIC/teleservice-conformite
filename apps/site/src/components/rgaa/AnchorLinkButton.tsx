@@ -17,6 +17,13 @@ export default function AnchorLinkButton({
 
 	// The browser does not scroll again when the hash is already the target's.
 	const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
+		const opensElsewhere =
+			event.button !== 0 ||
+			event.metaKey ||
+			event.ctrlKey ||
+			event.shiftKey ||
+			event.altKey;
+		if (opensElsewhere) return;
 		event.preventDefault();
 		if (window.location.hash !== `#${targetId}`)
 			window.location.hash = targetId;
