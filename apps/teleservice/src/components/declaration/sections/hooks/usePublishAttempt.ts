@@ -15,7 +15,7 @@ type UsePublishAttemptArgs = {
  * Shared publish navigation used by both the terminal Contact footer CTA and the
  * top-of-page StateNotice CTA. `attemptPublish` arms the error summary, validates
  * the whole declaration, then routes to preview or the first errored Section.
- * The error summary announces itself, and its links then lead to each field.
+ * The first errored field takes the focus; the error summary announces the rest.
  */
 export function usePublishAttempt({
 	declaration,
@@ -39,10 +39,11 @@ export function usePublishAttempt({
 				goToPreview();
 				return;
 			}
-			router.push(sectionHref(declaration.id, firstError.section), undefined, {
-				shallow: true,
-				scroll: false,
-			});
+			router.push(
+				sectionHref(declaration.id, firstError.section, firstError.field),
+				undefined,
+				{ shallow: true, scroll: false },
+			);
 		},
 		[declaration, pending, onPublishAttempt, goToPreview, router],
 	);
