@@ -45,6 +45,7 @@ export default function AraContent() {
 							iconPosition: "right",
 						}}
 						title="Réalisez vos audits d’accessibilité numérique"
+						titleAs="h2"
 					>
 						Ara n’audite pas automatiquement votre site et nécessite une bonne
 						connaissance de la méthode technique du RGAA.
