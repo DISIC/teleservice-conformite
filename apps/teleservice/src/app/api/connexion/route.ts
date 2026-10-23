@@ -2,9 +2,12 @@ import { auth } from "~/lib/auth";
 
 const DEFAULT_CALLBACK_URL = "/dashboard/declarations";
 
-// Only same-origin paths: an absolute URL here would make this an open redirect.
+const PLACEHOLDER_ORIGIN = "http://callback.invalid";
+
+// Only same-origin paths: browsers read `/\host` like `//host`, so the parsed origin decides.
 const safeCallbackURL = (value: string | null) =>
-	value?.startsWith("/") && !value.startsWith("//")
+	value?.startsWith("/") &&
+	new URL(value, PLACEHOLDER_ORIGIN).origin === PLACEHOLDER_ORIGIN
 		? value
 		: DEFAULT_CALLBACK_URL;
 
