@@ -33,6 +33,7 @@ import {
 	type LibraryProps,
 	type VisitProps,
 } from "~/lib/server-guards";
+import { pageTitle } from "~/lib/serviceName";
 
 const NO_PENDING_MODES: PendingSourceModes = {};
 
@@ -138,10 +139,7 @@ export default function DeclarationPage({
 	const heading = (
 		<>
 			<Head>
-				<title>
-					Déclaration de {declaration.name} - Téléservice de déclaration
-					d’accessibilité numérique
-				</title>
+				<title>{pageTitle(`Déclaration de ${declaration.name}`)}</title>
 			</Head>
 			<DeclarationHeading declaration={declaration} />
 		</>

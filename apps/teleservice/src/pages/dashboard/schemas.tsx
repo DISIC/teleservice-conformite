@@ -24,6 +24,7 @@ import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Entity, Schema } from "~/payload/payload-types";
 import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
+import { pageTitle } from "~/lib/serviceName";
 
 const ADD_SCHEMA_BUTTON_ID = "add-schema-button";
 
@@ -86,9 +87,7 @@ export default function SchemasPage({
 	return (
 		<>
 			<Head>
-				<title>
-					Mes schémas - Téléservice de déclaration d’accessibilité numérique
-				</title>
+				<title>{pageTitle("Mes schémas")}</title>
 			</Head>
 			<PageHeading
 				title="Mes schémas"

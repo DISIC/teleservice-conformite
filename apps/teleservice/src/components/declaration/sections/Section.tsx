@@ -40,6 +40,7 @@ import { useSourceMode } from "./hooks/useSourceMode";
 import { SectionShell } from "./Shell";
 import { handleFormSubmit } from "~/components/form/handleFormSubmit";
 import { newTabLinkProps } from "~/lib/newTabLink";
+import { pageTitle } from "~/lib/serviceName";
 
 type SectionProps = {
 	definition: AnySectionDefinition;
@@ -293,10 +294,7 @@ export function Section({
 	return (
 		<>
 			<Head>
-				<title>
-					{declaration.name} - {title} - Téléservice de déclaration
-					d’accessibilité numérique
-				</title>
+				<title>{pageTitle(declaration.name, title)}</title>
 			</Head>
 			<SectionShell
 				title={title}

@@ -51,7 +51,7 @@ export function TextField(props: TextFieldProps) {
 		if (textAreaRef.current) fitToContent(textAreaRef.current);
 	}, [field.state.value]);
 
-	// A new width re-wraps the text (resize, zoom, rotation) and showing a hidden textarea gives it one.
+	// The fitted height only holds for one width: a narrower textarea wraps the text onto more lines.
 	const attachTextArea = useCallback(
 		(textArea: HTMLTextAreaElement) => {
 			textAreaRef.current = textArea;

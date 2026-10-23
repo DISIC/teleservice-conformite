@@ -15,6 +15,7 @@ import type { Entity } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { pageTitle } from "~/lib/serviceName";
 
 interface EntityDeclarationsPageProps {
 	entity: Entity;
@@ -74,10 +75,7 @@ export default function EntityDeclarationsPage({
 	return (
 		<>
 			<Head>
-				<title>
-					Toutes les déclarations de l’organisation - Téléservice de déclaration
-					d’accessibilité numérique
-				</title>
+				<title>{pageTitle("Toutes les déclarations de l’organisation")}</title>
 			</Head>
 			<PageHeading
 				title="Toutes les déclarations de l’organisation"

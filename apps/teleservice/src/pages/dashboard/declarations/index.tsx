@@ -26,6 +26,7 @@ import {
 	type DeclarationsPage as DeclarationsPageData,
 	listOwnedDeclarations,
 } from "~/server/api/routers/declaration/service";
+import { pageTitle } from "~/lib/serviceName";
 
 interface DeclarationsPageProps {
 	firstPage: DeclarationsPageData;
@@ -128,10 +129,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	return (
 		<>
 			<Head>
-				<title>
-					Mes déclarations - Téléservice de déclaration d’accessibilité
-					numérique
-				</title>
+				<title>{pageTitle("Mes déclarations")}</title>
 			</Head>
 			<PageHeading
 				title="Mes déclarations d’accessibilité"

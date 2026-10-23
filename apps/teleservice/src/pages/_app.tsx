@@ -17,6 +17,7 @@ import type { PageWithHeader } from "~/components/layout/pageHeader";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
 import { authClient } from "~/lib/auth-client";
+import { SERVICE_NAME } from "~/lib/serviceName";
 
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
 	interface RegisterLink {
@@ -115,7 +116,7 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>Téléservice de déclaration d’accessibilité numérique</title>
+				<title>{SERVICE_NAME}</title>
 			</Head>
 			<div className={classes.mainContainer}>
 				<SkipLinks
@@ -141,14 +142,13 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 						}
 						homeLinkProps={{
 							href: "/",
-							title:
-								"Accueil Téléservice de déclaration d’accessibilité numérique, Beta",
+							title: `Accueil ${SERVICE_NAME}, Beta`,
 						}}
 						quickAccessItems={quickAccessItems}
 						navigation={navigation}
 						serviceTitle={
 							<>
-								Téléservice de déclaration d’accessibilité numérique{" "}
+								{SERVICE_NAME}{" "}
 								<Badge as="span" noIcon small severity="info">
 									BETA
 								</Badge>
@@ -164,8 +164,7 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 					id="footer"
 					homeLinkProps={{
 						href: "/",
-						title:
-							"République française, Accueil Téléservice de déclaration d’accessibilité numérique",
+						title: `République française, Accueil ${SERVICE_NAME}`,
 					}}
 					accessibility="non compliant"
 					bottomItems={[headerFooterDisplayItem]}

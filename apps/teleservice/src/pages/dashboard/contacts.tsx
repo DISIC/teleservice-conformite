@@ -27,6 +27,7 @@ import Table from "~/components/ui/Table";
 import type { Contact, Entity } from "~/payload/payload-types";
 import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
+import { pageTitle } from "~/lib/serviceName";
 
 const columnHelper = createColumnHelper<Contact>();
 
@@ -171,9 +172,7 @@ export default function ContactsPage({
 	return (
 		<>
 			<Head>
-				<title>
-					Mes contacts - Téléservice de déclaration d’accessibilité numérique
-				</title>
+				<title>{pageTitle("Mes contacts")}</title>
 			</Head>
 			<PageHeading
 				title="Mes contacts"
