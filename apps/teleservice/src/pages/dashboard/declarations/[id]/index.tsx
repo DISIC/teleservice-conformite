@@ -18,7 +18,7 @@ import {
 import { SectionContent } from "~/components/declaration/sections/Content";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
-import { parseSectionFromQuery } from "~/domain/declaration/sections";
+import { parseSectionFromQuery, SECTIONS } from "~/domain/declaration/sections";
 import { getObsolescence } from "~/domain/declaration/obsolescence";
 import { validateDeclaration } from "~/domain/declaration/validate";
 import { PendingSourceModesProvider } from "~/components/declaration/sections/PendingSourceModes";
@@ -33,6 +33,10 @@ import {
 	type LibraryProps,
 	type VisitProps,
 } from "~/lib/server-guards";
+import { pageTitle } from "~/lib/serviceName";
+import { useScopedState } from "~/hooks/useScopedState";
+
+const NO_PENDING_MODES: PendingSourceModes = {};
 
 export default function DeclarationPage({
 	declaration: initialDeclaration,
@@ -67,21 +71,26 @@ export default function DeclarationPage({
 		declaration.status !== "unpublished" &&
 		!updateRevealed;
 
-	// Armed by the terminal Section's "Prévisualiser et publier"; once armed, the
-	// error summary re-derives from the declaration on every save.
-	const [publishAttempted, setPublishAttempted] = useState(false);
-	const [pendingSourceModes, setPendingSourceModes] =
-		useState<PendingSourceModes>({});
+	// Set by "Prévisualiser et publier"; from then on the error summary re-derives on every save.
+	const [publishAttempted, setPublishAttempted] = useScopedState(
+		declaration.id,
+		false,
+	);
+	const onPublishAttempt = () => setPublishAttempted(() => true);
+
+	const [pendingSourceModes, updatePendingSourceModes] = useScopedState(
+		declaration.id,
+		NO_PENDING_MODES,
+	);
 	const pendingSourceModesValue = useMemo(
 		() => ({
 			pending: pendingSourceModes,
 			setPending: (kind: LibrarySectionKind, value: SourceModeValue | null) =>
-				setPendingSourceModes((current) => {
-					const { [kind]: _previous, ...rest } = current;
-					return value ? { ...rest, [kind]: value } : rest;
-				}),
+				updatePendingSourceModes(({ [kind]: _previous, ...rest }) =>
+					value ? { ...rest, [kind]: value } : rest,
+				),
 		}),
-		[pendingSourceModes],
+		[pendingSourceModes, updatePendingSourceModes],
 	);
 	const declarationErrors = useMemo(
 		() =>
@@ -106,11 +115,14 @@ export default function DeclarationPage({
 		router.replace({ query }, undefined, { shallow: true, scroll: false });
 	}, [fieldQuery, currentSection, router]);
 
+	const declarationTitle = `Déclaration de ${declaration.name}`;
 	const heading = (
 		<>
 			<Head>
 				<title>
-					Déclaration de {declaration.name} - Téléservice Conformité
+					{showInterstitial
+						? pageTitle(declarationTitle)
+						: pageTitle(SECTIONS[currentSection].title, declarationTitle)}
 				</title>
 			</Head>
 			<DeclarationHeading declaration={declaration} />
@@ -146,7 +158,7 @@ export default function DeclarationPage({
 					<PendingSourceModesProvider value={pendingSourceModesValue}>
 						<StateNotice
 							declaration={declaration}
-							onPublishAttempt={() => setPublishAttempted(true)}
+							onPublishAttempt={onPublishAttempt}
 							onReverted={() => router.reload()}
 						/>
 
@@ -175,7 +187,7 @@ export default function DeclarationPage({
 										currentSection={currentSection}
 										onDeclarationChange={setDeclaration}
 										mode={editingMode}
-										onPublishAttempt={() => setPublishAttempted(true)}
+										onPublishAttempt={onPublishAttempt}
 										publishAttempted={publishAttempted}
 									/>
 								</div>

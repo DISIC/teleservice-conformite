@@ -1,7 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
-import Tag from "@codegouvfr/react-dsfr/Tag";
+import type { TagProps } from "@codegouvfr/react-dsfr/Tag";
+import TagsGroup from "@codegouvfr/react-dsfr/TagsGroup";
 import NationalIdentityCard from "@codegouvfr/react-dsfr/picto/NationalIdentityCard";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
@@ -19,13 +20,18 @@ import {
 	type LibraryContactModalActions,
 } from "~/components/modal/LibraryContactModal";
 import EmptyState from "~/components/ui/EmptyState";
+import { EmptyValue } from "~/components/ui/EmptyValue";
 import { Loader } from "~/components/ui/Loader";
+import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import Table from "~/components/ui/Table";
 import type { Contact, Entity } from "~/payload/payload-types";
 import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
+import { pageTitle } from "~/lib/serviceName";
 
 const columnHelper = createColumnHelper<Contact>();
+
+const isNonEmpty = <T,>(items: T[]): items is [T, ...T[]] => items.length > 0;
 
 export default function ContactsPage({
 	entity,
@@ -42,10 +48,13 @@ export default function ContactsPage({
 		isLoading,
 		isFetching,
 	} = api.library.listContacts.useQuery();
-
-	const { mutate: deleteContact } = api.library.deleteContact.useMutation({
-		onSuccess: () => utils.library.listContacts.invalidate(),
-		onError: (e) => setErrorMessage(e.message),
+	const { addButtonId, deleteButtonId, deleteItem } = useFocusAfterDelete({
+		itemName: "contact",
+		isFetching,
+		deleteMutation: api.library.deleteContact.useMutation({
+			onSuccess: () => utils.library.listContacts.invalidate(),
+			onError: (e) => setErrorMessage(e.message),
+		}),
 	});
 
 	const confirmDelete = useCallback(
@@ -67,45 +76,61 @@ export default function ContactsPage({
 						</p>
 					</>
 				),
-				onConfirm: () => deleteContact({ id: contact.id }),
+				onConfirm: () => deleteItem(contact.id),
 			}),
-		[confirmationModalActions, deleteContact],
+		[confirmationModalActions, deleteItem],
 	);
 
 	const columns = useMemo(
 		() => [
 			columnHelper.accessor("name", {
 				id: "name",
+				header: "Nom du contact",
 				cell: (info) => <strong>{info.getValue()}</strong>,
 			}),
 			columnHelper.display({
 				id: "kinds",
+				header: "Moyens de contact",
 				cell: (info) => {
-					const contact = info.row.original;
-					return (
-						<div className={classes.tags}>
-							{contact.email && <Tag small>Email</Tag>}
-							{contact.url && <Tag small>Formulaire</Tag>}
-						</div>
+					const { email, url } = info.row.original;
+					const tags: TagProps[] = [
+						...(email ? [{ children: "Email" }] : []),
+						...(url ? [{ children: "Formulaire" }] : []),
+					];
+					return isNonEmpty(tags) ? (
+						<TagsGroup smallTags tags={tags} className={classes.tags} />
+					) : (
+						<EmptyValue />
 					);
 				},
 			}),
 			columnHelper.display({
 				id: "url",
+				header: "Lien URL du formulaire",
 				cell: (info) => {
 					const url = info.row.original.url;
-					return url ? <span className={classes.hint}>{url}</span> : null;
+					return url ? (
+						<span className={classes.hint}>{url}</span>
+					) : (
+						<EmptyValue />
+					);
 				},
 			}),
 			columnHelper.display({
 				id: "email",
+				header: "Email de contact",
 				cell: (info) => {
 					const email = info.row.original.email;
-					return email ? <span className={classes.hint}>{email}</span> : null;
+					return email ? (
+						<span className={classes.hint}>{email}</span>
+					) : (
+						<EmptyValue />
+					);
 				},
 			}),
 			columnHelper.display({
 				id: "actions",
+				header: "Actions",
 				meta: { styles: { justifyContent: "flex-end" } },
 				cell: (info) => {
 					const contact = info.row.original;
@@ -114,12 +139,19 @@ export default function ContactsPage({
 							label={contact.name}
 							onEdit={() => contactModalActions.open?.(contact)}
 							onDelete={() => confirmDelete(contact)}
+							deleteButtonId={deleteButtonId(contact.id)}
 						/>
 					);
 				},
 			}),
 		],
-		[classes.hint, classes.tags, confirmDelete, contactModalActions],
+		[
+			classes.hint,
+			classes.tags,
+			confirmDelete,
+			contactModalActions,
+			deleteButtonId,
+		],
 	);
 
 	const openCreate = () => contactModalActions.open?.();
@@ -127,14 +159,18 @@ export default function ContactsPage({
 	return (
 		<>
 			<Head>
-				<title>Mes contacts - Téléservice Conformité</title>
+				<title>{pageTitle("Mes contacts")}</title>
 			</Head>
 			<PageHeading
 				title="Mes contacts"
 				pictogram={<NationalIdentityCard fontSize="3.5rem" />}
 				entityName={entity.name}
 				actions={
-					<Button iconId="fr-icon-add-line" onClick={openCreate}>
+					<Button
+						iconId="fr-icon-add-line"
+						onClick={openCreate}
+						nativeButtonProps={{ id: addButtonId }}
+					>
 						Ajouter un contact
 					</Button>
 				}
@@ -165,10 +201,10 @@ export default function ContactsPage({
 						/>
 					) : (
 						<Table
+							caption="Liste de mes contacts"
 							columns={columns}
 							data={contacts}
 							numberPerPage={10}
-							hideHeaders
 						/>
 					)}
 				</div>
@@ -184,9 +220,14 @@ const useStyles = tss.withName(ContactsPage.name).create({
 		paddingBlock: fr.spacing("12v"),
 	},
 	tags: {
-		display: "flex",
+		margin: 0,
 		gap: fr.spacing("1v"),
-		flexWrap: "wrap",
+		"& > li": {
+			lineHeight: "normal",
+		},
+		"& .fr-tag": {
+			margin: 0,
+		},
 	},
 	hint: {
 		fontSize: "0.875rem",

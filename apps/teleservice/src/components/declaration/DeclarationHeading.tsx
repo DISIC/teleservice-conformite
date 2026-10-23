@@ -18,6 +18,7 @@ import { getDeclarationStatus } from "~/domain/declaration/status";
 import { api } from "~/lib/api";
 import { copyToClipboard } from "~/lib/clipboard";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { newTabLinkProps } from "~/lib/newTabLink";
 
 const DECLARATIONS_LIST = "/dashboard/declarations";
 
@@ -41,7 +42,10 @@ export function DeclarationHeading({
 
 	const { mutate: deleteDeclaration } = api.declaration.delete.useMutation({
 		onSuccess: () => {
-			router.push(DECLARATIONS_LIST);
+			router.push(
+				{ pathname: DECLARATIONS_LIST, query: { deleted: declaration.name } },
+				DECLARATIONS_LIST,
+			);
 		},
 		onError: (error) => {
 			logMutationError("deleting declaration", declaration.id)(error);
@@ -109,9 +113,9 @@ export function DeclarationHeading({
 									size="small"
 									linkProps={{
 										href: publicHref,
-										target: "_blank",
-										rel: "noopener noreferrer",
-										title: `Voir la déclaration ${declaration.name}, nouvelle fenêtre`,
+										...newTabLinkProps(
+											`Voir la déclaration ${declaration.name}`,
+										),
 									}}
 								>
 									Voir la déclaration

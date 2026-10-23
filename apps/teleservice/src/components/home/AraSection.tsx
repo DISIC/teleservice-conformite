@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Image from "next/image";
 import { tss } from "tss-react";
 import AraLogo from "~/assets/ara-logo.svg";
+import { newTabLinkProps } from "~/lib/newTabLink";
 
 export function AraSection() {
 	const { classes } = useStyles();
@@ -9,20 +10,12 @@ export function AraSection() {
 	return (
 		<section className={fr.cx("fr-container")}>
 			<div className={classes.block}>
-				<Image
-					src={AraLogo}
-					alt="Logo de l'outil Ara"
-					className={classes.artwork}
-				/>
+				<Image src={AraLogo} alt="" className={classes.artwork} />
 				<div className={classes.content}>
 					<h2 className={classes.heading}>En un clic avec Ara</h2>
 					<p className={classes.text}>
 						Si vous utilisez l’outil{" "}
-						<a
-							href="https://ara.numerique.gouv.fr"
-							target="_blank"
-							rel="noopener noreferrer"
-						>
+						<a href="https://ara.numerique.gouv.fr" {...newTabLinkProps("Ara")}>
 							Ara
 						</a>{" "}
 						pour réaliser votre audit, récupérez en un clic toutes les données

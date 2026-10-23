@@ -11,6 +11,7 @@ import type { Entity } from "~/payload/payload-types";
 import { AiPath } from "./AiPath";
 import { AraPath } from "./AraPath";
 import { ManualPath } from "./ManualPath";
+import { newTabLinkProps } from "~/lib/newTabLink";
 
 type CreationPath = "ai" | "ara" | "manual";
 
@@ -80,9 +81,7 @@ export function PathPicker({
 							<a
 								href="https://ara.numerique.gouv.fr/"
 								className={fr.cx("fr-link")}
-								target="_blank"
-								rel="noreferrer"
-								title="Ara, nouvelle fenêtre"
+								{...newTabLinkProps("Ara")}
 							>
 								Ara
 							</a>{" "}

@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { useRouter } from "next/router";
+import Link from "next/link";
 import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { SECTION_TITLES, sectionHref } from "~/domain/declaration/sections";
@@ -17,45 +17,40 @@ type ErrorSummaryProps = {
  * it shrinks as Sections are fixed and disappears at zero.
  */
 export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
-	const router = useRouter();
 	const { classes } = useStyles();
 
-	const goToSection = (error: DeclarationError) =>
-		router.push(
-			sectionHref(declarationId, error.section, error.field),
-			undefined,
-			{ shallow: true, scroll: false },
-		);
-
 	return (
-		<Alert
-			severity="error"
-			closable={false}
-			title={
-				errors.length > 1
-					? `${errors.length} champs doivent être complétés avant la publication`
-					: "Un champ doit être complété avant la publication"
-			}
-			description={
-				<ul className={classes.list}>
-					{errors.map((error) => (
-						<li key={`${error.section}.${error.field}`}>
-							<button
-								type="button"
-								className={classes.row}
-								onClick={() => goToSection(error)}
-							>
-								<span className={classes.section}>
-									{SECTION_TITLES[error.section]}
-									{error.label && ` › ${error.label}`}
-								</span>
-								<span>{error.message}</span>
-							</button>
-						</li>
-					))}
-				</ul>
-			}
-		/>
+		<div role="alert">
+			<Alert
+				severity="error"
+				closable={false}
+				title={
+					errors.length > 1
+						? `${errors.length} champs doivent être complétés avant la publication`
+						: "Un champ doit être complété avant la publication"
+				}
+				description={
+					<ul className={classes.list}>
+						{errors.map((error) => (
+							<li key={`${error.section}.${error.field}`}>
+								<Link
+									href={sectionHref(declarationId, error.section, error.field)}
+									shallow
+									scroll={false}
+									className={classes.row}
+								>
+									<span className={classes.section}>
+										{SECTION_TITLES[error.section]}
+										{error.label && ` › ${error.label}`}
+									</span>
+									<span>{error.message}</span>
+								</Link>
+							</li>
+						))}
+					</ul>
+				}
+			/>
+		</div>
 	);
 }
 
@@ -74,11 +69,9 @@ const useStyles = tss.withName(ErrorSummary.name).create({
 		gap: fr.spacing("1w"),
 		width: "100%",
 		textAlign: "left",
-		background: "none",
-		border: "none",
 		padding: `${fr.spacing("1v")} 0`,
-		cursor: "pointer",
 		color: "inherit",
+		backgroundImage: "none",
 		textDecoration: "underline",
 		textUnderlineOffset: "2px",
 	},

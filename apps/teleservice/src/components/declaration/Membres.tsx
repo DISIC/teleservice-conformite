@@ -2,6 +2,8 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
+import { EmptyValue } from "~/components/ui/EmptyValue";
+import { hiddenCaption } from "~/components/ui/Table";
 import { useState } from "react";
 import { tss } from "tss-react";
 import {
@@ -48,17 +50,16 @@ export default function Membres({ declaration }: MembresProps) {
 		status: AccessRight["status"];
 	}) => {
 		if (status === "pending") {
-			return <Badge key="status">Invitation envoyée</Badge>;
+			return <Badge as="span">Invitation envoyée</Badge>;
 		}
 
-		switch (role) {
-			case "admin":
-				return (
-					<Badge key="status" className={classes.adminBadge}>
-						Administrateur
-					</Badge>
-				);
-		}
+		return role === "admin" ? (
+			<Badge as="span" className={classes.adminBadge}>
+				Administrateur
+			</Badge>
+		) : (
+			<Badge as="span">Membre</Badge>
+		);
 	};
 
 	const ActionsButtons = ({
@@ -68,10 +69,17 @@ export default function Membres({ declaration }: MembresProps) {
 		accessRight: AccessRightAugmented;
 		session: Session | null;
 	}) => {
-		if (Number(session?.user.id) === accessRight?.user?.id) return;
-
+		const isSelf = Number(session?.user.id) === accessRight?.user?.id;
 		const isCreator = declaration.created_by?.id === Number(session?.user.id);
 		const isInvitePending = accessRight.status === "pending";
+
+		if (isSelf || (!isCreator && !isInvitePending)) {
+			return (
+				<span className={fr.cx("fr-text--sm", "fr-mb-0")}>
+					Aucune action disponible
+				</span>
+			);
+		}
 
 		const displayName = accessRight?.user?.name
 			? `${accessRight.user.name} (${accessRight.user.email})`
@@ -130,14 +138,18 @@ export default function Membres({ declaration }: MembresProps) {
 				/>
 			</div>
 			<Table
+				caption="Liste des membres ayant accès à la déclaration"
+				noCaption
 				bordered
 				className={classes.table}
 				data={accessRights.map((accessRight) => [
 					<div key={`user-${accessRight.id}`}>
-						{accessRight?.user?.name || "-"}
+						{accessRight?.user?.name || <EmptyValue />}
 					</div>,
 					<div key={`mail-${accessRight.id}`}>
-						{accessRight?.user?.email || accessRight.tmpUserEmail}
+						{accessRight?.user?.email || accessRight.tmpUserEmail || (
+							<EmptyValue />
+						)}
 					</div>,
 					<div key={`status-${accessRight.id}`}>
 						<StatusBadge role={accessRight.role} status={accessRight.status} />
@@ -158,7 +170,9 @@ export default function Membres({ declaration }: MembresProps) {
 					<div key="status" className={classes.tableHeader}>
 						Statut
 					</div>,
-					<div key="actions" />,
+					<div key="actions" className={classes.tableHeader}>
+						Actions
+					</div>,
 				]}
 			/>
 		</section>
@@ -193,6 +207,7 @@ const useStyles = tss.withName(Membres.name).create({
 		table: {
 			display: "table",
 		},
+		...hiddenCaption,
 		"thead::after, tbody::after": {
 			backgroundImage: "none!important",
 		},

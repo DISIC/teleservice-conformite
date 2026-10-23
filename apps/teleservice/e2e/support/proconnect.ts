@@ -4,7 +4,7 @@ import { E2E_IDENTITY } from "./identity";
 /** The ProConnect integration login as a declarant does it: home CTA, email, one click on the test identity provider. */
 export async function signInWithProConnect(page: Page) {
 	await page.goto("/");
-	await page.getByRole("button", { name: "Commencer" }).first().click();
+	await page.getByRole("link", { name: "Commencer" }).first().click();
 	await page
 		.getByRole("textbox", { name: "Email professionnel" })
 		.fill(E2E_IDENTITY.email);

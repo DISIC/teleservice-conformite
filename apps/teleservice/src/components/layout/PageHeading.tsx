@@ -74,6 +74,7 @@ const useStyles = tss.withName(PageHeading.name).create({
 		display: "flex",
 		alignItems: "center",
 		gap: fr.spacing("4v"),
+		minWidth: 0,
 	},
 	pictogram: {
 		flexShrink: 0,
@@ -83,6 +84,7 @@ const useStyles = tss.withName(PageHeading.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("1v"),
+		minWidth: 0,
 	},
 	titleLine: {
 		display: "flex",
@@ -92,6 +94,8 @@ const useStyles = tss.withName(PageHeading.name).create({
 	},
 	title: {
 		margin: 0,
+		minWidth: 0,
+		overflowWrap: "anywhere",
 	},
 	entity: {
 		margin: 0,

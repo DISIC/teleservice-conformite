@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { tss } from "tss-react";
 import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
 import { StatusBadge } from "~/components/declaration/StatusBadge";
+import { EmptyValue } from "~/components/ui/EmptyValue";
 import {
 	formatRate,
 	getConformityStatus,
@@ -15,16 +16,49 @@ import { getDeclarationStatus } from "~/domain/declaration/status";
 import { copyToClipboard } from "~/lib/clipboard";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { newTabLinkProps, newTabTitle } from "~/lib/newTabLink";
 
 const columnHelper = createColumnHelper<PopulatedDeclaration>();
 
 const publicUrl = (declaration: PopulatedDeclaration) =>
 	`/declarations/${declaration.id}/publish`;
 
-export function useDeclarationColumns() {
+export function useDeclarationColumns({
+	declarations,
+	hasPublished,
+	rowLink,
+	onCopySuccess,
+}: {
+	declarations: PopulatedDeclaration[];
+	/** For a paginated list, whether any page has a published declaration. */
+	hasPublished?: boolean;
+	rowLink: boolean;
+	onCopySuccess: (declarationName: string) => void;
+}) {
 	const { classes } = useStyles();
+	// The actions column is left out when no declaration in the whole list has one.
+	const withActions =
+		hasPublished ??
+		declarations.some(
+			(declaration) => getDeclarationStatus(declaration) === "published",
+		);
 
-	return useMemo(() => buildColumns(classes), [classes]);
+	return useMemo(() => {
+		const {
+			nameColumn,
+			appKindColumn,
+			statusColumn,
+			conformityRateColumn,
+			publicActionsColumn,
+		} = buildColumns(classes);
+		return [
+			nameColumn({ rowLink }),
+			appKindColumn,
+			statusColumn,
+			conformityRateColumn,
+			...(withActions ? [publicActionsColumn({ onCopySuccess })] : []),
+		];
+	}, [classes, rowLink, withActions, onCopySuccess]);
 }
 
 function buildColumns(
@@ -39,12 +73,12 @@ function buildColumns(
 
 	const appKindColumn = columnHelper.accessor("app_kind", {
 		header: "Type de service",
-		cell: (info) => (
-			<Tag small>
-				{appKindOptions.find((option) => option.value === info.getValue())
-					?.label ?? "—"}
-			</Tag>
-		),
+		cell: (info) => {
+			const label = appKindOptions.find(
+				(option) => option.value === info.getValue(),
+			)?.label;
+			return label ? <Tag small>{label}</Tag> : <EmptyValue />;
+		},
 	});
 
 	const statusColumn = columnHelper.accessor(
@@ -66,11 +100,11 @@ function buildColumns(
 		header: "Taux de conformité",
 		cell: (info) => {
 			const rate = info.getValue();
-			if (rate == null) return "—";
+			if (rate == null) return <EmptyValue />;
 			const conformity = getConformityStatus(rate);
 			return (
 				<div className={classes.rate}>
-					<Badge noIcon small severity={conformity.severity}>
+					<Badge as="span" noIcon small severity={conformity.severity}>
 						{formatRate(rate)}
 					</Badge>
 					<span className={fr.cx("fr-text--xs", "fr-mb-0")}>
@@ -87,10 +121,15 @@ function buildColumns(
 	}) =>
 		columnHelper.display({
 			id: "actions",
-			header: () => <span className={fr.cx("fr-sr-only")}>Actions</span>,
+			header: "Actions",
 			cell: (info) => {
 				const declaration = info.row.original;
-				if (getDeclarationStatus(declaration) !== "published") return null;
+				if (getDeclarationStatus(declaration) !== "published")
+					return (
+						<span className={fr.cx("fr-text--sm", "fr-mb-0")}>
+							Aucune action disponible
+						</span>
+					);
 				const copyTitle = `Copier le lien public de la déclaration ${declaration.name}`;
 				return (
 					<div className={classes.actions}>
@@ -111,11 +150,10 @@ function buildColumns(
 							iconId="fr-icon-eye-line"
 							priority="secondary"
 							size="small"
-							title={`Voir la déclaration ${declaration.name}, nouvelle fenêtre`}
+							title={newTabTitle(`Voir la déclaration ${declaration.name}`)}
 							linkProps={{
 								href: publicUrl(declaration),
-								target: "_blank",
-								rel: "noopener noreferrer",
+								...newTabLinkProps(`Voir la déclaration ${declaration.name}`),
 							}}
 						/>
 					</div>

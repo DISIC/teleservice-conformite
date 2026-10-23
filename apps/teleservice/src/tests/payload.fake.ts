@@ -24,8 +24,13 @@ function matches(doc: Doc, where: Where | undefined): boolean {
 		if (key === "or")
 			return (condition as Where[]).some((clause) => matches(doc, clause));
 		const value = readPath(doc, key);
-		const operator = condition as { equals?: unknown; contains?: string };
+		const operator = condition as {
+			equals?: unknown;
+			contains?: string;
+			exists?: boolean;
+		};
 		if ("equals" in operator) return idOf(value) === idOf(operator.equals);
+		if ("exists" in operator) return (value != null) === operator.exists;
 		if ("contains" in operator)
 			return (
 				typeof value === "string" && value.includes(operator.contains ?? "")

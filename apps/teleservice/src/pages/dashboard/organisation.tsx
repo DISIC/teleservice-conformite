@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { useDeclarationColumns } from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
@@ -12,6 +12,7 @@ import type { Entity } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { pageTitle } from "~/lib/serviceName";
 
 interface EntityDeclarationsPageProps {
 	entity: Entity;
@@ -25,13 +26,6 @@ export default function EntityDeclarationsPage({
 	declarations,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
-	const {
-		nameColumn,
-		appKindColumn,
-		statusColumn,
-		conformityRateColumn,
-		publicActionsColumn,
-	} = useDeclarationColumns();
 
 	const alertRef = useRef<HTMLDivElement>(null);
 	const [alertMessage, setAlertMessage] = useState<string | null>(null);
@@ -48,30 +42,16 @@ export default function EntityDeclarationsPage({
 		if (alertMessage) alertRef.current?.focus();
 	}, [alertMessage]);
 
-	const columns = useMemo(
-		() => [
-			nameColumn({ rowLink: false }),
-			appKindColumn,
-			statusColumn,
-			conformityRateColumn,
-			publicActionsColumn({ onCopySuccess }),
-		],
-		[
-			nameColumn,
-			appKindColumn,
-			statusColumn,
-			conformityRateColumn,
-			publicActionsColumn,
-			onCopySuccess,
-		],
-	);
+	const columns = useDeclarationColumns({
+		declarations,
+		rowLink: false,
+		onCopySuccess,
+	});
 
 	return (
 		<>
 			<Head>
-				<title>
-					Toutes les déclarations de l’organisation - Téléservice Conformité
-				</title>
+				<title>{pageTitle("Toutes les déclarations de l’organisation")}</title>
 			</Head>
 			<PageHeading
 				title="Toutes les déclarations de l’organisation"
@@ -93,6 +73,7 @@ export default function EntityDeclarationsPage({
 					)}
 					{declarations.length ? (
 						<Table
+							caption="Liste des déclarations d’accessibilité de l’organisation"
 							columns={columns}
 							data={declarations}
 							numberPerPage={NUMBER_PER_PAGE}

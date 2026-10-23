@@ -5,17 +5,17 @@ import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import { tss } from "tss-react";
 
 type HeroProps = {
-	onStart: () => void;
+	startHref: string;
 };
 
-export function Hero({ onStart }: HeroProps) {
+export function Hero({ startHref }: HeroProps) {
 	const { classes, cx } = useStyles();
 
 	return (
 		<div className={classes.band}>
 			<div className={cx(fr.cx("fr-container"), classes.container)}>
 				<div className={classes.content}>
-					<Badge noIcon small>
+					<Badge as="span" noIcon small>
 						BETA
 					</Badge>
 					<h1 className={classes.title}>
@@ -27,7 +27,7 @@ export function Hero({ onStart }: HeroProps) {
 						d’accessibilité numérique des services publics. Il permet un
 						meilleur suivi de la politique d’accessibilité de l’État.
 					</p>
-					<Button onClick={onStart} size="large">
+					<Button linkProps={{ href: startHref }} size="large">
 						Commencer
 					</Button>
 				</div>

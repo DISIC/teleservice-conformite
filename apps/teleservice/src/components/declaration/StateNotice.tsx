@@ -77,6 +77,7 @@ export function StateNotice({
 				<div className={classes.content}>
 					{badge && (
 						<Badge
+							as="span"
 							noIcon
 							small
 							className={classes.badge}

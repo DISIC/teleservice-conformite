@@ -29,7 +29,7 @@ export default function TopicSidebarList({ topics }: TopicSidebarListProps) {
 				<div className={classes.menuItem}>
 					{`${topic.number}. ${topic.topic}`}
 					{topic.notApplicable && (
-						<Badge small noIcon className={classes.badge}>
+						<Badge as="span" small noIcon className={classes.badge}>
 							Non applicable
 						</Badge>
 					)}

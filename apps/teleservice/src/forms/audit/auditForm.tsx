@@ -14,6 +14,7 @@ import {
 	auditToolsFormOptions,
 } from "./auditSchema";
 import { DATE_FORMAT_HINT, MIN_DATE, todayIsoDate } from "~/forms/rules";
+import { newTabLinkProps } from "~/lib/newTabLink";
 
 // A Sub-section that requires a realised audit stays in the SideMenu but has nothing to fill.
 function AuditNotRealisedNotice() {
@@ -181,7 +182,7 @@ export const ToolsForm = withForm({
 									{!readOnly && (
 										<field.TagGroupField
 											label="Ajouter un outil"
-											initialTags={extraTools}
+											tags={extraTools}
 										/>
 									)}
 								</>
@@ -213,7 +214,7 @@ export const ToolsForm = withForm({
 									{!readOnly && (
 										<field.TagGroupField
 											label="Ajouter un environnement"
-											initialTags={extraTestEnvironments}
+											tags={extraTestEnvironments}
 										/>
 									)}
 								</>
@@ -345,16 +346,16 @@ export const NonCompliantElementsForm = withForm({
 								label={
 									!readOnly
 										? "Éléments non soumis à l’obligation d’accessibilité (si concerné)"
-										: "Dérogations pour charge disproportionnée"
+										: "Contenus non soumis à l’obligation d’accessibilité"
 								}
 								textArea
 								hintText={
 									<>
 										<a
 											href="https://accessibilite.numerique.gouv.fr/obligations/champ-application/"
-											target="_blank"
-											rel="noopener noreferrer"
-											title="Liste des contenus non soumis à l’obligation d’accessibilité, nouvelle fenêtre"
+											{...newTabLinkProps(
+												"Liste des contenus non soumis à l’obligation d’accessibilité",
+											)}
 										>
 											Liste des contenus non soumis à l’obligation
 											d’accessibilité
@@ -374,15 +375,15 @@ export const NonCompliantElementsForm = withForm({
 								label={
 									!readOnly
 										? "Éléments avec dérogation pour charge disproportionnée (si concerné)"
-										: "Contenus non soumis à l’obligation d’accessibilité"
+										: "Dérogations pour charge disproportionnée"
 								}
 								hintText={
 									<>
 										<a
 											href="https://accessibilite.numerique.gouv.fr/obligations/champ-application/"
-											target="_blank"
-											rel="noopener noreferrer"
-											title="Qu’est-ce qu’une charge disproportionnée ?, nouvelle fenêtre"
+											{...newTabLinkProps(
+												"Qu’est-ce qu’une charge disproportionnée ?",
+											)}
 										>
 											Qu’est-ce qu’une charge disproportionnée ?
 										</a>

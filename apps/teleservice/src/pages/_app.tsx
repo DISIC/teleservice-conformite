@@ -13,11 +13,11 @@ import { useMemo } from "react";
 import { tss } from "tss-react";
 import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 
-import { AlertHost } from "~/components/alert/AlertHost";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
-import { authClient, signInWithProConnect } from "~/lib/auth-client";
+import { authClient } from "~/lib/auth-client";
+import { SERVICE_NAME } from "~/lib/serviceName";
 
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
 	interface RegisterLink {
@@ -71,8 +71,8 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 				{
 					iconId: "fr-icon-account-line",
 					text: "Se connecter",
-					buttonProps: {
-						onClick: () => signInWithProConnect(),
+					linkProps: {
+						href: "/api/connexion",
 						className: fr.cx("fr-btn--tertiary"),
 					},
 				},
@@ -116,7 +116,7 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>Téléservice Conformité</title>
+				<title>{SERVICE_NAME}</title>
 			</Head>
 			<div className={classes.mainContainer}>
 				<SkipLinks
@@ -142,13 +142,13 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 						}
 						homeLinkProps={{
 							href: "/",
-							title: "Accueil Téléservice Conformité",
+							title: `Accueil ${SERVICE_NAME}, Beta`,
 						}}
 						quickAccessItems={quickAccessItems}
 						navigation={navigation}
 						serviceTitle={
 							<>
-								Téléservice de déclaration d’accessibilité numérique{" "}
+								{SERVICE_NAME}{" "}
 								<Badge as="span" noIcon small severity="info">
 									BETA
 								</Badge>
@@ -158,11 +158,14 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 					/>
 				)}
 				<main id="contenu" className={classes.main} style={{ flex: 1 }}>
-					<AlertHost />
 					<Component {...pageProps} />
 				</main>
 				<Footer
 					id="footer"
+					homeLinkProps={{
+						href: "/",
+						title: `République française, Accueil ${SERVICE_NAME}`,
+					}}
 					accessibility="non compliant"
 					bottomItems={[headerFooterDisplayItem]}
 				/>

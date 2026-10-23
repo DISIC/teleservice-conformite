@@ -18,6 +18,7 @@ import { guardDeclaration } from "~/lib/server-guards";
 import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
 import { getDeclarationState } from "~/domain/declaration/state";
 import { getObsolescence } from "~/domain/declaration/obsolescence";
+import { pageTitle } from "~/lib/serviceName";
 
 // Only entity and created_by remain nullable relations for the preview.
 type RequiredPopulatedDeclaration = Omit<
@@ -66,10 +67,12 @@ export default function DeclarationPreviewPage({
 	const head = (
 		<Head>
 			<title>
-				{publishedAt
-					? "Votre déclaration a été publiée"
-					: "Votre déclaration est prête à être publiée"}{" "}
-				- Déclaration de {declaration.name} - Téléservice Conformité
+				{pageTitle(
+					publishedAt
+						? "Votre déclaration a été publiée"
+						: "Votre déclaration est prête à être publiée",
+					`Déclaration de ${declaration.name}`,
+				)}
 			</title>
 		</Head>
 	);
@@ -170,6 +173,10 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 		padding: fr.spacing("4w"),
 		marginTop: fr.spacing("10v"),
 		marginBottom: fr.spacing("6v"),
+		minWidth: 0,
+		"@media (max-width: 576px)": {
+			padding: fr.spacing("2w"),
+		},
 	},
 	buttonsContainer: {
 		display: "flex",

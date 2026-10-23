@@ -6,7 +6,7 @@ import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { useDeclarationColumns } from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
@@ -23,6 +23,7 @@ import {
 	type DeclarationsPage as DeclarationsPageData,
 	listOwnedDeclarations,
 } from "~/server/api/routers/declaration/service";
+import { pageTitle } from "~/lib/serviceName";
 
 interface DeclarationsPageProps {
 	firstPage: DeclarationsPageData;
@@ -46,13 +47,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	);
 	const declarations = page === 1 ? firstPage : (data ?? firstPage);
 
-	const {
-		nameColumn,
-		appKindColumn,
-		statusColumn,
-		conformityRateColumn,
-		publicActionsColumn,
-	} = useDeclarationColumns();
 	const [createModalActions] = useState<CreateDeclarationModalActions>({});
 	const alertRef = useRef<HTMLDivElement>(null);
 	const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -78,23 +72,12 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		[showDeclarationAlert],
 	);
 
-	const columns = useMemo(
-		() => [
-			nameColumn({ rowLink: true }),
-			appKindColumn,
-			statusColumn,
-			conformityRateColumn,
-			publicActionsColumn({ onCopySuccess }),
-		],
-		[
-			nameColumn,
-			appKindColumn,
-			statusColumn,
-			conformityRateColumn,
-			publicActionsColumn,
-			onCopySuccess,
-		],
-	);
+	const columns = useDeclarationColumns({
+		declarations: declarations.docs,
+		hasPublished: declarations.hasPublished,
+		rowLink: true,
+		onCopySuccess,
+	});
 
 	useEffect(() => {
 		if (showAlert) alertRef.current?.focus();
@@ -109,10 +92,21 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		router.replace({ query }, undefined, { shallow: true });
 	}, [router, createModalActions]);
 
+	useEffect(() => {
+		const { deleted, ...query } = router.query;
+		if (typeof deleted !== "string") return;
+
+		showDeclarationAlert({
+			description: `La déclaration « ${deleted} » a bien été supprimée.`,
+			severity: "success",
+		});
+		router.replace({ query }, undefined, { shallow: true });
+	}, [router, showDeclarationAlert]);
+
 	return (
 		<>
 			<Head>
-				<title>Mes déclarations - Téléservice Conformité</title>
+				<title>{pageTitle("Mes déclarations")}</title>
 			</Head>
 			<PageHeading
 				title="Mes déclarations d’accessibilité"
@@ -143,6 +137,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 					)}
 					{declarations.totalDocs ? (
 						<Table
+							caption="Liste de mes déclarations d’accessibilité"
 							columns={columns}
 							data={declarations.docs}
 							numberPerPage={declarations.limit}

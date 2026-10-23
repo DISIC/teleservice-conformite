@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
+import { newTabLinkProps } from "~/lib/newTabLink";
 
 const REASONS = [
 	{
@@ -37,8 +38,7 @@ export function WhySection() {
 						<p className={classes.cardText}>{description}</p>
 						<a
 							href={href}
-							target="_blank"
-							rel="noopener noreferrer"
+							{...newTabLinkProps(linkLabel)}
 							className={cx(fr.cx("fr-link", "fr-link--sm"), classes.cardLink)}
 						>
 							{linkLabel}

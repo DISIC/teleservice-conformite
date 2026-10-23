@@ -11,6 +11,7 @@ import {
 	parsePublishedDeclaration,
 	type PublishedDeclaration,
 } from "~/domain/declaration/published/snapshot";
+import { pageTitle } from "~/lib/serviceName";
 
 type PublishPageProps = {
 	publishedContent: PublishedDeclaration | null;
@@ -30,9 +31,7 @@ const PublishPage: PageWithHeader<PublishPageProps> = ({
 	return (
 		<>
 			<Head>
-				<title>
-					Déclaration de {publishedContent.name} - Téléservice Conformité
-				</title>
+				<title>{pageTitle(`Déclaration de ${publishedContent.name}`)}</title>
 			</Head>
 			<section
 				id="published-declaration-section"

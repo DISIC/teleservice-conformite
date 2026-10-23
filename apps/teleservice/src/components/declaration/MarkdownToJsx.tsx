@@ -25,7 +25,7 @@ export default function MarkdownToJsx({
 }) {
 	const { classes } = useStyles();
 
-	// In preview mode headings drop a rank so the page's own h1 stays unique.
+	// In preview the content sits under the page's h1 and its "Prévisualiser et publier" h2.
 	const headingRenderer =
 		(from: HeadingLevel) =>
 		(
@@ -35,7 +35,7 @@ export default function MarkdownToJsx({
 			>,
 		) => {
 			const level = Number(from.slice(1));
-			const tagLevel = mode === "preview" ? Math.min(6, level + 1) : level;
+			const tagLevel = mode === "preview" ? Math.min(6, level + 2) : level;
 			const Tag = `h${tagLevel}` as HeadingLevel;
 			return <Tag {...props} className={HEADING_CLASS[from]} />;
 		};
@@ -81,6 +81,21 @@ const useStyles = tss.withName(MarkdownToJsx.name).create({
 		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},
 	markdownContainer: {
+		minWidth: 0,
+		maxWidth: "100%",
+		overflowWrap: "anywhere",
+		"pre, code": {
+			whiteSpace: "pre-wrap",
+		},
+		"img, video, iframe": {
+			maxWidth: "100%",
+			height: "auto",
+		},
+		table: {
+			display: "block",
+			maxWidth: "100%",
+			overflowX: "auto",
+		},
 		"p, ul, ol": {
 			marginTop: 0,
 			marginBottom: fr.spacing("6v"),

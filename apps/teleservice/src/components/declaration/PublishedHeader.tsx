@@ -3,6 +3,7 @@ import { Header } from "@codegouvfr/react-dsfr/Header";
 import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
 import { tss } from "tss-react";
 import { publicationLabel } from "~/domain/declaration/published/markdown";
+import { SERVICE_NAME } from "~/lib/serviceName";
 
 export const PUBLISHED_HEADER_TITLE = "Déclaration d’accessibilité numérique";
 
@@ -23,7 +24,7 @@ export function PublishedHeader({
 			}
 			homeLinkProps={{
 				href: "/",
-				title: "Accueil Téléservice Conformité",
+				title: `Accueil ${SERVICE_NAME}`,
 			}}
 			serviceTitle={PUBLISHED_HEADER_TITLE}
 			serviceTagline={[declaration.name, declaration.url]
