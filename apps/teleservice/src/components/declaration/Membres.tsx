@@ -50,17 +50,16 @@ export default function Membres({ declaration }: MembresProps) {
 		status: AccessRight["status"];
 	}) => {
 		if (status === "pending") {
-			return <Badge key="status">Invitation envoyée</Badge>;
+			return <Badge as="span">Invitation envoyée</Badge>;
 		}
 
-		switch (role) {
-			case "admin":
-				return (
-					<Badge key="status" className={classes.adminBadge}>
-						Administrateur
-					</Badge>
-				);
-		}
+		return role === "admin" ? (
+			<Badge as="span" className={classes.adminBadge}>
+				Administrateur
+			</Badge>
+		) : (
+			<Badge as="span">Membre</Badge>
+		);
 	};
 
 	const ActionsButtons = ({
@@ -70,10 +69,17 @@ export default function Membres({ declaration }: MembresProps) {
 		accessRight: AccessRightAugmented;
 		session: Session | null;
 	}) => {
-		if (Number(session?.user.id) === accessRight?.user?.id) return;
-
+		const isSelf = Number(session?.user.id) === accessRight?.user?.id;
 		const isCreator = declaration.created_by?.id === Number(session?.user.id);
 		const isInvitePending = accessRight.status === "pending";
+
+		if (isSelf || (!isCreator && !isInvitePending)) {
+			return (
+				<span className={fr.cx("fr-text--sm", "fr-mb-0")}>
+					Aucune action disponible
+				</span>
+			);
+		}
 
 		const displayName = accessRight?.user?.name
 			? `${accessRight.user.name} (${accessRight.user.email})`
@@ -164,7 +170,9 @@ export default function Membres({ declaration }: MembresProps) {
 					<div key="status" className={classes.tableHeader}>
 						Statut
 					</div>,
-					<div key="actions" />,
+					<div key="actions" className={classes.tableHeader}>
+						Actions
+					</div>,
 				]}
 			/>
 		</section>

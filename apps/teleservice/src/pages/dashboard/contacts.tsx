@@ -130,7 +130,7 @@ export default function ContactsPage({
 			}),
 			columnHelper.display({
 				id: "actions",
-				header: () => <span className={fr.cx("fr-sr-only")}>Actions</span>,
+				header: "Actions",
 				meta: { styles: { justifyContent: "flex-end" } },
 				cell: (info) => {
 					const contact = info.row.original;

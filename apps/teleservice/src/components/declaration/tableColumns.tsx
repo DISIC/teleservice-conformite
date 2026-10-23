@@ -116,12 +116,12 @@ function buildColumns(
 	}) =>
 		columnHelper.display({
 			id: "actions",
-			header: () => <span className={fr.cx("fr-sr-only")}>Actions</span>,
+			header: "Actions",
 			cell: (info) => {
 				const declaration = info.row.original;
 				if (getDeclarationStatus(declaration) !== "published")
 					return (
-						<span className={fr.cx("fr-sr-only")}>
+						<span className={fr.cx("fr-text--sm", "fr-mb-0")}>
 							Aucune action disponible
 						</span>
 					);
