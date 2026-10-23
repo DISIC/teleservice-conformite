@@ -84,7 +84,7 @@ export function TagGroupField(props: TagGroupFieldProps) {
 									onClick: () => {
 										const newTags = tags.filter((t) => t !== tag);
 										setTags(newTags);
-										field.setValue([...field.state.value, ...newTags]);
+										field.setValue(newTags);
 									},
 								}}
 							>
