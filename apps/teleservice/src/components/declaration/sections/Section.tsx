@@ -4,7 +4,6 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { useStore } from "@tanstack/react-form";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { tss } from "tss-react";
@@ -40,7 +39,6 @@ import { useSourceMode } from "./hooks/useSourceMode";
 import { SectionShell } from "./Shell";
 import { handleFormSubmit } from "~/components/form/handleFormSubmit";
 import { newTabLinkProps } from "~/lib/newTabLink";
-import { pageTitle } from "~/lib/serviceName";
 
 type SectionProps = {
 	definition: AnySectionDefinition;
@@ -292,40 +290,35 @@ export function Section({
 		!!library && editing.bodyMode !== "custom" && !editing.showRadio;
 
 	return (
-		<>
-			<Head>
-				<title>{pageTitle(declaration.name, title)}</title>
-			</Head>
-			<SectionShell
-				title={title}
-				badge={
-					isSectionNotApplicable(declaration, slug) ? (
-						<SectionBadge variant="not-applicable" />
-					) : undefined
-				}
-				isEditable={definition.isEditable?.(declaration) ?? true}
-				readOnly={readOnly}
-				onEnterEdit={() => setReadOnly(false)}
-				onCancelEdit={() => {
-					form.reset();
-					setReadOnly(true);
-				}}
-				onSave={() => form.handleSubmit()}
-				onPublish={editing.isTerminal ? publish : undefined}
-				// Sequential mode autosaves silently — no pending indicator.
-				isSaving={isSequential ? false : isPending}
-				prevHref={prevHref}
-				nextHref={nextHref}
-				hideActions={hideActions}
-				mode={mode}
-			>
-				{!readOnly && !hideRequiredNotice && <RequiredFieldsNotice />}
-				{sourcePicker}
-				<form onSubmit={handleFormSubmit(form)} noValidate>
-					<div className={commonClasses.partStack}>{body}</div>
-				</form>
-			</SectionShell>
-		</>
+		<SectionShell
+			title={title}
+			badge={
+				isSectionNotApplicable(declaration, slug) ? (
+					<SectionBadge variant="not-applicable" />
+				) : undefined
+			}
+			isEditable={definition.isEditable?.(declaration) ?? true}
+			readOnly={readOnly}
+			onEnterEdit={() => setReadOnly(false)}
+			onCancelEdit={() => {
+				form.reset();
+				setReadOnly(true);
+			}}
+			onSave={() => form.handleSubmit()}
+			onPublish={editing.isTerminal ? publish : undefined}
+			// Sequential mode autosaves silently — no pending indicator.
+			isSaving={isSequential ? false : isPending}
+			prevHref={prevHref}
+			nextHref={nextHref}
+			hideActions={hideActions}
+			mode={mode}
+		>
+			{!readOnly && !hideRequiredNotice && <RequiredFieldsNotice />}
+			{sourcePicker}
+			<form onSubmit={handleFormSubmit(form)} noValidate>
+				<div className={commonClasses.partStack}>{body}</div>
+			</form>
+		</SectionShell>
 	);
 }
 

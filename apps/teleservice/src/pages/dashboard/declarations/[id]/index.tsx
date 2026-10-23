@@ -18,7 +18,7 @@ import {
 import { SectionContent } from "~/components/declaration/sections/Content";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
-import { parseSectionFromQuery } from "~/domain/declaration/sections";
+import { parseSectionFromQuery, SECTIONS } from "~/domain/declaration/sections";
 import { getObsolescence } from "~/domain/declaration/obsolescence";
 import { validateDeclaration } from "~/domain/declaration/validate";
 import { PendingSourceModesProvider } from "~/components/declaration/sections/PendingSourceModes";
@@ -136,10 +136,15 @@ export default function DeclarationPage({
 		router.replace({ query }, undefined, { shallow: true, scroll: false });
 	}, [fieldQuery, currentSection, router]);
 
+	const declarationTitle = `Déclaration de ${declaration.name}`;
 	const heading = (
 		<>
 			<Head>
-				<title>{pageTitle(`Déclaration de ${declaration.name}`)}</title>
+				<title>
+					{showInterstitial
+						? pageTitle(declarationTitle)
+						: pageTitle(SECTIONS[currentSection].title, declarationTitle)}
+				</title>
 			</Head>
 			<DeclarationHeading declaration={declaration} />
 		</>
