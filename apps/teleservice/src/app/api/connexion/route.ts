@@ -5,11 +5,16 @@ const DEFAULT_CALLBACK_URL = "/dashboard/declarations";
 const PLACEHOLDER_ORIGIN = "http://callback.invalid";
 
 // Only same-origin paths: browsers read `/\host` like `//host`, so the parsed origin decides.
-const safeCallbackURL = (value: string | null) =>
-	value?.startsWith("/") &&
-	new URL(value, PLACEHOLDER_ORIGIN).origin === PLACEHOLDER_ORIGIN
-		? value
-		: DEFAULT_CALLBACK_URL;
+function safeCallbackURL(value: string | null) {
+	if (!value?.startsWith("/")) return DEFAULT_CALLBACK_URL;
+	try {
+		return new URL(value, PLACEHOLDER_ORIGIN).origin === PLACEHOLDER_ORIGIN
+			? value
+			: DEFAULT_CALLBACK_URL;
+	} catch {
+		return DEFAULT_CALLBACK_URL;
+	}
+}
 
 // A relative Location: behind the proxy, `request.url` carries the internal host.
 const backToHome = () =>
