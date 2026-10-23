@@ -25,18 +25,23 @@ const publicUrl = (declaration: PopulatedDeclaration) =>
 
 export function useDeclarationColumns({
 	declarations,
+	hasPublished,
 	rowLink,
 	onCopySuccess,
 }: {
 	declarations: PopulatedDeclaration[];
+	/** For a paginated list, whether any page has a published declaration. */
+	hasPublished?: boolean;
 	rowLink: boolean;
 	onCopySuccess: (declarationName: string) => void;
 }) {
 	const { classes } = useStyles();
-	// The actions column is left out when no listed declaration has one.
-	const withActions = declarations.some(
-		(declaration) => getDeclarationStatus(declaration) === "published",
-	);
+	// The actions column is left out when no declaration in the whole list has one.
+	const withActions =
+		hasPublished ??
+		declarations.some(
+			(declaration) => getDeclarationStatus(declaration) === "published",
+		);
 
 	return useMemo(() => {
 		const {

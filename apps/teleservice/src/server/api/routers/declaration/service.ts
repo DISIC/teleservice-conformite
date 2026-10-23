@@ -161,6 +161,8 @@ export type DeclarationsPage = {
 	totalPages: number;
 	totalDocs: number;
 	limit: number;
+	/** Whether any of the caller's declarations, on any page, has a public page. */
+	hasPublished: boolean;
 };
 
 /** One page of the caller's declarations, newest first; the client fetches the next pages on demand. */
@@ -169,23 +171,33 @@ export const listOwnedDeclarations = async (
 	userId: number,
 	page = 1,
 ): Promise<DeclarationsPage> => {
-	const result = await payload.find({
-		collection: "declarations",
-		depth: 3,
-		page,
-		limit: DECLARATIONS_PER_PAGE,
-		sort: "-createdAt",
-		where: {
-			"accessRights.user": { equals: userId },
-			"accessRights.status": { equals: "approved" },
-		},
-	});
+	const owned = {
+		"accessRights.user": { equals: userId },
+		"accessRights.status": { equals: "approved" },
+	};
+	const [result, published] = await Promise.all([
+		payload.find({
+			collection: "declarations",
+			depth: 3,
+			page,
+			limit: DECLARATIONS_PER_PAGE,
+			sort: "-createdAt",
+			where: owned,
+		}),
+		payload.find({
+			collection: "declarations",
+			depth: 0,
+			limit: 1,
+			where: { and: [owned, { publishedContent: { exists: true } }] },
+		}),
+	]);
 	return {
 		docs: result.docs as PopulatedDeclaration[],
 		page: result.page ?? page,
 		totalPages: result.totalPages,
 		totalDocs: result.totalDocs,
 		limit: DECLARATIONS_PER_PAGE,
+		hasPublished: published.totalDocs > 0,
 	};
 };
 

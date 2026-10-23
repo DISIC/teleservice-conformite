@@ -74,6 +74,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 
 	const columns = useDeclarationColumns({
 		declarations: declarations.docs,
+		hasPublished: declarations.hasPublished,
 		rowLink: true,
 		onCopySuccess,
 	});
