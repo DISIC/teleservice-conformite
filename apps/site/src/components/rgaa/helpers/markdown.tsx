@@ -126,7 +126,7 @@ export function renderMarkdown(
 		list.items.push({ text, children: [] });
 	};
 
-	for (const raw of source.split("\n")) {
+	for (const raw of source.split(/\r?\n/)) {
 		const line = raw.trim();
 		const text = HARD_BREAK.test(raw)
 			? `${line.replace(/\\$/, "").trimEnd()}\n`
