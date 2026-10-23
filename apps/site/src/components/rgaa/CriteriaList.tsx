@@ -61,7 +61,9 @@ export default function CriteriaList({
 	return (
 		<div className={classes.grid}>
 			<div className={classes.leftSidebar}>
-				<Badge className={classes.badge}>{criterias.referentiel}</Badge>
+				<Badge as="span" className={classes.badge}>
+					{criterias.referentiel}
+				</Badge>
 				<TopicSidebarList topics={allTopics} />
 			</div>
 			<div className={classes.rightContent} ref={topicsRef}>

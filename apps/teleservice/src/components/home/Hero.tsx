@@ -15,7 +15,7 @@ export function Hero({ startHref }: HeroProps) {
 		<div className={classes.band}>
 			<div className={cx(fr.cx("fr-container"), classes.container)}>
 				<div className={classes.content}>
-					<Badge noIcon small>
+					<Badge as="span" noIcon small>
 						BETA
 					</Badge>
 					<h1 className={classes.title}>

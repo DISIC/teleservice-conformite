@@ -99,7 +99,7 @@ function buildColumns(
 			const conformity = getConformityStatus(rate);
 			return (
 				<div className={classes.rate}>
-					<Badge noIcon small severity={conformity.severity}>
+					<Badge as="span" noIcon small severity={conformity.severity}>
 						{formatRate(rate)}
 					</Badge>
 					<span className={fr.cx("fr-text--xs", "fr-mb-0")}>

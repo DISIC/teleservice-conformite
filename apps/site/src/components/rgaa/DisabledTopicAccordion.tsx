@@ -22,7 +22,7 @@ export default function DisabledTopicAccordion({
 			<div className={classes.header}>
 				<h2 className={classes.title}>{`${topicIndex}. ${topicName}`}</h2>
 				<span className={cx(fr.cx("ri-links-line"), classes.icon)} />
-				<Badge small noIcon>
+				<Badge as="span" small noIcon>
 					Non applicable
 				</Badge>
 			</div>

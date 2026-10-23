@@ -19,7 +19,7 @@ type StatusBadgeProps = {
 export function StatusBadge({ declaration }: StatusBadgeProps) {
 	if (getObsolescence(declaration, new Date()) === "obsolete") {
 		return (
-			<Badge small severity="warning">
+			<Badge as="span" small severity="warning">
 				Obsolète
 			</Badge>
 		);
@@ -27,7 +27,7 @@ export function StatusBadge({ declaration }: StatusBadgeProps) {
 	const { label, severity } =
 		STATUS_PRESENTATION[getDeclarationStatus(declaration)];
 	return (
-		<Badge noIcon small severity={severity}>
+		<Badge as="span" noIcon small severity={severity}>
 			{label}
 		</Badge>
 	);
