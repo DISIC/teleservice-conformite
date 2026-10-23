@@ -40,7 +40,7 @@ export function renderMarkdownInline(text: string): ReactNode[] {
 	if (lines.length > 1)
 		return lines.flatMap((line, index) => [
 			...(index > 0 ? [<br key={`br${index}`} />] : []),
-			...renderMarkdownInline(line),
+			<Fragment key={`line${index}`}>{renderMarkdownInline(line)}</Fragment>,
 		]);
 
 	const nodes: ReactNode[] = [];
