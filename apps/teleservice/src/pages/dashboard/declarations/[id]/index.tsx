@@ -86,9 +86,8 @@ export default function DeclarationPage({
 		declaration.status !== "unpublished" &&
 		!updateRevealed;
 
-	// Armed by the terminal Section's "Prévisualiser et publier"; once armed, the
-	// error summary re-derives from the declaration on every save.
-	// Counted, not a flag: every attempt moves the focus back to the error summary.
+	// Counted, not a flag: each "Prévisualiser et publier" refocuses the error summary,
+	// which from the first attempt on re-derives from the declaration on every save.
 	const [publishAttempts, updatePublishAttempts] = useDeclarationScopedState(
 		declaration.id,
 		0,
