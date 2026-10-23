@@ -74,24 +74,25 @@ export function TagGroupField(props: TagGroupFieldProps) {
 				</Button>
 			</div>
 			{tags.length > 0 && (
-				<div className={classes.tagsContainer}>
+				<ul className={classes.tagsContainer}>
 					{tags.map((tag) => (
-						<Tag
-							iconId="fr-icon-close-line"
-							key={tag}
-							nativeButtonProps={{
-								type: "button",
-								onClick: () => {
-									const newTags = tags.filter((t) => t !== tag);
-									setTags(newTags);
-									field.setValue([...field.state.value, ...newTags]);
-								},
-							}}
-						>
-							{tag}
-						</Tag>
+						<li key={tag}>
+							<Tag
+								iconId="fr-icon-close-line"
+								nativeButtonProps={{
+									type: "button",
+									onClick: () => {
+										const newTags = tags.filter((t) => t !== tag);
+										setTags(newTags);
+										field.setValue([...field.state.value, ...newTags]);
+									},
+								}}
+							>
+								{tag}
+							</Tag>
+						</li>
 					))}
-				</div>
+				</ul>
 			)}
 		</div>
 	);
@@ -119,6 +120,12 @@ const useStyles = tss.withName({ TagGroupField }).create({
 		display: "flex",
 		flexWrap: "wrap",
 		gap: fr.spacing("2v"),
+		listStyle: "none",
+		padding: 0,
+		margin: 0,
 		marginBottom: fr.spacing("4v"),
+		"& > li": {
+			padding: 0,
+		},
 	},
 });
