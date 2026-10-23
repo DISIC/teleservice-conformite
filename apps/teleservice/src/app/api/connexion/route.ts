@@ -37,11 +37,17 @@ export async function GET(request: Request) {
 		new URL(request.url).searchParams.get("callbackURL"),
 	);
 
-	const response = await auth.api.signInWithOAuth2({
-		body: { providerId: "proconnect", callbackURL },
-		headers: request.headers,
-		asResponse: true,
-	});
+	let response: Response;
+	try {
+		response = await auth.api.signInWithOAuth2({
+			body: { providerId: "proconnect", callbackURL },
+			headers: request.headers,
+			asResponse: true,
+		});
+	} catch (error) {
+		console.error("ProConnect sign-in threw", error);
+		return backToHome();
+	}
 
 	const url = await authorizationURL(response);
 	if (!url) return backToHome();
