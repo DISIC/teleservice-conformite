@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react";
 import { ErrorSummary } from "~/components/declaration/sections/ErrorSummary";
 import { SideMenu } from "~/components/declaration/SideMenu";
@@ -71,19 +71,12 @@ export default function DeclarationPage({
 		declaration.status !== "unpublished" &&
 		!updateRevealed;
 
-	// Counted, not a flag: each "Prévisualiser et publier" refocuses the error summary,
-	// which from the first attempt on re-derives from the declaration on every save.
-	const [publishAttempts, updatePublishAttempts] = useScopedState(
+	// Set by "Prévisualiser et publier"; from then on the error summary re-derives on every save.
+	const [publishAttempted, setPublishAttempted] = useScopedState(
 		declaration.id,
-		0,
+		false,
 	);
-	const publishAttempted = publishAttempts > 0;
-	const onPublishAttempt = () => updatePublishAttempts((count) => count + 1);
-	const errorSummaryRef = useRef<HTMLElement>(null);
-	// Only an attempt moves the focus: a summary reappearing after a save leaves it in the field being edited.
-	useEffect(() => {
-		if (publishAttempts > 0) errorSummaryRef.current?.focus();
-	}, [publishAttempts]);
+	const onPublishAttempt = () => setPublishAttempted(() => true);
 
 	const [pendingSourceModes, updatePendingSourceModes] = useScopedState(
 		declaration.id,
@@ -175,7 +168,6 @@ export default function DeclarationPage({
 									<ErrorSummary
 										declarationId={declaration.id}
 										errors={declarationErrors}
-										ref={errorSummaryRef}
 									/>
 								</div>
 							)}

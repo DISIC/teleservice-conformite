@@ -1,7 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Link from "next/link";
-import { type Ref, useId } from "react";
 import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { SECTION_TITLES, sectionHref } from "~/domain/declaration/sections";
@@ -10,8 +9,6 @@ import type { DeclarationError } from "~/domain/declaration/validate";
 type ErrorSummaryProps = {
 	declarationId: PopulatedDeclaration["id"];
 	errors: DeclarationError[];
-	/** The page focuses the summary on each publish attempt, so screen readers read it. */
-	ref?: Ref<HTMLElement>;
 };
 
 /**
@@ -19,30 +16,18 @@ type ErrorSummaryProps = {
  * after a publish attempt; it re-derives from the declaration on every save, so
  * it shrinks as Sections are fixed and disappears at zero.
  */
-export function ErrorSummary({
-	declarationId,
-	errors,
-	ref,
-}: ErrorSummaryProps) {
+export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
 	const { classes } = useStyles();
-	const titleId = useId();
 
 	return (
-		<section
-			ref={ref}
-			tabIndex={-1}
-			aria-labelledby={titleId}
-			className={classes.container}
-		>
+		<div role="alert">
 			<Alert
 				severity="error"
 				closable={false}
 				title={
-					<span id={titleId}>
-						{errors.length > 1
-							? `${errors.length} champs doivent être complétés avant la publication`
-							: "Un champ doit être complété avant la publication"}
-					</span>
+					errors.length > 1
+						? `${errors.length} champs doivent être complétés avant la publication`
+						: "Un champ doit être complété avant la publication"
 				}
 				description={
 					<ul className={classes.list}>
@@ -65,20 +50,11 @@ export function ErrorSummary({
 					</ul>
 				}
 			/>
-		</section>
+		</div>
 	);
 }
 
 const useStyles = tss.withName(ErrorSummary.name).create({
-	container: {
-		"&:focus": {
-			outline: "none",
-		},
-		"&:focus-visible": {
-			outline: `2px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
-			outlineOffset: "2px",
-		},
-	},
 	list: {
 		listStyle: "none",
 		margin: 0,
