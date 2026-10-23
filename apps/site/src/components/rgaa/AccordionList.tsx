@@ -100,7 +100,8 @@ const useStyles = tss
 		title: {
 			position: "sticky",
 			top: 0,
-			zIndex: 1,
+			// DSFR lifts an accordion holding focus to z-index 1.
+			zIndex: 2,
 			backgroundColor: topicAccordionBackgroundColor,
 			paddingBlock: fr.spacing("4v"),
 			paddingRight: fr.spacing("4v"),

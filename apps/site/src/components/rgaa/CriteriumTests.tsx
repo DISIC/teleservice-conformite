@@ -12,6 +12,9 @@ import {
 import type { Test } from "./helpers/topics";
 import AnchorLinkButton from "./AnchorLinkButton";
 import TestMethodology from "./TestMethodology";
+import { discloseWhenReady } from "./helpers/collapse";
+
+const TEST_COLLAPSE = ":scope > .fr-accordion > .fr-collapse";
 
 type CriteriumTestsProps = {
 	criteriumNumber: string;
@@ -43,6 +46,52 @@ export default function CriteriumTests({
 		return () => {
 			wrapper.removeEventListener("dsfr.disclose", onDisclose);
 			wrapper.removeEventListener("dsfr.conceal", onConceal);
+		};
+	}, []);
+
+	// A link to one test unfolds its criterium's tests, leaving the others folded.
+	useEffect(() => {
+		const wrapper = wrapperRef.current;
+
+		if (!wrapper) return;
+
+		let reveal: AbortController | undefined;
+
+		const revealTarget = () => {
+			const target = document.getElementById(
+				decodeURIComponent(window.location.hash.slice(1)),
+			);
+			const collapse = wrapper.querySelector(TEST_COLLAPSE);
+
+			if (!target || !collapse?.contains(target)) return;
+
+			reveal?.abort();
+			reveal = new AbortController();
+			const { signal } = reveal;
+			const scroll = () => target.scrollIntoView({ block: "start" });
+
+			signal.addEventListener("abort", discloseWhenReady(collapse));
+			wrapper.addEventListener("dsfr.disclose", scroll, { once: true, signal });
+			// The page is still settling while the accordion unfolds: land again once it is open.
+			collapse.addEventListener(
+				"transitionend",
+				(event) => {
+					if (event.target !== collapse) return;
+					scroll();
+					reveal?.abort();
+				},
+				{ signal },
+			);
+			wrapper.addEventListener("dsfr.conceal", () => reveal?.abort(), {
+				signal,
+			});
+		};
+
+		revealTarget();
+		window.addEventListener("hashchange", revealTarget);
+		return () => {
+			window.removeEventListener("hashchange", revealTarget);
+			reveal?.abort();
 		};
 	}, []);
 

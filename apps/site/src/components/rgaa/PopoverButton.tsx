@@ -90,7 +90,7 @@ const useStyles = tss.withName(PopoverButton.name).create({
 	root: {
 		position: "relative",
 		alignSelf: "flex-end",
-		zIndex: 2,
+		zIndex: 3,
 	},
 	toggleButtonOpen: {
 		"&&": {
