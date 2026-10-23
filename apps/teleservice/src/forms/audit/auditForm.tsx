@@ -14,6 +14,7 @@ import {
 	auditToolsFormOptions,
 } from "./auditSchema";
 import { DATE_FORMAT_HINT, MIN_DATE, todayIsoDate } from "~/forms/rules";
+import { newTabLinkProps } from "~/lib/newTabLink";
 
 // A Sub-section that requires a realised audit stays in the SideMenu but has nothing to fill.
 function AuditNotRealisedNotice() {
@@ -352,9 +353,9 @@ export const NonCompliantElementsForm = withForm({
 									<>
 										<a
 											href="https://accessibilite.numerique.gouv.fr/obligations/champ-application/"
-											target="_blank"
-											rel="noopener noreferrer"
-											title="Liste des contenus non soumis à l’obligation d’accessibilité, nouvelle fenêtre"
+											{...newTabLinkProps(
+												"Liste des contenus non soumis à l’obligation d’accessibilité",
+											)}
 										>
 											Liste des contenus non soumis à l’obligation
 											d’accessibilité
@@ -380,9 +381,9 @@ export const NonCompliantElementsForm = withForm({
 									<>
 										<a
 											href="https://accessibilite.numerique.gouv.fr/obligations/champ-application/"
-											target="_blank"
-											rel="noopener noreferrer"
-											title="Qu’est-ce qu’une charge disproportionnée ?, nouvelle fenêtre"
+											{...newTabLinkProps(
+												"Qu’est-ce qu’une charge disproportionnée ?",
+											)}
 										>
 											Qu’est-ce qu’une charge disproportionnée ?
 										</a>

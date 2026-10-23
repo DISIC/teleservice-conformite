@@ -13,6 +13,7 @@ import {
 } from "~/domain/declaration/obsolescence";
 import { copyToClipboard } from "~/lib/clipboard";
 import type { Declaration, User } from "~/payload/payload-types";
+import { newTabLinkProps } from "~/lib/newTabLink";
 
 type PublishSuccessProps = {
 	declaration: Pick<Declaration, "id" | "name" | "contact"> & {
@@ -103,9 +104,7 @@ export function PublishSuccess({
 				iconPosition="left"
 				linkProps={{
 					href: publicHref,
-					target: "_blank",
-					rel: "noopener noreferrer",
-					title: `Voir la déclaration ${declaration.name}, nouvelle fenêtre`,
+					...newTabLinkProps(`Voir la déclaration ${declaration.name}`),
 				}}
 			>
 				Voir la déclaration en ligne

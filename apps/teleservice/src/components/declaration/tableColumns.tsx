@@ -16,6 +16,7 @@ import { getDeclarationStatus } from "~/domain/declaration/status";
 import { copyToClipboard } from "~/lib/clipboard";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { newTabLinkProps, newTabTitle } from "~/lib/newTabLink";
 
 const columnHelper = createColumnHelper<PopulatedDeclaration>();
 
@@ -124,11 +125,10 @@ function buildColumns(
 							iconId="fr-icon-eye-line"
 							priority="secondary"
 							size="small"
-							title={`Voir la déclaration ${declaration.name}, nouvelle fenêtre`}
+							title={newTabTitle(`Voir la déclaration ${declaration.name}`)}
 							linkProps={{
 								href: publicUrl(declaration),
-								target: "_blank",
-								rel: "noopener noreferrer",
+								...newTabLinkProps(`Voir la déclaration ${declaration.name}`),
 							}}
 						/>
 					</div>

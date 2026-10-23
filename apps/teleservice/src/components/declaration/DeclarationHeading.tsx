@@ -19,6 +19,7 @@ import { getDeclarationStatus } from "~/domain/declaration/status";
 import { api } from "~/lib/api";
 import { copyToClipboard } from "~/lib/clipboard";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import { newTabLinkProps } from "~/lib/newTabLink";
 
 const DECLARATIONS_LIST = "/dashboard/declarations";
 
@@ -114,9 +115,9 @@ export function DeclarationHeading({
 									size="small"
 									linkProps={{
 										href: publicHref,
-										target: "_blank",
-										rel: "noopener noreferrer",
-										title: `Voir la déclaration ${declaration.name}, nouvelle fenêtre`,
+										...newTabLinkProps(
+											`Voir la déclaration ${declaration.name}`,
+										),
 									}}
 								>
 									Voir la déclaration

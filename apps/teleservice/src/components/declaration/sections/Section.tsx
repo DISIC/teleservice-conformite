@@ -39,6 +39,7 @@ import { useRevealSectionErrors } from "./hooks/useRevealSectionErrors";
 import { useSourceMode } from "./hooks/useSourceMode";
 import { SectionShell } from "./Shell";
 import { handleFormSubmit } from "~/components/form/handleFormSubmit";
+import { newTabLinkProps } from "~/lib/newTabLink";
 
 type SectionProps = {
 	definition: AnySectionDefinition;
@@ -220,9 +221,7 @@ export function Section({
 							</span>
 							<a
 								href="https://accessibilite.numerique.gouv.fr/obligations/schema-pluriannuel/"
-								target="_blank"
-								rel="noopener noreferrer"
-								title="En savoir plus sur le schéma pluriannuel, nouvelle fenêtre"
+								{...newTabLinkProps("En savoir plus sur le schéma pluriannuel")}
 								style={{ width: "fit-content" }}
 							>
 								En savoir plus sur le schéma pluriannuel
