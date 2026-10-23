@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { tss } from "tss-react";
 import AccordionList from "./AccordionList";
 import { setCollapsesExpanded } from "./helpers/collapse";
@@ -42,7 +42,7 @@ export default function CriteriaList({
 	referentiel,
 	criterias,
 }: CriteriaListProps) {
-	const allTopics = getTopicSidebarItem(criterias);
+	const allTopics = useMemo(() => getTopicSidebarItem(criterias), [criterias]);
 	const { badgeBackgroundColor, badgeColor } = getReferentielStyle(
 		referentiel.id,
 	);
