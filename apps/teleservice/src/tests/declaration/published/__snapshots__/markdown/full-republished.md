@@ -1,20 +1,20 @@
-# Impôts particulier (SIP)
+# Déclaration d’accessibilité de Impôts particulier (SIP)
 
 **La Direction Générale des Finances (DGFIP)** s’engage à rendre ses sites internet, intranet, extranet et ses progiciels accessibles (et ses applications mobiles et mobilier urbain numérique) conformément à l’article 47 de la loi n°2005-102 du 11 février 2005.
 
 À cette fin, **La Direction Générale des Finances (DGFIP)** met en œuvre la stratégie et les actions suivantes :
 
-- **Schéma pluriannuel de mise en accessibilité 2023-2025** : https://www.lienschemapluriannuel.gouv.fr ;
-- **Actions réalisées en 2022-2023** : https://www.liensactions.gouv.fr ;
-- **Plan d’actions 2023-2025** : https://www.lienschemaannuell.gouv.fr
+- **[Schéma pluriannuel de mise en accessibilité 2023-2025](https://www.lienschemapluriannuel.gouv.fr)**
+- **[Actions réalisées en 2022-2023](https://www.liensactions.gouv.fr)**
+- **[Plan d’actions 2023-2025](https://www.lienschemaannuell.gouv.fr)**
 
-Cette déclaration d’accessibilité s’applique au **site web www.impotspparticulier.gouv.fr**
+Cette déclaration d’accessibilité s’applique au **site web [Impôts particulier (SIP)](www.impotspparticulier.gouv.fr)**
 
 ## État de conformité
 
 <p class="fr-badge fr-badge--info fr-badge--sm fr-badge--no-icon">Partiellement conforme</p>
 
-Le site **Impôts particulier (SIP) www.impotspparticulier.gouv.fr** est **partiellement conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 5.
+Le site **Impôts particulier (SIP)** est **partiellement conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 5.
 
 ### Résultats des tests
 
