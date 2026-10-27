@@ -68,10 +68,7 @@ export default function DeclarationPreviewPage({
 		<Head>
 			<title>
 				{pageTitle(
-					publishedAt
-						? "Votre déclaration a été publiée"
-						: "Votre déclaration est prête à être publiée",
-					`Déclaration de ${declaration.name}`,
+					`Prévisualisation de la déclaration d'accessibilité de ${declaration.name}`,
 				)}
 			</title>
 		</Head>

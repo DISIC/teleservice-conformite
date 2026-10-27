@@ -36,6 +36,8 @@ export const publishedDeclarationSchema = z.object({
 		rgaa_version: z.enum(rgaaVersionLabels),
 		realised_by: z.string(),
 		rate: z.number(),
+		// Snapshots published before this field existed read as "no blocking element".
+		blockingElements: z.string().default(""),
 		nonCompliantElements: z.string().nullable(),
 		disproportionnedCharge: z.string().nullable(),
 		optionalElements: z.string().nullable(),
@@ -108,6 +110,10 @@ export const extractDeclarationContentToPublish = (
 					?.label ?? "RGAA 4",
 			realised_by: audit.realisedBy ?? "",
 			rate: audit.rate ?? 0,
+			blockingElements:
+				audit.hasBlockingElements === true
+					? (audit.blockingElements ?? "")
+					: "",
 			nonCompliantElements: audit.nonCompliantElements ?? "",
 			disproportionnedCharge: audit.disproportionnedCharge ?? "",
 			optionalElements: audit.optionalElements ?? "",

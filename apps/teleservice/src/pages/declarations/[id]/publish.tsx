@@ -31,7 +31,9 @@ const PublishPage: PageWithHeader<PublishPageProps> = ({
 	return (
 		<>
 			<Head>
-				<title>{pageTitle(`Déclaration de ${publishedContent.name}`)}</title>
+				<title>
+					{pageTitle(`Déclaration d'accessibilité de ${publishedContent.name}`)}
+				</title>
 			</Head>
 			<section
 				id="published-declaration-section"

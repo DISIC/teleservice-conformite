@@ -84,6 +84,7 @@ describe("extractDeclarationContentToPublish", () => {
 			rgaa_version: "RGAA 4",
 			realised_by: "",
 			rate: 0,
+			blockingElements: "",
 			nonCompliantElements: "",
 			disproportionnedCharge: "",
 			optionalElements: "",
@@ -92,6 +93,34 @@ describe("extractDeclarationContentToPublish", () => {
 			testEnvironments: [],
 			usedTools: [],
 		});
+	});
+
+	it("publishes blocking elements only when the audit found some", () => {
+		const withBlocking = (hasBlockingElements: boolean) =>
+			extractDeclarationContentToPublish(
+				completeDeclaration({
+					audit: {
+						isRealised: true,
+						toVerify: false,
+						hasBlockingElements,
+						blockingElements: "Paiement inaccessible au clavier",
+					},
+				}),
+			).audit.blockingElements;
+		expect(withBlocking(true)).toBe("Paiement inaccessible au clavier");
+		expect(withBlocking(false)).toBe("");
+	});
+
+	it("reads a snapshot published before blocking elements as having none", () => {
+		const snapshot = extractDeclarationContentToPublish(completeDeclaration(), {
+			publishedAt: new Date("2026-08-27T09:30:00.000Z"),
+		});
+		const { blockingElements: _, ...legacyAudit } = snapshot.audit;
+		expect(
+			parsePublishedDeclaration(
+				JSON.stringify({ ...snapshot, audit: legacyAudit }),
+			)?.audit.blockingElements,
+		).toBe("");
 	});
 
 	it("records whether an audit was performed", () => {
