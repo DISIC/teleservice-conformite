@@ -30,7 +30,6 @@ export default function GlossarySections({ letters }: GlossarySectionsProps) {
 								href="#contenu"
 								className={fr.cx(
 									"fr-link",
-									"fr-link--lg",
 									"fr-icon-arrow-up-fill",
 									"fr-link--icon-left",
 								)}

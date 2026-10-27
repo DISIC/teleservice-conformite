@@ -31,7 +31,6 @@ export default function MarkdownSections({ sections }: MarkdownSectionsProps) {
 							href="#contenu"
 							className={fr.cx(
 								"fr-link",
-								"fr-link--lg",
 								"fr-icon-arrow-up-fill",
 								"fr-link--icon-left",
 							)}
