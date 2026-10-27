@@ -8,7 +8,9 @@ import { getPageDescription } from "~/lib/navigation";
 import PageHero from "~/components/rgaa/PageHero";
 import CurrentSectionLabel from "~/components/rgaa/CurrentSectionLabel";
 
-export const metadata: Metadata = { title: "Notes de version" };
+export const metadata: Metadata = {
+	title: "Notes de révision du RGAA 4.1.2 vers 5.0",
+};
 
 export default function ReleaseNotesPage() {
 	const content = readMarkdownPage("notes-de-version");

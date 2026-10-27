@@ -13,7 +13,7 @@ import {
 } from "~/dsfr-bootstrap/server-only-index";
 
 export const metadata: Metadata = {
-	title: { default: "RGAA 5", template: "RGAA 5 - %s" },
+	title: { default: "RGAA 5", template: "%s - RGAA5" },
 	description:
 		"Référentiel général d’amélioration de l’accessibilité, version 5",
 };

@@ -7,7 +7,7 @@ import TechnicalMethodSections from "~/components/rgaa/TechnicalMethodSections";
 import { StartDsfrOnHydration } from "~/dsfr-bootstrap";
 import { getReferentielStyle } from "~/components/rgaa/referentiels";
 export const metadata: Metadata = {
-	title: "Méthode technique - Critères et tests",
+	title: "Critères et tests",
 };
 
 export default function TechnicalMethodPage() {

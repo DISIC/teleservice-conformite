@@ -7,7 +7,7 @@ import { getPageDescription } from "~/lib/navigation";
 import araLogo from "~/assets/ara-logo.svg";
 
 export const metadata: Metadata = {
-	title: "Ara - Outil d’audit d’accessibilité",
+	title: "Ara, outil d’audit d’accessibilité",
 };
 
 export default function AraPage() {
