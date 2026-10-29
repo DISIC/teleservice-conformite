@@ -3,9 +3,12 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { tss } from "tss-react";
-import { useDeclarationColumns } from "~/components/declaration/tableColumns";
+import {
+	type DeclarationAction,
+	useDeclarationColumns,
+} from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
 import {
 	CreateDeclarationModal,
@@ -16,7 +19,6 @@ import Table from "~/components/ui/Table";
 import type { Entity } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { loadEntityForPage } from "~/lib/server-guards";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { pageTitle } from "~/lib/serviceName";
 
 interface EntityDeclarationsPageProps {
@@ -26,14 +28,14 @@ interface EntityDeclarationsPageProps {
 
 const NUMBER_PER_PAGE = 10;
 
+const ACTIONS: DeclarationAction[] = ["view"];
+
 export default function EntityDeclarationsPage({
 	entity,
 	declarations,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
 
-	const alertRef = useRef<HTMLDivElement>(null);
-	const [alertMessage, setAlertMessage] = useState<string | null>(null);
 	const [createModalActions] = useState<CreateDeclarationModalActions>({});
 
 	const emptyStateFaq: FaqItem[] = [
@@ -68,22 +70,9 @@ export default function EntityDeclarationsPage({
 		},
 	];
 
-	const onCopySuccess = useCallback(
-		(declarationName: string) =>
-			setAlertMessage(
-				`Lien de la déclaration ${declarationName} copié dans le presse-papier`,
-			),
-		[],
-	);
-
-	useEffect(() => {
-		if (alertMessage) alertRef.current?.focus();
-	}, [alertMessage]);
-
 	const columns = useDeclarationColumns({
-		declarations,
 		rowLink: false,
-		onCopySuccess,
+		actions: ACTIONS,
 	});
 
 	return (
@@ -106,17 +95,6 @@ export default function EntityDeclarationsPage({
 			/>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
-					{alertMessage && (
-						<div className={classes.alertWrapper} ref={alertRef} tabIndex={-1}>
-							<Alert
-								small
-								severity="success"
-								description={alertMessage}
-								closable
-								onClose={() => setAlertMessage(null)}
-							/>
-						</div>
-					)}
 					{declarations.length ? (
 						<Table
 							caption="Liste des déclarations d’accessibilité de l’organisation"
@@ -150,12 +128,6 @@ const useStyles = tss.withName(EntityDeclarationsPage.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("6v"),
-	},
-	alertWrapper: {
-		width: "100%",
-		display: "flex",
-		"& div": { width: "100%" },
-		animation: "fadeIn 0.25s ease-in-out",
 	},
 	bold: {
 		fontWeight: 700,

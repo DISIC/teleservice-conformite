@@ -3,6 +3,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import { createColumnHelper } from "@tanstack/react-table";
+import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { tss } from "tss-react";
 import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
@@ -16,32 +17,28 @@ import { getDeclarationStatus } from "~/domain/declaration/status";
 import { copyToClipboard } from "~/lib/clipboard";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { newTabLinkProps, newTabTitle } from "~/lib/newTabLink";
+import { newTabTitle } from "~/lib/newTabLink";
 
 const columnHelper = createColumnHelper<PopulatedDeclaration>();
 
 const publicUrl = (declaration: PopulatedDeclaration) =>
 	`/declarations/${declaration.id}/publish`;
 
+export type DeclarationAction = "copy" | "view" | "edit";
+
+const ALL_ACTIONS: DeclarationAction[] = ["copy", "view", "edit"];
+
 export function useDeclarationColumns({
-	declarations,
-	hasPublished,
 	rowLink,
 	onCopySuccess,
+	actions = ALL_ACTIONS,
 }: {
-	declarations: PopulatedDeclaration[];
-	/** For a paginated list, whether any page has a published declaration. */
-	hasPublished?: boolean;
 	rowLink: boolean;
-	onCopySuccess: (declarationName: string) => void;
+	onCopySuccess?: (declarationName: string) => void;
+	actions?: DeclarationAction[];
 }) {
 	const { classes } = useStyles();
-	// The actions column is left out when no declaration in the whole list has one.
-	const withActions =
-		hasPublished ??
-		declarations.some(
-			(declaration) => getDeclarationStatus(declaration) === "published",
-		);
+	const { push } = useRouter();
 
 	return useMemo(() => {
 		const {
@@ -56,9 +53,9 @@ export function useDeclarationColumns({
 			appKindColumn,
 			statusColumn,
 			conformityRateColumn,
-			...(withActions ? [publicActionsColumn({ onCopySuccess })] : []),
+			publicActionsColumn({ onCopySuccess, onEdit: push, actions }),
 		];
-	}, [classes, rowLink, withActions, onCopySuccess]);
+	}, [classes, rowLink, onCopySuccess, push, actions]);
 }
 
 function buildColumns(
@@ -115,47 +112,63 @@ function buildColumns(
 		},
 	});
 
-	// Public actions only exist once a public page does.
 	const publicActionsColumn = (options: {
-		onCopySuccess: (declarationName: string) => void;
+		onCopySuccess?: (declarationName: string) => void;
+		onEdit: (href: string) => void;
+		actions: DeclarationAction[];
 	}) =>
 		columnHelper.display({
 			id: "actions",
 			header: "Actions",
+			meta: { styles: { justifyContent: "flex-end" }, fitContent: true },
 			cell: (info) => {
 				const declaration = info.row.original;
-				if (getDeclarationStatus(declaration) !== "published")
-					return (
-						<span className={fr.cx("fr-text--sm", "fr-mb-0")}>
-							Aucune action disponible
-						</span>
-					);
 				const copyTitle = `Copier le lien public de la déclaration ${declaration.name}`;
+				const viewLabel = `Voir la déclaration ${declaration.name}`;
+				const isPublished = getDeclarationStatus(declaration) === "published";
+				const showCopy = isPublished && options.actions.includes("copy");
+				const showView = isPublished && options.actions.includes("view");
+				const showEdit = options.actions.includes("edit");
+				if (!showCopy && !showView && !showEdit)
+					return <EmptyValue label="Aucune action disponible" />;
 				return (
 					<div className={classes.actions}>
-						<Button
-							iconId="fr-icon-link"
-							priority="secondary"
-							size="small"
-							title={copyTitle}
-							nativeButtonProps={{ "aria-label": copyTitle }}
-							onClick={() =>
-								copyToClipboard(
-									`${process.env.NEXT_PUBLIC_FRONT_URL}${publicUrl(declaration)}`,
-									() => options.onCopySuccess(declaration.name || ""),
-								)
-							}
-						/>
-						<Button
-							iconId="fr-icon-eye-line"
-							priority="secondary"
-							size="small"
-							title={newTabTitle(`Voir la déclaration ${declaration.name}`)}
-							linkProps={{
-								href: publicUrl(declaration),
-								...newTabLinkProps(`Voir la déclaration ${declaration.name}`),
-							}}
-						/>
+						{showCopy && (
+							<Button
+								iconId="ri-links-line"
+								priority="tertiary"
+								size="small"
+								title={copyTitle}
+								onClick={() =>
+									copyToClipboard(
+										`${process.env.NEXT_PUBLIC_FRONT_URL}${publicUrl(declaration)}`,
+										() => options.onCopySuccess?.(declaration.name || ""),
+									)
+								}
+							/>
+						)}
+						{showView && (
+							<Button
+								iconId="ri-eye-line"
+								priority="tertiary"
+								size="small"
+								title={newTabTitle(viewLabel)}
+								onClick={() =>
+									window.open(publicUrl(declaration), "_blank", "noopener")
+								}
+							/>
+						)}
+						{showEdit && (
+							<Button
+								iconId="ri-edit-line"
+								priority="tertiary"
+								size="small"
+								title={`Modifier la déclaration ${declaration.name}`}
+								onClick={() =>
+									options.onEdit(`/dashboard/declarations/${declaration.id}`)
+								}
+							/>
+						)}
 					</div>
 				);
 			},
@@ -186,7 +199,6 @@ const useStyles = tss.withName("TableColumns").create({
 	},
 	actions: {
 		display: "flex",
-		justifyContent: "flex-end",
-		gap: fr.spacing("2v"),
+		gap: fr.spacing("4v"),
 	},
 });

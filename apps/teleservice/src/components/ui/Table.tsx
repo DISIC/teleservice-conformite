@@ -21,6 +21,7 @@ declare module "@tanstack/react-table" {
 	interface ColumnMeta<TData extends RowData, TValue> {
 		styles?: CSSProperties;
 		rowLink?: boolean;
+		fitContent?: boolean;
 	}
 }
 
@@ -114,6 +115,9 @@ export const Table = <TData,>(props: Props<TData>) => {
 							key={header.id}
 							className={classes.headerCell}
 							style={{ ...header.column.columnDef.meta?.styles }}
+							data-fit-content={
+								header.column.columnDef.meta?.fitContent || undefined
+							}
 						>
 							{flexRender(header.column.columnDef.header, header.getContext())}
 						</div>
@@ -134,6 +138,7 @@ export const Table = <TData,>(props: Props<TData>) => {
 					key={cell.id}
 					className={cx(classes.bodyCell, isRowLink && classes.bodyCellLinked)}
 					style={{ ...cell.column.columnDef.meta?.styles }}
+					data-fit-content={cell.column.columnDef.meta?.fitContent || undefined}
 				>
 					{isRowLink ? (
 						<Link href={href} className={classes.rowLink} data-row-link>
@@ -209,6 +214,10 @@ const useStyles = tss.withName(Table.name).create(() => ({
 			display: "table",
 			width: "auto",
 			minWidth: "100%",
+		},
+		"th:has(> [data-fit-content]), td:has(> [data-fit-content])": {
+			width: "1%",
+			whiteSpace: "nowrap",
 		},
 		thead: {
 			backgroundColor: `${fr.colors.decisions.background.default.grey.default}!important`,

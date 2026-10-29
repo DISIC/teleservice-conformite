@@ -183,7 +183,7 @@ The **deadline** is the last publication date plus three years. Every publish ac
 
 A third axis next to [[status]] (lifecycle) and [[declaration-state|Declaration state]] (next action): it is never folded into either. Status stays Publiée underneath an Obsolète Declaration, and the Declaration state keeps answering "what next" — when both a Declaration state notice (Modifié, À compléter) and an obsolescence notice apply, the **Declaration state notice wins**, because it names the blocking action. The obsolescence notice, which offers to republish, shows only when the Declaration state has nothing to say.
 
-**Surfaces:** the Mes déclarations list (Statut cell), the details page header, the [[obsolète|interstitial]], the notice card, and the public page (Obsolète only).
+**Surfaces:** the Mes déclarations list (Statut cell), the details page header, the [[obsolète|interstitial]], the notice card, and the public page (Obsolète only). In the list's Statut cell a Valide Publiée Declaration shows its deadline too, as "Périme le {deadline}" under the Publiée badge; the details header shows nothing while Valide.
 
 **Avoid:** "Validité", "Expiration" — use "Obsolescence" for the axis. "Statut" — a different axis.
 
@@ -195,7 +195,7 @@ The [[obsolescence|Obsolescence]] value of a **Publiée** Declaration during the
 
 For the declarant: the Statut badge keeps reading Publiée; the list's Statut cell and the details header add a warning-icon line "Obsolète le {deadline}"; opening the Declaration shows the "bientôt obsolète" interstitial under the same rule as [[obsolète|Obsolète]], and the notice card offers to republish before the deadline when no [[declaration-state|Declaration state]] notice applies.
 
-**Avoid:** "Expirante", "Périme le", "Bientôt périmée".
+**Avoid:** "Expirante", "Bientôt périmée". "Périme le" is reserved for the list's Valide line (see [[obsolescence|Obsolescence]]), never for Bientôt obsolète.
 
 **See also:** [[obsolescence|Obsolescence]], [[obsolète|Obsolète]].
 
