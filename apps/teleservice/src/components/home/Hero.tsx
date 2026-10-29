@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import { tss } from "tss-react";
@@ -15,17 +14,15 @@ export function Hero({ startHref }: HeroProps) {
 		<div className={classes.band}>
 			<div className={cx(fr.cx("fr-container"), classes.container)}>
 				<div className={classes.content}>
-					<Badge as="span" noIcon small>
-						BETA
-					</Badge>
 					<h1 className={classes.title}>
 						Publiez et centralisez vos déclarations d’accessibilité conformément
 						aux exigences légales.
 					</h1>
 					<p className={classes.lead}>
 						Ce téléservice centralise l’ensemble des déclarations
-						d’accessibilité numérique des services publics. Il permet un
-						meilleur suivi de la politique d’accessibilité de l’État.
+						d’accessibilité numérique des services publics : services de l’État,
+						collectivités territoriales et établissements publics. Il permet un
+						meilleur suivi de la politique d’accessibilité du service public.
 					</p>
 					<Button linkProps={{ href: startHref }} size="large">
 						Commencer

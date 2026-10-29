@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { tss } from "tss-react";
 import { newTabLinkProps } from "~/lib/newTabLink";
 
@@ -12,9 +13,9 @@ const REASONS = [
 		href: "#",
 	},
 	{
-		title: "Un outil facilitateur, conçu pour répondre aux obligations légales",
+		title: "Un outil conçu pour répondre aux obligations légales",
 		description:
-			"Votre déclaration est générée selon le format réglementaire, conformément aux exigences légales.",
+			"Vos déclarations d’accessibilité sont générées au format réglementaire, et indiquent automatiquement la conformité du service, les contenus inaccessibles, ainsi que les moyens de contact et voies de recours éventuels.",
 		linkLabel:
 			"En savoir plus sur le contenu de la déclaration d’accessibilité",
 		href: "#",
@@ -29,23 +30,33 @@ export function WhySection() {
 			<h2 className={classes.heading}>
 				Pourquoi utiliser le téléservice de déclaration ?
 			</h2>
-			<ul className={classes.list}>
-				{REASONS.map(({ title, description, linkLabel, href }) => (
-					<li key={title} className={classes.card}>
-						<h3 className={fr.cx("fr-mb-4v")}>
-							<span aria-hidden="true">👉</span> {title}
-						</h3>
-						<p className={classes.cardText}>{description}</p>
-						<a
-							href={href}
-							{...newTabLinkProps(linkLabel)}
-							className={cx(fr.cx("fr-link", "fr-link--sm"), classes.cardLink)}
-						>
-							{linkLabel}
-						</a>
-					</li>
-				))}
-			</ul>
+			<div className={classes.content}>
+				<ul className={classes.list}>
+					{REASONS.map(({ title, description, linkLabel, href }) => (
+						<li key={title} className={classes.card}>
+							<h3 className={fr.cx("fr-mb-4v")}>
+								<span aria-hidden="true">👉</span> {title}
+							</h3>
+							<p className={classes.cardText}>{description}</p>
+							<a
+								href={href}
+								{...newTabLinkProps(linkLabel)}
+								className={cx(
+									fr.cx("fr-link", "fr-link--sm"),
+									classes.cardLink,
+								)}
+							>
+								{linkLabel}
+							</a>
+						</li>
+					))}
+				</ul>
+				<Alert
+					description="Le téléservice de déclaration n’est pas un outil d’audit d’accessibilité."
+					severity="warning"
+					small
+				/>
+			</div>
 		</section>
 	);
 }
@@ -86,6 +97,11 @@ const useStyles = tss.withName(WhySection.name).create({
 		flexDirection: "column",
 		padding: fr.spacing("10v"),
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+	},
+	content: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("4w"),
 	},
 	cardText: {
 		margin: 0,
