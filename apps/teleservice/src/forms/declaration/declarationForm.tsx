@@ -66,13 +66,16 @@ export const DeclarationGeneralForm = withForm({
 						<field.RichRadioField
 							label="Type de service"
 							readOnlyField={readOnly}
-							options={appKindOptions.map((option) => {
-								const Pictogram = appKindPictograms[option.value];
-								return {
-									...option,
-									illustration: <Pictogram fontSize="3rem" />,
-								};
-							})}
+							// "Autre" is no longer offered; declarations saved with it still display it.
+							options={appKindOptions
+								.filter((option) => readOnly || option.value !== "other")
+								.map((option) => {
+									const Pictogram = appKindPictograms[option.value];
+									return {
+										...option,
+										illustration: <Pictogram fontSize="3rem" />,
+									};
+								})}
 							onOptionChange={() => {
 								form.setFieldValue("general.url", "");
 								form.setFieldValue("general.mobilePlatform", undefined);
