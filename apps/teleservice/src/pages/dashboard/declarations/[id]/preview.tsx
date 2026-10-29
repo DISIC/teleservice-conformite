@@ -132,19 +132,21 @@ export default function DeclarationPreviewPage({
 								}
 							/>
 						)}
-						<div className={classes.buttonsContainer}>
-							<Button
-								priority="secondary"
-								size="large"
-								linkProps={{
-									href: `/dashboard/declarations/${declaration.id}`,
-								}}
-							>
-								Revenir au formulaire
-							</Button>
-							<Button priority="primary" size="large" onClick={onPublish}>
-								Publier la déclaration
-							</Button>
+						<div className={classes.sticky}>
+							<div className={classes.buttonsContainer}>
+								<Button
+									priority="secondary"
+									size="large"
+									linkProps={{
+										href: `/dashboard/declarations/${declaration.id}`,
+									}}
+								>
+									Revenir au formulaire
+								</Button>
+								<Button priority="primary" size="large" onClick={onPublish}>
+									Publier la déclaration
+								</Button>
+							</div>
 						</div>
 					</div>
 				</section>
@@ -160,7 +162,7 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 	main: {
 		display: "flex",
 		flexDirection: "column",
-		paddingBlock: fr.spacing("12v"),
+		paddingTop: fr.spacing("12v"),
 		"& > h1": {
 			marginBottom: fr.spacing("4v"),
 		},
@@ -169,13 +171,20 @@ const useStyles = tss.withName(DeclarationPreviewPage.name).create({
 		backgroundColor: fr.colors.decisions.background.default.grey.default,
 		padding: fr.spacing("4w"),
 		marginTop: fr.spacing("10v"),
-		marginBottom: fr.spacing("6v"),
 		minWidth: 0,
 		"@media (max-width: 576px)": {
 			padding: fr.spacing("2w"),
 		},
 	},
+	sticky: {
+		position: "sticky",
+		bottom: 0,
+		zIndex: 1,
+		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+	},
 	buttonsContainer: {
+		paddingTop: fr.spacing("6v"),
+		paddingBottom: fr.spacing("12v"),
 		display: "flex",
 		flexWrap: "wrap",
 		justifyContent: "space-between",
