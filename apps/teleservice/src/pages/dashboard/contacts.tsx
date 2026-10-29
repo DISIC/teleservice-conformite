@@ -19,7 +19,7 @@ import {
 	LibraryContactModal,
 	type LibraryContactModalActions,
 } from "~/components/modal/LibraryContactModal";
-import EmptyState from "~/components/ui/EmptyState";
+import EmptyState, { type FaqItem } from "~/components/ui/EmptyState";
 import { EmptyValue } from "~/components/ui/EmptyValue";
 import { Loader } from "~/components/ui/Loader";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
@@ -42,6 +42,23 @@ export default function ContactsPage({
 	const [contactModalActions] = useState<LibraryContactModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+	const emptyStateFaq: FaqItem[] = [
+		{
+			question: "Qu’est-ce qu’un point de contact accessibilité ?",
+			answer: (
+				<p>
+					Un point de contact accessibilité permet aux usagers de{" "}
+					<span className={classes.bold}>
+						signaler un défaut d’accessibilité.
+					</span>
+					Il sera affiché sur la déclaration d’accessibilité. Les voies de
+					recours seront ajoutées automatiquement à la déclaration, vous n’avez
+					rien à faire.
+				</p>
+			),
+		},
+	];
 
 	const {
 		data: contacts = [],
@@ -171,7 +188,7 @@ export default function ContactsPage({
 						onClick={openCreate}
 						nativeButtonProps={{ id: addButtonId }}
 					>
-						Ajouter un contact
+						Ajouter un point de contact
 					</Button>
 				}
 			/>
@@ -191,13 +208,14 @@ export default function ContactsPage({
 					) : contacts.length === 0 ? (
 						<EmptyState
 							pictogram={<NationalIdentityCard fontSize="3rem" />}
-							title="Vous n’avez aucun contact enregistré"
-							description="Centralisez et gérez les contacts nécessaires à vos déclarations d’accessibilité."
+							title="Vous n’avez aucun point de contact enregistré"
+							description="Centralisez et gérez ici les points de contacts nécessaires à vos déclarations d’accessibilité."
 							ctaProps={{
-								children: "Ajouter un contact",
+								children: "Ajouter un point de contact",
 								onClick: openCreate,
 								iconId: "fr-icon-add-line",
 							}}
+							faq={emptyStateFaq}
 						/>
 					) : (
 						<Table
@@ -232,6 +250,9 @@ const useStyles = tss.withName(ContactsPage.name).create({
 	hint: {
 		fontSize: "0.875rem",
 		color: fr.colors.decisions.text.mention.grey.default,
+	},
+	bold: {
+		fontWeight: 700,
 	},
 });
 

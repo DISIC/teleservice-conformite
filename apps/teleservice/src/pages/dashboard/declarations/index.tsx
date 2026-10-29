@@ -14,7 +14,7 @@ import {
 	CreateDeclarationModal,
 	type CreateDeclarationModalActions,
 } from "~/components/modal/CreateDeclarationModal";
-import EmptyState from "~/components/ui/EmptyState";
+import EmptyState, { type FaqItem } from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
 import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
@@ -40,6 +40,38 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { classes } = useStyles();
 	const router = useRouter();
 	const [page, setPage] = useState(1);
+
+	const emptyStateFaq: FaqItem[] = [
+		{
+			question:
+				"Je n’ai pas fait d’audit d’accessibilité, dois-je quand même utiliser le téléservice de déclaration d’accessibilité numérique ?",
+			answer: (
+				<p>
+					Oui, tous les sites et applications mobiles en production doivent être
+					référencés sur le téléservice de déclaration,{" "}
+					<span className={classes.bold}>
+						y compris ceux qui n’ont pas encore fait l’objet d’un audit
+						d’accessibilité.
+					</span>
+				</p>
+			),
+		},
+		{
+			question:
+				"Quels documents faut-il préparer avant d’utiliser le téléservice de déclaration d’accessibilité numérique ?",
+			answer: (
+				<>
+					<p>Si vous les possédez, pensez à préparer :</p>
+					<br />
+					<ul>
+						<li>votre déclaration d’accessibilité existante,</li>
+						<li>l’URL du schéma pluriannuel,</li>
+						<li>l’URL du ou des plans d’actions.</li>
+					</ul>
+				</>
+			),
+		},
+	];
 
 	const { data } = api.declaration.list.useQuery(
 		{ page },
@@ -150,26 +182,16 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 						/>
 					) : (
 						<EmptyState
-							title="Ajoutez votre première déclaration d’accessibilité"
-							description="Vous devez réaliser une déclaration par service et par type de support."
+							title="Déposez votre première déclaration d’accessibilité"
+							description="Durée de complétion estimée : entre 6 et 15 minutes"
 							pictogram={<Contract fontSize="3rem" />}
+							faq={emptyStateFaq}
 							ctaProps={{
 								onClick: () => createModalActions.open?.(),
 								children: "Déposer une déclaration",
 								iconId: "ri-download-line",
 							}}
-						>
-							<p>
-								<strong>Documents à préparer</strong>
-								<br />
-								Si vous les possédez, pensez à préparer votre déclaration
-								d’accessibilité existante, votre grille et rapport d’audit, le
-								fichier ou l’URL de votre schéma pluriannuel.
-							</p>
-							<p className={fr.cx("fr-text--xs", "fr-mb-0")}>
-								Durée de complétion estimée : entre 6 et 15 minutes
-							</p>
-						</EmptyState>
+						/>
 					)}
 				</section>
 			</div>
@@ -190,6 +212,9 @@ const useStyles = tss.withName(DeclarationsPage.name).create({
 		},
 		marginBottom: fr.spacing("6v"),
 		animation: "fadeIn 0.25s ease-in-out",
+	},
+	bold: {
+		fontWeight: 700,
 	},
 });
 

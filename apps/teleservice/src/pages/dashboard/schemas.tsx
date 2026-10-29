@@ -17,12 +17,13 @@ import {
 	LibrarySchemaModal,
 	type LibrarySchemaModalActions,
 } from "~/components/modal/LibrarySchemaModal";
-import EmptyState from "~/components/ui/EmptyState";
+import EmptyState, { type FaqItem } from "~/components/ui/EmptyState";
 import { EmptyValue } from "~/components/ui/EmptyValue";
 import { Loader } from "~/components/ui/Loader";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Entity, Schema } from "~/payload/payload-types";
 import { api } from "~/lib/api";
+import { newTabLinkProps } from "~/lib/newTabLink";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
 
@@ -35,6 +36,32 @@ export default function SchemasPage({
 	const [schemaModalActions] = useState<LibrarySchemaModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+	const emptyStateFaq: FaqItem[] = [
+		{
+			question: "Qu’est-ce qu’un schéma pluriannuel ?",
+			answer: (
+				<>
+					C’est une feuille de route d'une durée maximale de 3 ans : elle
+					définit la politique d'accessibilité de l'entité et s'appuie sur des
+					plans d'actions annuels.
+					<br />
+					Il est obligatoire pour les services de l’État, les collectivités
+					territoriales, les établissements publics et certaines entreprises
+					privées.
+					<br />
+					<br />
+					<a
+						href="https://accessibilite.numerique.gouv.fr/obligations/schema-pluriannuel/"
+						{...newTabLinkProps("En savoir plus sur le schéma pluriannuel")}
+						className={classes.link}
+					>
+						En savoir plus sur le schéma pluriannuel
+					</a>
+				</>
+			),
+		},
+	];
 
 	const {
 		data: schemas = [],
@@ -112,12 +139,13 @@ export default function SchemasPage({
 						<EmptyState
 							pictogram={<DataVisualization fontSize="3rem" />}
 							title="Vous n’avez aucun schéma pluriannuel enregistré"
-							description="Centralisez et gérez les schémas pluriannuels nécessaires à vos déclarations d’accessibilité."
+							description="Centralisez et gérez les schémas pluriannuels et plans d’actions nécessaires à vos déclarations d’accessibilité."
 							ctaProps={{
 								children: "Ajouter un schéma",
 								onClick: openCreate,
 								iconId: "fr-icon-add-line",
 							}}
+							faq={emptyStateFaq}
 						/>
 					) : (
 						<>
@@ -221,6 +249,9 @@ const useStyles = tss.withName(SchemasPage.name).create({
 		display: "flex",
 		alignItems: "center",
 		gap: fr.spacing("2v"),
+	},
+	link: {
+		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},
 });
 
