@@ -82,7 +82,7 @@ export const AuditGeneralForm = withForm({
 									{(field) => (
 										<field.TextField
 											label="Entité ou personne ayant réalisé l’audit"
-											hintText='Exemple : "Agence Audit", "Mme Hélène Belanyt"'
+											hintText='Exemple : "Agence Audit", "Service interne de la DGxxx"'
 											readOnlyField={readOnly}
 											required
 										/>
@@ -91,7 +91,7 @@ export const AuditGeneralForm = withForm({
 								<form.AppField name="rgaa_version">
 									{(field) => (
 										<field.RadioField
-											legend="Version du référentiel RGAA utilisée"
+											legend="Version du RGAA utilisée"
 											options={rgaaVersionOptions.map((option) => ({
 												label: option.label,
 												value: option.value,

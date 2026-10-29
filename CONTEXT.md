@@ -35,7 +35,7 @@ One of the four children of the **Audit** Section, surfaced as nested items in t
 
 - **Réalisation de l'audit** (slug `audit-general`) — `isAuditRealised`, date, RGAA version, realisedBy, rate
 - **Outils et environnements** (slug `audit-outils`) — usedTools + testEnvironments
-- **Contenus vérifiés** (slug `audit-contenus`) — compliantElements
+- **Échantillon audité** (slug `audit-contenus`) — compliantElements
 - **Non conformités & dérogations** (slug `audit-non-conformites`) — nonCompliantElements, disproportionnedCharge, optionalElements
 
 A Sub-section is a **URL-addressable, independently-saved slice** of the Audit Section: each has its own `?section=<slug>` destination, its own self-contained form, and saves on its own (ADR-0002). It is _not_ a top-level [[section]] — "Audit" is a menu-only **virtual parent** (`SectionParentKey`), reached via `audit-general`; the four Sub-sections are its nested `SideMenu` children, treated in code as ordinary `SectionMeta` carrying `parent: "audit"`.
@@ -52,7 +52,7 @@ When `audit.isRealised === false`, only "Réalisation de l'audit" is meaningful;
 
 A titled grouping of one or more related fields **inside** a [[sub-section]]'s body. A Sub-section contains one or more Parts; each Part has its own heading and is visually a self-contained bordered card. In standalone read-only mode each card hosts the Section's Modifier button — several Parts mean several buttons, all entering edit for the whole Section.
 
-Examples: the **Outils et environnements** Sub-section has two Parts — "Outils d'assistances" (`usedTools`) and "Environnements de tests" (`testEnvironments`). **Non conformités & dérogations** has two Parts — "Non conformités" (`nonCompliantElements`) and "Dérogations" (`optionalElements` + `disproportionnedCharge`). Single-Part Sub-sections (e.g. **Contenus vérifiés**) have exactly one Part.
+Examples: the **Outils et environnements** Sub-section has two Parts — "Outils d'assistances" (`usedTools`) and "Environnements de tests" (`testEnvironments`). **Non conformités & dérogations** has two Parts — "Non conformités" (`nonCompliantElements`) and "Dérogations" (`optionalElements` + `disproportionnedCharge`). Single-Part Sub-sections (e.g. **Échantillon audité**) have exactly one Part.
 
 **Avoid:** "block" (conversational only, see Out of scope), "section/sub-section" (reserved for the two higher levels).
 

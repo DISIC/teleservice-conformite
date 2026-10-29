@@ -83,7 +83,7 @@ export const AUDIT_SUB_SECTIONS: Record<
 		},
 	},
 	"audit-contenus": {
-		title: "Contenus vérifiés",
+		title: "Échantillon audité",
 		isToComplete: realisedSubSectionToComplete(
 			(d) => !!d.audit?.compliantElements,
 		),

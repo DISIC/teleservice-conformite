@@ -85,7 +85,7 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 				"general.name": "Nom du service numérique concerné",
 				"general.kind": "Type de service",
 				"general.mobilePlatform": "Plateforme mobile",
-				"general.url": "URL de la page d’accueil du site audité",
+				"general.url": "URL de la page d’accueil du site concerné",
 				"general.domain": "Secteur d’activité du service concerné",
 			},
 		},

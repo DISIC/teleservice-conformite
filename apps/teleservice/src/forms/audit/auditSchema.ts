@@ -147,7 +147,7 @@ export function auditToToolsValues(audit: Audit): ZAuditTools {
 	};
 }
 
-// ── Contenus vérifiés (slug `audit-contenus`) ───────────────────────────────
+// ── Échantillon audité (slug `audit-contenus`) ───────────────────────────────
 export const auditContents = z.object({
 	compliantElements: z
 		.string()

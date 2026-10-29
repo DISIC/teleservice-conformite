@@ -103,7 +103,7 @@ export const DeclarationGeneralForm = withForm({
 									<form.AppField name="general.url">
 										{(field) => (
 											<field.TextField
-												label="URL de la page d’accueil du site audité"
+												label="URL de la page d’accueil du site concerné"
 												nativeInputProps={{ type: "url " }}
 												hintText={
 													<>

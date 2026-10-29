@@ -36,7 +36,7 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 	// The sector lives on the entity shared by every UI-created row: always set it.
 	await checkRadio(page, /^Site web/);
 	await page
-		.getByLabel("URL de la page d’accueil du site audité")
+		.getByLabel("URL de la page d’accueil du site concerné")
 		.fill("https://www.example.fr");
 	await page
 		.getByLabel("Secteur d’activité du service concerné")
