@@ -133,6 +133,21 @@ describe("isSectionToComplete (À compléter badges)", () => {
 			),
 		).toBe(false);
 	});
+
+	it("does not ask for tools on an RGAA 5 audit", () => {
+		expect(
+			isSectionToComplete(
+				completeDeclaration({
+					audit: {
+						isRealised: true,
+						rgaa_version: "rgaa_5",
+						testEnvironments: [{ name: "voiceover_safari" }],
+					},
+				} as never),
+				"audit-outils",
+			),
+		).toBe(false);
+	});
 });
 
 describe("isSectionNotApplicable (Non applicable badges)", () => {

@@ -124,11 +124,14 @@ export const extractDeclarationContentToPublish = (
 					testEnvironmentOptions.find((option) => option.value === env.name)
 						?.label ?? env.name,
 			),
-			usedTools: (audit.usedTools ?? []).map(
-				(tool) =>
-					toolOptions.find((option) => option.value === tool.name)?.label ??
-					tool.name,
-			),
+			usedTools:
+				audit.rgaa_version === "rgaa_5"
+					? []
+					: (audit.usedTools ?? []).map(
+							(tool) =>
+								toolOptions.find((option) => option.value === tool.name)
+									?.label ?? tool.name,
+						),
 		},
 		contact: {
 			url: declaration.contact?.url ?? "",

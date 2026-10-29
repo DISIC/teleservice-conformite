@@ -112,18 +112,33 @@ export function auditToGeneralValues(audit: Audit): ZAuditGeneral {
 }
 
 // ── Outils et environnements (slug `audit-outils`) ──────────────────────────
-export const auditTools = z.object({
-	usedTools: z
-		.array(z.string())
-		.min(1, { message: "Au moins un outil d'assistance est requis" }),
-	testEnvironments: z
-		.array(z.string())
-		.min(1, { message: "Au moins un environnement de test est requis" }),
-});
+export const auditTools = z
+	.object({
+		rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
+		usedTools: z.array(z.string()),
+		testEnvironments: z.array(z.string()),
+	})
+	.superRefine((data, ctx) => {
+		if (data.rgaa_version === "rgaa_4" && data.usedTools.length === 0) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Au moins un outil d'assistance est requis",
+				path: ["usedTools"],
+			});
+		}
+		if (data.testEnvironments.length === 0) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Au moins un environnement de test est requis",
+				path: ["testEnvironments"],
+			});
+		}
+	});
 
 export type ZAuditTools = z.infer<typeof auditTools>;
 
 export const auditToolsDefaultValues: ZAuditTools = {
+	rgaa_version: "rgaa_4",
 	usedTools: [],
 	testEnvironments: [],
 };
@@ -135,6 +150,7 @@ export const auditToolsFormOptions = submitFormOptions(
 
 export function auditToToolsValues(audit: Audit): ZAuditTools {
 	return {
+		rgaa_version: auditToGeneralValues(audit).rgaa_version,
 		usedTools: (audit?.usedTools ?? []).map(
 			(tool) =>
 				toolOptions.find((opt) => opt.value === tool.name)?.value ?? tool.name,

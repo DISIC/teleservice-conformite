@@ -153,43 +153,45 @@ export const AuditGeneralForm = withForm({
 
 export const ToolsForm = withForm({
 	...auditToolsFormOptions,
-	props: { readOnly: false, showNotice: false },
-	render: function Render({ form, readOnly, showNotice }) {
+	props: { readOnly: false, showNotice: false, showUsedTools: true },
+	render: function Render({ form, readOnly, showNotice, showUsedTools }) {
 		if (showNotice) return <AuditNotRealisedNotice />;
 		return (
 			<>
-				<Part readOnly={readOnly} title="Outils d'assistances" grid={false}>
-					<form.AppField name="usedTools">
-						{(field) => {
-							const extraTools = (field.state.value || []).filter(
-								(tag) =>
-									![...toolOptions]
-										.map((option) => option.value as string)
-										.includes(tag),
-							);
-							return (
-								<>
-									<field.CheckboxGroupField
-										legend={
-											!readOnly
-												? "Liste des outils utilisés pour évaluer l’accessibilité"
-												: undefined
-										}
-										options={[...toolOptions]}
-										readOnlyField={readOnly}
-										required
-									/>
-									{!readOnly && (
-										<field.TagGroupField
-											label="Ajouter un outil"
-											tags={extraTools}
+				{showUsedTools && (
+					<Part readOnly={readOnly} title="Outils d'assistances" grid={false}>
+						<form.AppField name="usedTools">
+							{(field) => {
+								const extraTools = (field.state.value || []).filter(
+									(tag) =>
+										![...toolOptions]
+											.map((option) => option.value as string)
+											.includes(tag),
+								);
+								return (
+									<>
+										<field.CheckboxGroupField
+											legend={
+												!readOnly
+													? "Liste des outils utilisés pour évaluer l’accessibilité"
+													: undefined
+											}
+											options={[...toolOptions]}
+											readOnlyField={readOnly}
+											required
 										/>
-									)}
-								</>
-							);
-						}}
-					</form.AppField>
-				</Part>
+										{!readOnly && (
+											<field.TagGroupField
+												label="Ajouter un outil"
+												tags={extraTools}
+											/>
+										)}
+									</>
+								);
+							}}
+						</form.AppField>
+					</Part>
+				)}
 				<Part readOnly={readOnly} title="Environnements de tests" grid={false}>
 					<form.AppField name="testEnvironments">
 						{(field) => {
