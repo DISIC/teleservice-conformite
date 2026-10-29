@@ -11,16 +11,30 @@ describe("extractDeclarationContentToPublish", () => {
 			completeDeclaration({
 				audit: {
 					isRealised: true,
-					rgaa_version: "rgaa_5",
+					rgaa_version: "rgaa_4",
 					usedTools: [{ name: "wave" }],
 					testEnvironments: [{ name: "voiceover_safari" }],
 				},
 			} as never),
 		);
 		expect(content.appKindLabel).toBe("Site web");
-		expect(content.audit.rgaa_version).toBe("RGAA 5");
+		expect(content.audit.rgaa_version).toBe("RGAA 4");
 		expect(content.audit.usedTools).toEqual(["Wave"]);
 		expect(content.audit.testEnvironments).toEqual(["VoiceOver (Safari)"]);
+	});
+
+	it("leaves the assessment tools out of an RGAA 5 declaration", () => {
+		const content = extractDeclarationContentToPublish(
+			completeDeclaration({
+				audit: {
+					isRealised: true,
+					rgaa_version: "rgaa_5",
+					usedTools: [{ name: "wave" }],
+				},
+			} as never),
+		);
+		expect(content.audit.rgaa_version).toBe("RGAA 5");
+		expect(content.audit.usedTools).toEqual([]);
 	});
 
 	it("publishes only the contact's reachable channels, not their name", () => {

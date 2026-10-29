@@ -68,7 +68,8 @@ export const AUDIT_SUB_SECTIONS: Record<
 		title: "Outils et environnements",
 		isToComplete: realisedSubSectionToComplete(
 			(d) =>
-				(d.audit?.usedTools?.length ?? 0) > 0 &&
+				(d.audit?.rgaa_version === "rgaa_5" ||
+					(d.audit?.usedTools?.length ?? 0) > 0) &&
 				(d.audit?.testEnvironments?.length ?? 0) > 0,
 		),
 		validation: {
