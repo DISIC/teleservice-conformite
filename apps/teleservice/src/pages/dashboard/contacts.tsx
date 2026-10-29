@@ -1,14 +1,13 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
-import type { TagProps } from "@codegouvfr/react-dsfr/Tag";
-import TagsGroup from "@codegouvfr/react-dsfr/TagsGroup";
 import NationalIdentityCard from "@codegouvfr/react-dsfr/picto/NationalIdentityCard";
-import { createColumnHelper } from "@tanstack/react-table";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { tss } from "tss-react";
+import { EditActionProvider, Part } from "~/components/form/Part";
+import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
 import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
 import {
@@ -20,18 +19,12 @@ import {
 	type LibraryContactModalActions,
 } from "~/components/modal/LibraryContactModal";
 import EmptyState, { type FaqItem } from "~/components/ui/EmptyState";
-import { EmptyValue } from "~/components/ui/EmptyValue";
 import { Loader } from "~/components/ui/Loader";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
-import Table from "~/components/ui/Table";
 import type { Contact, Entity } from "~/payload/payload-types";
 import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
-
-const columnHelper = createColumnHelper<Contact>();
-
-const isNonEmpty = <T,>(items: T[]): items is [T, ...T[]] => items.length > 0;
 
 export default function ContactsPage({
 	entity,
@@ -98,79 +91,6 @@ export default function ContactsPage({
 		[confirmationModalActions, deleteItem],
 	);
 
-	const columns = useMemo(
-		() => [
-			columnHelper.accessor("name", {
-				id: "name",
-				header: "Nom du contact",
-				cell: (info) => <strong>{info.getValue()}</strong>,
-			}),
-			columnHelper.display({
-				id: "kinds",
-				header: "Moyens de contact",
-				cell: (info) => {
-					const { email, url } = info.row.original;
-					const tags: TagProps[] = [
-						...(email ? [{ children: "Email" }] : []),
-						...(url ? [{ children: "Formulaire" }] : []),
-					];
-					return isNonEmpty(tags) ? (
-						<TagsGroup smallTags tags={tags} className={classes.tags} />
-					) : (
-						<EmptyValue />
-					);
-				},
-			}),
-			columnHelper.display({
-				id: "url",
-				header: "URL du formulaire",
-				cell: (info) => {
-					const url = info.row.original.url;
-					return url ? (
-						<span className={classes.hint}>{url}</span>
-					) : (
-						<EmptyValue />
-					);
-				},
-			}),
-			columnHelper.display({
-				id: "email",
-				header: "Email de contact",
-				cell: (info) => {
-					const email = info.row.original.email;
-					return email ? (
-						<span className={classes.hint}>{email}</span>
-					) : (
-						<EmptyValue />
-					);
-				},
-			}),
-			columnHelper.display({
-				id: "actions",
-				header: "Actions",
-				meta: { styles: { justifyContent: "flex-end" } },
-				cell: (info) => {
-					const contact = info.row.original;
-					return (
-						<ItemActions
-							label={contact.name}
-							onEdit={() => contactModalActions.open?.(contact)}
-							onDelete={() => confirmDelete(contact)}
-							deleteButtonId={deleteButtonId(contact.id)}
-						/>
-					);
-				},
-			}),
-		],
-		[
-			classes.hint,
-			classes.tags,
-			confirmDelete,
-			contactModalActions,
-			deleteButtonId,
-		],
-	);
-
 	const openCreate = () => contactModalActions.open?.();
 
 	return (
@@ -218,12 +138,48 @@ export default function ContactsPage({
 							faq={emptyStateFaq}
 						/>
 					) : (
-						<Table
-							caption="Liste de mes contacts"
-							columns={columns}
-							data={contacts}
-							numberPerPage={10}
-						/>
+						<>
+							<h2 id="contacts-list-title" className={fr.cx("fr-sr-only")}>
+								Liste de mes points de contact
+							</h2>
+							<ul
+								className={classes.contactList}
+								aria-labelledby="contacts-list-title"
+							>
+								{contacts.map((contact) => (
+									<li key={contact.id}>
+										<EditActionProvider
+											value={
+												<ItemActions
+													label={contact.name}
+													onEdit={() => contactModalActions.open?.(contact)}
+													onDelete={() => confirmDelete(contact)}
+													deleteButtonId={deleteButtonId(contact.id)}
+													withLabels
+												/>
+											}
+										>
+											<Part
+												readOnly
+												definitionList
+												grid={false}
+												title={contact.name}
+											>
+												<ReadOnlyField
+													label="Email"
+													value={contact.email ?? ""}
+												/>
+												<ReadOnlyField
+													label="URL du formulaire de contact"
+													value={contact.url ?? ""}
+													link
+												/>
+											</Part>
+										</EditActionProvider>
+									</li>
+								))}
+							</ul>
+						</>
 					)}
 				</div>
 			</div>
@@ -237,19 +193,20 @@ const useStyles = tss.withName(ContactsPage.name).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
 	},
-	tags: {
+	contactList: {
+		listStyle: "none",
+		padding: 0,
 		margin: 0,
-		gap: fr.spacing("1v"),
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6v"),
 		"& > li": {
-			lineHeight: "normal",
-		},
-		"& .fr-tag": {
 			margin: 0,
+			padding: 0,
 		},
-	},
-	hint: {
-		fontSize: "0.875rem",
-		color: fr.colors.decisions.text.mention.grey.default,
+		"& > li > div, & dl": {
+			gap: fr.spacing("8v"),
+		},
 	},
 	bold: {
 		fontWeight: 700,

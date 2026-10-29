@@ -7,13 +7,41 @@ export function ItemActions({
 	onEdit,
 	onDelete,
 	deleteButtonId,
+	withLabels = false,
 }: {
 	label: string;
 	onEdit: () => void;
 	onDelete: () => void;
 	deleteButtonId?: string;
+	withLabels?: boolean;
 }) {
 	const { classes } = useStyles();
+	if (withLabels)
+		return (
+			<div className={classes.actions}>
+				<Button
+					priority="tertiary"
+					iconId="fr-icon-edit-line"
+					size="small"
+					onClick={onEdit}
+					nativeButtonProps={{ "aria-label": `Modifier ${label}` }}
+				>
+					Modifier
+				</Button>
+				<Button
+					priority="tertiary"
+					iconId="fr-icon-delete-line"
+					size="small"
+					onClick={onDelete}
+					nativeButtonProps={{
+						id: deleteButtonId,
+						"aria-label": `Supprimer ${label}`,
+					}}
+				>
+					Supprimer
+				</Button>
+			</div>
+		);
 	return (
 		<div className={classes.actions}>
 			<Button

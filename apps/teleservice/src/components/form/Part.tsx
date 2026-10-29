@@ -117,6 +117,7 @@ const useStyles = tss
 				...fieldsLayout,
 				gap: fr.spacing("6v"),
 				margin: 0,
+				padding: 0,
 			},
 			title: {
 				margin: 0,

@@ -1,12 +1,12 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
-import Tag from "@codegouvfr/react-dsfr/Tag";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import { tss } from "tss-react";
+import { EditActionProvider, Part } from "~/components/form/Part";
 import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
 import {
@@ -18,7 +18,6 @@ import {
 	type LibrarySchemaModalActions,
 } from "~/components/modal/LibrarySchemaModal";
 import EmptyState, { type FaqItem } from "~/components/ui/EmptyState";
-import { EmptyValue } from "~/components/ui/EmptyValue";
 import { Loader } from "~/components/ui/Loader";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Entity, Schema } from "~/payload/payload-types";
@@ -30,7 +29,7 @@ import { pageTitle } from "~/lib/serviceName";
 export default function SchemasPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 	const utils = api.useUtils();
 
 	const [schemaModalActions] = useState<LibrarySchemaModalActions>({});
@@ -157,40 +156,57 @@ export default function SchemasPage({
 								aria-labelledby="schemas-list-title"
 							>
 								{schemas.map((schema) => (
-									<li key={schema.id} className={classes.schemaCard}>
-										<div
-											className={cx(classes.schemaRow, classes.schemaHeaderRow)}
+									<li key={schema.id}>
+										<EditActionProvider
+											value={
+												<ItemActions
+													label={schema.name}
+													onEdit={() => schemaModalActions.open?.(schema)}
+													onDelete={() => confirmDelete(schema)}
+													deleteButtonId={deleteButtonId(schema.id)}
+													withLabels
+												/>
+											}
 										>
-											<strong>{schema.name}</strong>
-											<span className={classes.hint}>
-												{schema.url || <EmptyValue />}
-											</span>
-											<span className={classes.hint}>
-												Dernière mise à jour{" "}
-												<Tag small as="span">
-													{new Date(schema.updatedAt).toLocaleDateString(
-														"fr-FR",
+											<Part readOnly grid={false}>
+												<div className={classes.header}>
+													<h3 className={fr.cx("fr-h6", "fr-mb-0")}>
+														{schema.name}
+													</h3>
+													{schema.url && (
+														<a href={schema.url} className={classes.link}>
+															{schema.url}
+														</a>
 													)}
-												</Tag>
-											</span>
-											<ItemActions
-												label={schema.name}
-												onEdit={() => schemaModalActions.open?.(schema)}
-												onDelete={() => confirmDelete(schema)}
-												deleteButtonId={deleteButtonId(schema.id)}
-											/>
-										</div>
-										{(schema.actionPlanUrls ?? []).map((plan) => (
-											<div
-												key={plan.id ?? plan.url}
-												className={cx(classes.schemaRow, classes.schemaPlanRow)}
-											>
-												<span>{plan.name || <EmptyValue />}</span>
-												<span className={classes.hint}>
-													{plan.url || <EmptyValue />}
-												</span>
-											</div>
-										))}
+												</div>
+												<dl className={classes.entries}>
+													<div className={classes.entry}>
+														<dt className={classes.entryLabel}>
+															Plans d’actions associés
+														</dt>
+														<dd className={classes.entryValue}>
+															{schema.actionPlanUrls?.length ? (
+																<ul className={classes.planList}>
+																	{schema.actionPlanUrls.map((plan, index) => (
+																		<li key={plan.id ?? index}>
+																			<span>
+																				{plan.name ||
+																					`Plan d’actions ${index + 1}`}
+																			</span>
+																			{plan.url && (
+																				<a href={plan.url}>{plan.url}</a>
+																			)}
+																		</li>
+																	))}
+																</ul>
+															) : (
+																"Non"
+															)}
+														</dd>
+													</div>
+												</dl>
+											</Part>
+										</EditActionProvider>
 									</li>
 								))}
 							</ul>
@@ -212,43 +228,56 @@ const useStyles = tss.withName(SchemasPage.name).create({
 		listStyle: "none",
 		padding: 0,
 		margin: 0,
-		display: "grid",
-		gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+		display: "flex",
+		flexDirection: "column",
 		gap: fr.spacing("6v"),
 		"& > li": {
 			margin: 0,
 			padding: 0,
 		},
+		"& > li > div, & dl": {
+			gap: fr.spacing("8v"),
+		},
 	},
-	schemaCard: {
-		gridColumn: "1 / -1",
-		display: "grid",
-		gridTemplateColumns: "subgrid",
-		border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-		borderRadius: 4,
-		overflow: "hidden",
-	},
-	schemaRow: {
-		gridColumn: "1 / -1",
-		display: "grid",
-		gridTemplateColumns: "subgrid",
-		alignItems: "center",
-		gap: fr.spacing("4v"),
-		padding: `${fr.spacing("3v")} ${fr.spacing("4v")}`,
-	},
-	schemaHeaderRow: {
-		backgroundColor: fr.colors.decisions.background.default.grey.default,
-	},
-	schemaPlanRow: {
-		backgroundColor: fr.colors.decisions.background.alt.grey.default,
-		borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-	},
-	hint: {
-		fontSize: "0.875rem",
-		color: fr.colors.decisions.text.mention.grey.default,
+	entry: {
 		display: "flex",
-		alignItems: "center",
+		flexDirection: "column",
 		gap: fr.spacing("2v"),
+	},
+	entryLabel: {
+		fontWeight: 700,
+		color: fr.colors.decisions.text.label.grey.default,
+	},
+	entryValue: {
+		margin: 0,
+		paddingLeft: 0,
+		color: fr.colors.decisions.text.label.grey.default,
+		"& a": {
+			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+		},
+	},
+	header: {
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "flex-start",
+	},
+	entries: {
+		margin: 0,
+		padding: 0,
+	},
+	planList: {
+		margin: 0,
+		"& > li": {
+			width: "fit-content",
+			paddingBottom: 0,
+		},
+		"& > li > a": {
+			display: "block",
+			width: "fit-content",
+		},
+		"& > li + li": {
+			marginTop: fr.spacing("4v"),
+		},
 	},
 	link: {
 		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
