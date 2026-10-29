@@ -10,6 +10,7 @@ import { EditActionProvider, Part } from "~/components/form/Part";
 import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
 import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
+import { LinkedDeclarationsTag } from "~/components/library/LinkedDeclarationsTag";
 import {
 	ConfirmationModal,
 	type ConfirmationModalActions,
@@ -164,6 +165,11 @@ export default function ContactsPage({
 												definitionList
 												grid={false}
 												title={contact.name}
+												titleAside={
+													<LinkedDeclarationsTag
+														count={contact.declarations?.totalDocs}
+													/>
+												}
 											>
 												<ReadOnlyField
 													label="Email"

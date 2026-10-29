@@ -153,6 +153,7 @@ export async function listParents<K extends LibrarySectionKind>(
 		where: { user: { equals: userId } },
 		limit: 100,
 		depth: 0,
+		joins: { declarations: { count: true, limit: 1 } } as never,
 	});
 	return result.docs as ParentDoc<K>[];
 }

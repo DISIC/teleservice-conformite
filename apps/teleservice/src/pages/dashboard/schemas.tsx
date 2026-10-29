@@ -9,6 +9,7 @@ import { tss } from "tss-react";
 import { EditActionProvider, Part } from "~/components/form/Part";
 import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
+import { LinkedDeclarationsTag } from "~/components/library/LinkedDeclarationsTag";
 import {
 	ConfirmationModal,
 	type ConfirmationModalActions,
@@ -117,7 +118,7 @@ export default function SchemasPage({
 						onClick={openCreate}
 						nativeButtonProps={{ id: addButtonId }}
 					>
-						Ajouter un schéma pluriannuel
+						Ajouter un schéma
 					</Button>
 				}
 			/>
@@ -170,9 +171,14 @@ export default function SchemasPage({
 										>
 											<Part readOnly grid={false}>
 												<div className={classes.header}>
-													<h3 className={fr.cx("fr-h6", "fr-mb-0")}>
-														{schema.name}
-													</h3>
+													<div className={classes.titleRow}>
+														<h3 className={fr.cx("fr-h6", "fr-mb-0")}>
+															{schema.name}
+														</h3>
+														<LinkedDeclarationsTag
+															count={schema.declarations?.totalDocs}
+														/>
+													</div>
 													{schema.url && (
 														<a href={schema.url} className={classes.link}>
 															{schema.url}
@@ -260,6 +266,14 @@ const useStyles = tss.withName(SchemasPage.name).create({
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "flex-start",
+	},
+	titleRow: {
+		alignSelf: "stretch",
+		display: "flex",
+		flexWrap: "wrap",
+		alignItems: "center",
+		justifyContent: "space-between",
+		gap: fr.spacing("2v"),
 	},
 	entries: {
 		margin: 0,
