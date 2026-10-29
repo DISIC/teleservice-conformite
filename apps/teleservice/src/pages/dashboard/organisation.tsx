@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 import Contract from "@codegouvfr/react-dsfr/picto/Contract";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
@@ -6,6 +7,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { useDeclarationColumns } from "~/components/declaration/tableColumns";
 import { PageHeading } from "~/components/layout/PageHeading";
+import {
+	CreateDeclarationModal,
+	type CreateDeclarationModalActions,
+} from "~/components/modal/CreateDeclarationModal";
 import EmptyState, { type FaqItem } from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
 import type { Entity } from "~/payload/payload-types";
@@ -13,8 +18,6 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { pageTitle } from "~/lib/serviceName";
-import { type CreateDeclarationModalActions } from "~/components/modal/CreateDeclarationModal";
-import { useRouter } from "next/router";
 
 interface EntityDeclarationsPageProps {
 	entity: Entity;
@@ -28,11 +31,9 @@ export default function EntityDeclarationsPage({
 	declarations,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
-	const router = useRouter();
 
 	const alertRef = useRef<HTMLDivElement>(null);
 	const [alertMessage, setAlertMessage] = useState<string | null>(null);
-
 	const [createModalActions] = useState<CreateDeclarationModalActions>({});
 
 	const emptyStateFaq: FaqItem[] = [
@@ -79,15 +80,6 @@ export default function EntityDeclarationsPage({
 		if (alertMessage) alertRef.current?.focus();
 	}, [alertMessage]);
 
-	// Entry point for "Déposer une déclaration" from outside the list, where the modal cannot live.
-	useEffect(() => {
-		if (router.query.create !== "true") return;
-
-		createModalActions.open?.();
-		const { create: _create, ...query } = router.query;
-		router.replace({ query }, undefined, { shallow: true });
-	}, [router, createModalActions]);
-
 	const columns = useDeclarationColumns({
 		declarations,
 		rowLink: false,
@@ -103,6 +95,14 @@ export default function EntityDeclarationsPage({
 				title="Toutes les déclarations de l’organisation"
 				pictogram={<Contract fontSize="3.5rem" />}
 				entityName={entity.name}
+				actions={
+					<Button
+						iconId="ri-download-line"
+						onClick={() => createModalActions.open?.()}
+					>
+						Déposer une déclaration
+					</Button>
+				}
 			/>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
@@ -139,6 +139,7 @@ export default function EntityDeclarationsPage({
 					)}
 				</div>
 			</div>
+			<CreateDeclarationModal actions={createModalActions} entity={entity} />
 		</>
 	);
 }
