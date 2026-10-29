@@ -38,8 +38,11 @@ export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
 
 const NAVIGATION = [
 	{ text: "Mes déclarations", href: "/dashboard/declarations" },
-	{ text: "Mes contacts", href: "/dashboard/contacts" },
-	{ text: "Mes schémas", href: "/dashboard/schemas" },
+	{ text: "Mes points de contacts accessibilité", href: "/dashboard/contacts" },
+	{
+		text: "Mes schémas pluriannuels et plans d’actions",
+		href: "/dashboard/schemas",
+	},
 	{
 		text: "Toutes les déclarations de l’organisation",
 		href: "/dashboard/organisation",

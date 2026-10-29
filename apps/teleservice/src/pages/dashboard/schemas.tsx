@@ -77,10 +77,12 @@ export default function SchemasPage({
 	return (
 		<>
 			<Head>
-				<title>{pageTitle("Mes schémas")}</title>
+				<title>
+					{pageTitle("Mes schémas pluriannuels et plans d’actions")}
+				</title>
 			</Head>
 			<PageHeading
-				title="Mes schémas"
+				title="Mes schémas pluriannuels et plans d’actions"
 				pictogram={<DataVisualization fontSize="3.5rem" />}
 				entityName={entity.name}
 				actions={
