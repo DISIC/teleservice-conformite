@@ -83,7 +83,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 		if (showAlert) alertRef.current?.focus();
 	}, [showAlert, alertDetails]);
 
-	// Entry point for "Ajouter une déclaration" from outside the list, where the modal cannot live.
+	// Entry point for "Déposer une déclaration" from outside the list, where the modal cannot live.
 	useEffect(() => {
 		if (router.query.create !== "true") return;
 
@@ -114,10 +114,10 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 				entityName={entity?.name}
 				actions={
 					<Button
-						iconId="fr-icon-add-line"
+						iconId="ri-download-line"
 						onClick={() => createModalActions.open?.()}
 					>
-						Ajouter une déclaration
+						Déposer une déclaration
 					</Button>
 				}
 			/>
@@ -155,8 +155,8 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 							pictogram={<Contract fontSize="3rem" />}
 							ctaProps={{
 								onClick: () => createModalActions.open?.(),
-								children: "Ajouter une déclaration",
-								iconId: "fr-icon-add-line",
+								children: "Déposer une déclaration",
+								iconId: "ri-download-line",
 							}}
 						>
 							<p>
