@@ -31,7 +31,7 @@ export const contactGroup: Field = {
 		{
 			name: "url",
 			type: "text",
-			label: { fr: "Lien URL du formulaire" },
+			label: { fr: "URL du formulaire" },
 			access: {
 				update: readOnlyWhenLibraryParentSet("contact"),
 			},

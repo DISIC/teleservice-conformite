@@ -57,7 +57,7 @@ export function AiPath({
 			<form.AppField name="url">
 				{(field) => (
 					<field.TextField
-						label="Lien URL de la déclaration en ligne"
+						label="URL de la déclaration en ligne"
 						hintText="Format attendu : https://www.example.fr"
 						nativeInputProps={{ type: "url" }}
 						required

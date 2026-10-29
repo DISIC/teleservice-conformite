@@ -123,7 +123,7 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 			fieldLabels: {
 				name: "Nom du contact",
 				email: "Email de contact",
-				url: "Lien URL du formulaire",
+				url: "URL du formulaire",
 			},
 			sourceMode: {
 				kind: "contact",

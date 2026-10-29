@@ -28,7 +28,7 @@ export const Contacts: CollectionConfig = {
 		},
 		{
 			name: "url",
-			label: { fr: "Lien URL du formulaire" },
+			label: { fr: "URL du formulaire" },
 			type: "text",
 		},
 		{

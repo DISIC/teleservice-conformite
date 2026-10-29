@@ -128,7 +128,7 @@ export function UpdateAuditFromAraModal({
 				<form.AppField name="araUrl">
 					{(field) => (
 						<field.TextField
-							label="Lien URL de la déclaration Ara (obligatoire)"
+							label="URL de la déclaration Ara (obligatoire)"
 							hintText="Format attendu : https://ara.numerique.gouv.fr/declaration/xxxxxxx"
 							nativeInputProps={{ type: "url" }}
 							required
