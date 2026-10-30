@@ -4,7 +4,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { EditActionProvider, Part } from "~/components/form/Part";
 import { PageHeading } from "~/components/layout/PageHeading";
@@ -26,8 +26,16 @@ import { UrlText } from "~/components/ui/UrlText";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Entity, Schema } from "~/payload/payload-types";
 import { api } from "~/lib/api";
+import { newTabLinkProps } from "~/lib/newTabLink";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
+
+const SUCCESS_ALERT_DURATION_MS = 5000;
+
+type AlertDetails = {
+	description: string;
+	severity: "success" | "error";
+};
 
 export default function SchemasPage({
 	entity,
@@ -37,7 +45,17 @@ export default function SchemasPage({
 
 	const [schemaModalActions] = useState<LibrarySchemaModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const alertRef = useRef<HTMLDivElement>(null);
+	const [alert, setAlert] = useState<AlertDetails | null>(null);
+
+	useEffect(() => {
+		if (!alert) return;
+		alertRef.current?.focus();
+		if (alert.severity !== "success") return;
+
+		const timeout = setTimeout(() => setAlert(null), SUCCESS_ALERT_DURATION_MS);
+		return () => clearTimeout(timeout);
+	}, [alert]);
 
 	const {
 		data: schemas = [],
@@ -48,16 +66,24 @@ export default function SchemasPage({
 		itemName: "schema",
 		isFetching,
 		deleteMutation: api.library.deleteSchema.useMutation({
-			onSuccess: () => utils.library.listSchemas.invalidate(),
-			onError: (e) => setErrorMessage(e.message),
+			onSuccess: () => {
+				setAlert({
+					description: "Votre schéma a été supprimé avec succès",
+					severity: "success",
+				});
+				return utils.library.listSchemas.invalidate();
+			},
+			onError: (e) => setAlert({ description: e.message, severity: "error" }),
 		}),
 	});
 
 	const confirmDelete = (schema: Schema) =>
 		confirmationModalActions.open?.({
 			title: "Supprimer le schéma pluriannuel",
-			confirmLabel: "Supprimer",
+			confirmLabel: "Supprimer le schéma",
 			confirmIconId: "fr-icon-delete-fill",
+			confirmBackgroundColor:
+				fr.colors.decisions.background.actionHigh.error.default,
 			description: (
 				<>
 					<p>
@@ -74,6 +100,68 @@ export default function SchemasPage({
 			),
 			onConfirm: () => deleteItem(schema.id),
 		});
+
+	const openEdit = async (schema: Schema) => {
+		let linked: { id: number; name: string; isPublished: boolean }[];
+		try {
+			linked = await utils.library.linkedDeclarations.fetch({
+				kind: "schema",
+				id: schema.id,
+			});
+		} catch (e) {
+			setAlert({
+				description: e instanceof Error ? e.message : String(e),
+				severity: "error",
+			});
+			return;
+		}
+
+		if (!linked.some((declaration) => declaration.isPublished)) {
+			schemaModalActions.open?.(schema);
+			return;
+		}
+
+		confirmationModalActions.open?.({
+			title: "Attention, ce schéma est associé à des déclarations publiées.",
+			confirmLabel: "Modifier le schéma",
+			confirmIconId: "fr-icon-edit-line",
+			description: (
+				<>
+					<p>
+						{linked.length === 1 ? (
+							<>
+								Les modifications seront appliquées à 1 déclaration
+								d’accessibilité associée à ce schéma.
+								<br />
+								Elle sera automatiquement mise à jour.
+							</>
+						) : (
+							<>
+								Les modifications seront appliquées à {linked.length}{" "}
+								déclarations d’accessibilité associées à ce schéma.
+								<br />
+								Elles seront automatiquement mises à jour.
+							</>
+						)}
+					</p>
+					<ul>
+						{linked.map((declaration) => (
+							<li key={declaration.id}>
+								<a
+									href={`/dashboard/declarations/${declaration.id}`}
+									{...newTabLinkProps(declaration.name)}
+									className={classes.link}
+								>
+									{declaration.name}
+								</a>
+							</li>
+						))}
+					</ul>
+				</>
+			),
+			onConfirm: () => schemaModalActions.open?.(schema),
+		});
+	};
 
 	const openCreate = () => schemaModalActions.open?.();
 
@@ -100,14 +188,16 @@ export default function SchemasPage({
 			/>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
-					{errorMessage && (
-						<Alert
-							small
-							severity="error"
-							description={errorMessage}
-							closable
-							onClose={() => setErrorMessage(null)}
-						/>
+					{alert && (
+						<div className={classes.alertWrapper} ref={alertRef} tabIndex={-1}>
+							<Alert
+								small
+								severity={alert.severity}
+								description={alert.description}
+								closable
+								onClose={() => setAlert(null)}
+							/>
+						</div>
 					)}
 					{isLoading || isFetching ? (
 						<Loader />
@@ -134,7 +224,7 @@ export default function SchemasPage({
 										value={
 											<ItemActions
 												label={schema.name}
-												onEdit={() => schemaModalActions.open?.(schema)}
+												onEdit={() => openEdit(schema)}
 												onDelete={() => confirmDelete(schema)}
 												deleteButtonId={deleteButtonId(schema.id)}
 											/>
@@ -187,7 +277,15 @@ export default function SchemasPage({
 					)}
 				</div>
 			</div>
-			<LibrarySchemaModal actions={schemaModalActions} />
+			<LibrarySchemaModal
+				actions={schemaModalActions}
+				onCreated={(name) =>
+					setAlert({
+						description: `Le document « ${name} » a été ajouté avec succès`,
+						severity: "success",
+					})
+				}
+			/>
 			<ConfirmationModal actions={confirmationModalActions} />
 		</>
 	);
@@ -196,6 +294,30 @@ export default function SchemasPage({
 const useStyles = tss.withName(SchemasPage.name).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
+	},
+	alertWrapper: {
+		width: "100%",
+		display: "flex",
+		"& div": {
+			width: "100%",
+		},
+		marginBottom: fr.spacing("6v"),
+		animation: "fadeIn 0.25s ease-in-out",
+	},
+	schemaList: {
+		listStyle: "none",
+		padding: 0,
+		margin: 0,
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6v"),
+		"& > li": {
+			margin: 0,
+			padding: 0,
+		},
+		"& > li > div, & dl": {
+			gap: fr.spacing("8v"),
+		},
 	},
 	entry: {
 		display: "flex",
@@ -237,6 +359,9 @@ const useStyles = tss.withName(SchemasPage.name).create({
 		"& > li + li": {
 			marginTop: fr.spacing("4v"),
 		},
+	},
+	link: {
+		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},
 });
 
