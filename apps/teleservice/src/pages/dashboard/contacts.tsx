@@ -45,7 +45,7 @@ export default function ContactsPage({
 					Un point de contact accessibilité permet aux usagers de{" "}
 					<span className={classes.bold}>
 						signaler un défaut d’accessibilité.
-					</span>
+					</span>{" "}
 					Il sera affiché sur la déclaration d’accessibilité. Les voies de
 					recours seront ajoutées automatiquement à la déclaration, vous n’avez
 					rien à faire.
