@@ -35,7 +35,7 @@ export const ContactTypeForm = withForm({
 					<form.AppField name="url">
 						{(field) => (
 							<field.TextField
-								label="Lien URL du formulaire"
+								label="URL du formulaire"
 								hintText="Format attendu : https://www.example.fr"
 								nativeInputProps={{ type: "url" }}
 								readOnlyField={readOnly}

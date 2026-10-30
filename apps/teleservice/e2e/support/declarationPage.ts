@@ -39,7 +39,7 @@ export async function createManualDeclaration(
 	await page.goto("/dashboard/declarations");
 	// An empty list repeats the CTA in its empty state; the heading's is always there.
 	await page
-		.getByRole("button", { name: "Ajouter une déclaration" })
+		.getByRole("button", { name: "Déposer une déclaration" })
 		.first()
 		.click();
 	const dialog = page.getByRole("dialog", { name: "Créer une déclaration" });

@@ -267,7 +267,7 @@ describe("validateDeclaration", () => {
 		);
 		expect(errors.map((e) => e.label)).toEqual([
 			"Email de contact",
-			"Lien URL du formulaire",
+			"URL du formulaire",
 		]);
 	});
 

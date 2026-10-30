@@ -157,11 +157,11 @@ export function PublishSuccess({
 				</Button>
 				<Button
 					priority="primary"
-					iconId="fr-icon-add-line"
+					iconId="ri-download-line"
 					iconPosition="left"
 					linkProps={{ href: `${DECLARATIONS_LIST}?create=true` }}
 				>
-					Ajouter une déclaration
+					Déposer une déclaration
 				</Button>
 			</div>
 		</div>

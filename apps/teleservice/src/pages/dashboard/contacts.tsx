@@ -106,7 +106,7 @@ export default function ContactsPage({
 			}),
 			columnHelper.display({
 				id: "url",
-				header: "Lien URL du formulaire",
+				header: "URL du formulaire",
 				cell: (info) => {
 					const url = info.row.original.url;
 					return url ? (
@@ -159,10 +159,10 @@ export default function ContactsPage({
 	return (
 		<>
 			<Head>
-				<title>{pageTitle("Mes contacts")}</title>
+				<title>{pageTitle("Mes points de contacts accessibilité")}</title>
 			</Head>
 			<PageHeading
-				title="Mes contacts"
+				title="Mes points de contacts accessibilité"
 				pictogram={<NationalIdentityCard fontSize="3.5rem" />}
 				entityName={entity.name}
 				actions={
