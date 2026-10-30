@@ -15,6 +15,8 @@ export type ConfirmationModalParams = {
 	cancelLabel?: string;
 	confirmLabel?: string;
 	confirmIconId?: FrIconClassName | RiIconClassName;
+	confirmColor?: string;
+	confirmBackgroundColor?: string;
 	onConfirm: () => void;
 };
 
@@ -84,12 +86,14 @@ export function ConfirmationModal({ actions }: ConfirmationModalProps) {
 		<modal.Component
 			// The dialog stays mounted before its first open, so its heading always carries a label.
 			title={params?.title ?? "Confirmation"}
+			size="large"
 			className={classes.modal}
 			buttons={[
 				{
 					doClosesModal: true,
 					priority: "secondary",
 					type: "button",
+					iconId: "fr-icon-arrow-go-back-line",
 					children: params?.cancelLabel ?? "Annuler",
 				},
 				{
@@ -101,6 +105,12 @@ export function ConfirmationModal({ actions }: ConfirmationModalProps) {
 					onClick: () => {
 						pendingConfirmRef.current = params?.onConfirm ?? null;
 					},
+					nativeButtonProps: {
+						style: {
+							color: params?.confirmColor,
+							backgroundColor: params?.confirmBackgroundColor,
+						},
+					},
 				},
 			]}
 		>
@@ -111,9 +121,14 @@ export function ConfirmationModal({ actions }: ConfirmationModalProps) {
 
 const useStyles = tss.withName(ConfirmationModal.name).create({
 	modal: {
+		"& .fr-modal__header": {
+			padding: fr.spacing("4v"),
+		},
 		"& .fr-modal__footer": {
-			marginTop: fr.spacing("8v"),
-			borderTop: `2px solid ${fr.colors.decisions.border.default.grey.default}`,
+			marginTop: fr.spacing("4v"),
+		},
+		"& .fr-modal__footer .fr-btns-group": {
+			justifyContent: "space-between",
 		},
 		"& .fr-modal__content": {
 			marginBottom: fr.spacing("8v"),

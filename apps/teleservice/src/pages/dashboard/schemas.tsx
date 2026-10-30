@@ -29,6 +29,8 @@ import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
 
+const SUCCESS_ALERT_DURATION_MS = 5000;
+
 type AlertDetails = {
 	description: string;
 	severity: "success" | "error";
@@ -46,7 +48,12 @@ export default function SchemasPage({
 	const [alert, setAlert] = useState<AlertDetails | null>(null);
 
 	useEffect(() => {
-		if (alert) alertRef.current?.focus();
+		if (!alert) return;
+		alertRef.current?.focus();
+		if (alert.severity !== "success") return;
+
+		const timeout = setTimeout(() => setAlert(null), SUCCESS_ALERT_DURATION_MS);
+		return () => clearTimeout(timeout);
 	}, [alert]);
 
 	const {
@@ -58,7 +65,13 @@ export default function SchemasPage({
 		itemName: "schema",
 		isFetching,
 		deleteMutation: api.library.deleteSchema.useMutation({
-			onSuccess: () => utils.library.listSchemas.invalidate(),
+			onSuccess: () => {
+				setAlert({
+					description: "Votre schéma a été supprimé avec succès",
+					severity: "success",
+				});
+				return utils.library.listSchemas.invalidate();
+			},
 			onError: (e) => setAlert({ description: e.message, severity: "error" }),
 		}),
 	});
@@ -66,8 +79,10 @@ export default function SchemasPage({
 	const confirmDelete = (schema: Schema) =>
 		confirmationModalActions.open?.({
 			title: "Supprimer le schéma pluriannuel",
-			confirmLabel: "Supprimer",
+			confirmLabel: "Supprimer le schéma",
 			confirmIconId: "fr-icon-delete-fill",
+			confirmBackgroundColor:
+				fr.colors.decisions.background.actionHigh.error.default,
 			description: (
 				<>
 					<p>
@@ -84,6 +99,68 @@ export default function SchemasPage({
 			),
 			onConfirm: () => deleteItem(schema.id),
 		});
+
+	const openEdit = async (schema: Schema) => {
+		let linked: { id: number; name: string; isPublished: boolean }[];
+		try {
+			linked = await utils.library.linkedDeclarations.fetch({
+				kind: "schema",
+				id: schema.id,
+			});
+		} catch (e) {
+			setAlert({
+				description: e instanceof Error ? e.message : String(e),
+				severity: "error",
+			});
+			return;
+		}
+
+		if (!linked.some((declaration) => declaration.isPublished)) {
+			schemaModalActions.open?.(schema);
+			return;
+		}
+
+		confirmationModalActions.open?.({
+			title: "Attention, ce schéma est associé à des déclarations publiées.",
+			confirmLabel: "Modifier le schéma",
+			confirmIconId: "fr-icon-edit-line",
+			description: (
+				<>
+					<p>
+						{linked.length === 1 ? (
+							<>
+								Les modifications seront appliquées à 1 déclaration
+								d’accessibilité associée à ce schéma.
+								<br />
+								Elle sera automatiquement mise à jour.
+							</>
+						) : (
+							<>
+								Les modifications seront appliquées à {linked.length}{" "}
+								déclarations d’accessibilité associées à ce schéma.
+								<br />
+								Elles seront automatiquement mises à jour.
+							</>
+						)}
+					</p>
+					<ul>
+						{linked.map((declaration) => (
+							<li key={declaration.id}>
+								<a
+									href={`/dashboard/declarations/${declaration.id}`}
+									{...newTabLinkProps(declaration.name)}
+									className={classes.link}
+								>
+									{declaration.name}
+								</a>
+							</li>
+						))}
+					</ul>
+				</>
+			),
+			onConfirm: () => schemaModalActions.open?.(schema),
+		});
+	};
 
 	const openCreate = () => schemaModalActions.open?.();
 
