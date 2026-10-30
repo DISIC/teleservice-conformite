@@ -16,9 +16,13 @@ export type LibrarySchemaModalActions = {
 
 interface LibrarySchemaModalProps {
 	actions: LibrarySchemaModalActions;
+	onCreated?: (name: string) => void;
 }
 
-export function LibrarySchemaModal({ actions }: LibrarySchemaModalProps) {
+export function LibrarySchemaModal({
+	actions,
+	onCreated,
+}: LibrarySchemaModalProps) {
 	const id = useId();
 
 	const [modal] = useState(() =>
@@ -61,7 +65,11 @@ export function LibrarySchemaModal({ actions }: LibrarySchemaModalProps) {
 				values: value,
 				id: editing?.id,
 			});
+
 			modal.close();
+
+			if (!editing) onCreated?.(value.name);
+
 			setEditing(null);
 		},
 	});

@@ -4,7 +4,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { EditActionProvider, Part } from "~/components/form/Part";
 import { PageHeading } from "~/components/layout/PageHeading";
@@ -29,6 +29,11 @@ import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
 
+type AlertDetails = {
+	description: string;
+	severity: "success" | "error";
+};
+
 export default function SchemasPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -37,7 +42,12 @@ export default function SchemasPage({
 
 	const [schemaModalActions] = useState<LibrarySchemaModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const alertRef = useRef<HTMLDivElement>(null);
+	const [alert, setAlert] = useState<AlertDetails | null>(null);
+
+	useEffect(() => {
+		if (alert) alertRef.current?.focus();
+	}, [alert]);
 
 	const {
 		data: schemas = [],
@@ -49,7 +59,7 @@ export default function SchemasPage({
 		isFetching,
 		deleteMutation: api.library.deleteSchema.useMutation({
 			onSuccess: () => utils.library.listSchemas.invalidate(),
-			onError: (e) => setErrorMessage(e.message),
+			onError: (e) => setAlert({ description: e.message, severity: "error" }),
 		}),
 	});
 
@@ -100,14 +110,16 @@ export default function SchemasPage({
 			/>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
-					{errorMessage && (
-						<Alert
-							small
-							severity="error"
-							description={errorMessage}
-							closable
-							onClose={() => setErrorMessage(null)}
-						/>
+					{alert && (
+						<div className={classes.alertWrapper} ref={alertRef} tabIndex={-1}>
+							<Alert
+								small
+								severity={alert.severity}
+								description={alert.description}
+								closable
+								onClose={() => setAlert(null)}
+							/>
+						</div>
 					)}
 					{isLoading || isFetching ? (
 						<Loader />
@@ -187,7 +199,15 @@ export default function SchemasPage({
 					)}
 				</div>
 			</div>
-			<LibrarySchemaModal actions={schemaModalActions} />
+			<LibrarySchemaModal
+				actions={schemaModalActions}
+				onCreated={(name) =>
+					setAlert({
+						description: `Le document « ${name} » a été ajouté avec succès`,
+						severity: "success",
+					})
+				}
+			/>
 			<ConfirmationModal actions={confirmationModalActions} />
 		</>
 	);
@@ -196,6 +216,30 @@ export default function SchemasPage({
 const useStyles = tss.withName(SchemasPage.name).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
+	},
+	alertWrapper: {
+		width: "100%",
+		display: "flex",
+		"& div": {
+			width: "100%",
+		},
+		marginBottom: fr.spacing("6v"),
+		animation: "fadeIn 0.25s ease-in-out",
+	},
+	schemaList: {
+		listStyle: "none",
+		padding: 0,
+		margin: 0,
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6v"),
+		"& > li": {
+			margin: 0,
+			padding: 0,
+		},
+		"& > li > div, & dl": {
+			gap: fr.spacing("8v"),
+		},
 	},
 	entry: {
 		display: "flex",
