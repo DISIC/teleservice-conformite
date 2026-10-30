@@ -14,7 +14,8 @@ import {
 	CreateDeclarationModal,
 	type CreateDeclarationModalActions,
 } from "~/components/modal/CreateDeclarationModal";
-import EmptyState, { type FaqItem } from "~/components/ui/EmptyState";
+import { DECLARATION_FAQ } from "~/components/declaration/declarationFaq";
+import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
 import { api } from "~/lib/api";
 import { loadEntityForPage } from "~/lib/server-guards";
@@ -40,38 +41,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	const { classes } = useStyles();
 	const router = useRouter();
 	const [page, setPage] = useState(1);
-
-	const emptyStateFaq: FaqItem[] = [
-		{
-			question:
-				"Je n’ai pas fait d’audit d’accessibilité, dois-je quand même utiliser le téléservice de déclaration d’accessibilité numérique ?",
-			answer: (
-				<p>
-					Oui, tous les sites et applications mobiles en production doivent être
-					référencés sur le téléservice de déclaration,{" "}
-					<span className={classes.bold}>
-						y compris ceux qui n’ont pas encore fait l’objet d’un audit
-						d’accessibilité.
-					</span>
-				</p>
-			),
-		},
-		{
-			question:
-				"Quels documents faut-il préparer avant d’utiliser le téléservice de déclaration d’accessibilité numérique ?",
-			answer: (
-				<>
-					<p>Si vous les possédez, pensez à préparer :</p>
-					<br />
-					<ul>
-						<li>votre déclaration d’accessibilité existante,</li>
-						<li>l’URL du schéma pluriannuel,</li>
-						<li>l’URL du ou des plans d’actions.</li>
-					</ul>
-				</>
-			),
-		},
-	];
 
 	const { data } = api.declaration.list.useQuery(
 		{ page },
@@ -183,7 +152,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 							title="Déposez votre première déclaration d’accessibilité"
 							description="Durée de complétion estimée : entre 6 et 15 minutes"
 							pictogram={<Contract fontSize="3rem" />}
-							faq={emptyStateFaq}
+							faq={DECLARATION_FAQ}
 							ctaProps={{
 								onClick: () => createModalActions.open?.(),
 								children: "Déposer une déclaration",
@@ -210,9 +179,6 @@ const useStyles = tss.withName(DeclarationsPage.name).create({
 		},
 		marginBottom: fr.spacing("6v"),
 		animation: "fadeIn 0.25s ease-in-out",
-	},
-	bold: {
-		fontWeight: 700,
 	},
 });
 

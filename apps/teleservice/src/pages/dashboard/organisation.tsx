@@ -5,6 +5,7 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import { tss } from "tss-react";
+import { DECLARATION_FAQ } from "~/components/declaration/declarationFaq";
 import {
 	type DeclarationAction,
 	useDeclarationColumns,
@@ -14,7 +15,7 @@ import {
 	CreateDeclarationModal,
 	type CreateDeclarationModalActions,
 } from "~/components/modal/CreateDeclarationModal";
-import EmptyState, { type FaqItem } from "~/components/ui/EmptyState";
+import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
 import type { Entity } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
@@ -37,38 +38,6 @@ export default function EntityDeclarationsPage({
 	const { classes } = useStyles();
 
 	const [createModalActions] = useState<CreateDeclarationModalActions>({});
-
-	const emptyStateFaq: FaqItem[] = [
-		{
-			question:
-				"Je n’ai pas fait d’audit d’accessibilité, dois-je quand même utiliser le téléservice de déclaration d’accessibilité numérique ?",
-			answer: (
-				<p>
-					Oui, tous les sites et applications mobiles en production doivent être
-					référencés sur le téléservice de déclaration,
-					<span className={classes.bold}>
-						y compris ceux qui n’ont pas encore fait l’objet d’un audit
-						d’accessibilité.
-					</span>
-				</p>
-			),
-		},
-		{
-			question:
-				"Quels documents faut-il préparer avant d’utiliser le téléservice de déclaration d’accessibilité numérique ?",
-			answer: (
-				<>
-					<p>Si vous les possédez, pensez à préparer :</p>
-					<br />
-					<ul>
-						<li>votre déclaration d’accessibilité existante,</li>
-						<li>l’URL du schéma pluriannuel,</li>
-						<li>l’URL du ou des plans d’actions.</li>
-					</ul>
-				</>
-			),
-		},
-	];
 
 	const columns = useDeclarationColumns({
 		rowLink: false,
@@ -107,7 +76,7 @@ export default function EntityDeclarationsPage({
 							pictogram={<Contract fontSize="3rem" />}
 							title="Votre organisation n’a déposé aucune déclaration"
 							description={`Retrouvez ici toutes les déclarations créées dans votre organisation ${entity.name}`}
-							faq={emptyStateFaq}
+							faq={DECLARATION_FAQ}
 							ctaProps={{
 								onClick: () => createModalActions.open?.(),
 								children: "Déposer une déclaration",
@@ -128,9 +97,6 @@ const useStyles = tss.withName(EntityDeclarationsPage.name).create({
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("6v"),
-	},
-	bold: {
-		fontWeight: 700,
 	},
 });
 
