@@ -2,6 +2,7 @@ import { AdvantagesSection } from "~/components/home/AdvantagesSection";
 import { AraSection } from "~/components/home/AraSection";
 import { FaqSection } from "~/components/home/FaqSection";
 import { Hero } from "~/components/home/Hero";
+import { LegalObligationsSection } from "~/components/home/LegalObligationsSection";
 import { WhySection } from "~/components/home/WhySection";
 import { authClient } from "~/lib/auth-client";
 
@@ -16,6 +17,7 @@ export default function Home() {
 			<Hero startHref={startHref} />
 			<WhySection />
 			<AdvantagesSection startHref={startHref} />
+			<LegalObligationsSection />
 			<AraSection />
 			<FaqSection />
 		</>

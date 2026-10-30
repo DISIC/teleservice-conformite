@@ -9,7 +9,7 @@ import { tss } from "tss-react";
 const ADVANTAGES = [
 	{
 		title: "Normalisez",
-		desc: "Vos déclarations sont générées selon le format réglementaire, conformément aux exigences légales.",
+		desc: "Vos déclarations sont générées au format réglementaire, conformément aux exigences légales",
 		Picto: Document,
 	},
 	{
