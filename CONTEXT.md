@@ -21,7 +21,7 @@ One of the four top-level content areas of a Declaration, surfaced as items in t
 - **Informations générales** — meta-info about the service (slug `infos`)
 - **Audit** — audit results; has no slug of its own — it is a menu-only virtual parent (`SectionParentKey`) reached via its first [[sub-section]] (`audit-general`)
 - **Schéma et plans d'action** — multi-year accessibility plan (slug `schema`)
-- **Contact** — contact method for accessibility issues (slug `contact`)
+- **Point de contact accessibilité** — contact method for accessibility issues (slug `contact`)
 
 Every Section's content lives on the `declarations` row itself: Infos as top-level fields, Audit/Schéma/Contact as group fields (ADR-0004). Contact and Schéma may additionally reference a [[library|Library]] parent. The URL of the details page encodes the active Section as `?section=<slug>` — see ADR-0001.
 
@@ -35,7 +35,7 @@ One of the four children of the **Audit** Section, surfaced as nested items in t
 
 - **Réalisation de l'audit** (slug `audit-general`) — `isAuditRealised`, date, RGAA version, realisedBy, rate
 - **Outils et environnements** (slug `audit-outils`) — usedTools + testEnvironments
-- **Contenus vérifiés** (slug `audit-contenus`) — compliantElements
+- **Échantillon audité** (slug `audit-contenus`) — compliantElements
 - **Non conformités & dérogations** (slug `audit-non-conformites`) — nonCompliantElements, disproportionnedCharge, optionalElements
 
 A Sub-section is a **URL-addressable, independently-saved slice** of the Audit Section: each has its own `?section=<slug>` destination, its own self-contained form, and saves on its own (ADR-0002). It is _not_ a top-level [[section]] — "Audit" is a menu-only **virtual parent** (`SectionParentKey`), reached via `audit-general`; the four Sub-sections are its nested `SideMenu` children, treated in code as ordinary `SectionMeta` carrying `parent: "audit"`.
@@ -52,7 +52,7 @@ When `audit.isRealised === false`, only "Réalisation de l'audit" is meaningful;
 
 A titled grouping of one or more related fields **inside** a [[sub-section]]'s body. A Sub-section contains one or more Parts; each Part has its own heading and is visually a self-contained bordered card. In standalone read-only mode each card hosts the Section's Modifier button — several Parts mean several buttons, all entering edit for the whole Section.
 
-Examples: the **Outils et environnements** Sub-section has two Parts — "Outils d'assistances" (`usedTools`) and "Environnements de tests" (`testEnvironments`). **Non conformités & dérogations** has two Parts — "Non conformités" (`nonCompliantElements`) and "Dérogations" (`optionalElements` + `disproportionnedCharge`). Single-Part Sub-sections (e.g. **Contenus vérifiés**) have exactly one Part.
+Examples: the **Outils et environnements** Sub-section has two Parts — "Outils d'assistances" (`usedTools`) and "Environnements de tests" (`testEnvironments`). **Non conformités & dérogations** has two Parts — "Non conformités" (`nonCompliantElements`) and "Dérogations" (`optionalElements` + `disproportionnedCharge`). Single-Part Sub-sections (e.g. **Échantillon audité**) have exactly one Part.
 
 **Avoid:** "block" (conversational only, see Out of scope), "section/sub-section" (reserved for the two higher levels).
 
@@ -183,7 +183,7 @@ The **deadline** is the last publication date plus three years. Every publish ac
 
 A third axis next to [[status]] (lifecycle) and [[declaration-state|Declaration state]] (next action): it is never folded into either. Status stays Publiée underneath an Obsolète Declaration, and the Declaration state keeps answering "what next" — when both a Declaration state notice (Modifié, À compléter) and an obsolescence notice apply, the **Declaration state notice wins**, because it names the blocking action. The obsolescence notice, which offers to republish, shows only when the Declaration state has nothing to say.
 
-**Surfaces:** the Mes déclarations list (Statut cell), the details page header, the [[obsolète|interstitial]], the notice card, and the public page (Obsolète only).
+**Surfaces:** the Mes déclarations list (Statut cell), the details page header, the [[obsolète|interstitial]], the notice card, and the public page (Obsolète only). In the list's Statut cell a Valide Publiée Declaration shows its deadline too, as "Périme le {deadline}" under the Publiée badge; the details header shows nothing while Valide.
 
 **Avoid:** "Validité", "Expiration" — use "Obsolescence" for the axis. "Statut" — a different axis.
 
@@ -195,7 +195,7 @@ The [[obsolescence|Obsolescence]] value of a **Publiée** Declaration during the
 
 For the declarant: the Statut badge keeps reading Publiée; the list's Statut cell and the details header add a warning-icon line "Obsolète le {deadline}"; opening the Declaration shows the "bientôt obsolète" interstitial under the same rule as [[obsolète|Obsolète]], and the notice card offers to republish before the deadline when no [[declaration-state|Declaration state]] notice applies.
 
-**Avoid:** "Expirante", "Périme le", "Bientôt périmée".
+**Avoid:** "Expirante", "Bientôt périmée". "Périme le" is reserved for the list's Valide line (see [[obsolescence|Obsolescence]]), never for Bientôt obsolète.
 
 **See also:** [[obsolescence|Obsolescence]], [[obsolète|Obsolète]].
 

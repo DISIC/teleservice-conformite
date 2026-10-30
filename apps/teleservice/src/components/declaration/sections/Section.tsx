@@ -242,6 +242,7 @@ export function Section({
 		>
 			<RadioButtons
 				legend={withRequiredMark(library.legend, true)}
+				hintText={library.hintText}
 				state={sourceModeError ? "error" : "default"}
 				stateRelatedMessage={sourceModeError}
 				options={library.options

@@ -27,8 +27,8 @@ const LIBRARY_COPY: Record<
 	{ label: string; placeholder: string }
 > = {
 	contact: {
-		label: "Utiliser un contact de votre bibliothèque",
-		placeholder: "Sélectionner un contact",
+		label: "Sélectionner un point de contact",
+		placeholder: "Sélectionner un point de contact",
 	},
 	schema: {
 		label: "Utiliser un schéma de votre bibliothèque",

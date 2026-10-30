@@ -14,6 +14,7 @@ import {
 	CreateDeclarationModal,
 	type CreateDeclarationModalActions,
 } from "~/components/modal/CreateDeclarationModal";
+import { DECLARATION_FAQ } from "~/components/ui/emptyStateFaq";
 import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
 import { api } from "~/lib/api";
@@ -73,8 +74,6 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	);
 
 	const columns = useDeclarationColumns({
-		declarations: declarations.docs,
-		hasPublished: declarations.hasPublished,
 		rowLink: true,
 		onCopySuccess,
 	});
@@ -150,26 +149,16 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 						/>
 					) : (
 						<EmptyState
-							title="Ajoutez votre première déclaration d’accessibilité"
-							description="Vous devez réaliser une déclaration par service et par type de support."
+							title="Déposez votre première déclaration d’accessibilité"
+							description="Durée de complétion estimée : entre 6 et 15 minutes"
 							pictogram={<Contract fontSize="3rem" />}
+							faq={DECLARATION_FAQ}
 							ctaProps={{
 								onClick: () => createModalActions.open?.(),
 								children: "Déposer une déclaration",
 								iconId: "ri-download-line",
 							}}
-						>
-							<p>
-								<strong>Documents à préparer</strong>
-								<br />
-								Si vous les possédez, pensez à préparer votre déclaration
-								d’accessibilité existante, votre grille et rapport d’audit, le
-								fichier ou l’URL de votre schéma pluriannuel.
-							</p>
-							<p className={fr.cx("fr-text--xs", "fr-mb-0")}>
-								Durée de complétion estimée : entre 6 et 15 minutes
-							</p>
-						</EmptyState>
+						/>
 					)}
 				</section>
 			</div>

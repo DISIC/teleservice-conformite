@@ -6,6 +6,7 @@ interface PartProps {
 	readOnly: boolean;
 	/** Heading shown above the fields, in both edit and read-only modes. */
 	title?: ReactNode;
+	titleAside?: ReactNode;
 	/**
 	 * Lay the read-only fields out in a 2-column grid. Disable for Parts whose
 	 * read-only view has a bespoke structure (e.g. checkbox rows, repeaters).
@@ -47,6 +48,7 @@ export function EditActionSlot({ className }: { className?: string }) {
 export function Part({
 	readOnly,
 	title,
+	titleAside,
 	grid = true,
 	definitionList = false,
 	children,
@@ -56,13 +58,22 @@ export function Part({
 
 	return (
 		<div className={classes.root}>
-			{title && (
-				<h3
-					className={cx(classes.title, fr.cx("fr-h6", !readOnly && "fr-pb-6v"))}
-				>
-					{title}
-				</h3>
-			)}
+			{title &&
+				(titleAside ? (
+					<div className={classes.titleRow}>
+						<h3 className={cx(classes.title, fr.cx("fr-h6"))}>{title}</h3>
+						{titleAside}
+					</div>
+				) : (
+					<h3
+						className={cx(
+							classes.title,
+							fr.cx("fr-h6", !readOnly && "fr-pb-6v"),
+						)}
+					>
+						{title}
+					</h3>
+				))}
 			{asDefinitionList ? (
 				<DefinitionListContext.Provider value={{ fallbackTerm: title }}>
 					<dl className={classes.definitionList}>{children}</dl>
@@ -117,10 +128,20 @@ const useStyles = tss
 				...fieldsLayout,
 				gap: fr.spacing("6v"),
 				margin: 0,
+				padding: 0,
 			},
 			title: {
 				margin: 0,
 				// In the read-only grid, span the title full width above the fields.
+				...(readOnly &&
+					grid && { gridColumn: "1 / -1", marginBottom: fr.spacing("2v") }),
+			},
+			titleRow: {
+				display: "flex",
+				flexWrap: "wrap",
+				alignItems: "center",
+				justifyContent: "space-between",
+				gap: fr.spacing("2v"),
 				...(readOnly &&
 					grid && { gridColumn: "1 / -1", marginBottom: fr.spacing("2v") }),
 			},

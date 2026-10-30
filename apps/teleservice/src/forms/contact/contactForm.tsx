@@ -59,7 +59,7 @@ function ContactMeansGroup({
 	return (
 		<fieldset className={fr.cx("fr-fieldset")}>
 			<legend className={fr.cx("fr-fieldset__legend")}>
-				Saisir au moins un moyen de contact
+				Saisir au moins un point de contact
 				<RequiredMark />
 			</legend>
 			<div className={fr.cx("fr-fieldset__element")}>{children}</div>

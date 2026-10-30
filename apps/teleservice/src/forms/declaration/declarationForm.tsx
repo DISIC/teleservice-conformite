@@ -66,13 +66,16 @@ export const DeclarationGeneralForm = withForm({
 						<field.RichRadioField
 							label="Type de service"
 							readOnlyField={readOnly}
-							options={appKindOptions.map((option) => {
-								const Pictogram = appKindPictograms[option.value];
-								return {
-									...option,
-									illustration: <Pictogram fontSize="3rem" />,
-								};
-							})}
+							// "Autre" is display-only: shown on existing declarations, never offered as a choice.
+							options={appKindOptions
+								.filter((option) => readOnly || option.value !== "other")
+								.map((option) => {
+									const Pictogram = appKindPictograms[option.value];
+									return {
+										...option,
+										illustration: <Pictogram fontSize="3rem" />,
+									};
+								})}
 							onOptionChange={() => {
 								form.setFieldValue("general.url", "");
 								form.setFieldValue("general.mobilePlatform", undefined);
@@ -103,11 +106,11 @@ export const DeclarationGeneralForm = withForm({
 									<form.AppField name="general.url">
 										{(field) => (
 											<field.TextField
-												label="URL de la page d’accueil du site audité"
+												label="URL de la page d’accueil du site concerné"
 												nativeInputProps={{ type: "url " }}
 												hintText={
 													<>
-														Pour un site web public, renseignez l’adresse
+														Pour un site web public, renseignez le lien
 														accessible par les usagers.
 														<br />
 														Format attendu : https://www.monservice.gouv.fr

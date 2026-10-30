@@ -23,13 +23,13 @@ export const Schemas: CollectionConfig = {
 		{
 			name: "url",
 			type: "text",
-			label: { fr: "Lien du schéma pluriannuel" },
+			label: { fr: "URL du schéma pluriannuel" },
 			required: false,
 		},
 		{
 			name: "actionPlanUrls",
 			type: "array",
-			label: { fr: "Liens des plans d'actions" },
+			label: { fr: "URLs des plans d'actions" },
 			labels: {
 				singular: { fr: "Plan d'actions" },
 				plural: { fr: "Plans d'actions" },
@@ -44,7 +44,7 @@ export const Schemas: CollectionConfig = {
 				{
 					name: "url",
 					type: "text",
-					label: { fr: "Lien du plan d'actions" },
+					label: { fr: "URL du plan d'actions" },
 					required: true,
 				},
 			],

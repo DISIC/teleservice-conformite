@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import type { Payload } from "payload";
+import type { JoinQuery, Payload } from "payload";
 import type { Contact, Declaration, Schema } from "~/payload/payload-types";
 import {
 	getPopulatedDeclaration,
@@ -23,6 +23,14 @@ const LIBRARY_COLLECTION = {
 	contact: "contacts",
 	schema: "schemas",
 } as const satisfies Record<LibrarySectionKind, "contacts" | "schemas">;
+
+type LibraryCollection<K extends LibrarySectionKind> =
+	(typeof LIBRARY_COLLECTION)[K];
+
+// Payload has no count-only join and reads `limit: 0` as unlimited, so 1 is the cheapest.
+const DECLARATIONS_COUNT = {
+	declarations: { count: true, limit: 1 },
+} satisfies JoinQuery<"contacts"> & JoinQuery<"schemas">;
 
 type LibrarySectionAdapter<K extends LibrarySectionKind> = {
 	/** Mode flags every content write must reset; `skipped` is schema's only extension. */
@@ -153,6 +161,7 @@ export async function listParents<K extends LibrarySectionKind>(
 		where: { user: { equals: userId } },
 		limit: 100,
 		depth: 0,
+		joins: DECLARATIONS_COUNT as JoinQuery<LibraryCollection<K>>,
 	});
 	return result.docs as ParentDoc<K>[];
 }

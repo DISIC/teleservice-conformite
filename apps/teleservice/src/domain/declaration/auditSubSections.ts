@@ -83,7 +83,7 @@ export const AUDIT_SUB_SECTIONS: Record<
 		},
 	},
 	"audit-contenus": {
-		title: "Contenus vérifiés",
+		title: "Échantillon audité",
 		isToComplete: realisedSubSectionToComplete(
 			(d) => !!d.audit?.compliantElements,
 		),
@@ -92,7 +92,7 @@ export const AUDIT_SUB_SECTIONS: Record<
 			fromDeclaration: (d) => auditToContentsValues(d.audit),
 			fieldLabels: {
 				compliantElements:
-					"Éléments ayant fait l’objet de la vérification de conformité",
+					"Liste des pages de l’échantillon ayant fait l’objet de la vérification de conformité",
 			},
 			isApplicable: (d) => d.audit?.isRealised === true,
 		},

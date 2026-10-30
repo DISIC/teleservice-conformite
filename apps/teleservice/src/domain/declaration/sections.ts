@@ -85,7 +85,7 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 				"general.name": "Nom du service numérique concerné",
 				"general.kind": "Type de service",
 				"general.mobilePlatform": "Plateforme mobile",
-				"general.url": "URL de la page d’accueil du site audité",
+				"general.url": "URL de la page d’accueil du site concerné",
 				"general.domain": "Secteur d’activité du service concerné",
 			},
 		},
@@ -100,9 +100,9 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 			fromDeclaration: declarationToSchemaValues,
 			fieldLabels: {
 				name: "Nom du schéma pluriannuel",
-				url: "Lien du schéma pluriannuel",
+				url: "URL du schéma pluriannuel",
 				"actionPlanUrls.*.name": "Nom du plan d'actions",
-				"actionPlanUrls.*.url": "Lien du plan d'actions",
+				"actionPlanUrls.*.url": "URL du plan d'actions",
 			},
 			isApplicable: (d) => d.schema?.skipped !== true,
 			sourceMode: {
@@ -114,7 +114,7 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 		},
 	},
 	contact: {
-		title: "Contact",
+		title: "Point de contact accessibilité",
 		isToComplete: (d) => !d.contact?.name,
 		isToVerify: (d) => d.contact?.toVerify === true,
 		validation: {

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
 import { useDefinitionList } from "~/components/form/Part";
+import { UrlText } from "~/components/ui/UrlText";
 import type { DefaultFieldProps } from "~/forms/context";
 
 interface ReadOnlyFieldProps extends DefaultFieldProps {
@@ -42,7 +43,7 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 			))}
 		</ul>
 	) : link && value ? (
-		<a href={value}>{value}</a>
+		<UrlText url={value} />
 	) : (
 		value || placeholder
 	);

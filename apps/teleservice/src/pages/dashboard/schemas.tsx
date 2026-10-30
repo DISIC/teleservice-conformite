@@ -1,14 +1,16 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
-import Tag from "@codegouvfr/react-dsfr/Tag";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import { tss } from "tss-react";
+import { EditActionProvider, Part } from "~/components/form/Part";
 import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
+import { LibraryList } from "~/components/library/LibraryList";
+import { LinkedDeclarationsTag } from "~/components/library/LinkedDeclarationsTag";
 import {
 	ConfirmationModal,
 	type ConfirmationModalActions,
@@ -18,8 +20,9 @@ import {
 	type LibrarySchemaModalActions,
 } from "~/components/modal/LibrarySchemaModal";
 import EmptyState from "~/components/ui/EmptyState";
-import { EmptyValue } from "~/components/ui/EmptyValue";
+import { SCHEMA_FAQ } from "~/components/ui/emptyStateFaq";
 import { Loader } from "~/components/ui/Loader";
+import { UrlText } from "~/components/ui/UrlText";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Entity, Schema } from "~/payload/payload-types";
 import { api } from "~/lib/api";
@@ -29,7 +32,7 @@ import { pageTitle } from "~/lib/serviceName";
 export default function SchemasPage({
 	entity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 	const utils = api.useUtils();
 
 	const [schemaModalActions] = useState<LibrarySchemaModalActions>({});
@@ -91,7 +94,7 @@ export default function SchemasPage({
 						onClick={openCreate}
 						nativeButtonProps={{ id: addButtonId }}
 					>
-						Ajouter un schéma pluriannuel
+						Ajouter un schéma
 					</Button>
 				}
 			/>
@@ -112,61 +115,75 @@ export default function SchemasPage({
 						<EmptyState
 							pictogram={<DataVisualization fontSize="3rem" />}
 							title="Vous n’avez aucun schéma pluriannuel enregistré"
-							description="Centralisez et gérez les schémas pluriannuels nécessaires à vos déclarations d’accessibilité."
+							description="Centralisez et gérez les schémas pluriannuels et plans d’actions nécessaires à vos déclarations d’accessibilité."
 							ctaProps={{
 								children: "Ajouter un schéma",
 								onClick: openCreate,
 								iconId: "fr-icon-add-line",
 							}}
+							faq={SCHEMA_FAQ}
 						/>
 					) : (
-						<>
-							<h2 id="schemas-list-title" className={fr.cx("fr-sr-only")}>
-								Liste de mes schémas pluriannuels
-							</h2>
-							<ul
-								className={classes.schemaList}
-								aria-labelledby="schemas-list-title"
-							>
-								{schemas.map((schema) => (
-									<li key={schema.id} className={classes.schemaCard}>
-										<div
-											className={cx(classes.schemaRow, classes.schemaHeaderRow)}
-										>
-											<strong>{schema.name}</strong>
-											<span className={classes.hint}>
-												{schema.url || <EmptyValue />}
-											</span>
-											<span className={classes.hint}>
-												Dernière mise à jour{" "}
-												<Tag small as="span">
-													{new Date(schema.updatedAt).toLocaleDateString(
-														"fr-FR",
-													)}
-												</Tag>
-											</span>
+						<LibraryList
+							id="schemas-list-title"
+							title="Liste de mes schémas pluriannuels"
+						>
+							{schemas.map((schema) => (
+								<li key={schema.id}>
+									<EditActionProvider
+										value={
 											<ItemActions
 												label={schema.name}
 												onEdit={() => schemaModalActions.open?.(schema)}
 												onDelete={() => confirmDelete(schema)}
 												deleteButtonId={deleteButtonId(schema.id)}
 											/>
-										</div>
-										{(schema.actionPlanUrls ?? []).map((plan) => (
-											<div
-												key={plan.id ?? plan.url}
-												className={cx(classes.schemaRow, classes.schemaPlanRow)}
-											>
-												<span>{plan.name || <EmptyValue />}</span>
-												<span className={classes.hint}>
-													{plan.url || <EmptyValue />}
-												</span>
-											</div>
-										))}
-									</li>
-								))}
-							</ul>
-						</>
+										}
+									>
+										<Part
+											readOnly
+											grid={false}
+											title={schema.name}
+											titleAside={
+												<LinkedDeclarationsTag
+													count={schema.declarations?.totalDocs}
+												/>
+											}
+										>
+											{schema.url && (
+												<p className={classes.url}>
+													<UrlText url={schema.url} />
+												</p>
+											)}
+											<dl className={classes.entries}>
+												<div className={classes.entry}>
+													<dt className={classes.entryLabel}>
+														Plans d’actions associés
+													</dt>
+													<dd className={classes.entryValue}>
+														{schema.actionPlanUrls?.length ? (
+															<ul className={classes.planList}>
+																{schema.actionPlanUrls.map((plan, index) => (
+																	<li key={plan.id ?? index}>
+																		<span>
+																			{plan.name ||
+																				`Plan d’actions ${index + 1}`}
+																		</span>
+																		{plan.url && <UrlText url={plan.url} />}
+																	</li>
+																))}
+															</ul>
+														) : (
+															"Non"
+														)}
+													</dd>
+												</div>
+											</dl>
+										</Part>
+									</EditActionProvider>
+								</li>
+							))}
+						</LibraryList>
 					)}
 				</div>
 			</div>
@@ -180,47 +197,46 @@ const useStyles = tss.withName(SchemasPage.name).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
 	},
-	schemaList: {
-		listStyle: "none",
-		padding: 0,
+	entry: {
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("2v"),
+	},
+	entryLabel: {
+		fontWeight: 700,
+		color: fr.colors.decisions.text.label.grey.default,
+	},
+	entryValue: {
 		margin: 0,
-		display: "grid",
-		gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-		gap: fr.spacing("6v"),
-		"& > li": {
-			margin: 0,
-			padding: 0,
+		paddingLeft: 0,
+		color: fr.colors.decisions.text.label.grey.default,
+		"& a": {
+			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 		},
 	},
-	schemaCard: {
-		gridColumn: "1 / -1",
-		display: "grid",
-		gridTemplateColumns: "subgrid",
-		border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-		borderRadius: 4,
-		overflow: "hidden",
+	url: {
+		margin: 0,
+		"& a": {
+			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+		},
 	},
-	schemaRow: {
-		gridColumn: "1 / -1",
-		display: "grid",
-		gridTemplateColumns: "subgrid",
-		alignItems: "center",
-		gap: fr.spacing("4v"),
-		padding: `${fr.spacing("3v")} ${fr.spacing("4v")}`,
+	entries: {
+		margin: 0,
+		padding: 0,
 	},
-	schemaHeaderRow: {
-		backgroundColor: fr.colors.decisions.background.default.grey.default,
-	},
-	schemaPlanRow: {
-		backgroundColor: fr.colors.decisions.background.alt.grey.default,
-		borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-	},
-	hint: {
-		fontSize: "0.875rem",
-		color: fr.colors.decisions.text.mention.grey.default,
-		display: "flex",
-		alignItems: "center",
-		gap: fr.spacing("2v"),
+	planList: {
+		margin: 0,
+		"& > li": {
+			width: "fit-content",
+			paddingBottom: 0,
+		},
+		"& > li > a": {
+			display: "block",
+			width: "fit-content",
+		},
+		"& > li + li": {
+			marginTop: fr.spacing("4v"),
+		},
 	},
 });
 

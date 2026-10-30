@@ -11,6 +11,13 @@ type IssueCtx = {
 
 const URL_MESSAGE = "Lien invalide (ex: https://www.example.fr)";
 
+const httpUrl = z.url({ protocol: /^https?$/ });
+
+/** Only http(s) URLs are links: any other scheme (javascript:, data:…) can run code when clicked. */
+export function isHttpUrl(value: string | null | undefined): value is string {
+	return httpUrl.safeParse(value).success;
+}
+
 /** URL format is checked only once a value exists; emptiness stays a
  *  completeness concern owned by each schema's own required rules. */
 export function optionalUrlIssue(
@@ -18,7 +25,7 @@ export function optionalUrlIssue(
 	path: IssuePath,
 	value: string,
 ) {
-	if (value && !z.url().safeParse(value).success)
+	if (value && !isHttpUrl(value))
 		ctx.addIssue({ code: "custom", path, message: URL_MESSAGE });
 }
 
@@ -28,7 +35,7 @@ export function requiredUrlIssue(
 	path: IssuePath,
 	value: string,
 ) {
-	if (!z.url().safeParse(value).success)
+	if (!isHttpUrl(value))
 		ctx.addIssue({ code: "custom", path, message: URL_MESSAGE });
 }
 

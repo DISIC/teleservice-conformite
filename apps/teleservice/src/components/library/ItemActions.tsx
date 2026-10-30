@@ -19,18 +19,24 @@ export function ItemActions({
 			<Button
 				priority="tertiary"
 				iconId="fr-icon-edit-line"
-				title={`Modifier ${label}`}
 				size="small"
 				onClick={onEdit}
-			/>
+				nativeButtonProps={{ "aria-label": `Modifier ${label}` }}
+			>
+				Modifier
+			</Button>
 			<Button
 				priority="tertiary"
 				iconId="fr-icon-delete-line"
-				title={`Supprimer ${label}`}
 				size="small"
 				onClick={onDelete}
-				nativeButtonProps={{ id: deleteButtonId }}
-			/>
+				nativeButtonProps={{
+					id: deleteButtonId,
+					"aria-label": `Supprimer ${label}`,
+				}}
+			>
+				Supprimer
+			</Button>
 		</div>
 	);
 }

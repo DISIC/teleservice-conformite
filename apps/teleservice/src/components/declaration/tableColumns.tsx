@@ -23,25 +23,22 @@ const columnHelper = createColumnHelper<PopulatedDeclaration>();
 const publicUrl = (declaration: PopulatedDeclaration) =>
 	`/declarations/${declaration.id}/publish`;
 
+export type DeclarationAction = "copy" | "view" | "edit";
+
+const ALL_ACTIONS: DeclarationAction[] = ["copy", "view", "edit"];
+// The public page exists only once the Declaration is published.
+const PUBLIC_PAGE_ACTIONS: DeclarationAction[] = ["copy", "view"];
+
 export function useDeclarationColumns({
-	declarations,
-	hasPublished,
 	rowLink,
 	onCopySuccess,
+	actions = ALL_ACTIONS,
 }: {
-	declarations: PopulatedDeclaration[];
-	/** For a paginated list, whether any page has a published declaration. */
-	hasPublished?: boolean;
 	rowLink: boolean;
-	onCopySuccess: (declarationName: string) => void;
+	onCopySuccess?: (declarationName: string) => void;
+	actions?: DeclarationAction[];
 }) {
 	const { classes } = useStyles();
-	// The actions column is left out when no declaration in the whole list has one.
-	const withActions =
-		hasPublished ??
-		declarations.some(
-			(declaration) => getDeclarationStatus(declaration) === "published",
-		);
 
 	return useMemo(() => {
 		const {
@@ -56,9 +53,9 @@ export function useDeclarationColumns({
 			appKindColumn,
 			statusColumn,
 			conformityRateColumn,
-			...(withActions ? [publicActionsColumn({ onCopySuccess })] : []),
+			publicActionsColumn({ onCopySuccess, actions }),
 		];
-	}, [classes, rowLink, withActions, onCopySuccess]);
+	}, [classes, rowLink, onCopySuccess, actions]);
 }
 
 function buildColumns(
@@ -89,7 +86,7 @@ function buildColumns(
 			cell: (info) => (
 				<div className={classes.status}>
 					<StatusBadge declaration={info.row.original} />
-					<ObsolescenceLine declaration={info.row.original} underBadge />
+					<ObsolescenceLine declaration={info.row.original} inStatusCell />
 				</div>
 			),
 		},
@@ -115,47 +112,63 @@ function buildColumns(
 		},
 	});
 
-	// Public actions only exist once a public page does.
 	const publicActionsColumn = (options: {
-		onCopySuccess: (declarationName: string) => void;
+		onCopySuccess?: (declarationName: string) => void;
+		actions: DeclarationAction[];
 	}) =>
 		columnHelper.display({
 			id: "actions",
 			header: "Actions",
+			meta: { styles: { justifyContent: "flex-end" }, fitContent: true },
 			cell: (info) => {
 				const declaration = info.row.original;
-				if (getDeclarationStatus(declaration) !== "published")
-					return (
-						<span className={fr.cx("fr-text--sm", "fr-mb-0")}>
-							Aucune action disponible
-						</span>
-					);
 				const copyTitle = `Copier le lien public de la déclaration ${declaration.name}`;
+				const viewLabel = `Voir la déclaration ${declaration.name}`;
+				const isPublished = getDeclarationStatus(declaration) === "published";
+				const visible = options.actions.filter(
+					(action) => isPublished || !PUBLIC_PAGE_ACTIONS.includes(action),
+				);
+				if (visible.length === 0)
+					return <EmptyValue label="Aucune action disponible" />;
 				return (
 					<div className={classes.actions}>
-						<Button
-							iconId="fr-icon-link"
-							priority="secondary"
-							size="small"
-							title={copyTitle}
-							nativeButtonProps={{ "aria-label": copyTitle }}
-							onClick={() =>
-								copyToClipboard(
-									`${process.env.NEXT_PUBLIC_FRONT_URL}${publicUrl(declaration)}`,
-									() => options.onCopySuccess(declaration.name || ""),
-								)
-							}
-						/>
-						<Button
-							iconId="fr-icon-eye-line"
-							priority="secondary"
-							size="small"
-							title={newTabTitle(`Voir la déclaration ${declaration.name}`)}
-							linkProps={{
-								href: publicUrl(declaration),
-								...newTabLinkProps(`Voir la déclaration ${declaration.name}`),
-							}}
-						/>
+						{visible.includes("copy") && (
+							<Button
+								iconId="ri-links-line"
+								priority="tertiary"
+								size="small"
+								title={copyTitle}
+								onClick={() =>
+									copyToClipboard(
+										`${process.env.NEXT_PUBLIC_FRONT_URL}${publicUrl(declaration)}`,
+										() => options.onCopySuccess?.(declaration.name || ""),
+									)
+								}
+							/>
+						)}
+						{visible.includes("view") && (
+							<Button
+								iconId="ri-eye-line"
+								priority="tertiary"
+								size="small"
+								title={newTabTitle(viewLabel)}
+								linkProps={{
+									href: publicUrl(declaration),
+									...newTabLinkProps(viewLabel),
+								}}
+							/>
+						)}
+						{visible.includes("edit") && (
+							<Button
+								iconId="ri-edit-line"
+								priority="tertiary"
+								size="small"
+								title={`Modifier la déclaration ${declaration.name}`}
+								linkProps={{
+									href: `/dashboard/declarations/${declaration.id}`,
+								}}
+							/>
+						)}
 					</div>
 				);
 			},
@@ -186,7 +199,6 @@ const useStyles = tss.withName("TableColumns").create({
 	},
 	actions: {
 		display: "flex",
-		justifyContent: "flex-end",
-		gap: fr.spacing("2v"),
+		gap: fr.spacing("4v"),
 	},
 });
