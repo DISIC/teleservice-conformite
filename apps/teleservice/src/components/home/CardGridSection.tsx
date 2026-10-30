@@ -35,16 +35,18 @@ export function CardGridSection({
 						<li key={description} className={classes.card}>
 							<h3 className={fr.cx("fr-mb-4v")}>{title}</h3>
 							<p className={classes.cardText}>{description}</p>
-							<a
-								href={href}
-								{...(linkLabel && newTabLinkProps(linkLabel))}
-								className={cx(
-									fr.cx("fr-link", "fr-link--sm"),
-									classes.cardLink,
-								)}
-							>
-								{linkLabel}
-							</a>
+							{href && linkLabel && (
+								<a
+									href={href}
+									{...newTabLinkProps(linkLabel)}
+									className={cx(
+										fr.cx("fr-link", "fr-link--sm"),
+										classes.cardLink,
+									)}
+								>
+									{linkLabel}
+								</a>
+							)}
 						</li>
 					))}
 				</ul>

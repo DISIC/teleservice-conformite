@@ -3,7 +3,6 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { tss } from "tss-react";
 import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
@@ -17,7 +16,7 @@ import { getDeclarationStatus } from "~/domain/declaration/status";
 import { copyToClipboard } from "~/lib/clipboard";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { newTabTitle } from "~/lib/newTabLink";
+import { newTabLinkProps, newTabTitle } from "~/lib/newTabLink";
 
 const columnHelper = createColumnHelper<PopulatedDeclaration>();
 
@@ -38,7 +37,6 @@ export function useDeclarationColumns({
 	actions?: DeclarationAction[];
 }) {
 	const { classes } = useStyles();
-	const { push } = useRouter();
 
 	return useMemo(() => {
 		const {
@@ -53,9 +51,9 @@ export function useDeclarationColumns({
 			appKindColumn,
 			statusColumn,
 			conformityRateColumn,
-			publicActionsColumn({ onCopySuccess, onEdit: push, actions }),
+			publicActionsColumn({ onCopySuccess, actions }),
 		];
-	}, [classes, rowLink, onCopySuccess, push, actions]);
+	}, [classes, rowLink, onCopySuccess, actions]);
 }
 
 function buildColumns(
@@ -114,7 +112,6 @@ function buildColumns(
 
 	const publicActionsColumn = (options: {
 		onCopySuccess?: (declarationName: string) => void;
-		onEdit: (href: string) => void;
 		actions: DeclarationAction[];
 	}) =>
 		columnHelper.display({
@@ -153,9 +150,10 @@ function buildColumns(
 								priority="tertiary"
 								size="small"
 								title={newTabTitle(viewLabel)}
-								onClick={() =>
-									window.open(publicUrl(declaration), "_blank", "noopener")
-								}
+								linkProps={{
+									href: publicUrl(declaration),
+									...newTabLinkProps(viewLabel),
+								}}
 							/>
 						)}
 						{showEdit && (
@@ -164,9 +162,9 @@ function buildColumns(
 								priority="tertiary"
 								size="small"
 								title={`Modifier la déclaration ${declaration.name}`}
-								onClick={() =>
-									options.onEdit(`/dashboard/declarations/${declaration.id}`)
-								}
+								linkProps={{
+									href: `/dashboard/declarations/${declaration.id}`,
+								}}
 							/>
 						)}
 					</div>
