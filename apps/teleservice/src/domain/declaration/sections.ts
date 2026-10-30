@@ -100,9 +100,9 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 			fromDeclaration: declarationToSchemaValues,
 			fieldLabels: {
 				name: "Nom du schéma pluriannuel",
-				url: "Lien du schéma pluriannuel",
+				url: "URL du schéma pluriannuel",
 				"actionPlanUrls.*.name": "Nom du plan d'actions",
-				"actionPlanUrls.*.url": "Lien du plan d'actions",
+				"actionPlanUrls.*.url": "URL du plan d'actions",
 			},
 			isApplicable: (d) => d.schema?.skipped !== true,
 			sourceMode: {

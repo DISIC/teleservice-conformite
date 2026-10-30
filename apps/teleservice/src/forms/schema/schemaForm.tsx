@@ -28,7 +28,7 @@ export const SchemaForm = withForm({
 				<form.AppField name="url">
 					{(field) => (
 						<field.TextField
-							label="Lien du schéma pluriannuel"
+							label="URL du schéma pluriannuel"
 							hintText={
 								<>
 									Si vous êtes en cours de création de ce schéma, laissez le
@@ -81,7 +81,7 @@ export const SchemaForm = withForm({
 												<form.AppField name={`actionPlanUrls[${index}].url`}>
 													{(field) => (
 														<field.TextField
-															label="Lien du plan d'actions"
+															label="URL du plan d'actions"
 															hintText="Format attendu : https://www.example.fr"
 															nativeInputProps={{ type: "url" }}
 															readOnlyField={readOnly}
