@@ -1,3 +1,4 @@
+import { SECTION_TITLES } from "~/domain/declaration/sections";
 import { SECTION_BADGE } from "~/domain/declaration/state";
 import { declarationPath, stateNotice } from "./support/declarationPage";
 import { expect, test } from "./support/fixtures";
@@ -11,9 +12,9 @@ test("published-incomplete: notice, À compléter badge, publish refused by the 
 	await page.goto(declarationPath(declaration.id));
 
 	await expect(stateNotice(page, "published-incomplete")).toBeVisible();
-	await expect(page.getByRole("link", { name: /^Contact/ })).toContainText(
-		SECTION_BADGE["to-complete"].label,
-	);
+	await expect(
+		page.getByRole("link", { name: SECTION_TITLES.contact }),
+	).toContainText(SECTION_BADGE["to-complete"].label);
 	// Only the way back is offered: completing or reverting, never publishing.
 	await expect(
 		page.getByRole("button", { name: "Annuler les modifications" }),
