@@ -22,6 +22,7 @@ import EmptyState, { type FaqItem } from "~/components/ui/EmptyState";
 import { Loader } from "~/components/ui/Loader";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Entity, Schema } from "~/payload/payload-types";
+import { isHttpUrl } from "~/forms/rules";
 import { api } from "~/lib/api";
 import { newTabLinkProps } from "~/lib/newTabLink";
 import { loadEntityForPage } from "~/lib/server-guards";
@@ -179,10 +180,12 @@ export default function SchemasPage({
 															count={schema.declarations?.totalDocs}
 														/>
 													</div>
-													{schema.url && (
+													{isHttpUrl(schema.url) ? (
 														<a href={schema.url} className={classes.link}>
 															{schema.url}
 														</a>
+													) : (
+														schema.url && <span>{schema.url}</span>
 													)}
 												</div>
 												<dl className={classes.entries}>
@@ -199,8 +202,10 @@ export default function SchemasPage({
 																				{plan.name ||
 																					`Plan d’actions ${index + 1}`}
 																			</span>
-																			{plan.url && (
+																			{isHttpUrl(plan.url) ? (
 																				<a href={plan.url}>{plan.url}</a>
+																			) : (
+																				plan.url && <span>{plan.url}</span>
 																			)}
 																		</li>
 																	))}
