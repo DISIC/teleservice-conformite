@@ -19,9 +19,13 @@ export type LibraryContactModalActions = {
 
 interface LibraryContactModalProps {
 	actions: LibraryContactModalActions;
+	onCreated?: (name: string) => void;
 }
 
-export function LibraryContactModal({ actions }: LibraryContactModalProps) {
+export function LibraryContactModal({
+	actions,
+	onCreated,
+}: LibraryContactModalProps) {
 	const id = useId();
 
 	const [modal] = useState(() =>
@@ -62,6 +66,7 @@ export function LibraryContactModal({ actions }: LibraryContactModalProps) {
 				id: editing?.id,
 			});
 			modal.close();
+			if (!editing) onCreated?.(value.name);
 			setEditing(null);
 		},
 	});

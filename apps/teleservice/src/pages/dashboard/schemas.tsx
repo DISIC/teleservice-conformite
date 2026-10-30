@@ -26,6 +26,7 @@ import { UrlText } from "~/components/ui/UrlText";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Entity, Schema } from "~/payload/payload-types";
 import { api } from "~/lib/api";
+import { newTabLinkProps } from "~/lib/newTabLink";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
 
@@ -223,7 +224,7 @@ export default function SchemasPage({
 										value={
 											<ItemActions
 												label={schema.name}
-												onEdit={() => schemaModalActions.open?.(schema)}
+												onEdit={() => openEdit(schema)}
 												onDelete={() => confirmDelete(schema)}
 												deleteButtonId={deleteButtonId(schema.id)}
 											/>
@@ -358,6 +359,9 @@ const useStyles = tss.withName(SchemasPage.name).create({
 		"& > li + li": {
 			marginTop: fr.spacing("4v"),
 		},
+	},
+	link: {
+		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},
 });
 
