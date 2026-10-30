@@ -66,7 +66,7 @@ export const DeclarationGeneralForm = withForm({
 						<field.RichRadioField
 							label="Type de service"
 							readOnlyField={readOnly}
-							// "Autre" is no longer offered; declarations saved with it still display it.
+							// "Autre" is display-only: shown on existing declarations, never offered as a choice.
 							options={appKindOptions
 								.filter((option) => readOnly || option.value !== "other")
 								.map((option) => {
