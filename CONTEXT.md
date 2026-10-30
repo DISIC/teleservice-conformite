@@ -21,7 +21,7 @@ One of the four top-level content areas of a Declaration, surfaced as items in t
 - **Informations générales** — meta-info about the service (slug `infos`)
 - **Audit** — audit results; has no slug of its own — it is a menu-only virtual parent (`SectionParentKey`) reached via its first [[sub-section]] (`audit-general`)
 - **Schéma et plans d'action** — multi-year accessibility plan (slug `schema`)
-- **Contact** — contact method for accessibility issues (slug `contact`)
+- **Point de contact accessibilité** — contact method for accessibility issues (slug `contact`)
 
 Every Section's content lives on the `declarations` row itself: Infos as top-level fields, Audit/Schéma/Contact as group fields (ADR-0004). Contact and Schéma may additionally reference a [[library|Library]] parent. The URL of the details page encodes the active Section as `?section=<slug>` — see ADR-0001.
 

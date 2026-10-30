@@ -6,7 +6,6 @@ interface PartProps {
 	readOnly: boolean;
 	/** Heading shown above the fields, in both edit and read-only modes. */
 	title?: ReactNode;
-	/** Shown on the title's line, pushed to the right (e.g. a tag). */
 	titleAside?: ReactNode;
 	/**
 	 * Lay the read-only fields out in a 2-column grid. Disable for Parts whose

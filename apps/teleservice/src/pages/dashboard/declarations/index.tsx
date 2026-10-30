@@ -14,7 +14,7 @@ import {
 	CreateDeclarationModal,
 	type CreateDeclarationModalActions,
 } from "~/components/modal/CreateDeclarationModal";
-import { DECLARATION_FAQ } from "~/components/declaration/declarationFaq";
+import { DECLARATION_FAQ } from "~/components/ui/emptyStateFaq";
 import EmptyState from "~/components/ui/EmptyState";
 import Table from "~/components/ui/Table";
 import { api } from "~/lib/api";

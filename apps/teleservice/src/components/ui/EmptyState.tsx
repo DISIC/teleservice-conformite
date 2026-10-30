@@ -91,5 +91,8 @@ const useStyles = tss.withName(EmptyState.name).create({
 	},
 	emptyStateFaqAnswer: {
 		"& p": { margin: 0 },
+		"& a": {
+			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+		},
 	},
 });

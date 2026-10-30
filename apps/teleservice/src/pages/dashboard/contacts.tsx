@@ -10,6 +10,7 @@ import { EditActionProvider, Part } from "~/components/form/Part";
 import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
 import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
+import { LibraryList } from "~/components/library/LibraryList";
 import { LinkedDeclarationsTag } from "~/components/library/LinkedDeclarationsTag";
 import {
 	ConfirmationModal,
@@ -19,7 +20,8 @@ import {
 	LibraryContactModal,
 	type LibraryContactModalActions,
 } from "~/components/modal/LibraryContactModal";
-import EmptyState, { type FaqItem } from "~/components/ui/EmptyState";
+import EmptyState from "~/components/ui/EmptyState";
+import { CONTACT_FAQ } from "~/components/ui/emptyStateFaq";
 import { Loader } from "~/components/ui/Loader";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Contact, Entity } from "~/payload/payload-types";
@@ -36,23 +38,6 @@ export default function ContactsPage({
 	const [contactModalActions] = useState<LibraryContactModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-	const emptyStateFaq: FaqItem[] = [
-		{
-			question: "Qu’est-ce qu’un point de contact accessibilité ?",
-			answer: (
-				<p>
-					Un point de contact accessibilité permet aux usagers de{" "}
-					<span className={classes.bold}>
-						signaler un défaut d’accessibilité.
-					</span>{" "}
-					Il sera affiché sur la déclaration d’accessibilité. Les voies de
-					recours seront ajoutées automatiquement à la déclaration, vous n’avez
-					rien à faire.
-				</p>
-			),
-		},
-	];
 
 	const {
 		data: contacts = [],
@@ -136,56 +121,50 @@ export default function ContactsPage({
 								onClick: openCreate,
 								iconId: "fr-icon-add-line",
 							}}
-							faq={emptyStateFaq}
+							faq={CONTACT_FAQ}
 						/>
 					) : (
-						<>
-							<h2 id="contacts-list-title" className={fr.cx("fr-sr-only")}>
-								Liste de mes points de contact
-							</h2>
-							<ul
-								className={classes.contactList}
-								aria-labelledby="contacts-list-title"
-							>
-								{contacts.map((contact) => (
-									<li key={contact.id}>
-										<EditActionProvider
-											value={
-												<ItemActions
-													label={contact.name}
-													onEdit={() => contactModalActions.open?.(contact)}
-													onDelete={() => confirmDelete(contact)}
-													deleteButtonId={deleteButtonId(contact.id)}
-													withLabels
+						<LibraryList
+							id="contacts-list-title"
+							title="Liste de mes points de contact"
+						>
+							{contacts.map((contact) => (
+								<li key={contact.id}>
+									<EditActionProvider
+										value={
+											<ItemActions
+												label={contact.name}
+												onEdit={() => contactModalActions.open?.(contact)}
+												onDelete={() => confirmDelete(contact)}
+												deleteButtonId={deleteButtonId(contact.id)}
+											/>
+										}
+									>
+										<Part
+											readOnly
+											definitionList
+											grid={false}
+											title={contact.name}
+											titleAside={
+												<LinkedDeclarationsTag
+													count={contact.declarations?.totalDocs}
 												/>
 											}
 										>
-											<Part
-												readOnly
-												definitionList
-												grid={false}
-												title={contact.name}
-												titleAside={
-													<LinkedDeclarationsTag
-														count={contact.declarations?.totalDocs}
-													/>
-												}
-											>
-												<ReadOnlyField
-													label="Email"
-													value={contact.email ?? ""}
-												/>
-												<ReadOnlyField
-													label="URL du formulaire de contact"
-													value={contact.url ?? ""}
-													link
-												/>
-											</Part>
-										</EditActionProvider>
-									</li>
-								))}
-							</ul>
-						</>
+											<ReadOnlyField
+												label="Email"
+												value={contact.email ?? ""}
+											/>
+											<ReadOnlyField
+												label="URL du formulaire de contact"
+												value={contact.url ?? ""}
+												link
+											/>
+										</Part>
+									</EditActionProvider>
+								</li>
+							))}
+						</LibraryList>
 					)}
 				</div>
 			</div>
@@ -198,24 +177,6 @@ export default function ContactsPage({
 const useStyles = tss.withName(ContactsPage.name).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
-	},
-	contactList: {
-		listStyle: "none",
-		padding: 0,
-		margin: 0,
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("6v"),
-		"& > li": {
-			margin: 0,
-			padding: 0,
-		},
-		"& > li > div, & dl": {
-			gap: fr.spacing("8v"),
-		},
-	},
-	bold: {
-		fontWeight: 700,
 	},
 });
 

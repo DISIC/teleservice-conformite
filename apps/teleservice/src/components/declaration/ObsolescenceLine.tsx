@@ -8,7 +8,7 @@ import {
 
 type ObsolescenceLineProps = {
 	declaration: Pick<Declaration, "publishedContent" | "published_at">;
-	/** The list's Statut cell: a Valide Publiée shows its deadline too, and under an Obsolète badge the line starts at "depuis le". */
+	/** Outside the list's Statut cell, the deadline shows only once Bientôt obsolète or Obsolète. */
 	inStatusCell?: boolean;
 };
 
@@ -17,7 +17,6 @@ const formatDeadline = (publishedAt: string) =>
 		timeZone: "UTC",
 	});
 
-/** The deadline: outside the list, shown only once it is actionable. */
 export function ObsolescenceLine({
 	declaration,
 	inStatusCell = false,

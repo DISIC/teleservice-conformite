@@ -5,7 +5,7 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import { tss } from "tss-react";
-import { DECLARATION_FAQ } from "~/components/declaration/declarationFaq";
+import { DECLARATION_FAQ } from "~/components/ui/emptyStateFaq";
 import {
 	type DeclarationAction,
 	useDeclarationColumns,

@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { tss } from "tss-react";
 
 import { useDefinitionList } from "~/components/form/Part";
+import { UrlText } from "~/components/ui/UrlText";
 import type { DefaultFieldProps } from "~/forms/context";
-import { isHttpUrl } from "~/forms/rules";
 
 interface ReadOnlyFieldProps extends DefaultFieldProps {
 	label: ReactNode;
@@ -42,8 +42,8 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 				</li>
 			))}
 		</ul>
-	) : link && isHttpUrl(value) ? (
-		<a href={value}>{value}</a>
+	) : link && value ? (
+		<UrlText url={value} />
 	) : (
 		value || placeholder
 	);

@@ -9,6 +9,7 @@ import { tss } from "tss-react";
 import { EditActionProvider, Part } from "~/components/form/Part";
 import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
+import { LibraryList } from "~/components/library/LibraryList";
 import { LinkedDeclarationsTag } from "~/components/library/LinkedDeclarationsTag";
 import {
 	ConfirmationModal,
@@ -18,13 +19,13 @@ import {
 	LibrarySchemaModal,
 	type LibrarySchemaModalActions,
 } from "~/components/modal/LibrarySchemaModal";
-import EmptyState, { type FaqItem } from "~/components/ui/EmptyState";
+import EmptyState from "~/components/ui/EmptyState";
+import { SCHEMA_FAQ } from "~/components/ui/emptyStateFaq";
 import { Loader } from "~/components/ui/Loader";
+import { UrlText } from "~/components/ui/UrlText";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Entity, Schema } from "~/payload/payload-types";
-import { isHttpUrl } from "~/forms/rules";
 import { api } from "~/lib/api";
-import { newTabLinkProps } from "~/lib/newTabLink";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
 
@@ -37,32 +38,6 @@ export default function SchemasPage({
 	const [schemaModalActions] = useState<LibrarySchemaModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-	const emptyStateFaq: FaqItem[] = [
-		{
-			question: "Qu’est-ce qu’un schéma pluriannuel ?",
-			answer: (
-				<>
-					C’est une feuille de route d'une durée maximale de 3 ans : elle
-					définit la politique d'accessibilité de l'entité et s'appuie sur des
-					plans d'actions annuels.
-					<br />
-					Il est obligatoire pour les services de l’État, les collectivités
-					territoriales, les établissements publics et certaines entreprises
-					privées.
-					<br />
-					<br />
-					<a
-						href="https://accessibilite.numerique.gouv.fr/obligations/schema-pluriannuel/"
-						{...newTabLinkProps("En savoir plus sur le schéma pluriannuel")}
-						className={classes.link}
-					>
-						En savoir plus sur le schéma pluriannuel
-					</a>
-				</>
-			),
-		},
-	];
 
 	const {
 		data: schemas = [],
@@ -146,82 +121,69 @@ export default function SchemasPage({
 								onClick: openCreate,
 								iconId: "fr-icon-add-line",
 							}}
-							faq={emptyStateFaq}
+							faq={SCHEMA_FAQ}
 						/>
 					) : (
-						<>
-							<h2 id="schemas-list-title" className={fr.cx("fr-sr-only")}>
-								Liste de mes schémas pluriannuels
-							</h2>
-							<ul
-								className={classes.schemaList}
-								aria-labelledby="schemas-list-title"
-							>
-								{schemas.map((schema) => (
-									<li key={schema.id}>
-										<EditActionProvider
-											value={
-												<ItemActions
-													label={schema.name}
-													onEdit={() => schemaModalActions.open?.(schema)}
-													onDelete={() => confirmDelete(schema)}
-													deleteButtonId={deleteButtonId(schema.id)}
-													withLabels
+						<LibraryList
+							id="schemas-list-title"
+							title="Liste de mes schémas pluriannuels"
+						>
+							{schemas.map((schema) => (
+								<li key={schema.id}>
+									<EditActionProvider
+										value={
+											<ItemActions
+												label={schema.name}
+												onEdit={() => schemaModalActions.open?.(schema)}
+												onDelete={() => confirmDelete(schema)}
+												deleteButtonId={deleteButtonId(schema.id)}
+											/>
+										}
+									>
+										<Part
+											readOnly
+											grid={false}
+											title={schema.name}
+											titleAside={
+												<LinkedDeclarationsTag
+													count={schema.declarations?.totalDocs}
 												/>
 											}
 										>
-											<Part readOnly grid={false}>
-												<div className={classes.header}>
-													<div className={classes.titleRow}>
-														<h3 className={fr.cx("fr-h6", "fr-mb-0")}>
-															{schema.name}
-														</h3>
-														<LinkedDeclarationsTag
-															count={schema.declarations?.totalDocs}
-														/>
-													</div>
-													{isHttpUrl(schema.url) ? (
-														<a href={schema.url} className={classes.link}>
-															{schema.url}
-														</a>
-													) : (
-														schema.url && <span>{schema.url}</span>
-													)}
+											{schema.url && (
+												<p className={classes.url}>
+													<UrlText url={schema.url} />
+												</p>
+											)}
+											<dl className={classes.entries}>
+												<div className={classes.entry}>
+													<dt className={classes.entryLabel}>
+														Plans d’actions associés
+													</dt>
+													<dd className={classes.entryValue}>
+														{schema.actionPlanUrls?.length ? (
+															<ul className={classes.planList}>
+																{schema.actionPlanUrls.map((plan, index) => (
+																	<li key={plan.id ?? index}>
+																		<span>
+																			{plan.name ||
+																				`Plan d’actions ${index + 1}`}
+																		</span>
+																		{plan.url && <UrlText url={plan.url} />}
+																	</li>
+																))}
+															</ul>
+														) : (
+															"Non"
+														)}
+													</dd>
 												</div>
-												<dl className={classes.entries}>
-													<div className={classes.entry}>
-														<dt className={classes.entryLabel}>
-															Plans d’actions associés
-														</dt>
-														<dd className={classes.entryValue}>
-															{schema.actionPlanUrls?.length ? (
-																<ul className={classes.planList}>
-																	{schema.actionPlanUrls.map((plan, index) => (
-																		<li key={plan.id ?? index}>
-																			<span>
-																				{plan.name ||
-																					`Plan d’actions ${index + 1}`}
-																			</span>
-																			{isHttpUrl(plan.url) ? (
-																				<a href={plan.url}>{plan.url}</a>
-																			) : (
-																				plan.url && <span>{plan.url}</span>
-																			)}
-																		</li>
-																	))}
-																</ul>
-															) : (
-																"Non"
-															)}
-														</dd>
-													</div>
-												</dl>
-											</Part>
-										</EditActionProvider>
-									</li>
-								))}
-							</ul>
-						</>
+											</dl>
+										</Part>
+									</EditActionProvider>
+								</li>
+							))}
+						</LibraryList>
 					)}
 				</div>
 			</div>
@@ -234,21 +196,6 @@ export default function SchemasPage({
 const useStyles = tss.withName(SchemasPage.name).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
-	},
-	schemaList: {
-		listStyle: "none",
-		padding: 0,
-		margin: 0,
-		display: "flex",
-		flexDirection: "column",
-		gap: fr.spacing("6v"),
-		"& > li": {
-			margin: 0,
-			padding: 0,
-		},
-		"& > li > div, & dl": {
-			gap: fr.spacing("8v"),
-		},
 	},
 	entry: {
 		display: "flex",
@@ -267,18 +214,11 @@ const useStyles = tss.withName(SchemasPage.name).create({
 			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 		},
 	},
-	header: {
-		display: "flex",
-		flexDirection: "column",
-		alignItems: "flex-start",
-	},
-	titleRow: {
-		alignSelf: "stretch",
-		display: "flex",
-		flexWrap: "wrap",
-		alignItems: "center",
-		justifyContent: "space-between",
-		gap: fr.spacing("2v"),
+	url: {
+		margin: 0,
+		"& a": {
+			color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+		},
 	},
 	entries: {
 		margin: 0,
@@ -297,9 +237,6 @@ const useStyles = tss.withName(SchemasPage.name).create({
 		"& > li + li": {
 			marginTop: fr.spacing("4v"),
 		},
-	},
-	link: {
-		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},
 });
 

@@ -26,6 +26,8 @@ const publicUrl = (declaration: PopulatedDeclaration) =>
 export type DeclarationAction = "copy" | "view" | "edit";
 
 const ALL_ACTIONS: DeclarationAction[] = ["copy", "view", "edit"];
+// The public page exists only once the Declaration is published.
+const PUBLIC_PAGE_ACTIONS: DeclarationAction[] = ["copy", "view"];
 
 export function useDeclarationColumns({
 	rowLink,
@@ -123,14 +125,14 @@ function buildColumns(
 				const copyTitle = `Copier le lien public de la déclaration ${declaration.name}`;
 				const viewLabel = `Voir la déclaration ${declaration.name}`;
 				const isPublished = getDeclarationStatus(declaration) === "published";
-				const showCopy = isPublished && options.actions.includes("copy");
-				const showView = isPublished && options.actions.includes("view");
-				const showEdit = options.actions.includes("edit");
-				if (!showCopy && !showView && !showEdit)
+				const visible = options.actions.filter(
+					(action) => isPublished || !PUBLIC_PAGE_ACTIONS.includes(action),
+				);
+				if (visible.length === 0)
 					return <EmptyValue label="Aucune action disponible" />;
 				return (
 					<div className={classes.actions}>
-						{showCopy && (
+						{visible.includes("copy") && (
 							<Button
 								iconId="ri-links-line"
 								priority="tertiary"
@@ -144,7 +146,7 @@ function buildColumns(
 								}
 							/>
 						)}
-						{showView && (
+						{visible.includes("view") && (
 							<Button
 								iconId="ri-eye-line"
 								priority="tertiary"
@@ -156,7 +158,7 @@ function buildColumns(
 								}}
 							/>
 						)}
-						{showEdit && (
+						{visible.includes("edit") && (
 							<Button
 								iconId="ri-edit-line"
 								priority="tertiary"
