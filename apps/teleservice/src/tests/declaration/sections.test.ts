@@ -133,6 +133,37 @@ describe("isSectionToComplete (À compléter badges)", () => {
 			),
 		).toBe(false);
 	});
+
+	it("ignores a blocking-elements answer left from RGAA 5 on an RGAA 4 audit", () => {
+		expect(
+			isSectionToComplete(
+				completeDeclaration({
+					audit: {
+						isRealised: true,
+						rgaa_version: "rgaa_4",
+						hasBlockingElements: true,
+						blockingElements: "",
+					},
+				} as never),
+				"audit-non-conformites",
+			),
+		).toBe(false);
+	});
+
+	it("does not ask for tools on an RGAA 5 audit", () => {
+		expect(
+			isSectionToComplete(
+				completeDeclaration({
+					audit: {
+						isRealised: true,
+						rgaa_version: "rgaa_5",
+						testEnvironments: [{ name: "voiceover_safari" }],
+					},
+				} as never),
+				"audit-outils",
+			),
+		).toBe(false);
+	});
 });
 
 describe("isSectionNotApplicable (Non applicable badges)", () => {

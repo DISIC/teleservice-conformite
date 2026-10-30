@@ -17,6 +17,7 @@ import {
 	auditToNonConformitiesValues,
 	auditTools,
 	auditToToolsValues,
+	requiresUsedTools,
 	type ZAuditContents,
 	type ZAuditGeneral,
 	type ZAuditNonConformities,
@@ -124,6 +125,7 @@ export const auditOutilsSection = auditSubSection<
 			form={form}
 			readOnly={readOnly}
 			showNotice={!isRealised(declaration)}
+			showUsedTools={requiresUsedTools(declaration.audit?.rgaa_version)}
 		/>
 	),
 });

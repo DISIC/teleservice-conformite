@@ -7,6 +7,10 @@ import {
 } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
+import {
+	reportsBlockingElements,
+	requiresUsedTools,
+} from "~/forms/audit/auditSchema";
 
 type OptionLabel<T extends readonly { label: string }[]> = T[number]["label"];
 
@@ -36,6 +40,8 @@ export const publishedDeclarationSchema = z.object({
 		rgaa_version: z.enum(rgaaVersionLabels),
 		realised_by: z.string(),
 		rate: z.number(),
+		// Snapshots published before this field existed read as "no blocking element".
+		blockingElements: z.string().default(""),
 		nonCompliantElements: z.string().nullable(),
 		disproportionnedCharge: z.string().nullable(),
 		optionalElements: z.string().nullable(),
@@ -108,6 +114,9 @@ export const extractDeclarationContentToPublish = (
 					?.label ?? "RGAA 4",
 			realised_by: audit.realisedBy ?? "",
 			rate: audit.rate ?? 0,
+			blockingElements: reportsBlockingElements(audit)
+				? (audit.blockingElements ?? "")
+				: "",
 			nonCompliantElements: audit.nonCompliantElements ?? "",
 			disproportionnedCharge: audit.disproportionnedCharge ?? "",
 			optionalElements: audit.optionalElements ?? "",
@@ -118,11 +127,13 @@ export const extractDeclarationContentToPublish = (
 					testEnvironmentOptions.find((option) => option.value === env.name)
 						?.label ?? env.name,
 			),
-			usedTools: (audit.usedTools ?? []).map(
-				(tool) =>
-					toolOptions.find((option) => option.value === tool.name)?.label ??
-					tool.name,
-			),
+			usedTools: requiresUsedTools(audit.rgaa_version)
+				? (audit.usedTools ?? []).map(
+						(tool) =>
+							toolOptions.find((option) => option.value === tool.name)?.label ??
+							tool.name,
+					)
+				: [],
 		},
 		contact: {
 			url: declaration.contact?.url ?? "",

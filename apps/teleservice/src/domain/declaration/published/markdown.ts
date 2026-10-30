@@ -59,12 +59,26 @@ const serviceSubject = (appKindLabel: PublishedDeclaration["appKindLabel"]) => {
 	}
 };
 
-const serviceName = (d: PublishedDeclaration) =>
-	`**${[d.name, d.url].filter(hasText).join(" ")}**`;
+const lowerFirst = (text: string) =>
+	`${text.charAt(0).toLowerCase()}${text.slice(1)}`;
 
 const rgaaVersionNumber = (label: string) => label.replace(/^RGAA\s*/, "");
 
 const bulletList = (items: string[]) => items.map((item) => `- ${item}`);
+
+const escapeLinkText = (text: string) => text.replace(/[\\[\]]/g, "\\$&");
+
+// Declarations saved before URL validation may hold a bare host like "www.site.gouv.fr".
+const absoluteUrl = (url: string) =>
+	/^[a-z][a-z\d+.-]*:/i.test(url) ? url : `https://${url}`;
+
+const linkDestination = (url: string) =>
+	/[\s()<>]/.test(url)
+		? `<${url.replace(/[<>\s]/g, (char) => encodeURIComponent(char))}>`
+		: url;
+
+const link = (label: string, url: string) =>
+	`[${escapeLinkText(label)}](${linkDestination(absoluteUrl(url.trim()))})`;
 
 const section = (heading: string, ...lines: (string | null)[]) => [
 	heading,
@@ -77,21 +91,24 @@ const introduction = (d: PublishedDeclaration): string[] => {
 	const entity = `**${d.entityName}**`;
 	const schemaLinks = [
 		hasText(d.schema.schemaUrl)
-			? `**${hasText(d.schema.schemaName) ? d.schema.schemaName : "Schéma pluriannuel de mise en accessibilité"}** : ${d.schema.schemaUrl}`
+			? `**${link(hasText(d.schema.schemaName) ? d.schema.schemaName : "Schéma pluriannuel de mise en accessibilité", d.schema.schemaUrl)}**`
 			: null,
 		...d.schema.actionPlanUrls
 			.filter((plan) => hasText(plan.url))
 			.map(
 				(plan) =>
-					`**${hasText(plan.name) ? plan.name : "Plan d’actions"}** : ${plan.url}`,
+					`**${link(hasText(plan.name) ? plan.name : "Plan d’actions", plan.url)}**`,
 			),
 	].filter((line): line is string => line !== null);
 
 	const kind = appKindOptions.find((o) => o.label === d.appKindLabel)?.value;
+	const service = hasText(d.url) ? link(d.name, d.url) : d.name;
 	const scope =
-		kind && kind !== "other"
-			? `Cette déclaration d’accessibilité s’applique au **${d.appKindLabel.toLowerCase()} ${d.url}**`
-			: `Cette déclaration d’accessibilité s’applique à **${d.url}**`;
+		kind === "website"
+			? `Cette déclaration d’accessibilité s’applique au **site web ${service}**`
+			: kind === "mobile_app"
+				? `Cette déclaration d’accessibilité s’applique à **l’application mobile ${service}**`
+				: `Cette déclaration d’accessibilité s’applique à **${service}**`;
 
 	return [
 		`${entity} s’engage à rendre ses sites internet, intranet, extranet et ses progiciels accessibles (et ses applications mobiles et mobilier urbain numérique) conformément à l’article 47 de la loi n°2005-102 du 11 février 2005.`,
@@ -100,11 +117,7 @@ const introduction = (d: PublishedDeclaration): string[] => {
 			? [
 					`À cette fin, ${entity} met en œuvre la stratégie et les actions suivantes :`,
 					"",
-					...bulletList(
-						schemaLinks.map((line, index) =>
-							index < schemaLinks.length - 1 ? `${line} ;` : line,
-						),
-					),
+					...bulletList(schemaLinks),
 					"",
 				]
 			: []),
@@ -114,9 +127,10 @@ const introduction = (d: PublishedDeclaration): string[] => {
 };
 
 const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
-	const subject = `${serviceSubject(d.appKindLabel)} ${serviceName(d)}`;
+	const subject = `${serviceSubject(d.appKindLabel)} **${d.name}**`;
 	const rgaa = `avec le référentiel général d’amélioration de l’accessibilité (RGAA)`;
 	const version = `, version ${rgaaVersionNumber(d.audit.rgaa_version)}.`;
+	const rgaaWithVersion = `avec le référentiel général d’amélioration de l’accessibilité version ${rgaaVersionNumber(d.audit.rgaa_version)}`;
 
 	if (!d.audit.isRealised) {
 		return section(
@@ -124,12 +138,19 @@ const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
 			badge("Non conforme", "error"),
 			"",
 			`${subject} n’a pas fait l’objet d’un audit de conformité et est réputé **non conforme** ${rgaa}.`,
+			"",
+			"### Résultats des tests",
+			"",
+			`En l’absence d’audit, ${lowerFirst(subject)} est **non conforme** ${rgaa}.`,
 		);
 	}
 
-	const status = getConformityStatus(d.audit.rate);
+	// A blocking element makes the service non-conformant whatever its rate.
+	const status = hasText(d.audit.blockingElements)
+		? getConformityStatus(0)
+		: getConformityStatus(d.audit.rate);
 	const sentence = obsolete
-		? `Conformément à la législation, cette déclaration ayant été publiée il y a plus de ${OBSOLESCENCE_YEARS} ans, ${subject.charAt(0).toLowerCase()}${subject.slice(1)} est réputé **non conforme** ${rgaa}${version}`
+		? `Conformément à la législation, cette déclaration ayant été publiée il y a plus de ${OBSOLESCENCE_YEARS} ans, ${lowerFirst(subject)} est réputé **non conforme** ${rgaa}${version}`
 		: `${subject} est **${status.label.toLowerCase()}** ${rgaa}${version}`;
 
 	return section(
@@ -142,13 +163,16 @@ const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
 		"",
 		"### Résultats des tests",
 		"",
-		`L’audit de conformité réalisé par **${d.audit.realised_by}** révèle que **${d.audit.rate}%** des critères du **RGAA version ${rgaaVersionNumber(d.audit.rgaa_version)}** sont respectés.`,
+		status.label === "Non conforme"
+			? `${subject} est **non conforme** ${rgaaWithVersion}.`
+			: `L’audit de conformité réalisé par **${d.audit.realised_by}** révèle que **${d.audit.rate}%** des critères du **RGAA version ${rgaaVersionNumber(d.audit.rgaa_version)}** sont respectés.`,
 	);
 };
 
 const nonAccessibleContent = (d: PublishedDeclaration): string[] => {
 	if (!d.audit.isRealised) return [];
 	const parts = [
+		["### Éléments bloquants", d.audit.blockingElements],
 		["### Non-conformités", d.audit.nonCompliantElements],
 		[
 			"### Dérogations pour charge disproportionnée",
@@ -275,7 +299,7 @@ export function buildPublishedMarkdown(
 		obsolescenceOf(new Date(declaration.publishedAt), today) === "obsolete";
 
 	return [
-		`# ${declaration.name}`,
+		`# Déclaration d’accessibilité de ${declaration.name}`,
 		"",
 		...(obsolete ? [obsoleteNotice(), ""] : []),
 		...introduction(declaration),

@@ -1,4 +1,4 @@
-# Impôts particulier (SIP)
+# Déclaration d’accessibilité de Impôts particulier (SIP)
 
 <div class="declaration-obsolete">
 <p class="fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon">Obsolète</p>
@@ -10,17 +10,17 @@
 
 À cette fin, **La Direction Générale des Finances (DGFIP)** met en œuvre la stratégie et les actions suivantes :
 
-- **Schéma pluriannuel de mise en accessibilité 2023-2025** : https://www.lienschemapluriannuel.gouv.fr ;
-- **Actions réalisées en 2022-2023** : https://www.liensactions.gouv.fr ;
-- **Plan d’actions 2023-2025** : https://www.lienschemaannuell.gouv.fr
+- **[Schéma pluriannuel de mise en accessibilité 2023-2025](https://www.lienschemapluriannuel.gouv.fr)**
+- **[Actions réalisées en 2022-2023](https://www.liensactions.gouv.fr)**
+- **[Plan d’actions 2023-2025](https://www.lienschemaannuell.gouv.fr)**
 
-Cette déclaration d’accessibilité s’applique au **site web www.impotspparticulier.gouv.fr**
+Cette déclaration d’accessibilité s’applique au **site web [Impôts particulier (SIP)](https://www.impotspparticulier.gouv.fr)**
 
 ## État de conformité
 
 <p class="fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon">Non conforme</p>
 
-Conformément à la législation, cette déclaration ayant été publiée il y a plus de 3 ans, le site **Impôts particulier (SIP) www.impotspparticulier.gouv.fr** est réputé **non conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 5.
+Conformément à la législation, cette déclaration ayant été publiée il y a plus de 3 ans, le site **Impôts particulier (SIP)** est réputé **non conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 5.
 
 ### Résultats des tests
 
