@@ -46,7 +46,7 @@ export default function MarkdownToJsx({
 			HTMLAnchorElement
 		>,
 	) => {
-		const external = /^https?:\/\//.test(props.href ?? "");
+		const external = /^https?:\/\//i.test(props.href ?? "");
 		const label =
 			typeof props.children === "string" ? props.children : props.href;
 		const newTabProps = external

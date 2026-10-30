@@ -109,13 +109,17 @@ describe("extractDeclarationContentToPublish", () => {
 		});
 	});
 
-	it("publishes blocking elements only when the audit found some", () => {
-		const withBlocking = (hasBlockingElements: boolean) =>
+	it("publishes blocking elements only when an RGAA 5 audit found some", () => {
+		const withBlocking = (
+			hasBlockingElements: boolean,
+			rgaa_version: "rgaa_4" | "rgaa_5" = "rgaa_5",
+		) =>
 			extractDeclarationContentToPublish(
 				completeDeclaration({
 					audit: {
 						isRealised: true,
 						toVerify: false,
+						rgaa_version,
 						hasBlockingElements,
 						blockingElements: "Paiement inaccessible au clavier",
 					},
@@ -123,6 +127,7 @@ describe("extractDeclarationContentToPublish", () => {
 			).audit.blockingElements;
 		expect(withBlocking(true)).toBe("Paiement inaccessible au clavier");
 		expect(withBlocking(false)).toBe("");
+		expect(withBlocking(true, "rgaa_4")).toBe("");
 	});
 
 	it("reads a snapshot published before blocking elements as having none", () => {

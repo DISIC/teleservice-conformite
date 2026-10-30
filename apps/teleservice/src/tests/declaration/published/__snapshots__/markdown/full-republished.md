@@ -8,7 +8,7 @@
 - **[Actions réalisées en 2022-2023](https://www.liensactions.gouv.fr)**
 - **[Plan d’actions 2023-2025](https://www.lienschemaannuell.gouv.fr)**
 
-Cette déclaration d’accessibilité s’applique au **site web [Impôts particulier (SIP)](www.impotspparticulier.gouv.fr)**
+Cette déclaration d’accessibilité s’applique au **site web [Impôts particulier (SIP)](https://www.impotspparticulier.gouv.fr)**
 
 ## État de conformité
 

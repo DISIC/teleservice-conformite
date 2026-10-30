@@ -66,6 +66,20 @@ const rgaaVersionNumber = (label: string) => label.replace(/^RGAA\s*/, "");
 
 const bulletList = (items: string[]) => items.map((item) => `- ${item}`);
 
+const escapeLinkText = (text: string) => text.replace(/[\\[\]]/g, "\\$&");
+
+// Declarations saved before URL validation may hold a bare host like "www.site.gouv.fr".
+const absoluteUrl = (url: string) =>
+	/^[a-z][a-z\d+.-]*:/i.test(url) ? url : `https://${url}`;
+
+const linkDestination = (url: string) =>
+	/[\s()<>]/.test(url)
+		? `<${url.replace(/[<>\s]/g, (char) => encodeURIComponent(char))}>`
+		: url;
+
+const link = (label: string, url: string) =>
+	`[${escapeLinkText(label)}](${linkDestination(absoluteUrl(url.trim()))})`;
+
 const section = (heading: string, ...lines: (string | null)[]) => [
 	heading,
 	"",
@@ -77,24 +91,24 @@ const introduction = (d: PublishedDeclaration): string[] => {
 	const entity = `**${d.entityName}**`;
 	const schemaLinks = [
 		hasText(d.schema.schemaUrl)
-			? `**[${hasText(d.schema.schemaName) ? d.schema.schemaName : "Schéma pluriannuel de mise en accessibilité"}](${d.schema.schemaUrl})**`
+			? `**${link(hasText(d.schema.schemaName) ? d.schema.schemaName : "Schéma pluriannuel de mise en accessibilité", d.schema.schemaUrl)}**`
 			: null,
 		...d.schema.actionPlanUrls
 			.filter((plan) => hasText(plan.url))
 			.map(
 				(plan) =>
-					`**[${hasText(plan.name) ? plan.name : "Plan d’actions"}](${plan.url})**`,
+					`**${link(hasText(plan.name) ? plan.name : "Plan d’actions", plan.url)}**`,
 			),
 	].filter((line): line is string => line !== null);
 
 	const kind = appKindOptions.find((o) => o.label === d.appKindLabel)?.value;
-	const link = `[${d.name}](${d.url})`;
+	const service = hasText(d.url) ? link(d.name, d.url) : d.name;
 	const scope =
 		kind === "website"
-			? `Cette déclaration d’accessibilité s’applique au **site web ${link}**`
+			? `Cette déclaration d’accessibilité s’applique au **site web ${service}**`
 			: kind === "mobile_app"
-				? `Cette déclaration d’accessibilité s’applique à **l’application mobile ${link}**`
-				: `Cette déclaration d’accessibilité s’applique à **${link}**`;
+				? `Cette déclaration d’accessibilité s’applique à **l’application mobile ${service}**`
+				: `Cette déclaration d’accessibilité s’applique à **${service}**`;
 
 	return [
 		`${entity} s’engage à rendre ses sites internet, intranet, extranet et ses progiciels accessibles (et ses applications mobiles et mobilier urbain numérique) conformément à l’article 47 de la loi n°2005-102 du 11 février 2005.`,
@@ -127,11 +141,14 @@ const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
 			"",
 			"### Résultats des tests",
 			"",
-			`En l’absence d’audit, ${lowerFirst(subject)} est **non conforme** ${rgaaWithVersion}.`,
+			`En l’absence d’audit, ${lowerFirst(subject)} est **non conforme** ${rgaa}.`,
 		);
 	}
 
-	const status = getConformityStatus(d.audit.rate);
+	// A blocking element makes the service non-conformant whatever its rate.
+	const status = hasText(d.audit.blockingElements)
+		? getConformityStatus(0)
+		: getConformityStatus(d.audit.rate);
 	const sentence = obsolete
 		? `Conformément à la législation, cette déclaration ayant été publiée il y a plus de ${OBSOLESCENCE_YEARS} ans, ${lowerFirst(subject)} est réputé **non conforme** ${rgaa}${version}`
 		: `${subject} est **${status.label.toLowerCase()}** ${rgaa}${version}`;
@@ -146,7 +163,7 @@ const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
 		"",
 		"### Résultats des tests",
 		"",
-		status.label === "Non conforme" || hasText(d.audit.blockingElements)
+		status.label === "Non conforme"
 			? `${subject} est **non conforme** ${rgaaWithVersion}.`
 			: `L’audit de conformité réalisé par **${d.audit.realised_by}** révèle que **${d.audit.rate}%** des critères du **RGAA version ${rgaaVersionNumber(d.audit.rgaa_version)}** sont respectés.`,
 	);
@@ -155,6 +172,7 @@ const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
 const nonAccessibleContent = (d: PublishedDeclaration): string[] => {
 	if (!d.audit.isRealised) return [];
 	const parts = [
+		["### Éléments bloquants", d.audit.blockingElements],
 		["### Non-conformités", d.audit.nonCompliantElements],
 		[
 			"### Dérogations pour charge disproportionnée",

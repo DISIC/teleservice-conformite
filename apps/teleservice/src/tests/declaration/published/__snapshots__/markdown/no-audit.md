@@ -8,7 +8,7 @@
 - **[Actions réalisées en 2022-2023](https://www.liensactions.gouv.fr)**
 - **[Plan d’actions 2023-2025](https://www.lienschemaannuell.gouv.fr)**
 
-Cette déclaration d’accessibilité s’applique au **site web [Impôts particulier (SIP)](www.impotspparticulier.gouv.fr)**
+Cette déclaration d’accessibilité s’applique au **site web [Impôts particulier (SIP)](https://www.impotspparticulier.gouv.fr)**
 
 ## État de conformité
 
@@ -18,7 +18,7 @@ Le site **Impôts particulier (SIP)** n’a pas fait l’objet d’un audit de c
 
 ### Résultats des tests
 
-En l’absence d’audit, le site **Impôts particulier (SIP)** est **non conforme** avec le référentiel général d’amélioration de l’accessibilité version 4.
+En l’absence d’audit, le site **Impôts particulier (SIP)** est **non conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA).
 
 ## Établissement de cette déclaration d’accessibilité
 

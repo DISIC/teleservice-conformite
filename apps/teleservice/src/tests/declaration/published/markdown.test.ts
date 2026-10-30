@@ -175,7 +175,7 @@ describe("buildPublishedMarkdown", () => {
 				"n’a pas fait l’objet d’un audit de conformité et est réputé **non conforme**",
 			);
 			expect(md).toContain(
-				"### Résultats des tests\n\nEn l’absence d’audit, le site **Impôts particulier (SIP)** est **non conforme** avec le référentiel général d’amélioration de l’accessibilité version 5.",
+				"### Résultats des tests\n\nEn l’absence d’audit, le site **Impôts particulier (SIP)** est **non conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA).",
 			);
 			expect(md).not.toContain("L’audit de conformité réalisé par");
 			expect(md).not.toContain("Contenus non accessibles");
@@ -213,6 +213,16 @@ describe("buildPublishedMarkdown", () => {
 				"### Résultats des tests\n\nLe site **Impôts particulier (SIP)** est **non conforme** avec le référentiel général d’amélioration de l’accessibilité version 5.",
 			);
 			expect(md).not.toContain("révèle que");
+			expect(md).toContain(
+				'<p class="fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon">Non conforme</p>',
+			);
+			expect(md).toContain(
+				"Le site **Impôts particulier (SIP)** est **non conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 5.",
+			);
+			expect(md).not.toContain("partiellement conforme");
+			expect(md).toContain(
+				"### Éléments bloquants\n\nPaiement inaccessible au clavier",
+			);
 		});
 
 		it("reports the audit rate from 50%", () => {
@@ -231,7 +241,7 @@ describe("buildPublishedMarkdown", () => {
 			expect(
 				buildPublishedMarkdown(publishedDeclaration(), { today: TODAY }),
 			).toContain(
-				"s’applique au **site web [Impôts particulier (SIP)](www.impotspparticulier.gouv.fr)**",
+				"s’applique au **site web [Impôts particulier (SIP)](https://www.impotspparticulier.gouv.fr)**",
 			);
 		});
 
@@ -241,7 +251,7 @@ describe("buildPublishedMarkdown", () => {
 				{ today: TODAY },
 			);
 			expect(md).toContain(
-				"s’applique à **l’application mobile [Impôts particulier (SIP)](www.impotspparticulier.gouv.fr)**",
+				"s’applique à **l’application mobile [Impôts particulier (SIP)](https://www.impotspparticulier.gouv.fr)**",
 			);
 		});
 
@@ -251,10 +261,33 @@ describe("buildPublishedMarkdown", () => {
 				{ today: TODAY },
 			);
 			expect(md).toContain(
-				"s’applique à **[Impôts particulier (SIP)](www.impotspparticulier.gouv.fr)**",
+				"s’applique à **[Impôts particulier (SIP)](https://www.impotspparticulier.gouv.fr)**",
 			);
 			expect(md).not.toContain("Autre");
 			expect(md).toContain("Le service **Impôts particulier (SIP)");
+		});
+
+		it("names the service without a link when it has no URL", () => {
+			const md = buildPublishedMarkdown(publishedDeclaration({ url: "" }), {
+				today: TODAY,
+			});
+			expect(md).toContain(
+				"s’applique au **site web Impôts particulier (SIP)**",
+			);
+			expect(md).not.toContain("]()");
+		});
+
+		it("keeps the link intact when the name or URL holds link syntax", () => {
+			const md = buildPublishedMarkdown(
+				publishedDeclaration({
+					name: "Portail [beta]",
+					url: "https://example.fr/a (b)",
+				}),
+				{ today: TODAY },
+			);
+			expect(md).toContain(
+				"[Portail \\[beta\\]](<https://example.fr/a%20(b)>)",
+			);
 		});
 	});
 

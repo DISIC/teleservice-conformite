@@ -7,6 +7,10 @@ import {
 } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
+import {
+	reportsBlockingElements,
+	requiresUsedTools,
+} from "~/forms/audit/auditSchema";
 
 type OptionLabel<T extends readonly { label: string }[]> = T[number]["label"];
 
@@ -110,10 +114,9 @@ export const extractDeclarationContentToPublish = (
 					?.label ?? "RGAA 4",
 			realised_by: audit.realisedBy ?? "",
 			rate: audit.rate ?? 0,
-			blockingElements:
-				audit.hasBlockingElements === true
-					? (audit.blockingElements ?? "")
-					: "",
+			blockingElements: reportsBlockingElements(audit)
+				? (audit.blockingElements ?? "")
+				: "",
 			nonCompliantElements: audit.nonCompliantElements ?? "",
 			disproportionnedCharge: audit.disproportionnedCharge ?? "",
 			optionalElements: audit.optionalElements ?? "",
@@ -124,14 +127,13 @@ export const extractDeclarationContentToPublish = (
 					testEnvironmentOptions.find((option) => option.value === env.name)
 						?.label ?? env.name,
 			),
-			usedTools:
-				audit.rgaa_version === "rgaa_5"
-					? []
-					: (audit.usedTools ?? []).map(
-							(tool) =>
-								toolOptions.find((option) => option.value === tool.name)
-									?.label ?? tool.name,
-						),
+			usedTools: requiresUsedTools(audit.rgaa_version)
+				? (audit.usedTools ?? []).map(
+						(tool) =>
+							toolOptions.find((option) => option.value === tool.name)?.label ??
+							tool.name,
+					)
+				: [],
 		},
 		contact: {
 			url: declaration.contact?.url ?? "",
