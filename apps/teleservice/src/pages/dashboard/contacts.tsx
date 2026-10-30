@@ -4,7 +4,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import NationalIdentityCard from "@codegouvfr/react-dsfr/picto/NationalIdentityCard";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { tss } from "tss-react";
 import { EditActionProvider, Part } from "~/components/form/Part";
 import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
@@ -26,8 +26,16 @@ import { Loader } from "~/components/ui/Loader";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Contact, Entity } from "~/payload/payload-types";
 import { api } from "~/lib/api";
+import { newTabLinkProps } from "~/lib/newTabLink";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
+
+const SUCCESS_ALERT_DURATION_MS = 5000;
+
+type AlertDetails = {
+	description: string;
+	severity: "success" | "error";
+};
 
 export default function ContactsPage({
 	entity,
@@ -37,7 +45,17 @@ export default function ContactsPage({
 
 	const [contactModalActions] = useState<LibraryContactModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const alertRef = useRef<HTMLDivElement>(null);
+	const [alert, setAlert] = useState<AlertDetails | null>(null);
+
+	useEffect(() => {
+		if (!alert) return;
+		alertRef.current?.focus();
+		if (alert.severity !== "success") return;
+
+		const timeout = setTimeout(() => setAlert(null), SUCCESS_ALERT_DURATION_MS);
+		return () => clearTimeout(timeout);
+	}, [alert]);
 
 	const {
 		data: contacts = [],
@@ -48,8 +66,14 @@ export default function ContactsPage({
 		itemName: "contact",
 		isFetching,
 		deleteMutation: api.library.deleteContact.useMutation({
-			onSuccess: () => utils.library.listContacts.invalidate(),
-			onError: (e) => setErrorMessage(e.message),
+			onSuccess: () => {
+				setAlert({
+					description: "Votre contact a été supprimé avec succès",
+					severity: "success",
+				});
+				return utils.library.listContacts.invalidate();
+			},
+			onError: (e) => setAlert({ description: e.message, severity: "error" }),
 		}),
 	});
 
@@ -57,8 +81,10 @@ export default function ContactsPage({
 		(contact: Contact) =>
 			confirmationModalActions.open?.({
 				title: "Supprimer le contact",
-				confirmLabel: "Supprimer",
+				confirmLabel: "Supprimer le contact",
 				confirmIconId: "fr-icon-delete-fill",
+				confirmBackgroundColor:
+					fr.colors.decisions.background.actionHigh.error.default,
 				description: (
 					<>
 						<p>
@@ -76,6 +102,68 @@ export default function ContactsPage({
 			}),
 		[confirmationModalActions, deleteItem],
 	);
+
+	const openEdit = async (contact: Contact) => {
+		let linked: { id: number; name: string; isPublished: boolean }[];
+		try {
+			linked = await utils.library.linkedDeclarations.fetch({
+				kind: "contact",
+				id: contact.id,
+			});
+		} catch (e) {
+			setAlert({
+				description: e instanceof Error ? e.message : String(e),
+				severity: "error",
+			});
+			return;
+		}
+
+		if (!linked.some((declaration) => declaration.isPublished)) {
+			contactModalActions.open?.(contact);
+			return;
+		}
+
+		confirmationModalActions.open?.({
+			title: "Attention, ce contact est associé à des déclarations publiées.",
+			confirmLabel: "Modifier le contact",
+			confirmIconId: "fr-icon-edit-line",
+			description: (
+				<>
+					<p>
+						{linked.length === 1 ? (
+							<>
+								Les modifications seront appliquées à 1 déclaration
+								d’accessibilité associée à ce contact.
+								<br />
+								Elle sera automatiquement mise à jour.
+							</>
+						) : (
+							<>
+								Les modifications seront appliquées à {linked.length}{" "}
+								déclarations d’accessibilité associées à ce contact.
+								<br />
+								Elles seront automatiquement mises à jour.
+							</>
+						)}
+					</p>
+					<ul>
+						{linked.map((declaration) => (
+							<li key={declaration.id}>
+								<a
+									href={`/dashboard/declarations/${declaration.id}`}
+									{...newTabLinkProps(declaration.name)}
+									className={classes.link}
+								>
+									{declaration.name}
+								</a>
+							</li>
+						))}
+					</ul>
+				</>
+			),
+			onConfirm: () => contactModalActions.open?.(contact),
+		});
+	};
 
 	const openCreate = () => contactModalActions.open?.();
 
@@ -100,14 +188,16 @@ export default function ContactsPage({
 			/>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
-					{errorMessage && (
-						<Alert
-							small
-							severity="error"
-							description={errorMessage}
-							closable
-							onClose={() => setErrorMessage(null)}
-						/>
+					{alert && (
+						<div className={classes.alertWrapper} ref={alertRef} tabIndex={-1}>
+							<Alert
+								small
+								severity={alert.severity}
+								description={alert.description}
+								closable
+								onClose={() => setAlert(null)}
+							/>
+						</div>
 					)}
 					{isLoading || isFetching ? (
 						<Loader />
@@ -169,7 +259,15 @@ export default function ContactsPage({
 				</div>
 			</div>
 			<ConfirmationModal actions={confirmationModalActions} />
-			<LibraryContactModal actions={contactModalActions} />
+			<LibraryContactModal
+				actions={contactModalActions}
+				onCreated={(name) =>
+					setAlert({
+						description: `Le contact « ${name} » a été ajouté avec succès`,
+						severity: "success",
+					})
+				}
+			/>
 		</>
 	);
 }
@@ -177,6 +275,36 @@ export default function ContactsPage({
 const useStyles = tss.withName(ContactsPage.name).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
+	},
+	alertWrapper: {
+		width: "100%",
+		display: "flex",
+		"& div": {
+			width: "100%",
+		},
+		marginBottom: fr.spacing("6v"),
+		animation: "fadeIn 0.25s ease-in-out",
+	},
+	contactList: {
+		listStyle: "none",
+		padding: 0,
+		margin: 0,
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6v"),
+		"& > li": {
+			margin: 0,
+			padding: 0,
+		},
+		"& > li > div, & dl": {
+			gap: fr.spacing("8v"),
+		},
+	},
+	bold: {
+		fontWeight: 700,
+	},
+	link: {
+		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},
 });
 
