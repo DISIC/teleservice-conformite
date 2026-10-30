@@ -202,7 +202,8 @@ describe("validateDeclaration", () => {
 			{
 				section: "audit-contenus",
 				field: "compliantElements",
-				label: "Éléments ayant fait l’objet de la vérification de conformité",
+				label:
+					"Liste des pages de l’échantillon ayant fait l’objet de la vérification de conformité",
 				message: "Les éléments conformes sont requis",
 			},
 		]);

@@ -31,6 +31,7 @@ export type SectionLibrary = {
 	kind: LibrarySectionKind;
 	/** Legend of the source radio — must read correctly whatever options remain. */
 	legend: string;
+	hintText?: ReactNode;
 	options: SourceModeOption[];
 };
 

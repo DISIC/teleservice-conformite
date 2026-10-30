@@ -110,7 +110,7 @@ export const DeclarationGeneralForm = withForm({
 												nativeInputProps={{ type: "url " }}
 												hintText={
 													<>
-														Pour un site web public, renseignez l’adresse
+														Pour un site web public, renseignez le lien
 														accessible par les usagers.
 														<br />
 														Format attendu : https://www.monservice.gouv.fr

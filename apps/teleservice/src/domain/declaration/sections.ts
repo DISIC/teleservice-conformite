@@ -114,7 +114,7 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 		},
 	},
 	contact: {
-		title: "Contact",
+		title: "Point de contact accessibilité",
 		isToComplete: (d) => !d.contact?.name,
 		isToVerify: (d) => d.contact?.toVerify === true,
 		validation: {

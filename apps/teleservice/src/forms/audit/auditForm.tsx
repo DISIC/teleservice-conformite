@@ -237,7 +237,7 @@ export const CompliantElementsForm = withForm({
 				readOnly={readOnly}
 				title={
 					readOnly
-						? "Éléments ayant fait l’objet de la vérification de conformité"
+						? "Liste des pages de l’échantillon ayant fait l’objet de la vérification de conformité"
 						: undefined
 				}
 				grid={false}
@@ -247,14 +247,15 @@ export const CompliantElementsForm = withForm({
 						<field.TextField
 							label={
 								!readOnly
-									? "Éléments ayant fait l’objet de la vérification de conformité"
+									? "Liste des pages de l’échantillon ayant fait l’objet de la vérification de conformité"
 									: undefined
 							}
 							textArea
+							nativeTextAreaProps={{ rows: 6 }}
 							hintText={
 								<>
-									Renseignez le nom de chaque élément. Pour un site web,
-									renseignez également l’URL.
+									Renseignez le nom de chaque page. Pour un site web, renseignez
+									également l’URL.
 									<br /> L’URL reste facultative pour un intranet, extranet ou
 									si elle ne peut pas être communiquée pour des raisons de
 									sécurité.
@@ -300,6 +301,7 @@ export const NonCompliantElementsForm = withForm({
 									<field.TextField
 										label={!readOnly ? "Éléments bloquants" : undefined}
 										textArea
+										nativeTextAreaProps={{ rows: 6 }}
 										hintText="Décrivez les éléments qui empêchent totalement l’utilisation du service."
 										readOnlyField={readOnly}
 										required
@@ -317,6 +319,7 @@ export const NonCompliantElementsForm = withForm({
 												: undefined
 										}
 										textArea
+										nativeTextAreaProps={{ rows: 6 }}
 										hintText={
 											<>
 												Exemples : Vidéo sans transcription, navigation au
@@ -349,6 +352,7 @@ export const NonCompliantElementsForm = withForm({
 										: "Contenus non soumis à l’obligation d’accessibilité"
 								}
 								textArea
+								nativeTextAreaProps={{ rows: 6 }}
 								hintText={
 									<>
 										<a
@@ -397,6 +401,7 @@ export const NonCompliantElementsForm = withForm({
 									</>
 								}
 								textArea
+								nativeTextAreaProps={{ rows: 6 }}
 								readOnlyField={readOnly}
 							/>
 						)}

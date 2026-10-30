@@ -1,4 +1,4 @@
-import Avatar from "@codegouvfr/react-dsfr/picto/Avatar";
+import MainSend from "@codegouvfr/react-dsfr/picto/MainSend";
 import type { ComponentProps } from "react";
 import DocumentUser from "~/components/ui/picto/DocumentUser";
 import { ContactTypeForm } from "~/forms/contact/contactForm";
@@ -15,14 +15,14 @@ type ContactFormApi = ComponentProps<typeof ContactTypeForm>["form"];
 const CONTACT_OPTIONS: SourceModeOption[] = [
 	{
 		value: "linked",
-		label: "Utiliser un contact existant",
+		label: "Utiliser un point de contact existant",
 		hintText: "Enregistré dans vos documents.",
 		illustration: <DocumentUser fontSize="3rem" viewBox="0 0 56 56" />,
 	},
 	{
 		value: "custom",
-		label: "Définir un contact",
-		illustration: <Avatar fontSize="3rem" />,
+		label: "Définir un point de contact",
+		illustration: <MainSend fontSize="3rem" />,
 	},
 ];
 
@@ -42,7 +42,9 @@ export const contactSection = defineSection<ZContactForm, ContactFormApi>({
 	),
 	library: {
 		kind: "contact",
-		legend: "Renseigner un moyen de contact :",
+		legend: "Renseigner un point de contact :",
+		hintText:
+			"Un point de contact permet aux usagers de signaler un défaut d’accessibilité. Il sera affiché publiquement sur la déclaration d’accessibilité. Les voies de recours seront ajoutées automatiquement à la déclaration, vous n’avez rien à faire.",
 		options: CONTACT_OPTIONS,
 	},
 });
