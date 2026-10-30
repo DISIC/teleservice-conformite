@@ -8,8 +8,8 @@ import {
 
 type ObsolescenceLineProps = {
 	declaration: Pick<Declaration, "publishedContent" | "published_at">;
-	/** In the list's Statut cell a Valide Publiée shows its deadline too; under an Obsolète badge the line starts at "depuis le". */
-	underBadge?: boolean;
+	/** The list's Statut cell: a Valide Publiée shows its deadline too, and under an Obsolète badge the line starts at "depuis le". */
+	inStatusCell?: boolean;
 };
 
 const formatDeadline = (publishedAt: string) =>
@@ -20,7 +20,7 @@ const formatDeadline = (publishedAt: string) =>
 /** The deadline: outside the list, shown only once it is actionable. */
 export function ObsolescenceLine({
 	declaration,
-	underBadge = false,
+	inStatusCell = false,
 }: ObsolescenceLineProps) {
 	const { classes, cx } = useStyles();
 	const obsolescence = getObsolescence(declaration, new Date());
@@ -29,7 +29,7 @@ export function ObsolescenceLine({
 	const deadline = formatDeadline(declaration.published_at);
 
 	if (obsolescence === "valid") {
-		if (!underBadge) return null;
+		if (!inStatusCell) return null;
 		return (
 			<span className={fr.cx("fr-text--xs", "fr-mb-0")}>
 				Périme le {deadline}
@@ -53,7 +53,7 @@ export function ObsolescenceLine({
 	}
 	return (
 		<p className={cx(fr.cx("fr-text--xs", "fr-mb-0"), classes.line)}>
-			{underBadge ? "Depuis le " : "Obsolète depuis le "}
+			{inStatusCell ? "Depuis le " : "Obsolète depuis le "}
 			<strong>{deadline}</strong>
 		</p>
 	);

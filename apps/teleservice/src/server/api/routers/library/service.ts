@@ -27,6 +27,7 @@ const LIBRARY_COLLECTION = {
 type LibraryCollection<K extends LibrarySectionKind> =
 	(typeof LIBRARY_COLLECTION)[K];
 
+// Payload has no count-only join and reads `limit: 0` as unlimited, so 1 is the cheapest.
 const DECLARATIONS_COUNT = {
 	declarations: { count: true, limit: 1 },
 } satisfies JoinQuery<"contacts"> & JoinQuery<"schemas">;

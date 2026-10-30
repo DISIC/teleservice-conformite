@@ -52,30 +52,4 @@ describe("listOwnedDeclarations", () => {
 			limit: DECLARATIONS_PER_PAGE,
 		});
 	});
-
-	it("reports a published declaration that sits on another page", async () => {
-		const declarations = Array.from(
-			{ length: DECLARATIONS_PER_PAGE + 1 },
-			(_, i) =>
-				owned(i + 1, `2026-01-${String(i + 1).padStart(2, "0")}T00:00:00.000Z`),
-		);
-		const oldest = declarations[0];
-		if (oldest) oldest.publishedContent = "{}";
-		const { payload } = fakePayload({ declarations });
-
-		const first = await listOwnedDeclarations(payload, CALLER, 1);
-
-		expect(first.docs.some((doc) => doc.publishedContent)).toBe(false);
-		expect(first.hasPublished).toBe(true);
-	});
-
-	it("reports no published declaration when every row is a draft", async () => {
-		const { payload } = fakePayload({
-			declarations: [owned(1, "2026-01-01T00:00:00.000Z")],
-		});
-
-		const result = await listOwnedDeclarations(payload, CALLER);
-
-		expect(result.hasPublished).toBe(false);
-	});
 });

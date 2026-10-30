@@ -84,7 +84,7 @@ function buildColumns(
 			cell: (info) => (
 				<div className={classes.status}>
 					<StatusBadge declaration={info.row.original} />
-					<ObsolescenceLine declaration={info.row.original} underBadge />
+					<ObsolescenceLine declaration={info.row.original} inStatusCell />
 				</div>
 			),
 		},
