@@ -28,7 +28,6 @@ export const infosSection = defineSection<ZDeclarationGeneral, InfosFormApi>({
 						firstPublishedAt: isValidDate(value.general.firstPublishedAt)
 							? value.general.firstPublishedAt
 							: "",
-						entityId: declaration.entity?.id ?? -1,
 					},
 				}),
 			isPending,

@@ -6,6 +6,7 @@ import {
 	userProtectedProcedure,
 } from "../../trpc";
 import * as service from "./service";
+import { getUserEntity } from "./utils";
 
 export const declarationRouter = createTRPCRouter({
 	list: userProtectedProcedure
@@ -24,16 +25,18 @@ export const declarationRouter = createTRPCRouter({
 			data: await service.getAraReportData(input.id),
 		})),
 	createManual: userProtectedProcedure
-		.input(
-			z.object({ name: z.string().min(1), entityId: z.number().optional() }),
-		)
-		.mutation(async ({ input, ctx }) => ({
-			data: await service.createManualDeclaration(
-				ctx.payload,
-				Number(ctx.session.user.id),
-				input,
-			),
-		})),
+		.input(z.object({ name: z.string().min(1) }))
+		.mutation(async ({ input, ctx }) => {
+			const userId = Number(ctx.session.user.id);
+			const entity = await getUserEntity(ctx.payload, userId);
+
+			return {
+				data: await service.createManualDeclaration(ctx.payload, userId, {
+					name: input.name,
+					entityId: entity?.id,
+				}),
+			};
+		}),
 	createFromAra: userProtectedProcedure
 		.input(z.object({ araUrl: z.string().min(1) }))
 		.mutation(async ({ input, ctx }) => ({
@@ -56,13 +59,7 @@ export const declarationRouter = createTRPCRouter({
 		data: await service.deleteDeclaration(ctx.payload, ctx.declaration),
 	})),
 	update: declarationProcedure
-		.input(
-			z.object({
-				general: declarationGeneral.shape.general.extend({
-					entityId: z.number(),
-				}),
-			}),
-		)
+		.input(z.object({ general: declarationGeneral.shape.general }))
 		.mutation(async ({ input, ctx }) => ({
 			data: await service.updateDeclaration(
 				ctx.payload,

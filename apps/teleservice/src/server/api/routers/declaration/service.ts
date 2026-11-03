@@ -282,20 +282,19 @@ export const deleteDeclaration = async (
 
 type DeclarationGeneralUpdateInput = z.infer<
 	typeof declarationGeneral
->["general"] & {
-	entityId: number;
-};
+>["general"];
 
 export const updateDeclaration = async (
 	payload: Payload,
 	declaration: PopulatedDeclaration,
 	general: DeclarationGeneralUpdateInput,
 ) => {
-	const { organisation, entityId } = general;
+	const { organisation } = general;
+	const entityId = declaration.entity?.id;
 
 	// Sequential autosave persists partials: a cleared name keeps its saved value.
 	const entityData = organisation ? { name: organisation } : {};
-	if (organisation)
+	if (organisation && entityId)
 		await payload.update({
 			collection: "entities",
 			id: entityId,

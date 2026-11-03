@@ -86,7 +86,7 @@ export default function EntityDeclarationsPage({
 					)}
 				</div>
 			</div>
-			<CreateDeclarationModal actions={createModalActions} entity={entity} />
+			<CreateDeclarationModal actions={createModalActions} />
 		</>
 	);
 }
