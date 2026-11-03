@@ -224,7 +224,7 @@ export default function ContactsPage({
 										value={
 											<ItemActions
 												label={contact.name}
-												onEdit={() => contactModalActions.open?.(contact)}
+												onEdit={() => openEdit(contact)}
 												onDelete={() => confirmDelete(contact)}
 												deleteButtonId={deleteButtonId(contact.id)}
 											/>
