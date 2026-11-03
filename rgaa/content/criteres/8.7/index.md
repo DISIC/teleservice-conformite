@@ -1,1 +1,1 @@
-Le titre du document est pertinent
+Les changements du sens de lecture sont signalés

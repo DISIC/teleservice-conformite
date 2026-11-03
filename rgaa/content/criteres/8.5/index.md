@@ -1,1 +1,1 @@
-Chaque changement de langue est pertinent
+Le document a un titre
