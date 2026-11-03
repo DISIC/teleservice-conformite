@@ -1,7 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import readAlbertPrompt from "./readPrompt";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { fetchPublicText } from "~/lib/publicFetch";
+import { createTRPCRouter, userProtectedProcedure } from "~/server/api/trpc";
 
 export interface AlbertResponse {
 	service: { name: string | null; type: string | null; url: string | null };
@@ -30,18 +31,12 @@ function getRgaaVersion(rawVersion: string | null | undefined): string {
 }
 
 async function downloadHtmlWithPlaywright(url: string): Promise<string> {
-	const response = await fetch(url, {
+	return fetchPublicText(url, {
 		headers: {
 			"User-Agent":
 				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
 		},
 	});
-
-	if (!response.ok) {
-		throw new Error(`Failed to fetch URL: ${response.statusText}`);
-	}
-
-	return await response.text();
 }
 
 async function extractAccessibilityRateWithAlbert(
@@ -166,7 +161,7 @@ function parseAlbertResponse(response: any): AlbertResponse | null {
 /**
  * Fetches the declaration page, asks Albert to extract its accessibility info,
  * and parses the response into the {@link AlbertResponse} shape. Throws on
- * fetch / API / parse failure. Shared by the `analyzeUrl` procedure (debug page)
+ * fetch / API / parse failure. Shared by the `analyzeUrl` procedure
  * and `declaration.createFromUrlAnalysis`.
  */
 export async function analyzeUrlWithAlbert(
@@ -184,12 +179,13 @@ export async function analyzeUrlWithAlbert(
 }
 
 export const albertRouter = createTRPCRouter({
-	analyzeUrl: publicProcedure
+	analyzeUrl: userProtectedProcedure
 		.input(z.object({ url: z.string().url() }))
 		.mutation(async ({ input }) => {
 			try {
 				return { data: await analyzeUrlWithAlbert(input.url) };
 			} catch (error) {
+				if (error instanceof TRPCError) throw error;
 				throw new TRPCError({
 					code: "INTERNAL_SERVER_ERROR",
 					message:
