@@ -32,7 +32,7 @@ const PublishPage: PageWithHeader<PublishPageProps> = ({
 		<>
 			<Head>
 				<title>
-					{pageTitle(`Déclaration d'accessibilité de ${publishedContent.name}`)}
+					{pageTitle(`Déclaration d’accessibilité de ${publishedContent.name}`)}
 				</title>
 			</Head>
 			<section

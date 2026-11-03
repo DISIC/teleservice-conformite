@@ -8,9 +8,11 @@ import {
 	auditToGeneralValues,
 	auditToNonConformitiesValues,
 	auditToToolsValues,
+} from "~/forms/audit/auditSchema";
+import {
 	reportsBlockingElements,
 	requiresUsedTools,
-} from "~/forms/audit/auditSchema";
+} from "~/domain/declaration/rgaaVersion";
 import type { SectionValidation } from "./sectionValidation";
 
 /**

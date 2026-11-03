@@ -10,7 +10,7 @@ import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
 import {
 	reportsBlockingElements,
 	requiresUsedTools,
-} from "~/forms/audit/auditSchema";
+} from "~/domain/declaration/rgaaVersion";
 
 type OptionLabel<T extends readonly { label: string }[]> = T[number]["label"];
 
@@ -40,7 +40,7 @@ export const publishedDeclarationSchema = z.object({
 		rgaa_version: z.enum(rgaaVersionLabels),
 		realised_by: z.string(),
 		rate: z.number(),
-		// Snapshots published before this field existed read as "no blocking element".
+		// A snapshot without this field reads as "no blocking element".
 		blockingElements: z.string().default(""),
 		nonCompliantElements: z.string().nullable(),
 		disproportionnedCharge: z.string().nullable(),

@@ -68,7 +68,7 @@ export default function DeclarationPreviewPage({
 		<Head>
 			<title>
 				{pageTitle(
-					`Prévisualisation de la déclaration d'accessibilité de ${declaration.name}`,
+					`Prévisualisation de la déclaration d’accessibilité de ${declaration.name}`,
 				)}
 			</title>
 		</Head>

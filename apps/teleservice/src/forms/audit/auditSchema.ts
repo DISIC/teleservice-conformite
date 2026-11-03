@@ -1,5 +1,10 @@
 import z from "zod";
 
+import {
+	type RgaaVersion,
+	reportsBlockingElements,
+	requiresUsedTools,
+} from "~/domain/declaration/rgaaVersion";
 import { submitFormOptions } from "~/forms/formOptions";
 import { invalidDateIssue, notFutureDateIssue } from "~/forms/rules";
 import {
@@ -19,25 +24,9 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
 type Audit = PopulatedDeclaration["audit"];
 
-type RgaaVersion = (typeof rgaaVersionOptions)[number]["value"];
-
-// RGAA 5 drops the assessment tools list and introduces blocking elements.
-export const requiresUsedTools = (version: RgaaVersion | null | undefined) =>
-	version !== "rgaa_5";
-
-export const hasBlockingElementsQuestion = (
-	version: RgaaVersion | null | undefined,
-) => version === "rgaa_5";
-
-/** A blocking-elements answer left over from an RGAA 5 audit switched back to RGAA 4 is void. */
-export const reportsBlockingElements = (
-	audit:
-		| Pick<NonNullable<Audit>, "rgaa_version" | "hasBlockingElements">
-		| null
-		| undefined,
-) =>
-	hasBlockingElementsQuestion(audit?.rgaa_version) &&
-	audit?.hasBlockingElements === true;
+const rgaaVersionOf = (audit: Audit): RgaaVersion =>
+	rgaaVersionOptions.find((opt) => opt.value === audit?.rgaa_version)?.value ??
+	"rgaa_4";
 
 // ── Réalisation de l'audit (slug `audit-general`) ───────────────────────────
 // When the audit is realised, the date fields become required; otherwise they
@@ -89,7 +78,7 @@ export const auditGeneral = z
 				});
 			}
 			if (
-				hasBlockingElementsQuestion(data.rgaa_version) &&
+				data.rgaa_version === "rgaa_5" &&
 				data.hasBlockingElements === undefined
 			) {
 				ctx.addIssue({
@@ -122,9 +111,7 @@ export function auditToGeneralValues(audit: Audit): ZAuditGeneral {
 		isAuditRealised: audit?.isRealised ?? undefined,
 		date: audit?.date ? new Date(audit.date).toLocaleDateString("en-CA") : "",
 		realisedBy: audit?.realisedBy ?? "",
-		rgaa_version:
-			rgaaVersionOptions.find((opt) => opt.value === audit?.rgaa_version)
-				?.value ?? "rgaa_4",
+		rgaa_version: rgaaVersionOf(audit),
 		hasBlockingElements: audit?.hasBlockingElements ?? undefined,
 		rate: audit?.rate ?? null,
 	};
@@ -133,6 +120,8 @@ export function auditToGeneralValues(audit: Audit): ZAuditGeneral {
 // ── Outils et environnements (slug `audit-outils`) ──────────────────────────
 export const auditTools = z
 	.object({
+		// Carried from the `audit-general` answer, never edited here: it decides
+		// whether the tools list is required.
 		rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
 		usedTools: z.array(z.string()),
 		testEnvironments: z.array(z.string()),
@@ -169,7 +158,7 @@ export const auditToolsFormOptions = submitFormOptions(
 
 export function auditToToolsValues(audit: Audit): ZAuditTools {
 	return {
-		rgaa_version: auditToGeneralValues(audit).rgaa_version,
+		rgaa_version: rgaaVersionOf(audit),
 		usedTools: (audit?.usedTools ?? []).map(
 			(tool) =>
 				toolOptions.find((opt) => opt.value === tool.name)?.value ?? tool.name,

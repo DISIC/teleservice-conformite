@@ -1,6 +1,10 @@
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
-import { getConformityStatus } from "~/domain/declaration/conformity";
+import {
+	type ConformitySeverity,
+	getConformityStatus,
+	NON_CONFORME,
+} from "~/domain/declaration/conformity";
 import {
 	OBSOLESCENCE_YEARS,
 	obsolescenceOf,
@@ -37,26 +41,29 @@ export const publicationLabel = (
 const hasText = (value: string | null | undefined): value is string =>
 	!!value && value.trim().length > 0;
 
-const badge = (label: string, severity: "success" | "info" | "error") =>
+const badge = (label: string, severity: ConformitySeverity) =>
 	`<p class="fr-badge fr-badge--${severity} fr-badge--sm fr-badge--no-icon">${label}</p>`;
 
-const CONFORMITY_BADGE_SEVERITY: Record<string, "success" | "info" | "error"> =
-	{
-		Conforme: "success",
-		"Partiellement conforme": "info",
-		"Non conforme": "error",
-	};
+const SERVICE_WORDING = {
+	website: {
+		subject: "Le site",
+		scope: (service: string) => `au **site web ${service}**`,
+	},
+	mobile_app: {
+		subject: "L’application mobile",
+		scope: (service: string) => `à **l’application mobile ${service}**`,
+	},
+	other: {
+		subject: "Le service",
+		scope: (service: string) => `à **${service}**`,
+	},
+};
 
-const serviceSubject = (appKindLabel: PublishedDeclaration["appKindLabel"]) => {
+const serviceWording = (appKindLabel: PublishedDeclaration["appKindLabel"]) => {
 	const kind = appKindOptions.find((o) => o.label === appKindLabel)?.value;
-	switch (kind) {
-		case "website":
-			return "Le site";
-		case "mobile_app":
-			return "L’application mobile";
-		default:
-			return "Le service";
-	}
+	return kind === "website" || kind === "mobile_app"
+		? SERVICE_WORDING[kind]
+		: SERVICE_WORDING.other;
 };
 
 const lowerFirst = (text: string) =>
@@ -68,7 +75,7 @@ const bulletList = (items: string[]) => items.map((item) => `- ${item}`);
 
 const escapeLinkText = (text: string) => text.replace(/[\\[\]]/g, "\\$&");
 
-// Declarations saved before URL validation may hold a bare host like "www.site.gouv.fr".
+// A URL without a scheme, like "www.site.gouv.fr", links over https.
 const absoluteUrl = (url: string) =>
 	/^[a-z][a-z\d+.-]*:/i.test(url) ? url : `https://${url}`;
 
@@ -101,14 +108,7 @@ const introduction = (d: PublishedDeclaration): string[] => {
 			),
 	].filter((line): line is string => line !== null);
 
-	const kind = appKindOptions.find((o) => o.label === d.appKindLabel)?.value;
 	const service = hasText(d.url) ? link(d.name, d.url) : d.name;
-	const scope =
-		kind === "website"
-			? `Cette déclaration d’accessibilité s’applique au **site web ${service}**`
-			: kind === "mobile_app"
-				? `Cette déclaration d’accessibilité s’applique à **l’application mobile ${service}**`
-				: `Cette déclaration d’accessibilité s’applique à **${service}**`;
 
 	return [
 		`${entity} s’engage à rendre ses sites internet, intranet, extranet et ses progiciels accessibles (et ses applications mobiles et mobilier urbain numérique) conformément à l’article 47 de la loi n°2005-102 du 11 février 2005.`,
@@ -121,21 +121,20 @@ const introduction = (d: PublishedDeclaration): string[] => {
 					"",
 				]
 			: []),
-		scope,
+		`Cette déclaration d’accessibilité s’applique ${serviceWording(d.appKindLabel).scope(service)}`,
 		"",
 	];
 };
 
 const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
-	const subject = `${serviceSubject(d.appKindLabel)} **${d.name}**`;
+	const subject = `${serviceWording(d.appKindLabel).subject} **${d.name}**`;
+	const version = rgaaVersionNumber(d.audit.rgaa_version);
 	const rgaa = `avec le référentiel général d’amélioration de l’accessibilité (RGAA)`;
-	const version = `, version ${rgaaVersionNumber(d.audit.rgaa_version)}.`;
-	const rgaaWithVersion = `avec le référentiel général d’amélioration de l’accessibilité version ${rgaaVersionNumber(d.audit.rgaa_version)}`;
 
 	if (!d.audit.isRealised) {
 		return section(
 			"## État de conformité",
-			badge("Non conforme", "error"),
+			badge(NON_CONFORME.label, NON_CONFORME.severity),
 			"",
 			`${subject} n’a pas fait l’objet d’un audit de conformité et est réputé **non conforme** ${rgaa}.`,
 			"",
@@ -147,25 +146,24 @@ const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
 
 	// A blocking element makes the service non-conformant whatever its rate.
 	const status = hasText(d.audit.blockingElements)
-		? getConformityStatus(0)
+		? NON_CONFORME
 		: getConformityStatus(d.audit.rate);
+	const badgeStatus = obsolete ? NON_CONFORME : status;
 	const sentence = obsolete
-		? `Conformément à la législation, cette déclaration ayant été publiée il y a plus de ${OBSOLESCENCE_YEARS} ans, ${lowerFirst(subject)} est réputé **non conforme** ${rgaa}${version}`
-		: `${subject} est **${status.label.toLowerCase()}** ${rgaa}${version}`;
+		? `Conformément à la législation, cette déclaration ayant été publiée il y a plus de ${OBSOLESCENCE_YEARS} ans, ${lowerFirst(subject)} est réputé **non conforme** ${rgaa}, version ${version}.`
+		: `${subject} est **${status.label.toLowerCase()}** ${rgaa}, version ${version}.`;
 
 	return section(
 		"## État de conformité",
-		obsolete
-			? badge("Non conforme", "error")
-			: badge(status.label, CONFORMITY_BADGE_SEVERITY[status.label] ?? "info"),
+		badge(badgeStatus.label, badgeStatus.severity),
 		"",
 		sentence,
 		"",
 		"### Résultats des tests",
 		"",
-		status.label === "Non conforme"
-			? `${subject} est **non conforme** ${rgaaWithVersion}.`
-			: `L’audit de conformité réalisé par **${d.audit.realised_by}** révèle que **${d.audit.rate}%** des critères du **RGAA version ${rgaaVersionNumber(d.audit.rgaa_version)}** sont respectés.`,
+		status === NON_CONFORME
+			? `${subject} est **non conforme** avec le référentiel général d’amélioration de l’accessibilité version ${version}.`
+			: `L’audit de conformité réalisé par **${d.audit.realised_by}** révèle que **${d.audit.rate}%** des critères du **RGAA version ${version}** sont respectés.`,
 	);
 };
 
