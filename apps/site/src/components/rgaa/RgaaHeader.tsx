@@ -74,7 +74,7 @@ export default function RgaaHeader({ navigation: entries }: RgaaHeaderProps) {
 						linkProps={{ href: TELESERVICE_URL }}
 						priority="tertiary"
 					>
-						Publier une déclaration
+						Déposer une déclaration
 					</Button>,
 					<Button
 						key="rgaa-4"
