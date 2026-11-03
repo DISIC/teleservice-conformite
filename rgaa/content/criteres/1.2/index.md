@@ -1,1 +1,1 @@
-Chaque image informative possède une alternative textuelle
+Chaque image informative possède un nom accessible

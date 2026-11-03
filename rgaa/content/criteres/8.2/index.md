@@ -1,1 +1,1 @@
-La langue par défaut est définie
+La langue définie par défaut est pertinente

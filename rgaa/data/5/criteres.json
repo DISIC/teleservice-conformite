@@ -40,7 +40,7 @@
 									"number": "1.1.1",
 									"title": "Chaque image décorative (balise `<img>`) sans légende, vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"La balise `<img>` possède un attribut alt vide (alt=\"\") et est dépourvue de tout autre attribut permettant de fournir une alternative textuelle.",
+										"La balise `<img>` possède un attribut alt vide (alt=\"\") et est dépourvue de nom accessible.",
 										"La balise `<img>` possède un attribut WAI-ARIA aria-hidden=\"true\"",
 										"La balise `<img>` possède un role=\"presentation\" ou un role=\"none\" et est dépourvue des attributs title, aria-label et aria-labelledby"
 									]
@@ -49,7 +49,7 @@
 									"number": "1.1.2",
 									"title": "Chaque zone non cliquable décorative (balise `<area>` sans attribut href), vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"La balise `<area>` possède un attribut alt vide (alt=\"\") et est dépourvue de tout autre attribut permettant de fournir une alternative textuelle ;",
+										"La balise `<area>` possède un attribut alt vide (alt=\"\") et est dépourvue de nom accessible ;",
 										"La balise `<area>` possède un attribut WAI-ARIA aria-hidden=\"true\".",
 										"La balise `<area>` possède un attribut WAI-ARIA role=\"presentation\" ou role=\"none\" et est dépourvue des attributs title, aria-label et aria-labelledby."
 									]
@@ -59,8 +59,8 @@
 									"title": "Chaque image objet décorative (balise `<object>` avec l’attribut type=\"image/…\"), sans légende, vérifie-t-elle ces conditions ?",
 									"conditions": [
 										"La balise `<object>` possède un attribut WAI-ARIA aria-hidden=\"true\" ;",
-										"La balise `<object>` est dépourvue d’alternative textuelle ;",
-										"Il n’y a aucun texte faisant office d’alternative textuelle entre `<object>` et `</object>`."
+										"La balise `<object>` est dépourvue de nom accessible ;",
+										"Il n’y a aucun texte entre `<object>` et `</object>`."
 									]
 								},
 								{
@@ -77,8 +77,8 @@
 									"title": "Chaque image bitmap décorative (balise `<canvas>`), sans légende, vérifie-t-elle ces conditions ?",
 									"conditions": [
 										"La balise `<canvas>` possède un attribut WAI-ARIA aria-hidden=\"true\" ;",
-										"La balise `<canvas>` et ses enfants sont dépourvus d’alternative textuelle ;",
-										"Il n’y a aucun texte faisant office d’alternative textuelle entre `<canvas>` et `</canvas>`."
+										"La balise `<canvas>` et ses enfants sont dépourvus de nom accessible ;",
+										"Il n’y a aucun texte entre `<canvas>` et `</canvas>`."
 									]
 								},
 								{
@@ -86,7 +86,7 @@
 									"title": "Chaque image embarquée décorative (balise `<embed>` avec l’attribut type=\"image/…\"), sans légende, vérifie-t-elle ces conditions ?",
 									"conditions": [
 										"La balise `<embed>` possède un attribut WAI-ARIA aria-hidden=\"true\" ;",
-										"La balise `<embed>` et ses enfants sont dépourvus d’alternative textuelle."
+										"La balise `<embed>` et ses enfants sont dépourvus de nom accessible."
 									]
 								},
 								{
@@ -95,7 +95,7 @@
 								}
 							],
 							"appendix": {
-								"technicalNotes": "Lorsqu’une image est associée à une légende, la note technique WCAG recommande de prévoir systématiquement une alternative textuelle (cf. critère 1.9). Dans ce cas, le critère 1.1 est non applicable.\n\nDans le cas d’une image vectorielle décorative (balise `<svg>`) qui serait affichée au travers d’un élément `<use href=\"…\">` enfant de l’élément `<svg>`, le test 1.1.4 s’appliquera également à l’élément `<svg>` associé par le biais de l’élément `<use>`.\n\nSi une image se trouve imbriquée dans une balise possédant un attribut aria-hidden=\"true\", alors elle sera considérée comme étant masquée pour les technologies d’assistance."
+								"technicalNotes": "Lorsqu’une image est associée à une légende, la note technique WCAG recommande de prévoir systématiquement un nom accessible (cf. critère 1.7). Dans ce cas, le critère 1.1 est non applicable.\n\nDans le cas d’une image vectorielle décorative (balise `<svg>`) qui serait affichée au travers d’un élément `<use href=\"…\">` enfant de l’élément `<svg>`, le test 1.1.4 s’appliquera également à l’élément `<svg>` associé par le biais de l’élément `<use>`.\n\nSi une image se trouve imbriquée dans une balise possédant un attribut aria-hidden=\"true\", alors elle sera considérée comme étant masquée pour les technologies d’assistance."
 							}
 						},
 						"mobile": {
@@ -112,8 +112,7 @@
 									"number": "1.1.1",
 									"title": "Chaque image décorative vérifie-t-elle ces conditions ?",
 									"conditions": [
-										"Les propriétés `<titre>` et `<description>` sont absentes ou vides",
-										"L'image est dépourvue d'alternative textuelle",
+										"Les propriétés nom, description et texte alternatif sont absentes ou vides",
 										"L’image est marquée comme décorative ou artefact"
 									]
 								}
@@ -123,17 +122,17 @@
 				},
 				{
 					"number": "1.2",
-					"title": "Chaque image informative possède une alternative textuelle",
+					"title": "Chaque image informative possède un nom accessible",
 					"referentiels": {
 						"web": {
 							"tests": [
 								{
 									"number": "1.2.1",
-									"title": "Chaque image informative (balise `<img>` ou balise possédant l’attribut WAI-ARIA role=\"img\") a-t-elle une alternative textuelle ?"
+									"title": "Chaque image informative (balise `<img>` ou balise possédant l’attribut WAI-ARIA role=\"img\") a-t-elle un nom accessible ?"
 								},
 								{
 									"number": "1.2.2",
-									"title": "Chaque zone d’une image réactive informative (balise `<area>`) a-t-elle une alternative textuelle ?"
+									"title": "Chaque zone d’une image réactive informative (balise `<area>`) a-t-elle un nom accessible ?"
 								},
 								{
 									"number": "1.2.3",
@@ -144,40 +143,40 @@
 									"title": "Chaque image vectorielle informative (balise `<svg>`), vérifie-t-elle ces conditions ?",
 									"conditions": [
 										"La balise `<svg>` possède un attribut WAI-ARIA role=\"img\".",
-										"La balise `<svg>` a une alternative textuelle."
+										"La balise `<svg>` a un nom accessible."
 									]
 								},
 								{
 									"number": "1.2.5",
 									"title": "Chaque image objet informative (balise `<object>` avec l’attribut type=\"image/…\"), vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"La balise `<object>` possède une alternative textuelle et un attribut role=\"img\".",
-										"L’élément `<object>` est immédiatement suivi d’un lien ou bouton adjacent permettant d’accéder à un contenu alternatif.",
-										"Un mécanisme permet à la personne utilisatrice de remplacer l’élément `<object>` par un contenu alternatif."
+										"La balise `<object>` possède un nom accessible et un attribut role=\"img\".",
+										"L’élément `<object>` est immédiatement suivi d’un lien ou bouton adjacent permettant d’accéder à un texte équivalent.",
+										"Un mécanisme permet à la personne utilisatrice de remplacer l’élément `<object>` par un texte équivalent."
 									]
 								},
 								{
 									"number": "1.2.6",
 									"title": "Chaque image embarquée (balise `<embed>` avec l’attribut type=\"image/…\") informative, vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"La balise `<embed>` possède une alternative textuelle et un attribut role=\"img\".",
-										"L’élément `<embed>` est immédiatement suivi d’un lien ou bouton adjacent permettant d’accéder à un contenu alternatif.",
-										"Un mécanisme permet à la personne utilisatrice de remplacer l’élément `<embed>` par un contenu alternatif."
+										"La balise `<embed>` possède un nom accessible et un attribut role=\"img\".",
+										"L’élément `<embed>` est immédiatement suivi d’un lien ou bouton adjacent permettant d’accéder à un texte équivalent.",
+										"Un mécanisme permet à la personne utilisatrice de remplacer l’élément `<embed>` par un texte équivalent."
 									]
 								},
 								{
 									"number": "1.2.7",
 									"title": "Chaque image bitmap informative (balise `<canvas>`), vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"La balise `<canvas>` possède une alternative textuelle et un attribut role=\"img\".",
-										"Un contenu alternatif est présent entre les balises `<canvas>` et `</canvas>`.",
-										"L’élément `<canvas>` est immédiatement suivi d’un lien ou bouton adjacent permettant d’accéder à un contenu alternatif.",
-										"Un mécanisme permet à la personne utilisatrice de remplacer l’élément `<canvas>` par un contenu alternatif."
+										"La balise `<canvas>` possède un nom accessible et un attribut role=\"img\".",
+										"Un texte équivalent est présent entre les balises `<canvas>` et `</canvas>`.",
+										"L’élément `<canvas>` est immédiatement suivi d’un lien ou bouton adjacent permettant d’accéder à un texte équivalent.",
+										"Un mécanisme permet à la personne utilisatrice de remplacer l’élément `<canvas>` par un texte équivalent."
 									]
 								},
 								{
 									"number": "1.2.8",
-									"title": "Chaque image informative affichée via les styles a-t-elle une alternative textuelle ?"
+									"title": "Chaque image informative affichée via les styles a-t-elle un nom accessible ?"
 								}
 							]
 						},
@@ -185,7 +184,7 @@
 							"tests": [
 								{
 									"number": "1.2.1",
-									"title": "L’alternative de chaque image informative est-elle  correctement restitué par les technologies d’assistance ?"
+									"title": "Le nom accessible de chaque image informative est-il correctement restitué par les technologies d’assistance ?"
 								}
 							]
 						},
@@ -195,8 +194,8 @@
 									"number": "1.2.1",
 									"title": "Chaque image informative vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"L’image possède une alternative textuelle.",
-										"Un lien adjacent à l’image permet d’accéder à une alternative textuelle."
+										"L’image possède un texte alternatif.",
+										"Un lien adjacent à l’image permet d’accéder à un texte équivalent."
 									]
 								}
 							]
@@ -205,23 +204,23 @@
 				},
 				{
 					"number": "1.3",
-					"title": "L’alternative textuelle de chaque image informative est pertinente (hors cas particuliers)",
+					"title": "Le nom accessible de chaque image informative est pertinente (hors cas particuliers)",
 					"referentiels": {
 						"web": {
 							"tests": [
 								{
 									"number": "1.3.1",
-									"title": "Pour chaque image (balise `<img>` ou balise possédant l’attribut WAI-ARIA role=\"img\") informative, ayant une alternative textuelle, cette alternative est-elle pertinente (hors cas particuliers) ?",
+									"title": "Pour chaque image (balise `<img>` ou balise possédant l’attribut WAI-ARIA role=\"img\") informative, ayant un nom accessible, celui-ci est-il pertinent (hors cas particuliers) ?",
 									"conditions": [
 										"S'il est présent, le contenu de l’attribut alt est pertinent.",
 										"S'il est présent, le contenu de l’attribut title est pertinent.",
-										"S'il S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent.",
-										"S'il S’il est présent, le passage de texte associé via l’attribut WAI-ARIA aria-labelledby est pertinent."
+										"S'il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent.",
+										"S'il est présent, le passage de texte associé via l’attribut WAI-ARIA aria-labelledby est pertinent."
 									]
 								},
 								{
 									"number": "1.3.2",
-									"title": "Pour chaque zone (balise `<area>`) d’une image réactive informative, ayant une alternative textuelle, cette alternative est-elle pertinente (hors cas particuliers) ?",
+									"title": "Pour chaque zone (balise `<area>`) d’une image réactive informative, ayant un nom accessible, celui-ci est-il pertinent (hors cas particuliers) ?",
 									"conditions": [
 										"S’il est présent, le contenu de l’attribut alt est pertinent.",
 										"S'il est présent, le contenu de l’attribut title est pertinent.",
@@ -231,27 +230,27 @@
 								},
 								{
 									"number": "1.3.3",
-									"title": "Pour chaque image objet (balise `<object>` avec l’attribut type=\"image/…\") informative, ayant une alternative textuelle ou un contenu alternatif, cette alternative est-elle pertinente (hors cas particuliers) ?",
+									"title": "Pour chaque image objet (balise `<object>` avec l’attribut type=\"image/…\") informative, ayant un nom accessible ou un texte équivalent, cette alternative est-elle pertinente (hors cas particuliers) ?",
 									"conditions": [
 										"S’il est présent, le contenu de l’attribut title est pertinent.",
 										"S’il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent.",
 										"S’il est présent, le passage de texte associé via l’attribut WAI-ARIA aria-labelledby est pertinent.",
-										"S’il est présent, le contenu alternatif est pertinent."
+										"S’il est présent, le texte équivalent est pertinent."
 									]
 								},
 								{
 									"number": "1.3.4",
-									"title": "Pour chaque image embarquée (balise `<embed>` avec l’attribut type=\"image/…\") informative, ayant une alternative textuelle ou un contenu alternatif, cette alternative est-elle pertinente (hors cas particuliers) ?",
+									"title": "Pour chaque image embarquée (balise `<embed>` avec l’attribut type=\"image/…\") informative, ayant un nom accessible ou un texte équivalent, cette alternative est-elle pertinente (hors cas particuliers) ?",
 									"conditions": [
 										"S'il est présent, le contenu de l’attribut title est pertinent.",
 										"S'il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent.",
 										"S'il est présent, le passage de texte associé via l’attribut WAI-ARIA aria-labelledby est pertinent.",
-										"S'il est présent, le contenu alternatif est pertinent."
+										"S'il est présent, le text équivalent est pertinent."
 									]
 								},
 								{
 									"number": "1.3.5",
-									"title": "Pour chaque image vectorielle (balise `<svg>`) informative, ayant une alternative textuelle, cette alternative est-elle pertinente (hors cas particuliers) ?",
+									"title": "Pour chaque image vectorielle (balise `<svg>`) informative, ayant un nom accessible, celui-ci est-il pertinent (hors cas particuliers) ?",
 									"conditions": [
 										"S'il est présent, le contenu de l’élément `<title>` est pertinent.",
 										"S'il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent.",
@@ -260,37 +259,37 @@
 								},
 								{
 									"number": "1.3.6",
-									"title": "Pour chaque image bitmap (balise `<canvas>`) informative, ayant une alternative textuelle ou un contenu alternatif, cette alternative est-elle pertinente (hors cas particuliers) ?",
+									"title": "Pour chaque image bitmap (balise `<canvas>`) informative, ayant un nom accessible ou un texte équivalent, cette alternative est-elle pertinente (hors cas particuliers) ?",
 									"conditions": [
 										"S'il est présent, le contenu de l’attribut title est pertinent.",
 										"S'il est présent, le contenu de l’attribut WAI-ARIA aria-label est pertinent.",
 										"S'il est présent, le passage de texte associé via l’attribut WAI-ARIA aria-labelledby est pertinent.",
-										"S'il est présent, le contenu alternatif est pertinent."
+										"S'il est présent, le texte équivalent est pertinent."
 									]
 								},
 								{
 									"number": "1.3.7",
-									"title": "Pour chaque image bitmap (balise `<canvas>`) informative et ayant un contenu alternatif entre `<canvas>` et `</canvas>`, ce contenu alternatif est-il correctement restitué par les technologies d’assistance ?"
+									"title": "Pour chaque image bitmap (balise `<canvas>`) informative et ayant un texte équivalent entre `<canvas>` et `</canvas>`, celui-ci est-il correctement restitué par les technologies d’assistance ?"
 								},
 								{
 									"number": "1.3.8",
-									"title": "Pour chaque image informative ayant une alternative textuelle, l’alternative textuelle est-elle courte et concise (hors cas particuliers) ?"
+									"title": "Pour chaque image informative ayant un nom accessible, celui-ci est-il court et concis (hors cas particuliers) ?"
 								},
 								{
 									"number": "1.3.9",
-									"title": "Pour chaque image informative affichée via les styles ayant une alternative textuelle, cette alternative est-elle pertinente (hors cas particuliers) ?"
+									"title": "Pour chaque image informative affichée via les styles ayant un nom accessible, celui-ci est-il pertinent (hors cas particuliers) ?"
 								}
 							],
 							"appendix": {
-								"particularCases": "Il existe une gestion de cas particuliers lorsque l’image est utilisée comme CAPTCHA ou comme image-test. Dans cette situation, où il n’est pas possible de donner une alternative pertinente sans détruire l’objet du CAPTCHA ou du test, le critère est non applicable.\n\nNote : le cas des CAPTCHA et des images-test est traité de manière spécifique par le critère 16.1",
-								"technicalNotes": "Pour s'assurer de la pertinence de l'alternative textuelle, il est possible de se référer à l'arbre de décision https://www.w3.org/WAI/tutorials/images/decision-tree/fr"
+								"particularCases": "Le cas des images utilisées comme CAPTCHA et des images-test est traité dans la thématique 16 Captcha et identification et ce critère est non applicable.",
+								"technicalNotes": "Pour s'assurer de la pertinence du nom accessible, il est possible de se référer à l'arbre de décision https://www.w3.org/WAI/tutorials/images/decision-tree/fr"
 							}
 						},
 						"mobile": {
 							"tests": [
 								{
 									"number": "1.3.1",
-									"title": "L’alternative de chaque image informative restitué par les technologies d’assistance est-elle pertinente ?"
+									"title": "Le nom accessible de chaque image informative restitué par les technologies d’assistance est-il pertinent ?"
 								}
 							]
 						},
@@ -298,11 +297,11 @@
 							"tests": [
 								{
 									"number": "1.3.1",
-									"title": "Chaque image informative ayant une alternative textuelle, vérifie-t-elle ces conditions (hors cas particuliers) ?",
+									"title": "Chaque image informative ayant un nom accessible, vérifie-t-elle ces conditions (hors cas particuliers) ?",
 									"conditions": [
-										"S'il est présent, le contenu de la propriété `<titre>` est pertinent",
-										"S'il est présent, le contenu de la propriété `<description>` est pertinent",
-										"l'alternative textuelle est courte et concise (hors cas particuliers)"
+										"S'il est présent, le contenu de la propriété titre est pertinent",
+										"S'il est présent, le contenu de la propriété description est pertinent",
+										"S'il est présent, le contenu du texte alternatif est court et concis (hors cas particuliers)"
 									]
 								}
 							]
@@ -319,16 +318,16 @@
 									"number": "1.4.1",
 									"title": "Chaque image informative (balise `<img>`), qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image ;",
+										"Il existe un nom accessible contenant la référence à une description détaillée adjacente à l’image ;",
 										"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée ;",
-										"Il existe une description détaillée disponible avec l'attribut  aria-describedby."
+										"Il existe une description détaillée disponible avec l'attribut aria-describedby."
 									]
 								},
 								{
 									"number": "1.4.2",
 									"title": "Chaque image objet (balise `<object>` avec l’attribut type=\"image/…\") informative, qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image ;",
+										"Il existe un nom accessible contenant la référence à une description détaillée adjacente à l’image ;",
 										"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée ;",
 										"Il existe une description détaillée disponible avec l'attribut aria-describedby."
 									]
@@ -337,7 +336,7 @@
 									"number": "1.4.3",
 									"title": "Chaque image embarquée (balise `<embed>`) informative, qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image ;",
+										"Il existe un nom accessible contenant la référence à une description détaillée adjacente à l’image ;",
 										"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée.",
 										"Il existe une description détaillée disponible avec l'attribut aria-describedby"
 									]
@@ -346,8 +345,8 @@
 									"number": "1.4.4",
 									"title": "Chaque image vectorielle (balise `<svg>`) informative, qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"Il existe un attribut WAI-ARIA aria-label contenant l’alternative textuelle et une référence à une description détaillée adjacente ;",
-										"Il existe un attribut WAI-ARIA aria-labelledby associant un passage de texte faisant office d’alternative textuelle et un autre faisant office de description détaillée ;",
+										"Il existe un attribut WAI-ARIA aria-label contenant le nom accessible et une référence à une description détaillée adjacente ;",
+										"Il existe un attribut WAI-ARIA aria-labelledby associant un nom accessible et un autre faisant office de description détaillée ;",
 										"Il existe un attribut WAI-ARIA aria-describedby associant un passage de texte faisant office de description détaillée ;",
 										"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée."
 									]
@@ -356,8 +355,8 @@
 									"number": "1.4.5",
 									"title": "Chaque image bitmap (balise `<canvas>`) informative qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"Il existe un attribut WAI-ARIA aria-label contenant l’alternative textuelle et une référence à une description détaillée adjacente ;",
-										"Il existe un attribut WAI-ARIA aria-labelledby associant un passage de texte faisant office d’alternative textuelle et un autre faisant office de description détaillée ;",
+										"Il existe un attribut WAI-ARIA aria-label contenant le nom accessible et une référence à une description détaillée adjacente ;",
+										"Il existe un attribut WAI-ARIA aria-labelledby associant le nom accessibleet un passage de texte faisant office de description détaillée ;",
 										"Il existe un contenu textuel entre `<canvas>` et `</canvas>` faisant référence à une description détaillée adjacente à l’image bitmap ;",
 										"Il existe un contenu textuel entre `<canvas>` et `</canvas>` faisant office de description détaillée ;",
 										"Il existe un lien ou bouton adjacent permettant d’accéder à la description détaillée."
@@ -371,8 +370,8 @@
 									"number": "1.4.7",
 									"title": "Chaque balise possédant un attribut WAI-ARIA role=\"img\" informative, qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"Il existe un attribut WAI-ARIA aria-label contenant l’alternative textuelle et une référence à une description détaillée adjacente ;",
-										"Il existe un attribut WAI-ARIA aria-labelledby associant un passage de texte faisant office d’alternative textuelle et un autre faisant office de description détaillée ;",
+										"Il existe un attribut WAI-ARIA aria-label contenant le nom accessible et une référence à une description détaillée adjacente ;",
+										"Il existe un attribut WAI-ARIA aria-labelledby associant le nom accessible et un passage de texte faisant office de description détaillée ;",
 										"Il existe un attribut WAI-ARIA aria-describedby associant un passage de texte faisant office de description détaillée ;",
 										"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée."
 									]
@@ -381,7 +380,7 @@
 									"number": "1.4.8",
 									"title": "Chaque image informative affichée via les styles, qui nécessite une description détaillée, vérifie-t-elle une de ces conditions ?",
 									"conditions": [
-										"Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image.",
+										"Il existe un nom accessible contenant la référence à une description détaillée adjacente à l’image.",
 										"Il existe un lien ou bouton contenant l'élément lui même ou adjacent permettant d’accéder à la description détaillée."
 									]
 								}
@@ -394,7 +393,7 @@
 							"tests": [
 								{
 									"number": "1.4.1",
-									"title": "L’alternative de chaque image informative complexe  est-elle correctement restitué par les technologies d’assistance"
+									"title": "Le nom accessible de chaque image informative complexe est-elle correctement restitué par les technologies d’assistance"
 								}
 							]
 						},
@@ -422,7 +421,7 @@
 									"number": "1.5.1",
 									"title": "Chaque image (balise `<img>`) informative, ayant une description détaillée, vérifie-t-elle ces conditions ?",
 									"conditions": [
-										"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
+										"La description détaillée dans la page et signalée par le nom accessible est pertinente.",
 										"La description détaillée via un lien ou un bouton adjacent est pertinente.",
 										"Le passage de texte associé via l’attribut WAI-ARIA aria-describedby est pertinent."
 									]
@@ -431,7 +430,7 @@
 									"number": "1.5.2",
 									"title": "Chaque image objet (balise `<object>` avec l’attribut type=\"image/…\") informative, ayant une description détaillée, vérifie-t-elle ces conditions ?",
 									"conditions": [
-										"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
+										"La description détaillée dans la page et signalée par le nom accessible est pertinente.",
 										"La description détaillée adjacente à l’image objet est pertinente.",
 										"La description détaillée via un lien ou un bouton adjacent est pertinente.",
 										"Le passage de texte associé via l’attribut WAI-ARIA aria-describedby est pertinent."
@@ -441,7 +440,7 @@
 									"number": "1.5.3",
 									"title": "Chaque image embarquée (balise `<embed>` avec l’attribut type=\"image/…\") informative, ayant une description détaillée, vérifie-t-elle ces conditions ?",
 									"conditions": [
-										"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
+										"La description détaillée dans la page et signalée par le nom accessible est pertinente.",
 										"La description détaillée adjacente à l’image embarquée est pertinente.",
 										"La description détaillée via un lien ou un bouton adjacent est pertinente.",
 										"Le passage de texte associé via l’attribut WAI-ARIA aria-describedby est pertinent."
@@ -451,7 +450,7 @@
 									"number": "1.5.4",
 									"title": "Chaque image vectorielle (balise `<svg>`) informative, ayant une description détaillée, vérifie-t-elle ces conditions ?",
 									"conditions": [
-										"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
+										"La description détaillée dans la page et signalée par le nom accessible est pertinente.",
 										"La description détaillée dans la page et signalée par le texte contenu dans la balise `<desc>` ou `<title>` est pertinente.",
 										"La description détaillée adjacente contenue dans la balise `<desc>` est pertinente.",
 										"La description détaillée via un lien ou un bouton adjacent est pertinente.",
@@ -462,7 +461,7 @@
 									"number": "1.5.5",
 									"title": "Chaque image bitmap (balise `<canvas>`) informative, ayant une description détaillée, vérifie-t-elle ces conditions ?",
 									"conditions": [
-										"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
+										"La description détaillée dans la page et signalée par le nom accessible est pertinente.",
 										"La description détaillée dans la page et signalée par le texte contenu entre `<canvas>` et `</canvas>` est pertinente.",
 										"La description détaillée contenue entre `<canvas>` et `</canvas>` est pertinente.",
 										"La description détaillée adjacente à l’image bitmap est pertinente.",
@@ -474,7 +473,7 @@
 									"number": "1.5.6",
 									"title": "Chaque image informative affichée via les styles, ayant une description détaillée, vérifie-t-elle ces conditions ?",
 									"conditions": [
-										"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
+										"La description détaillée dans la page et signalée par le nom accessible est pertinente.",
 										"La description détaillée, fournie via un lien ou via un bouton contenant l'élément ou lui étant adjacent, est pertinente."
 									]
 								}
@@ -489,7 +488,7 @@
 									"number": "1.5.1",
 									"title": "Chaque image informative, ayant une description détaillée, vérifie-t-elle ces conditions ?",
 									"conditions": [
-										"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
+										"La description détaillée dans la page et signalée par le nom accessible est pertinente.",
 										"La description détaillée via un lien ou un bouton adjacent est pertinente."
 									]
 								}
@@ -1432,7 +1431,7 @@
 							"tests": [
 								{
 									"number": "4.10.1",
-									"title": "Pour chaque média temporel synchronisé ayant des sous-titres et en présence d’une fonctionnalité permettant de modifier leur présentation,  celle-ci vérifie-t-elle ces conditions ?",
+									"title": "Pour chaque média temporel synchronisé ayant des sous-titres et en présence d’une fonctionnalité permettant de modifier leur présentation, celle-ci vérifie-t-elle ces conditions ?",
 									"conditions": [
 										"Les paramètres système de présentation des sous-titres définis par la personne utilisatrice s’appliquent aux sous-titres.",
 										"La fonctionnalité de modification de l'apparence des sous-titres permet de choisir à minima la couleur et l'opacité de l'arrière-plan, la couleur du texte, la police de caractère, la taille de caractère et la couleur du contour des caractères"
@@ -1447,7 +1446,7 @@
 							"tests": [
 								{
 									"number": "4.10.1",
-									"title": "Pour chaque média temporel synchronisé ayant des sous-titres et en présence d’une fonctionnalité permettant de modifier leur présentation,  celle-ci vérifie-t-elle ces conditions ?",
+									"title": "Pour chaque média temporel synchronisé ayant des sous-titres et en présence d’une fonctionnalité permettant de modifier leur présentation, celle-ci vérifie-t-elle ces conditions ?",
 									"conditions": [
 										"Les paramètres système de présentation des sous-titres définis par la personne utilisatrice s’appliquent aux sous-titres.",
 										"La fonctionnalité de modification de l'apparence des sous-titres permet de choisir à minima la couleur et l'opacité de l'arrière-plan, la couleur du texte, la police de caractère, la taille de caractère et la couleur du contour des caractères"
@@ -2424,26 +2423,12 @@
 			"criteria": [
 				{
 					"number": "8.1",
-					"title": "Le document indique et respecte un format standardisé",
-					"referentiels": {
-						"bureautique": {
-							"tests": [
-								{
-									"number": "8.1.1",
-									"title": "Le document indique-t-il et respecte-t-il un format standardisé?"
-								}
-							]
-						}
-					}
-				},
-				{
-					"number": "8.2",
 					"title": "La langue par défaut est définie",
 					"referentiels": {
 						"web": {
 							"tests": [
 								{
-									"number": "8.2.1",
+									"number": "8.1.1",
 									"title": "L’indication de langue par défaut vérifie-t-elle une de ces conditions ?",
 									"conditions": [
 										"L’indication de la langue de la page (attribut lang et/ou xml:lang) est donnée pour l’élément html.",
@@ -2455,7 +2440,7 @@
 						"mobile": {
 							"tests": [
 								{
-									"number": "8.2.1",
+									"number": "8.1.1",
 									"title": "Les textes sont-ils restitués par les technologies d’assistance dans la langue principale de l'application ?"
 								}
 							]
@@ -2463,7 +2448,7 @@
 						"bureautique": {
 							"tests": [
 								{
-									"number": "8.2.1",
+									"number": "8.1.1",
 									"title": "Pour chaque document, l'une de ces conditions est-elle respectée :",
 									"conditions": [
 										"Les textes sont restitués par les technologies d’assistance dans la langue principale du document",
@@ -2476,13 +2461,13 @@
 					}
 				},
 				{
-					"number": "8.3",
+					"number": "8.2",
 					"title": "La langue définie par défaut est pertinente",
 					"referentiels": {
 						"web": {
 							"tests": [
 								{
-									"number": "8.3.1",
+									"number": "8.2.1",
 									"title": "Lorsqu'une langue par défaut est definie, le code de langue vérifie-t-il ces conditions ?",
 									"conditions": [
 										"Le code de langue est valide.",
@@ -2494,13 +2479,13 @@
 					}
 				},
 				{
-					"number": "8.4",
+					"number": "8.3",
 					"title": "Chaque changement de langue est indiqué (hors cas particuliers)",
 					"referentiels": {
 						"web": {
 							"tests": [
 								{
-									"number": "8.4.1",
+									"number": "8.3.1",
 									"title": "Chaque texte écrit dans une langue différente de la langue par défaut vérifie-t-il une de ces conditions (hors cas particuliers) ?",
 									"conditions": [
 										"L’indication de langue est donnée sur l’élément contenant le texte (attribut lang et/ou xml:lang).",
@@ -2515,7 +2500,7 @@
 						"mobile": {
 							"tests": [
 								{
-									"number": "8.4.1",
+									"number": "8.3.1",
 									"title": "Les changements de langue dans le texte sont-ils restitués par les technologies d'assistance dans la bonne langue ?"
 								}
 							]
@@ -2523,7 +2508,7 @@
 						"bureautique": {
 							"tests": [
 								{
-									"number": "8.4.1",
+									"number": "8.3.1",
 									"title": "Les changements de langue dans le texte sont-ils restitués par les technologies d'assistance dans la bonne langue ?"
 								}
 							]
@@ -2531,13 +2516,13 @@
 					}
 				},
 				{
-					"number": "8.5",
+					"number": "8.4",
 					"title": "Chaque changement de langue est pertinent",
 					"referentiels": {
 						"web": {
 							"tests": [
 								{
-									"number": "8.5.1",
+									"number": "8.4.1",
 									"title": "Le code de langue de chaque changement de langue vérifie-t-il ces conditions ?",
 									"conditions": [
 										"Le code de langue est valide.",
@@ -2549,13 +2534,13 @@
 					}
 				},
 				{
-					"number": "8.6",
+					"number": "8.5",
 					"title": "Le document a un titre",
 					"referentiels": {
 						"web": {
 							"tests": [
 								{
-									"number": "8.6.1",
+									"number": "8.5.1",
 									"title": "Chaque document a-t-il un titre de page (balise `<title>`) ?"
 								}
 							]
@@ -2563,11 +2548,11 @@
 						"bureautique": {
 							"tests": [
 								{
-									"number": "8.6.1",
+									"number": "8.5.1",
 									"title": "Le document a-t-il un titre défini dans ses propriétés globales ?"
 								},
 								{
-									"number": "8.6.2",
+									"number": "8.5.2",
 									"title": "Le nom du fichier reprend-il le titre du document afin de le rendre identifiable ?"
 								}
 							]
@@ -2575,13 +2560,13 @@
 					}
 				},
 				{
-					"number": "8.7",
+					"number": "8.6",
 					"title": "Le titre du document est pertinent",
 					"referentiels": {
 						"web": {
 							"tests": [
 								{
-									"number": "8.7.1",
+									"number": "8.6.1",
 									"title": "Pour chaque document ayant un titre de page (balise `<title>`), le contenu de cette balise est-il pertinent ?"
 								}
 							]
@@ -2589,7 +2574,7 @@
 						"bureautique": {
 							"tests": [
 								{
-									"number": "8.7.1",
+									"number": "8.6.1",
 									"title": "Le contenu du titre du document est-il pertinent ?"
 								}
 							]
@@ -2597,17 +2582,17 @@
 					}
 				},
 				{
-					"number": "8.8",
+					"number": "8.7",
 					"title": "Les changements du sens de lecture sont signalés",
 					"referentiels": {
 						"web": {
 							"tests": [
 								{
-									"number": "8.8.1",
+									"number": "8.7.1",
 									"title": "Chaque texte dont le sens de lecture est différent du sens de lecture par défaut est-il contenu dans une balise possédant un attribut dir ?"
 								},
 								{
-									"number": "8.8.2",
+									"number": "8.7.2",
 									"title": "Chaque changement du sens de lecture (attribut dir) vérifie-t-il ces conditions ?",
 									"conditions": [
 										"La valeur de l’attribut dir est conforme (rtl ou ltr)",
@@ -2668,7 +2653,7 @@
 								},
 								{
 									"number": "9.1.2",
-									"title": "Le contenu de chaque titre est-il pertinent  ?"
+									"title": "Le contenu de chaque titre est-il pertinent ?"
 								},
 								{
 									"number": "9.1.3",
@@ -3042,7 +3027,7 @@
 							"tests": [
 								{
 									"number": "10.6.1",
-									"title": "Pour chaque composant d’interface recevant le focus au clavier, le composant d’interface n’est pas complètement masqué lorsqu’il reçoit le focus, cette règle est-elle respectée  (hors cas particuliers) ?"
+									"title": "Pour chaque composant d’interface recevant le focus au clavier, le composant d’interface n’est pas complètement masqué lorsqu’il reçoit le focus, cette règle est-elle respectée (hors cas particuliers) ?"
 								}
 							],
 							"appendix": {
@@ -3053,7 +3038,7 @@
 							"tests": [
 								{
 									"number": "10.6.1",
-									"title": "Pour chaque composant d’interface recevant le focus, le composant d’interface n’est pas complètement masqué lorsqu’il reçoit le focus, cette règle est-elle respectée (hors cas particuliers)  ?"
+									"title": "Pour chaque composant d’interface recevant le focus, le composant d’interface n’est pas complètement masqué lorsqu’il reçoit le focus, cette règle est-elle respectée (hors cas particuliers) ?"
 								}
 							]
 						}
@@ -3105,7 +3090,7 @@
 							"tests": [
 								{
 									"number": "10.8.1",
-									"title": "Chaque contenu caché  vérifie-t-il une de ces conditions?",
+									"title": "Chaque contenu caché vérifie-t-il une de ces conditions?",
 									"conditions": [
 										"Le contenu caché a vocation à être ignoré par les technologies d’assistance.",
 										"Le contenu caché n’a pas vocation à être ignoré par les technologies d’assistance et est rendu restituable par les technologies d’assistance suite à une action de l’utilisateur réalisable au clavier ou par tout dispositif de pointage sur un élément précédent le contenu caché ou suite à un repositionnement du focus dessus."
@@ -3445,7 +3430,7 @@
 								},
 								{
 									"number": "11.2.2",
-									"title": "Le nom accessible permet-il de connaître la fonction exacte du champ de formulaire auquel il est associé (hors cas particuluiers)?"
+									"title": "Le nom accessible permet-il de connaître la fonction exacte du champ de formulaire auquel il est associé (hors cas particuliers)?"
 								},
 								{
 									"number": "11.2.3",
@@ -3669,7 +3654,7 @@
 									"number": "11.8.3",
 									"title": "Chaque bouton de type image (balise `<input>` avec l’attribut type=\"image\") porteur d’information, qui nécessite une description détaillée, vérifie-t-il une de ces conditions ?",
 									"conditions": [
-										"Il existe une alternative textuelle contenant la référence à une description détaillée adjacente à l’image.",
+										"Il existe un nom accessible contenant la référence à une description détaillée adjacente à l’image.",
 										"Il existe un lien ou un bouton adjacent permettant d’accéder à la description détaillée.",
 										"Il existe un attribut WAI-ARIA aria-describedby associant un passage de texte faisant office de description détaillée."
 									]
@@ -3678,7 +3663,7 @@
 									"number": "11.8.4",
 									"title": "Chaque bouton de type image (balise `<input>` avec l’attribut type=\"image\") porteur d’information, ayant une description détaillée, vérifie-t-il ces conditions ?",
 									"conditions": [
-										"La description détaillée dans la page et signalée par l’alternative textuelle est pertinente.",
+										"La description détaillée dans la page et signalée par le nom accessible est pertinente.",
 										"La description détaillée via un lien ou un bouton adjacent est pertinente.",
 										"Le passage de texte associé via l’attribut WAI-ARIA aria-describedby est pertinent."
 									]
@@ -5143,7 +5128,7 @@
 							"tests": [
 								{
 									"number": "14.2.1",
-									"title": "Le mécanisme d’activation de chaque fonctionnalité d’accessibilité répond-il aux besoins des personnes utilisatrices concernées  (hors cas particuliers) ?"
+									"title": "Le mécanisme d’activation de chaque fonctionnalité d’accessibilité répond-il aux besoins des personnes utilisatrices concernées (hors cas particuliers) ?"
 								}
 							]
 						},
@@ -5355,7 +5340,7 @@
 		},
 		{
 			"number": "16",
-			"title": "Services d’assistance",
+			"title": "Captcha",
 			"criteria": [
 				{
 					"number": "16.1",
@@ -5365,7 +5350,7 @@
 							"tests": [
 								{
 									"number": "16.1.1",
-									"title": "Le nom accessible de chaque test ou CAPTCHA permet-il d’identifier la nature et la fonction du test ou du CAPTCHA  ?"
+									"title": "Le nom accessible de chaque test ou CAPTCHA permet-il d’identifier la nature et la fonction du test ou du CAPTCHA ?"
 								},
 								{
 									"number": "16.1.2",
@@ -5578,7 +5563,7 @@
 							"tests": [
 								{
 									"number": "17.4.1",
-									"title": "Chaque fonctionnalité de restitution d'échanges écrits en temps réel (RTT) permet-elle de consulter l'ensemble des échanges  :",
+									"title": "Chaque fonctionnalité de restitution d'échanges écrits en temps réel (RTT) permet-elle de consulter l'ensemble des échanges :",
 									"conditions": [
 										"pendant la communication ;",
 										"après la cloture de celle-ci si elle a été enregistrée."
@@ -5621,7 +5606,7 @@
 							"tests": [
 								{
 									"number": "17.6.1",
-									"title": "Chaque fonctionnalité  de communication orale en direct multilocuteurs qui inclut une fonctionnalité de communication écrite en temps réel (RTT) permet-elle au minimum la réception et le traitement de 90 caractères par seconde (CPS) depuis au moins 3 sources (chacune avec un débit de 30 CPS) ?"
+									"title": "Chaque fonctionnalité de communication orale en direct multilocuteurs qui inclut une fonctionnalité de communication écrite en temps réel (RTT) permet-elle au minimum la réception et le traitement de 90 caractères par seconde (CPS) depuis au moins 3 sources (chacune avec un débit de 30 CPS) ?"
 								}
 							]
 						},
@@ -5629,7 +5614,7 @@
 							"tests": [
 								{
 									"number": "17.6.1",
-									"title": "Chaque fonctionnalité  de communication orale en direct multilocuteurs qui inclut une fonctionnalité de communication écrite en temps réel (RTT) permet-elle au minimum la réception et le traitement de 90 caractères par seconde (CPS) depuis au moins 3 sources (chacune avec un débit de 30 CPS) ?"
+									"title": "Chaque fonctionnalité de communication orale en direct multilocuteurs qui inclut une fonctionnalité de communication écrite en temps réel (RTT) permet-elle au minimum la réception et le traitement de 90 caractères par seconde (CPS) depuis au moins 3 sources (chacune avec un débit de 30 CPS) ?"
 								}
 							]
 						}
@@ -5643,7 +5628,7 @@
 							"tests": [
 								{
 									"number": "17.7.1",
-									"title": "Chaque fonctionnalité  de communication orale en direct multilocuteurs qui inclut une fonctionnalité de communication écrite en temps réel (RTT) gère-t-elle correctement tout texte Unicode des étendues suivantes ·",
+									"title": "Chaque fonctionnalité de communication orale en direct multilocuteurs qui inclut une fonctionnalité de communication écrite en temps réel (RTT) gère-t-elle correctement tout texte Unicode des étendues suivantes ·",
 									"conditions": [
 										"Latin de base et supplément Latin-1 (étendue U+0000-U+00FF)",
 										"émojis de la plateforme sous-jacente ;",
@@ -5658,7 +5643,7 @@
 							"tests": [
 								{
 									"number": "17.7.1",
-									"title": "Chaque fonctionnalité  de communication orale en direct multilocuteurs qui inclut une fonctionnalité de communication écrite en temps réel (RTT) gère correctement tout texte Unicode des étendues suivantes ·",
+									"title": "Chaque fonctionnalité de communication orale en direct multilocuteurs qui inclut une fonctionnalité de communication écrite en temps réel (RTT) gère correctement tout texte Unicode des étendues suivantes ·",
 									"conditions": [
 										"Latin de base et supplément Latin-1 (étendue U+0000-U+00FF)",
 										"émojis de la plateforme sous-jacente ;",
@@ -5679,7 +5664,7 @@
 							"tests": [
 								{
 									"number": "17.8.1",
-									"title": "Pour chaque application web de communication orale et écrite en temps réel, un indicateur  de l’activité orale, à la fois visuel et accessible aux technologies d’assistance, est-il présent ?"
+									"title": "Pour chaque application web de communication orale et écrite en temps réel, un indicateur de l’activité orale, à la fois visuel et accessible aux technologies d’assistance, est-il présent ?"
 								},
 								{
 									"number": "17.8.2",
@@ -5691,7 +5676,7 @@
 							"tests": [
 								{
 									"number": "17.8.1",
-									"title": "Pour chaque application de communication orale et écrite en temps réel, un indicateur  de l’activité orale, à la fois visuel et accessible aux technologies d’assistance, est-il présent ?"
+									"title": "Pour chaque application de communication orale et écrite en temps réel, un indicateur de l’activité orale, à la fois visuel et accessible aux technologies d’assistance, est-il présent ?"
 								},
 								{
 									"number": "17.8.2",

@@ -1,1 +1,1 @@
-Le document a un titre
+Le titre du document est pertinent

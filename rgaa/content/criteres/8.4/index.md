@@ -1,1 +1,1 @@
-Chaque changement de langue est indiqué (hors cas particuliers)
+Chaque changement de langue est pertinent
