@@ -179,6 +179,7 @@ const useStyles = tss
 			marginBottom: fr.spacing("8v"),
 
 			"& > h5": {
+				fontWeight: 400,
 				marginBottom: 0,
 			},
 
