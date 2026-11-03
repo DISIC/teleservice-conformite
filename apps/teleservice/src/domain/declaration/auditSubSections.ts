@@ -9,6 +9,10 @@ import {
 	auditToNonConformitiesValues,
 	auditToToolsValues,
 } from "~/forms/audit/auditSchema";
+import {
+	reportsBlockingElements,
+	requiresUsedTools,
+} from "~/domain/declaration/rgaaVersion";
 import type { SectionValidation } from "./sectionValidation";
 
 /**
@@ -68,7 +72,8 @@ export const AUDIT_SUB_SECTIONS: Record<
 		title: "Outils et environnements",
 		isToComplete: realisedSubSectionToComplete(
 			(d) =>
-				(d.audit?.usedTools?.length ?? 0) > 0 &&
+				(!requiresUsedTools(d.audit?.rgaa_version) ||
+					(d.audit?.usedTools?.length ?? 0) > 0) &&
 				(d.audit?.testEnvironments?.length ?? 0) > 0,
 		),
 		validation: {
@@ -101,7 +106,7 @@ export const AUDIT_SUB_SECTIONS: Record<
 		title: "Non conformités & dérogations",
 		// Only the blocking elements are mandatory here, and only once the audit reported some.
 		isToComplete: (d) =>
-			d.audit?.hasBlockingElements === true && !d.audit?.blockingElements,
+			reportsBlockingElements(d.audit) && !d.audit?.blockingElements,
 		validation: {
 			schema: auditNonConformities,
 			fromDeclaration: (d) => auditToNonConformitiesValues(d.audit),

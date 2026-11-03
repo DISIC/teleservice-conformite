@@ -27,9 +27,7 @@ export function PublishedHeader({
 				title: `Accueil ${SERVICE_NAME}`,
 			}}
 			serviceTitle={PUBLISHED_HEADER_TITLE}
-			serviceTagline={[declaration.name, declaration.url]
-				.filter((part) => part.trim().length > 0)
-				.join(" ")}
+			serviceTagline={declaration.name}
 			quickAccessItems={[
 				<p
 					key="publication"

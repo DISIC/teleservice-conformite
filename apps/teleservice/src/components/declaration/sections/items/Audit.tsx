@@ -1,6 +1,7 @@
 import type { StandardSchemaV1 } from "@tanstack/react-form";
 import type { ComponentProps, ReactNode } from "react";
 import type { AuditSubSectionSlug } from "~/domain/declaration/auditSubSections";
+import { requiresUsedTools } from "~/domain/declaration/rgaaVersion";
 import { isSectionToComplete } from "~/domain/declaration/sections";
 import {
 	AuditGeneralForm,
@@ -124,6 +125,7 @@ export const auditOutilsSection = auditSubSection<
 			form={form}
 			readOnly={readOnly}
 			showNotice={!isRealised(declaration)}
+			showUsedTools={requiresUsedTools(declaration.audit?.rgaa_version)}
 		/>
 	),
 });

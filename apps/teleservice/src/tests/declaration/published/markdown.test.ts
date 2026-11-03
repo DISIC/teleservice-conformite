@@ -37,6 +37,7 @@ function publishedDeclaration(
 			rgaa_version: "RGAA 5",
 			realised_by: "Orion audit",
 			rate: 74,
+			blockingElements: "",
 			nonCompliantElements: [
 				"- La vidéo de présentation de la demande d’aide n’a pas de transcription.",
 				"- Le bouton d’envoi du formulaire de déclaration contient un intitulé « Retour » au lieu de « Envoi »",
@@ -81,6 +82,7 @@ describe("buildPublishedMarkdown", () => {
 						rgaa_version: "RGAA 4",
 						realised_by: "",
 						rate: 0,
+						blockingElements: "",
 						nonCompliantElements: "",
 						disproportionnedCharge: "",
 						optionalElements: "",
@@ -162,7 +164,7 @@ describe("buildPublishedMarkdown", () => {
 			expect(md).toContain("74%");
 		});
 
-		it("omits every audit-derived section when no audit was performed", () => {
+		it("states non-conformity in the test results when no audit was performed", () => {
 			const md = buildPublishedMarkdown(
 				publishedDeclaration({
 					audit: { ...publishedDeclaration().audit, isRealised: false },
@@ -172,10 +174,65 @@ describe("buildPublishedMarkdown", () => {
 			expect(md).toContain(
 				"n’a pas fait l’objet d’un audit de conformité et est réputé **non conforme**",
 			);
-			expect(md).not.toContain("Résultats des tests");
+			expect(md).toContain(
+				"### Résultats des tests\n\nEn l’absence d’audit, le site **Impôts particulier (SIP)** est **non conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA).",
+			);
+			expect(md).not.toContain("L’audit de conformité réalisé par");
 			expect(md).not.toContain("Contenus non accessibles");
 			expect(md).not.toContain("Environnement de test");
 			expect(md).not.toContain("Pages du site");
+		});
+	});
+
+	describe("test results", () => {
+		it("states non-conformity instead of the rate below 50%", () => {
+			const md = buildPublishedMarkdown(
+				publishedDeclaration({
+					audit: { ...publishedDeclaration().audit, rate: 49 },
+				}),
+				{ today: TODAY },
+			);
+			expect(md).toContain(
+				"### Résultats des tests\n\nLe site **Impôts particulier (SIP)** est **non conforme** avec le référentiel général d’amélioration de l’accessibilité version 5.",
+			);
+			expect(md).not.toContain("révèle que");
+		});
+
+		it("states non-conformity from 50% when there are blocking elements", () => {
+			const md = buildPublishedMarkdown(
+				publishedDeclaration({
+					audit: {
+						...publishedDeclaration().audit,
+						rate: 80,
+						blockingElements: "Paiement inaccessible au clavier",
+					},
+				}),
+				{ today: TODAY },
+			);
+			expect(md).toContain(
+				"### Résultats des tests\n\nLe site **Impôts particulier (SIP)** est **non conforme** avec le référentiel général d’amélioration de l’accessibilité version 5.",
+			);
+			expect(md).not.toContain("révèle que");
+			expect(md).toContain(
+				'<p class="fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon">Non conforme</p>',
+			);
+			expect(md).toContain(
+				"Le site **Impôts particulier (SIP)** est **non conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 5.",
+			);
+			expect(md).not.toContain("partiellement conforme");
+			expect(md).toContain(
+				"### Éléments bloquants\n\nPaiement inaccessible au clavier",
+			);
+		});
+
+		it("reports the audit rate from 50%", () => {
+			const md = buildPublishedMarkdown(
+				publishedDeclaration({
+					audit: { ...publishedDeclaration().audit, rate: 50 },
+				}),
+				{ today: TODAY },
+			);
+			expect(md).toContain("révèle que **50%** des critères");
 		});
 	});
 
@@ -183,7 +240,19 @@ describe("buildPublishedMarkdown", () => {
 		it("names the service type", () => {
 			expect(
 				buildPublishedMarkdown(publishedDeclaration(), { today: TODAY }),
-			).toContain("s’applique au **site web www.impotspparticulier.gouv.fr**");
+			).toContain(
+				"s’applique au **site web [Impôts particulier (SIP)](https://www.impotspparticulier.gouv.fr)**",
+			);
+		});
+
+		it("names a mobile application with its own article", () => {
+			const md = buildPublishedMarkdown(
+				publishedDeclaration({ appKindLabel: "Application mobile" }),
+				{ today: TODAY },
+			);
+			expect(md).toContain(
+				"s’applique à **l’application mobile [Impôts particulier (SIP)](https://www.impotspparticulier.gouv.fr)**",
+			);
 		});
 
 		it("omits the catch-all « Autre »", () => {
@@ -191,9 +260,34 @@ describe("buildPublishedMarkdown", () => {
 				publishedDeclaration({ appKindLabel: "Autre" }),
 				{ today: TODAY },
 			);
-			expect(md).toContain("s’applique à **www.impotspparticulier.gouv.fr**");
+			expect(md).toContain(
+				"s’applique à **[Impôts particulier (SIP)](https://www.impotspparticulier.gouv.fr)**",
+			);
 			expect(md).not.toContain("Autre");
 			expect(md).toContain("Le service **Impôts particulier (SIP)");
+		});
+
+		it("names the service without a link when it has no URL", () => {
+			const md = buildPublishedMarkdown(publishedDeclaration({ url: "" }), {
+				today: TODAY,
+			});
+			expect(md).toContain(
+				"s’applique au **site web Impôts particulier (SIP)**",
+			);
+			expect(md).not.toContain("]()");
+		});
+
+		it("keeps the link intact when the name or URL holds link syntax", () => {
+			const md = buildPublishedMarkdown(
+				publishedDeclaration({
+					name: "Portail [beta]",
+					url: "https://example.fr/a (b)",
+				}),
+				{ today: TODAY },
+			);
+			expect(md).toContain(
+				"[Portail \\[beta\\]](<https://example.fr/a%20(b)>)",
+			);
 		});
 	});
 
@@ -209,9 +303,9 @@ describe("buildPublishedMarkdown", () => {
 			{ today: TODAY },
 		);
 		expect(md).toContain(
-			"- **Schéma pluriannuel de mise en accessibilité** : https://schema.gouv.fr ;",
+			"- **[Schéma pluriannuel de mise en accessibilité](https://schema.gouv.fr)**",
 		);
-		expect(md).toContain("- **Plan d’actions** : https://plan.gouv.fr");
+		expect(md).toContain("- **[Plan d’actions](https://plan.gouv.fr)**");
 	});
 });
 

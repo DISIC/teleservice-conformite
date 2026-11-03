@@ -156,6 +156,7 @@ describe("auditContents", () => {
 describe("auditTools", () => {
 	it("requires at least one tool and one test environment", () => {
 		const result = auditTools.safeParse({
+			rgaa_version: "rgaa_4",
 			usedTools: [],
 			testEnvironments: [],
 		});
@@ -165,7 +166,18 @@ describe("auditTools", () => {
 		]);
 		expect(
 			auditTools.safeParse({
+				rgaa_version: "rgaa_4",
 				usedTools: ["wave"],
+				testEnvironments: ["voiceover_safari"],
+			}).success,
+		).toBe(true);
+	});
+
+	it("does not require tools for an RGAA 5 audit", () => {
+		expect(
+			auditTools.safeParse({
+				rgaa_version: "rgaa_5",
+				usedTools: [],
 				testEnvironments: ["voiceover_safari"],
 			}).success,
 		).toBe(true);
@@ -207,6 +219,7 @@ describe("auditToToolsValues", () => {
 				testEnvironments: [{ name: "voiceover_safari" }],
 			} as unknown as Audit),
 		).toEqual({
+			rgaa_version: "rgaa_4",
 			usedTools: ["wave", "nvda"],
 			testEnvironments: ["voiceover_safari"],
 		});

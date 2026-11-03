@@ -33,10 +33,10 @@ Every Section's content lives on the `declarations` row itself: Infos as top-lev
 
 One of the four children of the **Audit** Section, surfaced as nested items in the `SideMenu`:
 
-- **Réalisation de l'audit** (slug `audit-general`) — `isAuditRealised`, date, RGAA version, realisedBy, rate
-- **Outils et environnements** (slug `audit-outils`) — usedTools + testEnvironments
+- **Réalisation de l'audit** (slug `audit-general`) — `isAuditRealised`, date, RGAA version, realisedBy, rate, hasBlockingElements (RGAA 5 only)
+- **Outils et environnements** (slug `audit-outils`) — usedTools (RGAA 4 only) + testEnvironments
 - **Échantillon audité** (slug `audit-contenus`) — compliantElements
-- **Non conformités & dérogations** (slug `audit-non-conformites`) — nonCompliantElements, disproportionnedCharge, optionalElements
+- **Non conformités & dérogations** (slug `audit-non-conformites`) — blockingElements (RGAA 5 only, required once the audit reported some), nonCompliantElements, disproportionnedCharge, optionalElements
 
 A Sub-section is a **URL-addressable, independently-saved slice** of the Audit Section: each has its own `?section=<slug>` destination, its own self-contained form, and saves on its own (ADR-0002). It is _not_ a top-level [[section]] — "Audit" is a menu-only **virtual parent** (`SectionParentKey`), reached via `audit-general`; the four Sub-sections are its nested `SideMenu` children, treated in code as ordinary `SectionMeta` carrying `parent: "audit"`.
 
@@ -52,7 +52,7 @@ When `audit.isRealised === false`, only "Réalisation de l'audit" is meaningful;
 
 A titled grouping of one or more related fields **inside** a [[sub-section]]'s body. A Sub-section contains one or more Parts; each Part has its own heading and is visually a self-contained bordered card. In standalone read-only mode each card hosts the Section's Modifier button — several Parts mean several buttons, all entering edit for the whole Section.
 
-Examples: the **Outils et environnements** Sub-section has two Parts — "Outils d'assistances" (`usedTools`) and "Environnements de tests" (`testEnvironments`). **Non conformités & dérogations** has two Parts — "Non conformités" (`nonCompliantElements`) and "Dérogations" (`optionalElements` + `disproportionnedCharge`). Single-Part Sub-sections (e.g. **Échantillon audité**) have exactly one Part.
+Examples: the **Outils et environnements** Sub-section has two Parts — "Outils d'assistances" (`usedTools`) and "Environnements de tests" (`testEnvironments`); an RGAA 5 audit has no tools list, so only the second shows. **Non conformités & dérogations** has two Parts — "Non conformités" (`nonCompliantElements`) and "Dérogations" (`optionalElements` + `disproportionnedCharge`). Single-Part Sub-sections (e.g. **Échantillon audité**) have exactly one Part.
 
 **Avoid:** "block" (conversational only, see Out of scope), "section/sub-section" (reserved for the two higher levels).
 
@@ -100,7 +100,7 @@ The `isAuditRealised` boolean on the Declaration's `audit` group. When `false`, 
 
 Status badges shown on `SideMenu` items and on the Section's own title (and historically on the Démarche page tiles):
 
-- **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit, `Réalisation de l'audit` is flagged until the realisation question is answered; the other Sub-sections are flagged per-slice (e.g. an empty `usedTools` or `testEnvironments` list for Outils) **only once the audit is declared realised** — before that answer they stay quiet. The Audit parent is flagged when any of its Sub-sections is.
+- **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit, `Réalisation de l'audit` is flagged until the realisation question is answered; the other Sub-sections are flagged per-slice (e.g. an empty `testEnvironments` list for Outils, or an empty `usedTools` list on an RGAA 4 audit) **only once the audit is declared realised** — before that answer they stay quiet. The Audit parent is flagged when any of its Sub-sections is.
 - **À vérifier** — the Section's `toVerify` flag is `true`, set when content was AI-generated and needs human review. Tracked at Section level only; not fanned out to Sub-sections.
 - **Non applicable** — the declarant's answers put the Section out of scope, so there is nothing to fill: the three realised-only Audit Sub-sections while the audit is declared "non réalisé". A Skipped [[schema|Schéma]] is _not_ flagged — skipping is a deliberate choice, not a loss of scope.
 - **Modifié** — _(future)_ a Section changed since the last publish. The badge **variant** exists in `SECTION_BADGE` but the per-section diff against `publishedContent` is not yet implemented; only [[declaration-state|Declaration state]] currently surfaces "Modifié", at the declaration level.

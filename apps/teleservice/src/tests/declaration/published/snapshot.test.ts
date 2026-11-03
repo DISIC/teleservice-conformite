@@ -11,16 +11,30 @@ describe("extractDeclarationContentToPublish", () => {
 			completeDeclaration({
 				audit: {
 					isRealised: true,
-					rgaa_version: "rgaa_5",
+					rgaa_version: "rgaa_4",
 					usedTools: [{ name: "wave" }],
 					testEnvironments: [{ name: "voiceover_safari" }],
 				},
 			} as never),
 		);
 		expect(content.appKindLabel).toBe("Site web");
-		expect(content.audit.rgaa_version).toBe("RGAA 5");
+		expect(content.audit.rgaa_version).toBe("RGAA 4");
 		expect(content.audit.usedTools).toEqual(["Wave"]);
 		expect(content.audit.testEnvironments).toEqual(["VoiceOver (Safari)"]);
+	});
+
+	it("leaves the assessment tools out of an RGAA 5 declaration", () => {
+		const content = extractDeclarationContentToPublish(
+			completeDeclaration({
+				audit: {
+					isRealised: true,
+					rgaa_version: "rgaa_5",
+					usedTools: [{ name: "wave" }],
+				},
+			} as never),
+		);
+		expect(content.audit.rgaa_version).toBe("RGAA 5");
+		expect(content.audit.usedTools).toEqual([]);
 	});
 
 	it("publishes only the contact's reachable channels, not their name", () => {
@@ -84,6 +98,7 @@ describe("extractDeclarationContentToPublish", () => {
 			rgaa_version: "RGAA 4",
 			realised_by: "",
 			rate: 0,
+			blockingElements: "",
 			nonCompliantElements: "",
 			disproportionnedCharge: "",
 			optionalElements: "",
@@ -92,6 +107,39 @@ describe("extractDeclarationContentToPublish", () => {
 			testEnvironments: [],
 			usedTools: [],
 		});
+	});
+
+	it("publishes blocking elements only when an RGAA 5 audit found some", () => {
+		const withBlocking = (
+			hasBlockingElements: boolean,
+			rgaa_version: "rgaa_4" | "rgaa_5" = "rgaa_5",
+		) =>
+			extractDeclarationContentToPublish(
+				completeDeclaration({
+					audit: {
+						isRealised: true,
+						toVerify: false,
+						rgaa_version,
+						hasBlockingElements,
+						blockingElements: "Paiement inaccessible au clavier",
+					},
+				}),
+			).audit.blockingElements;
+		expect(withBlocking(true)).toBe("Paiement inaccessible au clavier");
+		expect(withBlocking(false)).toBe("");
+		expect(withBlocking(true, "rgaa_4")).toBe("");
+	});
+
+	it("reads a snapshot published before blocking elements as having none", () => {
+		const snapshot = extractDeclarationContentToPublish(completeDeclaration(), {
+			publishedAt: new Date("2026-08-27T09:30:00.000Z"),
+		});
+		const { blockingElements: _, ...legacyAudit } = snapshot.audit;
+		expect(
+			parsePublishedDeclaration(
+				JSON.stringify({ ...snapshot, audit: legacyAudit }),
+			)?.audit.blockingElements,
+		).toBe("");
 	});
 
 	it("records whether an audit was performed", () => {

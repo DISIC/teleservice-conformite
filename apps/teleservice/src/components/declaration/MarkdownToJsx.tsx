@@ -42,12 +42,23 @@ export default function MarkdownToJsx({
 
 	const linkRenderer = (
 		props: React.DetailedHTMLProps<
-			React.HTMLAttributes<HTMLAnchorElement>,
+			React.AnchorHTMLAttributes<HTMLAnchorElement>,
 			HTMLAnchorElement
 		>,
 	) => {
+		const external = /^https?:\/\//i.test(props.href ?? "");
+		const label =
+			typeof props.children === "string" ? props.children : props.href;
+		const newTabProps = external
+			? {
+					target: "_blank",
+					rel: "noopener noreferrer",
+					title: `${label} - nouvelle fenêtre`,
+				}
+			: {};
+
 		return (
-			<a {...props} className={classes.link}>
+			<a {...props} {...newTabProps} className={classes.link}>
 				{props.children}
 			</a>
 		);

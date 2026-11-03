@@ -1,5 +1,10 @@
 import z from "zod";
 
+import {
+	type RgaaVersion,
+	reportsBlockingElements,
+	requiresUsedTools,
+} from "~/domain/declaration/rgaaVersion";
 import { submitFormOptions } from "~/forms/formOptions";
 import { invalidDateIssue, notFutureDateIssue } from "~/forms/rules";
 import {
@@ -18,6 +23,10 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
  */
 
 type Audit = PopulatedDeclaration["audit"];
+
+const rgaaVersionOf = (audit: Audit): RgaaVersion =>
+	rgaaVersionOptions.find((opt) => opt.value === audit?.rgaa_version)?.value ??
+	"rgaa_4";
 
 // ── Réalisation de l'audit (slug `audit-general`) ───────────────────────────
 // When the audit is realised, the date fields become required; otherwise they
@@ -68,7 +77,6 @@ export const auditGeneral = z
 					path: ["rate"],
 				});
 			}
-			// Blocking elements only exist in RGAA 5.
 			if (
 				data.rgaa_version === "rgaa_5" &&
 				data.hasBlockingElements === undefined
@@ -103,27 +111,42 @@ export function auditToGeneralValues(audit: Audit): ZAuditGeneral {
 		isAuditRealised: audit?.isRealised ?? undefined,
 		date: audit?.date ? new Date(audit.date).toLocaleDateString("en-CA") : "",
 		realisedBy: audit?.realisedBy ?? "",
-		rgaa_version:
-			rgaaVersionOptions.find((opt) => opt.value === audit?.rgaa_version)
-				?.value ?? "rgaa_4",
+		rgaa_version: rgaaVersionOf(audit),
 		hasBlockingElements: audit?.hasBlockingElements ?? undefined,
 		rate: audit?.rate ?? null,
 	};
 }
 
 // ── Outils et environnements (slug `audit-outils`) ──────────────────────────
-export const auditTools = z.object({
-	usedTools: z
-		.array(z.string())
-		.min(1, { message: "Au moins un outil d'assistance est requis" }),
-	testEnvironments: z
-		.array(z.string())
-		.min(1, { message: "Au moins un environnement de test est requis" }),
-});
+export const auditTools = z
+	.object({
+		// Carried from the `audit-general` answer, never edited here: it decides
+		// whether the tools list is required.
+		rgaa_version: z.enum(rgaaVersionOptions.map((option) => option.value)),
+		usedTools: z.array(z.string()),
+		testEnvironments: z.array(z.string()),
+	})
+	.superRefine((data, ctx) => {
+		if (requiresUsedTools(data.rgaa_version) && data.usedTools.length === 0) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Au moins un outil d'assistance est requis",
+				path: ["usedTools"],
+			});
+		}
+		if (data.testEnvironments.length === 0) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Au moins un environnement de test est requis",
+				path: ["testEnvironments"],
+			});
+		}
+	});
 
 export type ZAuditTools = z.infer<typeof auditTools>;
 
 export const auditToolsDefaultValues: ZAuditTools = {
+	rgaa_version: "rgaa_4",
 	usedTools: [],
 	testEnvironments: [],
 };
@@ -135,6 +158,7 @@ export const auditToolsFormOptions = submitFormOptions(
 
 export function auditToToolsValues(audit: Audit): ZAuditTools {
 	return {
+		rgaa_version: rgaaVersionOf(audit),
 		usedTools: (audit?.usedTools ?? []).map(
 			(tool) =>
 				toolOptions.find((opt) => opt.value === tool.name)?.value ?? tool.name,
@@ -211,7 +235,7 @@ export function auditToNonConformitiesValues(
 	audit: Audit,
 ): ZAuditNonConformities {
 	return {
-		hasBlockingElements: audit?.hasBlockingElements ?? undefined,
+		hasBlockingElements: reportsBlockingElements(audit) || undefined,
 		blockingElements: audit?.blockingElements ?? "",
 		nonCompliantElements: audit?.nonCompliantElements ?? "",
 		optionalElements: audit?.optionalElements ?? "",
