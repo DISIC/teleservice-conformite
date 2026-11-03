@@ -6,73 +6,49 @@ import type { Appendix, Reference } from "@rgaa/content";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import { renderMarkdown } from "./helpers/markdown";
+import { techniqueUrl, wcagSuccessCriterionUrl } from "./helpers/references";
 
 interface CriteriumAppendixProps {
 	appendix?: Appendix;
 }
 
-// Techniques are WCAG techniques: they belong under the WCAG group, next to its success criteria.
 const isWcag = (standard: string) => standard.startsWith("WCAG");
 
-function groupByStandard(references: Reference[]) {
-	const groups = new Map<string, Reference[]>();
-	for (const reference of references) {
-		const group = groups.get(reference.standard);
-		if (group) group.push(reference);
-		else groups.set(reference.standard, [reference]);
-	}
-	return [...groups];
-}
+const toEnClause = ({ reference, title, level }: Reference) =>
+	`9.${reference} ${title}${level ? ` (${level})` : ""}`;
 
 export default function CriteriumAppendix({
 	appendix,
 }: CriteriumAppendixProps) {
-	const { classes, cx } = useStyles();
+	const { classes } = useStyles();
 
 	if (!appendix) return null;
 
 	const { references = [], techniques = [], technicalNotes } = appendix;
-	const groups = groupByStandard(references);
-	const orphanTechniques =
-		techniques.length > 0 && !groups.some(([standard]) => isWcag(standard));
+	const wcagReferences = references.filter(({ standard }) => isWcag(standard));
 
 	return (
 		<div className={classes.root}>
-			{(groups.length > 0 || techniques.length > 0) && (
+			{(references.length > 0 || techniques.length > 0) && (
 				<section className={classes.section}>
 					<AppendixTitle icon="fr-icon-book-2-line" title="Références" />
-					{groups.map(([standard, group]) => (
-						<div key={standard} className={classes.group}>
-							<h6 className={cx(classes.standard, "fr-text--md")}>
-								{standard}
-							</h6>
-							<div className={classes.groupBody}>
-								<TagField label="Critère(s) de succès :">
-									{group.map(({ reference, level }) => (
-										// TODO: add link
-										<Tag
-											key={reference}
-											linkProps={{
-												href: "#",
-											}}
-											iconId="ri-external-link-fill"
-											className={classes.tag}
-										>
-											{level ? `${reference} (${level})` : reference}
-										</Tag>
-									))}
-								</TagField>
-								{isWcag(standard) && techniques.length > 0 && (
-									<TechniquesField techniques={techniques} />
-								)}
-							</div>
-						</div>
-					))}
-					{orphanTechniques && (
-						<div className={classes.groupBody}>
+					<StandardGroup title="WCAG 2.2">
+						{wcagReferences.length > 0 && (
+							<SuccessCriteriaField references={wcagReferences} />
+						)}
+						{techniques.length > 0 && (
 							<TechniquesField techniques={techniques} />
-						</div>
-					)}
+						)}
+					</StandardGroup>
+					<StandardGroup title="EN 301 549 V2.1.2 (2018-08) (en anglais)">
+						{wcagReferences.length > 0 && (
+							<ul className={classes.clauses}>
+								{wcagReferences.map((reference) => (
+									<li key={reference.reference}>{toEnClause(reference)}</li>
+								))}
+							</ul>
+						)}
+					</StandardGroup>
 				</section>
 			)}
 
@@ -106,6 +82,56 @@ function AppendixTitle({ icon, title }: { icon: string; title: string }) {
 	);
 }
 
+function StandardGroup({
+	title,
+	children,
+}: {
+	title: string;
+	children: ReactNode;
+}) {
+	const { classes, cx } = useStyles();
+
+	return (
+		<div className={classes.group}>
+			<h6 className={cx(classes.standard, "fr-text--md")}>{title}</h6>
+			<div className={classes.groupBody}>{children}</div>
+		</div>
+	);
+}
+
+function SuccessCriteriaField({ references }: { references: Reference[] }) {
+	const { classes } = useStyles();
+
+	return (
+		<TagField label="Critère(s) de succès :">
+			{references.map(({ reference, title, level }) => {
+				const label = level ? `${reference} (${level})` : reference;
+				return (
+					<Tag
+						key={reference}
+						linkProps={externalLinkProps(
+							wcagSuccessCriterionUrl(title),
+							`${label} ${title}`,
+						)}
+						className={classes.tag}
+					>
+						{label}
+					</Tag>
+				);
+			})}
+		</TagField>
+	);
+}
+
+function externalLinkProps(href: string, label: string) {
+	return {
+		href,
+		target: "_blank",
+		rel: "noopener noreferrer",
+		title: `${label} - nouvelle fenêtre`,
+	};
+}
+
 function TagField({ label, children }: { label: string; children: ReactNode }) {
 	const { classes } = useStyles();
 
@@ -123,13 +149,9 @@ function TechniquesField({ techniques }: { techniques: string[] }) {
 	return (
 		<TagField label="Technique(s) suffisante(s) et/ou échec(s) (en anglais) :">
 			{techniques.map((technique) => (
-				// TODO: add link
 				<Tag
 					key={technique}
-					linkProps={{
-						href: "#",
-					}}
-					iconId="ri-external-link-fill"
+					linkProps={externalLinkProps(techniqueUrl(technique), technique)}
 					className={classes.tag}
 				>
 					{technique}
@@ -222,12 +244,19 @@ const useStyles = tss.withName("CriteriumAppendix").create({
 		gap: fr.spacing("1w"),
 	},
 	tag: {
-		// DSFR only ships fr-tag--icon-left; the design puts the icon after the label.
-		"&&::before": {
-			order: 1,
-			marginLeft: "0.25rem",
-			marginRight: "-0.125rem",
+		"&&": {
+			backgroundColor:
+				fr.colors.decisions.background.actionLow.blueFrance.default,
+			color: fr.colors.decisions.background.flat.blueFrance.default,
 		},
+	},
+	clauses: {
+		fontFamily: "Marianne",
+		fontSize: "16px",
+		lineHeight: "24px",
+		letterSpacing: 0,
+		color: fr.colors.decisions.text.default.grey.default,
+		marginBottom: 0,
 	},
 	prose: {
 		fontFamily: "Marianne",
