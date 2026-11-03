@@ -6,11 +6,6 @@ export const Media: CollectionConfig = {
 		singular: { fr: "Média" },
 		plural: { fr: "Médias" },
 	},
-	access: {
-		read: () => true,
-		create: () => true,
-		update: () => true,
-	},
 	fields: [
 		{
 			name: "uploadedAt",
