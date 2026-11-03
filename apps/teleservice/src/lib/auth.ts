@@ -123,12 +123,9 @@ const baseConfig = {
 		additionalFields: {
 			siret: {
 				type: "number" as const,
+				input: false,
 			},
 		},
-	},
-	emailAndPassword: {
-		enabled: true,
-		autoSignIn: false,
 	},
 	advanced: {
 		database: {
