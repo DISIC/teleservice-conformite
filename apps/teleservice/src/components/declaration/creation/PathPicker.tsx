@@ -7,7 +7,6 @@ import System from "@codegouvfr/react-dsfr/picto/System";
 import { useState } from "react";
 import { tss } from "tss-react";
 import HelpingMessage from "~/components/ui/HelpingMessage";
-import type { Entity } from "~/payload/payload-types";
 import { AiPath } from "./AiPath";
 import { AraPath } from "./AraPath";
 import { ManualPath } from "./ManualPath";
@@ -43,10 +42,8 @@ const PATH_OPTIONS = [
  * handling. ARA and AI failures fall back to the manual path in place.
  */
 export function PathPicker({
-	entity,
 	onCreated,
 }: {
-	entity: Entity | null;
 	onCreated: (declarationId: number) => void;
 }) {
 	const { classes } = useStyles();
@@ -70,9 +67,7 @@ export function PathPicker({
 			/>
 			{path === "ai" && <AiPath onCreated={onCreated} />}
 			{path === "ara" && <AraPath onCreated={onCreated} />}
-			{path === "manual" && (
-				<ManualPath entityId={entity?.id} onCreated={onCreated} />
-			)}
+			{path === "manual" && <ManualPath onCreated={onCreated} />}
 			{!path && (
 				<HelpingMessage
 					image={<Accessibility fontSize="4rem" />}

@@ -19,10 +19,8 @@ const defaultValues: z.infer<typeof manualSchema> = { name: "" };
  * later through the declaration editor. Creates the declaration immediately.
  */
 export function ManualPath({
-	entityId,
 	onCreated,
 }: {
-	entityId?: number;
 	onCreated: (declarationId: number) => void;
 }) {
 	const { mutateAsync, isPending } = api.declaration.createManual.useMutation({
@@ -32,7 +30,7 @@ export function ManualPath({
 	const form = useAppForm({
 		...submitFormOptions(defaultValues, manualSchema),
 		onSubmit: async ({ value }) => {
-			await mutateAsync({ name: value.name.trim(), entityId });
+			await mutateAsync({ name: value.name.trim() });
 		},
 	});
 
