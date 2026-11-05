@@ -49,7 +49,7 @@ export default function TopicCriteria({
 						id={criteriumNumber}
 						className={classes.criteriumContainer}
 					>
-						<h3 className={cx("fr-h4", headingClasses.title)}>
+						<h3 className={cx("fr-h5", headingClasses.title)}>
 							<span className={headingClasses.number}>
 								{criteriumNumber}&nbsp;
 							</span>

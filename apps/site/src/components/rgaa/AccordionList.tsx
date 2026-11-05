@@ -66,7 +66,7 @@ export default function AccordionList({
 						data-topic-accordion
 						className={classes.topicAnchor}
 					>
-						<h2 className={cx(classes.title, headingClasses.title)}>
+						<h2 className={cx("fr-h3", classes.title, headingClasses.title)}>
 							<span className={headingClasses.number}>
 								{topic.number}.&nbsp;
 							</span>

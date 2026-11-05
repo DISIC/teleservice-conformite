@@ -113,7 +113,7 @@ export default function CriteriumTests({
 							id={testNumber}
 							className={classes.test}
 						>
-							<h5 className={cx("fr-text--lg", headingClasses.title)}>
+							<h5 className={cx("fr-text", headingClasses.title)}>
 								<span className={headingClasses.number}>
 									{testNumber}&nbsp;
 								</span>
@@ -180,6 +180,7 @@ const useStyles = tss
 
 			"& > h5": {
 				fontWeight: 400,
+				fontSize: "16px",
 				marginBottom: 0,
 			},
 
