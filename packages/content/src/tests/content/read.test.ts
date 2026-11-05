@@ -72,6 +72,15 @@ describe("readSources", () => {
 		);
 	});
 
+	it("refuses an unknown technique prefix", () => {
+		const problems = problemsOf({
+			"criteres/1.2/web/annexe.md": "---\ntechniques:\n  - PDF1\n---\n",
+		});
+		expect(problems[0]?.message).toMatch(
+			/^champ « techniques\[0\] » : technique WCAG inconnue/,
+		);
+	});
+
 	it("refuses prose in annexe.md", () => {
 		const problems = problemsOf({
 			"criteres/1.2/web/annexe.md":
