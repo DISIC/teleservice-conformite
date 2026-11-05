@@ -329,18 +329,25 @@ export const publishDeclaration = async (
 	}
 
 	const publishedAt = new Date();
+	// A first publication in this téléservice is its own initial publication; a manual
+	// declaration was never published elsewhere, so its creation-day default is replaced.
+	const firstPublishedAt =
+		declaration.fromSource === "manual" && !declaration.published_at
+			? publishedAt.toISOString()
+			: (declaration.first_published_at ?? publishedAt.toISOString());
 	const result = await payload.update({
 		collection: "declarations",
 		id: declaration.id,
 		data: {
 			status: "published",
 			publishedContent: JSON.stringify(
-				extractDeclarationContentToPublish(declaration, { publishedAt }),
+				extractDeclarationContentToPublish(
+					{ ...declaration, first_published_at: firstPublishedAt },
+					{ publishedAt },
+				),
 			),
 			published_at: publishedAt.toISOString(),
-			// A first publication in this téléservice is its own initial publication.
-			first_published_at:
-				declaration.first_published_at ?? publishedAt.toISOString(),
+			first_published_at: firstPublishedAt,
 		},
 	});
 

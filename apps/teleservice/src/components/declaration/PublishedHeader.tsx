@@ -1,7 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
 import { tss } from "tss-react";
+import { obsolescenceOf } from "~/domain/declaration/obsolescence";
 import { publicationLabel } from "~/domain/declaration/published/markdown";
 import { SERVICE_NAME } from "~/lib/serviceName";
 
@@ -13,6 +15,10 @@ export function PublishedHeader({
 	declaration: PublishedDeclaration;
 }) {
 	const { classes, cx } = useStyles();
+	const isObsolete =
+		obsolescenceOf(new Date(declaration.publishedAt), new Date()) ===
+		"obsolete";
+
 	return (
 		<Header
 			brandTop={
@@ -29,26 +35,38 @@ export function PublishedHeader({
 			serviceTitle={PUBLISHED_HEADER_TITLE}
 			serviceTagline={declaration.name}
 			quickAccessItems={[
-				<p
-					key="publication"
-					className={cx(
-						fr.cx(
-							"fr-icon-calendar-2-line",
-							"fr-icon--sm",
-							"fr-text--sm",
-							"fr-mb-0",
-						),
-						classes.publication,
+				<div key="publication" className={classes.publicationInfo}>
+					<p
+						className={cx(
+							fr.cx(
+								"fr-icon-calendar-2-line",
+								"fr-icon--sm",
+								"fr-text--sm",
+								"fr-mb-0",
+							),
+							classes.publication,
+						)}
+					>
+						{publicationLabel(declaration)}
+					</p>
+					{isObsolete && (
+						<Badge as="p" small severity="warning">
+							Obsolète
+						</Badge>
 					)}
-				>
-					{publicationLabel(declaration)}
-				</p>,
+				</div>,
 			]}
 		/>
 	);
 }
 
 const useStyles = tss.withName(PublishedHeader.name).create({
+	publicationInfo: {
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "flex-end",
+		gap: fr.spacing("1v"),
+	},
 	publication: {
 		"&::before": {
 			marginRight: fr.spacing("2v"),

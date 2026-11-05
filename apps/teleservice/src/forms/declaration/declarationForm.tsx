@@ -25,9 +25,6 @@ export const DeclarationGeneralForm = withForm({
 										Date à laquelle cette déclaration a été publiée pour la
 										première fois, quel qu’en soit le support.
 										<br />
-										S’il s’agit d’une première publication, conservez la date du
-										jour.
-										<br />
 										La date ne peut pas être postérieure à la date du jour.
 										<br />
 										{DATE_FORMAT_HINT}
