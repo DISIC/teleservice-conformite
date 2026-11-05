@@ -22,8 +22,7 @@ export function Hero({ startHref, startLabel }: HeroProps) {
 					<p className={classes.lead}>
 						Ce téléservice centralise l’ensemble des déclarations
 						d’accessibilité numérique des services publics : services de l’État,
-						collectivités territoriales et établissements publics. Il permet un
-						meilleur suivi de la politique d’accessibilité du service public.
+						collectivités territoriales et établissements publics.
 					</p>
 					<Button linkProps={{ href: startHref }} size="large">
 						{startLabel}
