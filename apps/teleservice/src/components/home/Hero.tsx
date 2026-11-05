@@ -5,9 +5,10 @@ import { tss } from "tss-react";
 
 type HeroProps = {
 	startHref: string;
+	startLabel: string;
 };
 
-export function Hero({ startHref }: HeroProps) {
+export function Hero({ startHref, startLabel }: HeroProps) {
 	const { classes, cx } = useStyles();
 
 	return (
@@ -25,7 +26,7 @@ export function Hero({ startHref }: HeroProps) {
 						meilleur suivi de la politique d’accessibilité du service public.
 					</p>
 					<Button linkProps={{ href: startHref }} size="large">
-						Commencer
+						{startLabel}
 					</Button>
 				</div>
 				<div className={classes.artwork} aria-hidden="true">

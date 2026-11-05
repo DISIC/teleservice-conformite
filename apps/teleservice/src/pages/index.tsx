@@ -11,12 +11,13 @@ const DASHBOARD_HREF = "/dashboard/declarations";
 export default function Home() {
 	const { data: authSession } = authClient.useSession();
 	const startHref = authSession ? DASHBOARD_HREF : "/api/connexion";
+	const startLabel = authSession ? "Voir mes déclarations" : "Commencer";
 
 	return (
 		<>
-			<Hero startHref={startHref} />
+			<Hero startHref={startHref} startLabel={startLabel} />
 			<WhySection />
-			<AdvantagesSection startHref={startHref} />
+			<AdvantagesSection startHref={startHref} startLabel={startLabel} />
 			<LegalObligationsSection />
 			<AraSection />
 			<FaqSection />

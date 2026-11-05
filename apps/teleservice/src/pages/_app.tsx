@@ -37,6 +37,7 @@ const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
 export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
 
 const NAVIGATION = [
+	{ text: "Accueil", href: "/" },
 	{ text: "Mes déclarations", href: "/dashboard/declarations" },
 	{ text: "Mes points de contacts accessibilité", href: "/dashboard/contacts" },
 	{
