@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
@@ -11,6 +10,7 @@ import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
 import { LibraryList } from "~/components/library/LibraryList";
 import { LinkedDeclarationsTag } from "~/components/library/LinkedDeclarationsTag";
+import { useConfirmLibraryEdit } from "~/components/library/useConfirmLibraryEdit";
 import {
 	ConfirmationModal,
 	type ConfirmationModalActions,
@@ -22,6 +22,7 @@ import {
 import EmptyState from "~/components/ui/EmptyState";
 import { SCHEMA_FAQ } from "~/components/ui/emptyStateFaq";
 import { Loader } from "~/components/ui/Loader";
+import { type AlertDetails, PageAlert } from "~/components/ui/PageAlert";
 import { UrlText } from "~/components/ui/UrlText";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Entity, Schema } from "~/payload/payload-types";
@@ -37,7 +38,7 @@ export default function SchemasPage({
 
 	const [schemaModalActions] = useState<LibrarySchemaModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [alert, setAlert] = useState<AlertDetails | null>(null);
 
 	const {
 		data: schemas = [],
@@ -48,16 +49,24 @@ export default function SchemasPage({
 		itemName: "schema",
 		isFetching,
 		deleteMutation: api.library.deleteSchema.useMutation({
-			onSuccess: () => utils.library.listSchemas.invalidate(),
-			onError: (e) => setErrorMessage(e.message),
+			onSuccess: () => {
+				setAlert({
+					description: "Votre schéma a été supprimé avec succès",
+					severity: "success",
+				});
+				return utils.library.listSchemas.invalidate();
+			},
+			onError: (e) => setAlert({ description: e.message, severity: "error" }),
 		}),
 	});
 
 	const confirmDelete = (schema: Schema) =>
 		confirmationModalActions.open?.({
 			title: "Supprimer le schéma pluriannuel",
-			confirmLabel: "Supprimer",
+			confirmLabel: "Supprimer le schéma",
 			confirmIconId: "fr-icon-delete-fill",
+			confirmBackgroundColor:
+				fr.colors.decisions.background.actionHigh.error.default,
 			description: (
 				<>
 					<p>
@@ -74,6 +83,14 @@ export default function SchemasPage({
 			),
 			onConfirm: () => deleteItem(schema.id),
 		});
+
+	const confirmEdit = useConfirmLibraryEdit({
+		kind: "schema",
+		confirmationModalActions,
+		onError: (description) => setAlert({ description, severity: "error" }),
+	});
+	const openEdit = (schema: Schema) =>
+		confirmEdit(schema.id, () => schemaModalActions.open?.(schema));
 
 	const openCreate = () => schemaModalActions.open?.();
 
@@ -100,15 +117,7 @@ export default function SchemasPage({
 			/>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
-					{errorMessage && (
-						<Alert
-							small
-							severity="error"
-							description={errorMessage}
-							closable
-							onClose={() => setErrorMessage(null)}
-						/>
-					)}
+					<PageAlert alert={alert} onClose={() => setAlert(null)} />
 					{isLoading || isFetching ? (
 						<Loader />
 					) : schemas.length === 0 ? (
@@ -134,7 +143,7 @@ export default function SchemasPage({
 										value={
 											<ItemActions
 												label={schema.name}
-												onEdit={() => schemaModalActions.open?.(schema)}
+												onEdit={() => openEdit(schema)}
 												onDelete={() => confirmDelete(schema)}
 												deleteButtonId={deleteButtonId(schema.id)}
 											/>
@@ -187,7 +196,15 @@ export default function SchemasPage({
 					)}
 				</div>
 			</div>
-			<LibrarySchemaModal actions={schemaModalActions} />
+			<LibrarySchemaModal
+				actions={schemaModalActions}
+				onCreated={(name) =>
+					setAlert({
+						description: `Le document « ${name} » a été ajouté avec succès`,
+						severity: "success",
+					})
+				}
+			/>
 			<ConfirmationModal actions={confirmationModalActions} />
 		</>
 	);
@@ -196,6 +213,21 @@ export default function SchemasPage({
 const useStyles = tss.withName(SchemasPage.name).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
+	},
+	schemaList: {
+		listStyle: "none",
+		padding: 0,
+		margin: 0,
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6v"),
+		"& > li": {
+			margin: 0,
+			padding: 0,
+		},
+		"& > li > div, & dl": {
+			gap: fr.spacing("8v"),
+		},
 	},
 	entry: {
 		display: "flex",

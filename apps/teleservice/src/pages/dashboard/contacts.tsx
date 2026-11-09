@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import NationalIdentityCard from "@codegouvfr/react-dsfr/picto/NationalIdentityCard";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
@@ -12,6 +11,7 @@ import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
 import { LibraryList } from "~/components/library/LibraryList";
 import { LinkedDeclarationsTag } from "~/components/library/LinkedDeclarationsTag";
+import { useConfirmLibraryEdit } from "~/components/library/useConfirmLibraryEdit";
 import {
 	ConfirmationModal,
 	type ConfirmationModalActions,
@@ -23,6 +23,7 @@ import {
 import EmptyState from "~/components/ui/EmptyState";
 import { CONTACT_FAQ } from "~/components/ui/emptyStateFaq";
 import { Loader } from "~/components/ui/Loader";
+import { type AlertDetails, PageAlert } from "~/components/ui/PageAlert";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Contact, Entity } from "~/payload/payload-types";
 import { api } from "~/lib/api";
@@ -37,7 +38,7 @@ export default function ContactsPage({
 
 	const [contactModalActions] = useState<LibraryContactModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [alert, setAlert] = useState<AlertDetails | null>(null);
 
 	const {
 		data: contacts = [],
@@ -48,8 +49,14 @@ export default function ContactsPage({
 		itemName: "contact",
 		isFetching,
 		deleteMutation: api.library.deleteContact.useMutation({
-			onSuccess: () => utils.library.listContacts.invalidate(),
-			onError: (e) => setErrorMessage(e.message),
+			onSuccess: () => {
+				setAlert({
+					description: "Votre contact a été supprimé avec succès",
+					severity: "success",
+				});
+				return utils.library.listContacts.invalidate();
+			},
+			onError: (e) => setAlert({ description: e.message, severity: "error" }),
 		}),
 	});
 
@@ -57,8 +64,10 @@ export default function ContactsPage({
 		(contact: Contact) =>
 			confirmationModalActions.open?.({
 				title: "Supprimer le contact",
-				confirmLabel: "Supprimer",
+				confirmLabel: "Supprimer le contact",
 				confirmIconId: "fr-icon-delete-fill",
+				confirmBackgroundColor:
+					fr.colors.decisions.background.actionHigh.error.default,
 				description: (
 					<>
 						<p>
@@ -76,6 +85,14 @@ export default function ContactsPage({
 			}),
 		[confirmationModalActions, deleteItem],
 	);
+
+	const confirmEdit = useConfirmLibraryEdit({
+		kind: "contact",
+		confirmationModalActions,
+		onError: (description) => setAlert({ description, severity: "error" }),
+	});
+	const openEdit = (contact: Contact) =>
+		confirmEdit(contact.id, () => contactModalActions.open?.(contact));
 
 	const openCreate = () => contactModalActions.open?.();
 
@@ -100,15 +117,7 @@ export default function ContactsPage({
 			/>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
-					{errorMessage && (
-						<Alert
-							small
-							severity="error"
-							description={errorMessage}
-							closable
-							onClose={() => setErrorMessage(null)}
-						/>
-					)}
+					<PageAlert alert={alert} onClose={() => setAlert(null)} />
 					{isLoading || isFetching ? (
 						<Loader />
 					) : contacts.length === 0 ? (
@@ -134,7 +143,7 @@ export default function ContactsPage({
 										value={
 											<ItemActions
 												label={contact.name}
-												onEdit={() => contactModalActions.open?.(contact)}
+												onEdit={() => openEdit(contact)}
 												onDelete={() => confirmDelete(contact)}
 												deleteButtonId={deleteButtonId(contact.id)}
 											/>
@@ -169,7 +178,15 @@ export default function ContactsPage({
 				</div>
 			</div>
 			<ConfirmationModal actions={confirmationModalActions} />
-			<LibraryContactModal actions={contactModalActions} />
+			<LibraryContactModal
+				actions={contactModalActions}
+				onCreated={(name) =>
+					setAlert({
+						description: `Le contact « ${name} » a été ajouté avec succès`,
+						severity: "success",
+					})
+				}
+			/>
 		</>
 	);
 }
@@ -177,6 +194,24 @@ export default function ContactsPage({
 const useStyles = tss.withName(ContactsPage.name).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
+	},
+	contactList: {
+		listStyle: "none",
+		padding: 0,
+		margin: 0,
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6v"),
+		"& > li": {
+			margin: 0,
+			padding: 0,
+		},
+		"& > li > div, & dl": {
+			gap: fr.spacing("8v"),
+		},
+	},
+	bold: {
+		fontWeight: 700,
 	},
 });
 
