@@ -10,6 +10,7 @@ import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
 import { LibraryList } from "~/components/library/LibraryList";
 import { LinkedDeclarationsTag } from "~/components/library/LinkedDeclarationsTag";
+import { useConfirmLibraryEdit } from "~/components/library/useConfirmLibraryEdit";
 import {
 	ConfirmationModal,
 	type ConfirmationModalActions,
@@ -26,7 +27,6 @@ import { UrlText } from "~/components/ui/UrlText";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Entity, Schema } from "~/payload/payload-types";
 import { api } from "~/lib/api";
-import { newTabLinkProps } from "~/lib/newTabLink";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
 
@@ -84,67 +84,13 @@ export default function SchemasPage({
 			onConfirm: () => deleteItem(schema.id),
 		});
 
-	const openEdit = async (schema: Schema) => {
-		let linked: { id: number; name: string; isPublished: boolean }[];
-		try {
-			linked = await utils.library.linkedDeclarations.fetch({
-				kind: "schema",
-				id: schema.id,
-			});
-		} catch (e) {
-			setAlert({
-				description: e instanceof Error ? e.message : String(e),
-				severity: "error",
-			});
-			return;
-		}
-
-		if (!linked.some((declaration) => declaration.isPublished)) {
-			schemaModalActions.open?.(schema);
-			return;
-		}
-
-		confirmationModalActions.open?.({
-			title: "Attention, ce schéma est associé à des déclarations publiées.",
-			confirmLabel: "Modifier le schéma",
-			confirmIconId: "fr-icon-edit-line",
-			description: (
-				<>
-					<p>
-						{linked.length === 1 ? (
-							<>
-								Les modifications seront appliquées à 1 déclaration
-								d’accessibilité associée à ce schéma.
-								<br />
-								Elle sera automatiquement mise à jour.
-							</>
-						) : (
-							<>
-								Les modifications seront appliquées à {linked.length}{" "}
-								déclarations d’accessibilité associées à ce schéma.
-								<br />
-								Elles seront automatiquement mises à jour.
-							</>
-						)}
-					</p>
-					<ul>
-						{linked.map((declaration) => (
-							<li key={declaration.id}>
-								<a
-									href={`/dashboard/declarations/${declaration.id}`}
-									{...newTabLinkProps(declaration.name)}
-									className={classes.link}
-								>
-									{declaration.name}
-								</a>
-							</li>
-						))}
-					</ul>
-				</>
-			),
-			onConfirm: () => schemaModalActions.open?.(schema),
-		});
-	};
+	const confirmEdit = useConfirmLibraryEdit({
+		kind: "schema",
+		confirmationModalActions,
+		onError: (description) => setAlert({ description, severity: "error" }),
+	});
+	const openEdit = (schema: Schema) =>
+		confirmEdit(schema.id, () => schemaModalActions.open?.(schema));
 
 	const openCreate = () => schemaModalActions.open?.();
 
@@ -323,9 +269,6 @@ const useStyles = tss.withName(SchemasPage.name).create({
 		"& > li + li": {
 			marginTop: fr.spacing("4v"),
 		},
-	},
-	link: {
-		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},
 });
 

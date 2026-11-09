@@ -11,6 +11,7 @@ import { PageHeading } from "~/components/layout/PageHeading";
 import { ItemActions } from "~/components/library/ItemActions";
 import { LibraryList } from "~/components/library/LibraryList";
 import { LinkedDeclarationsTag } from "~/components/library/LinkedDeclarationsTag";
+import { useConfirmLibraryEdit } from "~/components/library/useConfirmLibraryEdit";
 import {
 	ConfirmationModal,
 	type ConfirmationModalActions,
@@ -26,7 +27,6 @@ import { type AlertDetails, PageAlert } from "~/components/ui/PageAlert";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Contact, Entity } from "~/payload/payload-types";
 import { api } from "~/lib/api";
-import { newTabLinkProps } from "~/lib/newTabLink";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
 
@@ -86,67 +86,13 @@ export default function ContactsPage({
 		[confirmationModalActions, deleteItem],
 	);
 
-	const openEdit = async (contact: Contact) => {
-		let linked: { id: number; name: string; isPublished: boolean }[];
-		try {
-			linked = await utils.library.linkedDeclarations.fetch({
-				kind: "contact",
-				id: contact.id,
-			});
-		} catch (e) {
-			setAlert({
-				description: e instanceof Error ? e.message : String(e),
-				severity: "error",
-			});
-			return;
-		}
-
-		if (!linked.some((declaration) => declaration.isPublished)) {
-			contactModalActions.open?.(contact);
-			return;
-		}
-
-		confirmationModalActions.open?.({
-			title: "Attention, ce contact est associé à des déclarations publiées.",
-			confirmLabel: "Modifier le contact",
-			confirmIconId: "fr-icon-edit-line",
-			description: (
-				<>
-					<p>
-						{linked.length === 1 ? (
-							<>
-								Les modifications seront appliquées à 1 déclaration
-								d’accessibilité associée à ce contact.
-								<br />
-								Elle sera automatiquement mise à jour.
-							</>
-						) : (
-							<>
-								Les modifications seront appliquées à {linked.length}{" "}
-								déclarations d’accessibilité associées à ce contact.
-								<br />
-								Elles seront automatiquement mises à jour.
-							</>
-						)}
-					</p>
-					<ul>
-						{linked.map((declaration) => (
-							<li key={declaration.id}>
-								<a
-									href={`/dashboard/declarations/${declaration.id}`}
-									{...newTabLinkProps(declaration.name)}
-									className={classes.link}
-								>
-									{declaration.name}
-								</a>
-							</li>
-						))}
-					</ul>
-				</>
-			),
-			onConfirm: () => contactModalActions.open?.(contact),
-		});
-	};
+	const confirmEdit = useConfirmLibraryEdit({
+		kind: "contact",
+		confirmationModalActions,
+		onError: (description) => setAlert({ description, severity: "error" }),
+	});
+	const openEdit = (contact: Contact) =>
+		confirmEdit(contact.id, () => contactModalActions.open?.(contact));
 
 	const openCreate = () => contactModalActions.open?.();
 
@@ -266,9 +212,6 @@ const useStyles = tss.withName(ContactsPage.name).create({
 	},
 	bold: {
 		fontWeight: 700,
-	},
-	link: {
-		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},
 });
 
