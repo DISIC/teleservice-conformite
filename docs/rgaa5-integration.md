@@ -313,7 +313,6 @@ Imbrication du document : `topics[] > criteria[] > referentiels{} > tests[]`, m�
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
@@ -334,9 +333,9 @@ Imbrication du document : `topics[] > criteria[] > referentiels{} > tests[]`, m�
 							"appendix": {
 								"references": [
 									{
-										"standard": "EN 301 549 v3.2.1",
-										"reference": "11.1.1.1",
-										"title": "Non-text content (open functionality)"
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
 									}
 								],
 								"particularCases": "Les icônes décoratives …"
@@ -363,4 +362,4 @@ Imbrication du document : `topics[] > criteria[] > referentiels{} > tests[]`, m�
 }
 ```
 
-Lecture de l'exemple : un Critère porte deux champs et une carte `referentiels` ; une déclinaison porte deux blocs, `tests` et `appendix`, qui deviennent deux sections de l'accordéon ; l'absence de `referentiels[ref]` est le marqueur « hors référentiel », et une Thématique dont aucun Critère n'a de clé pour le Référentiel affiché est entièrement marquée. Le même `"1.1.1"` peut apparaître sous `web` et `mobile` avec un contenu différent, l'identité d'un Test étant le couple (Référentiel, numéro). `references` est une liste typée (`standard`, `reference`, `title`, `level`) commune aux critères WCAG et aux clauses EN 301 549 ; les méthodologies sont intégrées aux tests, plus de `methodologies.json`. Le glossaire suit le même en-tête puis `terms: [{ "slug", "title", "referentiels", "definition" }]`, `definition` en markdown. Écartés : numéros locaux par niveau (`number: 1`) qui obligent à reconstruire la citation ; clés en français ; niveau par Critère ; URL par objet ; `null` et tableaux vides.
+Lecture de l'exemple : un Critère porte deux champs et une carte `referentiels` ; une déclinaison porte deux blocs, `tests` et `appendix`, qui deviennent deux sections de l'accordéon ; l'absence de `referentiels[ref]` est le marqueur « hors référentiel », et une Thématique dont aucun Critère n'a de clé pour le Référentiel affiché est entièrement marquée. Le même `"1.1.1"` peut apparaître sous `web` et `mobile` avec un contenu différent, l'identité d'un Test étant le couple (Référentiel, numéro). `references` liste les critères de succès WCAG 2.1 (`reference`, `title`, `level`), sans rappeler la norme sur chaque entrée ; les clauses EN 301 549 s’en déduisent ; les méthodologies sont intégrées aux tests, plus de `methodologies.json`. Le glossaire suit le même en-tête puis `terms: [{ "slug", "title", "referentiels", "definition" }]`, `definition` en markdown. Écartés : numéros locaux par niveau (`number: 1`) qui obligent à reconstruire la citation ; clés en français ; niveau par Critère ; URL par objet ; `null` et tableaux vides.

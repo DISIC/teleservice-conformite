@@ -30,7 +30,6 @@ export const REFERENTIELS: Record<ReferentielId, Omit<Referentiel, "id">> = {
 };
 
 export const Reference = z.object({
-	standard: z.string().min(1),
 	reference: z.string().min(1),
 	title: z.string().min(1),
 	level: z.enum(["A", "AA", "AAA"]).optional(),

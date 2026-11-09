@@ -8,7 +8,7 @@ export const VALID_TREE: Record<string, string> = {
 	"criteres/1.1/index.md":
 		"Chaque [image](#image) a-t-elle une alternative textuelle ?\n",
 	"criteres/1.1/web/annexe.md":
-		'---\nreferences:\n  - standard: WCAG 2.1\n    reference: "1.1.1"\n    title: Non-text Content\n    level: A\ntechniques:\n  - H36\n---\n',
+		'---\nreferences:\n  - reference: "1.1.1"\n    title: Non-text Content\n    level: A\ntechniques:\n  - H36\n---\n',
 	"criteres/1.1/web/notes-techniques.md":
 		"Une note sur l’[alternative](#alternative).\n",
 	"criteres/1.1/web/tests/1.md":
@@ -16,7 +16,7 @@ export const VALID_TREE: Record<string, string> = {
 	"criteres/1.1/web/tests/2.md":
 		"---\ntitle: Chaque image vectorielle vérifie-t-elle ces conditions ?\nconditions:\n  - Elle a un rôle ;\n  - Elle a une [alternative](#alternative).\n---\n\n1. Retrouver les svg.\n",
 	"criteres/1.1/mobile/annexe.md":
-		'---\nreferences:\n  - standard: EN 301 549 v3.2.1\n    reference: "11.1.1.1"\n    title: Non-text content\n---\n',
+		'---\nreferences:\n  - reference: "1.1.1"\n    title: Non-text Content\n    level: A\n---\n',
 	"criteres/1.1/mobile/tests/1.md":
 		"---\ntitle: Chaque [image](#image) a-t-elle une description accessible ?\n---\n\n1. Parcourir chaque écran.\n",
 	"criteres/1.2/index.md": "Chaque image de décoration est-elle ignorée ?\n",

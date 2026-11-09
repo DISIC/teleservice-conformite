@@ -17,11 +17,29 @@ const NumeroReference = z.string({
 	error: 'doit être une chaîne : entourez le numéro de guillemets (« "1.10" »)',
 });
 
+export const TECHNIQUE_PREFIXES = [
+	"ARIA",
+	"C",
+	"F",
+	"G",
+	"H",
+	"SCR",
+	"SM",
+	"SVR",
+] as const;
+export type TechniquePrefix = (typeof TECHNIQUE_PREFIXES)[number];
+
+const Technique = z
+	.string()
+	.trim()
+	.regex(new RegExp(`^(${TECHNIQUE_PREFIXES.join("|")})[1-9]\\d*$`), {
+		error: `technique WCAG inconnue : préfixe attendu parmi ${TECHNIQUE_PREFIXES.join(", ")}, suivi d'un numéro (« H36 »)`,
+	});
+
 export const AnnexeFrontmatter = z.strictObject({
 	references: z
 		.array(
 			z.strictObject({
-				standard: z.string().trim().min(1),
 				reference: NumeroReference.trim().min(1),
 				title: z.string().trim().min(1),
 				level: z.enum(["A", "AA", "AAA"]).optional(),
@@ -29,7 +47,7 @@ export const AnnexeFrontmatter = z.strictObject({
 		)
 		.min(1)
 		.optional(),
-	techniques: z.array(z.string().trim().min(1)).min(1).optional(),
+	techniques: z.array(Technique).min(1).optional(),
 });
 export type Annexe = z.infer<typeof AnnexeFrontmatter>;
 
