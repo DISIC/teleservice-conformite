@@ -76,6 +76,8 @@ const genericOAuthPlugin = genericOAuth({
 const baseConfig = {
 	database: pool,
 	basePath: "/api/better-auth",
+	// The SIRET comes only from ProConnect: `input: false` would also drop it from the provider profile.
+	disabledPaths: ["/update-user"] as string[],
 	hooks: {
 		after: upsertEntityToUser,
 	},
@@ -125,10 +127,6 @@ const baseConfig = {
 				type: "number" as const,
 			},
 		},
-	},
-	emailAndPassword: {
-		enabled: true,
-		autoSignIn: false,
 	},
 	advanced: {
 		database: {

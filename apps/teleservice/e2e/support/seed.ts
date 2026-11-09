@@ -68,7 +68,6 @@ const monthsAgo = (months: number): Date => {
 async function complete(
 	payload: Payload,
 	declaration: PopulatedDeclaration,
-	entityId: number,
 ): Promise<PopulatedDeclaration> {
 	let next = await updateDeclaration(payload, declaration, {
 		...declarationToGeneralValues(declaration).general,
@@ -76,7 +75,6 @@ async function complete(
 		domain: "Protection sociale",
 		kind: "website",
 		url: "https://www.example.fr",
-		entityId,
 	});
 	next = await saveSection(payload, next, "audit", { isRealised: false });
 	next = await skipSchema(payload, next);
@@ -145,18 +143,17 @@ export async function seedDeclaration(
 	});
 	await markVisited(payload, user.id, id);
 	const created = await loadOwnedDeclaration(payload, user.id, id);
-	const finished = await advance(payload, created, entity.id, state);
+	const finished = await advance(payload, created, state);
 	return { ...finished, name };
 }
 
 async function advance(
 	payload: Payload,
 	created: PopulatedDeclaration,
-	entityId: number,
 	state: SeedState,
 ): Promise<PopulatedDeclaration> {
 	if (state === "brouillon-incomplete") return created;
-	const ready = await complete(payload, created, entityId);
+	const ready = await complete(payload, created);
 	switch (state) {
 		case "brouillon-ready":
 			return ready;

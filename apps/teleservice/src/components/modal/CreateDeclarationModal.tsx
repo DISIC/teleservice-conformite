@@ -4,7 +4,6 @@ import { useId, useState } from "react";
 import { PathPicker } from "~/components/declaration/creation/PathPicker";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
 import { useAccessibleModal } from "~/hooks/useAccessibleModal";
-import type { Entity } from "~/payload/payload-types";
 
 export type CreateDeclarationModalActions = {
 	open?: () => void;
@@ -12,10 +11,8 @@ export type CreateDeclarationModalActions = {
 
 export function CreateDeclarationModal({
 	actions,
-	entity,
 }: {
 	actions: CreateDeclarationModalActions;
-	entity: Entity | null;
 }) {
 	const id = useId();
 	const { push } = useRouter();
@@ -33,7 +30,6 @@ export function CreateDeclarationModal({
 		<modal.Component size="large" title="Créer une déclaration">
 			<RequiredFieldsNotice />
 			<PathPicker
-				entity={entity}
 				onCreated={(declarationId) =>
 					push(`/dashboard/declarations/${declarationId}`)
 				}

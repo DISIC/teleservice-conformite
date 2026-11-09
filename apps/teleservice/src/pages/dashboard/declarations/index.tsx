@@ -162,7 +162,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 					)}
 				</section>
 			</div>
-			<CreateDeclarationModal actions={createModalActions} entity={entity} />
+			<CreateDeclarationModal actions={createModalActions} />
 		</>
 	);
 }
