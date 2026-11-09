@@ -1,7 +1,6 @@
 ---
 references:
-  - standard: "WCAG 2.2"
-    reference: "2.3.1"
+  - reference: "2.3.1"
     title: "Three Flashes or Below Threshold"
     level: A
 techniques:

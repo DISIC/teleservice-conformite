@@ -40,7 +40,6 @@ export const AnnexeFrontmatter = z.strictObject({
 	references: z
 		.array(
 			z.strictObject({
-				standard: z.string().trim().min(1),
 				reference: NumeroReference.trim().min(1),
 				title: z.string().trim().min(1),
 				level: z.enum(["A", "AA", "AAA"]).optional(),

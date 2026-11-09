@@ -1,7 +1,6 @@
 ---
 references:
-  - standard: "WCAG 2.2"
-    reference: "1.2.2"
+  - reference: "1.2.2"
     title: "Captions (Prerecorded)"
     level: A
 techniques:

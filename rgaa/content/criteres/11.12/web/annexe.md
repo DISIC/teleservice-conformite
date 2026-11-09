@@ -1,7 +1,6 @@
 ---
 references:
-  - standard: "WCAG 2.2"
-    reference: "3.3.4"
+  - reference: "3.3.4"
     title: "Error Prevention (Legal, Financial, Data)"
     level: AA
 techniques:

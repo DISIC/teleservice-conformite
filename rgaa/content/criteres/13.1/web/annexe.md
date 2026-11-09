@@ -1,11 +1,9 @@
 ---
 references:
-  - standard: "WCAG 2.2"
-    reference: "2.2.1"
+  - reference: "2.2.1"
     title: "Timing Adjustable"
     level: A
-  - standard: "WCAG 2.2"
-    reference: "2.2.2"
+  - reference: "2.2.2"
     title: "Pause, Stop, Hide"
     level: A
 techniques:

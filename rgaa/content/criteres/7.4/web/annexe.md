@@ -1,11 +1,9 @@
 ---
 references:
-  - standard: "WCAG 2.2"
-    reference: "3.2.1"
+  - reference: "3.2.1"
     title: "On Focus"
     level: A
-  - standard: "WCAG 2.2"
-    reference: "3.2.2"
+  - reference: "3.2.2"
     title: "On Input"
     level: A
 techniques:

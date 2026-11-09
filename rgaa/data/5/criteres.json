@@ -97,7 +97,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
@@ -197,13 +196,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -323,13 +320,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -452,7 +447,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
@@ -557,7 +551,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
@@ -625,7 +618,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
@@ -710,7 +702,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
@@ -769,7 +760,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -796,7 +786,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -859,13 +848,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.1",
 										"title": "Use of color",
 										"level": "A"
@@ -1000,7 +987,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.3",
 										"title": "Contrast (Minimum)",
 										"level": "AA"
@@ -1130,7 +1116,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.11",
 										"title": "Non-text Contrast",
 										"level": "AA"
@@ -1235,13 +1220,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.2.1",
 										"title": "Audio-only and Video-only (Prerecorded)",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.2.3",
 										"title": "Audio Description or Media Alternative (Prerecorded)",
 										"level": "A"
@@ -1292,13 +1275,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.2.1",
 										"title": "Audio-only and Video-only (Prerecorded)",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.2.3",
 										"title": "Audio Description or Media Alternative (Prerecorded)",
 										"level": "A"
@@ -1357,7 +1338,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.2.2",
 										"title": "Captions (Prerecorded)",
 										"level": "A"
@@ -1420,7 +1400,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.2.2",
 										"title": "Captions (Prerecorded)",
 										"level": "A"
@@ -1491,7 +1470,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.2.5",
 										"title": "Audio Description (Prerecorded)",
 										"level": "AA"
@@ -1569,7 +1547,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.2.5",
 										"title": "Audio Description (Prerecorded)",
 										"level": "AA"
@@ -1624,7 +1601,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
@@ -1683,7 +1659,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
@@ -1745,7 +1720,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
@@ -1791,7 +1765,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.2",
 										"title": "Audio Control",
 										"level": "A"
@@ -1841,13 +1814,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.1.1",
 										"title": "Keyboard",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.1.2",
 										"title": "No Keyboard Trap",
 										"level": "A"
@@ -1895,13 +1866,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.1.1",
 										"title": "Keyboard",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.1.2",
 										"title": "No Keyboard Trap",
 										"level": "A"
@@ -1942,7 +1911,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, role, Value",
 										"level": "A"
@@ -2171,7 +2139,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -2215,7 +2182,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -2258,13 +2224,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.2",
 										"title": "Meaningful Sequence",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -2308,7 +2272,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -2371,7 +2334,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -2444,7 +2406,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -2497,7 +2458,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -2538,7 +2498,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -2579,19 +2538,16 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.4",
 										"title": "Link Purpose (In Context)",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.5.3",
 										"title": "Label in Name",
 										"level": "A"
@@ -2680,13 +2636,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.4",
 										"title": "Link Purpose (In Context)",
 										"level": "A"
@@ -2771,13 +2725,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.5.3",
 										"title": "Label in Name",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -2882,13 +2834,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -2947,19 +2897,16 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.1.1",
 										"title": "Keyboard",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.7",
 										"title": "Focus Visible",
 										"level": "AA"
@@ -3030,13 +2977,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.2.1",
 										"title": "On Focus",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.2.2",
 										"title": "On Input",
 										"level": "A"
@@ -3098,7 +3043,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.3",
 										"title": "Status Messages",
 										"level": "AA"
@@ -3146,7 +3090,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.1",
 										"title": "Parsing",
 										"level": "A"
@@ -3199,13 +3142,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.1",
 										"title": "Parsing",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -3240,7 +3181,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.1.1",
 										"title": "Language of Page",
 										"level": "A"
@@ -3288,7 +3228,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.1.1",
 										"title": "Language of Page",
 										"level": "A"
@@ -3315,7 +3254,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.2",
 										"title": "Page Titled",
 										"level": "A"
@@ -3356,7 +3294,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.2",
 										"title": "Page Titled",
 										"level": "A"
@@ -3401,7 +3338,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.1.2",
 										"title": "Language of Parts",
 										"level": "AA"
@@ -3442,25 +3378,21 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.1",
 										"title": "Bypass Blocks",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.6",
 										"title": "Headings and Labels",
 										"level": "AA"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -3553,7 +3485,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -3605,7 +3536,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -3665,7 +3595,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -3756,13 +3685,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.2",
 										"title": "Meaningful Sequence",
 										"level": "A"
@@ -3815,13 +3742,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -3869,13 +3794,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.2",
 										"title": "Meaningful Sequence",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.3",
 										"title": "Focus Order",
 										"level": "A"
@@ -3934,7 +3857,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.4",
 										"title": "Resize Text",
 										"level": "AA"
@@ -3991,7 +3913,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.3",
 										"title": "Contrast (Minimum)",
 										"level": "AA"
@@ -4026,7 +3947,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.1",
 										"title": "Use of Color",
 										"level": "A"
@@ -4071,13 +3991,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.1",
 										"title": "Use of Color",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.7",
 										"title": "Focus Visible",
 										"level": "AA"
@@ -4135,13 +4053,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.2",
 										"title": "Meaningful Sequence",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -4205,13 +4121,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.3",
 										"title": "Sensory Characteristics",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.1",
 										"title": "Use of Color",
 										"level": "A"
@@ -4293,13 +4207,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.3",
 										"title": "Sensory Characteristics",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.1",
 										"title": "Use of Color",
 										"level": "A"
@@ -4373,7 +4285,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.10",
 										"title": "Reflow",
 										"level": "AA"
@@ -4409,7 +4320,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.12",
 										"title": "Text Spacing",
 										"level": "AA"
@@ -4454,7 +4364,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.4.13",
 										"title": "Content on Hover or Focus",
 										"level": "AA"
@@ -4527,25 +4436,21 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.6",
 										"title": "Headings and Labels",
 										"level": "AA"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.3.2",
 										"title": "Labels or Instructions",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -4608,19 +4513,16 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.6",
 										"title": "Headings and Labels",
 										"level": "AA"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.5.3",
 										"title": "Label in Name",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.3.2",
 										"title": "Labels or Instructions",
 										"level": "A"
@@ -4687,7 +4589,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.2.4",
 										"title": "Consistent Identification",
 										"level": "AA"
@@ -4747,7 +4648,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.3.2",
 										"title": "Labels or Instructions",
 										"level": "A"
@@ -4787,13 +4687,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.3.2",
 										"title": "Labels or Instructions",
 										"level": "A"
@@ -4834,13 +4732,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.3.2",
 										"title": "Labels or Instructions",
 										"level": "A"
@@ -4884,13 +4780,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.3.2",
 										"title": "Labels or Instructions",
 										"level": "A"
@@ -4958,7 +4852,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
@@ -5038,13 +4931,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.5.3",
 										"title": "Label in Name",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -5104,13 +4995,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.3.1",
 										"title": "Error Identification",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.3.2",
 										"title": "Labels or Instructions",
 										"level": "A"
@@ -5171,7 +5060,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.3.3",
 										"title": "Error Suggestion",
 										"level": "AA"
@@ -5219,7 +5107,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.3.4",
 										"title": "Error Prevention (Legal, Financial, Data)",
 										"level": "AA"
@@ -5283,7 +5170,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.5",
 										"title": "Identify Input Purpose",
 										"level": "AA"
@@ -5369,7 +5255,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.5",
 										"title": "Multiple Ways",
 										"level": "AA"
@@ -5427,7 +5312,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.2.3",
 										"title": "Consistent Navigation",
 										"level": "AA"
@@ -5494,7 +5378,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.5",
 										"title": "Multiple Ways",
 										"level": "AA"
@@ -5552,13 +5435,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.5",
 										"title": "Multiple Ways",
 										"level": "AA"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.2.3",
 										"title": "Consistent Navigation",
 										"level": "AA"
@@ -5596,7 +5477,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.2.3",
 										"title": "Consistent Navigation",
 										"level": "AA"
@@ -5632,19 +5512,16 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.1",
 										"title": "Bypass Blocks",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -5678,19 +5555,16 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.1",
 										"title": "Bypass Blocks",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.3",
 										"title": "Focus Order",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.2.3",
 										"title": "Consistent Navigation",
 										"level": "AA"
@@ -5738,7 +5612,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.3",
 										"title": "Focus Order",
 										"level": "A"
@@ -5789,13 +5662,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.1.1",
 										"title": "Keyboard",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.1.2",
 										"title": "No Keyboard Trap",
 										"level": "A"
@@ -5841,7 +5712,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.1.4",
 										"title": "Character Key Shortcuts",
 										"level": "A"
@@ -5928,13 +5798,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.2.1",
 										"title": "Timing Adjustable",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.2.2",
 										"title": "Pause, Stop, Hide",
 										"level": "A"
@@ -6000,7 +5868,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.2.1",
 										"title": "On focus",
 										"level": "A"
@@ -6041,43 +5908,36 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.2",
 										"title": "Meaningful Sequence",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.1",
 										"title": "Bypass Blocks",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.3",
 										"title": "Focus Order",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.1.1",
 										"title": "Language of Page",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -6132,43 +5992,36 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.1",
 										"title": "Info and Relationships",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.2",
 										"title": "Meaningful Sequence",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.1",
 										"title": "Bypass Blocks",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.4.3",
 										"title": "Focus Order",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "3.1.1",
 										"title": "Language of Page",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
@@ -6214,7 +6067,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
@@ -6261,7 +6113,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.1.1",
 										"title": "Non-text Content",
 										"level": "A"
@@ -6326,7 +6177,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.3.1",
 										"title": "Three Flashes or Below Threshold",
 										"level": "A"
@@ -6399,13 +6249,11 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.2.1",
 										"title": "Timing Adjustable",
 										"level": "A"
 									},
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.2.2",
 										"title": "Pause, Stop, Hide",
 										"level": "A"
@@ -6487,7 +6335,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "1.3.4",
 										"title": "Orientation",
 										"level": "AA"
@@ -6564,7 +6411,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.5.1",
 										"title": "Pointer Gestures",
 										"level": "A"
@@ -6609,7 +6455,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.5.2",
 										"title": "Pointer Cancellation",
 										"level": "A"
@@ -6646,7 +6491,6 @@
 							"appendix": {
 								"references": [
 									{
-										"standard": "WCAG 2.2",
 										"reference": "2.5.4",
 										"title": "Motion Actuation",
 										"level": "A"

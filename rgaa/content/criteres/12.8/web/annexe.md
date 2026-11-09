@@ -1,7 +1,6 @@
 ---
 references:
-  - standard: "WCAG 2.2"
-    reference: "2.4.3"
+  - reference: "2.4.3"
     title: "Focus Order"
     level: A
 techniques:

@@ -1,7 +1,6 @@
 ---
 references:
-  - standard: "WCAG 2.2"
-    reference: "1.4.4"
+  - reference: "1.4.4"
     title: "Resize Text"
     level: AA
 techniques:

@@ -65,7 +65,7 @@ describe("readSources", () => {
 	it("requires the reference number to be quoted", () => {
 		const problems = problemsOf({
 			"criteres/1.2/web/annexe.md":
-				"---\nreferences:\n  - standard: WCAG 2.1\n    reference: 1.10\n    title: X\n---\n",
+				"---\nreferences:\n  - reference: 1.10\n    title: X\n---\n",
 		});
 		expect(problems[0]?.message).toBe(
 			'champ « references[0].reference » : doit être une chaîne : entourez le numéro de guillemets (« "1.10" »)',

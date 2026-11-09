@@ -1,7 +1,6 @@
 ---
 references:
-  - standard: "WCAG 2.2"
-    reference: "1.4.2"
+  - reference: "1.4.2"
     title: "Audio Control"
     level: A
 techniques:

@@ -1,11 +1,9 @@
 ---
 references:
-  - standard: "WCAG 2.2"
-    reference: "1.4.1"
+  - reference: "1.4.1"
     title: "Use of Color"
     level: A
-  - standard: "WCAG 2.2"
-    reference: "2.4.7"
+  - reference: "2.4.7"
     title: "Focus Visible"
     level: AA
 techniques:

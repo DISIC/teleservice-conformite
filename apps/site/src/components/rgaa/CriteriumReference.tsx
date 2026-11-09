@@ -9,7 +9,6 @@ import { tss } from "tss-react";
 import { renderMarkdown } from "./helpers/markdown";
 import {
 	enClause,
-	isWcag,
 	techniqueUrl,
 	wcagSuccessCriterionUrl,
 } from "./helpers/references";
@@ -20,17 +19,8 @@ type CriteriumReferenceProps = {
 	accordionBackgroundColor: string;
 };
 
+const WCAG_TITLE = "WCAG 2.1";
 const EN_301_549_TITLE = "EN 301 549 V2.1.2 (2018-08) (en anglais)";
-
-function groupByStandard(references: Reference[]) {
-	const groups = new Map<string, Reference[]>();
-	for (const reference of references) {
-		const group = groups.get(reference.standard);
-		if (group) group.push(reference);
-		else groups.set(reference.standard, [reference]);
-	}
-	return [...groups];
-}
 
 export default function CriteriumReference({
 	criteriumNumber,
@@ -50,15 +40,6 @@ export default function CriteriumReference({
 		technicalNotes,
 		particularCases,
 	} = appendix;
-	const groups = groupByStandard(references);
-	const hasEnGroup = groups.some(([standard]) =>
-		standard.startsWith("EN 301 549"),
-	);
-	const enClauses = hasEnGroup
-		? []
-		: references
-				.filter(({ standard }) => isWcag(standard))
-				.flatMap((reference) => enClause(reference) ?? []);
 
 	return (
 		<div data-accordion="reference">
@@ -68,31 +49,24 @@ export default function CriteriumReference({
 				className={accordionClasses.referenceAccordion}
 			>
 				<div className={classes.root}>
-					{groups.length > 0 && (
+					{references.length > 0 && (
 						<section className={classes.section}>
 							<AppendixTitle icon="fr-icon-book-2-line" title="Références" />
-							{groups.map(([standard, group]) => (
-								<StandardGroup key={standard} title={standard}>
-									<SuccessCriteriaField
-										references={group}
-										linked={isWcag(standard)}
-									/>
-									{isWcag(standard) && techniques.length > 0 && (
-										<TechniquesField techniques={techniques} />
-									)}
-								</StandardGroup>
-							))}
-							{enClauses.length > 0 && (
-								<StandardGroup title={EN_301_549_TITLE}>
-									<div className={classes.prose}>
-										<ul>
-											{enClauses.map((clause) => (
-												<li key={clause}>{clause}</li>
-											))}
-										</ul>
-									</div>
-								</StandardGroup>
-							)}
+							<StandardGroup title={WCAG_TITLE}>
+								<SuccessCriteriaField references={references} />
+								{techniques.length > 0 && (
+									<TechniquesField techniques={techniques} />
+								)}
+							</StandardGroup>
+							<StandardGroup title={EN_301_549_TITLE}>
+								<div className={classes.prose}>
+									<ul>
+										{references.map((reference) => (
+											<li key={reference.reference}>{enClause(reference)}</li>
+										))}
+									</ul>
+								</div>
+							</StandardGroup>
 						</section>
 					)}
 
@@ -153,13 +127,7 @@ function StandardGroup({
 	);
 }
 
-function SuccessCriteriaField({
-	references,
-	linked,
-}: {
-	references: Reference[];
-	linked: boolean;
-}) {
+function SuccessCriteriaField({ references }: { references: Reference[] }) {
 	const { classes } = useStyles();
 
 	return (
@@ -168,7 +136,7 @@ function SuccessCriteriaField({
 				const label = reference.level
 					? `${reference.reference} (${reference.level})`
 					: reference.reference;
-				return linked ? (
+				return (
 					<Tag
 						key={reference.reference}
 						linkProps={externalLinkProps(
@@ -178,10 +146,6 @@ function SuccessCriteriaField({
 						className={classes.tag}
 					>
 						{label}
-					</Tag>
-				) : (
-					<Tag key={reference.reference} className={classes.tag}>
-						{`${label} ${reference.title}`}
 					</Tag>
 				);
 			})}

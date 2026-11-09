@@ -1,7 +1,6 @@
 ---
 references:
-  - standard: "WCAG 2.2"
-    reference: "1.4.12"
+  - reference: "1.4.12"
     title: "Text Spacing"
     level: AA
 techniques:
