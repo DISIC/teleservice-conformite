@@ -83,10 +83,10 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 				"general.firstPublishedAt":
 					"Date de publication initiale de la déclaration",
 				"general.name": "Nom du service numérique concerné",
+				"general.domain": "Secteur d’activité du service",
 				"general.kind": "Type de service",
 				"general.mobilePlatform": "Plateforme mobile",
 				"general.url": "URL de la page d’accueil du site concerné",
-				"general.domain": "Secteur d’activité du service concerné",
 			},
 		},
 	},

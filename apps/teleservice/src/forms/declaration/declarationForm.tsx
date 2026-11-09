@@ -58,6 +58,19 @@ export const DeclarationGeneralForm = withForm({
 						/>
 					)}
 				</form.AppField>
+				<form.AppField name="general.domain">
+					{(field) => (
+						<field.SelectField
+							label="Secteur d’activité du service"
+							placeholder="Sélectionnez un secteur"
+							hint="Cette donnée sera utilisée à des fins de statistiques."
+							infoStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
+							readOnlyField={readOnly}
+							options={[...kindOptions]}
+							required
+						/>
+					)}
+				</form.AppField>
 				<form.AppField name="general.kind">
 					{(field) => (
 						<field.RichRadioField
@@ -124,19 +137,6 @@ export const DeclarationGeneralForm = withForm({
 						}
 					}}
 				</form.Subscribe>
-				<form.AppField name="general.domain">
-					{(field) => (
-						<field.SelectField
-							label="Secteur d’activité du service concerné"
-							placeholder="Sélectionnez un secteur"
-							hint="Cette donnée sera utilisée à des fins de statistiques."
-							infoStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
-							readOnlyField={readOnly}
-							options={[...kindOptions]}
-							required
-						/>
-					)}
-				</form.AppField>
 			</Part>
 		);
 	},
