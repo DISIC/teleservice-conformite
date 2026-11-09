@@ -1,10 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import NationalIdentityCard from "@codegouvfr/react-dsfr/picto/NationalIdentityCard";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { tss } from "tss-react";
 import { EditActionProvider, Part } from "~/components/form/Part";
 import { ReadOnlyField } from "~/components/form/fields/ReadOnlyField";
@@ -23,19 +22,13 @@ import {
 import EmptyState from "~/components/ui/EmptyState";
 import { CONTACT_FAQ } from "~/components/ui/emptyStateFaq";
 import { Loader } from "~/components/ui/Loader";
+import { type AlertDetails, PageAlert } from "~/components/ui/PageAlert";
 import { useFocusAfterDelete } from "~/hooks/useFocusAfterDelete";
 import type { Contact, Entity } from "~/payload/payload-types";
 import { api } from "~/lib/api";
 import { newTabLinkProps } from "~/lib/newTabLink";
 import { loadEntityForPage } from "~/lib/server-guards";
 import { pageTitle } from "~/lib/serviceName";
-
-const SUCCESS_ALERT_DURATION_MS = 5000;
-
-type AlertDetails = {
-	description: string;
-	severity: "success" | "error";
-};
 
 export default function ContactsPage({
 	entity,
@@ -45,17 +38,7 @@ export default function ContactsPage({
 
 	const [contactModalActions] = useState<LibraryContactModalActions>({});
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
-	const alertRef = useRef<HTMLDivElement>(null);
 	const [alert, setAlert] = useState<AlertDetails | null>(null);
-
-	useEffect(() => {
-		if (!alert) return;
-		alertRef.current?.focus();
-		if (alert.severity !== "success") return;
-
-		const timeout = setTimeout(() => setAlert(null), SUCCESS_ALERT_DURATION_MS);
-		return () => clearTimeout(timeout);
-	}, [alert]);
 
 	const {
 		data: contacts = [],
@@ -188,17 +171,7 @@ export default function ContactsPage({
 			/>
 			<div className={fr.cx("fr-container")}>
 				<div className={classes.main}>
-					{alert && (
-						<div className={classes.alertWrapper} ref={alertRef} tabIndex={-1}>
-							<Alert
-								small
-								severity={alert.severity}
-								description={alert.description}
-								closable
-								onClose={() => setAlert(null)}
-							/>
-						</div>
-					)}
+					<PageAlert alert={alert} onClose={() => setAlert(null)} />
 					{isLoading || isFetching ? (
 						<Loader />
 					) : contacts.length === 0 ? (
@@ -275,15 +248,6 @@ export default function ContactsPage({
 const useStyles = tss.withName(ContactsPage.name).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
-	},
-	alertWrapper: {
-		width: "100%",
-		display: "flex",
-		"& div": {
-			width: "100%",
-		},
-		marginBottom: fr.spacing("6v"),
-		animation: "fadeIn 0.25s ease-in-out",
 	},
 	contactList: {
 		listStyle: "none",
