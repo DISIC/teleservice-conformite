@@ -16,11 +16,13 @@ import { pageTitle } from "~/lib/serviceName";
 type PublishPageProps = {
 	publishedContent: PublishedDeclaration | null;
 	deleted?: boolean;
+	today: string;
 };
 
 const PublishPage: PageWithHeader<PublishPageProps> = ({
 	publishedContent,
 	deleted,
+	today,
 }) => {
 	const { classes } = useStyles();
 
@@ -40,7 +42,10 @@ const PublishPage: PageWithHeader<PublishPageProps> = ({
 				className={fr.cx("fr-container")}
 			>
 				<div className={classes.publishedDeclarationContainer}>
-					<PublishedTemplate declaration={publishedContent} />
+					<PublishedTemplate
+						declaration={publishedContent}
+						today={new Date(today)}
+					/>
 				</div>
 			</section>
 		</>
@@ -48,8 +53,10 @@ const PublishPage: PageWithHeader<PublishPageProps> = ({
 };
 
 // The public page describes the document, not the téléservice.
-PublishPage.renderHeader = ({ publishedContent }) =>
-	publishedContent ? <PublishedHeader declaration={publishedContent} /> : null;
+PublishPage.renderHeader = ({ publishedContent, today }) =>
+	publishedContent ? (
+		<PublishedHeader declaration={publishedContent} today={new Date(today)} />
+	) : null;
 
 export default PublishPage;
 
@@ -81,6 +88,7 @@ export const getServerSideProps: GetServerSideProps<PublishPageProps> = async (
 		props: {
 			publishedContent,
 			deleted: !!declaration?.deletedAt,
+			today: new Date().toISOString(),
 		},
 	};
 };

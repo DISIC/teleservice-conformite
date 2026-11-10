@@ -11,13 +11,14 @@ export const PUBLISHED_HEADER_TITLE = "Déclaration d’accessibilité numériqu
 
 export function PublishedHeader({
 	declaration,
+	today,
 }: {
 	declaration: PublishedDeclaration;
+	today: Date;
 }) {
 	const { classes, cx } = useStyles();
 	const isObsolete =
-		obsolescenceOf(new Date(declaration.publishedAt), new Date()) ===
-		"obsolete";
+		obsolescenceOf(new Date(declaration.publishedAt), today) === "obsolete";
 
 	return (
 		<Header

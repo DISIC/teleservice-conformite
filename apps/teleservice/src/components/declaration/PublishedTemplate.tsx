@@ -9,15 +9,17 @@ export type PublishedTemplateMode = "preview" | "published";
 type PublishedTemplateProps = {
 	declaration: PublishedDeclaration;
 	mode?: PublishedTemplateMode;
+	today?: Date;
 };
 
 export default function PublishedTemplate({
 	declaration,
 	mode = "published",
+	today = new Date(),
 }: PublishedTemplateProps) {
 	return (
 		<MarkdownToJsx
-			content={buildPublishedMarkdown(declaration, { today: new Date() })}
+			content={buildPublishedMarkdown(declaration, { today })}
 			mode={mode}
 		/>
 	);
