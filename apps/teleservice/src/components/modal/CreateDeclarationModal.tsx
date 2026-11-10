@@ -134,7 +134,9 @@ export function CreateDeclarationModal({
 								<p className={fr.cx("fr-text--lg", "fr-mb-1v")}>
 									<strong>{title}</strong>
 								</p>
-								<div className="fr-text--sm">{description}</div>
+								<div className={cx("fr-text--sm", classes.description)}>
+									{description}
+								</div>
 							</div>
 						</li>
 					))}
