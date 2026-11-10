@@ -5,9 +5,8 @@ import {
 } from "@codegouvfr/react-dsfr";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { useRouter } from "next/router";
-import { useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { tss } from "tss-react";
 import { PathPicker } from "~/components/declaration/creation/PathPicker";
 import { RequiredFieldsNotice } from "~/components/form/RequiredField";
@@ -44,12 +43,6 @@ export function CreateDeclarationModal({
 	const { push } = useRouter();
 	const { classes, cx } = useStyles();
 
-	const [introModal] = useState(() =>
-		createModal({
-			id: `createDeclarationIntroModal-${id}`,
-			isOpenedByDefault: false,
-		}),
-	);
 	const [modal] = useState(() =>
 		createModal({
 			id: `createDeclarationModal-${id}`,
@@ -57,20 +50,23 @@ export function CreateDeclarationModal({
 		}),
 	);
 
-	const openIntro = useAccessibleModal(introModal);
-	const openCreate = useAccessibleModal(modal);
-	const startRequested = useRef(false);
+	const open = useAccessibleModal(modal);
+	const [step, setStep] = useState<"intro" | "create">("intro");
 	const [hideIntro, setHideIntro] = useState(false);
+	const started = useRef(false);
 
-	useIsModalOpen(introModal, {
-		onConceal: () => {
-			if (!startRequested.current) return;
-			startRequested.current = false;
-			openCreate();
-		},
-	});
+	actions.open = () => {
+		started.current = false;
+		setStep(isIntroHidden() ? "create" : "intro");
+		open();
+	};
 
-	actions.open = () => (isIntroHidden() ? openCreate() : openIntro());
+	useEffect(() => {
+		if (step !== "create" || !started.current) return;
+		const title = document.getElementById(`fr-modal-title-${modal.id}`);
+		title?.setAttribute("tabindex", "-1");
+		title?.focus();
+	}, [step, modal.id]);
 
 	const list: Item[] = [
 		{
@@ -108,64 +104,71 @@ export function CreateDeclarationModal({
 	];
 
 	return (
-		<>
-			<introModal.Component
-				size="large"
-				title="Déposer une déclaration"
-				buttons={[
-					{
-						children: "Commencer",
-						priority: "primary",
-						type: "button",
-						onClick: () => {
-							startRequested.current = true;
-						},
-					},
-				]}
-				className={classes.modal}
-			>
-				<ul className={classes.list}>
-					{list.map(({ title, description, icon }) => (
-						<li key={title} className={classes.item}>
-							<span className={classes.iconBox}>
-								<span className={cx(fr.cx(icon), classes.icon)} aria-hidden />
-							</span>
-							<div>
-								<p className={fr.cx("fr-text--lg", "fr-mb-1v")}>
-									<strong>{title}</strong>
-								</p>
-								<div className={cx("fr-text--sm", classes.description)}>
-									{description}
+		<modal.Component
+			size="large"
+			title="Déposer une déclaration"
+			buttons={
+				step === "intro"
+					? {
+							children: "Commencer",
+							priority: "primary",
+							type: "button",
+							doClosesModal: false,
+							onClick: () => {
+								started.current = true;
+								setStep("create");
+							},
+						}
+					: undefined
+			}
+			className={classes.modal}
+		>
+			{step === "intro" ? (
+				<div data-intro>
+					<ul className={classes.list}>
+						{list.map(({ title, description, icon }) => (
+							<li key={title} className={classes.item}>
+								<span className={classes.iconBox}>
+									<span className={cx(fr.cx(icon), classes.icon)} aria-hidden />
+								</span>
+								<div>
+									<p className={fr.cx("fr-text--lg", "fr-mb-1v")}>
+										<strong>{title}</strong>
+									</p>
+									<div className={cx("fr-text--sm", classes.description)}>
+										{description}
+									</div>
 								</div>
-							</div>
-						</li>
-					))}
-				</ul>
-				<Checkbox
-					className={cx(fr.cx("fr-mt-4v", "fr-mb-0"), classes.hideIntro)}
-					options={[
-						{
-							label: "Ne plus afficher cette page",
-							nativeInputProps: {
-								checked: hideIntro,
-								onChange: (event) => {
-									setHideIntro(event.target.checked);
-									setIntroHidden(event.target.checked);
+							</li>
+						))}
+					</ul>
+					<Checkbox
+						className={cx(fr.cx("fr-mt-4v", "fr-mb-0"), classes.hideIntro)}
+						options={[
+							{
+								label: "Ne plus afficher cette page",
+								nativeInputProps: {
+									checked: hideIntro,
+									onChange: (event) => {
+										setHideIntro(event.target.checked);
+										setIntroHidden(event.target.checked);
+									},
 								},
 							},
-						},
-					]}
-				/>
-			</introModal.Component>
-			<modal.Component size="large" title="Déposer une déclaration">
-				<RequiredFieldsNotice />
-				<PathPicker
-					onCreated={(declarationId) =>
-						push(`/dashboard/declarations/${declarationId}`)
-					}
-				/>
-			</modal.Component>
-		</>
+						]}
+					/>
+				</div>
+			) : (
+				<>
+					<RequiredFieldsNotice />
+					<PathPicker
+						onCreated={(declarationId) =>
+							push(`/dashboard/declarations/${declarationId}`)
+						}
+					/>
+				</>
+			)}
+		</modal.Component>
 	);
 }
 
@@ -179,17 +182,18 @@ const useStyles = tss.withName(CreateDeclarationModal.name).create({
 		},
 	},
 	modal: {
-		"& .fr-modal__header, & .fr-modal__content, & .fr-modal__footer": {
-			paddingInline: fr.spacing("6w"),
-		},
-		"& .fr-modal__header": {
+		"&:has([data-intro]) :is(.fr-modal__header, .fr-modal__content, .fr-modal__footer)":
+			{
+				paddingInline: fr.spacing("6w"),
+			},
+		"&:has([data-intro]) .fr-modal__header": {
 			paddingTop: fr.spacing("4w"),
 		},
-		"& .fr-modal__footer": {
+		"&:has([data-intro]) .fr-modal__footer": {
 			paddingBottom: fr.spacing("4w"),
 			paddingTop: fr.spacing("3w"),
 		},
-		"& h1": {
+		"&:has([data-intro]) h1": {
 			marginBottom: fr.spacing("10v"),
 		},
 	},
