@@ -50,7 +50,12 @@ export function PublishedHeader({
 						{publicationLabel(declaration)}
 					</p>
 					{isObsolete && (
-						<Badge as="p" small severity="warning">
+						<Badge
+							as="p"
+							small
+							severity="warning"
+							className={classes.obsoleteBadge}
+						>
 							Obsolète
 						</Badge>
 					)}
@@ -61,6 +66,12 @@ export function PublishedHeader({
 }
 
 const useStyles = tss.withName(PublishedHeader.name).create({
+	obsoleteBadge: {
+		color: fr.colors.decisions.background.flat.error.default,
+		"&::before": {
+			color: fr.colors.decisions.background.flat.error.default,
+		},
+	},
 	publicationInfo: {
 		display: "flex",
 		flexDirection: "column",
