@@ -40,8 +40,8 @@ describe("validateDeclaration", () => {
 		]);
 	});
 
-	it("requires the initial publication date whatever the creation path", () => {
-		for (const fromSource of ["manual", "ara", "ai"] as const) {
+	it("requires the initial publication date of an imported declaration", () => {
+		for (const fromSource of ["ara", "ai"] as const) {
 			expect(
 				errorsFor(
 					validateDeclaration(
@@ -58,17 +58,19 @@ describe("validateDeclaration", () => {
 				},
 			]);
 		}
-		expect(
-			errorsFor(
-				validateDeclaration(
-					completeDeclaration({
-						fromSource: "manual",
-						first_published_at: "2024-03-24T00:00:00.000Z",
-					}),
+	});
+
+	it("never asks a manual declaration for its hidden initial publication date", () => {
+		for (const first_published_at of [null, "2999-01-01T00:00:00.000Z"]) {
+			expect(
+				errorsFor(
+					validateDeclaration(
+						completeDeclaration({ fromSource: "manual", first_published_at }),
+					),
+					"infos",
 				),
-				"infos",
-			),
-		).toEqual([]);
+			).toEqual([]);
+		}
 	});
 
 	it("rejects an initial publication date in the future", () => {
