@@ -23,6 +23,18 @@ describe("extractDeclarationContentToPublish", () => {
 		expect(content.audit.testEnvironments).toEqual(["VoiceOver (Safari)"]);
 	});
 
+	it("previews a manual draft as a first publication on the publish day", () => {
+		const content = extractDeclarationContentToPublish(
+			completeDeclaration({
+				fromSource: "manual",
+				first_published_at: "2026-11-01T00:00:00.000Z",
+			}),
+			{ publishedAt: new Date("2026-11-10T09:00:00.000Z") },
+		);
+		expect(content.firstPublishedAt).toBe("2026-11-10");
+		expect(content.publishedAt).toBe("2026-11-10");
+	});
+
 	it("leaves the assessment tools out of an RGAA 5 declaration", () => {
 		const content = extractDeclarationContentToPublish(
 			completeDeclaration({

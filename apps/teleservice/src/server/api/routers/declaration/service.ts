@@ -13,6 +13,7 @@ import {
 } from "~/server/api/utils/section-write";
 import {
 	extractDeclarationContentToPublish,
+	firstPublishedAtFor,
 	parsePublishedDeclaration,
 } from "~/domain/declaration/published/snapshot";
 import { validateDeclaration } from "~/domain/declaration/validate";
@@ -329,25 +330,16 @@ export const publishDeclaration = async (
 	}
 
 	const publishedAt = new Date();
-	// A first publication in this téléservice is its own initial publication; a manual
-	// declaration was never published elsewhere, so its creation-day default is replaced.
-	const firstPublishedAt =
-		declaration.fromSource === "manual" && !declaration.published_at
-			? publishedAt.toISOString()
-			: (declaration.first_published_at ?? publishedAt.toISOString());
 	const result = await payload.update({
 		collection: "declarations",
 		id: declaration.id,
 		data: {
 			status: "published",
 			publishedContent: JSON.stringify(
-				extractDeclarationContentToPublish(
-					{ ...declaration, first_published_at: firstPublishedAt },
-					{ publishedAt },
-				),
+				extractDeclarationContentToPublish(declaration, { publishedAt }),
 			),
 			published_at: publishedAt.toISOString(),
-			first_published_at: firstPublishedAt,
+			first_published_at: firstPublishedAtFor(declaration, publishedAt),
 		},
 	});
 
