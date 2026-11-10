@@ -62,7 +62,6 @@ export function CreateDeclarationModal({
 	const startRequested = useRef(false);
 	const [hideIntro, setHideIntro] = useState(false);
 
-	// Opened once the intro has handed focus back to the trigger, so the creation modal returns it there too.
 	useIsModalOpen(introModal, {
 		onConceal: () => {
 			if (!startRequested.current) return;
@@ -111,50 +110,50 @@ export function CreateDeclarationModal({
 	return (
 		<>
 			<introModal.Component
-			size="large"
-			title="Déposer une déclaration"
-			buttons={[
-				{
-					children: "Commencer",
-					priority: "primary",
-					type: "button",
-					onClick: () => {
-						startRequested.current = true;
-					},
-				},
-			]}
-			className={classes.modal}
-		>
-			<ul className={classes.list}>
-				{list.map(({ title, description, icon }) => (
-					<li key={title} className={classes.item}>
-						<span className={classes.iconBox}>
-							<span className={cx(fr.cx(icon), classes.icon)} aria-hidden />
-						</span>
-						<div>
-							<p className={fr.cx("fr-text--lg", "fr-mb-1v")}>
-								<strong>{title}</strong>
-							</p>
-							<div className="fr-text--sm">{description}</div>
-						</div>
-					</li>
-				))}
-			</ul>
-			<Checkbox
-				className={cx(fr.cx("fr-mt-4v", "fr-mb-0"), classes.hideIntro)}
-				options={[
+				size="large"
+				title="Déposer une déclaration"
+				buttons={[
 					{
-						label: "Ne plus afficher cette page",
-						nativeInputProps: {
-							checked: hideIntro,
-							onChange: (event) => {
-								setHideIntro(event.target.checked);
-								setIntroHidden(event.target.checked);
-							},
+						children: "Commencer",
+						priority: "primary",
+						type: "button",
+						onClick: () => {
+							startRequested.current = true;
 						},
 					},
 				]}
-			/>
+				className={classes.modal}
+			>
+				<ul className={classes.list}>
+					{list.map(({ title, description, icon }) => (
+						<li key={title} className={classes.item}>
+							<span className={classes.iconBox}>
+								<span className={cx(fr.cx(icon), classes.icon)} aria-hidden />
+							</span>
+							<div>
+								<p className={fr.cx("fr-text--lg", "fr-mb-1v")}>
+									<strong>{title}</strong>
+								</p>
+								<div className="fr-text--sm">{description}</div>
+							</div>
+						</li>
+					))}
+				</ul>
+				<Checkbox
+					className={cx(fr.cx("fr-mt-4v", "fr-mb-0"), classes.hideIntro)}
+					options={[
+						{
+							label: "Ne plus afficher cette page",
+							nativeInputProps: {
+								checked: hideIntro,
+								onChange: (event) => {
+									setHideIntro(event.target.checked);
+									setIntroHidden(event.target.checked);
+								},
+							},
+						},
+					]}
+				/>
 			</introModal.Component>
 			<modal.Component size="large" title="Déposer une déclaration">
 				<RequiredFieldsNotice />
