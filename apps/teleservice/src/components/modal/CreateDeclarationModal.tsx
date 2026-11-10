@@ -30,6 +30,39 @@ function setIntroHidden(hidden: boolean) {
 	document.cookie = `${INTRO_COOKIE}=true; path=/; max-age=${maxAge}; SameSite=Lax`;
 }
 
+const INTRO_ITEMS: Item[] = [
+	{
+		title: "Une déclaration par service numérique et par support",
+		description:
+			"Par exemple, si vous avez un site, une application mobile iOs, une application mobile Android et un intranet, vous devrez déposer 4 déclarations.",
+		icon: "ri-quill-pen-line",
+	},
+	{
+		title: "Pour tous les services numériques, même sans audit",
+		description: (
+			<>
+				Tous les sites et applications mobiles en production doivent être
+				référencés sur le téléservice de déclaration,{" "}
+				<strong>
+					y compris ceux qui n’ont pas encore fait l’objet d’un audit
+					d’accessibilité.
+				</strong>
+			</>
+		),
+		icon: "ri-list-check",
+	},
+	{
+		title: "2 étapes simples",
+		description: (
+			<ol>
+				<li>Vous déposez votre déclaration sur le téléservice.</li>
+				<li>Vous publiez sur votre site le lien vers votre télédéclaration.</li>
+			</ol>
+		),
+		icon: "ri-emoji-sticker-line",
+	},
+];
+
 export type CreateDeclarationModalActions = {
 	open?: () => void;
 };
@@ -68,41 +101,6 @@ export function CreateDeclarationModal({
 		title?.focus();
 	}, [step, modal.id]);
 
-	const list: Item[] = [
-		{
-			title: "Une déclaration par service numérique et par support",
-			description:
-				"Par exemple, si vous avez un site, une application mobile iOs, une application mobile Android et un intranet, vous devrez déposer 4 déclarations.",
-			icon: "ri-quill-pen-line",
-		},
-		{
-			title: "Pour tous les services numériques, même sans audit",
-			description: (
-				<>
-					Tous les sites et applications mobiles en production doivent être
-					référencés sur le téléservice de déclaration,{" "}
-					<strong>
-						y compris ceux qui n’ont pas encore fait l’objet d’un audit
-						d’accessibilité.
-					</strong>
-				</>
-			),
-			icon: "ri-list-check",
-		},
-		{
-			title: "2 étapes simples",
-			description: (
-				<ol>
-					<li>Vous déposez votre déclaration sur le téléservice.</li>
-					<li>
-						Vous publiez sur votre site le lien vers votre télédéclaration.
-					</li>
-				</ol>
-			),
-			icon: "ri-emoji-sticker-line",
-		},
-	];
-
 	return (
 		<modal.Component
 			size="large"
@@ -126,7 +124,7 @@ export function CreateDeclarationModal({
 			{step === "intro" ? (
 				<div data-intro>
 					<ul className={classes.list}>
-						{list.map(({ title, description, icon }) => (
+						{INTRO_ITEMS.map(({ title, description, icon }) => (
 							<li key={title} className={classes.item}>
 								<span className={classes.iconBox}>
 									<span className={cx(fr.cx(icon), classes.icon)} aria-hidden />
