@@ -100,12 +100,12 @@ The `isAuditRealised` boolean on the Declaration's `audit` group. When `false`, 
 
 Status badges shown on `SideMenu` items and on the Section's own title (and historically on the Démarche page tiles):
 
-- **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit, `Réalisation de l'audit` is flagged until the realisation question is answered; the other Sub-sections are flagged per-slice (e.g. an empty `testEnvironments` list for Outils, or an empty `usedTools` list on an RGAA 4 audit) **only once the audit is declared realised** — before that answer they stay quiet. The Audit parent is flagged when any of its Sub-sections is.
-- **À vérifier** — the Section's `toVerify` flag is `true`, set when content was AI-generated and needs human review. Tracked at Section level only; not fanned out to Sub-sections.
+- **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit, `Réalisation de l'audit` is flagged until the realisation question is answered; the other Sub-sections are flagged per-slice (e.g. an empty `testEnvironments` list for Outils, or an empty `usedTools` list on an RGAA 4 audit) **only once the audit is declared realised** — before that answer they stay quiet. A Section is also flagged whenever the publish gate would report a missing or invalid required field in it (e.g. an empty service name, a contact with neither email nor URL). The Audit parent is flagged when any of its Sub-sections is.
+- **À vérifier** — the Section's `toVerify` flag is `true`, set when content was imported (IA or ARA) and needs human review. Tracked at Section level only; not fanned out to Sub-sections.
 - **Non applicable** — the declarant's answers put the Section out of scope, so there is nothing to fill: the three realised-only Audit Sub-sections while the audit is declared "non réalisé". A Skipped [[schema|Schéma]] is _not_ flagged — skipping is a deliberate choice, not a loss of scope.
 - **Modifié** — _(future)_ a Section changed since the last publish. The badge **variant** exists in `SECTION_BADGE` but the per-section diff against `publishedContent` is not yet implemented; only [[declaration-state|Declaration state]] currently surfaces "Modifié", at the declaration level.
 
-**When À compléter appears:** never during the declarant's first pass through the walkthrough — the form is being filled, not repaired, and flagging every untouched field would read as "only these are needed". It appears once they have left the Declaration and come back (their own `firstVisitedAt` on the access right, so co-declarants each get a first pass), and always outside the walkthrough, where missing data is a regression. The rule is `isToCompleteRevealed`; the page hands the answer to the Sections through one React context.
+**When À compléter appears:** never during the declarant's first pass through the walkthrough — the form is being filled, not repaired, and flagging every untouched field would read as "only these are needed". It appears once they have left the Declaration and come back (their own `firstVisitedAt` on the access right, so co-declarants each get a first pass), always outside the walkthrough, where missing data is a regression, and on the first visit of an imported (IA or ARA) Declaration, which is reviewed rather than filled, so what the import missed shows next to **À vérifier**. The rule is `isToCompleteRevealed`; the page hands the answer to the Sections through one React context.
 
 **Single source of presentation:** which sections get a badge is decided by the per-section checks (`isSectionToComplete` / `isSectionToVerify` / `isSectionNotApplicable`), but the badge **label + colours** are not defined here. They come from `SECTION_BADGE` in `state.ts` — a subset of `STATE_PRESENTATION` that references the existing `.badge` objects of the matching [[declaration-state|Declaration state]] (`to-complete`→`incomplete`, `to-verify`→`to-verify`, `modified`→`published-modified`; `not-applicable` is a neutral grey pair of its own). This keeps the SideMenu badges and the StateNotice card visually identical (same decision-token colours, same copy) with one source of truth. The per-section badge presentation is _not_ the same axis as `DeclarationState` itself (which is one declaration-wide value); only the presentation triple is shared.
 
@@ -113,22 +113,22 @@ Status badges shown on `SideMenu` items and on the Section's own title (and hist
 
 ### Declaration state
 
-A **derived, presentation-facing** state answering _"what should the declarant do next?"_, surfaced as a single notice card at the top of the [[dashboard editor|Surfaces]]. Distinct from [[status]]: where `Status` is the binary lifecycle (snapshot present or not), `DeclarationState` is a **richer** value that folds the Modifiée split, completeness and AI-verification on top of it. The two are not the same axis and must not be conflated.
+A **derived, presentation-facing** state answering _"what should the declarant do next?"_, surfaced as a single notice card at the top of the [[dashboard editor|Surfaces]]. Distinct from [[status]]: where `Status` is the binary lifecycle (snapshot present or not), `DeclarationState` is a **richer** value that folds the Modifiée split, completeness and import verification on top of it. The two are not the same axis and must not be conflated.
 
 Computed by `getDeclarationState(declaration)`: [[status]] decides first, the `status` column splits Publiée into clean / Modifiée, then the editable branches sub-split by completeness:
 
-| `DeclarationState`     | Reached when                                             | Maps to [[status]] |
-| ---------------------- | -------------------------------------------------------- | ------------------ |
-| `incomplete`           | draft **and** `validateDeclaration()` returns errors     | Brouillon          |
-| `to-verify`            | draft, complete, has unverified AI content (`toVerify`)  | Brouillon          |
-| `ready`                | draft, complete, no AI flag                              | Brouillon          |
-| `published-incomplete` | Publiée, modified **and** `validateDeclaration()` errors | Publiée (Modifiée) |
-| `published-modified`   | Publiée, modified, complete                              | Publiée (Modifiée) |
-| `null` (no notice)     | Publiée, unchanged since the last publish                | Publiée            |
+| `DeclarationState`     | Reached when                                                  | Maps to [[status]] |
+| ---------------------- | ------------------------------------------------------------- | ------------------ |
+| `incomplete`           | draft **and** `validateDeclaration()` returns errors          | Brouillon          |
+| `to-verify`            | draft, complete, has unverified imported content (`toVerify`) | Brouillon          |
+| `ready`                | draft, complete, no AI flag                                   | Brouillon          |
+| `published-incomplete` | Publiée, modified **and** `validateDeclaration()` errors      | Publiée (Modifiée) |
+| `published-modified`   | Publiée, modified, complete                                   | Publiée (Modifiée) |
+| `null` (no notice)     | Publiée, unchanged since the last publish                     | Publiée            |
 
-**Key rule (v2):** the lifecycle decides first (Brouillon / Publiée, then clean or Modifiée), then completeness and AI-verification sub-split the editable branches **symmetrically**. A published Declaration **can** become incomplete — removing its Contact or Schema moves it to Modifiée with that Section flagged À compléter (`published-incomplete`), and publishing is blocked until completed. The public snapshot is unaffected. _(Supersedes the retired v1 rule "incomplete is Brouillon-only".)_
+**Key rule (v2):** the lifecycle decides first (Brouillon / Publiée, then clean or Modifiée), then completeness and import verification sub-split the editable branches **symmetrically**. A published Declaration **can** become incomplete — removing its Contact or Schema moves it to Modifiée with that Section flagged À compléter (`published-incomplete`), and publishing is blocked until completed. The public snapshot is unaffected. _(Supersedes the retired v1 rule "incomplete is Brouillon-only".)_
 
-`to-verify` becomes reachable once the IA import [[creation-path|Creation path]] lands — it creates Declarations with `toVerify` Sections. ARA imports are structured data and are not flagged.
+`to-verify` is reached through the IA and ARA import [[creation-path|Creation paths]] — both create Declarations with `toVerify` Sections.
 
 Does **not** violate the "visible status is a pure function of the row" Invariant: that invariant governs `Status`, which is unchanged. `DeclarationState` is a separate concept layered above it.
 
@@ -146,7 +146,7 @@ One of the three ways a Declaration comes into existence, chosen by the declaran
 - **Import ARA** (`fromSource: "ara"`) — declarant supplies the URL of an ARA report; its data is fetched from ARA's API and the Declaration is created pre-filled.
 - **Import IA** (`fromSource: "ai"`) — declarant supplies the URL of an already-published accessibility declaration page; an LLM (Albert) extracts its content and the Declaration is created pre-filled.
 
-The two **import paths** share one contract: both sources normalize into a single imported-data shape, the Declaration is created entirely server-side in one mutation, and only the IA path's Sections are flagged **À vérifier** ([[à-compléter-à-vérifier|À compléter / À vérifier]]) because its content is AI-generated. ARA data is structured and trusted, so it is not flagged. On failure nothing is created; the declarant is offered the Manuel path as fallback. The imported name falls back to the submitted URL's hostname when the source provides none — a Declaration is never created nameless.
+The two **import paths** share one contract: both sources normalize into a single imported-data shape, the Declaration is created entirely server-side in one mutation, and both paths flag their Sections **À vérifier** ([[à-compléter-à-vérifier|À compléter / À vérifier]]) so the declarant reviews imported content before publishing. On failure nothing is created; the declarant is offered the Manuel path as fallback. The imported name falls back to the submitted URL's hostname when the source provides none — a Declaration is never created nameless.
 
 The ARA import is intended to be reusable later as an **update** of an existing (published) Declaration's audit from a fresh ARA report — same fetch + normalize + transform, update instead of create.
 

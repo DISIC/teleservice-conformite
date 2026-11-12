@@ -130,6 +130,10 @@ const useStyles = tss.withName(StateNotice.name).create({
 		gap: fr.spacing("6v"),
 		padding: fr.spacing("6v"),
 		marginBottom: fr.spacing("6v"),
+		[fr.breakpoints.down("md")]: {
+			flexDirection: "column",
+			alignItems: "flex-start",
+		},
 	},
 	content: {
 		display: "flex",
@@ -149,5 +153,8 @@ const useStyles = tss.withName(StateNotice.name).create({
 		display: "flex",
 		gap: fr.spacing("3v"),
 		flexShrink: 0,
+		[fr.breakpoints.down("md")]: {
+			flexWrap: "wrap",
+		},
 	},
 });

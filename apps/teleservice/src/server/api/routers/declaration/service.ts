@@ -13,6 +13,7 @@ import {
 } from "~/server/api/utils/section-write";
 import {
 	extractDeclarationContentToPublish,
+	firstPublishedAtFor,
 	parsePublishedDeclaration,
 } from "~/domain/declaration/published/snapshot";
 import { validateDeclaration } from "~/domain/declaration/validate";
@@ -29,8 +30,8 @@ import {
 } from "./utils";
 
 /**
- * Creates a declaration from imported ARA or AI data. AI sections are flagged
- * `toVerify`; ARA structured data is trusted. Grants the creator admin access.
+ * Creates a declaration from imported ARA or AI data. Every imported section is
+ * flagged `toVerify` for the user to review. Grants the creator admin access.
  */
 const createDeclarationFromImportedData = async (
 	payload: Payload,
@@ -84,7 +85,6 @@ const createDeclarationFromImportedData = async (
 				entity: entityId,
 				created_by: userId,
 				fromSource: source,
-				// AI-generated content needs review; ARA structured data does not.
 				audit: {
 					isRealised: true,
 					realisedBy: data.auditRealizedBy || "-",
@@ -101,7 +101,7 @@ const createDeclarationFromImportedData = async (
 					nonCompliantElements: data.nonCompliantElements || "",
 					disproportionnedCharge: data.disproportionnedCharge || "",
 					optionalElements: data.optionalElements || "",
-					toVerify: source === "ai",
+					toVerify: true,
 				},
 				// The source's publication date is when the declaration first went
 				// public, not when the audit ran. Unknown defaults to today, editable until publish.
@@ -115,7 +115,7 @@ const createDeclarationFromImportedData = async (
 						: "Contact de la déclaration",
 					email: data.contact.email || undefined,
 					url: data.contact.url || undefined,
-					toVerify: source === "ai",
+					toVerify: true,
 				},
 				schema: {
 					name: data.service.name
@@ -124,7 +124,7 @@ const createDeclarationFromImportedData = async (
 					url: data.schema.currentYearSchemaUrl ?? undefined,
 					actionPlanUrls: [],
 					skipped: false,
-					toVerify: source === "ai",
+					toVerify: true,
 				},
 			},
 			req: { transactionID },
@@ -338,9 +338,7 @@ export const publishDeclaration = async (
 				extractDeclarationContentToPublish(declaration, { publishedAt }),
 			),
 			published_at: publishedAt.toISOString(),
-			// A first publication in this téléservice is its own initial publication.
-			first_published_at:
-				declaration.first_published_at ?? publishedAt.toISOString(),
+			first_published_at: firstPublishedAtFor(declaration, publishedAt),
 		},
 	});
 

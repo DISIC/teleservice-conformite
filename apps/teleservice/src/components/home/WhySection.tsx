@@ -4,7 +4,7 @@ const REASONS = [
 	{
 		title: "Une obligation de déclaration pour tous les services publics",
 		description:
-			"Depuis la loi du XXXXX, tous les services numériques publics doivent déposer via le téléservice leur déclaration d’accessibilité.",
+			"Le RGAA 5 impose à tous les services numériques publics le dépôt de la déclaration d’accessibilité via le téléservice.",
 		linkLabel:
 			"En savoir plus sur la publication de la déclaration d’accessibilité",
 		href: "#",

@@ -6,7 +6,7 @@ import { validateDeclaration } from "./validate";
 
 /**
  * Derived state answering "what should the declarant do next?". Distinct from
- * {@link Status}: it folds completeness and AI-verification on top of the pure
+ * {@link Status}: it folds completeness and import verification on top of the pure
  * lifecycle. `null` renders no notice.
  */
 export type DeclarationState =
@@ -18,13 +18,15 @@ export type DeclarationState =
 
 /**
  * Whether unfilled data is flagged "À compléter". The first pass only exists in
- * the walkthrough: outside it, missing data is a regression to repair.
+ * the walkthrough: outside it, missing data is a regression to repair. An
+ * imported declaration is reviewed, not filled, so what the import missed shows at once.
  */
 export function isToCompleteRevealed(
 	mode: EditingMode,
 	hasVisitedBefore: boolean,
+	isImported = false,
 ): boolean {
-	return hasVisitedBefore || mode === "standalone";
+	return hasVisitedBefore || mode === "standalone" || isImported;
 }
 
 /** Actions a notice may expose, in render order. Handlers are wired by the component. */
@@ -51,8 +53,10 @@ export type StatePresentation = {
 	actions: StateAction[];
 };
 
-/** True when any Section carries the AI `toVerify` flag. */
-function hasUnverifiedAiContent(declaration: PopulatedDeclaration): boolean {
+/** True when any Section carries the import `toVerify` flag. */
+function hasUnverifiedImportedContent(
+	declaration: PopulatedDeclaration,
+): boolean {
 	return (
 		declaration.audit?.toVerify === true ||
 		declaration.schema?.toVerify === true ||
@@ -60,13 +64,13 @@ function hasUnverifiedAiContent(declaration: PopulatedDeclaration): boolean {
 	);
 }
 
-// Lifecycle first, then completeness and AI-verification split the editable
+// Lifecycle first, then completeness and import verification split the editable
 // branches; a published declaration can turn incomplete when a Section is removed.
 export function getDeclarationState(
 	declaration: PopulatedDeclaration,
 ): DeclarationState | null {
 	if (getDeclarationStatus(declaration) === "draft") {
-		if (hasUnverifiedAiContent(declaration)) return "to-verify";
+		if (hasUnverifiedImportedContent(declaration)) return "to-verify";
 		if (validateDeclaration(declaration).length > 0) return "incomplete";
 		return "ready";
 	}

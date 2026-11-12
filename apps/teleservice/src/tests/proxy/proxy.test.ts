@@ -16,12 +16,17 @@ function run(path: string, headers: Record<string, string> = {}) {
 }
 
 describe("proxy", () => {
-	it("sends a session cookie holder from the home page to the dashboard", () => {
-		expect(run("/", signedIn)).toEqual({
+	it("lets a session cookie holder see the home page", () => {
+		expect(run("/", signedIn).status).toBe(200);
+		expect(run("/", signedInSecure).status).toBe(200);
+	});
+
+	it("sends a session cookie holder from other public pages to the dashboard", () => {
+		expect(run("/declarations/12", signedIn)).toEqual({
 			status: 307,
 			location: "https://app.test/dashboard",
 		});
-		expect(run("/", signedInSecure).location).toBe(
+		expect(run("/declarations/12", signedInSecure).location).toBe(
 			"https://app.test/dashboard",
 		);
 	});

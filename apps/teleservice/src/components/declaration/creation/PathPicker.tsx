@@ -3,30 +3,22 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Accessibility from "@codegouvfr/react-dsfr/picto/Accessibility";
 import DocumentSearch from "@codegouvfr/react-dsfr/picto/DocumentSearch";
 import Internet from "@codegouvfr/react-dsfr/picto/Internet";
-import System from "@codegouvfr/react-dsfr/picto/System";
 import { useState } from "react";
 import { tss } from "tss-react";
 import HelpingMessage from "~/components/ui/HelpingMessage";
-import { AiPath } from "./AiPath";
-import { AraPath } from "./AraPath";
 import { ManualPath } from "./ManualPath";
+import { OnlinePath } from "./OnlinePath";
 import { newTabLinkProps } from "~/lib/newTabLink";
 
-type CreationPath = "ai" | "ara" | "manual";
+type CreationPath = "online" | "manual";
 
 const PATH_OPTIONS = [
 	{
-		value: "ai" as const,
-		label: "J'ai une déclaration en ligne, sans avoir utilisé Ara",
+		value: "online" as const,
+		label: "J’ai une déclaration d’accessibilité en ligne",
 		hintText:
-			"La nouvelle déclaration pourra être pré-remplie grâce à une IA souveraine ; des erreurs peuvent survenir",
+			"La nouvelle déclaration sera pré-remplie à partir de l’URL : automatiquement pour Ara, sinon grâce à une IA souveraine (des erreurs peuvent survenir)",
 		illustration: <Internet fontSize="3rem" />,
-	},
-	{
-		value: "ara" as const,
-		label: "J'ai une déclaration en ligne réalisée avec l’outil Ara",
-		hintText: "La nouvelle déclaration pourra être pré-remplie automatiquement",
-		illustration: <System fontSize="3rem" />,
 	},
 	{
 		value: "manual" as const,
@@ -37,9 +29,9 @@ const PATH_OPTIONS = [
 ];
 
 /**
- * Entry point of the declaration creation flow: the user picks one of three
+ * Entry point of the declaration creation flow: the user picks one of two
  * paths, each of which owns its own input, validation, submission and error
- * handling. ARA and AI failures fall back to the manual path in place.
+ * handling. Online import failures fall back to the manual path in place.
  */
 export function PathPicker({
 	onCreated,
@@ -65,8 +57,7 @@ export function PathPicker({
 					},
 				}))}
 			/>
-			{path === "ai" && <AiPath onCreated={onCreated} />}
-			{path === "ara" && <AraPath onCreated={onCreated} />}
+			{path === "online" && <OnlinePath onCreated={onCreated} />}
 			{path === "manual" && <ManualPath onCreated={onCreated} />}
 			{!path && (
 				<HelpingMessage

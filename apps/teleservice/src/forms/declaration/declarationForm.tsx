@@ -25,9 +25,6 @@ export const DeclarationGeneralForm = withForm({
 										Date à laquelle cette déclaration a été publiée pour la
 										première fois, quel qu’en soit le support.
 										<br />
-										S’il s’agit d’une première publication, conservez la date du
-										jour.
-										<br />
 										La date ne peut pas être postérieure à la date du jour.
 										<br />
 										{DATE_FORMAT_HINT}
@@ -51,12 +48,25 @@ export const DeclarationGeneralForm = withForm({
 							readOnlyField={readOnly}
 							hintText={
 								<>
-									Nous vous conseillons d’utiliser le nom du service numérique.
+									Il sera utilisé pour nommer votre déclaration.
 									<br />
 									Exemples : Demande de logement social, Service public.fr,
 									Outil de gestion des congés
 								</>
 							}
+							required
+						/>
+					)}
+				</form.AppField>
+				<form.AppField name="general.domain">
+					{(field) => (
+						<field.SelectField
+							label="Secteur d’activité du service"
+							placeholder="Sélectionnez un secteur"
+							hint="Cette donnée sera utilisée à des fins de statistiques."
+							infoStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
+							readOnlyField={readOnly}
+							options={[...kindOptions]}
 							required
 						/>
 					)}
@@ -127,19 +137,6 @@ export const DeclarationGeneralForm = withForm({
 						}
 					}}
 				</form.Subscribe>
-				<form.AppField name="general.domain">
-					{(field) => (
-						<field.SelectField
-							label="Secteur d’activité du service concerné"
-							placeholder="Sélectionnez un secteur"
-							hint="Cette donnée sera utilisée à des fins de statistiques."
-							infoStateMessage="Si vous représentez une agglomération, choisissez “Aucun de ces domaines”"
-							readOnlyField={readOnly}
-							options={[...kindOptions]}
-							required
-						/>
-					)}
-				</form.AppField>
 			</Part>
 		);
 	},

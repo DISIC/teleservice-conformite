@@ -17,7 +17,7 @@ export function proxy(request: NextRequest) {
 	const hasSessionCookie = getSessionCookie(request) !== null;
 
 	if (hasSessionCookie) {
-		if (!pathname.startsWith("/dashboard")) {
+		if (pathname !== "/" && !pathname.startsWith("/dashboard")) {
 			return NextResponse.redirect(new URL("/dashboard", request.url));
 		}
 	} else {

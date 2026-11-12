@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { completeDeclaration } from "./declaration.fixture";
-import { validateDeclaration } from "~/domain/declaration/validate";
+import { SECTION_SLUGS } from "~/domain/declaration/sections";
+import {
+	isAuditIncomplete,
+	isSectionIncomplete,
+	validateDeclaration,
+} from "~/domain/declaration/validate";
 
 const errorsFor = (
 	errors: ReturnType<typeof validateDeclaration>,
@@ -40,8 +45,8 @@ describe("validateDeclaration", () => {
 		]);
 	});
 
-	it("requires the initial publication date whatever the creation path", () => {
-		for (const fromSource of ["manual", "ara", "ai"] as const) {
+	it("requires the initial publication date of an imported declaration", () => {
+		for (const fromSource of ["ara", "ai"] as const) {
 			expect(
 				errorsFor(
 					validateDeclaration(
@@ -58,17 +63,19 @@ describe("validateDeclaration", () => {
 				},
 			]);
 		}
-		expect(
-			errorsFor(
-				validateDeclaration(
-					completeDeclaration({
-						fromSource: "manual",
-						first_published_at: "2024-03-24T00:00:00.000Z",
-					}),
+	});
+
+	it("never asks a manual declaration for its hidden initial publication date", () => {
+		for (const first_published_at of [null, "2999-01-01T00:00:00.000Z"]) {
+			expect(
+				errorsFor(
+					validateDeclaration(
+						completeDeclaration({ fromSource: "manual", first_published_at }),
+					),
+					"infos",
 				),
-				"infos",
-			),
-		).toEqual([]);
+			).toEqual([]);
+		}
 	});
 
 	it("rejects an initial publication date in the future", () => {
@@ -347,5 +354,37 @@ describe("validateDeclaration", () => {
 			"schema",
 		);
 		expect(errors.map((e) => e.field)).toEqual(["name"]);
+	});
+});
+
+describe("isSectionIncomplete (À compléter badges)", () => {
+	it("flags nothing on a complete declaration", () => {
+		for (const slug of SECTION_SLUGS)
+			expect(isSectionIncomplete(completeDeclaration(), slug)).toBe(false);
+		expect(isAuditIncomplete(completeDeclaration())).toBe(false);
+	});
+
+	it("flags a Section with an empty required field", () => {
+		expect(
+			isSectionIncomplete(completeDeclaration({ name: "" } as never), "infos"),
+		).toBe(true);
+		expect(
+			isSectionIncomplete(
+				completeDeclaration({
+					contact: { name: "Référent accessibilité" },
+				} as never),
+				"contact",
+			),
+		).toBe(true);
+	});
+
+	it("flags the Audit parent when a Sub-section misses a required field", () => {
+		expect(
+			isAuditIncomplete(
+				completeDeclaration({
+					audit: { isRealised: true },
+				} as never),
+			),
+		).toBe(true);
 	});
 });

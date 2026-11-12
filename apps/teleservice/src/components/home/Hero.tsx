@@ -5,9 +5,10 @@ import { tss } from "tss-react";
 
 type HeroProps = {
 	startHref: string;
+	startLabel: string;
 };
 
-export function Hero({ startHref }: HeroProps) {
+export function Hero({ startHref, startLabel }: HeroProps) {
 	const { classes, cx } = useStyles();
 
 	return (
@@ -21,11 +22,10 @@ export function Hero({ startHref }: HeroProps) {
 					<p className={classes.lead}>
 						Ce téléservice centralise l’ensemble des déclarations
 						d’accessibilité numérique des services publics : services de l’État,
-						collectivités territoriales et établissements publics. Il permet un
-						meilleur suivi de la politique d’accessibilité du service public.
+						collectivités territoriales et établissements publics.
 					</p>
 					<Button linkProps={{ href: startHref }} size="large">
-						Commencer
+						{startLabel}
 					</Button>
 				</div>
 				<div className={classes.artwork} aria-hidden="true">

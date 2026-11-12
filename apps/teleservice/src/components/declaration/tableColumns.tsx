@@ -135,7 +135,7 @@ function buildColumns(
 						{visible.includes("copy") && (
 							<Button
 								iconId="ri-links-line"
-								priority="tertiary"
+								priority="secondary"
 								size="small"
 								title={copyTitle}
 								onClick={() =>
@@ -149,7 +149,7 @@ function buildColumns(
 						{visible.includes("view") && (
 							<Button
 								iconId="ri-eye-line"
-								priority="tertiary"
+								priority="secondary"
 								size="small"
 								title={newTabTitle(viewLabel)}
 								linkProps={{
@@ -161,7 +161,7 @@ function buildColumns(
 						{visible.includes("edit") && (
 							<Button
 								iconId="ri-edit-line"
-								priority="tertiary"
+								priority="secondary"
 								size="small"
 								title={`Modifier la déclaration ${declaration.name}`}
 								linkProps={{
