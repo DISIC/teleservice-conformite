@@ -60,7 +60,11 @@ export default function DeclarationPage({
 
 	const status = getDeclarationStatus(declaration);
 	const editingMode = getEditingMode(status);
-	const showToComplete = isToCompleteRevealed(editingMode, !!hasVisitedBefore);
+	const showToComplete = isToCompleteRevealed(
+		editingMode,
+		!!hasVisitedBefore,
+		declaration.fromSource !== "manual",
+	);
 
 	// The interstitial gates an unchanged, ageing publication until the declarant
 	// starts updating it; once the row is Modifiée they are already acting.

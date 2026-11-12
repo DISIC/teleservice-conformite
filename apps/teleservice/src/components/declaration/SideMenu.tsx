@@ -8,19 +8,22 @@ import { tss } from "tss-react";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { SectionBadge } from "~/components/declaration/SectionBadge";
 import { useShowToComplete } from "~/components/declaration/ToCompleteGuidance";
+import { usePendingSourceModes } from "~/components/declaration/sections/PendingSourceModes";
 import type { BadgeVariant } from "~/domain/declaration/state";
 import {
 	isAuditSubSection,
-	isAuditToComplete,
 	isAuditToVerify,
 	isSectionNotApplicable,
-	isSectionToComplete,
 	isSectionToVerify,
 	SECTION_SLUGS,
 	SECTION_TITLES,
 	type SectionSlug,
 	sectionHref,
 } from "~/domain/declaration/sections";
+import {
+	isAuditIncomplete,
+	isSectionIncomplete,
+} from "~/domain/declaration/validate";
 
 type SideMenuProps = {
 	declaration: PopulatedDeclaration;
@@ -29,6 +32,7 @@ type SideMenuProps = {
 
 export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	const showToComplete = useShowToComplete();
+	const { pending: pendingSourceModes } = usePendingSourceModes();
 	const { classes } = useStyles();
 	const declarationId = declaration.id;
 	const visibleAuditSubSections = SECTION_SLUGS.filter(isAuditSubSection);
@@ -62,7 +66,10 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 
 	const sectionBadges = (slug: SectionSlug): BadgeVariant[] => {
 		const variants: BadgeVariant[] = [];
-		if (showToComplete && isSectionToComplete(declaration, slug))
+		if (
+			showToComplete &&
+			isSectionIncomplete(declaration, slug, pendingSourceModes)
+		)
 			variants.push("to-complete");
 		if (isSectionToVerify(declaration, slug)) variants.push("to-verify");
 		if (isSectionNotApplicable(declaration, slug))
@@ -84,7 +91,7 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 		sectionItem("infos"),
 		{
 			text: renderLabel("Audit", [
-				...(showToComplete && isAuditToComplete(declaration)
+				...(showToComplete && isAuditIncomplete(declaration, pendingSourceModes)
 					? (["to-complete"] as const)
 					: []),
 				...(isAuditToVerify(declaration) ? (["to-verify"] as const) : []),

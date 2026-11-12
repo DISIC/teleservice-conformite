@@ -42,7 +42,7 @@ export function ManualPath({
 						label="Nom du service numérique concerné"
 						hintText={
 							<>
-								Nous vous conseillons d’utiliser le nom du service numérique.
+								Il sera utilisé pour nommer votre déclaration.
 								<br />
 								Exemples : Demande de logement social, Service public.fr, Outil
 								de gestion des congés
