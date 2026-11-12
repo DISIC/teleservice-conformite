@@ -6,7 +6,7 @@ import ErrorPage from "~/components/declaration/ErrorPage";
 import { PublishedHeader } from "~/components/declaration/PublishedHeader";
 import PublishedTemplate from "~/components/declaration/PublishedTemplate";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
-import { loadDeclarationForPage } from "~/lib/server-guards";
+import { loadPublishedDeclarationForPage } from "~/lib/server-guards";
 import {
 	parsePublishedDeclaration,
 	type PublishedDeclaration,
@@ -67,9 +67,10 @@ export const getServerSideProps: GetServerSideProps<PublishPageProps> = async (
 		permanent: false,
 	};
 
-	const { session, declaration } = await loadDeclarationForPage(context, {
-		trash: true,
-	});
+	const { session, declaration } = await loadPublishedDeclarationForPage(
+		context,
+		String(context.params?.slug ?? ""),
+	);
 
 	if (!session) return { redirect };
 

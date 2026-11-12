@@ -62,6 +62,17 @@ export const Declarations: CollectionConfig = {
 			},
 		},
 		{
+			name: "published_declaration_slug",
+			type: "text",
+			label: { fr: "Identifiant de l’URL publique" },
+			unique: true,
+			index: true,
+			admin: {
+				position: "sidebar",
+				readOnly: true,
+			},
+		},
+		{
 			name: "created_by",
 			type: "relationship",
 			relationTo: "users",
