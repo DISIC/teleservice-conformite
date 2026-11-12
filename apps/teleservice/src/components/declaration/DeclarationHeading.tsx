@@ -19,6 +19,7 @@ import { api } from "~/lib/api";
 import { copyToClipboard } from "~/lib/clipboard";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { newTabLinkProps } from "~/lib/newTabLink";
+import { publicDeclarationPath } from "~/domain/declaration/published/publicPath";
 
 const DECLARATIONS_LIST = "/dashboard/declarations";
 
@@ -38,7 +39,7 @@ export function DeclarationHeading({
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 
 	const isPublished = getDeclarationStatus(declaration) === "published";
-	const publicHref = `/declarations/${declaration.id}/publish`;
+	const publicHref = publicDeclarationPath(declaration);
 
 	const { mutate: deleteDeclaration } = api.declaration.delete.useMutation({
 		onSuccess: () => {

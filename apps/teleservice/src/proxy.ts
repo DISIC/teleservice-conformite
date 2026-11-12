@@ -10,7 +10,10 @@ export function proxy(request: NextRequest) {
 
 	if (isAdminShell || isApi) return NextResponse.next();
 
-	if (pathname.endsWith("/publish") || pathname.endsWith("/accept-invite"))
+	if (
+		pathname.startsWith("/declarations/") ||
+		pathname.endsWith("/accept-invite")
+	)
 		return NextResponse.next();
 
 	// Cookie presence only: pages validate the session against the database themselves.

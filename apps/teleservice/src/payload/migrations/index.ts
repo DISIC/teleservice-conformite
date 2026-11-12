@@ -9,6 +9,7 @@ import * as migration_20260921_090533_first_visited_at from './20260921_090533_f
 import * as migration_20260921_142918_blocking_elements from './20260921_142918_blocking_elements';
 import * as migration_20260922_151414_declaration_domain from './20260922_151414_declaration_domain';
 import * as migration_20261016_101921_relax_action_plan_rows from './20261016_101921_relax_action_plan_rows';
+import * as migration_20261112_141707_declaration_published_declaration_slug from './20261112_141707_declaration_published_declaration_slug';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20261016_101921_relax_action_plan_rows.up,
     down: migration_20261016_101921_relax_action_plan_rows.down,
-    name: '20261016_101921_relax_action_plan_rows'
+    name: '20261016_101921_relax_action_plan_rows',
+  },
+  {
+    up: migration_20261112_141707_declaration_published_declaration_slug.up,
+    down: migration_20261112_141707_declaration_published_declaration_slug.down,
+    name: '20261112_141707_declaration_published_declaration_slug'
   },
 ];

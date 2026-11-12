@@ -17,11 +17,12 @@ import { copyToClipboard } from "~/lib/clipboard";
 import { appKindOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { newTabLinkProps, newTabTitle } from "~/lib/newTabLink";
+import { publicDeclarationPath } from "~/domain/declaration/published/publicPath";
 
 const columnHelper = createColumnHelper<PopulatedDeclaration>();
 
 const publicUrl = (declaration: PopulatedDeclaration) =>
-	`/declarations/${declaration.id}/publish`;
+	publicDeclarationPath(declaration);
 
 export type DeclarationAction = "copy" | "view" | "edit";
 

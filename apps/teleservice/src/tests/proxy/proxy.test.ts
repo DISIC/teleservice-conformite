@@ -38,10 +38,11 @@ describe("proxy", () => {
 		expect(run("/").status).toBe(200);
 	});
 
-	it("never touches admin, api, publish and accept-invite routes", () => {
+	it("never touches admin, api, public declaration and accept-invite routes", () => {
 		for (const path of [
 			"/admin/collections",
 			"/api/trpc/x",
+			"/declarations/3f2a9c1e7b4d8a60",
 			"/declarations/12/publish",
 			"/accept-invite",
 		]) {
