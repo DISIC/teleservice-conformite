@@ -41,8 +41,7 @@ Un Critère s'applique à un Référentiel dès qu'il possède le dossier corres
 ```yaml
 ---
 references:
-  - standard: WCAG 2.1
-    reference: "1.1.1"
+  - reference: "1.1.1"
     title: Non-text Content
     level: A
 techniques:
@@ -51,7 +50,7 @@ techniques:
 ---
 ```
 
-Les numéros sont toujours entre guillemets : sans guillemets, `1.10` serait lu comme le nombre 1,1.
+Les références sont des critères de succès WCAG 2.2 ; la norme n'est pas rappelée sur chaque entrée. Les numéros sont toujours entre guillemets : sans guillemets, `1.10` serait lu comme le nombre 1,1.
 
 **`criteres/1.1/web/tests/1.md`** : l'en-tête porte l'intitulé et, si le test énumère des conditions, la liste `conditions`. Le corps est la méthodologie.
 

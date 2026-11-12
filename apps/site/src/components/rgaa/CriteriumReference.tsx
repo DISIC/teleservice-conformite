@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import type { Appendix, Reference } from "@rgaa/content";
+import type { Appendix, Reference, ReferentielId } from "@rgaa/content";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
 import { renderMarkdown } from "./helpers/markdown";
@@ -14,15 +14,17 @@ import {
 } from "./helpers/references";
 
 type CriteriumReferenceProps = {
+	referentielId: ReferentielId;
 	criteriumNumber: string;
 	appendix?: Appendix;
 	accordionBackgroundColor: string;
 };
 
-const WCAG_TITLE = "WCAG 2.1";
-const EN_301_549_TITLE = "EN 301 549 V2.1.2 (2018-08) (en anglais)";
+const WCAG_TITLE = "WCAG 2.2";
+const EN_301_549_TITLE = "EN 301 549 V4.1.1 (2026-09) (en anglais)";
 
 export default function CriteriumReference({
+	referentielId,
 	criteriumNumber,
 	appendix,
 	accordionBackgroundColor,
@@ -62,7 +64,9 @@ export default function CriteriumReference({
 								<div className={classes.prose}>
 									<ul>
 										{references.map((reference) => (
-											<li key={reference.reference}>{enClause(reference)}</li>
+											<li key={reference.reference}>
+												{enClause(reference, referentielId)}
+											</li>
 										))}
 									</ul>
 								</div>

@@ -67,6 +67,7 @@ export default function TopicCriteria({
 							accordionBackgroundColor={testAccordionBackgroundColor}
 						/>
 						<CriteriumReference
+							referentielId={referentielId}
 							criteriumNumber={criteriumNumber}
 							appendix={criterium.appendix}
 							accordionBackgroundColor={testAccordionBackgroundColor}
