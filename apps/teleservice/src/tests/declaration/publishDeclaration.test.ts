@@ -81,6 +81,22 @@ describe("publishDeclaration", () => {
 		expect(result.first_published_at).toBe("2025-01-10T00:00:00.000Z");
 	});
 
+	it("freezes the public URL slug at first publication", async () => {
+		const declaration = completeDeclaration();
+		const { payload } = seeded(declaration);
+
+		const first = await publishDeclaration(payload, declaration);
+		expect(first.published_declaration_slug).toMatch(/^[0-9a-f]{16}$/);
+
+		const renamed = await publishDeclaration(payload, {
+			...first,
+			name: "Nouveau nom",
+		});
+		expect(renamed.published_declaration_slug).toBe(
+			first.published_declaration_slug,
+		);
+	});
+
 	it("gates a Modifiée republish too — there is no fast path", async () => {
 		const declaration = completeDeclaration({
 			publishedContent: '{"name":"previous snapshot"}',

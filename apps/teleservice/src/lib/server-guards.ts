@@ -94,6 +94,37 @@ export async function loadDeclarationForPage(
 	return { payload, session, declaration };
 }
 
+export async function loadPublishedDeclarationForPage(
+	context: GetServerSidePropsContext,
+	slug: string,
+) {
+	const [payload, session] = await Promise.all([
+		getPayload({ config }),
+		readPageSession(context),
+	]);
+
+	if (!session || !slug) return { payload, session, declaration: null };
+
+	const match = await payload.find({
+		collection: "declarations",
+		where: { published_declaration_slug: { equals: slug } },
+		trash: true,
+		limit: 1,
+		depth: 0,
+	});
+	const declarationId = match.docs[0]?.id;
+	if (!declarationId) return { payload, session, declaration: null };
+
+	const declaration = await loadOwnedDeclaration(
+		payload,
+		Number(session.user.id),
+		declarationId,
+		{ trash: true },
+	).catch(() => null);
+
+	return { payload, session, declaration };
+}
+
 export async function guardDeclaration(
 	context: GetServerSidePropsContext,
 	options?: {
