@@ -60,7 +60,7 @@ RGAA considère trois types d’alternatives textuelles liées à la nature de l
 
 Note 1 : pour une image [CAPTCHA](#captcha) l’alternative peut être, par exemple : « Code de sécurité anti-spam » ou « code pour vérifier que vous êtes un humain » ou toute autre alternative permettant à l’utilisateur de comprendre la nature et la fonction de l’image.
 
-Note 2 : pour un groupe d’images, par exemple un système de vote constitué de plusieurs images d’étoile, il est fortement conseillé d’utiliser soit la première image du groupe pour donner une alternative cohérente au groupe d’image (voir la [technique WCAG2.1 G196](https://www.w3.org/WAI/WCAG21/Techniques/general/G196)), soit une balise conteneur pourvue d’un rôle WAI-ARIA `img` et d’une alternative textuelle. Dans le premier cas, les autres images du groupe sont considérées comme des images de décoration. Dans le second cas, toutes les images du groupe sont considérées comme des images de décoration.
+Note 2 : pour un groupe d’images, par exemple un système de vote constitué de plusieurs images d’étoile, il est fortement conseillé d’utiliser soit la première image du groupe pour donner une alternative cohérente au groupe d’image (voir la [technique WCAG2.2 G196](https://www.w3.org/WAI/WCAG22/Techniques/general/G196)), soit une balise conteneur pourvue d’un rôle WAI-ARIA `img` et d’une alternative textuelle. Dans le premier cas, les autres images du groupe sont considérées comme des images de décoration. Dans le second cas, toutes les images du groupe sont considérées comme des images de décoration.
 
 Note 3 : pour les image-lien, l’alternative doit permettre de comprendre la fonction et la destination du lien ; ce cas est traité dans la thématique liens.
 

@@ -40,7 +40,6 @@ export const RESSOURCES_LINKS: NavLink[] = [
 		href: "#",
 		description: PLACEHOLDER_DESCRIPTION,
 	},
-	{ text: "Critères AAA", href: "#", description: PLACEHOLDER_DESCRIPTION },
 	{
 		text: "Ara - Outil d’audit d’accessibilité",
 		href: "/ara",
