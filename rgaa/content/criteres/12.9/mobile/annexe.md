@@ -8,6 +8,4 @@ references:
     level: A
 techniques:
   - "G21"
-  - "H91"
-  - "F10"
 ---

@@ -12,11 +12,4 @@ references:
 techniques:
   - "G90"
   - "G202"
-  - "F42"
-  - "F54"
-  - "F55"
-  - "SCR2"
-  - "SCR20"
-  - "SCR29"
-  - "SCR35"
 ---

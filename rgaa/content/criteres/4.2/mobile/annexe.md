@@ -6,9 +6,4 @@ references:
   - reference: "1.2.3"
     title: "Audio Description or Media Alternative (Prerecorded)"
     level: A
-techniques:
-  - "F30"
-  - "F67"
-  - "SM6"
-  - "SM7"
 ---

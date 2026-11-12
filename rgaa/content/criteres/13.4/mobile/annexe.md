@@ -22,7 +22,6 @@ references:
     title: "Name, Role, Value"
     level: A
 techniques:
-  - "F15"
   - "G10"
   - "G135"
 ---

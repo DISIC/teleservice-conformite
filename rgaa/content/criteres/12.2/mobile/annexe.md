@@ -5,5 +5,4 @@ references:
     level: AA
 techniques:
   - "G61"
-  - "F66"
 ---

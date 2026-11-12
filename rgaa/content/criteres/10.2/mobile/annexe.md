@@ -8,6 +8,4 @@ references:
     level: A
 techniques:
   - "G140"
-  - "F3"
-  - "F87"
 ---

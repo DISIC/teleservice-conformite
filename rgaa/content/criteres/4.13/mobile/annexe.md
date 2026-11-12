@@ -6,6 +6,4 @@ references:
 techniques:
   - "G10"
   - "G135"
-  - "F15"
-  - "F54"
 ---

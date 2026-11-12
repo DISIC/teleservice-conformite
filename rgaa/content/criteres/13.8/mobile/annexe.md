@@ -7,20 +7,10 @@ references:
     title: "Pause, Stop, Hide"
     level: A
 techniques:
-  - "F4"
-  - "F7"
-  - "F16"
-  - "F47"
-  - "F50"
   - "G4"
   - "G11"
   - "G152"
   - "G186"
   - "G187"
   - "G191"
-  - "SCR22"
-  - "SCR33"
-  - "SCR36"
-  - "SM11"
-  - "SM12"
 ---

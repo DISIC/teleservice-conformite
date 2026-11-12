@@ -126,13 +126,6 @@
 										"title": "Non-text Content",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H36",
-									"H37",
-									"H53",
-									"F65",
-									"H24"
 								]
 							}
 						},
@@ -270,13 +263,7 @@
 									}
 								],
 								"techniques": [
-									"H67",
-									"G196",
-									"C9",
-									"F39",
-									"F38",
-									"ARIA4",
-									"ARIA10"
+									"G196"
 								]
 							}
 						},
@@ -445,12 +432,7 @@
 								"techniques": [
 									"G94",
 									"G95",
-									"F30",
-									"F71",
-									"G196",
-									"ARIA6",
-									"ARIA9",
-									"ARIA10"
+									"G196"
 								]
 							}
 						},
@@ -828,9 +810,7 @@
 								"techniques": [
 									"G92",
 									"G74",
-									"G73",
-									"H45",
-									"ARIA6"
+									"G73"
 								]
 							}
 						},
@@ -938,8 +918,7 @@
 									}
 								],
 								"techniques": [
-									"G92",
-									"F67"
+									"G92"
 								]
 							}
 						},
@@ -1330,8 +1309,7 @@
 									"G136",
 									"G148",
 									"G174",
-									"G145",
-									"C29"
+									"G145"
 								]
 							}
 						},
@@ -1491,8 +1469,7 @@
 									"G207",
 									"G174",
 									"G145",
-									"G183",
-									"F78"
+									"G183"
 								]
 							}
 						},
@@ -1622,10 +1599,7 @@
 									"G159",
 									"G173",
 									"G8",
-									"G166",
-									"H96",
-									"SM6",
-									"SM7"
+									"G166"
 								]
 							}
 						}
@@ -1692,12 +1666,6 @@
 										"title": "Audio Description or Media Alternative (Prerecorded)",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"F30",
-									"F67",
-									"SM6",
-									"SM7"
 								]
 							}
 						}
@@ -1785,12 +1753,7 @@
 								"techniques": [
 									"G58",
 									"G93",
-									"G87",
-									"H95",
-									"SM11",
-									"SM12",
-									"F74",
-									"F75"
+									"G87"
 								]
 							}
 						}
@@ -1851,12 +1814,7 @@
 								],
 								"techniques": [
 									"G93",
-									"G87",
-									"SM11",
-									"SM12",
-									"F8",
-									"F74",
-									"F75"
+									"G87"
 								]
 							}
 						}
@@ -1966,12 +1924,7 @@
 									"G8",
 									"G58",
 									"G78",
-									"G173",
-									"H96",
-									"SM1",
-									"SM2",
-									"SM6",
-									"SM7"
+									"G173"
 								]
 							}
 						}
@@ -2035,12 +1988,6 @@
 										"title": "Audio Description (Prerecorded)",
 										"level": "AA"
 									}
-								],
-								"techniques": [
-									"SM1",
-									"SM2",
-									"SM6",
-									"SM7"
 								]
 							}
 						}
@@ -2184,10 +2131,6 @@
 										"title": "Non-text Content",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H35",
-									"H46"
 								]
 							}
 						}
@@ -2244,10 +2187,6 @@
 										"title": "Non-text Content",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H46",
-									"F30"
 								]
 							}
 						}
@@ -2308,9 +2247,7 @@
 								"techniques": [
 									"G60",
 									"G170",
-									"G171",
-									"F23",
-									"F93"
+									"G171"
 								]
 							}
 						}
@@ -2500,9 +2437,7 @@
 								],
 								"techniques": [
 									"G10",
-									"G135",
-									"F15",
-									"F54"
+									"G135"
 								]
 							}
 						}
@@ -2738,9 +2673,6 @@
 										"title": "Info and Relationships",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H73"
 								]
 							}
 						},
@@ -2804,9 +2736,6 @@
 										"title": "Info and Relationships",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H73"
 								]
 							}
 						},
@@ -2881,10 +2810,6 @@
 										"title": "Name, Role, Value",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"F49",
-									"ARIA4"
 								]
 							}
 						},
@@ -2954,9 +2879,6 @@
 										"title": "Info and Relationships",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H39"
 								]
 							}
 						},
@@ -3114,10 +3036,6 @@
 										"title": "Info and Relationships",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H51",
-									"F91"
 								]
 							}
 						},
@@ -3603,18 +3521,7 @@
 								"techniques": [
 									"G10",
 									"G135",
-									"G136",
-									"F15",
-									"F19",
-									"F20",
-									"F42",
-									"F59",
-									"F79",
-									"ARIA4",
-									"ARIA5",
-									"ARIA18",
-									"ARIA19",
-									"SCR21"
+									"G136"
 								]
 							}
 						}
@@ -3786,14 +3693,7 @@
 								],
 								"techniques": [
 									"G90",
-									"G202",
-									"F42",
-									"F54",
-									"F55",
-									"SCR2",
-									"SCR20",
-									"SCR29",
-									"SCR35"
+									"G202"
 								]
 							}
 						}
@@ -3880,15 +3780,7 @@
 									"G13",
 									"G76",
 									"G80",
-									"G107",
-									"H32",
-									"H84",
-									"F9",
-									"F22",
-									"F36",
-									"F37",
-									"F41",
-									"SCR19"
+									"G107"
 								]
 							}
 						}
@@ -3943,11 +3835,6 @@
 										"title": "Status Messages",
 										"level": "AA"
 									}
-								],
-								"techniques": [
-									"ARIA19",
-									"ARIA22",
-									"ARIA23"
 								]
 							}
 						}
@@ -3973,20 +3860,7 @@
 										"L’indication de la langue de la page (attribut lang et/ou xml:lang) est donnée sur chaque élément de texte ou sur l’un des éléments parents."
 									]
 								}
-							],
-							"appendix": {
-								"references": [
-									{
-										"reference": "4.1.1",
-										"title": "Parsing",
-										"level": "A"
-									}
-								],
-								"techniques": [
-									"G134",
-									"G192"
-								]
-							}
+							]
 						},
 						"mobile": {
 							"tests": [
@@ -3994,20 +3868,7 @@
 									"number": "8.1.1",
 									"title": "Les textes sont-ils restitués par les technologies d’assistance dans la langue principale de l'application ?"
 								}
-							],
-							"appendix": {
-								"references": [
-									{
-										"reference": "4.1.1",
-										"title": "Parsing",
-										"level": "A"
-									}
-								],
-								"techniques": [
-									"G134",
-									"G192"
-								]
-							}
+							]
 						},
 						"bureautique": {
 							"tests": [
@@ -4020,20 +3881,7 @@
 										"La langue par défaut du document est défini dans les propriétés globales du document"
 									]
 								}
-							],
-							"appendix": {
-								"references": [
-									{
-										"reference": "4.1.1",
-										"title": "Parsing",
-										"level": "A"
-									}
-								],
-								"techniques": [
-									"G134",
-									"G192"
-								]
-							}
+							]
 						}
 					}
 				},
@@ -4055,22 +3903,10 @@
 							"appendix": {
 								"references": [
 									{
-										"reference": "4.1.1",
-										"title": "Parsing",
-										"level": "A"
-									},
-									{
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H74",
-									"H93",
-									"H94",
-									"F70",
-									"F77"
 								]
 							}
 						}
@@ -4119,9 +3955,6 @@
 										"title": "Language of Page",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H57"
 								]
 							}
 						},
@@ -4414,10 +4247,7 @@
 								"techniques": [
 									"G115",
 									"G130",
-									"H42",
-									"G141",
-									"ARIA4",
-									"ARIA12"
+									"G141"
 								]
 							}
 						},
@@ -4614,10 +4444,7 @@
 								],
 								"techniques": [
 									"G115",
-									"G153",
-									"H40",
-									"H48",
-									"F2"
+									"G153"
 								]
 							}
 						},
@@ -4893,9 +4720,7 @@
 									}
 								],
 								"techniques": [
-									"G140",
-									"F3",
-									"F87"
+									"G140"
 								]
 							}
 						},
@@ -4982,8 +4807,7 @@
 								],
 								"techniques": [
 									"G59",
-									"G140",
-									"F1"
+									"G140"
 								]
 							}
 						},
@@ -5086,15 +4910,7 @@
 								],
 								"techniques": [
 									"G146",
-									"G179",
-									"F69",
-									"F80",
-									"SCR34",
-									"C12",
-									"C13",
-									"C14",
-									"C17",
-									"C28"
+									"G179"
 								],
 								"particularCases": "Le critère est non applicable pour les éléments suivants :\n\n- Les éléments graphiques texte ;\n\n- Les sous-titres de vidéo."
 							}
@@ -5143,9 +4959,6 @@
 										"title": "Contrast (Minimum)",
 										"level": "AA"
 									}
-								],
-								"techniques": [
-									"F24"
 								]
 							}
 						}
@@ -5193,8 +5006,7 @@
 									}
 								],
 								"techniques": [
-									"G183",
-									"F73"
+									"G183"
 								]
 							}
 						}
@@ -5462,9 +5274,7 @@
 								],
 								"techniques": [
 									"G96",
-									"G140",
-									"F14",
-									"F26"
+									"G140"
 								]
 							}
 						},
@@ -5588,9 +5398,7 @@
 								],
 								"techniques": [
 									"G96",
-									"G140",
-									"F14",
-									"F26"
+									"G140"
 								]
 							}
 						},
@@ -5773,9 +5581,6 @@
 										"title": "Content on Hover or Focus",
 										"level": "AA"
 									}
-								],
-								"techniques": [
-									"F95"
 								]
 							}
 						},
@@ -5921,16 +5726,7 @@
 								],
 								"techniques": [
 									"G82",
-									"G131",
-									"H44",
-									"H65",
-									"F68",
-									"F82",
-									"F86",
-									"ARIA6",
-									"ARIA9",
-									"ARIA14",
-									"ARIA16"
+									"G131"
 								]
 							}
 						}
@@ -6021,13 +5817,7 @@
 								],
 								"techniques": [
 									"G82",
-									"G131",
-									"H44",
-									"H65",
-									"ARIA6",
-									"ARIA9",
-									"ARIA14",
-									"ARIA16"
+									"G131"
 								]
 							}
 						}
@@ -6104,9 +5894,6 @@
 										"title": "Consistent Identification",
 										"level": "AA"
 									}
-								],
-								"techniques": [
-									"F31"
 								],
 								"particularCases": "Les tests 11.3.2 et 11.3.3 seront considérés comme non applicables :\n\n- Dans le cas où l’étiquette mélange une portion de texte qui se lit de droite à gauche avec une portion de texte qui se lit de gauche à droite ;\n\n- Dans le cas où un formulaire contient des labels de plusieurs langues qui se liraient de droite à gauche et inversement. Par exemple, un formulaire de commande en arabe qui propose une liste de cases à cocher de produit en langue française ou mixant des produits en langue arabe ou en langue française ;\n\n- Dans le cas où les champs de type radio ou checkbox et les balises ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\" ne sont pas visuellement présentés sous forme de bouton radio ou de case à cocher ;\n\n- Dans le cas où les champs seraient utilisés dans un contexte où il pourrait être légitime, du point de vue de l’expérience utilisateur, de placer les étiquettes de manière différente à celle requise dans les tests 11.3.2 et 11.3.3."
 							}
@@ -6223,10 +6010,6 @@
 										"title": "Labels or Instructions",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H71",
-									"ARIA17"
 								]
 							}
 						}
@@ -6281,10 +6064,6 @@
 										"title": "Labels or Instructions",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H71",
-									"ARIA17"
 								]
 							}
 						}
@@ -6429,9 +6208,6 @@
 										"title": "Info and Relationships",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H85"
 								]
 							}
 						}
@@ -6530,14 +6306,6 @@
 										"title": "Name, Role, Value",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H36",
-									"H91",
-									"ARIA6",
-									"ARIA9",
-									"ARIA14",
-									"ARIA16"
 								]
 							}
 						}
@@ -6622,20 +6390,7 @@
 									"G84",
 									"G85",
 									"G89",
-									"G184",
-									"H44",
-									"H81",
-									"H89",
-									"H90",
-									"F81",
-									"SCR18",
-									"SCR32",
-									"ARIA1",
-									"ARIA2",
-									"ARIA6",
-									"ARIA9",
-									"ARIA16",
-									"ARIA21"
+									"G184"
 								]
 							}
 						}
@@ -6698,8 +6453,7 @@
 									"G84",
 									"G85",
 									"G89",
-									"G177",
-									"H89"
+									"G177"
 								]
 							}
 						}
@@ -6988,8 +6742,7 @@
 									}
 								],
 								"techniques": [
-									"G61",
-									"F66"
+									"G61"
 								]
 							}
 						}
@@ -7270,9 +7023,7 @@
 									"G1",
 									"G59",
 									"G123",
-									"G124",
-									"SCR28",
-									"F66"
+									"G124"
 								]
 							}
 						}
@@ -7333,14 +7084,7 @@
 									}
 								],
 								"techniques": [
-									"G59",
-									"H4",
-									"F44",
-									"F85",
-									"SCR26",
-									"SCR27",
-									"SCR37",
-									"C27"
+									"G59"
 								]
 							}
 						}
@@ -7408,9 +7152,7 @@
 									}
 								],
 								"techniques": [
-									"G21",
-									"H91",
-									"F10"
+									"G21"
 								]
 							}
 						}
@@ -7465,7 +7207,6 @@
 									}
 								],
 								"techniques": [
-									"F99",
 									"G217"
 								]
 							}
@@ -7613,22 +7354,13 @@
 									}
 								],
 								"techniques": [
-									"F40",
-									"F41",
-									"F58",
-									"F61",
 									"G75",
 									"G76",
 									"G110",
 									"G133",
 									"G180",
 									"G186",
-									"G198",
-									"H76",
-									"SCR1",
-									"SCR16",
-									"SCR36",
-									"SVR1"
+									"G198"
 								]
 							}
 						}
@@ -7675,7 +7407,6 @@
 									}
 								],
 								"techniques": [
-									"F55",
 									"G107"
 								]
 							}
@@ -7795,7 +7526,6 @@
 									}
 								],
 								"techniques": [
-									"F15",
 									"G10",
 									"G135"
 								]
@@ -7962,7 +7692,6 @@
 									}
 								],
 								"techniques": [
-									"F15",
 									"G10",
 									"G135"
 								]
@@ -8043,7 +7772,6 @@
 								],
 								"techniques": [
 									"F71",
-									"F70",
 									"G135",
 									"H86"
 								],
@@ -8066,10 +7794,7 @@
 									}
 								],
 								"techniques": [
-									"F71",
-									"F70",
-									"G135",
-									"H86"
+									"G135"
 								]
 							}
 						}
@@ -8131,11 +7856,6 @@
 										"title": "Non-text Content",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"F71",
-									"F72",
-									"H86"
 								]
 							}
 						},
@@ -8344,22 +8064,12 @@
 									}
 								],
 								"techniques": [
-									"F4",
-									"F7",
-									"F16",
-									"F47",
-									"F50",
 									"G4",
 									"G11",
 									"G152",
 									"G186",
 									"G187",
-									"G191",
-									"SCR22",
-									"SCR33",
-									"SCR36",
-									"SM11",
-									"SM12"
+									"G191"
 								]
 							}
 						},

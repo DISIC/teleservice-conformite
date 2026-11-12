@@ -6,9 +6,4 @@ references:
 techniques:
   - "G93"
   - "G87"
-  - "SM11"
-  - "SM12"
-  - "F8"
-  - "F74"
-  - "F75"
 ---

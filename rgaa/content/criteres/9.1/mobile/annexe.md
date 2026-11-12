@@ -15,8 +15,5 @@ references:
 techniques:
   - "G115"
   - "G130"
-  - "H42"
   - "G141"
-  - "ARIA4"
-  - "ARIA12"
 ---

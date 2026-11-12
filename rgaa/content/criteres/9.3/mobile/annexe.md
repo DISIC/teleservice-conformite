@@ -6,7 +6,4 @@ references:
 techniques:
   - "G115"
   - "G153"
-  - "H40"
-  - "H48"
-  - "F2"
 ---

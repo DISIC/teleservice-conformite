@@ -15,13 +15,4 @@ references:
 techniques:
   - "G82"
   - "G131"
-  - "H44"
-  - "H65"
-  - "F68"
-  - "F82"
-  - "F86"
-  - "ARIA6"
-  - "ARIA9"
-  - "ARIA14"
-  - "ARIA16"
 ---

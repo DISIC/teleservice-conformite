@@ -5,5 +5,4 @@ references:
     level: A
 techniques:
   - "G183"
-  - "F73"
 ---

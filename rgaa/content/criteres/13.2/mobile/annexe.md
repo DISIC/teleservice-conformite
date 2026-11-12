@@ -4,6 +4,5 @@ references:
     title: "On focus"
     level: A
 techniques:
-  - "F55"
   - "G107"
 ---

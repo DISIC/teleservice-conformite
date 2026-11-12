@@ -5,5 +5,4 @@ references:
     level: A
 techniques:
   - "G92"
-  - "F67"
 ---

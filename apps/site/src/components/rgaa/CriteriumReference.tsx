@@ -42,6 +42,9 @@ export default function CriteriumReference({
 		technicalNotes,
 		particularCases,
 	} = appendix;
+	const enClauses = references.flatMap(
+		(reference) => enClause(reference, referentielId) ?? [],
+	);
 
 	return (
 		<div data-accordion="reference">
@@ -60,17 +63,17 @@ export default function CriteriumReference({
 									<TechniquesField techniques={techniques} />
 								)}
 							</StandardGroup>
-							<StandardGroup title={EN_301_549_TITLE}>
-								<div className={classes.prose}>
-									<ul>
-										{references.map((reference) => (
-											<li key={reference.reference}>
-												{enClause(reference, referentielId)}
-											</li>
-										))}
-									</ul>
-								</div>
-							</StandardGroup>
+							{enClauses.length > 0 && (
+								<StandardGroup title={EN_301_549_TITLE}>
+									<div className={classes.prose}>
+										<ul>
+											{enClauses.map((clause) => (
+												<li key={clause}>{clause}</li>
+											))}
+										</ul>
+									</div>
+								</StandardGroup>
+							)}
 						</section>
 					)}
 

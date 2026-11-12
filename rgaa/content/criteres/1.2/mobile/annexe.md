@@ -7,11 +7,5 @@ references:
     title: "Name, Role, Value"
     level: A
 techniques:
-  - "H67"
   - "G196"
-  - "C9"
-  - "F39"
-  - "F38"
-  - "ARIA4"
-  - "ARIA10"
 ---

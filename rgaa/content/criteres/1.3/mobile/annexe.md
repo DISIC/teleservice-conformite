@@ -9,10 +9,5 @@ references:
 techniques:
   - "G94"
   - "G95"
-  - "F30"
-  - "F71"
   - "G196"
-  - "ARIA6"
-  - "ARIA9"
-  - "ARIA10"
 ---

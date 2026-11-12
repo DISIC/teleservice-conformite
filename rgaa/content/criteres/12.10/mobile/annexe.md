@@ -4,6 +4,5 @@ references:
     title: "Character Key Shortcuts"
     level: A
 techniques:
-  - "F99"
   - "G217"
 ---

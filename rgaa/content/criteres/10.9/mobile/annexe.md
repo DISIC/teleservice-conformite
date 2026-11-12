@@ -9,6 +9,4 @@ references:
 techniques:
   - "G96"
   - "G140"
-  - "F14"
-  - "F26"
 ---

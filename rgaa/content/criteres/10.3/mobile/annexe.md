@@ -9,5 +9,4 @@ references:
 techniques:
   - "G59"
   - "G140"
-  - "F1"
 ---
