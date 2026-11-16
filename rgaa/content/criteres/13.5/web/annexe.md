@@ -5,7 +5,6 @@ references:
     level: A
 techniques:
   - "F71"
-  - "F70"
   - "G135"
   - "H86"
 ---

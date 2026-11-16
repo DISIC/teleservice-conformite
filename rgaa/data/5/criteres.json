@@ -118,7 +118,16 @@
 									"number": "1.1.1",
 									"title": "Chaque image décorative est-elle ignorée par les technologies d’assistance?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -130,7 +139,23 @@
 										"L’image est marquée comme décorative ou artefact"
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"H36",
+									"H37",
+									"H53",
+									"F65",
+									"H24"
+								]
+							}
 						}
 					}
 				},
@@ -223,7 +248,24 @@
 									"number": "1.2.1",
 									"title": "Le nom accessible de chaque image informative est-il correctement restitué par les technologies d’assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G196"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -235,7 +277,30 @@
 										"Un lien adjacent à l’image permet d’accéder à un texte équivalent."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"H67",
+									"G196",
+									"C9",
+									"F39",
+									"F38",
+									"ARIA4",
+									"ARIA10"
+								]
+							}
 						}
 					}
 				},
@@ -350,7 +415,26 @@
 									"number": "1.3.1",
 									"title": "Le nom accessible de chaque image informative restitué par les technologies d’assistance est-il pertinent ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G94",
+									"G95",
+									"G196"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -363,7 +447,31 @@
 										"S'il est présent, le contenu du texte alternatif est court et concis (hors cas particuliers)"
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G94",
+									"G95",
+									"F30",
+									"F71",
+									"G196",
+									"ARIA6",
+									"ARIA9",
+									"ARIA10"
+								]
+							}
 						}
 					}
 				},
@@ -465,7 +573,20 @@
 									"number": "1.4.1",
 									"title": "Le nom accessible de chaque image informative complexe est-elle correctement restitué par les technologies d’assistance"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G100",
+									"G143"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -477,7 +598,20 @@
 										"Il existe un lien adjacent permettant d’accéder à la description détaillée"
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G100",
+									"G143"
+								]
+							}
 						}
 					}
 				},
@@ -572,7 +706,19 @@
 										"La description détaillée via un lien ou un bouton adjacent est pertinente."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G144"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -584,7 +730,19 @@
 										"La description détaillée via un lien adjacent est pertinente."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G144"
+								]
+							}
 						}
 					}
 				},
@@ -640,7 +798,21 @@
 									"number": "1.6.1",
 									"title": "Chaque image texte porteuse d’information, en l’absence d’un mécanisme de remplacement, est-elle si possible remplacée par du texte stylé (hors cas particuliers) ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G92",
+									"G74",
+									"G73"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -648,7 +820,23 @@
 									"number": "1.6.1",
 									"title": "Chaque image texte porteuse d’information est-elle si possible remplacée par du texte stylé (hors cas particuliers) ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G92",
+									"G74",
+									"G73",
+									"H45",
+									"ARIA6"
+								]
+							}
 						}
 					}
 				},
@@ -720,7 +908,19 @@
 									"number": "1.7.1",
 									"title": "Chaque élément graphique légendé est-il correctement restitué par les technologies d’assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G92"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -732,7 +932,20 @@
 										"L’alternative de l’image contient une référence explicite à la légende"
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G92",
+									"F67"
+								]
+							}
 						}
 					}
 				}
@@ -904,7 +1117,29 @@
 										"Le lien dispose d’une indication visuelle au focus autre qu’un changement de couleur."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "1.4.1",
+										"title": "Use of color",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G14",
+									"G182",
+									"G111",
+									"G117",
+									"G138",
+									"G205"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -941,7 +1176,29 @@
 										"Le lien dispose d’une indication visuelle au focus autre qu’un changement de couleur."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "1.4.1",
+										"title": "Use of color",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G14",
+									"G182",
+									"G111",
+									"G117",
+									"G138",
+									"G205"
+								]
+							}
 						}
 					}
 				},
@@ -1038,7 +1295,23 @@
 										"Un mécanisme permet à la personne utilisatrice d’afficher le texte avec un rapport de contraste de 3:1, au moins."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.3",
+										"title": "Contrast (Minimum)",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G18",
+									"G136",
+									"G148",
+									"G174",
+									"G145"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -1074,7 +1347,24 @@
 										"Un mécanisme permet à la personne utilisatrice d’afficher le texte avec un rapport de contraste de 3:1, au moins."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.3",
+										"title": "Contrast (Minimum)",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G18",
+									"G136",
+									"G148",
+									"G174",
+									"G145",
+									"C29"
+								]
+							}
 						}
 					}
 				},
@@ -1164,7 +1454,24 @@
 									"number": "3.3.4",
 									"title": "Dans le mécanisme qui permet d’afficher un rapport de contraste conforme, les couleurs du composant ou des éléments graphiques porteurs d’informations qui le composent, sont-elles suffisamment contrastées ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.11",
+										"title": "Non-text Contrast",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G18",
+									"G195",
+									"G207",
+									"G174",
+									"G145",
+									"G183"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -1196,7 +1503,25 @@
 									"number": "3.3.4",
 									"title": "Dans le mécanisme qui permet d’afficher un rapport de contraste conforme, les couleurs du composant ou des éléments graphiques porteurs d’informations qui le composent, sont-elles suffisamment contrastées ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.11",
+										"title": "Non-text Contrast",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G18",
+									"G195",
+									"G207",
+									"G174",
+									"G145",
+									"G183",
+									"F78"
+								]
+							}
 						}
 					}
 				}
@@ -1252,7 +1577,31 @@
 									"number": "4.1.1",
 									"title": "Le contenu textuel adjacent à chaque média temporel permet-il de l’identifier clairement ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.2.1",
+										"title": "Audio-only and Video-only (Prerecorded)",
+										"level": "A"
+									},
+									{
+										"reference": "1.2.3",
+										"title": "Audio Description or Media Alternative (Prerecorded)",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G58",
+									"G69",
+									"G78",
+									"G158",
+									"G159",
+									"G173",
+									"G8",
+									"G166"
+								]
+							}
 						}
 					}
 				},
@@ -1304,7 +1653,21 @@
 										"Le volume du son peut être contrôlé par la personne utilisatrice indépendamment du contrôle de volume du système."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.2.1",
+										"title": "Audio-only and Video-only (Prerecorded)",
+										"level": "A"
+									},
+									{
+										"reference": "1.2.3",
+										"title": "Audio Description or Media Alternative (Prerecorded)",
+										"level": "A"
+									}
+								]
+							}
 						}
 					}
 				},
@@ -1378,7 +1741,21 @@
 										"Une fonctionnalité activable par le clavier et tout dispositif de pointage permettant de réaliser la même action et est présente dans l'écran."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.2.2",
+										"title": "Captions (Prerecorded)",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G58",
+									"G93",
+									"G87"
+								]
+							}
 						}
 					}
 				},
@@ -1426,7 +1803,20 @@
 										"Pour chaque média temporel, la fonctionnalité qui permet d’activer et désactiver l’audiodescription doit être présentée au même niveau que les fonctionnalités principales."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.2.2",
+										"title": "Captions (Prerecorded)",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G93",
+									"G87"
+								]
+							}
 						}
 					}
 				},
@@ -1521,7 +1911,22 @@
 										"Il existe une version alternative avec une audiodescription synchronisée accessible via un lien ou bouton adjacent."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.2.5",
+										"title": "Audio Description (Prerecorded)",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G8",
+									"G58",
+									"G78",
+									"G173"
+								]
+							}
 						}
 					}
 				},
@@ -1575,7 +1980,16 @@
 									"number": "4.6.3",
 									"title": "La transcription textuelle de chaque média temporel pré-enregistré synchronisé est pertinente"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.2.5",
+										"title": "Audio Description (Prerecorded)",
+										"level": "AA"
+									}
+								]
+							}
 						}
 					}
 				},
@@ -1623,7 +2037,20 @@
 										"Il existe une version alternative possédant des sous-titres synchronisés accessible via un lien ou bouton adjacent."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G68",
+									"G100"
+								]
+							}
 						}
 					}
 				},
@@ -1696,7 +2123,16 @@
 									"number": "4.8.3",
 									"title": "Pour chaque média temporel ayant des sous titres synchronisés, aucun contenu additionnel ne les masque. Cette règle est-elle respectée?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								]
+							}
 						}
 					}
 				},
@@ -1743,7 +2179,16 @@
 										"Les caractéristiques essentielles des sous-titres sont conservées."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								]
+							}
 						}
 					}
 				},
@@ -1790,7 +2235,21 @@
 										"La fonctionnalité de modification de l'apparence des sous-titres permet de choisir à minima la couleur et l'opacité de l'arrière-plan, la couleur du texte, la police de caractère, la taille de caractère et la couleur du contour des caractères"
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.2",
+										"title": "Audio Control",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G60",
+									"G170",
+									"G171"
+								]
+							}
 						}
 					}
 				},
@@ -1844,7 +2303,26 @@
 										"Il existe une version alternative contenant une vocalisation de l’ensemble des sous-titres de traduction, accessible via un lien ou bouton adjacent."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.1.1",
+										"title": "Keyboard",
+										"level": "A"
+									},
+									{
+										"reference": "2.1.2",
+										"title": "No Keyboard Trap",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G4",
+									"G90",
+									"G202"
+								]
+							}
 						}
 					}
 				},
@@ -1893,7 +2371,25 @@
 										"Il existe une version alternative avec une audiodescription synchronisée."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.1.1",
+										"title": "Keyboard",
+										"level": "A"
+									},
+									{
+										"reference": "2.1.2",
+										"title": "No Keyboard Trap",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G4",
+									"G90"
+								]
+							}
 						}
 					}
 				},
@@ -1930,7 +2426,20 @@
 									"number": "4.13.1",
 									"title": "Pour chaque média temporel pré-enregistré synchronisé ayant une audiodescription synchronisée, celle-ci est-elle pertinente ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "4.1.2",
+										"title": "Name, role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G10",
+									"G135"
+								]
+							}
 						}
 					}
 				},
@@ -2156,7 +2665,16 @@
 									"number": "5.1.1",
 									"title": "Pour chaque tableau de données complexe, un résumé est-il disponible ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -2164,7 +2682,19 @@
 									"number": "5.1.1",
 									"title": "Pour chaque tableau de données complexe, un résumé est-il disponible ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"H73"
+								]
+							}
 						}
 					}
 				},
@@ -2198,7 +2728,16 @@
 									"number": "5.2.1",
 									"title": "Le résumé de chaque tableau de données complexe est-il pertinent ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -2206,7 +2745,19 @@
 									"number": "5.2.1",
 									"title": "Le résumé de chaque tableau de données complexe est-il pertinent ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"H73"
+								]
+							}
 						}
 					}
 				},
@@ -2246,7 +2797,21 @@
 									"number": "5.3.1",
 									"title": "Chaque titre de tableau de données est-il associé au tableau ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.2",
+										"title": "Meaningful Sequence",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -2254,7 +2819,25 @@
 									"number": "5.3.1",
 									"title": "Chaque titre de tableau de données est-il associé au tableau ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.2",
+										"title": "Meaningful Sequence",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"F49",
+									"ARIA4"
+								]
+							}
 						}
 					}
 				},
@@ -2288,7 +2871,16 @@
 									"number": "5.4.1",
 									"title": "Le titre du tableau permet-il d’identifier le contenu du tableau de données de manière claire et concise ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -2296,7 +2888,19 @@
 									"number": "5.4.1",
 									"title": "Le titre du tableau permet-il d’identifier le contenu du tableau de données de manière claire et concise ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"H39"
+								]
+							}
 						}
 					}
 				},
@@ -2424,7 +3028,16 @@
 									"number": "5.6.1",
 									"title": "Pour chaque combinaison des en-têtes de ligne et/ou de colonnes possible l’association d’au moins une cellule avec ceux-ci est-elle vérifiée à l’aide du lecteur d’écran ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -2436,7 +3049,20 @@
 									"number": "5.6.2",
 									"title": "Pour chaque combinaison des en-têtes de ligne et/ou de colonnes possible l’association d’au moins une cellule avec ceux-ci est-elle vérifiée à l’aide du lecteur d’écran ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"H51",
+									"F91"
+								]
+							}
 						}
 					}
 				},
@@ -2476,7 +3102,21 @@
 									"number": "5.7.1",
 									"title": "Pour chaque tableau de présentation, le contenu linéarisé reste-t-il compréhensible ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"H43",
+									"H63",
+									"F90"
+								]
+							}
 						}
 					}
 				},
@@ -2514,7 +3154,19 @@
 									"number": "5.8.1",
 									"title": "Chaque tableau de mise en forme ne doit pas utiliser d’éléments propres aux tableaux de données, cette règle est-elle respectée ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"F46"
+								]
+							}
 						}
 					}
 				}
@@ -2582,7 +3234,39 @@
 									"number": "6.1.3",
 									"title": "Chaque lien utilisant une forme complexe a-t-il un intitulé ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.4",
+										"title": "Link Purpose (In Context)",
+										"level": "A"
+									},
+									{
+										"reference": "2.5.3",
+										"title": "Label in Name",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"H30",
+									"H78",
+									"H79",
+									"H80",
+									"H81",
+									"G53",
+									"G91",
+									"F63",
+									"F89",
+									"ARIA7",
+									"ARIA8"
+								]
+							}
 						}
 					}
 				},
@@ -2669,7 +3353,26 @@
 									"number": "6.2.2",
 									"title": "Chaque lien ayant les mêmes fonction et destination a-t-il le même intitulé (hors cas particuliers) ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.4",
+										"title": "Link Purpose (In Context)",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"H30",
+									"G91",
+									"F89"
+								]
+							}
 						}
 					}
 				}
@@ -2801,7 +3504,26 @@
 										"L’état de la fonctionnalité peut être déterminé par le toucher ou le son sans modifier l’état du contrôle."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.5.3",
+										"title": "Label in Name",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G10",
+									"G135",
+									"G136"
+								]
+							}
 						}
 					}
 				},
@@ -2950,7 +3672,30 @@
 										"Le contenu additionnel reste visible jusqu’à ce qu’il ne soit plus valide."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "2.1.1",
+										"title": "Keyboard",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.7",
+										"title": "Focus Visible",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G90",
+									"G202"
+								]
+							}
 						}
 					}
 				},
@@ -3017,7 +3762,27 @@
 									"number": "7.4.2",
 									"title": "La prise de focus d'un élément ne doit pas déclencher de changement de contexte. Cette règle est-elle respectée ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "3.2.1",
+										"title": "On Focus",
+										"level": "A"
+									},
+									{
+										"reference": "3.2.2",
+										"title": "On Input",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G13",
+									"G76",
+									"G80",
+									"G107"
+								]
+							}
 						}
 					}
 				},
@@ -3062,7 +3827,16 @@
 									"number": "7.5.1",
 									"title": "Les messages d'état sont-ils correctement restitués par les technologies d’assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "4.1.3",
+										"title": "Status Messages",
+										"level": "AA"
+									}
+								]
+							}
 						}
 					}
 				}
@@ -3086,20 +3860,7 @@
 										"L’indication de la langue de la page (attribut lang et/ou xml:lang) est donnée sur chaque élément de texte ou sur l’un des éléments parents."
 									]
 								}
-							],
-							"appendix": {
-								"references": [
-									{
-										"reference": "4.1.1",
-										"title": "Parsing",
-										"level": "A"
-									}
-								],
-								"techniques": [
-									"G134",
-									"G192"
-								]
-							}
+							]
 						},
 						"mobile": {
 							"tests": [
@@ -3142,22 +3903,10 @@
 							"appendix": {
 								"references": [
 									{
-										"reference": "4.1.1",
-										"title": "Parsing",
-										"level": "A"
-									},
-									{
 										"reference": "4.1.2",
 										"title": "Name, Role, Value",
 										"level": "A"
 									}
-								],
-								"techniques": [
-									"H74",
-									"H93",
-									"H94",
-									"F70",
-									"F77"
 								]
 							}
 						}
@@ -3198,7 +3947,16 @@
 									"number": "8.3.1",
 									"title": "Les changements de langue dans le texte sont-ils restitués par les technologies d'assistance dans la bonne langue ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "3.1.1",
+										"title": "Language of Page",
+										"level": "A"
+									}
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -3206,7 +3964,19 @@
 									"number": "8.3.1",
 									"title": "Les changements de langue dans le texte sont-ils restitués par les technologies d'assistance dans la bonne langue ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "3.1.1",
+										"title": "Language of Page",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"H57"
+								]
+							}
 						}
 					}
 				},
@@ -3276,7 +4046,21 @@
 									"number": "8.5.2",
 									"title": "Le nom du fichier reprend-il le titre du document afin de le rendre identifiable ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.4.2",
+										"title": "Page Titled",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G88",
+									"G127",
+									"H25"
+								]
+							}
 						}
 					}
 				},
@@ -3312,7 +4096,21 @@
 									"number": "8.6.1",
 									"title": "Le contenu du titre du document est-il pertinent ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.4.2",
+										"title": "Page Titled",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G88",
+									"G127",
+									"H25"
+								]
+							}
 						}
 					}
 				},
@@ -3422,7 +4220,36 @@
 									"number": "9.1.3",
 									"title": "La hiérarchie entre les titres est-elle pertinente ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.1",
+										"title": "Bypass Blocks",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.6",
+										"title": "Headings and Labels",
+										"level": "AA"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G115",
+									"G130",
+									"G141"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -3442,7 +4269,39 @@
 									"number": "9.1.4",
 									"title": "La hiérarchie des titres est-elle reflétée dans les signets du document ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.1",
+										"title": "Bypass Blocks",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.6",
+										"title": "Headings and Labels",
+										"level": "AA"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G115",
+									"G130",
+									"H42",
+									"G141",
+									"ARIA4",
+									"ARIA12"
+								]
+							}
 						}
 					}
 				},
@@ -3502,7 +4361,20 @@
 									"number": "9.2.1",
 									"title": "Chaque document dispose-t-il, si nécessaire, des éléments en-tête et pied de page?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G115",
+									"ARIA11"
+								]
+							}
 						}
 					}
 				},
@@ -3561,7 +4433,20 @@
 									"number": "9.3.2",
 									"title": "Chaque liste ordonnée est-elle correctement structurée ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G115",
+									"G153"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -3573,7 +4458,23 @@
 									"number": "9.3.2",
 									"title": "Chaque liste ordonnée est-elle correctement structurée ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G115",
+									"G153",
+									"H40",
+									"H48",
+									"F2"
+								]
+							}
 						}
 					}
 				},
@@ -3617,7 +4518,21 @@
 									"number": "9.4.2",
 									"title": "Les blocs de citation sont-elles correctement balisés si le format le permet ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G115",
+									"H49",
+									"F2"
+								]
+							}
 						}
 					}
 				},
@@ -3724,7 +4639,32 @@
 										"Les espaces ne sont pas utilisées pour simuler des colonnes de texte."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "1.3.2",
+										"title": "Meaningful Sequence",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G140",
+									"F32",
+									"F33",
+									"F34",
+									"F48",
+									"C6",
+									"C8",
+									"C18",
+									"C22"
+								]
+							}
 						}
 					}
 				},
@@ -3765,7 +4705,24 @@
 									"number": "10.2.1",
 									"title": "Le contenu visible porteur d’information est-il restitué aux technologies d’assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G140"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -3775,6 +4732,23 @@
 								}
 							],
 							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G140",
+									"F3",
+									"F87"
+								],
 								"technicalNotes": "Les informations importantes, notamment si elles sont contenues dans les en-têtes et les pieds de page, doivent être restituées aux technologies d'assistance par exemple en étant aussi présentes au moins une fois dans le corps du document."
 							}
 						}
@@ -3817,7 +4791,25 @@
 									"number": "10.3.1",
 									"title": "Le contenu est-il restitué dans un ordre qui permet sa compréhension au travers de technologies d'assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.2",
+										"title": "Meaningful Sequence",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.3",
+										"title": "Focus Order",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G59",
+									"G140"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -3825,7 +4817,26 @@
 									"number": "10.3.1",
 									"title": "Le contenu est-il restitué dans un ordre qui permet sa compréhension au travers de technologies d'assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.2",
+										"title": "Meaningful Sequence",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.3",
+										"title": "Focus Order",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G59",
+									"G140",
+									"F1"
+								]
+							}
 						}
 					}
 				},
@@ -3890,6 +4901,17 @@
 								}
 							],
 							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.4",
+										"title": "Resize Text",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G146",
+									"G179"
+								],
 								"particularCases": "Le critère est non applicable pour les éléments suivants :\n\n- Les éléments graphiques texte ;\n\n- Les sous-titres de vidéo."
 							}
 						}
@@ -3929,7 +4951,16 @@
 									"number": "10.5.1",
 									"title": "La prise de focus est-elle visible pour chaque élément recevant le focus ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.3",
+										"title": "Contrast (Minimum)",
+										"level": "AA"
+									}
+								]
+							}
 						}
 					}
 				},
@@ -3965,7 +4996,19 @@
 									"number": "10.6.1",
 									"title": "Pour chaque composant d’interface recevant le focus, le composant d’interface n’est pas complètement masqué lorsqu’il reçoit le focus, cette règle est-elle respectée (hors cas particuliers) ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.1",
+										"title": "Use of Color",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G183"
+								]
+							}
 						}
 					}
 				},
@@ -4027,7 +5070,31 @@
 									"number": "10.7.3",
 									"title": "Chaque utilisation d’une image pour créer une couleur de fond d’un élément susceptible de contenir du texte est-elle accompagnée d’une déclaration de couleur de fond, au moins, héritée d’un parent?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.1",
+										"title": "Use of Color",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.7",
+										"title": "Focus Visible",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G149",
+									"G165",
+									"G183",
+									"G195",
+									"F73",
+									"F78",
+									"SCR31",
+									"C15"
+								]
+							}
 						}
 					}
 				},
@@ -4083,7 +5150,24 @@
 									"number": "10.8.2",
 									"title": "Chaque contenu décoratif est-il ignoré par les technologies d'assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.2",
+										"title": "Meaningful Sequence",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G57"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -4091,7 +5175,24 @@
 									"number": "10.8.1",
 									"title": "Chaque contenu décoratif est-il ignoré par les technologies d'assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.2",
+										"title": "Meaningful Sequence",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G57"
+								]
+							}
 						}
 					}
 				},
@@ -4157,7 +5258,25 @@
 									"number": "10.9.4",
 									"title": "Pour chaque média non temporel qui transmet une information donnée uniquement par la forme, taille ou position, existe-t-il une alternative ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.3",
+										"title": "Sensory Characteristics",
+										"level": "A"
+									},
+									{
+										"reference": "1.4.1",
+										"title": "Use of Color",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G96",
+									"G140"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -4177,7 +5296,27 @@
 									"number": "10.9.4",
 									"title": "Pour chaque média non temporel qui transmet une information donnée uniquement par la forme, taille ou position, existet-il une alternative ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.3",
+										"title": "Sensory Characteristics",
+										"level": "A"
+									},
+									{
+										"reference": "1.4.1",
+										"title": "Use of Color",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G96",
+									"G140",
+									"F14",
+									"F26"
+								]
+							}
 						}
 					}
 				},
@@ -4243,7 +5382,25 @@
 									"number": "10.10.4",
 									"title": "Chaque alternative à l'information donnée uniquement par la forme, taille ou position d'un média non temporel, est-elle pertinente ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.3",
+										"title": "Sensory Characteristics",
+										"level": "A"
+									},
+									{
+										"reference": "1.4.1",
+										"title": "Use of Color",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G96",
+									"G140"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -4263,7 +5420,27 @@
 									"number": "10.10.4",
 									"title": "Chaque alternative à l'information donnée uniquement par la forme, taille ou position d'un média non temporel, est-elle pertinente ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.3",
+										"title": "Sensory Characteristics",
+										"level": "A"
+									},
+									{
+										"reference": "1.4.1",
+										"title": "Use of Color",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G96",
+									"G140",
+									"F14",
+									"F26"
+								]
+							}
 						}
 					}
 				},
@@ -4346,7 +5523,22 @@
 										"L’espacement des mots (word-spacing) est défini à au moins 0,16 fois la taille de la police."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.12",
+										"title": "Text Spacing",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"C8",
+									"C21",
+									"C35",
+									"C36"
+								]
+							}
 						}
 					}
 				},
@@ -4381,7 +5573,16 @@
 									"number": "10.13.1",
 									"title": "La taille de la cible des entrées de pointeur est-elle d'au moins 24px par 24px (hors cas particuliers) ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.13",
+										"title": "Content on Hover or Focus",
+										"level": "AA"
+									}
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -4389,7 +5590,19 @@
 									"number": "10.13.1",
 									"title": "La taille de la cible des entrées de pointeur est-elle d'au moins 24px par 24px (hors cas particuliers) ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.4.13",
+										"title": "Content on Hover or Focus",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"F95"
+								]
+							}
 						}
 					}
 				}
@@ -4487,7 +5700,35 @@
 									"number": "11.1.2",
 									"title": "Pour chaque champ de formulaire à la prise de focus l'étiquette est-elle restituée par les technologies d’assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.6",
+										"title": "Headings and Labels",
+										"level": "AA"
+									},
+									{
+										"reference": "3.3.2",
+										"title": "Labels or Instructions",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G82",
+									"G131"
+								]
+							}
 						}
 					}
 				},
@@ -4555,7 +5796,30 @@
 									"number": "11.2.3",
 									"title": "Le nom accessible de chaque champ contient-il au moins le contenu de l’étiquette visible ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.4.6",
+										"title": "Headings and Labels",
+										"level": "AA"
+									},
+									{
+										"reference": "2.5.3",
+										"title": "Label in Name",
+										"level": "A"
+									},
+									{
+										"reference": "3.3.2",
+										"title": "Labels or Instructions",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G82",
+									"G131"
+								]
+							}
 						}
 					}
 				},
@@ -4624,6 +5888,13 @@
 								}
 							],
 							"appendix": {
+								"references": [
+									{
+										"reference": "3.2.4",
+										"title": "Consistent Identification",
+										"level": "AA"
+									}
+								],
 								"particularCases": "Les tests 11.3.2 et 11.3.3 seront considérés comme non applicables :\n\n- Dans le cas où l’étiquette mélange une portion de texte qui se lit de droite à gauche avec une portion de texte qui se lit de gauche à droite ;\n\n- Dans le cas où un formulaire contient des labels de plusieurs langues qui se liraient de droite à gauche et inversement. Par exemple, un formulaire de commande en arabe qui propose une liste de cases à cocher de produit en langue française ou mixant des produits en langue arabe ou en langue française ;\n\n- Dans le cas où les champs de type radio ou checkbox et les balises ayant un attribut WAI-ARIA role=\"checkbox\", role=\"radio\" ou role=\"switch\" ne sont pas visuellement présentés sous forme de bouton radio ou de case à cocher ;\n\n- Dans le cas où les champs seraient utilisés dans un contexte où il pourrait être légitime, du point de vue de l’expérience utilisateur, de placer les étiquettes de manière différente à celle requise dans les tests 11.3.2 et 11.3.3."
 							}
 						}
@@ -4664,7 +5935,19 @@
 									"number": "11.4.1",
 									"title": "Les champs de même nature sont-ils regroupés dans un élément commun ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "3.3.2",
+										"title": "Labels or Instructions",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G162"
+								]
+							}
 						}
 					}
 				},
@@ -4714,7 +5997,21 @@
 										"le nom accessible reprend au moins le texte de l’étiquette visible."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "3.3.2",
+										"title": "Labels or Instructions",
+										"level": "A"
+									}
+								]
+							}
 						}
 					}
 				},
@@ -4754,7 +6051,21 @@
 									"number": "11.6.1",
 									"title": "L’étiquette visible et le nom accessible de chaque regroupement de champs de même nature sont-ils pertinents ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "3.3.2",
+										"title": "Labels or Instructions",
+										"level": "A"
+									}
+								]
+							}
 						}
 					}
 				},
@@ -4889,7 +6200,16 @@
 										"La description détaillée via un lien ou un bouton adjacent est pertinente."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									}
+								]
+							}
 						}
 					}
 				},
@@ -4973,7 +6293,21 @@
 										"Le message d’erreur indiquant le caractère invalide de la saisie est situé dans le groupe de champs."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.5.3",
+										"title": "Label in Name",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								]
+							}
 						}
 					}
 				},
@@ -5037,7 +6371,28 @@
 										"Le type de données et/ou de format est disponible aux technologies d’assistance avant la saisie."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "3.3.1",
+										"title": "Error Identification",
+										"level": "A"
+									},
+									{
+										"reference": "3.3.2",
+										"title": "Labels or Instructions",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G83",
+									"G84",
+									"G85",
+									"G89",
+									"G184"
+								]
+							}
 						}
 					}
 				},
@@ -5085,7 +6440,22 @@
 										"Le champ est compatible avec une fonctionnalité de remplissage automatique."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "3.3.3",
+										"title": "Error Suggestion",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G84",
+									"G85",
+									"G89",
+									"G177"
+								]
+							}
 						}
 					}
 				},
@@ -5132,7 +6502,23 @@
 										"disponibles pour être sélectionnées par la personne utilisatrice."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "3.3.4",
+										"title": "Error Prevention (Legal, Financial, Data)",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G98",
+									"G99",
+									"G155",
+									"G164",
+									"G168"
+								]
+							}
 						}
 					}
 				},
@@ -5346,7 +6732,19 @@
 									"number": "12.2.4",
 									"title": "Dans chaque ensemble d'écran, la fonctionnalité vers le moteur de recherche se présente-t-elle toujours dans le même ordre relatif pour les technologies d'assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "3.2.3",
+										"title": "Consistent Navigation",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G61"
+								]
+							}
 						}
 					}
 				},
@@ -5409,7 +6807,19 @@
 										"Le lien vers le mécanisme d'aide est fonctionnel."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.4.5",
+										"title": "Multiple Ways",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G63"
+								]
+							}
 						}
 					}
 				},
@@ -5590,7 +7000,32 @@
 									"number": "12.7.2",
 									"title": "Pour chaque script qui met à jour ou insère un contenu, l’ordre de tabulation au clavier reste-t-il cohérent ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.4.1",
+										"title": "Bypass Blocks",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.3",
+										"title": "Focus Order",
+										"level": "A"
+									},
+									{
+										"reference": "3.2.3",
+										"title": "Consistent Navigation",
+										"level": "AA"
+									}
+								],
+								"techniques": [
+									"G1",
+									"G59",
+									"G123",
+									"G124"
+								]
+							}
 						}
 					}
 				},
@@ -5639,7 +7074,19 @@
 										"La personne utilisatrice est informée d’un mécanisme fonctionnel permettant d’atteindre au clavier l’élément suivant ou précédent pouvant recevoir le focus."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.4.3",
+										"title": "Focus Order",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G59"
+								]
+							}
 						}
 					}
 				},
@@ -5690,7 +7137,24 @@
 										"Dans le cas d’un composant d’interface utilisateur, le raccourci clavier qui lui est associé ne peut être activé que si le focus clavier est sur ce composant."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.1.1",
+										"title": "Keyboard",
+										"level": "A"
+									},
+									{
+										"reference": "2.1.2",
+										"title": "No Keyboard Trap",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G21"
+								]
+							}
 						}
 					}
 				},
@@ -5733,7 +7197,19 @@
 									"number": "12.10.2",
 									"title": "Chaque composant (bouton, lien, étiquette, image) ayant la même fonction dans un ensemble de pages est-il cohérent ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.1.4",
+										"title": "Character Key Shortcuts",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G217"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -5745,7 +7221,20 @@
 									"number": "12.10.2",
 									"title": "Chaque composant (bouton, lien, étiquette, image) ayant la même fonction dans un ensemble de pages est-il cohérent ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.1.4",
+										"title": "Character Key Shortcuts",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"F99",
+									"G217"
+								]
+							}
 						}
 					}
 				}
@@ -5850,7 +7339,30 @@
 										"La limite de temps avant la fin de la session est de vingt heures au moins"
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.2.1",
+										"title": "Timing Adjustable",
+										"level": "A"
+									},
+									{
+										"reference": "2.2.2",
+										"title": "Pause, Stop, Hide",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G75",
+									"G76",
+									"G110",
+									"G133",
+									"G180",
+									"G186",
+									"G198"
+								]
+							}
 						}
 					}
 				},
@@ -5885,7 +7397,19 @@
 									"number": "13.2.1",
 									"title": "L’ouverture d’une nouvelle fenêtre ne doit pas être déclenchée sans action de la personne utilisatrice. Cette règle est-elle respectée ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "3.2.1",
+										"title": "On focus",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G107"
+								]
+							}
 						}
 					}
 				},
@@ -5962,7 +7486,50 @@
 										"Il en existe une version alternative au format HTML compatible avec l’accessibilité."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "1.3.2",
+										"title": "Meaningful Sequence",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.1",
+										"title": "Bypass Blocks",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.3",
+										"title": "Focus Order",
+										"level": "A"
+									},
+									{
+										"reference": "3.1.1",
+										"title": "Language of Page",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G10",
+									"G135"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -5974,7 +7541,51 @@
 										"Il en existe une version alternative fournie conjointement par le même canal compatible avec l’accessibilité ."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "1.3.2",
+										"title": "Meaningful Sequence",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.1",
+										"title": "Bypass Blocks",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.3",
+										"title": "Focus Order",
+										"level": "A"
+									},
+									{
+										"reference": "3.1.1",
+										"title": "Language of Page",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"F15",
+									"G10",
+									"G135"
+								]
+							}
 						}
 					}
 				},
@@ -6041,7 +7652,50 @@
 									"number": "13.4.1",
 									"title": "Chaque version compatible avec l’accessibilité, p. ex. HTML ou EPUB, d’un document bureautique offre-t-elle la même information?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "1.3.2",
+										"title": "Meaningful Sequence",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.1",
+										"title": "Bypass Blocks",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.3",
+										"title": "Focus Order",
+										"level": "A"
+									},
+									{
+										"reference": "3.1.1",
+										"title": "Language of Page",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G10",
+									"G135"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -6049,7 +7703,51 @@
 									"number": "13.4.1",
 									"title": "Chaque version compatible avec l’accessibilité, p. ex. HTML ou EPUB, d’un document bureautique offre-t-elle la même information?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									},
+									{
+										"reference": "1.3.1",
+										"title": "Info and Relationships",
+										"level": "A"
+									},
+									{
+										"reference": "1.3.2",
+										"title": "Meaningful Sequence",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.1",
+										"title": "Bypass Blocks",
+										"level": "A"
+									},
+									{
+										"reference": "2.4.3",
+										"title": "Focus Order",
+										"level": "A"
+									},
+									{
+										"reference": "3.1.1",
+										"title": "Language of Page",
+										"level": "A"
+									},
+									{
+										"reference": "4.1.2",
+										"title": "Name, Role, Value",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"F15",
+									"G10",
+									"G135"
+								]
+							}
 						}
 					}
 				},
@@ -6074,7 +7772,6 @@
 								],
 								"techniques": [
 									"F71",
-									"F70",
 									"G135",
 									"H86"
 								],
@@ -6087,7 +7784,19 @@
 									"number": "13.5.1",
 									"title": "Pour chaque fonctionnalité de conversion d’un document, les informations relatives à l’accessibilité disponibles dans le document source sont-elles conservées dans le document de destination (hors cas particuliers) ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G135"
+								]
+							}
 						}
 					}
 				},
@@ -6139,7 +7848,16 @@
 									"number": "13.6.2",
 									"title": "Chaque contenu cryptique décoratif est-il correctement ignoré par les technologies d’assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -6155,7 +7873,21 @@
 									"number": "13.6.2",
 									"title": "Chaque contenu cryptique décoratif est-il correctement ignoré par les technologies d’assistance ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.1.1",
+										"title": "Non-text Content",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"F71",
+									"F72",
+									"H86"
+								]
+							}
 						}
 					}
 				},
@@ -6199,7 +7931,21 @@
 										"La signification mise à disposition par une méthode compatible avec l’accessibilité est pertinente."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.3.1",
+										"title": "Three Flashes or Below Threshold",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G15",
+									"G19",
+									"G176"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -6211,7 +7957,21 @@
 										"La signification mise à disposition par une méthode compatible avec l’accessibilité est pertinente."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.3.1",
+										"title": "Three Flashes or Below Threshold",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G15",
+									"G19",
+									"G176"
+								]
+							}
 						}
 					}
 				},
@@ -6289,7 +8049,29 @@
 										"La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.2.1",
+										"title": "Timing Adjustable",
+										"level": "A"
+									},
+									{
+										"reference": "2.2.2",
+										"title": "Pause, Stop, Hide",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G4",
+									"G11",
+									"G152",
+									"G186",
+									"G187",
+									"G191"
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -6301,7 +8083,39 @@
 										"La surface totale cumulée des effets est inférieure ou égale à 21824 pixels."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.2.1",
+										"title": "Timing Adjustable",
+										"level": "A"
+									},
+									{
+										"reference": "2.2.2",
+										"title": "Pause, Stop, Hide",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"F4",
+									"F7",
+									"F16",
+									"F47",
+									"F50",
+									"G4",
+									"G11",
+									"G152",
+									"G186",
+									"G187",
+									"G191",
+									"SCR22",
+									"SCR33",
+									"SCR36",
+									"SM11",
+									"SM12"
+								]
+							}
 						}
 					}
 				},
@@ -6365,7 +8179,16 @@
 										"La personne utilisatrice peut afficher la totalité de l’information sans le clignotement."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.4",
+										"title": "Orientation",
+										"level": "AA"
+									}
+								]
+							}
 						},
 						"bureautique": {
 							"tests": [
@@ -6389,7 +8212,16 @@
 										"La personne utilisatrice peut afficher la totalité de l’information sans le clignotement."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "1.3.4",
+										"title": "Orientation",
+										"level": "AA"
+									}
+								]
+							}
 						}
 					}
 				},
@@ -6433,7 +8265,20 @@
 										"Le contenu proposé reste le même, quel que soit le mode d’orientation de l’écran utilisé même si sa présentation et le moyen d’y accéder peuvent différer."
 									]
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.5.1",
+										"title": "Pointer Gestures",
+										"level": "A"
+									}
+								],
+								"techniques": [
+									"G215",
+									"G216"
+								]
+							}
 						}
 					}
 				},
@@ -6473,7 +8318,16 @@
 									"number": "13.11.2",
 									"title": "Chaque fonctionnalité disponible ou utilisable suite à un geste basé sur le suivi d’une trajectoire sur l’écran est-elle également disponible ou utilisable suite à un contact en un point unique de l’écran (hors cas particuliers) ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.5.2",
+										"title": "Pointer Cancellation",
+										"level": "A"
+									}
+								]
+							}
 						}
 					}
 				},
@@ -6505,7 +8359,16 @@
 									"number": "13.12.1",
 									"title": "Chaque fonctionnalité activable par la réalisation d’actions simultanées est-elle aussi activable sans actions simultanées (hors cas particuliers) ?"
 								}
-							]
+							],
+							"appendix": {
+								"references": [
+									{
+										"reference": "2.5.4",
+										"title": "Motion Actuation",
+										"level": "A"
+									}
+								]
+							}
 						}
 					}
 				},
