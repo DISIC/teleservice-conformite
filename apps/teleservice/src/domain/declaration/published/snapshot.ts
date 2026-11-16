@@ -80,17 +80,6 @@ type SnapshotDates = {
 	publishedAt?: Date;
 };
 
-export const firstPublishedAtFor = (
-	declaration: Pick<
-		PopulatedDeclaration,
-		"fromSource" | "published_at" | "first_published_at"
-	>,
-	publishedAt: Date,
-): string =>
-	declaration.fromSource === "manual" && !declaration.published_at
-		? publishedAt.toISOString()
-		: (declaration.first_published_at ?? publishedAt.toISOString());
-
 export const extractDeclarationContentToPublish = (
 	declaration: PopulatedDeclaration,
 	dates: SnapshotDates = {},
@@ -115,12 +104,7 @@ export const extractDeclarationContentToPublish = (
 			appKindOptions.find((kind) => kind.value === declaration.app_kind)
 				?.label ?? "",
 		url: declaration?.url ?? "",
-		firstPublishedAt:
-			toIsoDate(
-				dates.publishedAt
-					? firstPublishedAtFor(declaration, dates.publishedAt)
-					: declaration.first_published_at,
-			) ?? publishedAt,
+		firstPublishedAt: toIsoDate(declaration.first_published_at) ?? publishedAt,
 		publishedAt,
 		audit: {
 			isRealised: audit.isRealised === true,

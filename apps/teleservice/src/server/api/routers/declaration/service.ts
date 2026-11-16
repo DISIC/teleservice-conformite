@@ -13,7 +13,6 @@ import {
 } from "~/server/api/utils/section-write";
 import {
 	extractDeclarationContentToPublish,
-	firstPublishedAtFor,
 	parsePublishedDeclaration,
 } from "~/domain/declaration/published/snapshot";
 import { validateDeclaration } from "~/domain/declaration/validate";
@@ -227,7 +226,6 @@ export const createManualDeclaration = async (
 			created_by: userId,
 			status: "unpublished",
 			fromSource: "manual",
-			first_published_at: new Date().toISOString(),
 		},
 	});
 
@@ -338,7 +336,8 @@ export const publishDeclaration = async (
 				extractDeclarationContentToPublish(declaration, { publishedAt }),
 			),
 			published_at: publishedAt.toISOString(),
-			first_published_at: firstPublishedAtFor(declaration, publishedAt),
+			first_published_at:
+				declaration.first_published_at ?? publishedAt.toISOString(),
 		},
 	});
 

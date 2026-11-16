@@ -56,7 +56,7 @@ describe("publishDeclaration", () => {
 	it("dates a manual declaration's initial publication by its first publish", async () => {
 		const declaration = completeDeclaration({
 			fromSource: "manual",
-			first_published_at: "2024-03-24T00:00:00.000Z",
+			first_published_at: null,
 		});
 		const { payload } = seeded(declaration);
 

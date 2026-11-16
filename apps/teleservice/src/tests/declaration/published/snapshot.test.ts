@@ -27,7 +27,7 @@ describe("extractDeclarationContentToPublish", () => {
 		const content = extractDeclarationContentToPublish(
 			completeDeclaration({
 				fromSource: "manual",
-				first_published_at: "2026-11-01T00:00:00.000Z",
+				first_published_at: null,
 			}),
 			{ publishedAt: new Date("2026-11-10T09:00:00.000Z") },
 		);
