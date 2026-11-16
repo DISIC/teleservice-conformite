@@ -12,7 +12,7 @@ import { api } from "~/lib/api";
 import { handleFormSubmit } from "~/components/form/handleFormSubmit";
 import { Actions } from "./Actions";
 
-const ARA_DECLARATION_PREFIX = "https://ara.numerique.gouv.fr/declaration/";
+const ARA_HOST = "ara.numerique.gouv.fr";
 
 const onlineSchema = z.object({
 	url: z.url({ message: "Lien invalide (ex: https://www.example.fr)" }),
@@ -21,14 +21,9 @@ const onlineSchema = z.object({
 const defaultValues: z.infer<typeof onlineSchema> = { url: "" };
 
 function isAraUrl(url: string) {
-	return url.startsWith(ARA_DECLARATION_PREFIX);
+	return url.toLowerCase().includes(ARA_HOST);
 }
 
-/**
- * Import from a declaration already online. An Ara URL is imported from its
- * structured report; any other URL is parsed by a sovereign LLM (Albert) and
- * the extracted data is flagged "to verify".
- */
 export function OnlinePath({
 	onCreated,
 }: {
