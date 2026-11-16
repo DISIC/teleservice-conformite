@@ -21,7 +21,7 @@ const onlineSchema = z.object({
 const defaultValues: z.infer<typeof onlineSchema> = { url: "" };
 
 function isAraUrl(url: string) {
-	return url.toLowerCase().includes(ARA_HOST);
+	return new URL(url).hostname === ARA_HOST;
 }
 
 export function OnlinePath({
