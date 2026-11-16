@@ -34,7 +34,7 @@ const INTRO_ITEMS: Item[] = [
 	{
 		title: "Une déclaration par service numérique et par support",
 		description:
-			"Par exemple, si vous avez un site, une application mobile iOs, une application mobile Android et un intranet, vous devrez déposer 4 déclarations.",
+			"Par exemple, si vous avez un site, une application mobile iOS, une application mobile Android et un intranet, vous devrez déposer 4 déclarations.",
 		icon: "ri-quill-pen-line",
 	},
 	{

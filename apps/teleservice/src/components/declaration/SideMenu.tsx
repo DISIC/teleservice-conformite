@@ -20,10 +20,7 @@ import {
 	type SectionSlug,
 	sectionHref,
 } from "~/domain/declaration/sections";
-import {
-	isAuditIncomplete,
-	isSectionIncomplete,
-} from "~/domain/declaration/validate";
+import { isSectionIncomplete } from "~/domain/declaration/validate";
 
 type SideMenuProps = {
 	declaration: PopulatedDeclaration;
@@ -36,6 +33,13 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	const { classes } = useStyles();
 	const declarationId = declaration.id;
 	const visibleAuditSubSections = SECTION_SLUGS.filter(isAuditSubSection);
+	const incompleteSlugs = new Set(
+		showToComplete
+			? SECTION_SLUGS.filter((slug) =>
+					isSectionIncomplete(declaration, slug, pendingSourceModes),
+				)
+			: [],
+	);
 
 	// Answering the audit question flips the sub-section badges out of sight of
 	// screen reader users; announce the change, never the initial state.
@@ -66,11 +70,7 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 
 	const sectionBadges = (slug: SectionSlug): BadgeVariant[] => {
 		const variants: BadgeVariant[] = [];
-		if (
-			showToComplete &&
-			isSectionIncomplete(declaration, slug, pendingSourceModes)
-		)
-			variants.push("to-complete");
+		if (incompleteSlugs.has(slug)) variants.push("to-complete");
 		if (isSectionToVerify(declaration, slug)) variants.push("to-verify");
 		if (isSectionNotApplicable(declaration, slug))
 			variants.push("not-applicable");
@@ -91,7 +91,7 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 		sectionItem("infos"),
 		{
 			text: renderLabel("Audit", [
-				...(showToComplete && isAuditIncomplete(declaration, pendingSourceModes)
+				...(visibleAuditSubSections.some((slug) => incompleteSlugs.has(slug))
 					? (["to-complete"] as const)
 					: []),
 				...(isAuditToVerify(declaration) ? (["to-verify"] as const) : []),

@@ -1,6 +1,5 @@
 import type { z } from "zod";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { AUDIT_SUB_SECTION_SLUGS } from "./auditSubSections";
 import {
 	isSectionToComplete,
 	SECTION_SLUGS,
@@ -117,15 +116,5 @@ export function isSectionIncomplete(
 	return (
 		isSectionToComplete(declaration, slug) ||
 		validateSection(declaration, slug, pendingSourceModes).length > 0
-	);
-}
-
-/** The Audit parent is À compléter as soon as one of its Sub-sections is. */
-export function isAuditIncomplete(
-	declaration: PopulatedDeclaration,
-	pendingSourceModes: PendingSourceModes = {},
-): boolean {
-	return AUDIT_SUB_SECTION_SLUGS.some((slug) =>
-		isSectionIncomplete(declaration, slug, pendingSourceModes),
 	);
 }

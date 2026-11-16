@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { completeDeclaration } from "./declaration.fixture";
-import { SECTION_SLUGS } from "~/domain/declaration/sections";
 import {
-	isAuditIncomplete,
+	isAuditSubSection,
+	SECTION_SLUGS,
+} from "~/domain/declaration/sections";
+import {
 	isSectionIncomplete,
 	validateDeclaration,
 } from "~/domain/declaration/validate";
@@ -361,7 +363,6 @@ describe("isSectionIncomplete (À compléter badges)", () => {
 	it("flags nothing on a complete declaration", () => {
 		for (const slug of SECTION_SLUGS)
 			expect(isSectionIncomplete(completeDeclaration(), slug)).toBe(false);
-		expect(isAuditIncomplete(completeDeclaration())).toBe(false);
 	});
 
 	it("flags a Section with an empty required field", () => {
@@ -378,12 +379,13 @@ describe("isSectionIncomplete (À compléter badges)", () => {
 		).toBe(true);
 	});
 
-	it("flags the Audit parent when a Sub-section misses a required field", () => {
+	it("flags an Audit Sub-section that misses a required field", () => {
+		const declaration = completeDeclaration({
+			audit: { isRealised: true },
+		} as never);
 		expect(
-			isAuditIncomplete(
-				completeDeclaration({
-					audit: { isRealised: true },
-				} as never),
+			SECTION_SLUGS.filter(isAuditSubSection).some((slug) =>
+				isSectionIncomplete(declaration, slug),
 			),
 		).toBe(true);
 	});
