@@ -1,6 +1,11 @@
 import type { z } from "zod";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { SECTION_SLUGS, SECTIONS, type SectionSlug } from "./sections";
+import {
+	isSectionToComplete,
+	SECTION_SLUGS,
+	SECTIONS,
+	type SectionSlug,
+} from "./sections";
 import {
 	type PendingSourceModes,
 	resolveSourceGate,
@@ -99,5 +104,17 @@ export function validateDeclaration(
 ): DeclarationError[] {
 	return SECTION_SLUGS.flatMap((slug) =>
 		validateSection(declaration, slug, pendingSourceModes),
+	);
+}
+
+/** "À compléter" badge: the Section is missing data or a field the publish gate requires. */
+export function isSectionIncomplete(
+	declaration: PopulatedDeclaration,
+	slug: SectionSlug,
+	pendingSourceModes: PendingSourceModes = {},
+): boolean {
+	return (
+		isSectionToComplete(declaration, slug) ||
+		validateSection(declaration, slug, pendingSourceModes).length > 0
 	);
 }

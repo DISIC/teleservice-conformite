@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import type { JoinQuery, Payload } from "payload";
+import type { JoinQuery, Payload, Where } from "payload";
 import type { Contact, Declaration, Schema } from "~/payload/payload-types";
 import {
 	getPopulatedDeclaration,
@@ -27,9 +27,12 @@ const LIBRARY_COLLECTION = {
 type LibraryCollection<K extends LibrarySectionKind> =
 	(typeof LIBRARY_COLLECTION)[K];
 
-// Payload has no count-only join and reads `limit: 0` as unlimited, so 1 is the cheapest.
 const DECLARATIONS_COUNT = {
-	declarations: { count: true, limit: 1 },
+	declarations: {
+		count: true,
+		limit: 1,
+		where: { deletedAt: { exists: false } } as Where,
+	},
 } satisfies JoinQuery<"contacts"> & JoinQuery<"schemas">;
 
 type LibrarySectionAdapter<K extends LibrarySectionKind> = {

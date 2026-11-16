@@ -24,7 +24,6 @@ export const infosSection = defineSection<ZDeclarationGeneral, InfosFormApi>({
 					declarationId: declaration.id,
 					general: {
 						...value.general,
-						// An empty date keeps the saved one; an impossible date must not reach the server.
 						firstPublishedAt: isValidDate(value.general.firstPublishedAt)
 							? value.general.firstPublishedAt
 							: "",
@@ -33,12 +32,13 @@ export const infosSection = defineSection<ZDeclarationGeneral, InfosFormApi>({
 			isPending,
 		};
 	},
-	// The initial publication date is frozen by the first publish action.
-	renderForm: ({ form, readOnly, mode }) => (
+	renderForm: ({ form, readOnly, mode, declaration }) => (
 		<DeclarationGeneralForm
 			form={form}
 			readOnly={readOnly}
-			showFirstPublishedAt={mode === "sequential"}
+			showFirstPublishedAt={
+				mode === "sequential" && declaration.fromSource !== "manual"
+			}
 		/>
 	),
 });

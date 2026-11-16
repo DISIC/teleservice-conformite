@@ -42,7 +42,21 @@ export async function createManualDeclaration(
 		.getByRole("button", { name: "Déposer une déclaration" })
 		.first()
 		.click();
-	const dialog = page.getByRole("dialog", { name: "Créer une déclaration" });
+
+	const intro = page
+		.getByRole("dialog", { name: "Déposer une déclaration" })
+		.filter({ has: page.getByRole("button", { name: "Commencer" }) });
+
+	await intro.getByRole("button", { name: "Commencer" }).click();
+
+	const dialog = page
+		.getByRole("dialog", { name: "Déposer une déclaration" })
+		.filter({
+			has: page.getByRole("radio", {
+				name: /Je n’ai pas de déclaration d’accessibilité/,
+			}),
+		});
+
 	await expect(dialog).toBeVisible();
 	await onModalOpen?.();
 	await checkRadio(dialog, /Je n’ai pas de déclaration d’accessibilité/);

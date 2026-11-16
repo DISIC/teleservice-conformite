@@ -101,7 +101,7 @@ export const Declarations: CollectionConfig = {
 		{
 			name: "domain",
 			type: "select",
-			label: { fr: "Secteur d'activité du service concerné" },
+			label: { fr: "Secteur d'activité du service" },
 			options: [...kindOptions],
 		},
 		{

@@ -68,4 +68,8 @@ describe("isToCompleteRevealed", () => {
 	it("always reveals it outside the walkthrough", () => {
 		expect(isToCompleteRevealed("standalone", false)).toBe(true);
 	});
+
+	it("reveals it on the first visit of an imported declaration", () => {
+		expect(isToCompleteRevealed("sequential", false, true)).toBe(true);
+	});
 });

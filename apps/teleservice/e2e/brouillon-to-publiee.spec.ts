@@ -39,7 +39,7 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 		.getByLabel("URL de la page d’accueil du site concerné")
 		.fill("https://www.example.fr");
 	await page
-		.getByLabel("Secteur d’activité du service concerné")
+		.getByLabel("Secteur d’activité du service")
 		.selectOption({ label: "Protection sociale" });
 	await waitForSave(page, "declaration.update", "Protection sociale");
 

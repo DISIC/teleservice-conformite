@@ -16,6 +16,7 @@ import { createEmotionSsrAdvancedApproach } from "tss-react/next/pagesDir";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
 import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
+import { useIsAuthenticated } from "~/hooks/useIsAuthenticated";
 import { authClient } from "~/lib/auth-client";
 import { SERVICE_NAME } from "~/lib/serviceName";
 
@@ -37,6 +38,7 @@ const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
 export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
 
 const NAVIGATION = [
+	{ text: "Accueil", href: "/" },
 	{ text: "Mes déclarations", href: "/dashboard/declarations" },
 	{ text: "Mes points de contacts accessibilité", href: "/dashboard/contacts" },
 	{
@@ -64,9 +66,7 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 	};
 	const router = useRouter();
 	const { classes } = useStyles();
-	const { data: authSession, isPending: isPendingAuth } =
-		authClient.useSession();
-	const isAuthenticated = isPendingAuth ? !!hasSessionCookie : !!authSession;
+	const isAuthenticated = useIsAuthenticated(hasSessionCookie);
 
 	const quickAccessItems = useMemo<HeaderProps.QuickAccessItem[]>(() => {
 		if (!isAuthenticated) {
@@ -161,7 +161,7 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 					/>
 				)}
 				<main id="contenu" className={classes.main} style={{ flex: 1 }}>
-					<Component {...pageProps} />
+					<Component {...pageProps} hasSessionCookie={hasSessionCookie} />
 				</main>
 				<Footer
 					id="footer"

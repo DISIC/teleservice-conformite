@@ -20,7 +20,7 @@ const generalFields = z.object({
 	name: z.string(),
 	url: z.string(),
 	domain: z.string().meta({ kind: "select" }),
-	firstPublishedAt: optionalDateField,
+	firstPublishedAt: optionalDateField.optional(),
 });
 
 export const declarationGeneral = z.object({ general: generalFields });
@@ -55,18 +55,20 @@ export const declarationGeneralRefined = declarationGeneral.superRefine(
 			"Le secteur d’activité est requis",
 		);
 		optionalUrlIssue(ctx, ["general", "url"], g.url);
-		requiredIssue(
-			ctx,
-			["general", "firstPublishedAt"],
-			g.firstPublishedAt,
-			"La date de publication initiale est requise",
-		);
-		notFutureDateIssue(
-			ctx,
-			["general", "firstPublishedAt"],
-			g.firstPublishedAt,
-			"La date de publication initiale ne peut pas être postérieure à la date du jour",
-		);
+		if (g.firstPublishedAt !== undefined) {
+			requiredIssue(
+				ctx,
+				["general", "firstPublishedAt"],
+				g.firstPublishedAt,
+				"La date de publication initiale est requise",
+			);
+			notFutureDateIssue(
+				ctx,
+				["general", "firstPublishedAt"],
+				g.firstPublishedAt,
+				"La date de publication initiale ne peut pas être postérieure à la date du jour",
+			);
+		}
 		if (g.kind === "mobile_app" && !g.mobilePlatform)
 			ctx.addIssue({
 				code: "custom",
@@ -106,9 +108,13 @@ export function declarationToGeneralValues(
 			name: declaration.name ?? "",
 			url: declaration.url ?? "",
 			domain: declaration.domain ?? "",
-			firstPublishedAt: declaration.first_published_at
-				? declaration.first_published_at.slice(0, 10)
-				: "",
+			// A manual declaration was never published elsewhere: its first publish dates it.
+			firstPublishedAt:
+				declaration.fromSource === "manual"
+					? undefined
+					: declaration.first_published_at
+						? declaration.first_published_at.slice(0, 10)
+						: "",
 		},
 	};
 }

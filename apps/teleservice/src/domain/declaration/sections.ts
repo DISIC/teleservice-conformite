@@ -83,10 +83,10 @@ export const SECTIONS: Record<SectionSlug, SectionMeta> = {
 				"general.firstPublishedAt":
 					"Date de publication initiale de la déclaration",
 				"general.name": "Nom du service numérique concerné",
+				"general.domain": "Secteur d’activité du service",
 				"general.kind": "Type de service",
 				"general.mobilePlatform": "Plateforme mobile",
 				"general.url": "URL de la page d’accueil du site concerné",
-				"general.domain": "Secteur d’activité du service concerné",
 			},
 		},
 	},
@@ -202,13 +202,6 @@ export function isSectionToVerify(
 	slug: SectionSlug,
 ): boolean {
 	return SECTIONS[slug].isToVerify(declaration);
-}
-
-/** The Audit parent is À compléter as soon as one of its Sub-sections is. */
-export function isAuditToComplete(declaration: PopulatedDeclaration): boolean {
-	return AUDIT_SUB_SECTION_SLUGS.some((slug) =>
-		SECTIONS[slug].isToComplete(declaration),
-	);
 }
 
 export function isAuditToVerify(declaration: PopulatedDeclaration): boolean {
