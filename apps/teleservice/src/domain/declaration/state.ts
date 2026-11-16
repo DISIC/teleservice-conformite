@@ -16,11 +16,6 @@ export type DeclarationState =
 	| "published-incomplete"
 	| "published-modified";
 
-/**
- * Whether unfilled data is flagged "À compléter". The first pass only exists in
- * the walkthrough: outside it, missing data is a regression to repair. An
- * imported declaration is reviewed, not filled, so what the import missed shows at once.
- */
 export function isToCompleteRevealed(
 	mode: EditingMode,
 	hasVisitedBefore: boolean,
