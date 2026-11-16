@@ -3,6 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import { tss } from "tss-react";
+import { toPlainText } from "./helpers/markdown";
 
 export type TileGridItem = {
 	title: string;
@@ -29,7 +30,7 @@ export default function TileGrid({ tiles }: TileGridProps) {
 					title={title}
 					titleAs="h2"
 					className={cx("fr-h6", classes.tile)}
-					desc={description}
+					desc={description && toPlainText(description)}
 				/>
 			))}
 		</div>

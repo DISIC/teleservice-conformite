@@ -6,6 +6,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Image, { type StaticImageData } from "next/image";
 import type { ReactNode } from "react";
 import { tss } from "tss-react";
+import { renderMarkdownInline } from "./helpers/markdown";
 import Pictogram, { type PictogramId } from "./Pictogram";
 import type { ReferentielInfos, ReferentielStyle } from "./referentiels";
 import ellipse from "../../assets/ellipse.svg";
@@ -82,7 +83,11 @@ export default function PageHero(props: PageHeroProps) {
 					<div className={classes.heroText}>
 						<h1 className={classes.title}>{title}</h1>
 						{description && (
-							<p className={classes.description}>{description}</p>
+							<p className={classes.description}>
+								{typeof description === "string"
+									? renderMarkdownInline(description)
+									: description}
+							</p>
 						)}
 						{linkButtons && linkButtons.length > 0 && (
 							<ul className={classes.referentielTags}>

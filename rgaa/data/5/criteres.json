@@ -12,17 +12,17 @@
 		{
 			"id": "web",
 			"title": "Référentiel web",
-			"description": "Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+			"description": "142 critères pour évaluer les services numériques utilisables à l'aide d'un navigateur web : site internet, intranet et extranet."
 		},
 		{
 			"id": "mobile",
 			"title": "Référentiel application mobile",
-			"description": "Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+			"description": "115 critères pour évaluer les applications mobiles natives disponibles sur les différents stores."
 		},
 		{
 			"id": "bureautique",
 			"title": "Référentiel bureautique",
-			"description": "Domaine d’application du référentiel Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+			"description": "38 critères pour évaluer les documents bureautiques : traitement de texte, document pdf, etc."
 		}
 	],
 	"topics": [

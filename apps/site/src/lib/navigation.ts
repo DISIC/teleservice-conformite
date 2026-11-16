@@ -14,7 +14,8 @@ export const METHODE_LINKS: NavLink[] = [
 	{
 		text: "Introduction",
 		href: "/methode/introduction",
-		description: PLACEHOLDER_DESCRIPTION,
+		description:
+			"Le RGAA 5 permet de vérifier qu'un site web, une application mobile ou un document bureautique est conforme aux critères de succès de la [norme européenne de référence EN 301 549 v4.1.1](https://www.etsi.org/deliver/etsi_en/301500_301599/301549/04.01.01_60/en_301549v040101p.pdf) et de la norme internationale WCAG 2.2 pour établir le niveau d’exigence légale en matière d’accessibilité numérique.",
 	},
 	...getAllReferentiels().map(({ id, title, description }) => ({
 		text: title,
