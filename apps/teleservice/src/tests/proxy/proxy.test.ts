@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { describe, expect, it } from "vitest";
 import { proxy } from "~/proxy";
+import { computePublishedDeclarationSlug } from "~/server/api/utils/published-declaration-slug";
 
 const signedIn = { cookie: "better-auth.session_token=abc.def" };
 const signedInSecure = { cookie: "__Secure-better-auth.session_token=abc.def" };
@@ -22,11 +23,11 @@ describe("proxy", () => {
 	});
 
 	it("sends a session cookie holder from other public pages to the dashboard", () => {
-		expect(run("/declarations/12", signedIn)).toEqual({
+		expect(run("/unknown-page", signedIn)).toEqual({
 			status: 307,
 			location: "https://app.test/dashboard",
 		});
-		expect(run("/declarations/12", signedInSecure).location).toBe(
+		expect(run("/unknown-page", signedInSecure).location).toBe(
 			"https://app.test/dashboard",
 		);
 	});
@@ -47,7 +48,7 @@ describe("proxy", () => {
 		for (const path of [
 			"/admin/collections",
 			"/api/trpc/x",
-			"/declarations/3f2a9c1e7b4d8a60",
+			`/declarations/${computePublishedDeclarationSlug("Mon service", 12)}`,
 			"/declarations/12/publish",
 			"/accept-invite",
 		]) {
