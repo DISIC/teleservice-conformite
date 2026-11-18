@@ -9,9 +9,13 @@ import {
 	type Obsolescence,
 	obsoleteSince,
 } from "~/domain/declaration/obsolescence";
+import { publicDeclarationPath } from "~/domain/declaration/published/publicPath";
 
 type ObsolescenceInterstitialProps = {
-	declaration: Pick<Declaration, "id" | "name" | "published_at">;
+	declaration: Pick<
+		Declaration,
+		"id" | "name" | "published_at" | "published_declaration_slug"
+	>;
 	obsolescence: Exclude<Obsolescence, "valid">;
 	/** Reveals the details page for this visit; nothing is persisted. */
 	onUpdate: () => void;
@@ -87,7 +91,7 @@ export function ObsolescenceInterstitial({
 				{ timeZone: "UTC" },
 			)
 		: null;
-	const publicUrl = `/declarations/${declaration.id}/publish`;
+	const publicUrl = publicDeclarationPath(declaration);
 	const copy = COPY[obsolescence];
 
 	return (
