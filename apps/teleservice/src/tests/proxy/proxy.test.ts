@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 import { describe, expect, it } from "vitest";
 import { proxy } from "~/proxy";
-import { computePublishedDeclarationSlug } from "~/server/api/utils/published-declaration-slug";
 
 const signedIn = { cookie: "better-auth.session_token=abc.def" };
 const signedInSecure = { cookie: "__Secure-better-auth.session_token=abc.def" };
@@ -48,7 +47,7 @@ describe("proxy", () => {
 		for (const path of [
 			"/admin/collections",
 			"/api/trpc/x",
-			`/declarations/${computePublishedDeclarationSlug("Mon service", 12)}`,
+			"/declarations/dee3073f57442733",
 			"/declarations/12/publish",
 			"/accept-invite",
 		]) {
