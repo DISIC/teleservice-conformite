@@ -1,4 +1,4 @@
-import { test as base } from "@playwright/test";
+import { test as base, expect } from "@playwright/test";
 import type { Payload } from "payload";
 import { expectAccessible } from "./a11y";
 import {
@@ -24,6 +24,13 @@ type Fixtures = {
 type WorkerFixtures = { payload: Payload };
 
 export const test = base.extend<Fixtures, WorkerFixtures>({
+	// An uncaught browser error can leave the page unusable while every locator still resolves.
+	page: async ({ page }, use) => {
+		const errors: Error[] = [];
+		page.on("pageerror", (error) => errors.push(error));
+		await use(page);
+		expect(errors, "uncaught errors in the page").toEqual([]);
+	},
 	payload: [
 		// Playwright requires the destructuring pattern even when a fixture depends on nothing.
 		// oxlint-disable-next-line no-empty-pattern
