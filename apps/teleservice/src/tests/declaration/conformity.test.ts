@@ -12,11 +12,11 @@ describe("getConformityStatus", () => {
 		});
 	});
 
-	it("is partiellement conforme from 50 to 99 %, shown as info", () => {
-		expect(getConformityStatus(50).severity).toBe("info");
+	it("is partiellement conforme from 50 to 99 %, shown as new", () => {
+		expect(getConformityStatus(50).severity).toBe("new");
 		expect(getConformityStatus(99)).toEqual({
 			label: "Partiellement conforme",
-			severity: "info",
+			severity: "new",
 		});
 	});
 

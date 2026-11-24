@@ -1,4 +1,6 @@
-export type ConformitySeverity = "success" | "info" | "warning" | "error";
+import type { BadgeProps } from "@codegouvfr/react-dsfr/Badge";
+
+export type ConformitySeverity = NonNullable<BadgeProps["severity"]>;
 
 type ConformityStatus = { label: string; severity: ConformitySeverity };
 
@@ -13,7 +15,7 @@ export const getConformityStatus = (rate: number): ConformityStatus => {
 		return NON_CONFORME;
 	}
 	if (rate >= 50 && rate <= 99) {
-		return { label: "Partiellement conforme", severity: "info" };
+		return { label: "Partiellement conforme", severity: "new" };
 	}
 
 	return { label: "Conforme", severity: "success" };

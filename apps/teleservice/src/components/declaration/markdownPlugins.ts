@@ -10,6 +10,7 @@ const BADGE_CLASSES = [
 	"fr-badge--info",
 	"fr-badge--warning",
 	"fr-badge--error",
+	"fr-badge--new",
 	"fr-badge--sm",
 	"fr-badge--no-icon",
 ];

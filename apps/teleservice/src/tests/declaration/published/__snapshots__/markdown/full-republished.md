@@ -12,7 +12,7 @@ Cette déclaration d’accessibilité s’applique au **site web [Impôts partic
 
 ## État de conformité
 
-<p class="fr-badge fr-badge--info fr-badge--sm fr-badge--no-icon">Partiellement conforme</p>
+<p class="fr-badge fr-badge--new fr-badge--sm fr-badge--no-icon">Partiellement conforme</p>
 
 Le site **Impôts particulier (SIP)** est **partiellement conforme** avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 5.
 

@@ -138,7 +138,7 @@ describe("buildPublishedMarkdown", () => {
 			expect(
 				buildPublishedMarkdown(publishedDeclaration(), { today: TODAY }),
 			).toContain(
-				'<p class="fr-badge fr-badge--info fr-badge--sm fr-badge--no-icon">Partiellement conforme</p>',
+				'<p class="fr-badge fr-badge--new fr-badge--sm fr-badge--no-icon">Partiellement conforme</p>',
 			);
 			expect(
 				buildPublishedMarkdown(
