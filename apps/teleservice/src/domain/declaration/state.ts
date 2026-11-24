@@ -13,8 +13,8 @@ export type DeclarationState =
 	| "incomplete"
 	| "to-verify"
 	| "ready"
-	| "published-incomplete"
-	| "published-modified";
+	| "deposited-incomplete"
+	| "deposited-modified";
 
 export function isToCompleteRevealed(
 	mode: EditingMode,
@@ -25,7 +25,7 @@ export function isToCompleteRevealed(
 }
 
 /** Actions a notice may expose, in render order. Handlers are wired by the component. */
-export type StateAction = "revert" | "publish";
+export type StateAction = "revert" | "deposit";
 
 /** Badge variants surfaced on SideMenu items and Section titles. `modified` is not rendered yet. */
 export type BadgeVariant =
@@ -60,7 +60,7 @@ function hasUnverifiedImportedContent(
 }
 
 // Lifecycle first, then completeness and import verification split the editable
-// branches; a published declaration can turn incomplete when a Section is removed.
+// branches; a deposited declaration can turn incomplete when a Section is removed.
 export function getDeclarationState(
 	declaration: PopulatedDeclaration,
 ): DeclarationState | null {
@@ -69,11 +69,11 @@ export function getDeclarationState(
 		if (validateDeclaration(declaration).length > 0) return "incomplete";
 		return "ready";
 	}
-	// Editing a Publiée row flips its column back to "unpublished" until republished.
-	if (declaration.status === "published") return null;
+	// Editing a Déposée row flips its column back to "undeposited" until redeposited.
+	if (declaration.status === "deposited") return null;
 	if (validateDeclaration(declaration).length > 0)
-		return "published-incomplete";
-	return "published-modified";
+		return "deposited-incomplete";
+	return "deposited-modified";
 }
 
 /**
@@ -93,14 +93,14 @@ export const STATE_PRESENTATION: Record<DeclarationState, StatePresentation> = {
 			bgColor: fr.colors.decisions.background.contrast.purpleGlycine.default,
 		},
 		heading: "Votre déclaration est incomplète.",
-		body: 'Certaines informations sont nécessaires pour pouvoir publier la déclaration. Veuillez renseigner les champs marqués "À compléter".',
-		actions: ["publish"],
+		body: 'Certaines informations sont nécessaires pour pouvoir déposer la déclaration. Veuillez renseigner les champs marqués "À compléter".',
+		actions: ["deposit"],
 	},
 	ready: {
 		bgColor: fr.colors.decisions.background.alt.greenEmeraude.default,
-		heading: "Votre déclaration est prête à être publiée.",
-		body: "Vous pouvez prévisualiser et publier pour la mettre en ligne.",
-		actions: ["publish"],
+		heading: "Votre déclaration est prête à être déposée sur le téléservice.",
+		body: "Vous pouvez prévisualiser et déposer pour la mettre en ligne.",
+		actions: ["deposit"],
 	},
 	"to-verify": {
 		bgColor: fr.colors.decisions.background.alt.yellowTournesol.default,
@@ -110,21 +110,21 @@ export const STATE_PRESENTATION: Record<DeclarationState, StatePresentation> = {
 			bgColor: fr.colors.decisions.background.contrast.yellowTournesol.default,
 		},
 		heading: "Votre déclaration a été pré-remplie automatiquement.",
-		body: "Nous vous invitons à vérifier l'ensemble des informations renseignées ci-dessous avant de publier.",
-		actions: ["publish"],
+		body: "Nous vous invitons à vérifier l'ensemble des informations renseignées ci-dessous avant de déposer.",
+		actions: ["deposit"],
 	},
-	"published-incomplete": {
+	"deposited-incomplete": {
 		bgColor: fr.colors.decisions.background.alt.purpleGlycine.default,
 		badge: {
 			label: "À compléter",
 			color: fr.colors.decisions.text.label.purpleGlycine.default,
 			bgColor: fr.colors.decisions.background.contrast.purpleGlycine.default,
 		},
-		heading: "Votre déclaration est publiée mais incomplète.",
-		body: 'Une information nécessaire à la publication a été retirée. Veuillez renseigner les champs marqués "À compléter" pour pouvoir republier, ou revenir à la dernière version publiée.',
+		heading: "Votre déclaration est déposée mais incomplète.",
+		body: 'Une information nécessaire au dépôt a été retirée. Veuillez renseigner les champs marqués "À compléter" pour pouvoir déposer à nouveau, ou revenir à la dernière version déposée.',
 		actions: ["revert"],
 	},
-	"published-modified": {
+	"deposited-modified": {
 		bgColor: fr.colors.decisions.background.alt.orangeTerreBattue.default,
 		badge: {
 			label: "Modifié",
@@ -132,9 +132,9 @@ export const STATE_PRESENTATION: Record<DeclarationState, StatePresentation> = {
 			bgColor:
 				fr.colors.decisions.background.contrast.orangeTerreBattue.default,
 		},
-		heading: "Votre déclaration est publiée mais a été modifiée.",
-		body: "Des modifications ont été réalisées depuis la dernière publication. Vous pouvez prévisualiser et publier pour mettre à jour.",
-		actions: ["revert", "publish"],
+		heading: "Votre déclaration est déposée mais a été modifiée.",
+		body: "Des modifications ont été réalisées depuis le dernier dépôt. Vous pouvez prévisualiser et déposer pour mettre à jour.",
+		actions: ["revert", "deposit"],
 	},
 };
 
@@ -145,7 +145,7 @@ export const SECTION_BADGE: Record<
 > = {
 	"to-complete": STATE_PRESENTATION.incomplete.badge!,
 	"to-verify": STATE_PRESENTATION["to-verify"].badge!,
-	modified: STATE_PRESENTATION["published-modified"].badge!,
+	modified: STATE_PRESENTATION["deposited-modified"].badge!,
 	"not-applicable": {
 		label: "Non applicable",
 		color: fr.colors.decisions.text.label.grey.default,

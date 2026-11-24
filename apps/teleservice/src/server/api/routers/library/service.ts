@@ -136,7 +136,7 @@ async function propagateToLinkedDeclarations<K extends LibrarySectionKind>(
 }
 
 /** The declarant's deliberate "no schema" choice clears content and Library
- *  link. Schema-only; a Contact is always required to publish. */
+ *  link. Schema-only; a Contact is always required to deposit. */
 export function skipSchema(
 	payload: Payload,
 	declaration: PopulatedDeclaration,
@@ -252,7 +252,7 @@ export async function linkParent<K extends LibrarySectionKind>(
 	);
 }
 
-/** Pre-check for the edit/delete warning modals — published declarations flip
+/** Pre-check for the edit/delete warning modals — deposited declarations flip
  *  to Modifiée on a parent edit, so the modal lists them first. */
 export async function getLinkedDeclarations(
 	payload: Payload,
@@ -267,6 +267,6 @@ export async function getLinkedDeclarations(
 	return linked.docs.map((declaration) => ({
 		id: declaration.id,
 		name: declaration.name ?? "",
-		isPublished: Boolean(declaration.publishedContent),
+		isDeposited: Boolean(declaration.depositedContent),
 	}));
 }

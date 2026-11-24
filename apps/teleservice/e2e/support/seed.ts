@@ -1,11 +1,11 @@
 import { getPayload, type Payload } from "payload";
 import { OBSOLESCENCE_YEARS } from "~/domain/declaration/obsolescence";
-import { extractDeclarationContentToPublish } from "~/domain/declaration/published/snapshot";
+import { extractDeclarationContentToDeposit } from "~/domain/declaration/deposited/snapshot";
 import { declarationToGeneralValues } from "~/forms/declaration/declarationSchema";
 import config from "~/payload/payload.config";
 import {
 	createManualDeclaration,
-	publishDeclaration,
+	depositDeclaration,
 	updateDeclaration,
 } from "~/server/api/routers/declaration/service";
 import { skipSchema } from "~/server/api/routers/library/service";
@@ -25,9 +25,9 @@ export const SEED_STATES = [
 	"brouillon-incomplete",
 	"brouillon-ready",
 	"to-verify",
-	"publiee",
+	"deposee",
 	"modifiee",
-	"published-incomplete",
+	"deposited-incomplete",
 	"bientot-obsolete",
 	"obsolete",
 ] as const;
@@ -64,7 +64,7 @@ const monthsAgo = (months: number): Date => {
 	return date;
 };
 
-/** Mirrors `completeDeclaration()` in the unit fixtures: the smallest row that passes the publish gate. */
+/** Mirrors `completeDeclaration()` in the unit fixtures: the smallest row that passes the deposit gate. */
 async function complete(
 	payload: Payload,
 	declaration: PopulatedDeclaration,
@@ -81,20 +81,20 @@ async function complete(
 	return saveSection(payload, next, "contact", CONTACT);
 }
 
-/** Rewrites the publish action as if it had happened on `publishedAt`, column and snapshot alike. */
-async function publishedOn(
+/** Rewrites the deposit action as if it had happened on `depositedAt`, column and snapshot alike. */
+async function depositedOn(
 	payload: Payload,
 	declaration: PopulatedDeclaration,
-	publishedAt: Date,
+	depositedAt: Date,
 ): Promise<PopulatedDeclaration> {
 	const updated = await payload.update({
 		collection: "declarations",
 		id: declaration.id,
 		data: {
-			published_at: publishedAt.toISOString(),
-			first_published_at: publishedAt.toISOString(),
-			publishedContent: JSON.stringify(
-				extractDeclarationContentToPublish(declaration, { publishedAt }),
+			deposited_at: depositedAt.toISOString(),
+			first_published_at: depositedAt.toISOString(),
+			depositedContent: JSON.stringify(
+				extractDeclarationContentToDeposit(declaration, { depositedAt }),
 			),
 		},
 	});
@@ -162,31 +162,31 @@ async function advance(
 				contact: { ...ready.contact, toVerify: true },
 			});
 	}
-	const published = await publishDeclaration(payload, ready);
+	const deposited = await depositDeclaration(payload, ready);
 	switch (state) {
-		case "publiee":
-			return published;
+		case "deposee":
+			return deposited;
 		// Only public fields drift the snapshot: the contact name alone would leave the row clean.
 		case "modifiee":
-			return saveSection(payload, published, "contact", {
+			return saveSection(payload, deposited, "contact", {
 				...CONTACT,
 				email: "autre-referent@example.fr",
 			});
-		case "published-incomplete":
-			return saveSection(payload, published, "contact", {
+		case "deposited-incomplete":
+			return saveSection(payload, deposited, "contact", {
 				name: "",
 				email: "",
 			});
 		case "bientot-obsolete":
-			return publishedOn(
+			return depositedOn(
 				payload,
-				published,
+				deposited,
 				monthsAgo(OBSOLESCENCE_YEARS * 12 - 1),
 			);
 		case "obsolete":
-			return publishedOn(
+			return depositedOn(
 				payload,
-				published,
+				deposited,
 				monthsAgo(OBSOLESCENCE_YEARS * 12 + 1),
 			);
 	}

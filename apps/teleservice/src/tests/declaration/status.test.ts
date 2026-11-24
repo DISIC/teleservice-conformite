@@ -2,74 +2,102 @@ import { describe, expect, it } from "vitest";
 import {
 	getDeclarationStatus,
 	getEditingMode,
-	hasContentChangedSincePublish,
+	hasContentChangedSinceDeposit,
 	statusAfterEdit,
 } from "~/domain/declaration/status";
 import {
 	completeDeclaration,
-	publishedDeclaration,
+	depositedDeclaration,
 } from "./declaration.fixture";
 
 describe("getDeclarationStatus", () => {
 	it("is draft with no snapshot", () => {
-		expect(getDeclarationStatus({ publishedContent: null })).toBe("draft");
+		expect(getDeclarationStatus({ depositedContent: null })).toBe("draft");
 	});
 
 	it("treats an empty snapshot like no snapshot", () => {
-		expect(getDeclarationStatus({ publishedContent: "" })).toBe("draft");
+		expect(getDeclarationStatus({ depositedContent: "" })).toBe("draft");
 	});
 
-	it("is published once a snapshot exists", () => {
-		expect(getDeclarationStatus({ publishedContent: "{}" })).toBe("published");
+	it("is deposited once a snapshot exists", () => {
+		expect(getDeclarationStatus({ depositedContent: "{}" })).toBe("deposited");
 	});
 
-	it("stays published while modified since the last publish", () => {
+	it("is published once the link to the public page is verified", () => {
+		expect(
+			getDeclarationStatus({
+				depositedContent: "{}",
+				link_verified_at: "2026-11-24T00:00:00.000Z",
+			}),
+		).toBe("published");
+	});
+
+	it("is never published without a snapshot, whatever the verification date", () => {
+		expect(
+			getDeclarationStatus({
+				depositedContent: null,
+				link_verified_at: "2026-11-24T00:00:00.000Z",
+			}),
+		).toBe("draft");
+	});
+
+	it("stays published while modified since the last deposit", () => {
 		const modified = {
-			...publishedDeclaration(),
-			status: "unpublished" as const,
+			...depositedDeclaration(),
+			link_verified_at: "2026-11-24T00:00:00.000Z",
+			status: "undeposited" as const,
 		};
 		expect(getDeclarationStatus(modified)).toBe("published");
+	});
+
+	it("stays deposited while modified since the last deposit", () => {
+		const modified = {
+			...depositedDeclaration(),
+			status: "undeposited" as const,
+		};
+		expect(getDeclarationStatus(modified)).toBe("deposited");
 	});
 });
 
 describe("getEditingMode", () => {
-	it("is sequential only for a never-published draft", () => {
+	it("is sequential only for a never-deposited draft", () => {
 		expect(getEditingMode("draft")).toBe("sequential");
+		expect(getEditingMode("deposited")).toBe("standalone");
 		expect(getEditingMode("published")).toBe("standalone");
 	});
 });
 
-describe("hasContentChangedSincePublish", () => {
+describe("hasContentChangedSinceDeposit", () => {
 	it("is false for a draft — nothing to differ from", () => {
-		expect(hasContentChangedSincePublish(completeDeclaration())).toBe(false);
+		expect(hasContentChangedSinceDeposit(completeDeclaration())).toBe(false);
 	});
 
-	it("is false right after publishing", () => {
-		expect(hasContentChangedSincePublish(publishedDeclaration())).toBe(false);
+	it("is false right after depositing", () => {
+		expect(hasContentChangedSinceDeposit(depositedDeclaration())).toBe(false);
 	});
 
-	it("detects an edit to published content", () => {
-		const declaration = publishedDeclaration();
+	it("detects an edit to deposited content", () => {
+		const declaration = depositedDeclaration();
 		expect(
-			hasContentChangedSincePublish({
+			hasContentChangedSinceDeposit({
 				...declaration,
 				contact: { ...declaration.contact, email: "autre@example.fr" },
 			} as never),
 		).toBe(true);
 	});
 
-	it("flags an unreadable snapshot so it gets republished", () => {
+	it("flags an unreadable snapshot so it gets redeposited", () => {
 		expect(
-			hasContentChangedSincePublish(
-				completeDeclaration({ publishedContent: '{"name":"legacy"}' }),
+			hasContentChangedSinceDeposit(
+				completeDeclaration({ depositedContent: '{"name":"legacy"}' }),
 			),
 		).toBe(true);
 	});
 
 	it("ignores edits to fields outside the public snapshot", () => {
-		const declaration = publishedDeclaration();
+		const declaration = depositedDeclaration();
 		expect(
-			hasContentChangedSincePublish({
+			hasContentChangedSinceDeposit({
 				...declaration,
 				contact: { ...declaration.contact, name: "Autre référent" },
 			} as never),
@@ -79,22 +107,22 @@ describe("hasContentChangedSincePublish", () => {
 
 describe("statusAfterEdit", () => {
 	it("keeps a draft's column — there is no snapshot to drift from", () => {
-		expect(statusAfterEdit(completeDeclaration())).toBe("unpublished");
+		expect(statusAfterEdit(completeDeclaration())).toBe("undeposited");
 	});
 
-	it("turns Publiée into Modifiée when public content drifts", () => {
-		const declaration = publishedDeclaration();
+	it("turns Déposée into Modifiée when public content drifts", () => {
+		const declaration = depositedDeclaration();
 		expect(
 			statusAfterEdit({
 				...declaration,
 				contact: { ...declaration.contact, email: "autre@example.fr" },
 			}),
-		).toBe("unpublished");
+		).toBe("undeposited");
 	});
 
-	it("turns Modifiée back into Publiée when the row matches its snapshot again", () => {
+	it("turns Modifiée back into Déposée when the row matches its snapshot again", () => {
 		expect(
-			statusAfterEdit({ ...publishedDeclaration(), status: "unpublished" }),
-		).toBe("published");
+			statusAfterEdit({ ...depositedDeclaration(), status: "undeposited" }),
+		).toBe("deposited");
 	});
 });

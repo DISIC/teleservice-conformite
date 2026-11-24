@@ -37,7 +37,7 @@ export const schemaForm = schemaFields.superRefine((data, ctx) => {
 
 /** Lenient autosave input: the schema field set with no required/format rules,
  *  so sequential autosave persists partial, in-progress values. Completeness is
- *  re-checked by `schemaForm` at the publish gate. */
+ *  re-checked by `schemaForm` at the deposit gate. */
 export const schemaDraft = schemaFields.partial();
 
 export type ZSchema = z.infer<typeof schemaForm>;
@@ -54,7 +54,7 @@ export const schemaFormOptions = submitFormOptions(
 );
 
 /** Maps a persisted declaration to this form's values. Keep in sync with the
- *  schema above so the publish gate validates the exact shape the form feeds. */
+ *  schema above so the deposit gate validates the exact shape the form feeds. */
 export function declarationToSchemaValues(
 	declaration: PopulatedDeclaration,
 ): ZSchema {

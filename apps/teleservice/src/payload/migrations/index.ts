@@ -10,6 +10,8 @@ import * as migration_20260921_142918_blocking_elements from './20260921_142918_
 import * as migration_20260922_151414_declaration_domain from './20260922_151414_declaration_domain';
 import * as migration_20261016_101921_relax_action_plan_rows from './20261016_101921_relax_action_plan_rows';
 import * as migration_20261116_100000_clear_manual_draft_first_published_at from './20261116_100000_clear_manual_draft_first_published_at';
+import * as migration_20261124_105049_deposited_vocabulary from './20261124_105049_deposited_vocabulary';
+import * as migration_20261124_105644_link_verified_at from './20261124_105644_link_verified_at';
 
 export const migrations = [
   {
@@ -65,11 +67,21 @@ export const migrations = [
   {
     up: migration_20261016_101921_relax_action_plan_rows.up,
     down: migration_20261016_101921_relax_action_plan_rows.down,
-    name: '20261016_101921_relax_action_plan_rows'
+    name: '20261016_101921_relax_action_plan_rows',
   },
   {
     up: migration_20261116_100000_clear_manual_draft_first_published_at.up,
     down: migration_20261116_100000_clear_manual_draft_first_published_at.down,
     name: '20261116_100000_clear_manual_draft_first_published_at',
+  },
+  {
+    up: migration_20261124_105049_deposited_vocabulary.up,
+    down: migration_20261124_105049_deposited_vocabulary.down,
+    name: '20261124_105049_deposited_vocabulary',
+  },
+  {
+    up: migration_20261124_105644_link_verified_at.up,
+    down: migration_20261124_105644_link_verified_at.down,
+    name: '20261124_105644_link_verified_at'
   },
 ];

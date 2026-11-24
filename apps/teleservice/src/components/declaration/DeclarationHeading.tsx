@@ -37,7 +37,7 @@ export function DeclarationHeading({
 	} | null>(null);
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 
-	const isPublished = getDeclarationStatus(declaration) === "published";
+	const isDeposited = getDeclarationStatus(declaration) !== "draft";
 	const publicHref = `/declarations/${declaration.id}/publish`;
 
 	const { mutate: deleteDeclaration } = api.declaration.delete.useMutation({
@@ -82,9 +82,9 @@ export function DeclarationHeading({
 							d'accessibilité accessible aux usagers.
 						</p>
 						<p>
-							Si votre déclaration arrive en fin de validité, vous pouvez la
-							mettre à jour depuis l'onglet « Déclaration » de votre
-							déclaration.
+							Si votre déclaration arrive en fin de validité, vous devez
+							actualiser votre déclaration et la déposer à nouveau sur le
+							téléservice.
 						</p>
 					</div>
 				</div>
@@ -106,7 +106,7 @@ export function DeclarationHeading({
 				badge={<StatusBadge declaration={declaration} />}
 				actions={
 					<>
-						{isPublished && (
+						{isDeposited && (
 							<>
 								<Button
 									priority="tertiary"
@@ -126,7 +126,7 @@ export function DeclarationHeading({
 									size="small"
 									nativeButtonProps={{
 										"aria-label":
-											"Copier le lien web de la déclaration publiée",
+											"Copier le lien web de la déclaration déposée",
 									}}
 									onClick={() =>
 										copyToClipboard(
@@ -135,7 +135,7 @@ export function DeclarationHeading({
 												setNotice({
 													severity: "success",
 													description:
-														"Lien de la déclaration publiée copié dans le presse-papier",
+														"Lien de la déclaration déposée copié dans le presse-papier",
 												}),
 										)
 									}

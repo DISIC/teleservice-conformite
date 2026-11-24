@@ -22,7 +22,8 @@ concurrency:
 jobs:
   e2e:
     name: Playwright
-    runs-on: ubuntu-latest
+    # Playwright's WebKit build needs Ubuntu 24.04 system libraries; move with a Playwright upgrade.
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     # Forks receive no secrets, so the ProConnect login cannot run on their pull requests.
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
@@ -50,7 +51,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+          key: playwright-ubuntu-24.04-${{ steps.playwright.outputs.version }}
       - run: pnpm --filter teleservice exec playwright install --with-deps chromium firefox webkit
       - run: pnpm --filter teleservice payload generate:types
       - run: pnpm --filter teleservice build

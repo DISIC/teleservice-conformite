@@ -6,7 +6,7 @@ import {
 	toolOptions,
 } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
-import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
+import { NO_AUDIT } from "~/domain/declaration/deposited/noAudit";
 import {
 	reportsBlockingElements,
 	requiresUsedTools,
@@ -22,7 +22,7 @@ const rgaaVersionLabels = rgaaVersionOptions.map((option) => option.label);
 
 /** The public snapshot's contract. Parsed, never cast: a snapshot that fails
  *  it is treated as absent rather than rendered half-filled. */
-export const publishedDeclarationSchema = z.object({
+export const depositedDeclarationSchema = z.object({
 	name: z.string(),
 	entityName: z.string(),
 	schema: z.object({
@@ -34,7 +34,7 @@ export const publishedDeclarationSchema = z.object({
 	url: z.string(),
 	// ISO calendar dates (YYYY-MM-DD): what the public reads, timezone-free.
 	firstPublishedAt: z.iso.date(),
-	publishedAt: z.iso.date(),
+	depositedAt: z.iso.date(),
 	audit: z.object({
 		isRealised: z.boolean(),
 		rgaa_version: z.enum(rgaaVersionLabels),
@@ -56,14 +56,14 @@ export const publishedDeclarationSchema = z.object({
 	}),
 });
 
-export type PublishedDeclaration = z.infer<typeof publishedDeclarationSchema>;
+export type DepositedDeclaration = z.infer<typeof depositedDeclarationSchema>;
 
-export const parsePublishedDeclaration = (
+export const parseDepositedDeclaration = (
 	json: string | null | undefined,
-): PublishedDeclaration | null => {
+): DepositedDeclaration | null => {
 	if (!json) return null;
 	try {
-		const result = publishedDeclarationSchema.safeParse(JSON.parse(json));
+		const result = depositedDeclarationSchema.safeParse(JSON.parse(json));
 		return result.success ? result.data : null;
 	} catch {
 		return null;
@@ -77,16 +77,16 @@ const toIsoDate = (value: string | Date | null | undefined): string | null => {
 };
 
 type SnapshotDates = {
-	publishedAt?: Date;
+	depositedAt?: Date;
 };
 
-export const extractDeclarationContentToPublish = (
+export const extractDeclarationContentToDeposit = (
 	declaration: PopulatedDeclaration,
 	dates: SnapshotDates = {},
-): PublishedDeclaration => {
-	const publishedAt =
-		toIsoDate(dates.publishedAt) ?? toIsoDate(declaration.published_at) ?? "";
-	// Without a realised audit there is nothing to publish about it, whatever
+): DepositedDeclaration => {
+	const depositedAt =
+		toIsoDate(dates.depositedAt) ?? toIsoDate(declaration.deposited_at) ?? "";
+	// Without a realised audit there is nothing to deposit about it, whatever
 	// details the row still carries.
 	const audit =
 		declaration.audit?.isRealised === true ? declaration.audit : NO_AUDIT;
@@ -104,8 +104,8 @@ export const extractDeclarationContentToPublish = (
 			appKindOptions.find((kind) => kind.value === declaration.app_kind)
 				?.label ?? "",
 		url: declaration?.url ?? "",
-		firstPublishedAt: toIsoDate(declaration.first_published_at) ?? publishedAt,
-		publishedAt,
+		firstPublishedAt: toIsoDate(declaration.first_published_at) ?? depositedAt,
+		depositedAt,
 		audit: {
 			isRealised: audit.isRealised === true,
 			rgaa_version:

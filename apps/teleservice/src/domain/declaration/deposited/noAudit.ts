@@ -3,7 +3,7 @@ import type { Declaration } from "~/payload/payload-types";
 /**
  * The audit group of a declaration whose audit was not realised: the answer
  * alone, with no detail left. Single source of truth for both ends — what the
- * declarant's "non réalisé" answer writes to the row, and what the publish
+ * declarant's "non réalisé" answer writes to the row, and what the deposit
  * snapshot extracts whatever the row still carries.
  */
 export const NO_AUDIT = {

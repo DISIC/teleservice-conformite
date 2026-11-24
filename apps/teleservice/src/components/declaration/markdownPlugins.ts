@@ -2,7 +2,7 @@ import type { Options } from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
-import { OBSOLETE_NOTICE_CLASS } from "~/domain/declaration/published/markdown";
+import { OBSOLETE_NOTICE_CLASS } from "~/domain/declaration/deposited/markdown";
 
 const BADGE_CLASSES = [
 	"fr-badge",

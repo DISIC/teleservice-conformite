@@ -96,7 +96,7 @@ export const declarationGeneralFormOptions = submitFormOptions(
 );
 
 /** Maps a persisted declaration to this form's values. Keep in sync with the
- *  schema above so the publish gate validates the exact shape the form feeds. */
+ *  schema above so the deposit gate validates the exact shape the form feeds. */
 export function declarationToGeneralValues(
 	declaration: PopulatedDeclaration,
 ): ZDeclarationGeneral {
@@ -108,7 +108,7 @@ export function declarationToGeneralValues(
 			name: declaration.name ?? "",
 			url: declaration.url ?? "",
 			domain: declaration.domain ?? "",
-			// A manual declaration was never published elsewhere: its first publish dates it.
+			// A manual declaration was never published elsewhere: its first deposit dates it.
 			firstPublishedAt:
 				declaration.fromSource === "manual"
 					? undefined

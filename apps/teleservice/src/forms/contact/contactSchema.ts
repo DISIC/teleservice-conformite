@@ -40,7 +40,7 @@ export const contact = contactFields.superRefine((data, ctx) => {
 
 /** Lenient autosave input: the contact field set with no required/format rules,
  *  so sequential autosave persists partial, in-progress values. Completeness is
- *  re-checked by `contact` at the publish gate. */
+ *  re-checked by `contact` at the deposit gate. */
 export const contactDraft = contactFields.partial();
 
 export type ZContact = z.infer<typeof contact>;
@@ -64,7 +64,7 @@ export const contactFormOptions = changeFormOptions(
 );
 
 /** Maps a persisted declaration to this form's values. Keep in sync with the
- *  schema above so the publish gate validates the exact shape the form feeds. */
+ *  schema above so the deposit gate validates the exact shape the form feeds. */
 export function declarationToContactValues(
 	declaration: PopulatedDeclaration,
 ): ZContactForm {

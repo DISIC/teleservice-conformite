@@ -1,4 +1,4 @@
-# Context — Téléservice Conformité
+# Glossary — Téléservice Conformité
 
 Domain glossary and shared vocabulary for this project. Skills like `/grill-with-docs`, `/diagnose`, `/tdd`, and `/improve-codebase-architecture` read this file before exploring the codebase, and use the terms defined here when naming things they produce.
 
@@ -10,7 +10,7 @@ This file starts mostly empty and is filled in lazily by `/grill-with-docs` as t
 
 The main entity of the application: an accessibility declaration ("déclaration d'accessibilité") for one digital service of one administration. Materialised by the `declarations` Payload collection.
 
-A Declaration aggregates four pieces of content (its [[section]]s) plus identity fields (name, entity/administration, app_kind, url) and a publication lifecycle (see [[status]]).
+A Declaration aggregates four pieces of content (its [[section]]s) plus identity fields (name, entity/administration, app_kind, url) and a lifecycle (see [[status]]).
 
 **See also:** [[section]], [[status]], ADR-0001.
 
@@ -60,31 +60,32 @@ Examples: the **Outils et environnements** Sub-section has two Parts — "Outils
 
 ### Status
 
-The Declaration's publication lifecycle. **Two values**, derived from the presence of `publishedContent` alone:
+The Declaration's lifecycle. **Three values**, walked in order:
 
-| Status        | `publishedContent`                  |
-| ------------- | ----------------------------------- |
-| **Brouillon** | empty/null — never published        |
-| **Publiée**   | non-empty — published at least once |
+| Status        | Meaning                                                                                                        |
+| ------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Brouillon** | never deposited: no snapshot, no public page                                                                   |
+| **Déposée**   | deposited at least once: the declaration passed full validation, a snapshot exists and its public page is live |
+| **Publiée**   | Déposée, **and** the platform has verified that the digital service links to that public page                  |
 
-`publishedContent` holds the snapshot of the declaration as it appeared when last published. Editing a Publiée Declaration does **not** change its Status: the public page is still live, so the badge on the list and on the details page keeps reading Publiée. Whether the row has drifted from that snapshot is a [[declaration-state|Declaration state]] question (**Modifiée**): the `status` column reads `"unpublished"` over a non-empty snapshot.
+The **dépôt** (action: _déposer_) is what turns a Brouillon into a Déposée Declaration: it validates every Section, takes the snapshot and puts the public page online. The platform's real goal is the next step: knowing that the service actually links to its declaration. That link verification is what makes a Declaration Publiée; until it exists in the product, no Declaration is Publiée.
 
-Transitions:
+Publiée is a fact about the **link**, not about the content, and it is the only step that can be lost:
 
-- `Brouillon` → **publish action** → `Publiée` (sets `status`, `published_at`, `publishedContent`)
-- `Publiée` → **edit any Section** → still `Publiée`, now Modifiée (sets `status="unpublished"`, keeps `publishedContent`)
-- Modifiée → **publish action** or **`revertToPublished`** → clean `Publiée` (`status="published"`; revert restores Section content from `publishedContent`)
+- Editing a Déposée or Publiée Declaration does **not** change its Status: the public page is still live. Whether the row has drifted from its snapshot is a [[declaration-state|Declaration state]] question (**Modifiée**).
+- Depositing again keeps a Publiée Declaration Publiée: the public address did not change.
+- A later verification that no longer finds the link returns the Declaration to Déposée.
 
-**Avoid:** "Draft" (use "Brouillon"), "Dirty" (use "Modifiée"), treating Modifiée as a third Status. UI badge labels live in `StatusBadge`.
+**Avoid:** "Déposer" as the Status name (it is the action; the Status is "Déposée"), "Soumise" / "submitted" (nobody reviews a dépôt), "Validée", "Draft" (use "Brouillon"), "Dirty" (use "Modifiée"), treating Modifiée as a Status, "Publiée" for a Declaration whose link has not been verified. UI badge labels live in `StatusBadge`.
 
 ### Editing mode (sequential / standalone)
 
 How the declaration details page presents its [[section]]s for editing. Derived from [[status]], but a distinct concept — it describes _interaction_, not lifecycle.
 
-- **Sequential** — used while the Declaration is **Brouillon** (never published). The [[section]]s are chained into one guided walkthrough: every section renders permanently editable (no read-only toggle, no per-section Modifier/Annuler/Enregistrer). Edits **autosave** as they happen (silent on success, a DSFR Alert on failure), so a partially-filled section persists and navigation never blocks. The footer is plain "Suivant" section-to-section movement — it neither saves nor validates. The final section (Contact) ends the walkthrough with a completeness gate ("Prévisualiser et publier") that validates _all_ sections against their schemas and surfaces a single, live, page-level error summary (ADR-0006).
-- **Standalone** — used once the Declaration has been published (**Publiée**, clean or Modifiée). Each [[section]] is edited on its own, independent of the others (the ADR-0002 model): read-only, every [[part]] card carries a Modifier button (a body without Parts shows it underneath); editing, the footer swaps Précédent/Suivant for Enregistrer/Annuler until the edit is saved or cancelled. Read-only footer navigation is plain section-to-section movement.
+- **Sequential** — used while the Declaration is **Brouillon** (never deposited). The [[section]]s are chained into one guided walkthrough: every section renders permanently editable (no read-only toggle, no per-section Modifier/Annuler/Enregistrer). Edits **autosave** as they happen (silent on success, a DSFR Alert on failure), so a partially-filled section persists and navigation never blocks. The footer is plain "Suivant" section-to-section movement — it neither saves nor validates. The final section (Contact) ends the walkthrough with a completeness gate ("Prévisualiser la déclaration") that validates _all_ sections against their schemas and surfaces a single, live, page-level error summary (ADR-0006).
+- **Standalone** — used once the Declaration has been deposited (**Déposée** or **Publiée**, clean or Modifiée). Each [[section]] is edited on its own, independent of the others (the ADR-0002 model): read-only, every [[part]] card carries a Modifier button (a body without Parts shows it underneath); editing, the footer swaps Précédent/Suivant for Enregistrer/Annuler until the edit is saved or cancelled. Read-only footer navigation is plain section-to-section movement.
 
-The two modes select different behaviors of the same `Section` runtime and `sections/Shell`; the active mode is decided once per page load from `status === "Brouillon"`, and `resolveSectionEditing` turns it into the per-Section behaviour (autosave, starts read-only, terminal publish gate).
+The two modes select different behaviors of the same `Section` runtime and `sections/Shell`; the active mode is decided once per page load from `status === "Brouillon"`, and `resolveSectionEditing` turns it into the per-Section behaviour (autosave, starts read-only, terminal deposit gate).
 
 **Distinct from the "nothing to save" signal:** mode answers "how does the whole declaration get edited"; the per-section `hideActions` flag is an orthogonal signal for "this particular section has nothing to save" (e.g. an audit notice when the audit isn't realised). The two compose — a nothing-to-save section in sequential mode still just advances.
 
@@ -100,33 +101,33 @@ The `isAuditRealised` boolean on the Declaration's `audit` group. When `false`, 
 
 Status badges shown on `SideMenu` items and on the Section's own title (and historically on the Démarche page tiles):
 
-- **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit, `Réalisation de l'audit` is flagged until the realisation question is answered; the other Sub-sections are flagged per-slice (e.g. an empty `testEnvironments` list for Outils, or an empty `usedTools` list on an RGAA 4 audit) **only once the audit is declared realised** — before that answer they stay quiet. A Section is also flagged whenever the publish gate would report a missing or invalid required field in it (e.g. an empty service name, a contact with neither email nor URL). The Audit parent is flagged when any of its Sub-sections is.
+- **À compléter** — the Section's data is missing (e.g. `!declaration.contact`). For Audit, `Réalisation de l'audit` is flagged until the realisation question is answered; the other Sub-sections are flagged per-slice (e.g. an empty `testEnvironments` list for Outils, or an empty `usedTools` list on an RGAA 4 audit) **only once the audit is declared realised** — before that answer they stay quiet. A Section is also flagged whenever the deposit gate would report a missing or invalid required field in it (e.g. an empty service name, a contact with neither email nor URL). The Audit parent is flagged when any of its Sub-sections is.
 - **À vérifier** — the Section's `toVerify` flag is `true`, set when content was imported (IA or ARA) and needs human review. Tracked at Section level only; not fanned out to Sub-sections.
 - **Non applicable** — the declarant's answers put the Section out of scope, so there is nothing to fill: the three realised-only Audit Sub-sections while the audit is declared "non réalisé". A Skipped [[schema|Schéma]] is _not_ flagged — skipping is a deliberate choice, not a loss of scope.
-- **Modifié** — _(future)_ a Section changed since the last publish. The badge **variant** exists in `SECTION_BADGE` but the per-section diff against `publishedContent` is not yet implemented; only [[declaration-state|Declaration state]] currently surfaces "Modifié", at the declaration level.
+- **Modifié** — _(future)_ a Section changed since the last dépôt. The badge **variant** exists in `SECTION_BADGE` but the per-section diff against `depositedContent` is not yet implemented; only [[declaration-state|Declaration state]] currently surfaces "Modifié", at the declaration level.
 
 **When À compléter appears:** never during the declarant's first pass through the walkthrough — the form is being filled, not repaired, and flagging every untouched field would read as "only these are needed". It appears once they have left the Declaration and come back (their own `firstVisitedAt` on the access right, so co-declarants each get a first pass), always outside the walkthrough, where missing data is a regression, and on the first visit of an imported (IA or ARA) Declaration, which is reviewed rather than filled, so what the import missed shows next to **À vérifier**. The rule is `isToCompleteRevealed`; the page hands the answer to the Sections through one React context.
 
-**Single source of presentation:** which sections get a badge is decided by the per-section checks (`isSectionToComplete` / `isSectionToVerify` / `isSectionNotApplicable`), but the badge **label + colours** are not defined here. They come from `SECTION_BADGE` in `state.ts` — a subset of `STATE_PRESENTATION` that references the existing `.badge` objects of the matching [[declaration-state|Declaration state]] (`to-complete`→`incomplete`, `to-verify`→`to-verify`, `modified`→`published-modified`; `not-applicable` is a neutral grey pair of its own). This keeps the SideMenu badges and the StateNotice card visually identical (same decision-token colours, same copy) with one source of truth. The per-section badge presentation is _not_ the same axis as `DeclarationState` itself (which is one declaration-wide value); only the presentation triple is shared.
+**Single source of presentation:** which sections get a badge is decided by the per-section checks (`isSectionToComplete` / `isSectionToVerify` / `isSectionNotApplicable`), but the badge **label + colours** are not defined here. They come from `SECTION_BADGE` in `state.ts` — a subset of `STATE_PRESENTATION` that references the existing `.badge` objects of the matching [[declaration-state|Declaration state]] (`to-complete`→`incomplete`, `to-verify`→`to-verify`, `modified`→`deposited-modified`; `not-applicable` is a neutral grey pair of its own). This keeps the SideMenu badges and the StateNotice card visually identical (same decision-token colours, same copy) with one source of truth. The per-section badge presentation is _not_ the same axis as `DeclarationState` itself (which is one declaration-wide value); only the presentation triple is shared.
 
 **Avoid:** "À remplir" — older copy, replaced by "À compléter."
 
 ### Declaration state
 
-A **derived, presentation-facing** state answering _"what should the declarant do next?"_, surfaced as a single notice card at the top of the [[dashboard editor|Surfaces]]. Distinct from [[status]]: where `Status` is the binary lifecycle (snapshot present or not), `DeclarationState` is a **richer** value that folds the Modifiée split, completeness and import verification on top of it. The two are not the same axis and must not be conflated.
+A **derived, presentation-facing** state answering _"what should the declarant do next?"_, surfaced as a single notice card at the top of the [[dashboard editor|Surfaces]]. Distinct from [[status]]: where `Status` is the lifecycle (Brouillon, Déposée, Publiée), `DeclarationState` is a **richer** value that folds the Modifiée split, completeness and import verification on top of it. The two are not the same axis and must not be conflated.
 
-Computed by `getDeclarationState(declaration)`: [[status]] decides first, the `status` column splits Publiée into clean / Modifiée, then the editable branches sub-split by completeness:
+Computed by `getDeclarationState(declaration)`: [[status]] decides first, the `status` column splits a deposited Declaration (Déposée or Publiée) into clean / Modifiée, then the editable branches sub-split by completeness:
 
-| `DeclarationState`     | Reached when                                                  | Maps to [[status]] |
-| ---------------------- | ------------------------------------------------------------- | ------------------ |
-| `incomplete`           | draft **and** `validateDeclaration()` returns errors          | Brouillon          |
-| `to-verify`            | draft, complete, has unverified imported content (`toVerify`) | Brouillon          |
-| `ready`                | draft, complete, no AI flag                                   | Brouillon          |
-| `published-incomplete` | Publiée, modified **and** `validateDeclaration()` errors      | Publiée (Modifiée) |
-| `published-modified`   | Publiée, modified, complete                                   | Publiée (Modifiée) |
-| `null` (no notice)     | Publiée, unchanged since the last publish                     | Publiée            |
+| `DeclarationState`     | Reached when                                                  | Maps to [[status]]            |
+| ---------------------- | ------------------------------------------------------------- | ----------------------------- |
+| `incomplete`           | draft **and** `validateDeclaration()` returns errors          | Brouillon                     |
+| `to-verify`            | draft, complete, has unverified imported content (`toVerify`) | Brouillon                     |
+| `ready`                | draft, complete, no AI flag                                   | Brouillon                     |
+| `deposited-incomplete` | deposited, modified **and** `validateDeclaration()` errors    | Déposée or Publiée (Modifiée) |
+| `deposited-modified`   | deposited, modified, complete                                 | Déposée or Publiée (Modifiée) |
+| `null` (no notice)     | deposited, unchanged since the last dépôt                     | Déposée or Publiée            |
 
-**Key rule (v2):** the lifecycle decides first (Brouillon / Publiée, then clean or Modifiée), then completeness and import verification sub-split the editable branches **symmetrically**. A published Declaration **can** become incomplete — removing its Contact or Schema moves it to Modifiée with that Section flagged À compléter (`published-incomplete`), and publishing is blocked until completed. The public snapshot is unaffected. _(Supersedes the retired v1 rule "incomplete is Brouillon-only".)_
+**Key rule (v2):** the lifecycle decides first (Brouillon or deposited, then clean or Modifiée), then completeness and import verification sub-split the editable branches **symmetrically**. A deposited Declaration **can** become incomplete — removing its Contact or Schema moves it to Modifiée with that Section flagged À compléter (`deposited-incomplete`), and a new dépôt is blocked until completed. The public snapshot is unaffected. Link verification plays no part: a clean Déposée Declaration shows no notice, exactly like a clean Publiée one. _(Supersedes the retired v1 rule "incomplete is Brouillon-only".)_
 
 `to-verify` is reached through the IA and ARA import [[creation-path|Creation paths]] — both create Declarations with `toVerify` Sections.
 
@@ -146,9 +147,9 @@ One of the three ways a Declaration comes into existence, chosen by the declaran
 - **Import ARA** (`fromSource: "ara"`) — declarant supplies the URL of an ARA report; its data is fetched from ARA's API and the Declaration is created pre-filled.
 - **Import IA** (`fromSource: "ai"`) — declarant supplies the URL of an already-published accessibility declaration page; an LLM (Albert) extracts its content and the Declaration is created pre-filled.
 
-The two **import paths** share one contract: both sources normalize into a single imported-data shape, the Declaration is created entirely server-side in one mutation, and both paths flag their Sections **À vérifier** ([[à-compléter-à-vérifier|À compléter / À vérifier]]) so the declarant reviews imported content before publishing. On failure nothing is created; the declarant is offered the Manuel path as fallback. The imported name falls back to the submitted URL's hostname when the source provides none — a Declaration is never created nameless.
+The two **import paths** share one contract: both sources normalize into a single imported-data shape, the Declaration is created entirely server-side in one mutation, and both paths flag their Sections **À vérifier** ([[à-compléter-à-vérifier|À compléter / À vérifier]]) so the declarant reviews imported content before the dépôt. On failure nothing is created; the declarant is offered the Manuel path as fallback. The imported name falls back to the submitted URL's hostname when the source provides none — a Declaration is never created nameless.
 
-The ARA import is intended to be reusable later as an **update** of an existing (published) Declaration's audit from a fresh ARA report — same fetch + normalize + transform, update instead of create.
+The ARA import is intended to be reusable later as an **update** of an existing (deposited) Declaration's audit from a fresh ARA report — same fetch + normalize + transform, update instead of create.
 
 **Avoid:** "contextForm" — legacy name for the creation page's form, retired with the per-path split.
 
@@ -156,34 +157,34 @@ The ARA import is intended to be reusable later as an **update** of an existing 
 
 ### Date de publication initiale
 
-The date a Declaration was **first** made public, wherever that happened — in this téléservice, in ARA, or on an older declaration page being re-entered. Distinct from the audit date (`audit.date`, when the audit was performed) and from the last publication date (`published_at`, overwritten on every publish action).
+The date a Declaration was **first** made public, wherever that happened — in this téléservice, in ARA, or on an older declaration page being re-entered. Distinct from the audit date (`audit.date`, when the audit was performed) and from the last dépôt date (`deposited_at`, overwritten on every dépôt). It keeps the word "publication" because it names a real-world fact stated by the declarant, not the [[status]] Publiée.
 
 Always required. Its initial value follows the [[creation-path|Creation path]]:
 
 - **Manuel** — defaults to the creation date, which the declarant changes when re-entering an "ancienne déclaration" already published elsewhere.
 - **Import ARA / Import IA** — prefilled from the source's publication date when present; otherwise defaults to the creation date, like Manuel.
 
-Shown at the top of the Informations générales [[section]] only while the Declaration has never been published: the first publish action freezes it, and the field disappears from the form afterwards. Never derived from `audit.date`. Plays no part in [[obsolescence|Obsolescence]], which follows the last publication date.
+Shown at the top of the Informations générales [[section]] only while the Declaration has never been deposited: the first dépôt freezes it, and the field disappears from the form afterwards. Never derived from `audit.date`. Plays no part in [[obsolescence|Obsolescence]], which follows the last dépôt date.
 
-**Avoid:** "date de publication" alone — ambiguous with the last publish date. "Audit date" — a different fact.
+**Avoid:** "date de publication" alone — ambiguous with the last dépôt date and with the Status Publiée. "Audit date" — a different fact.
 
 **See also:** [[creation-path|Creation path]], [[status]].
 
 ### Obsolescence
 
-The three-year validity axis of a Declaration, read from the **last publish action** and today's date. Three values, in the order time walks through them:
+The three-year validity axis of a Declaration, read from the **last dépôt** and today's date. Three values, in the order time walks through them:
 
 | Obsolescence         | Reached when                                                                    |
 | -------------------- | ------------------------------------------------------------------------------- |
-| **Valide**           | Brouillon, or Publiée for less than 2 years and 9 months since the last publish |
-| **Bientôt obsolète** | Publiée, within the last 3 months before the deadline                           |
-| **Obsolète**         | Publiée, deadline passed                                                        |
+| **Valide**           | Brouillon, or deposited for less than 2 years and 9 months since the last dépôt |
+| **Bientôt obsolète** | deposited, within the last 3 months before the deadline                         |
+| **Obsolète**         | deposited, deadline passed                                                      |
 
-The **deadline** is the last publication date plus three years. Every publish action, with or without content changes, restarts it; the [[date-de-publication-initiale|Date de publication initiale]] and the audit date play no part. Derived at read time and **never stored**, since it changes by the mere passage of time.
+The **deadline** is the last dépôt date plus three years. Every dépôt, with or without content changes, restarts it; the [[date-de-publication-initiale|Date de publication initiale]], the audit date and link verification play no part: a Déposée Declaration that never becomes Publiée still turns Obsolète. Derived at read time and **never stored**, since it changes by the mere passage of time.
 
-A third axis next to [[status]] (lifecycle) and [[declaration-state|Declaration state]] (next action): it is never folded into either. Status stays Publiée underneath an Obsolète Declaration, and the Declaration state keeps answering "what next" — when both a Declaration state notice (Modifié, À compléter) and an obsolescence notice apply, the **Declaration state notice wins**, because it names the blocking action. The obsolescence notice, which offers to republish, shows only when the Declaration state has nothing to say.
+A third axis next to [[status]] (lifecycle) and [[declaration-state|Declaration state]] (next action): it is never folded into either. Status stays Déposée or Publiée underneath an Obsolète Declaration, and the Declaration state keeps answering "what next" — when both a Declaration state notice (Modifié, À compléter) and an obsolescence notice apply, the **Declaration state notice wins**, because it names the blocking action. The obsolescence notice, which offers a new dépôt, shows only when the Declaration state has nothing to say.
 
-**Surfaces:** the Mes déclarations list (Statut cell), the details page header, the [[obsolète|interstitial]], the notice card, and the public page (Obsolète only). In the list's Statut cell a Valide Publiée Declaration shows its deadline too, as "Périme le {deadline}" under the Publiée badge; the details header shows nothing while Valide.
+**Surfaces:** the Mes déclarations list (Statut cell), the details page header, the [[obsolète|interstitial]], the notice card, and the public page (Obsolète only). In the list's Statut cell a Valide deposited Declaration shows its deadline too, as "Périme le {deadline}" under its Status badge; the details header shows nothing while Valide.
 
 **Avoid:** "Validité", "Expiration" — use "Obsolescence" for the axis. "Statut" — a different axis.
 
@@ -191,9 +192,9 @@ A third axis next to [[status]] (lifecycle) and [[declaration-state|Declaration 
 
 ### Bientôt obsolète
 
-The [[obsolescence|Obsolescence]] value of a **Publiée** Declaration during the three months before its deadline. A **declarant-facing warning only**: the public page is unchanged, the conformity badge stays truthful, and citizens have no action to take.
+The [[obsolescence|Obsolescence]] value of a **deposited** Declaration (Déposée or Publiée) during the three months before its deadline. A **declarant-facing warning only**: the public page is unchanged, the conformity badge stays truthful, and citizens have no action to take.
 
-For the declarant: the Statut badge keeps reading Publiée; the list's Statut cell and the details header add a warning-icon line "Obsolète le {deadline}"; opening the Declaration shows the "bientôt obsolète" interstitial under the same rule as [[obsolète|Obsolète]], and the notice card offers to republish before the deadline when no [[declaration-state|Declaration state]] notice applies.
+For the declarant: the Statut badge keeps reading Déposée or Publiée; the list's Statut cell and the details header add a warning-icon line "Obsolète le {deadline}"; opening the Declaration shows the "bientôt obsolète" interstitial under the same rule as [[obsolète|Obsolète]], and the notice card offers a new dépôt before the deadline when no [[declaration-state|Declaration state]] notice applies.
 
 **Avoid:** "Expirante", "Bientôt périmée". "Périme le" is reserved for the list's Valide line (see [[obsolescence|Obsolescence]]), never for Bientôt obsolète.
 
@@ -201,11 +202,11 @@ For the declarant: the Statut badge keeps reading Publiée; the list's Statut ce
 
 ### Obsolète
 
-The [[obsolescence|Obsolescence]] value of a **Publiée** Declaration whose deadline has passed. An Obsolète Declaration is presented as _réputée non conforme_ regardless of its audit rate, and its public view says so with a red notice and a "Non conforme" conformity badge, but none of its content is hidden or altered: the published snapshot, including the audit rate, is untouched.
+The [[obsolescence|Obsolescence]] value of a **deposited** Declaration (Déposée or Publiée) whose deadline has passed. An Obsolète Declaration is presented as _réputée non conforme_ regardless of its audit rate, and its public view says so with a red notice and a "Non conforme" conformity badge, but none of its content is hidden or altered: the deposited snapshot, including the audit rate, is untouched.
 
-For the declarant: "Obsolète" **replaces** the Publiée badge in the list and the details header (Status itself is unchanged); the Statut cell reads "depuis le {deadline}" under the badge, the header "Obsolète depuis le {deadline}".
+For the declarant: "Obsolète" **replaces** the Déposée or Publiée badge in the list and the details header (Status itself is unchanged); the Statut cell reads "depuis le {deadline}" under the badge, the header "Obsolète depuis le {deadline}".
 
-**Interstitial.** Opening an Obsolète or Bientôt obsolète Declaration that is **unchanged since its last publish** shows a full-page interstitial in place of the Sections: what happened, what to do (new audit + update, or verify + republish as is), and "Mettre à jour ma déclaration", which reveals the details page for that visit. Nothing is persisted: the interstitial returns on the next visit until the Declaration is Modifiée (the declarant is already acting) or republished (the axis is Valide again). Republishing without any change is a legitimate path and needs no confirmation checkbox or date modal.
+**Interstitial.** Opening an Obsolète or Bientôt obsolète Declaration that is **unchanged since its last dépôt** shows a full-page interstitial in place of the Sections: what happened, what to do (new audit + update, or verify + deposit again as is), and "Mettre à jour ma déclaration", which reveals the details page for that visit. Nothing is persisted: the interstitial returns on the next visit until the Declaration is Modifiée (the declarant is already acting) or deposited again (the axis is Valide again). Depositing again without any change is a legitimate path and needs no confirmation checkbox or date modal.
 
 **Avoid:** "Expirée", "Périmée" — the design system copy is "Obsolète".
 
@@ -217,16 +218,16 @@ A user's personal pool of Contacts and Schemas, reusable across their Declaratio
 
 A Declaration's contact/schema is sourced in one of these **modes**, chosen explicitly via a [[source mode]] radio in the section form:
 
-- **Linked** — the Declaration references a Library parent (an object created/managed from the "Mes contacts" / "Mes schémas" pages). It holds its **own copy** of the parent's content, but the copy mirrors the parent: while linked, the data renders **read-only** in the Declaration form, and editing the parent (only possible from the Library area) **auto-propagates** to every linked copy. If propagation touches published Declarations, a warning modal lists them before saving (they move to Modifiée and need republishing — the public snapshot never moves on its own).
+- **Linked** — the Declaration references a Library parent (an object created/managed from the "Mes contacts" / "Mes schémas" pages). It holds its **own copy** of the parent's content, but the copy mirrors the parent: while linked, the data renders **read-only** in the Declaration form, and editing the parent (only possible from the Library area) **auto-propagates** to every linked copy. If propagation touches deposited Declarations, a warning modal lists them before saving (they move to Modifiée and need a new dépôt — the public snapshot never moves on its own).
 - **Custom** — the declarant flips the custom switch and writes the object inline. It belongs to that Declaration alone: editable in place, no parent, no propagation in or out.
-- **Skipped** _(schema only)_ — the declarant declares "no schema" deliberately. Contact has no Skipped mode; a Contact is always required to publish.
+- **Skipped** _(schema only)_ — the declarant declares "no schema" deliberately. Contact has no Skipped mode; a Contact is always required for the dépôt.
 
 The section-form dropdown offers **both**: Library parents _and_ custom objects from the user's other Declarations. Selecting a parent establishes a **link**; selecting another Declaration's custom object only **pre-fills** a new custom copy — later changes to the source flow nowhere.
 
 Lifecycle rules:
 
-- **Deleting** a Library parent never affects Declarations — their copies survive, detached (they become custom). Published content is immutable to Library operations.
-- Removing a contact or schema **from a published Declaration itself** moves it to Modifiée with that section flagged À compléter; the public snapshot is unchanged.
+- **Deleting** a Library parent never affects Declarations — their copies survive, detached (they become custom). Deposited content is immutable to Library operations.
+- Removing a contact or schema **from a deposited Declaration itself** moves it to Modifiée with that section flagged À compléter; the public snapshot is unchanged.
 
 **Avoid:** "shared documents" / entity-level sharing — the retired model where Contacts/Schemas were linked to an `entity`. "Bibliothèque" / "Schémas et Contacts" as a page name — the retired single page. "Pre-fill" for the linked mode — pre-fill is the copy-without-link gesture, linking is more than pre-fill.
 
@@ -238,7 +239,7 @@ The declarant's explicit choice, per Contact/Schema [[section]], of where that s
 
 The selected option is **derived from persisted state**, not stored as its own field: `parent` set → Linked; content present, no parent → Custom; (schema) `skipped` flag → Skipped; everything empty and no parent → **Undecided** (no option pre-selected). The radio is hidden entirely when the user's Library holds no item of that kind — the section collapses to a bare editable Custom form.
 
-**Undecided blocks publish.** [[à-compléter-à-vérifier|Completeness]] is no longer the only schema gate: choosing a Source mode is itself required. While Undecided, `validateDeclaration` emits one error targeting the radio ("select an option"), so the [[à-compléter-à-vérifier|error summary]] pushes the declarant to decide — including the deliberate Skipped choice for schema. Once content exists (Custom intent), the usual field-level validation takes over.
+**Undecided blocks the dépôt.** [[à-compléter-à-vérifier|Completeness]] is no longer the only schema gate: choosing a Source mode is itself required. While Undecided, `validateDeclaration` emits one error targeting the radio ("select an option"), so the [[à-compléter-à-vérifier|error summary]] pushes the declarant to decide — including the deliberate Skipped choice for schema. Once content exists (Custom intent), the usual field-level validation takes over.
 
 **Avoid:** "toggle"/"switch" — the retired two-state custom switch; this is an N-way radio. "skip" as a verb on contact — contact cannot be skipped.
 
@@ -258,8 +259,8 @@ A Declaration is reached through two distinct route trees, kept separate on purp
 
 - **Dashboard** — `/dashboard/*` (authenticated). Four pages sit behind the téléservice header's navigation: **Mes déclarations** (`/dashboard/declarations`, the user's own Declarations, where creation starts), **Mes contacts** and **Mes schémas** (the [[library|Library]]), and **Toutes les déclarations de l'organisation** (`/dashboard/organisation`). The bare `/dashboard` is only the landing URL and forwards to Mes déclarations.
   - **Dashboard editor** — `/dashboard/declarations/[id]`. The editing surface: SideMenu, [[section]]s, status actions, Membres. Reached only from Mes déclarations.
-  - **Organisation view** — the entity-wide list is read-only discovery: it never opens the editor, it only leads to the public published view of each published Declaration.
-- **Public published view** — `/declarations/[id]/publish` (no auth). Read-only render of `publishedContent` via `PublishedDeclarationTemplate`.
+  - **Organisation view** — the entity-wide list is read-only discovery: it never opens the editor, it only leads to the public view of each deposited Declaration.
+- **Public view** — `/declarations/[id]/publish` (no auth). Read-only render of the deposited snapshot, online from the first dépôt. This is the page the digital service must link to for its Declaration to become Publiée; the address keeps its `publish` segment.
 
 Both trees use the **plural** `declarations/` segment. Singular `declaration/` is not used as a route segment.
 
@@ -328,8 +329,8 @@ The grouping of Critères, named by the first segment of a Critère number (`1` 
 Layered, not feature-foldered. One predictable layer per concern:
 
 - `components/ui/` — generic, domain-free UI (primitives + cross-cutting pieces like EmptyState, HelpingMessage).
-- `components/declaration/` — declaration-specific UI only (e.g. the `sections/` tree: `Section.tsx` is the one Section runtime, `items/` holds one `defineSection` per Section); `sections/hooks/` holds the hooks the runtime composes (autosave, error reveal, publish attempt, source mode).
-- `domain/declaration/` — pure business logic on a Declaration: the Section registry, the publish gate, status and state, source mode, the Section editing matrix (`sectionEditing`), and the published snapshot + markdown (`published/`). No React, no tRPC, no DOM; every module is unit-testable and mirrored in `src/tests/declaration/`.
+- `components/declaration/` — declaration-specific UI only (e.g. the `sections/` tree: `Section.tsx` is the one Section runtime, `items/` holds one `defineSection` per Section); `sections/hooks/` holds the hooks the runtime composes (autosave, error reveal, deposit attempt, source mode).
+- `domain/declaration/` — pure business logic on a Declaration: the Section registry, the deposit gate, status and state, source mode, the Section editing matrix (`sectionEditing`), and the deposited snapshot + markdown (`deposited/`). No React, no tRPC, no DOM; every module is unit-testable and mirrored in `src/tests/declaration/`.
 - `lib/` — infrastructure glue (api/tRPC client, auth, server guards).
 - `hooks/` — generic, cross-cutting hooks only.
 - `forms/` — TanStack form definitions + Zod schemas (cross-cutting layer).
@@ -339,13 +340,14 @@ Layered, not feature-foldered. One predictable layer per concern:
 
 ## Invariants
 
-- A Declaration's visible [[status|Status]] is a pure function of `publishedContent` alone; Modifiée is a [[declaration-state|Declaration state]] read from the `status` column. Don't introduce a third source of truth.
+- A Declaration's visible [[status|Status]] is a pure function of two facts on its row: whether a snapshot exists (`depositedContent`) and whether the link has been verified (`link_verified_at`). Modifiée is a [[declaration-state|Declaration state]] read from the `status` column, whose values (`deposited` / `undeposited`) say whether the row still matches its snapshot, never the Status. Don't introduce another source of truth.
+- **Link verification never touches content, and content never touches link verification.** `link_verified_at` is written only by link verification: a dépôt, an edit or a revert leaves it alone.
 - A Declaration has exactly one audit — the `audit` group on its row (structural since ADR-0004; v1's "at most one `audits` row" invariant is subsumed). The four Audit [[sub-section]]s are UI groupings over that single group.
 - When `audit.isRealised === false`, fields belonging to the three non-Réalisation Sub-sections are not required and should not be surfaced for editing.
 - `toVerify` is per-Section, not per-Sub-section.
 - A **linked** contact/schema copy is written only by the Library propagation procedure — never directly by a Declaration save. Custom copies are written only by their own Declaration.
-- **Publish always validates.** The publish action runs full declaration validation regardless of lifecycle state — there is no fast path. Enforced server-side: the publish mutation itself validates and builds the published snapshot, so a client can never author `publishedContent`. (Supersedes the retired v1 invariant "published-modified is always publishable": removing a Contact/Schema from a published Declaration can make it incomplete, so completeness is no longer guaranteed by per-section save gating. See [[declaration-state|Declaration state]].)
-- **Obsolescence is derived, never stored.** It is a pure function of `published_at` and today's date, computed where it is read (dashboard and public page alike, from one module). It is a third axis: never a Status value, never a Declaration state value, and no row column records it.
+- **The dépôt always validates.** The dépôt runs full declaration validation regardless of lifecycle state — there is no fast path. Enforced server-side: the deposit mutation itself validates and builds the snapshot, so a client can never author `depositedContent`. (Supersedes the retired v1 invariant "a modified Declaration can always be deposited again": removing a Contact/Schema from a deposited Declaration can make it incomplete, so completeness is no longer guaranteed by per-section save gating. See [[declaration-state|Declaration state]].)
+- **Obsolescence is derived, never stored.** It is a pure function of `deposited_at` and today's date, computed where it is read (dashboard and public page alike, from one module). It is a third axis: never a Status value, never a Declaration state value, and no row column records it.
 - Contact and Schema are **symmetric** in flows and business logic: anything defined for one (Library behaviour, removal from a Declaration, À compléter flagging) applies identically to the other.
 - **A Declaration is reached only through an approved access right of the caller**, and that rule has one implementation: `loadOwnedDeclaration` (`server/api/utils/declaration-access.ts`). tRPC procedures scoped to a Declaration take a top-level `declarationId` input and are built on `declarationProcedure`, which resolves the owned, populated Declaration into `ctx.declaration` before the body runs; pages go through `loadDeclarationForPage` / `guardDeclaration` (`lib/server-guards.ts`). A procedure body never re-checks access and never re-fetches the Declaration it was given.
 - **Every write to a Declaration's content goes through `writeDeclaration`** (`server/api/utils/section-write.ts`). The `status` column is derived from the row as it is about to be written and lands in the same update; no caller recomputes or re-reads it afterwards. Section saves enter through `saveSection`, whose per-Section merge rules are the only place a save shapes its data. Every save returns the whole Declaration, and the client folds it with `applySavedDeclaration`.

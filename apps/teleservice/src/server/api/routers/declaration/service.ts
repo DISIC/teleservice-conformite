@@ -12,9 +12,9 @@ import {
 	writeDeclaration,
 } from "~/server/api/utils/section-write";
 import {
-	extractDeclarationContentToPublish,
-	parsePublishedDeclaration,
-} from "~/domain/declaration/published/snapshot";
+	extractDeclarationContentToDeposit,
+	parseDepositedDeclaration,
+} from "~/domain/declaration/deposited/snapshot";
 import { validateDeclaration } from "~/domain/declaration/validate";
 import type { declarationGeneral } from "~/forms/declaration/declarationSchema";
 import { analyzeUrlWithAlbert } from "../albert";
@@ -80,7 +80,7 @@ const createDeclarationFromImportedData = async (
 				app_kind:
 					appKindOptions.find((option) => option.value === data.service.type)
 						?.value ?? undefined,
-				status: "unpublished",
+				status: "undeposited",
 				entity: entityId,
 				created_by: userId,
 				fromSource: source,
@@ -103,7 +103,7 @@ const createDeclarationFromImportedData = async (
 					toVerify: true,
 				},
 				// The source's publication date is when the declaration first went
-				// public, not when the audit ran. Unknown defaults to today, editable until publish.
+				// public, not when the audit ran. Unknown defaults to today, editable until deposit.
 				first_published_at:
 					data.publishedAt && !Number.isNaN(Date.parse(data.publishedAt))
 						? new Date(data.publishedAt).toISOString()
@@ -224,7 +224,7 @@ export const createManualDeclaration = async (
 			name,
 			entity: declarationEntityId,
 			created_by: userId,
-			status: "unpublished",
+			status: "undeposited",
 			fromSource: "manual",
 		},
 	});
@@ -313,8 +313,8 @@ export const updateDeclarationName = (
 	name: string,
 ) => writeDeclaration(payload, declaration, { name });
 
-// Publish always validates: the snapshot is server-built — clients never supply publishedContent.
-export const publishDeclaration = async (
+// Deposit always validates: the snapshot is server-built — clients never supply depositedContent.
+export const depositDeclaration = async (
 	payload: Payload,
 	declaration: PopulatedDeclaration,
 ) => {
@@ -322,29 +322,29 @@ export const publishDeclaration = async (
 	if (errors.length > 0) {
 		throw new TRPCError({
 			code: "PRECONDITION_FAILED",
-			message: "Declaration is incomplete and cannot be published",
+			message: "Declaration is incomplete and cannot be deposited",
 		});
 	}
 
-	const publishedAt = new Date();
+	const depositedAt = new Date();
 	const result = await payload.update({
 		collection: "declarations",
 		id: declaration.id,
 		data: {
-			status: "published",
-			publishedContent: JSON.stringify(
-				extractDeclarationContentToPublish(declaration, { publishedAt }),
+			status: "deposited",
+			depositedContent: JSON.stringify(
+				extractDeclarationContentToDeposit(declaration, { depositedAt }),
 			),
-			published_at: publishedAt.toISOString(),
+			deposited_at: depositedAt.toISOString(),
 			first_published_at:
-				declaration.first_published_at ?? publishedAt.toISOString(),
+				declaration.first_published_at ?? depositedAt.toISOString(),
 		},
 	});
 
 	return getPopulatedDeclaration(result);
 };
 
-export const getPreviousPublishedRate = async (
+export const getPreviousDepositedRate = async (
 	payload: Payload,
 	declaration: PopulatedDeclaration,
 ): Promise<number | null> => {
@@ -352,7 +352,7 @@ export const getPreviousPublishedRate = async (
 		collection: "declarations",
 		where: {
 			parent: { equals: declaration.id },
-			"version.status": { equals: "published" },
+			"version.status": { equals: "deposited" },
 		},
 		limit: 2,
 		sort: "-updatedAt",
@@ -360,36 +360,36 @@ export const getPreviousPublishedRate = async (
 
 	const previousVersion = versions.docs[1];
 
-	const published = parsePublishedDeclaration(
-		previousVersion?.version?.publishedContent,
+	const deposited = parseDepositedDeclaration(
+		previousVersion?.version?.depositedContent,
 	);
-	return published?.audit.rate ?? null;
+	return deposited?.audit.rate ?? null;
 };
 
-export const revertToPublished = async (
+export const revertToDeposited = async (
 	payload: Payload,
 	declaration: PopulatedDeclaration,
 ): Promise<number> => {
-	if (!declaration.publishedContent) {
+	if (!declaration.depositedContent) {
 		throw new TRPCError({
 			code: "BAD_REQUEST",
-			message: "No published content to revert to",
+			message: "No deposited content to revert to",
 		});
 	}
 
 	// Groups are captured by the declaration's own version history, so restoring
-	// the last published version restores the whole declaration in one step.
-	const latestPublished = await payload.findVersions({
+	// the last deposited version restores the whole declaration in one step.
+	const latestDeposited = await payload.findVersions({
 		collection: "declarations",
 		where: {
 			parent: { equals: declaration.id },
-			"version.status": { equals: "published" },
+			"version.status": { equals: "deposited" },
 		},
 		limit: 1,
 		sort: "-updatedAt",
 	});
 
-	const previousVersionId = latestPublished.docs[0]?.id;
+	const previousVersionId = latestDeposited.docs[0]?.id;
 
 	if (!previousVersionId) {
 		throw new TRPCError({

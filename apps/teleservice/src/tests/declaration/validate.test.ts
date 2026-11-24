@@ -32,7 +32,7 @@ describe("validateDeclaration", () => {
 		expect(errors[0]?.section).toBe("infos");
 	});
 
-	it("blocks publishing while the service type is unset", () => {
+	it("blocks depositing while the service type is unset", () => {
 		const errors = errorsFor(
 			validateDeclaration(completeDeclaration({ app_kind: null } as never)),
 			"infos",
@@ -253,7 +253,7 @@ describe("validateDeclaration", () => {
 		]);
 	});
 
-	it("validates the persisted row, so an unanswered audit blocks publish", () => {
+	it("validates the persisted row, so an unanswered audit blocks deposit", () => {
 		const errors = validateDeclaration(
 			completeDeclaration({ audit: {} } as never),
 		);

@@ -96,7 +96,7 @@ function validateSection(
  * using the persisted `declaration` (not live form instances) plus any source
  * choice the declarant made but has not persisted yet. Returns a flat,
  * ordered list of field-level errors — empty when the declaration is complete
- * enough to publish.
+ * enough to deposit.
  */
 export function validateDeclaration(
 	declaration: PopulatedDeclaration,
@@ -107,7 +107,7 @@ export function validateDeclaration(
 	);
 }
 
-/** "À compléter" badge: the Section is missing data or a field the publish gate requires. */
+/** "À compléter" badge: the Section is missing data or a field the deposit gate requires. */
 export function isSectionIncomplete(
 	declaration: PopulatedDeclaration,
 	slug: SectionSlug,

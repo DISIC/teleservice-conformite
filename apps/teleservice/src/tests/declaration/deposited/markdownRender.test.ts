@@ -20,7 +20,7 @@ const generated = (name: string) =>
 		"utf8",
 	);
 
-describe("published markdown rendering", () => {
+describe("deposited markdown rendering", () => {
 	it("keeps the HTML the generator emits", () => {
 		const html = render(generated("obsolete"));
 
@@ -32,7 +32,7 @@ describe("published markdown rendering", () => {
 		expect(html).toContain("<br/>");
 	});
 
-	it.each(["full-republished", "no-audit", "obsolete"])(
+	it.each(["full-redeposited", "no-audit", "obsolete"])(
 		"renders the %s declaration exactly as unsanitized raw HTML would",
 		(name) => {
 			const unsanitized = renderToStaticMarkup(

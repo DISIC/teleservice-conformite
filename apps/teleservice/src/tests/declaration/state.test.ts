@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
 	completeDeclaration,
-	publishedDeclaration,
+	depositedDeclaration,
 } from "./declaration.fixture";
 import {
 	getDeclarationState,
@@ -9,10 +9,10 @@ import {
 } from "~/domain/declaration/state";
 
 describe("getDeclarationState", () => {
-	it("renders no notice for a clean published declaration", () => {
+	it("renders no notice for a clean deposited declaration", () => {
 		const d = completeDeclaration({
-			status: "published",
-			publishedContent: "{}",
+			status: "deposited",
+			depositedContent: "{}",
 		} as never);
 		expect(getDeclarationState(d)).toBeNull();
 	});
@@ -34,25 +34,25 @@ describe("getDeclarationState", () => {
 		expect(getDeclarationState(d)).toBe("to-verify");
 	});
 
-	it("keeps a modified declaration on the published branch", () => {
+	it("keeps a modified declaration on the deposited branch", () => {
 		const modified = {
-			...publishedDeclaration(),
-			status: "unpublished" as const,
+			...depositedDeclaration(),
+			status: "undeposited" as const,
 		};
-		expect(getDeclarationState(modified)).toBe("published-modified");
+		expect(getDeclarationState(modified)).toBe("deposited-modified");
 	});
 
-	it("is published-modified for a complete declaration edited since publish", () => {
-		const d = completeDeclaration({ publishedContent: "{}" } as never);
-		expect(getDeclarationState(d)).toBe("published-modified");
+	it("is deposited-modified for a complete declaration edited since deposit", () => {
+		const d = completeDeclaration({ depositedContent: "{}" } as never);
+		expect(getDeclarationState(d)).toBe("deposited-modified");
 	});
 
-	it("is published-incomplete when an edit removed required content", () => {
+	it("is deposited-incomplete when an edit removed required content", () => {
 		const d = completeDeclaration({
-			publishedContent: "{}",
+			depositedContent: "{}",
 			contact: {},
 		} as never);
-		expect(getDeclarationState(d)).toBe("published-incomplete");
+		expect(getDeclarationState(d)).toBe("deposited-incomplete");
 	});
 });
 

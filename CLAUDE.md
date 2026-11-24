@@ -61,7 +61,7 @@ rgaa/
 ├── content/       # RGAA 5 sources: thematiques.yml, criteres/<n>/<referentiel>/, glossaire/
 └── data/          # generated Données publiées, committed by CI (not yet produced)
 docs/              # team documentation: ADRs, agent guides, RGAA 5 decisions
-CONTEXT.md         # domain glossary
+GLOSSARY.md         # domain glossary
 ```
 
 Paths in the guides below are relative to `apps/teleservice/` unless they start with `apps/`, `packages/` or `docs/`.
@@ -76,8 +76,8 @@ Comment only to state a business rule or constraint the code cannot show. One li
 
 ### Domain docs
 
-Single-context repo. `CONTEXT.md` lives at the repo root; ADRs live in `docs/adr/`. See `docs/agents/domain.md`.
+Single-context repo. `GLOSSARY.md` lives at the repo root; ADRs live in `docs/adr/`. See `docs/agents/domain.md`.
 
-Before working on the declaration details page (sections, forms, autosave, publish gate), read the area map in `docs/agents/declaration-form.md` — it locates every seam so you open only the files the task touches.
+Before working on the declaration details page (sections, forms, autosave, deposit gate), read the area map in `docs/agents/declaration-form.md` — it locates every seam so you open only the files the task touches.
 
 ADRs hold the reasoning; guides hold the resulting rule. A guide may link an ADR where a rule would surprise, but never restates its trade-off analysis. Code never cites ADRs or docs.

@@ -18,7 +18,7 @@ export type SourceModeController = {
 	/** What the radio shows: a pending local choice, else the derived mode. */
 	effectiveMode: SourceModeValue | null;
 	isLinked: boolean;
-	/** The same verdict the publish gate reaches for this Section. */
+	/** The same verdict the deposit gate reaches for this Section. */
 	gate: SourceGate;
 	libraryLink: LibraryLink;
 	/** Declarations sharing the linked parent (incl. this one); undefined until loaded. */

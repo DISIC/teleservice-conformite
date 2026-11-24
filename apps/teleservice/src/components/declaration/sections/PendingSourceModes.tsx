@@ -15,7 +15,7 @@ const PendingSourceModesContext = createContext<PendingSourceModesValue>({
 	setPending: () => {},
 });
 
-/** Page-level owner of unsaved radio choices, so the publish gate sees what the radio shows. */
+/** Page-level owner of unsaved radio choices, so the deposit gate sees what the radio shows. */
 export function PendingSourceModesProvider({
 	value,
 	children,

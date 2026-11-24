@@ -16,25 +16,25 @@ import {
 	getObsolescence,
 	OBSOLESCENCE_PRESENTATION,
 } from "~/domain/declaration/obsolescence";
-import { usePublishAttempt } from "~/components/declaration/sections/hooks/usePublishAttempt";
+import { useDepositAttempt } from "~/components/declaration/sections/hooks/useDepositAttempt";
 import { useShowToComplete } from "~/components/declaration/ToCompleteGuidance";
 
 type StateNoticeProps = {
 	declaration: PopulatedDeclaration;
-	/** Arms the page-level error summary when a sequential publish surfaces errors. */
-	onPublishAttempt: () => void;
+	/** Arms the page-level error summary when a sequential deposit surfaces errors. */
+	onDepositAttempt: () => void;
 	/** Re-fetch the page after a successful revert (re-runs SSR). */
 	onReverted: () => void;
 };
 
 /**
  * Top-of-page status notice telling the declarant what to do next, plus its
- * action CTAs. A clean published declaration shows the obsolescence notice
+ * action CTAs. A clean deposited declaration shows the obsolescence notice
  * when one applies, nothing otherwise.
  */
 export function StateNotice({
 	declaration,
-	onPublishAttempt,
+	onDepositAttempt,
 	onReverted,
 }: StateNoticeProps) {
 	// `getDeclarationState` runs the full declaration validation; memoize so it
@@ -46,9 +46,9 @@ export function StateNotice({
 	const showToComplete = useShowToComplete();
 	const state =
 		derivedState === "incomplete" && !showToComplete ? null : derivedState;
-	const { attemptPublish } = usePublishAttempt({
+	const { attemptDeposit } = useDepositAttempt({
 		declaration,
-		onPublishAttempt,
+		onDepositAttempt,
 	});
 	const [revertActions] = useState<RevertModalActions>({});
 	const { classes } = useStyles();
@@ -63,9 +63,9 @@ export function StateNotice({
 	if (!presentation) return null;
 
 	const { bgColor, badge, heading, body, actions } = presentation;
-	// Publish always validates: the CTA runs the full declaration validation gate
+	// Deposit always validates: the CTA runs the full declaration validation gate
 	// in every state — there is no fast path.
-	const onPublish = () => attemptPublish();
+	const onDeposit = () => attemptDeposit();
 
 	return (
 		<>
@@ -101,14 +101,14 @@ export function StateNotice({
 								Annuler les modifications
 							</Button>
 						)}
-						{actions.includes("publish") && (
+						{actions.includes("deposit") && (
 							<Button
 								priority="primary"
 								iconId="fr-icon-upload-fill"
 								iconPosition="left"
-								onClick={onPublish}
+								onClick={onDeposit}
 							>
-								Prévisualiser et publier
+								Prévisualiser la déclaration
 							</Button>
 						)}
 					</div>

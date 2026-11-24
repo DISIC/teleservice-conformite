@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
+import { NO_AUDIT } from "~/domain/declaration/deposited/noAudit";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import {
 	saveSection,
@@ -8,7 +8,7 @@ import {
 import { fakePayload } from "../payload.fake";
 import {
 	completeDeclaration,
-	publishedDeclaration,
+	depositedDeclaration,
 } from "./declaration.fixture";
 
 const seeded = (declaration: PopulatedDeclaration) =>
@@ -30,11 +30,11 @@ describe("saveSection — one write, status derived from the row as written", ()
 			parent: null,
 			toVerify: false,
 		});
-		expect(result.status).toBe("unpublished");
+		expect(result.status).toBe("undeposited");
 	});
 
-	it("turns a Publiée declaration Modifiée in the same write when public content drifts", async () => {
-		const declaration = publishedDeclaration();
+	it("turns a Déposée declaration Modifiée in the same write when public content drifts", async () => {
+		const declaration = depositedDeclaration();
 		const { payload, read } = seeded(declaration);
 		const update = vi.spyOn(payload, "update");
 
@@ -43,15 +43,15 @@ describe("saveSection — one write, status derived from the row as written", ()
 		});
 
 		expect(update).toHaveBeenCalledTimes(1);
-		expect(result.status).toBe("unpublished");
+		expect(result.status).toBe("undeposited");
 		expect(read("declarations", 1)).toMatchObject({
-			status: "unpublished",
+			status: "undeposited",
 			contact: { email: "autre@example.fr" },
 		});
 	});
 
-	it("keeps a Publiée declaration clean when the edit stays outside the public snapshot", async () => {
-		const declaration = publishedDeclaration();
+	it("keeps a Déposée declaration clean when the edit stays outside the public snapshot", async () => {
+		const declaration = depositedDeclaration();
 		const { payload } = seeded(declaration);
 
 		const result = await saveSection(payload, declaration, "contact", {
@@ -59,15 +59,15 @@ describe("saveSection — one write, status derived from the row as written", ()
 		});
 
 		expect(result.contact?.name).toBe("Autre référent");
-		expect(result.status).toBe("published");
+		expect(result.status).toBe("deposited");
 	});
 
-	it("restores Publiée when an edit brings the row back to its snapshot", async () => {
-		const published = publishedDeclaration();
+	it("restores Déposée when an edit brings the row back to its snapshot", async () => {
+		const deposited = depositedDeclaration();
 		const declaration = {
-			...published,
-			status: "unpublished" as const,
-			contact: { ...published.contact, email: "drift@example.fr" },
+			...deposited,
+			status: "undeposited" as const,
+			contact: { ...deposited.contact, email: "drift@example.fr" },
 		};
 		const { payload } = seeded(declaration);
 
@@ -75,7 +75,7 @@ describe("saveSection — one write, status derived from the row as written", ()
 			email: "a11y@example.fr",
 		});
 
-		expect(result.status).toBe("published");
+		expect(result.status).toBe("deposited");
 	});
 
 	it("returns the declaration as written", async () => {
@@ -93,8 +93,8 @@ describe("saveSection — one write, status derived from the row as written", ()
 });
 
 describe("writeDeclaration — direct row writes", () => {
-	it("turns a Publiée declaration Modifiée when its name changes", async () => {
-		const declaration = publishedDeclaration();
+	it("turns a Déposée declaration Modifiée when its name changes", async () => {
+		const declaration = depositedDeclaration();
 		const { payload } = seeded(declaration);
 
 		const result = await writeDeclaration(payload, declaration, {
@@ -103,7 +103,7 @@ describe("writeDeclaration — direct row writes", () => {
 
 		expect(result).toMatchObject({
 			name: "Nouveau nom",
-			status: "unpublished",
+			status: "undeposited",
 		});
 	});
 });
@@ -279,7 +279,7 @@ describe("infos merge rules", () => {
 		});
 	});
 
-	it("writes the initial publication date for a draft and freezes it once published", async () => {
+	it("writes the initial publication date for a draft and freezes it once deposited", async () => {
 		const draft = completeDeclaration();
 		const savedDraft = await saveSection(
 			seeded(draft).payload,
@@ -289,15 +289,15 @@ describe("infos merge rules", () => {
 		);
 		expect(savedDraft.first_published_at).toBe("2024-03-24");
 
-		const published = publishedDeclaration();
-		const savedPublished = await saveSection(
-			seeded(published).payload,
-			published,
+		const deposited = depositedDeclaration();
+		const savedDeposited = await saveSection(
+			seeded(deposited).payload,
+			deposited,
 			"infos",
 			{ ...general, firstPublishedAt: "2024-03-24" },
 		);
-		expect(savedPublished.first_published_at).toBe(
-			published.first_published_at,
+		expect(savedDeposited.first_published_at).toBe(
+			deposited.first_published_at,
 		);
 	});
 });

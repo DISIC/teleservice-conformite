@@ -28,7 +28,7 @@ export type SectionEditing = {
 	showRadio: boolean;
 	/** The rendered content is this Section's own work to persist. */
 	isCustomEdit: boolean;
-	/** Ends the sequential walkthrough with the publish gate instead of "Suivant". */
+	/** Ends the sequential walkthrough with the deposit gate instead of "Suivant". */
 	isTerminal: boolean;
 	autosave: boolean;
 	startsReadOnly: boolean;

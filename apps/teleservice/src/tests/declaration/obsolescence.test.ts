@@ -6,14 +6,14 @@ import {
 } from "~/domain/declaration/obsolescence";
 import {
 	completeDeclaration,
-	publishedDeclaration,
+	depositedDeclaration,
 } from "./declaration.fixture";
 
-const PUBLISHED = new Date("2023-03-24T10:30:00.000Z");
+const DEPOSITED = new Date("2023-03-24T10:30:00.000Z");
 
 describe("obsoleteSince", () => {
-	it("is three years after the last publication", () => {
-		expect(obsoleteSince(PUBLISHED).toISOString().slice(0, 10)).toBe(
+	it("is three years after the last deposit", () => {
+		expect(obsoleteSince(DEPOSITED).toISOString().slice(0, 10)).toBe(
 			"2026-03-24",
 		);
 	});
@@ -29,44 +29,44 @@ describe("obsoleteSince", () => {
 
 describe("obsolescenceOf", () => {
 	it("is valid until three months before the deadline", () => {
-		expect(obsolescenceOf(PUBLISHED, new Date("2024-01-01T00:00:00Z"))).toBe(
+		expect(obsolescenceOf(DEPOSITED, new Date("2024-01-01T00:00:00Z"))).toBe(
 			"valid",
 		);
-		expect(obsolescenceOf(PUBLISHED, new Date("2025-12-23T23:59:59Z"))).toBe(
+		expect(obsolescenceOf(DEPOSITED, new Date("2025-12-23T23:59:59Z"))).toBe(
 			"valid",
 		);
 	});
 
 	it("is expiring from three months before the deadline, on the calendar day", () => {
-		expect(obsolescenceOf(PUBLISHED, new Date("2025-12-24T00:00:00Z"))).toBe(
+		expect(obsolescenceOf(DEPOSITED, new Date("2025-12-24T00:00:00Z"))).toBe(
 			"expiring",
 		);
-		expect(obsolescenceOf(PUBLISHED, new Date("2026-03-24T23:59:59Z"))).toBe(
+		expect(obsolescenceOf(DEPOSITED, new Date("2026-03-24T23:59:59Z"))).toBe(
 			"expiring",
 		);
 	});
 
 	it("opens the warning window on the last day of a short month", () => {
-		const published = new Date("2023-05-31T12:00:00Z");
-		expect(obsolescenceOf(published, new Date("2026-02-27T00:00:00Z"))).toBe(
+		const deposited = new Date("2023-05-31T12:00:00Z");
+		expect(obsolescenceOf(deposited, new Date("2026-02-27T00:00:00Z"))).toBe(
 			"valid",
 		);
-		expect(obsolescenceOf(published, new Date("2026-02-28T00:00:00Z"))).toBe(
+		expect(obsolescenceOf(deposited, new Date("2026-02-28T00:00:00Z"))).toBe(
 			"expiring",
 		);
-		expect(obsolescenceOf(published, new Date("2026-05-31T23:59:59Z"))).toBe(
+		expect(obsolescenceOf(deposited, new Date("2026-05-31T23:59:59Z"))).toBe(
 			"expiring",
 		);
-		expect(obsolescenceOf(published, new Date("2026-06-01T00:00:00Z"))).toBe(
+		expect(obsolescenceOf(deposited, new Date("2026-06-01T00:00:00Z"))).toBe(
 			"obsolete",
 		);
 	});
 
-	it("is obsolete the day after the deadline, whatever the publish hour", () => {
-		expect(obsolescenceOf(PUBLISHED, new Date("2026-03-25T00:00:00Z"))).toBe(
+	it("is obsolete the day after the deadline, whatever the deposit hour", () => {
+		expect(obsolescenceOf(DEPOSITED, new Date("2026-03-25T00:00:00Z"))).toBe(
 			"obsolete",
 		);
-		expect(obsolescenceOf(PUBLISHED, new Date("2030-01-01T00:00:00Z"))).toBe(
+		expect(obsolescenceOf(DEPOSITED, new Date("2030-01-01T00:00:00Z"))).toBe(
 			"obsolete",
 		);
 	});
@@ -79,19 +79,19 @@ describe("getObsolescence", () => {
 		expect(getObsolescence(completeDeclaration(), FAR_FUTURE)).toBe("valid");
 	});
 
-	it("is valid for a Publiée row without a publish date", () => {
+	it("is valid for a Déposée row without a deposit date", () => {
 		expect(
 			getObsolescence(
-				{ ...publishedDeclaration(), published_at: null },
+				{ ...depositedDeclaration(), deposited_at: null },
 				FAR_FUTURE,
 			),
 		).toBe("valid");
 	});
 
-	it("reads the last publish date of a Publiée row", () => {
+	it("reads the last deposit date of a Déposée row", () => {
 		const declaration = {
-			...publishedDeclaration(),
-			published_at: PUBLISHED.toISOString(),
+			...depositedDeclaration(),
+			deposited_at: DEPOSITED.toISOString(),
 		};
 		expect(getObsolescence(declaration, new Date("2025-01-01T00:00:00Z"))).toBe(
 			"valid",
@@ -104,9 +104,9 @@ describe("getObsolescence", () => {
 
 	it("ignores whether the row is Modifiée", () => {
 		const modified = {
-			...publishedDeclaration(),
-			published_at: PUBLISHED.toISOString(),
-			status: "unpublished" as const,
+			...depositedDeclaration(),
+			deposited_at: DEPOSITED.toISOString(),
+			status: "undeposited" as const,
 		};
 		expect(getObsolescence(modified, FAR_FUTURE)).toBe("obsolete");
 	});

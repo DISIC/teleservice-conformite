@@ -11,7 +11,7 @@ import {
 } from "~/domain/declaration/obsolescence";
 
 type ObsolescenceInterstitialProps = {
-	declaration: Pick<Declaration, "id" | "name" | "published_at">;
+	declaration: Pick<Declaration, "id" | "name" | "deposited_at">;
 	obsolescence: Exclude<Obsolescence, "valid">;
 	/** Reveals the details page for this visit; nothing is persisted. */
 	onUpdate: () => void;
@@ -59,7 +59,7 @@ const WITH_CHANGES: Step[] = [
 	},
 	{ title: "Modifiez les informations", detail: "de votre déclaration." },
 	{
-		title: "Publiez la nouvelle déclaration",
+		title: "Déposez la nouvelle déclaration",
 		detail: `qui sera valide pour une durée de ${OBSOLESCENCE_YEARS} ans.`,
 	},
 ];
@@ -70,7 +70,7 @@ const WITHOUT_CHANGES: Step[] = [
 		detail: "et modifiez les le cas échéant.",
 	},
 	{
-		title: "Publiez la nouvelle déclaration",
+		title: "Déposez la nouvelle déclaration",
 		detail: `qui sera valide pour une durée de ${OBSOLESCENCE_YEARS} ans.`,
 	},
 ];
@@ -81,8 +81,8 @@ export function ObsolescenceInterstitial({
 	onUpdate,
 }: ObsolescenceInterstitialProps) {
 	const { classes, cx } = useStyles();
-	const deadline = declaration.published_at
-		? obsoleteSince(new Date(declaration.published_at)).toLocaleDateString(
+	const deadline = declaration.deposited_at
+		? obsoleteSince(new Date(declaration.deposited_at)).toLocaleDateString(
 				"fr-FR",
 				{ timeZone: "UTC" },
 			)
@@ -103,7 +103,7 @@ export function ObsolescenceInterstitial({
 				{copy.title}
 			</h2>
 			<p className={cx(fr.cx("fr-text--xl", "fr-mb-2v"), classes.center)}>
-				Votre déclaration a été publiée il y a {copy.since} {OBSOLESCENCE_YEARS}{" "}
+				Votre déclaration a été déposée il y a {copy.since} {OBSOLESCENCE_YEARS}{" "}
 				ans.
 				<br />
 				{copy.deadline} <strong>{deadline}</strong>.
@@ -129,7 +129,7 @@ export function ObsolescenceInterstitial({
 			<p className={cx(fr.cx("fr-text--xl"), classes.center)}>
 				Conformément à la législation, vous devez actualiser votre
 				<br />
-				déclaration et la publier à nouveau.
+				déclaration et la déposer à nouveau.
 			</p>
 			<div className={classes.columns}>
 				<StepColumn

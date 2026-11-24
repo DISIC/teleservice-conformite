@@ -36,13 +36,13 @@ export const Declarations: CollectionConfig = {
 			name: "status",
 			type: "select",
 			label: { fr: "Statut" },
-			defaultValue: "unpublished",
+			defaultValue: "undeposited",
 			options: [...declarationStatusOptions],
 		},
 		{
-			name: "published_at",
+			name: "deposited_at",
 			type: "date",
-			label: { fr: "Date de publication" },
+			label: { fr: "Date du dernier dépôt" },
 			admin: {
 				position: "sidebar",
 				date: {
@@ -56,6 +56,18 @@ export const Declarations: CollectionConfig = {
 			label: { fr: "Date de publication initiale" },
 			admin: {
 				position: "sidebar",
+				date: {
+					pickerAppearance: "dayOnly",
+				},
+			},
+		},
+		{
+			name: "link_verified_at",
+			type: "date",
+			label: { fr: "Date de vérification du lien" },
+			admin: {
+				position: "sidebar",
+				readOnly: true,
 				date: {
 					pickerAppearance: "dayOnly",
 				},
@@ -105,9 +117,9 @@ export const Declarations: CollectionConfig = {
 			options: [...kindOptions],
 		},
 		{
-			name: "publishedContent",
+			name: "depositedContent",
 			type: "text",
-			label: { fr: "Contenu publié" },
+			label: { fr: "Contenu déposé" },
 			required: false,
 		},
 		auditGroup,

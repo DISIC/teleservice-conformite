@@ -1,24 +1,24 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Header } from "@codegouvfr/react-dsfr/Header";
-import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
+import type { DepositedDeclaration } from "~/domain/declaration/deposited/snapshot";
 import { tss } from "tss-react";
 import { obsolescenceOf } from "~/domain/declaration/obsolescence";
-import { publicationLabel } from "~/domain/declaration/published/markdown";
+import { depositLabel } from "~/domain/declaration/deposited/markdown";
 import { SERVICE_NAME } from "~/lib/serviceName";
 
-export const PUBLISHED_HEADER_TITLE = "Déclaration d’accessibilité numérique";
+export const DEPOSITED_HEADER_TITLE = "Déclaration d’accessibilité numérique";
 
-export function PublishedHeader({
+export function DepositedHeader({
 	declaration,
 	today,
 }: {
-	declaration: PublishedDeclaration;
+	declaration: DepositedDeclaration;
 	today: Date;
 }) {
 	const { classes, cx } = useStyles();
 	const isObsolete =
-		obsolescenceOf(new Date(declaration.publishedAt), today) === "obsolete";
+		obsolescenceOf(new Date(declaration.depositedAt), today) === "obsolete";
 
 	return (
 		<Header
@@ -33,10 +33,10 @@ export function PublishedHeader({
 				href: "/",
 				title: `Accueil ${SERVICE_NAME}`,
 			}}
-			serviceTitle={PUBLISHED_HEADER_TITLE}
+			serviceTitle={DEPOSITED_HEADER_TITLE}
 			serviceTagline={declaration.name}
 			quickAccessItems={[
-				<div key="publication" className={classes.publicationInfo}>
+				<div key="publication" className={classes.depositInfo}>
 					<p
 						className={cx(
 							fr.cx(
@@ -48,7 +48,7 @@ export function PublishedHeader({
 							classes.publication,
 						)}
 					>
-						{publicationLabel(declaration)}
+						{depositLabel(declaration)}
 					</p>
 					{isObsolete && (
 						<Badge as="p" small severity="error">
@@ -61,8 +61,8 @@ export function PublishedHeader({
 	);
 }
 
-const useStyles = tss.withName({ PublishedHeader }).create({
-	publicationInfo: {
+const useStyles = tss.withName({ DepositedHeader }).create({
+	depositInfo: {
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "flex-end",

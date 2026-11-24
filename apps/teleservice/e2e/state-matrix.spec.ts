@@ -6,14 +6,14 @@ import { declarationPath, stateNotice } from "./support/declarationPage";
 import { expect, test } from "./support/fixtures";
 import type { SeedState } from "./support/seed";
 
-/** Every seeded state and the notice it must show; `null` is the clean Publiée row. */
+/** Every seeded state and the notice it must show; `null` is the clean Déposée row. */
 const MATRIX: [SeedState, DeclarationState | null][] = [
 	["brouillon-incomplete", "incomplete"],
 	["to-verify", "to-verify"],
 	["brouillon-ready", "ready"],
-	["publiee", null],
-	["modifiee", "published-modified"],
-	["published-incomplete", "published-incomplete"],
+	["deposee", null],
+	["modifiee", "deposited-modified"],
+	["deposited-incomplete", "deposited-incomplete"],
 ];
 
 const STATES = Object.keys(STATE_PRESENTATION) as DeclarationState[];
@@ -51,9 +51,9 @@ test("Declaration state matrix: each state shows its notice, badge and actions",
 			seedState,
 		).toHaveCount(actions.includes("revert") ? 1 : 0);
 		await expect(
-			page.getByRole("button", { name: "Prévisualiser et publier" }),
+			page.getByRole("button", { name: "Prévisualiser la déclaration" }),
 			seedState,
-		).toHaveCount(actions.includes("publish") ? 1 : 0);
+		).toHaveCount(actions.includes("deposit") ? 1 : 0);
 		await a11y.check(`details page in state ${state}`);
 	}
 });

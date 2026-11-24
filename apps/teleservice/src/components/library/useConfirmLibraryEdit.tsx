@@ -17,7 +17,7 @@ type Params = {
 	onError: (message: string) => void;
 };
 
-/** Editing an item used by a published declaration updates that declaration, so the user confirms first. */
+/** Editing an item used by a deposited declaration updates that declaration, so the user confirms first. */
 export function useConfirmLibraryEdit({
 	kind,
 	confirmationModalActions,
@@ -28,7 +28,7 @@ export function useConfirmLibraryEdit({
 	const noun = NOUNS[kind];
 
 	return async (id: number, openEditor: () => void) => {
-		let linked: { id: number; name: string; isPublished: boolean }[];
+		let linked: { id: number; name: string; isDeposited: boolean }[];
 		try {
 			linked = await utils.library.linkedDeclarations.fetch({ kind, id });
 		} catch (e) {
@@ -36,13 +36,13 @@ export function useConfirmLibraryEdit({
 			return;
 		}
 
-		if (!linked.some((declaration) => declaration.isPublished)) {
+		if (!linked.some((declaration) => declaration.isDeposited)) {
 			openEditor();
 			return;
 		}
 
 		confirmationModalActions.open?.({
-			title: `Attention, ce ${noun} est associé à des déclarations publiées.`,
+			title: `Attention, ce ${noun} est associé à des déclarations déposées.`,
 			confirmLabel: `Modifier le ${noun}`,
 			confirmIconId: "fr-icon-edit-line",
 			description: (

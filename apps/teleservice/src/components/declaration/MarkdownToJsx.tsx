@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Markdown from "react-markdown";
 import { tss } from "tss-react";
-import { OBSOLETE_NOTICE_CLASS } from "~/domain/declaration/published/markdown";
+import { OBSOLETE_NOTICE_CLASS } from "~/domain/declaration/deposited/markdown";
 import { rehypePlugins, remarkPlugins } from "./markdownPlugins";
 
 type HeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
@@ -17,14 +17,14 @@ const HEADING_CLASS: Record<HeadingLevel, string> = {
 
 export default function MarkdownToJsx({
 	content,
-	mode = "published",
+	mode = "deposited",
 }: {
 	content: string;
-	mode?: "published" | "preview";
+	mode?: "deposited" | "preview";
 }) {
 	const { classes } = useStyles();
 
-	// In preview the content sits under the page's h1 and its "Prévisualiser et publier" h2.
+	// In preview the content sits under the page's h1 and its "Prévisualiser la déclaration" h2.
 	const headingRenderer =
 		(from: HeadingLevel) =>
 		(

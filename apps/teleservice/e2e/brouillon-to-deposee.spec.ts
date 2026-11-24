@@ -5,7 +5,7 @@ import {
 	expectPreview,
 	footer,
 	goToNextSection,
-	publishFromPreview,
+	depositFromPreview,
 	openListRow,
 	sectionHeading,
 	stateNotice,
@@ -13,7 +13,7 @@ import {
 } from "./support/declarationPage";
 import { expect, test } from "./support/fixtures";
 
-test("Brouillon to Publiée through the sequential walkthrough", async ({
+test("Brouillon to Déposée through the sequential walkthrough", async ({
 	page,
 	uniqueName,
 	a11y,
@@ -65,12 +65,12 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 
 	// The terminal gate validates the whole Declaration and lists what blocks.
 	await footer(page)
-		.getByRole("button", { name: "Prévisualiser et publier" })
+		.getByRole("button", { name: "Prévisualiser la déclaration" })
 		.click();
 	// The "email or URL" rule flags both paths, so the summary counts two fields.
 	const summary = page.getByRole("heading", {
 		level: 3,
-		name: /champs? (doit|doivent) être complétés? avant la publication/,
+		name: /champs? (doit|doivent) être complétés? avant le dépôt/,
 	});
 	await expect(summary).toBeVisible();
 	await a11y.check("error summary after a blocked gate");
@@ -86,18 +86,18 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 	await expect(stateNotice(page, "ready")).toBeVisible();
 
 	await footer(page)
-		.getByRole("button", { name: "Prévisualiser et publier" })
+		.getByRole("button", { name: "Prévisualiser la déclaration" })
 		.click();
 	await expectPreview(page);
 	await a11y.check("preview page");
-	await publishFromPreview(page);
-	await a11y.check("publication confirmation screen");
+	await depositFromPreview(page);
+	await a11y.check("deposit confirmation screen");
 
 	await page.goto(`/dashboard/declarations/${id}`);
-	await a11y.check("details page after publishing");
+	await a11y.check("details page after depositing");
 
-	// Publiée: standalone mode, no notice, public page live, list badge swapped.
-	await expect(page.getByText("Publiée", { exact: true })).toBeVisible();
+	// Déposée: standalone mode, no notice, public page live, list badge swapped.
+	await expect(page.getByText("Déposée", { exact: true })).toBeVisible();
 	await expect(
 		page.getByRole("button", { name: "Modifier" }).first(),
 	).toBeVisible();
@@ -105,10 +105,10 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 
 	await page.goto(`/declarations/${id}/publish`);
 	await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
-	await a11y.check("public page of a Publiée declaration");
+	await a11y.check("public page of a Déposée declaration");
 
 	const row = await openListRow(page, name);
-	await expect(row).toContainText("Publiée");
+	await expect(row).toContainText("Déposée");
 	await expect(row).not.toContainText(
 		STATE_PRESENTATION.incomplete.badge!.label,
 	);

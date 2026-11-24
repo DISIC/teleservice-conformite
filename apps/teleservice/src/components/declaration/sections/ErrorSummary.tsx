@@ -12,8 +12,8 @@ type ErrorSummaryProps = {
 };
 
 /**
- * Live, page-level summary of the declaration-wide publish gate. Rendered only
- * after a publish attempt; it re-derives from the declaration on every save, so
+ * Live, page-level summary of the declaration-wide deposit gate. Rendered only
+ * after a deposit attempt; it re-derives from the declaration on every save, so
  * it shrinks as Sections are fixed and disappears at zero.
  */
 export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
@@ -26,8 +26,8 @@ export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
 				closable={false}
 				title={
 					errors.length > 1
-						? `${errors.length} champs doivent être complétés avant la publication`
-						: "Un champ doit être complété avant la publication"
+						? `${errors.length} champs doivent être complétés avant le dépôt sur le téléservice`
+						: "Un champ doit être complété avant le dépôt sur le téléservice"
 				}
 				description={
 					<ul className={classes.list}>

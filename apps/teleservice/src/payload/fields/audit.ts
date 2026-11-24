@@ -18,7 +18,7 @@ const isRealised = (_: unknown, siblingData: AuditSiblingData | undefined) =>
  * realised-only fields.
  *
  * No required-field validation here: the row is a draft that autosave writes
- * one partial slice at a time — completeness is enforced by the publish gate.
+ * one partial slice at a time — completeness is enforced by the deposit gate.
  */
 export const auditGroup: Field = {
 	name: "audit",

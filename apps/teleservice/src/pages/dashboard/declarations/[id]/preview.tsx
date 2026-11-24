@@ -6,16 +6,16 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
 import { tss } from "tss-react";
-import PublishedTemplate, {
-	extractDeclarationContentToPublish,
-} from "~/components/declaration/PublishedTemplate";
+import DepositedTemplate, {
+	extractDeclarationContentToDeposit,
+} from "~/components/declaration/DepositedTemplate";
 import { DeclarationHeading } from "~/components/declaration/DeclarationHeading";
-import { PublishSuccess } from "~/components/declaration/PublishSuccess";
+import { DepositSuccess } from "~/components/declaration/DepositSuccess";
 import type { Entity, User } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { api } from "~/lib/api";
 import { guardDeclaration } from "~/lib/server-guards";
-import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
+import type { DepositedDeclaration } from "~/domain/declaration/deposited/snapshot";
 import { getDeclarationState } from "~/domain/declaration/state";
 import { getObsolescence } from "~/domain/declaration/obsolescence";
 import { pageTitle } from "~/lib/serviceName";
@@ -34,34 +34,34 @@ export default function DeclarationPreviewPage({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const { classes } = useStyles();
 
-	// Publishing stamps today, so the preview must not inherit an old, possibly obsolete, date.
-	const publishedDeclarationContent: PublishedDeclaration =
-		extractDeclarationContentToPublish(declaration, {
-			publishedAt: new Date(),
+	// Depositing stamps today, so the preview must not inherit an old, possibly obsolete, date.
+	const depositedDeclarationContent: DepositedDeclaration =
+		extractDeclarationContentToDeposit(declaration, {
+			depositedAt: new Date(),
 		});
 
-	const [publishError, setPublishError] = useState<
+	const [depositError, setDepositError] = useState<
 		"incomplete" | "generic" | null
 	>(null);
-	// Set once the server has published: the confirmation replaces the preview at the same URL.
-	const [publishedAt, setPublishedAt] = useState<Date | null>(null);
+	// Set once the server has deposited: the confirmation replaces the preview at the same URL.
+	const [depositedAt, setDepositedAt] = useState<Date | null>(null);
 
-	const { mutate: publishDeclaration } = api.declaration.publish.useMutation({
+	const { mutate: depositDeclaration } = api.declaration.deposit.useMutation({
 		onSuccess: ({ data }) => {
-			setPublishedAt(
-				data.published_at ? new Date(data.published_at) : new Date(),
+			setDepositedAt(
+				data.deposited_at ? new Date(data.deposited_at) : new Date(),
 			);
 		},
 		onError: (error) => {
-			setPublishError(
+			setDepositError(
 				error.data?.code === "PRECONDITION_FAILED" ? "incomplete" : "generic",
 			);
 		},
 	});
 
-	const onPublish = () => {
-		setPublishError(null);
-		publishDeclaration({ declarationId: declaration.id });
+	const onDeposit = () => {
+		setDepositError(null);
+		depositDeclaration({ declarationId: declaration.id });
 	};
 
 	const head = (
@@ -74,16 +74,16 @@ export default function DeclarationPreviewPage({
 		</Head>
 	);
 
-	if (publishedAt) {
+	if (depositedAt) {
 		return (
 			<>
 				{head}
 				<DeclarationHeading declaration={declaration} />
 				<section
-					id="declaration-published"
+					id="declaration-deposited"
 					className={fr.cx("fr-container", "fr-mt-10v")}
 				>
-					<PublishSuccess declaration={declaration} publishedAt={publishedAt} />
+					<DepositSuccess declaration={declaration} depositedAt={depositedAt} />
 				</section>
 			</>
 		);
@@ -97,29 +97,29 @@ export default function DeclarationPreviewPage({
 				<section id="declaration-preview" className={fr.cx("fr-container")}>
 					<div className={classes.main}>
 						<h2 className={fr.cx("fr-h1", "fr-mb-4v")}>
-							Prévisualiser et publier
+							Prévisualiser la déclaration
 						</h2>
 						<p className={fr.cx("fr-mb-0", "fr-text--xl")}>
 							Voici un aperçu de votre déclaration, telle qu’elle sera
-							consultable une fois publiée.
+							consultable une fois déposée sur le téléservice.
 							<br />
-							Nous vous invitons à la relire pour validation avant publication.
+							Nous vous invitons à la relire pour validation avant envoi.
 						</p>
 						<div className={classes.declarationPreview}>
-							<PublishedTemplate
-								declaration={publishedDeclarationContent}
+							<DepositedTemplate
+								declaration={depositedDeclarationContent}
 								mode="preview"
 							/>
 						</div>
-						{publishError && (
+						{depositError && (
 							<Alert
 								className={fr.cx("fr-mb-3v")}
 								severity="error"
-								title="Publication impossible"
+								title="Dépôt impossible"
 								description={
-									publishError === "incomplete" ? (
+									depositError === "incomplete" ? (
 										<>
-											La déclaration ne peut pas être publiée car elle est
+											La déclaration ne peut pas être déposée car elle est
 											incomplète.{" "}
 											<Link href={`/dashboard/declarations/${declaration.id}`}>
 												Retournez à la déclaration
@@ -127,7 +127,7 @@ export default function DeclarationPreviewPage({
 											pour compléter les sections manquantes.
 										</>
 									) : (
-										"Une erreur est survenue lors de la publication. Veuillez réessayer."
+										"Une erreur est survenue lors du dépôt. Veuillez réessayer."
 									)
 								}
 							/>
@@ -143,8 +143,8 @@ export default function DeclarationPreviewPage({
 								>
 									Revenir au formulaire
 								</Button>
-								<Button priority="primary" size="large" onClick={onPublish}>
-									Publier la déclaration
+								<Button priority="primary" size="large" onClick={onDeposit}>
+									Déposer la déclaration
 								</Button>
 							</div>
 						</div>

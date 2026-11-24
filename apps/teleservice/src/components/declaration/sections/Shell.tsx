@@ -19,12 +19,12 @@ export type SectionShellProps = {
 	onEnterEdit: () => void;
 	onCancelEdit: () => void;
 	onSave: () => void;
-	/** Terminal publish CTA; bypasses the section form submit when provided. */
-	onPublish?: () => void;
+	/** Terminal deposit CTA; bypasses the section form submit when provided. */
+	onDeposit?: () => void;
 	isSaving?: boolean;
 	prevHref: string | null;
 	nextHref: string | null;
-	/** Override the "Suivant" label (e.g. "Prévisualiser et publier" on the last section). */
+	/** Override the "Suivant" label (e.g. "Prévisualiser la déclaration" on the last section). */
 	nextLabel?: string;
 	nextIcon?: FrIconClassName | RiIconClassName;
 	/** Nothing to save (e.g. an audit sub-section before the audit is realised). */
@@ -43,7 +43,7 @@ export function SectionShell({
 	onEnterEdit,
 	onCancelEdit,
 	onSave,
-	onPublish,
+	onDeposit,
 	isSaving = false,
 	prevHref,
 	nextHref,
@@ -59,7 +59,7 @@ export function SectionShell({
 	// Standalone has no autosave, so navigating mid-edit would discard the section;
 	// the footer carries only the commit actions until the edit is saved or cancelled.
 	const showEditActions = hasStandaloneActions && isEditing;
-	// The last Section of the walkthrough ends with the declaration-wide publish
+	// The last Section of the walkthrough ends with the declaration-wide deposit
 	// gate instead of a "next" link.
 	const isTerminal = isSequential && !hideActions && !nextHref;
 	const { classes, cx } = useStyles();
@@ -136,11 +136,11 @@ export function SectionShell({
 									priority="primary"
 									iconId="fr-icon-upload-fill"
 									iconPosition="left"
-									onClick={onPublish ?? onSave}
+									onClick={onDeposit ?? onSave}
 									disabled={isSaving}
 									size="small"
 								>
-									Prévisualiser et publier
+									Prévisualiser la déclaration
 								</Button>
 							) : nextHref ? (
 								<Button

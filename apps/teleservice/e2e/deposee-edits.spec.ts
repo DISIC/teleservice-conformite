@@ -1,7 +1,7 @@
 import { CONTACT } from "./support/seed";
 import {
 	declarationPath,
-	publishFromPreview,
+	depositFromPreview,
 	stateNotice,
 	waitForSave,
 } from "./support/declarationPage";
@@ -21,21 +21,21 @@ async function editContactEmail(
 	]);
 }
 
-test("Publiée: an edit makes it Modifiée, revert restores it, republish clears it", async ({
+test("Déposée: an edit makes it Modifiée, revert restores it, redeposit clears it", async ({
 	page,
 	seed,
 	a11y,
 }) => {
-	const declaration = await seed.declaration("publiee");
+	const declaration = await seed.declaration("deposee");
 	await page.goto(declarationPath(declaration.id, "contact"));
 
-	// A clean Publiée row shows no notice and edits Section by Section.
-	await expect(stateNotice(page, "published-modified")).toHaveCount(0);
+	// A clean Déposée row shows no notice and edits Section by Section.
+	await expect(stateNotice(page, "deposited-modified")).toHaveCount(0);
 	await editContactEmail(page, NEW_EMAIL);
-	await expect(stateNotice(page, "published-modified")).toBeVisible();
+	await expect(stateNotice(page, "deposited-modified")).toBeVisible();
 	await a11y.check("standalone details page with the Modifiée notice");
 
-	// Revert restores the published version; the page reloads with the old value.
+	// Revert restores the deposited version; the page reloads with the old value.
 	await page.getByRole("button", { name: "Annuler les modifications" }).click();
 	const dialog = page.getByRole("dialog", {
 		name: "Annuler les modifications",
@@ -43,20 +43,22 @@ test("Publiée: an edit makes it Modifiée, revert restores it, republish clears
 	await expect(dialog).toBeVisible();
 	await a11y.check("revert confirmation dialog");
 	await Promise.all([
-		waitForSave(page, "declaration.revertToPublished"),
+		waitForSave(page, "declaration.revertToDeposited"),
 		dialog.getByRole("button", { name: "Annuler les modifications" }).click(),
 	]);
 	await expect(page.getByText(CONTACT.email)).toBeVisible();
-	await expect(stateNotice(page, "published-modified")).toHaveCount(0);
+	await expect(stateNotice(page, "deposited-modified")).toHaveCount(0);
 
-	// Republishing a Modifiée row publishes the new content and clears the notice.
+	// Redepositing a Modifiée row deposits the new content and clears the notice.
 	await editContactEmail(page, NEW_EMAIL);
-	await expect(stateNotice(page, "published-modified")).toBeVisible();
-	await page.getByRole("button", { name: "Prévisualiser et publier" }).click();
-	await publishFromPreview(page);
+	await expect(stateNotice(page, "deposited-modified")).toBeVisible();
+	await page
+		.getByRole("button", { name: "Prévisualiser la déclaration" })
+		.click();
+	await depositFromPreview(page);
 
 	await page.goto(`/dashboard/declarations/${declaration.id}`);
-	await expect(stateNotice(page, "published-modified")).toHaveCount(0);
+	await expect(stateNotice(page, "deposited-modified")).toHaveCount(0);
 
 	await page.goto(`/declarations/${declaration.id}/publish`);
 	await expect(page.getByText(NEW_EMAIL)).toBeVisible();

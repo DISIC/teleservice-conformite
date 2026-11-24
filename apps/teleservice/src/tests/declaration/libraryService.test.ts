@@ -11,7 +11,7 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 import { fakePayload } from "../payload.fake";
 import {
 	completeDeclaration,
-	publishedDeclaration,
+	depositedDeclaration,
 } from "./declaration.fixture";
 
 const OWNER = 1;
@@ -100,13 +100,13 @@ describe.each(KIND_LIST)("linkParent — %s", (kind) => {
 		});
 	});
 
-	it("turns a Publiée declaration Modifiée when the linked content differs from its snapshot", async () => {
-		const current = publishedDeclaration();
+	it("turns a Déposée declaration Modifiée when the linked content differs from its snapshot", async () => {
+		const current = depositedDeclaration();
 		const { payload } = seeded(kind, [current]);
 
 		const result = await linkParent(payload, OWNER, kind, current, PARENT_ID);
 
-		expect(result.status).toBe("unpublished");
+		expect(result.status).toBe("undeposited");
 	});
 
 	it("refuses a parent from another user's Library", async () => {
@@ -173,8 +173,8 @@ describe.each(KIND_LIST)("upsertParent — %s", (kind) => {
 		expect(readDeclaration(read, 3)).toBe(custom);
 	});
 
-	it("turns a linked Publiée declaration Modifiée in the same write", async () => {
-		const current = publishedDeclaration({
+	it("turns a linked Déposée declaration Modifiée in the same write", async () => {
+		const current = depositedDeclaration({
 			[kind]: { ...copy, parent: PARENT_ID },
 		} as never);
 		const { payload, read } = seeded(kind, [current]);
@@ -188,7 +188,7 @@ describe.each(KIND_LIST)("upsertParent — %s", (kind) => {
 		);
 
 		expect(readDeclaration(read, current.id)).toMatchObject({
-			status: "unpublished",
+			status: "undeposited",
 			[kind]: publicEdit,
 		});
 	});
@@ -213,9 +213,9 @@ describe.each(KIND_LIST)("upsertParent — %s", (kind) => {
 });
 
 describe("upsertParent — what stays private", () => {
-	it("renaming a contact leaves a linked Publiée declaration clean, the name is never public", async () => {
+	it("renaming a contact leaves a linked Déposée declaration clean, the name is never public", async () => {
 		const { copy, values } = KINDS.contact;
-		const current = publishedDeclaration({
+		const current = depositedDeclaration({
 			contact: { ...copy, parent: PARENT_ID },
 		} as never);
 		const { payload, read } = seeded("contact", [current]);
@@ -229,7 +229,7 @@ describe("upsertParent — what stays private", () => {
 		);
 
 		expect(readDeclaration(read, current.id)).toMatchObject({
-			status: "published",
+			status: "deposited",
 			contact: { name: "Référent renommé" },
 		});
 	});
@@ -239,16 +239,16 @@ describe.each(KIND_LIST)("deleteParent — %s", (kind) => {
 	const { collection, parent, copy } = KINDS[kind];
 
 	it("detaches every linked copy but keeps its content, then deletes the item", async () => {
-		const current = publishedDeclaration({
+		const current = depositedDeclaration({
 			[kind]: { ...copy, parent: PARENT_ID },
 		} as never);
 		const { payload, read } = seeded(kind, [current]);
 
 		await deleteParent(payload, OWNER, kind, PARENT_ID);
 
-		// Detaching changes nothing public: the Publiée row stays clean.
+		// Detaching changes nothing public: the Déposée row stays clean.
 		expect(readDeclaration(read, current.id)).toMatchObject({
-			status: "published",
+			status: "deposited",
 			[kind]: { ...copy, parent: null },
 		});
 		expect(read(collection, PARENT_ID)).toBeUndefined();
@@ -293,18 +293,18 @@ describe("skipSchema", () => {
 		});
 	});
 
-	it("turns a Publiée declaration that had a schema Modifiée", async () => {
-		const current = publishedDeclaration({ schema: customSchema } as never);
+	it("turns a Déposée declaration that had a schema Modifiée", async () => {
+		const current = depositedDeclaration({ schema: customSchema } as never);
 		const { payload } = seeded("schema", [current]);
 
 		const result = await skipSchema(payload, current);
 
-		expect(result.status).toBe("unpublished");
+		expect(result.status).toBe("undeposited");
 	});
 });
 
 describe("getLinkedDeclarations", () => {
-	it("lists the linked declarations, and only them, with whether each is Publiée", async () => {
+	it("lists the linked declarations, and only them, with whether each is Déposée", async () => {
 		const { copy } = KINDS.contact;
 		const { payload } = seeded("contact", [
 			completeDeclaration({
@@ -312,7 +312,7 @@ describe("getLinkedDeclarations", () => {
 				name: "Brouillon lié",
 				contact: { ...copy, parent: PARENT_ID },
 			} as never),
-			publishedDeclaration({
+			depositedDeclaration({
 				id: 2,
 				name: "En ligne",
 				contact: { ...copy, parent: PARENT_ID },
@@ -323,8 +323,8 @@ describe("getLinkedDeclarations", () => {
 		expect(
 			await getLinkedDeclarations(payload, OWNER, "contact", PARENT_ID),
 		).toEqual([
-			{ id: 1, name: "Brouillon lié", isPublished: false },
-			{ id: 2, name: "En ligne", isPublished: true },
+			{ id: 1, name: "Brouillon lié", isDeposited: false },
+			{ id: 2, name: "En ligne", isDeposited: true },
 		]);
 	});
 

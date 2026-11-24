@@ -89,7 +89,7 @@ export async function openListRow(page: Page, name: string): Promise<Locator> {
 export const sectionHeading = (page: Page, slug: SectionSlug) =>
 	page.getByRole("heading", { level: 2, name: SECTION_TITLES[slug] });
 
-/** The walkthrough footer; the terminal Section swaps "Suivant" for the publish gate. */
+/** The walkthrough footer; the terminal Section swaps "Suivant" for the deposit gate. */
 export const footer = (page: Page) => page.locator("section > footer");
 
 export async function goToNextSection(page: Page, expected: SectionSlug) {
@@ -104,17 +104,20 @@ export const stateNotice = (page: Page, state: DeclarationState) =>
 export async function expectPreview(page: Page) {
 	await page.waitForURL(/\/preview$/);
 	await expect(
-		page.getByRole("heading", { level: 2, name: "Prévisualiser et publier" }),
+		page.getByRole("heading", {
+			level: 2,
+			name: "Prévisualiser la déclaration",
+		}),
 	).toBeVisible();
 }
 
-/** Publishes and asserts the confirmation screen; the caller navigates on from there. */
-export async function publishFromPreview(page: Page) {
-	await page.getByRole("button", { name: "Publier la déclaration" }).click();
+/** Deposits and asserts the confirmation screen; the caller navigates on from there. */
+export async function depositFromPreview(page: Page) {
+	await page.getByRole("button", { name: "Déposer la déclaration" }).click();
 	await expect(
 		page.getByRole("heading", {
 			level: 2,
-			name: "Votre déclaration a été publiée sur le téléservice.",
+			name: "Votre déclaration a été déposée sur le téléservice.",
 		}),
 	).toBeVisible();
 }
@@ -125,8 +128,8 @@ export const obsolescenceNotice = (
 ) => page.getByText(OBSOLESCENCE_PRESENTATION[value].heading);
 
 /** The deadline exactly as ObsolescenceLine prints it. */
-export const deadlineOf = (declaration: { published_at?: string | null }) =>
-	obsoleteSince(new Date(declaration.published_at ?? "")).toLocaleDateString(
+export const deadlineOf = (declaration: { deposited_at?: string | null }) =>
+	obsoleteSince(new Date(declaration.deposited_at ?? "")).toLocaleDateString(
 		"fr-FR",
 		{ timeZone: "UTC" },
 	);

@@ -3,30 +3,30 @@ import type { GetServerSideProps, Redirect } from "next";
 import Head from "next/head";
 import { tss } from "tss-react";
 import ErrorPage from "~/components/declaration/ErrorPage";
-import { PublishedHeader } from "~/components/declaration/PublishedHeader";
-import PublishedTemplate from "~/components/declaration/PublishedTemplate";
+import { DepositedHeader } from "~/components/declaration/DepositedHeader";
+import DepositedTemplate from "~/components/declaration/DepositedTemplate";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
 import { loadDeclarationForPage } from "~/lib/server-guards";
 import {
-	parsePublishedDeclaration,
-	type PublishedDeclaration,
-} from "~/domain/declaration/published/snapshot";
+	parseDepositedDeclaration,
+	type DepositedDeclaration,
+} from "~/domain/declaration/deposited/snapshot";
 import { pageTitle } from "~/lib/serviceName";
 
 type PublishPageProps = {
-	publishedContent: PublishedDeclaration | null;
+	depositedContent: DepositedDeclaration | null;
 	deleted?: boolean;
 	today: string;
 };
 
 const PublishPage: PageWithHeader<PublishPageProps> = ({
-	publishedContent,
+	depositedContent,
 	deleted,
 	today,
 }) => {
 	const { classes } = useStyles();
 
-	if (!publishedContent) {
+	if (!depositedContent) {
 		return <ErrorPage deleted={deleted} />;
 	}
 
@@ -34,16 +34,16 @@ const PublishPage: PageWithHeader<PublishPageProps> = ({
 		<>
 			<Head>
 				<title>
-					{pageTitle(`Déclaration d’accessibilité de ${publishedContent.name}`)}
+					{pageTitle(`Déclaration d’accessibilité de ${depositedContent.name}`)}
 				</title>
 			</Head>
 			<section
-				id="published-declaration-section"
+				id="deposited-declaration-section"
 				className={fr.cx("fr-container")}
 			>
-				<div className={classes.publishedDeclarationContainer}>
-					<PublishedTemplate
-						declaration={publishedContent}
+				<div className={classes.depositedDeclarationContainer}>
+					<DepositedTemplate
+						declaration={depositedContent}
 						today={new Date(today)}
 					/>
 				</div>
@@ -53,15 +53,15 @@ const PublishPage: PageWithHeader<PublishPageProps> = ({
 };
 
 // The public page describes the document, not the téléservice.
-PublishPage.renderHeader = ({ publishedContent, today }) =>
-	publishedContent ? (
-		<PublishedHeader declaration={publishedContent} today={new Date(today)} />
+PublishPage.renderHeader = ({ depositedContent, today }) =>
+	depositedContent ? (
+		<DepositedHeader declaration={depositedContent} today={new Date(today)} />
 	) : null;
 
 export default PublishPage;
 
 const useStyles = tss.withName("PublishPage").create({
-	publishedDeclarationContainer: {
+	depositedDeclarationContainer: {
 		paddingBlock: fr.spacing("12v"),
 	},
 });
@@ -80,13 +80,13 @@ export const getServerSideProps: GetServerSideProps<PublishPageProps> = async (
 
 	if (!session) return { redirect };
 
-	const publishedContent = declaration?.deletedAt
+	const depositedContent = declaration?.deletedAt
 		? null
-		: parsePublishedDeclaration(declaration?.publishedContent);
+		: parseDepositedDeclaration(declaration?.depositedContent);
 
 	return {
 		props: {
-			publishedContent,
+			depositedContent,
 			deleted: !!declaration?.deletedAt,
 			today: new Date().toISOString(),
 		},

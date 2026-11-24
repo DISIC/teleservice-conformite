@@ -29,7 +29,7 @@ const SCHEMA_OPTIONS: SourceModeOption[] = [
 		value: "skipped",
 		label: "Renseigner un schéma pluriannuel plus tard",
 		hintText:
-			"Vous pouvez publier votre déclaration et renseigner votre schéma pluriannuel par la suite.",
+			"Vous pouvez déposer votre déclaration et renseigner votre schéma pluriannuel par la suite.",
 		illustration: <Error fontSize="3rem" />,
 	},
 ];

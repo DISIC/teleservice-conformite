@@ -26,7 +26,7 @@ const publicUrl = (declaration: PopulatedDeclaration) =>
 export type DeclarationAction = "copy" | "view" | "edit";
 
 const ALL_ACTIONS: DeclarationAction[] = ["copy", "view", "edit"];
-// The public page exists only once the Declaration is published.
+// The public page exists only once the Declaration is deposited.
 const PUBLIC_PAGE_ACTIONS: DeclarationAction[] = ["copy", "view"];
 
 export function useDeclarationColumns({
@@ -124,9 +124,9 @@ function buildColumns(
 				const declaration = info.row.original;
 				const copyTitle = `Copier le lien public de la déclaration ${declaration.name}`;
 				const viewLabel = `Voir la déclaration ${declaration.name}`;
-				const isPublished = getDeclarationStatus(declaration) === "published";
+				const isDeposited = getDeclarationStatus(declaration) !== "draft";
 				const visible = options.actions.filter(
-					(action) => isPublished || !PUBLIC_PAGE_ACTIONS.includes(action),
+					(action) => isDeposited || !PUBLIC_PAGE_ACTIONS.includes(action),
 				);
 				if (visible.length === 0)
 					return <EmptyValue label="Aucune action disponible" />;
