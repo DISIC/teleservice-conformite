@@ -1,169 +1,188 @@
-import { fr } from "@codegouvfr/react-dsfr";
+import { fr, type FrIconClassName } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import Success from "@codegouvfr/react-dsfr/picto/Success";
-import Search from "@codegouvfr/react-dsfr/picto/Search";
-import Application from "@codegouvfr/react-dsfr/picto/Application";
-import { type ComponentType, useEffect, useRef } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 import { tss } from "tss-react";
 import {
-	EXPIRING_MONTHS,
-	OBSOLESCENCE_YEARS,
-	obsoleteSince,
-} from "~/domain/declaration/obsolescence";
+	footerConformityLabel,
+	getAuditConformity,
+} from "~/domain/declaration/conformity";
+import type { DepositedDeclaration } from "~/domain/declaration/deposited/snapshot";
 import { copyToClipboard } from "~/lib/clipboard";
-import type { Declaration, User } from "~/payload/payload-types";
-import { newTabLinkProps } from "~/lib/newTabLink";
+import { newTabLinkProps, newTabTitle } from "~/lib/newTabLink";
+import type { Declaration } from "~/payload/payload-types";
 
 type DepositSuccessProps = {
-	declaration: Pick<Declaration, "id" | "name" | "contact"> & {
-		created_by: User;
-	};
-	/** The date the server stamped on this deposit, not the moment of render. */
-	depositedAt: Date;
+	declaration: Pick<Declaration, "id">;
+	audit: DepositedDeclaration["audit"];
 };
 
 const DECLARATIONS_LIST = "/dashboard/declarations";
 
-const SUPPORTS: {
-	picto: ComponentType<{ fontSize?: string; "aria-hidden"?: boolean }>;
-	title: string;
-	detail: string;
-}[] = [
+// Distinct from the header notice form so the two feedback channels stay separable.
+const JDMA_URL =
+	"https://jedonnemonavis.numerique.gouv.fr/Demarches/4385?button=5139";
+
+const publicationRules = (
+	mention: string,
+): { iconId: FrIconClassName; text: ReactNode }[] => [
 	{
-		picto: Search,
-		title: "Pour les sites internet",
-		detail:
-			"La déclaration d’accessibilité est publiée sur le site internet concerné. Elle est mise à disposition au sein d’une page accessibilité, directement accessible depuis la page d’accueil et depuis n’importe quelle page du site.",
+		iconId: "fr-icon-computer-line",
+		text: "Il doit être disponible depuis toutes les pages du site, à la place de votre précédente déclaration d’accessibilité, par exemple en pied de page.",
 	},
 	{
-		picto: Application,
-		title: "Pour les applications mobiles",
-		detail:
-			"Elle est disponible sur le site internet de l’organisme qui a développé l’application ou apparaît avec d’autres informations disponibles lors du téléchargement de l’application. L’état de conformité est précisé au sein de l’application.",
+		iconId: "fr-icon-external-link-line",
+		text: "Il doit être signalé comme étant un lien externe, pointant vers la déclaration hébergée sur la plateforme du téléservice.",
 	},
 	{
-		picto: Application,
-		title: "Pour les autres services de communication au public en ligne",
-		detail:
-			"Elle est disponible sur le site internet des organismes responsables de leur gestion ou de leur mise à disposition.",
+		iconId: "fr-icon-bookmark-line",
+		text: (
+			<>
+				Il doit indiquer explicitement l’état de conformité :
+				<br />« {mention} ».
+			</>
+		),
 	},
 ];
 
-export function DepositSuccess({
-	declaration,
-	depositedAt,
-}: DepositSuccessProps) {
+export function DepositSuccess({ declaration, audit }: DepositSuccessProps) {
 	const { classes, cx } = useStyles();
-	const heading = useRef<HTMLHeadingElement>(null);
+	const confirmation = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		heading.current?.focus();
+		confirmation.current?.focus();
 	}, []);
 
-	const deadline = obsoleteSince(depositedAt).toLocaleDateString("fr-FR", {
-		timeZone: "UTC",
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	});
-
-	const publicHref = `/declarations/${declaration.id}/publish`;
-	const publicUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}${publicHref}`;
-
-	const recipients = [
-		declaration.created_by.email,
-		declaration.contact?.email,
-	].filter((email): email is string => !!email);
+	const publicUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/declarations/${declaration.id}/publish`;
+	const mention = `Accessibilité : ${footerConformityLabel(getAuditConformity(audit))}`;
+	const snippet = `<a target="_blank" title="${newTabTitle(mention)}" class="fr-footer__bottom-link" href="${publicUrl}">${mention.replace(" :", "&nbsp;:")}</a>`;
 
 	return (
 		<div className={classes.root}>
-			<Success fontSize="6rem" aria-hidden />
-			<h2
-				ref={heading}
-				tabIndex={-1}
-				className={cx(fr.cx("fr-h1", "fr-mt-4v", "fr-mb-6v"), classes.center)}
-			>
-				Votre déclaration a été déposée
-				<br />
-				sur le téléservice.
-			</h2>
-			<p className={cx(fr.cx("fr-text--xl", "fr-mb-0"), classes.center)}>
-				Cette déclaration est valable {OBSOLESCENCE_YEARS} ans, jusqu’au{" "}
-				<strong>{deadline}</strong>.
-			</p>
-			<p className={cx(fr.cx("fr-text--xl"), classes.center)}>
-				Un rappel sera envoyé {EXPIRING_MONTHS} mois avant que la déclaration ne
-				soit obsolète à {recipients.join(" et ")}.
-			</p>
-			<Button
-				priority="tertiary"
-				size="small"
-				className={fr.cx("fr-mt-6v")}
-				iconId="fr-icon-eye-fill"
-				iconPosition="left"
-				linkProps={{
-					href: publicHref,
-					...newTabLinkProps(`Voir la déclaration ${declaration.name}`),
-				}}
-			>
-				Voir la déclaration en ligne
-			</Button>
-			<h3
-				className={cx(fr.cx("fr-h2", "fr-mt-12v", "fr-mb-3v"), classes.center)}
-			>
-				Prochaine étape
-			</h3>
-			<p className={cx(fr.cx("fr-text--lg", "fr-mb-3v"), classes.center)}>
-				Affichez le lien de votre déclaration sur votre site.
-			</p>
-			<div className={classes.copyRow}>
-				<Input
-					label="Lien de votre déclaration déposée"
-					classes={{ root: classes.linkField, label: fr.cx("fr-sr-only") }}
-					nativeInputProps={{ value: publicUrl, readOnly: true }}
+			<div ref={confirmation} tabIndex={-1}>
+				<Alert
+					severity="success"
+					title="Déclaration déposée sur le téléservice"
+					description="Un mail de confirmation vous a été envoyé."
+					as="h6"
+					small={false}
 				/>
-				<Button
-					priority="tertiary"
-					iconId="fr-icon-links-line"
-					iconPosition="left"
-					onClick={() => copyToClipboard(publicUrl, () => void 0)}
-				>
-					Copier le lien
-				</Button>
 			</div>
-			<ul className={classes.supports}>
-				{SUPPORTS.map(({ picto: Picto, title, detail }) => (
-					<li key={title} className={classes.support}>
-						<span className={classes.pictoCircle}>
-							<Picto fontSize="3.5rem" aria-hidden />
-						</span>
-						<span className={fr.cx("fr-text--lg", "fr-mb-0")}>
-							<strong>{title}</strong>
-							<br />
-							{detail}
-						</span>
-					</li>
-				))}
-			</ul>
-			<div className={classes.actions}>
-				<Button
-					priority="secondary"
-					iconId="fr-icon-arrow-left-s-line"
-					iconPosition="left"
-					linkProps={{ href: DECLARATIONS_LIST }}
-				>
-					Retourner à la liste de mes déclarations
-				</Button>
-				<Button
-					priority="primary"
-					iconId="ri-download-line"
-					iconPosition="left"
-					linkProps={{ href: `${DECLARATIONS_LIST}?create=true` }}
-				>
-					Déposer une déclaration
-				</Button>
+			<div className={classes.card}>
+				<section className={classes.part}>
+					<h2 className={cx(fr.cx("fr-h3"), classes.center)}>
+						Publiez la déclaration sur votre site
+					</h2>
+					<p className={cx("fr-mt-3v", classes.center)}>
+						La déclaration d’accessibilité doit être disponible depuis toutes
+						les pages de votre site.
+					</p>
+					<ol className={classes.steps}>
+						<li className={classes.step}>
+							<span className={classes.stepNumber} aria-hidden>
+								1
+							</span>
+							<h3 className={cx(fr.cx("fr-h5", "fr-mb-0"), classes.center)}>
+								Copiez le lien de la déclaration
+							</h3>
+							<div className={classes.linkField}>
+								<Input
+									label="Lien de votre déclaration déposée"
+									classes={{
+										root: classes.field,
+										label: fr.cx("fr-sr-only"),
+									}}
+									nativeInputProps={{ value: publicUrl, readOnly: true }}
+								/>
+							</div>
+							<Button
+								iconId="fr-icon-links-line"
+								iconPosition="left"
+								onClick={() => copyToClipboard(publicUrl, () => void 0)}
+							>
+								Copier le lien
+							</Button>
+						</li>
+						<li className={classes.step}>
+							<span className={classes.stepNumber} aria-hidden>
+								2
+							</span>
+							<h3 className={cx(fr.cx("fr-h5", "fr-mb-0"), classes.center)}>
+								Intégrez le lien sur votre site
+							</h3>
+							<p className={classes.center}>
+								Vous devez le publier sur votre site, en respectant les règles
+								suivantes :
+							</p>
+							<ul className={classes.rules}>
+								{publicationRules(mention).map(({ iconId, text }) => (
+									<li key={iconId} className={classes.rule}>
+										<span
+											className={cx(fr.cx(iconId), classes.ruleIcon)}
+											aria-hidden
+										/>
+										<span>{text}</span>
+									</li>
+								))}
+							</ul>
+							<p className={classes.center}>
+								Vous pouvez copier ce code et l’envoyer à votre équipe technique
+								pour l’intégrer sur votre site. Les classes CSS proposées ici
+								sont celles du DSFR.
+							</p>
+							<Input
+								label="Code du lien vers la déclaration"
+								textArea
+								classes={{
+									root: classes.field,
+									label: fr.cx("fr-sr-only"),
+								}}
+								nativeTextAreaProps={{
+									value: snippet,
+									readOnly: true,
+									rows: 4,
+								}}
+							/>
+							<Button
+								priority="secondary"
+								iconId="ri-file-copy-line"
+								iconPosition="right"
+								onClick={() => copyToClipboard(snippet, () => void 0)}
+							>
+								Copier le code
+							</Button>
+						</li>
+					</ol>
+				</section>
+				<section className={cx(classes.part, classes.feedback)}>
+					<h2 className={cx(fr.cx("fr-h5", "fr-mb-3v"), classes.center)}>
+						Aidez-nous à améliorer ce service !
+					</h2>
+					<p className={cx(classes.center, classes.mention)}>
+						Donnez-nous votre avis, cela ne prend que 2 minutes.
+					</p>
+					<a
+						href={JDMA_URL}
+						{...newTabLinkProps("Je donne mon avis")}
+						className={fr.cx("fr-raw-link", "fr-mt-9v")}
+					>
+						{/* oxlint-disable-next-line nextjs/no-img-element -- JDMA requires its hosted button image */}
+						<img
+							src="https://jedonnemonavis.numerique.gouv.fr/static/bouton-bleu-clair.svg"
+							alt="Je donne mon avis"
+						/>
+					</a>
+				</section>
 			</div>
+			<Button
+				priority="secondary"
+				iconId="fr-icon-arrow-left-s-line"
+				iconPosition="left"
+				linkProps={{ href: DECLARATIONS_LIST }}
+			>
+				Retourner à la liste de mes déclarations
+			</Button>
 		</div>
 	);
 }
@@ -173,66 +192,102 @@ const useStyles = tss.withName({ DepositSuccess }).create({
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
-		maxWidth: "48rem",
+		gap: fr.spacing("10v"),
+		maxWidth: "50rem",
 		marginInline: "auto",
 		paddingBottom: fr.spacing("12v"),
+		"& > *:first-child": { width: "100%" },
 	},
 	center: {
 		textAlign: "center",
 		margin: 0,
 	},
-	copyRow: {
-		display: "flex",
-		flexWrap: "wrap",
-		alignItems: "flex-start",
-		gap: fr.spacing("3v"),
-		"@media (max-width: 768px)": {
-			flexDirection: "column",
-			alignItems: "center",
-		},
-	},
-	linkField: {
-		marginBottom: "0!important",
-		"& input": {
-			minWidth: "24rem",
-			marginTop: "0!important",
-		},
-	},
-	notice: {
+	card: {
 		width: "100%",
-		marginTop: fr.spacing("3v"),
+		border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
 	},
-	supports: {
+	part: {
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+		padding: `${fr.spacing("12v")} ${fr.spacing("21v")}`,
+		[fr.breakpoints.down("md")]: {
+			padding: fr.spacing("6v"),
+		},
+	},
+	feedback: {
+		borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+	},
+	mention: {
+		color: fr.colors.decisions.text.mention.grey.default,
+		marginBottom: fr.spacing("3v"),
+	},
+	steps: {
 		listStyle: "none",
 		padding: 0,
-		width: "100%",
+		margin: 0,
 		marginTop: fr.spacing("12v"),
-		marginBottom: 0,
+		width: "100%",
 		display: "flex",
 		flexDirection: "column",
 		gap: fr.spacing("12v"),
 	},
-	support: {
+	step: {
 		display: "flex",
-		alignItems: "flex-start",
-		gap: fr.spacing("6v"),
+		flexDirection: "column",
+		alignItems: "center",
+		gap: fr.spacing("3v"),
 		padding: 0,
 	},
-	pictoCircle: {
+	stepNumber: {
+		display: "inline-flex",
+		alignItems: "center",
+		justifyContent: "center",
+		width: fr.spacing("12v"),
+		height: fr.spacing("12v"),
+		borderRadius: "50%",
+		fontSize: "1.5rem",
+		fontWeight: 700,
+		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+	},
+	field: {
+		width: "100%",
+		marginBottom: "0!important",
+		"& input, & textarea": {
+			marginTop: "0!important",
+		},
+	},
+	linkField: {
+		width: "70%",
+		[fr.breakpoints.down("md")]: {
+			width: "100%",
+		},
+	},
+	rules: {
+		listStyle: "none",
+		padding: 0,
+		margin: 0,
+		marginTop: fr.spacing("3v"),
+		marginBottom: fr.spacing("3v"),
+		display: "flex",
+		flexDirection: "column",
+		gap: fr.spacing("6v"),
+	},
+	rule: {
+		display: "flex",
+		alignItems: "flex-start",
+		gap: fr.spacing("4v"),
+		padding: 0,
+	},
+	ruleIcon: {
 		flexShrink: 0,
 		display: "inline-flex",
 		alignItems: "center",
 		justifyContent: "center",
-		width: fr.spacing("22v"),
-		height: fr.spacing("22v"),
+		width: fr.spacing("10v"),
+		height: fr.spacing("10v"),
 		borderRadius: "50%",
+		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-	},
-	actions: {
-		display: "flex",
-		flexWrap: "wrap",
-		justifyContent: "center",
-		gap: fr.spacing("4v"),
-		marginTop: fr.spacing("12v"),
 	},
 });

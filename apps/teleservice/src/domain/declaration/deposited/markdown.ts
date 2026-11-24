@@ -2,7 +2,7 @@ import { appKindOptions } from "~/payload/selectOptions";
 import type { DepositedDeclaration } from "~/domain/declaration/deposited/snapshot";
 import {
 	type ConformitySeverity,
-	getConformityStatus,
+	getAuditConformity,
 	NON_CONFORME,
 } from "~/domain/declaration/conformity";
 import {
@@ -144,10 +144,7 @@ const conformity = (d: DepositedDeclaration, obsolete: boolean): string[] => {
 		);
 	}
 
-	// A blocking element makes the service non-conformant whatever its rate.
-	const status = hasText(d.audit.blockingElements)
-		? NON_CONFORME
-		: getConformityStatus(d.audit.rate);
+	const status = getAuditConformity(d.audit);
 	const badgeStatus = obsolete ? NON_CONFORME : status;
 	const sentence = obsolete
 		? `Conformément à la législation, cette déclaration ayant été publiée il y a plus de ${OBSOLESCENCE_YEARS} ans, ${lowerFirst(subject)} est réputé **non conforme** ${rgaa}, version ${version}.`

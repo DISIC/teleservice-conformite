@@ -83,7 +83,10 @@ export default function DeclarationPreviewPage({
 					id="declaration-deposited"
 					className={fr.cx("fr-container", "fr-mt-10v")}
 				>
-					<DepositSuccess declaration={declaration} depositedAt={depositedAt} />
+					<DepositSuccess
+						declaration={declaration}
+						audit={depositedDeclarationContent.audit}
+					/>
 				</section>
 			</>
 		);

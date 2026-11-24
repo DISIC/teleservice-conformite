@@ -3,6 +3,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { Header, type HeaderProps } from "@codegouvfr/react-dsfr/Header";
+import { Notice } from "@codegouvfr/react-dsfr/Notice";
 import { createNextDsfrIntegrationApi } from "@codegouvfr/react-dsfr/next-pagesdir";
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
 import NextApp, { type AppContext, type AppProps } from "next/app";
@@ -18,6 +19,7 @@ import "~/styles/keyframes.css";
 import { api } from "~/lib/api";
 import { useIsAuthenticated } from "~/hooks/useIsAuthenticated";
 import { authClient } from "~/lib/auth-client";
+import { newTabLinkProps } from "~/lib/newTabLink";
 import { SERVICE_NAME } from "~/lib/serviceName";
 
 declare module "@codegouvfr/react-dsfr/next-pagesdir" {
@@ -36,6 +38,10 @@ const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
 });
 
 export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
+
+// Distinct from the deposit success JDMA button so the two feedback channels stay separable.
+const FEEDBACK_FORM_URL =
+	"https://jedonnemonavis.numerique.gouv.fr/Demarches/avis/2610?button=5140";
 
 const NAVIGATION = [
 	{ text: "Accueil", href: "/" },
@@ -116,6 +122,8 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 		Component as PageWithHeader<typeof pageProps>
 	).renderHeader?.(pageProps);
 
+	const showFeedbackNotice = !pageHeader && isAuthenticated;
+
 	return (
 		<>
 			<Head>
@@ -136,6 +144,9 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 				/>
 				{pageHeader ?? (
 					<Header
+						classes={{
+							root: showFeedbackNotice ? classes.flatHeader : undefined,
+						}}
 						brandTop={
 							<>
 								RÉPUBLIQUE
@@ -158,6 +169,20 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 							</>
 						}
 						serviceTagline="Publiez et centralisez vos déclarations d’accessibilité conformément aux exigences légales."
+					/>
+				)}
+				{showFeedbackNotice && (
+					<Notice
+						isClosable
+						title="Vos avis sont précieux !"
+						description="N’hésitez pas à nous faire part de vos retours depuis ce"
+						link={{
+							text: "court formulaire",
+							linkProps: {
+								href: FEEDBACK_FORM_URL,
+								...newTabLinkProps("Court formulaire de retour"),
+							},
+						}}
 					/>
 				)}
 				<main id="contenu" className={classes.main} style={{ flex: 1 }}>
@@ -195,6 +220,10 @@ const useStyles = tss.withName({ App }).create({
 		minHeight: "100vh",
 		display: "flex",
 		flexDirection: "column",
+	},
+	// The feedback notice sits flush under the header, so the header drops its shadow.
+	flatHeader: {
+		filter: "none!important",
 	},
 	main: {
 		display: "flex",
