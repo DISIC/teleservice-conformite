@@ -51,7 +51,7 @@ test("Declaration state matrix: each state shows its notice, badge and actions",
 			seedState,
 		).toHaveCount(actions.includes("revert") ? 1 : 0);
 		await expect(
-			page.getByRole("button", { name: "Prévisualiser et publier" }),
+			page.getByRole("button", { name: "Prévisualiser la déclaration" }),
 			seedState,
 		).toHaveCount(actions.includes("deposit") ? 1 : 0);
 		await a11y.check(`details page in state ${state}`);

@@ -97,13 +97,13 @@ export default function DeclarationPreviewPage({
 				<section id="declaration-preview" className={fr.cx("fr-container")}>
 					<div className={classes.main}>
 						<h2 className={fr.cx("fr-h1", "fr-mb-4v")}>
-							Prévisualiser et publier
+							Prévisualiser la déclaration
 						</h2>
 						<p className={fr.cx("fr-mb-0", "fr-text--xl")}>
 							Voici un aperçu de votre déclaration, telle qu’elle sera
-							consultable une fois publiée.
+							consultable une fois déposée sur le téléservice.
 							<br />
-							Nous vous invitons à la relire pour validation avant publication.
+							Nous vous invitons à la relire pour validation avant envoi.
 						</p>
 						<div className={classes.declarationPreview}>
 							<DepositedTemplate
@@ -115,11 +115,11 @@ export default function DeclarationPreviewPage({
 							<Alert
 								className={fr.cx("fr-mb-3v")}
 								severity="error"
-								title="Publication impossible"
+								title="Dépôt impossible"
 								description={
 									depositError === "incomplete" ? (
 										<>
-											La déclaration ne peut pas être publiée car elle est
+											La déclaration ne peut pas être déposée car elle est
 											incomplète.{" "}
 											<Link href={`/dashboard/declarations/${declaration.id}`}>
 												Retournez à la déclaration
@@ -127,7 +127,7 @@ export default function DeclarationPreviewPage({
 											pour compléter les sections manquantes.
 										</>
 									) : (
-										"Une erreur est survenue lors de la publication. Veuillez réessayer."
+										"Une erreur est survenue lors du dépôt. Veuillez réessayer."
 									)
 								}
 							/>
@@ -144,7 +144,7 @@ export default function DeclarationPreviewPage({
 									Revenir au formulaire
 								</Button>
 								<Button priority="primary" size="large" onClick={onDeposit}>
-									Publier la déclaration
+									Déposer la déclaration
 								</Button>
 							</div>
 						</div>

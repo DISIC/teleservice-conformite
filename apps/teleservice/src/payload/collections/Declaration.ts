@@ -42,7 +42,7 @@ export const Declarations: CollectionConfig = {
 		{
 			name: "deposited_at",
 			type: "date",
-			label: { fr: "Date de publication" },
+			label: { fr: "Date du dernier dépôt" },
 			admin: {
 				position: "sidebar",
 				date: {
@@ -119,7 +119,7 @@ export const Declarations: CollectionConfig = {
 		{
 			name: "depositedContent",
 			type: "text",
-			label: { fr: "Contenu publié" },
+			label: { fr: "Contenu déposé" },
 			required: false,
 		},
 		auditGroup,

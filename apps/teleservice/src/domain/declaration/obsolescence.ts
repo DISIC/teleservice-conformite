@@ -62,7 +62,7 @@ export const OBSOLESCENCE_PRESENTATION: Record<
 			bgColor: fr.colors.decisions.background.contrast.yellowMoutarde.default,
 		},
 		heading: "Votre déclaration sera bientôt obsolète.",
-		body: `Elle a été publiée il y a près de ${OBSOLESCENCE_YEARS} ans. Vérifiez les informations ci-dessous, puis prévisualisez et publiez avant l’échéance pour la renouveler pour ${OBSOLESCENCE_YEARS} ans.`,
+		body: `Elle a été déposée il y a près de ${OBSOLESCENCE_YEARS} ans. Vérifiez les informations ci-dessous, puis prévisualisez et déposez avant l’échéance pour la renouveler pour ${OBSOLESCENCE_YEARS} ans.`,
 		actions: ["deposit"],
 	},
 	obsolete: {
@@ -73,7 +73,7 @@ export const OBSOLESCENCE_PRESENTATION: Record<
 			bgColor: fr.colors.decisions.background.contrast.redMarianne.default,
 		},
 		heading: "Votre déclaration est obsolète.",
-		body: `Une déclaration de plus de ${OBSOLESCENCE_YEARS} ans est obsolète. Votre service numérique est alors considéré comme non conforme. Conformément à la législation, vous devez actualiser votre déclaration et la publier à nouveau. `,
+		body: `Une déclaration de plus de ${OBSOLESCENCE_YEARS} ans est obsolète. Votre service numérique est alors considéré comme non conforme. Conformément à la législation, vous devez actualiser votre déclaration et la déposer à nouveau. `,
 		actions: ["deposit"],
 	},
 };

@@ -44,7 +44,7 @@ test("Obsolescence: list, header, interstitial, notice, public page and renewal"
 		page.getByText(`Obsolète depuis le ${deadlineOf(obsolete)}`),
 	).toBeVisible();
 	await expect(
-		page.getByRole("button", { name: "Prévisualiser et publier" }),
+		page.getByRole("button", { name: "Prévisualiser la déclaration" }),
 	).toBeVisible();
 	await a11y.check("details page with the obsolete notice");
 
@@ -56,7 +56,9 @@ test("Obsolescence: list, header, interstitial, notice, public page and renewal"
 	await expect(
 		page.getByText(`Obsolète le ${deadlineOf(expiring)}`),
 	).toBeVisible();
-	await page.getByRole("button", { name: "Prévisualiser et publier" }).click();
+	await page
+		.getByRole("button", { name: "Prévisualiser la déclaration" })
+		.click();
 	await expectPreview(page);
 
 	// Citizens see the obsolete notice and a Non conforme badge; the content itself is untouched.
@@ -72,7 +74,9 @@ test("Obsolescence: list, header, interstitial, notice, public page and renewal"
 	await page
 		.getByRole("button", { name: "Mettre à jour ma déclaration" })
 		.click();
-	await page.getByRole("button", { name: "Prévisualiser et publier" }).click();
+	await page
+		.getByRole("button", { name: "Prévisualiser la déclaration" })
+		.click();
 	await expectPreview(page);
 	await depositFromPreview(page);
 

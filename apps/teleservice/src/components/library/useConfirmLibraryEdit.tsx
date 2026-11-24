@@ -42,7 +42,7 @@ export function useConfirmLibraryEdit({
 		}
 
 		confirmationModalActions.open?.({
-			title: `Attention, ce ${noun} est associé à des déclarations publiées.`,
+			title: `Attention, ce ${noun} est associé à des déclarations déposées.`,
 			confirmLabel: `Modifier le ${noun}`,
 			confirmIconId: "fr-icon-edit-line",
 			description: (

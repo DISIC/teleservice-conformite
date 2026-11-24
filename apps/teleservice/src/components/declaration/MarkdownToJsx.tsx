@@ -24,7 +24,7 @@ export default function MarkdownToJsx({
 }) {
 	const { classes } = useStyles();
 
-	// In preview the content sits under the page's h1 and its "Prévisualiser et publier" h2.
+	// In preview the content sits under the page's h1 and its "Prévisualiser la déclaration" h2.
 	const headingRenderer =
 		(from: HeadingLevel) =>
 		(

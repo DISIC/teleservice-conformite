@@ -52,7 +52,9 @@ test("Déposée: an edit makes it Modifiée, revert restores it, redeposit clear
 	// Redepositing a Modifiée row deposits the new content and clears the notice.
 	await editContactEmail(page, NEW_EMAIL);
 	await expect(stateNotice(page, "deposited-modified")).toBeVisible();
-	await page.getByRole("button", { name: "Prévisualiser et publier" }).click();
+	await page
+		.getByRole("button", { name: "Prévisualiser la déclaration" })
+		.click();
 	await depositFromPreview(page);
 
 	await page.goto(`/dashboard/declarations/${declaration.id}`);

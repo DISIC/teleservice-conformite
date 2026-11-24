@@ -59,12 +59,12 @@ export const mobilePlatformOptions = [
 
 export const declarationStatusOptions = [
 	{
-		label: "Publiée",
+		label: "Déposée, sans modification",
 		value: "deposited",
 	},
 
 	{
-		label: "Brouillon",
+		label: "Brouillon ou modifiée",
 		value: "undeposited",
 	},
 ] as const;

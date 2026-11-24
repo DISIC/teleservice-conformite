@@ -93,13 +93,13 @@ export const STATE_PRESENTATION: Record<DeclarationState, StatePresentation> = {
 			bgColor: fr.colors.decisions.background.contrast.purpleGlycine.default,
 		},
 		heading: "Votre déclaration est incomplète.",
-		body: 'Certaines informations sont nécessaires pour pouvoir publier la déclaration. Veuillez renseigner les champs marqués "À compléter".',
+		body: 'Certaines informations sont nécessaires pour pouvoir déposer la déclaration. Veuillez renseigner les champs marqués "À compléter".',
 		actions: ["deposit"],
 	},
 	ready: {
 		bgColor: fr.colors.decisions.background.alt.greenEmeraude.default,
-		heading: "Votre déclaration est prête à être publiée.",
-		body: "Vous pouvez prévisualiser et publier pour la mettre en ligne.",
+		heading: "Votre déclaration est prête à être déposée sur le téléservice.",
+		body: "Vous pouvez prévisualiser et déposer pour la mettre en ligne.",
 		actions: ["deposit"],
 	},
 	"to-verify": {
@@ -110,7 +110,7 @@ export const STATE_PRESENTATION: Record<DeclarationState, StatePresentation> = {
 			bgColor: fr.colors.decisions.background.contrast.yellowTournesol.default,
 		},
 		heading: "Votre déclaration a été pré-remplie automatiquement.",
-		body: "Nous vous invitons à vérifier l'ensemble des informations renseignées ci-dessous avant de publier.",
+		body: "Nous vous invitons à vérifier l'ensemble des informations renseignées ci-dessous avant de déposer.",
 		actions: ["deposit"],
 	},
 	"deposited-incomplete": {
@@ -120,8 +120,8 @@ export const STATE_PRESENTATION: Record<DeclarationState, StatePresentation> = {
 			color: fr.colors.decisions.text.label.purpleGlycine.default,
 			bgColor: fr.colors.decisions.background.contrast.purpleGlycine.default,
 		},
-		heading: "Votre déclaration est publiée mais incomplète.",
-		body: 'Une information nécessaire à la publication a été retirée. Veuillez renseigner les champs marqués "À compléter" pour pouvoir republier, ou revenir à la dernière version publiée.',
+		heading: "Votre déclaration est déposée mais incomplète.",
+		body: 'Une information nécessaire au dépôt a été retirée. Veuillez renseigner les champs marqués "À compléter" pour pouvoir déposer à nouveau, ou revenir à la dernière version déposée.',
 		actions: ["revert"],
 	},
 	"deposited-modified": {
@@ -132,8 +132,8 @@ export const STATE_PRESENTATION: Record<DeclarationState, StatePresentation> = {
 			bgColor:
 				fr.colors.decisions.background.contrast.orangeTerreBattue.default,
 		},
-		heading: "Votre déclaration est publiée mais a été modifiée.",
-		body: "Des modifications ont été réalisées depuis la dernière publication. Vous pouvez prévisualiser et publier pour mettre à jour.",
+		heading: "Votre déclaration est déposée mais a été modifiée.",
+		body: "Des modifications ont été réalisées depuis le dernier dépôt. Vous pouvez prévisualiser et déposer pour mettre à jour.",
 		actions: ["revert", "deposit"],
 	},
 };

@@ -69,8 +69,8 @@ export function RevertModal({
 			]}
 		>
 			<p>
-				Cette action restaurera la déclaration telle qu'elle était lors de sa
-				dernière publication.{" "}
+				Cette action restaurera la déclaration telle qu'elle était lors de son
+				dernier dépôt.{" "}
 				<strong>
 					Toutes les modifications réalisées depuis seront définitivement
 					perdues.

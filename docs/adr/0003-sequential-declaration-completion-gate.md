@@ -1,7 +1,7 @@
 # ADR-0003: Sequential completion mode + declaration-wide validation gate
 
 - **Status:** Accepted — partly superseded by ADR-0006
-- **Amended 2026-11-24 (ADR-0007):** Status has three values (Brouillon / Déposée / Publiée). What this ADR calls "publish", "Publiée" and `publishedContent` is now the **dépôt**, **Déposée** and `depositedContent`; Publiée now means "link verified". Read "publish gate" as "deposit gate" and "Prévisualiser et publier" as "Prévisualiser et déposer". The gate and the mode split are unchanged — `sequential` for Brouillon, `standalone` for Déposée and Publiée.
+- **Amended 2026-11-24 (ADR-0007):** Status has three values (Brouillon / Déposée / Publiée). What this ADR calls "publish", "Publiée" and `publishedContent` is now the **dépôt**, **Déposée** and `depositedContent`; Publiée now means "link verified". Read "publish gate" as "deposit gate" and "Prévisualiser et publier" as "Prévisualiser la déclaration". The gate and the mode split are unchanged — `sequential` for Brouillon, `standalone` for Déposée and Publiée.
 - **Amended 2026-09-10:** Status is binary (Brouillon / Publiée, from `publishedContent` alone). Where this ADR says "Modifiée/Publiée" as lifecycle values, read "Publiée, clean or Modifiée": Modifiée is a Declaration state layered on Publiée, not a Status. The mode split is unchanged — `sequential` for Brouillon, `standalone` for Publiée.
 - **Date:** 2026-06-09 (gate scope widened 2026-06-10, ADR-0004; gate predicate extended 2026-06-14, ADR-0005; save-on-advance + per-section save validation retired 2026-06-18, ADR-0006; gate enforcement moved server-side 2026-07-02)
 

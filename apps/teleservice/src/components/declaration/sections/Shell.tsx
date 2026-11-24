@@ -24,7 +24,7 @@ export type SectionShellProps = {
 	isSaving?: boolean;
 	prevHref: string | null;
 	nextHref: string | null;
-	/** Override the "Suivant" label (e.g. "Prévisualiser et publier" on the last section). */
+	/** Override the "Suivant" label (e.g. "Prévisualiser la déclaration" on the last section). */
 	nextLabel?: string;
 	nextIcon?: FrIconClassName | RiIconClassName;
 	/** Nothing to save (e.g. an audit sub-section before the audit is realised). */
@@ -140,7 +140,7 @@ export function SectionShell({
 									disabled={isSaving}
 									size="small"
 								>
-									Prévisualiser et publier
+									Prévisualiser la déclaration
 								</Button>
 							) : nextHref ? (
 								<Button

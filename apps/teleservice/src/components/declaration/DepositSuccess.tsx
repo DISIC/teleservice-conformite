@@ -84,7 +84,7 @@ export function DepositSuccess({
 				tabIndex={-1}
 				className={cx(fr.cx("fr-h1", "fr-mt-4v", "fr-mb-6v"), classes.center)}
 			>
-				Votre déclaration a été publiée
+				Votre déclaration a été déposée
 				<br />
 				sur le téléservice.
 			</h2>
@@ -119,7 +119,7 @@ export function DepositSuccess({
 			</p>
 			<div className={classes.copyRow}>
 				<Input
-					label="Lien de votre déclaration publiée"
+					label="Lien de votre déclaration déposée"
 					classes={{ root: classes.linkField, label: fr.cx("fr-sr-only") }}
 					nativeInputProps={{ value: publicUrl, readOnly: true }}
 				/>

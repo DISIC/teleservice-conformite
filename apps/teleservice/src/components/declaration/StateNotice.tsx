@@ -108,7 +108,7 @@ export function StateNotice({
 								iconPosition="left"
 								onClick={onDeposit}
 							>
-								Prévisualiser et publier
+								Prévisualiser la déclaration
 							</Button>
 						)}
 					</div>

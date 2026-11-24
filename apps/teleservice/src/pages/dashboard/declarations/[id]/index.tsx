@@ -75,7 +75,7 @@ export default function DeclarationPage({
 		declaration.status !== "undeposited" &&
 		!updateRevealed;
 
-	// Set by "Prévisualiser et publier"; from then on the error summary re-derives on every save.
+	// Set by "Prévisualiser la déclaration"; from then on the error summary re-derives on every save.
 	const [depositAttempted, setDepositAttempted] = useScopedState(
 		declaration.id,
 		false,

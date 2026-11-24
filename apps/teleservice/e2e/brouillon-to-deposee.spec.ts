@@ -65,12 +65,12 @@ test("Brouillon to Déposée through the sequential walkthrough", async ({
 
 	// The terminal gate validates the whole Declaration and lists what blocks.
 	await footer(page)
-		.getByRole("button", { name: "Prévisualiser et publier" })
+		.getByRole("button", { name: "Prévisualiser la déclaration" })
 		.click();
 	// The "email or URL" rule flags both paths, so the summary counts two fields.
 	const summary = page.getByRole("heading", {
 		level: 3,
-		name: /champs? (doit|doivent) être complétés? avant la publication/,
+		name: /champs? (doit|doivent) être complétés? avant le dépôt/,
 	});
 	await expect(summary).toBeVisible();
 	await a11y.check("error summary after a blocked gate");
@@ -86,12 +86,12 @@ test("Brouillon to Déposée through the sequential walkthrough", async ({
 	await expect(stateNotice(page, "ready")).toBeVisible();
 
 	await footer(page)
-		.getByRole("button", { name: "Prévisualiser et publier" })
+		.getByRole("button", { name: "Prévisualiser la déclaration" })
 		.click();
 	await expectPreview(page);
 	await a11y.check("preview page");
 	await depositFromPreview(page);
-	await a11y.check("publication confirmation screen");
+	await a11y.check("deposit confirmation screen");
 
 	await page.goto(`/dashboard/declarations/${id}`);
 	await a11y.check("details page after depositing");

@@ -26,8 +26,8 @@ export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
 				closable={false}
 				title={
 					errors.length > 1
-						? `${errors.length} champs doivent être complétés avant la publication`
-						: "Un champ doit être complété avant la publication"
+						? `${errors.length} champs doivent être complétés avant le dépôt sur le téléservice`
+						: "Un champ doit être complété avant le dépôt sur le téléservice"
 				}
 				description={
 					<ul className={classes.list}>
