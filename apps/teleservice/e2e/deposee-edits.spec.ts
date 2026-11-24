@@ -21,7 +21,7 @@ async function editContactEmail(
 	]);
 }
 
-test("Publiée: an edit makes it Modifiée, revert restores it, redeposit clears it", async ({
+test("Déposée: an edit makes it Modifiée, revert restores it, redeposit clears it", async ({
 	page,
 	seed,
 	a11y,
@@ -29,7 +29,7 @@ test("Publiée: an edit makes it Modifiée, revert restores it, redeposit clears
 	const declaration = await seed.declaration("deposee");
 	await page.goto(declarationPath(declaration.id, "contact"));
 
-	// A clean Publiée row shows no notice and edits Section by Section.
+	// A clean Déposée row shows no notice and edits Section by Section.
 	await expect(stateNotice(page, "deposited-modified")).toHaveCount(0);
 	await editContactEmail(page, NEW_EMAIL);
 	await expect(stateNotice(page, "deposited-modified")).toBeVisible();

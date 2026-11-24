@@ -23,6 +23,33 @@ describe("getDeclarationStatus", () => {
 		expect(getDeclarationStatus({ depositedContent: "{}" })).toBe("deposited");
 	});
 
+	it("is published once the link to the public page is verified", () => {
+		expect(
+			getDeclarationStatus({
+				depositedContent: "{}",
+				link_verified_at: "2026-11-24T00:00:00.000Z",
+			}),
+		).toBe("published");
+	});
+
+	it("is never published without a snapshot, whatever the verification date", () => {
+		expect(
+			getDeclarationStatus({
+				depositedContent: null,
+				link_verified_at: "2026-11-24T00:00:00.000Z",
+			}),
+		).toBe("draft");
+	});
+
+	it("stays published while modified since the last deposit", () => {
+		const modified = {
+			...depositedDeclaration(),
+			link_verified_at: "2026-11-24T00:00:00.000Z",
+			status: "undeposited" as const,
+		};
+		expect(getDeclarationStatus(modified)).toBe("published");
+	});
+
 	it("stays deposited while modified since the last deposit", () => {
 		const modified = {
 			...depositedDeclaration(),
@@ -36,6 +63,7 @@ describe("getEditingMode", () => {
 	it("is sequential only for a never-deposited draft", () => {
 		expect(getEditingMode("draft")).toBe("sequential");
 		expect(getEditingMode("deposited")).toBe("standalone");
+		expect(getEditingMode("published")).toBe("standalone");
 	});
 });
 

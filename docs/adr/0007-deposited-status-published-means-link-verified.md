@@ -25,7 +25,7 @@ That name claimed more than the platform knew. A declaration read "Publiée" whi
 - A declaration can be publicly reachable and still not Publiée. This is deliberate: reachable by address is the dépôt, reachable from the service is the publication.
 - Status is no longer a function of the snapshot alone; the invariant now names two facts, and link verification is the only writer of the second.
 - Everything attached to the old publish action follows the dépôt unchanged: the completeness gate, the snapshot, Modifiée and revert, the sequential → standalone switch, and the three-year Obsolescence clock (counted from the last dépôt — an unverified Déposée declaration still becomes Obsolète).
-- A clean Déposée declaration has an obvious next action — integrate the link — that no notice announces yet. It comes with the verification design, together with these open questions: what writes `link_verified_at`, how often the link is re-checked, and whether changing the service's URL clears the verification.
+- A clean Déposée declaration has an obvious next action — integrate the link — that no notice announces yet. It comes with the verification design, together with these open questions: what writes `link_verified_at`, how often the link is re-checked, whether changing the service's URL clears the verification, and how a revert — which restores a whole earlier version of the row — is kept from bringing back an older verification date.
 - Earlier ADRs keep their original wording and carry an amendment line pointing here.
 - The rename happened while the application was in preprod with no data to preserve: the migration is generated, not hand-written, and existing rows could be discarded. After launch the same rename would need a data-preserving migration.
 

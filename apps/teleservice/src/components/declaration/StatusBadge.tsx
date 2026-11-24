@@ -5,14 +5,18 @@ import { getDeclarationStatus, type Status } from "~/domain/declaration/status";
 
 const STATUS_PRESENTATION: Record<
 	Status,
-	{ label: string; severity?: "success" }
+	{ label: string; severity?: "info" | "success" }
 > = {
 	draft: { label: "Brouillon" },
-	deposited: { label: "Publiée", severity: "success" },
+	deposited: { label: "Déposée", severity: "info" },
+	published: { label: "Publiée", severity: "success" },
 };
 
 type StatusBadgeProps = {
-	declaration: Pick<Declaration, "depositedContent" | "deposited_at">;
+	declaration: Pick<
+		Declaration,
+		"depositedContent" | "deposited_at" | "link_verified_at"
+	>;
 };
 
 // Obsolète replaces the Status badge; Bientôt obsolète keeps it and is signalled next to the badge.

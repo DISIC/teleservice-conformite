@@ -5,8 +5,8 @@ import {
 } from "~/domain/declaration/deposited/snapshot";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
-/** Brouillon until the first deposit, Déposée forever after — even while modified. */
-export type Status = "draft" | "deposited";
+/** Brouillon until the first deposit, Déposée once deposited, Publiée once the service's link to its public page is verified. */
+export type Status = "draft" | "deposited" | "published";
 
 /**
  * How the declaration details page presents its Sections for editing. Derived
@@ -20,9 +20,10 @@ export function getEditingMode(status: Status): EditingMode {
 }
 
 export function getDeclarationStatus(
-	declaration: Pick<Declaration, "depositedContent">,
+	declaration: Pick<Declaration, "depositedContent" | "link_verified_at">,
 ): Status {
-	return declaration.depositedContent ? "deposited" : "draft";
+	if (!declaration.depositedContent) return "draft";
+	return declaration.link_verified_at ? "published" : "deposited";
 }
 
 /** Returns `false` when no snapshot exists — a draft has nothing to differ from. */

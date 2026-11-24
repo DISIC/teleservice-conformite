@@ -6,7 +6,7 @@ import { declarationPath, stateNotice } from "./support/declarationPage";
 import { expect, test } from "./support/fixtures";
 import type { SeedState } from "./support/seed";
 
-/** Every seeded state and the notice it must show; `null` is the clean Publiée row. */
+/** Every seeded state and the notice it must show; `null` is the clean Déposée row. */
 const MATRIX: [SeedState, DeclarationState | null][] = [
 	["brouillon-incomplete", "incomplete"],
 	["to-verify", "to-verify"],

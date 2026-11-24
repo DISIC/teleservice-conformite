@@ -124,7 +124,7 @@ function buildColumns(
 				const declaration = info.row.original;
 				const copyTitle = `Copier le lien public de la déclaration ${declaration.name}`;
 				const viewLabel = `Voir la déclaration ${declaration.name}`;
-				const isDeposited = getDeclarationStatus(declaration) === "deposited";
+				const isDeposited = getDeclarationStatus(declaration) !== "draft";
 				const visible = options.actions.filter(
 					(action) => isDeposited || !PUBLIC_PAGE_ACTIONS.includes(action),
 				);

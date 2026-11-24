@@ -37,7 +37,7 @@ export function DeclarationHeading({
 	} | null>(null);
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 
-	const isDeposited = getDeclarationStatus(declaration) === "deposited";
+	const isDeposited = getDeclarationStatus(declaration) !== "draft";
 	const publicHref = `/declarations/${declaration.id}/publish`;
 
 	const { mutate: deleteDeclaration } = api.declaration.delete.useMutation({

@@ -19,15 +19,15 @@ test("Obsolescence: list, header, interstitial, notice, public page and renewal"
 		seed.declaration("obsolete", "Obsolète"),
 	]);
 
-	// Bientôt obsolète keeps Publiée and adds the deadline; Obsolète replaces the badge.
+	// Bientôt obsolète keeps Déposée and adds the deadline; Obsolète replaces the badge.
 	const expiringRow = await openListRow(page, expiring.name);
-	await expect(expiringRow).toContainText("Publiée");
+	await expect(expiringRow).toContainText("Déposée");
 	await expect(expiringRow).toContainText(
 		`Obsolète le ${deadlineOf(expiring)}`,
 	);
 	const obsoleteRow = await openListRow(page, obsolete.name);
 	await expect(obsoleteRow).toContainText(`Depuis le ${deadlineOf(obsolete)}`);
-	await expect(obsoleteRow).not.toContainText("Publiée");
+	await expect(obsoleteRow).not.toContainText("Déposée");
 	await a11y.check("list with obsolescence rows");
 
 	// An unchanged Obsolète row opens on the interstitial; updating reveals the editor.

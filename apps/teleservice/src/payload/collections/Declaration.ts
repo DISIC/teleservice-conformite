@@ -62,6 +62,18 @@ export const Declarations: CollectionConfig = {
 			},
 		},
 		{
+			name: "link_verified_at",
+			type: "date",
+			label: { fr: "Date de vérification du lien" },
+			admin: {
+				position: "sidebar",
+				readOnly: true,
+				date: {
+					pickerAppearance: "dayOnly",
+				},
+			},
+		},
+		{
 			name: "created_by",
 			type: "relationship",
 			relationTo: "users",
