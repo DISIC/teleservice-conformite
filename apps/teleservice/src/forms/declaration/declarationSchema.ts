@@ -5,6 +5,7 @@ import {
 	optionalDateField,
 	optionalUrlIssue,
 	requiredIssue,
+	requiredUrlIssue,
 } from "~/forms/rules";
 import { appKindOptions, mobilePlatformOptions } from "~/payload/selectOptions";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
@@ -54,7 +55,8 @@ export const declarationGeneralRefined = declarationGeneral.superRefine(
 			g.domain,
 			"Le secteur d’activité est requis",
 		);
-		optionalUrlIssue(ctx, ["general", "url"], g.url);
+		if (g.kind === "website") requiredUrlIssue(ctx, ["general", "url"], g.url);
+		else optionalUrlIssue(ctx, ["general", "url"], g.url);
 		if (g.firstPublishedAt !== undefined) {
 			requiredIssue(
 				ctx,
