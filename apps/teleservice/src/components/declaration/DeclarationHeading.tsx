@@ -1,10 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import Binders from "@codegouvfr/react-dsfr/picto/Binders";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { tss } from "tss-react";
 import { logMutationError } from "~/components/declaration/logMutationError";
 import { ObsolescenceLine } from "~/components/declaration/ObsolescenceLine";
 import { StatusBadge } from "~/components/declaration/StatusBadge";
@@ -30,7 +28,6 @@ export function DeclarationHeading({
 	declaration: PopulatedDeclaration;
 }) {
 	const router = useRouter();
-	const { classes } = useStyles();
 	const [notice, setNotice] = useState<{
 		severity: "success" | "error";
 		description: string;
@@ -66,28 +63,32 @@ export function DeclarationHeading({
 
 	const confirmDelete = () =>
 		confirmationModalActions.open?.({
-			title: "Supprimer la déclaration",
-			confirmLabel: "Supprimer",
-			confirmIconId: "fr-icon-delete-fill",
-			description: (
-				<div className={classes.emptyStateContainer}>
-					<Binders fontSize="250px" />
-					<div>
-						<p>
-							Cette action est irréversible et entrainera la suppression de la
-							page publique de la déclaration.
-						</p>
-						<p>
-							Nous vous rappelons que chaque site doit fournir une déclaration
-							d'accessibilité accessible aux usagers.
-						</p>
-						<p>
-							Si votre déclaration arrive en fin de validité, vous devez
-							actualiser votre déclaration et la déposer à nouveau sur le
-							téléservice.
-						</p>
-					</div>
-				</div>
+			title: isDeposited
+				? "Vous vous apprêtez à supprimer une déclaration déjà déposée."
+				: "Supprimer la déclaration",
+			confirmLabel: "Supprimer la déclaration",
+			confirmIconId: "fr-icon-delete-line",
+			confirmBackgroundColor:
+				fr.colors.decisions.background.actionHigh.error.default,
+			description: isDeposited ? (
+				<>
+					<p>
+						Cette action est <strong>irréversible</strong> et entrainera la{" "}
+						<strong>suppression de la page publique</strong> de la déclaration.
+						Chaque service doit fournir une déclaration d'accessibilité aux
+						usagers.
+					</p>
+					<p>
+						Si votre déclaration arrive en fin de validité, vous devez
+						actualiser votre déclaration et la déposer à nouveau sur le
+						téléservice.
+					</p>
+				</>
+			) : (
+				<p>
+					Êtes-vous sûr de vouloir supprimer la déclaration{" "}
+					<strong>{declaration.name}</strong> ? Cette action est irréversible.
+				</p>
 			),
 			onConfirm: () => deleteDeclaration({ declarationId: declaration.id }),
 		});
@@ -173,19 +174,3 @@ export function DeclarationHeading({
 		</>
 	);
 }
-
-const useStyles = tss.withName({ DeclarationHeading }).create({
-	emptyStateContainer: {
-		display: "flex",
-		flexDirection: "row",
-		alignItems: "center",
-		gap: fr.spacing("8v"),
-		backgroundColor: fr.colors.decisions.background.open.blueFrance.default,
-		padding: fr.spacing("6v"),
-		"& > div": {
-			"& p:last-child": {
-				marginBottom: 0,
-			},
-		},
-	},
-});
