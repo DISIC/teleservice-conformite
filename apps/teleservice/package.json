@@ -19,7 +19,7 @@
 		"seed:dev": "NODE_ENV=development PAYLOAD_CONFIG_PATH=./src/payload/payload.config.ts PAYLOAD_DROP_DATABASE=true"
 	},
 	"dependencies": {
-		"@codegouvfr/react-dsfr": "^1.28.0",
+		"@codegouvfr/react-dsfr": "^1.36.1",
 		"@emotion/react": "^11.14.0",
 		"@emotion/server": "^11.11.0",
 		"@emotion/styled": "^11.14.1",

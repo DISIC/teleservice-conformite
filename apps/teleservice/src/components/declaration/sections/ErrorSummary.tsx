@@ -20,37 +20,35 @@ export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
 	const { classes } = useStyles();
 
 	return (
-		<div role="alert">
-			<Alert
-				severity="error"
-				closable={false}
-				title={
-					errors.length > 1
-						? `${errors.length} champs doivent être complétés avant le dépôt sur le téléservice`
-						: "Un champ doit être complété avant le dépôt sur le téléservice"
-				}
-				description={
-					<ul className={classes.list}>
-						{errors.map((error) => (
-							<li key={`${error.section}.${error.field}`}>
-								<Link
-									href={sectionHref(declarationId, error.section, error.field)}
-									shallow
-									scroll={false}
-									className={classes.row}
-								>
-									<span className={classes.section}>
-										{SECTION_TITLES[error.section]}
-										{error.label && ` › ${error.label}`}
-									</span>
-									<span>{error.message}</span>
-								</Link>
-							</li>
-						))}
-					</ul>
-				}
-			/>
-		</div>
+		<Alert
+			severity="error"
+			closable={false}
+			title={
+				errors.length > 1
+					? `${errors.length} champs doivent être complétés avant le dépôt sur le téléservice`
+					: "Un champ doit être complété avant le dépôt sur le téléservice"
+			}
+			description={
+				<ul className={classes.list}>
+					{errors.map((error) => (
+						<li key={`${error.section}.${error.field}`}>
+							<Link
+								href={sectionHref(declarationId, error.section, error.field)}
+								shallow
+								scroll={false}
+								className={classes.row}
+							>
+								<span className={classes.section}>
+									{SECTION_TITLES[error.section]}
+									{error.label && ` › ${error.label}`}
+								</span>
+								<span>{error.message}</span>
+							</Link>
+						</li>
+					))}
+				</ul>
+			}
+		/>
 	);
 }
 

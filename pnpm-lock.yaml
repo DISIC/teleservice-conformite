@@ -167,8 +167,8 @@ importers:
   .:
     devDependencies:
       '@codegouvfr/react-dsfr':
-        specifier: 1.28.0
-        version: 1.28.0
+        specifier: 1.36.1
+        version: 1.36.1
       lefthook:
         specifier: ^2.1.6
         version: 2.1.6
@@ -185,8 +185,8 @@ importers:
   apps/site:
     dependencies:
       '@codegouvfr/react-dsfr':
-        specifier: ^1.28.0
-        version: 1.28.0
+        specifier: ^1.36.1
+        version: 1.36.1
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.0.0)(react@19.0.0)
@@ -228,8 +228,8 @@ importers:
   apps/teleservice:
     dependencies:
       '@codegouvfr/react-dsfr':
-        specifier: ^1.28.0
-        version: 1.28.0
+        specifier: ^1.36.1
+        version: 1.36.1
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.0.0)(react@19.0.0)
@@ -530,8 +530,8 @@ packages:
   '@borewit/text-codec@0.2.2':
     resolution: {integrity: sha512-DDaRehssg1aNrH4+2hnj1B7vnUGEjU6OIlyRdkMd0aUdIUvKXrJfXsy8LVtXAy7DRvYVluWbMspsRhz2lcW0mQ==}
 
-  '@codegouvfr/react-dsfr@1.28.0':
-    resolution: {integrity: sha512-/RnN9KcBPrye/gfd6eK0M8f/Mj/6x+6rmVDE4f5qvPtxeICRX2IuJtkUu6VcMroQLBwtk8uypfjQdSKd5uiuAA==}
+  '@codegouvfr/react-dsfr@1.36.1':
+    resolution: {integrity: sha512-VKz8QS2htayZx7axdJAJ48l+GHD7DYzHn7ovpRN/1jbGLt0wfOXjjrFC+CuXaXmXbLJ0RuUAewbRMftSZdiCiA==}
     hasBin: true
     peerDependencies:
       '@gouvfr/dsfr-chart': ^1.0.0
@@ -5210,7 +5210,7 @@ snapshots:
 
   '@borewit/text-codec@0.2.2': {}
 
-  '@codegouvfr/react-dsfr@1.28.0':
+  '@codegouvfr/react-dsfr@1.36.1':
     dependencies:
       tsafe: 1.8.12
       yargs-parser: 21.1.1

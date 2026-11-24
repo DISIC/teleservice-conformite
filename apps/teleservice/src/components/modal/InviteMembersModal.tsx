@@ -100,6 +100,7 @@ export function InviteMembersModal({
 					{ children: "Inviter", type: "submit", doClosesModal: false },
 				]}
 				size="large"
+				titleAs="div"
 				title={
 					<section id="modal-header" className={classes.modalHeader}>
 						<h1 className={classes.modalHeading}>Inviter un membre</h1>
