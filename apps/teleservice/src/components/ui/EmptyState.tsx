@@ -11,6 +11,7 @@ export type FaqItem = {
 
 type EmptyStateProps = {
 	title?: string;
+	titleAs?: "h1" | "h2";
 	description: string;
 	pictogram?: ReactNode;
 	children?: ReactNode;
@@ -22,17 +23,35 @@ type EmptyStateProps = {
 
 export default function EmptyState(props: EmptyStateProps) {
 	const { classes, cx } = useStyles();
-	const { title, description, ctaProps, pictogram, children, faq } = props;
+	const {
+		title,
+		titleAs: Title = "h2",
+		description,
+		ctaProps,
+		pictogram,
+		children,
+		faq,
+	} = props;
 
 	return (
 		<div className={classes.emptyStateContainer}>
-			{pictogram}
-			{title && (
-				<h2 className={cx(classes.emptyStateTitle, "fr-h5")}>{title}</h2>
-			)}
-			<p className={cx(classes.emptyStateDescription, "fr-text--xs")}>
-				{description}
-			</p>
+			<div className={classes.emptyStateIntro}>
+				{pictogram}
+				{title && (
+					<Title className={cx(classes.emptyStateTitle, "fr-h5")}>
+						{title}
+					</Title>
+				)}
+				<p
+					className={cx(
+						classes.emptyStateDescription,
+						"fr-mt-1v",
+						"fr-text--xs",
+					)}
+				>
+					{description}
+				</p>
+			</div>
 			{children && <div className={classes.emptyStateBody}>{children}</div>}
 			{ctaProps && (
 				<Button {...ctaProps} priority="primary">
@@ -45,7 +64,11 @@ export default function EmptyState(props: EmptyStateProps) {
 					data-fr-group="false"
 				>
 					{faq.map(({ question, answer }) => (
-						<Accordion key={question} label={question} titleAs="h3">
+						<Accordion
+							key={question}
+							label={question}
+							titleAs={Title === "h1" ? "h2" : "h3"}
+						>
 							<div className={classes.emptyStateFaqAnswer}>{answer}</div>
 						</Accordion>
 					))}
@@ -54,6 +77,8 @@ export default function EmptyState(props: EmptyStateProps) {
 		</div>
 	);
 }
+
+const CONTENT_MAX_WIDTH = "39rem";
 
 const useStyles = tss.withName(EmptyState.name).create({
 	emptyStateContainer: {
@@ -64,6 +89,13 @@ const useStyles = tss.withName(EmptyState.name).create({
 		textAlign: "center",
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
 		padding: `${fr.spacing("10v")} ${fr.spacing("6v")}`,
+	},
+	emptyStateIntro: {
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+		width: "100%",
+		maxWidth: `calc(${CONTENT_MAX_WIDTH} * 0.9)`,
 	},
 	emptyStateTitle: {
 		marginBottom: 0,
@@ -79,13 +111,12 @@ const useStyles = tss.withName(EmptyState.name).create({
 		flexDirection: "column",
 		alignItems: "center",
 		gap: fr.spacing("4v"),
-		maxWidth: "40rem",
-		marginBottom: fr.spacing("8v"),
+		maxWidth: CONTENT_MAX_WIDTH,
 		"& p": { margin: 0 },
 	},
 	emptyStateFaq: {
 		width: "100%",
-		maxWidth: "40rem",
+		maxWidth: CONTENT_MAX_WIDTH,
 		textAlign: "left",
 		marginTop: fr.spacing("8v"),
 	},

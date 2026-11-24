@@ -73,7 +73,7 @@ export default function EntityDeclarationsPage({
 						/>
 					) : (
 						<EmptyState
-							pictogram={<Contract fontSize="3rem" />}
+							pictogram={<Contract fontSize="4rem" />}
 							title="Votre organisation n’a déposé aucune déclaration"
 							description={`Retrouvez ici toutes les déclarations créées dans votre organisation ${entity.name}`}
 							faq={DECLARATION_FAQ}

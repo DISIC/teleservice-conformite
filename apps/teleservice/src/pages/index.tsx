@@ -14,7 +14,7 @@ export default function Home({
 	hasSessionCookie?: boolean;
 }) {
 	const isAuthenticated = useIsAuthenticated(hasSessionCookie);
-	const startHref = isAuthenticated ? DASHBOARD_HREF : "/api/connexion";
+	const startHref = isAuthenticated ? DASHBOARD_HREF : "/connexion";
 	const startLabel = isAuthenticated ? "Voir mes déclarations" : "Commencer";
 
 	return (

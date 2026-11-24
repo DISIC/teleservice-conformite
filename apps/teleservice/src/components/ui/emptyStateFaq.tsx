@@ -71,3 +71,35 @@ export const SCHEMA_FAQ: FaqItem[] = [
 		),
 	},
 ];
+
+export const PROCONNECT_FAQ: FaqItem[] = [
+	{
+		question: "Je n’ai pas de compte ProConnect, comment faire ?",
+		answer: (
+			<>
+				<p>Tous les agents publics peuvent se créer un compte ProConnect :</p>
+				<br />
+				<ol>
+					<li>Cliquez sur le bouton “S’identifier avec ProConnect”.</li>
+					<li>Renseignez votre adresse email professionnelle.</li>
+					<li>
+						Confirmez votre adresse e-mail à l’aide du code de validation reçu.
+					</li>
+					<li>Choisissez un mot de passe.</li>
+					<li>
+						Entrez le SIRET de votre organisation (disponible sur{" "}
+						<a
+							href="https://annuaire-entreprises.data.gouv.fr/"
+							{...newTabLinkProps("l’Annuaire des Entreprises")}
+						>
+							l’Annuaire des Entreprises
+						</a>
+						)
+					</li>
+					<li>Remplissez vos informations personnelles.</li>
+					<li>Votre compte est créé !</li>
+				</ol>
+			</>
+		),
+	},
+];

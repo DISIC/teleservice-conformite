@@ -122,7 +122,7 @@ export default function ContactsPage({
 						<Loader />
 					) : contacts.length === 0 ? (
 						<EmptyState
-							pictogram={<NationalIdentityCard fontSize="3rem" />}
+							pictogram={<NationalIdentityCard fontSize="4rem" />}
 							title="Vous n’avez aucun point de contact enregistré"
 							description="Centralisez et gérez ici les points de contacts nécessaires à vos déclarations d’accessibilité."
 							ctaProps={{

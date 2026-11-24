@@ -122,7 +122,7 @@ export default function SchemasPage({
 						<Loader />
 					) : schemas.length === 0 ? (
 						<EmptyState
-							pictogram={<DataVisualization fontSize="3rem" />}
+							pictogram={<DataVisualization fontSize="4rem" />}
 							title="Vous n’avez aucun schéma pluriannuel enregistré"
 							description="Centralisez et gérez les schémas pluriannuels et plans d’actions nécessaires à vos déclarations d’accessibilité."
 							ctaProps={{

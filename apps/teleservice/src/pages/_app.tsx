@@ -75,7 +75,7 @@ function App({ Component, pageProps: allPageProps }: AppProps) {
 					iconId: "fr-icon-account-line",
 					text: "Se connecter",
 					linkProps: {
-						href: "/api/connexion",
+						href: "/connexion",
 						className: fr.cx("fr-btn--tertiary"),
 					},
 				},

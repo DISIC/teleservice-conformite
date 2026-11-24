@@ -151,7 +151,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 						<EmptyState
 							title="Déposez votre première déclaration d’accessibilité"
 							description="Durée de complétion estimée : entre 6 et 15 minutes"
-							pictogram={<Contract fontSize="3rem" />}
+							pictogram={<Contract fontSize="4rem" />}
 							faq={DECLARATION_FAQ}
 							ctaProps={{
 								onClick: () => createModalActions.open?.(),
