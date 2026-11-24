@@ -65,7 +65,7 @@ export default function ContactsPage({
 			confirmationModalActions.open?.({
 				title: "Supprimer le contact",
 				confirmLabel: "Supprimer le contact",
-				confirmIconId: "fr-icon-delete-fill",
+				confirmIconId: "fr-icon-delete-line",
 				confirmBackgroundColor:
 					fr.colors.decisions.background.actionHigh.error.default,
 				description: (

@@ -64,7 +64,7 @@ export default function SchemasPage({
 		confirmationModalActions.open?.({
 			title: "Supprimer le schéma pluriannuel",
 			confirmLabel: "Supprimer le schéma",
-			confirmIconId: "fr-icon-delete-fill",
+			confirmIconId: "fr-icon-delete-line",
 			confirmBackgroundColor:
 				fr.colors.decisions.background.actionHigh.error.default,
 			description: (
