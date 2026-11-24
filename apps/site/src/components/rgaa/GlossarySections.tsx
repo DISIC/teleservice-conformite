@@ -61,7 +61,7 @@ export default function GlossarySections({ letters }: GlossarySectionsProps) {
 	);
 }
 
-const useStyles = tss.withName(GlossarySections.name).create({
+const useStyles = tss.withName({ GlossarySections }).create({
 	section: {
 		marginTop: fr.spacing("10v"),
 	},

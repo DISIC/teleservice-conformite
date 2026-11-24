@@ -56,7 +56,7 @@ export default function DeclarationLoader({
 	);
 }
 
-const useStyles = tss.withName(DeclarationLoader.name).create({
+const useStyles = tss.withName({ DeclarationLoader }).create({
 	loaderContainer: {
 		position: "fixed",
 		inset: 0,

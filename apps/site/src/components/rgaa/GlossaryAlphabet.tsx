@@ -32,7 +32,7 @@ export default function GlossaryAlphabet({ letters }: GlossaryAlphabetProps) {
 	);
 }
 
-const useStyles = tss.withName(GlossaryAlphabet.name).create(() => ({
+const useStyles = tss.withName({ GlossaryAlphabet }).create(() => ({
 	list: {
 		display: "flex",
 		flexWrap: "wrap",

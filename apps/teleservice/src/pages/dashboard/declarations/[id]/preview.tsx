@@ -155,7 +155,7 @@ export default function DeclarationPreviewPage({
 	);
 }
 
-const useStyles = tss.withName(DeclarationPreviewPage.name).create({
+const useStyles = tss.withName({ DeclarationPreviewPage }).create({
 	band: {
 		backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
 	},

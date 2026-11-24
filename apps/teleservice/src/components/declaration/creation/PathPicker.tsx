@@ -65,7 +65,7 @@ export function PathPicker({
 	);
 }
 
-const useStyles = tss.withName(PathPicker.name).create({
+const useStyles = tss.withName({ PathPicker }).create({
 	container: {
 		display: "flex",
 		flexDirection: "column",

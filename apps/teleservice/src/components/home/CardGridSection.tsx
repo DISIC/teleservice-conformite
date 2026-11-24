@@ -56,7 +56,7 @@ export function CardGridSection({
 	);
 }
 
-const useStyles = tss.withName(CardGridSection.name).create({
+const useStyles = tss.withName({ CardGridSection }).create({
 	section: {
 		display: "grid",
 		gridTemplateColumns: "3fr 7fr",

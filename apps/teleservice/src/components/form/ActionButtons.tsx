@@ -102,7 +102,7 @@ export function CancelButton({
 	);
 }
 
-const useStyles = tss.withName(SubscribeButton.name).create(() => ({
+const useStyles = tss.withName({ SubscribeButton }).create(() => ({
 	buttonWrapper: {
 		display: "flex",
 		justifyContent: "end",

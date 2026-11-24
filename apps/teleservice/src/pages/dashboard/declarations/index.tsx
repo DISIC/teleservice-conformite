@@ -167,7 +167,7 @@ export default function DeclarationsPage(props: DeclarationsPageProps) {
 	);
 }
 
-const useStyles = tss.withName(DeclarationsPage.name).create({
+const useStyles = tss.withName({ DeclarationsPage }).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
 	},

@@ -174,7 +174,7 @@ export function DeclarationHeading({
 	);
 }
 
-const useStyles = tss.withName(DeclarationHeading.name).create({
+const useStyles = tss.withName({ DeclarationHeading }).create({
 	emptyStateContainer: {
 		display: "flex",
 		flexDirection: "row",

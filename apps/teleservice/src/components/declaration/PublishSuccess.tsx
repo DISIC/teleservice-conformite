@@ -168,7 +168,7 @@ export function PublishSuccess({
 	);
 }
 
-const useStyles = tss.withName(PublishSuccess.name).create({
+const useStyles = tss.withName({ PublishSuccess }).create({
 	root: {
 		display: "flex",
 		flexDirection: "column",

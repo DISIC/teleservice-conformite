@@ -21,7 +21,7 @@ export const Loader = (props: Props) => {
 	);
 };
 
-const useStyles = tss.withName(Loader.name).create(() => ({
+const useStyles = tss.withName({ Loader }).create(() => ({
 	loader: {
 		padding: fr.spacing("30v"),
 		display: "flex",

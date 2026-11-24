@@ -79,7 +79,7 @@ export default function TopicCriteria({
 	);
 }
 
-const useStyles = tss.withName(TopicCriteria.name).create({
+const useStyles = tss.withName({ TopicCriteria }).create({
 	topicCriteria: {
 		marginLeft: fr.spacing("6v"),
 		marginBlock: fr.spacing("6v"),

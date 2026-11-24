@@ -80,7 +80,7 @@ export default function EmptyState(props: EmptyStateProps) {
 
 const CONTENT_MAX_WIDTH = "39rem";
 
-const useStyles = tss.withName(EmptyState.name).create({
+const useStyles = tss.withName({ EmptyState }).create({
 	emptyStateContainer: {
 		display: "flex",
 		flexDirection: "column",

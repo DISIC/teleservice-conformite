@@ -190,7 +190,7 @@ App.getInitialProps = async (appContext: AppContext) => {
 	};
 };
 
-const useStyles = tss.withName(App.name).create({
+const useStyles = tss.withName({ App }).create({
 	mainContainer: {
 		minHeight: "100vh",
 		display: "flex",

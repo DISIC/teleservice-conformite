@@ -40,7 +40,7 @@ export function AuditNotice({
 	);
 }
 
-const useStyles = tss.withName(AuditNotice.name).create({
+const useStyles = tss.withName({ AuditNotice }).create({
 	noticeCustomTitle: {
 		display: "block!important",
 	},

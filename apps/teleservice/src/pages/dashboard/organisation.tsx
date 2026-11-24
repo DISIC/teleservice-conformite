@@ -91,7 +91,7 @@ export default function EntityDeclarationsPage({
 	);
 }
 
-const useStyles = tss.withName(EntityDeclarationsPage.name).create({
+const useStyles = tss.withName({ EntityDeclarationsPage }).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
 		display: "flex",

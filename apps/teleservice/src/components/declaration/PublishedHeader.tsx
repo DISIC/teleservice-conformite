@@ -61,7 +61,7 @@ export function PublishedHeader({
 	);
 }
 
-const useStyles = tss.withName(PublishedHeader.name).create({
+const useStyles = tss.withName({ PublishedHeader }).create({
 	publicationInfo: {
 		display: "flex",
 		flexDirection: "column",

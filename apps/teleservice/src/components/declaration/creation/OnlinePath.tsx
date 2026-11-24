@@ -92,7 +92,7 @@ export function OnlinePath({
 	);
 }
 
-const useStyles = tss.withName(OnlinePath.name).create({
+const useStyles = tss.withName({ OnlinePath }).create({
 	araNotice: {
 		display: "flex",
 		alignItems: "center",

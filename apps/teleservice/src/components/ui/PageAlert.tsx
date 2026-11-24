@@ -48,7 +48,7 @@ export const PageAlert = ({ alert, onClose }: Props) => {
 	);
 };
 
-const useStyles = tss.withName(PageAlert.name).create({
+const useStyles = tss.withName({ PageAlert }).create({
 	alertWrapper: {
 		width: "100%",
 		display: "flex",

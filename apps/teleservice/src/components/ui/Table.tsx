@@ -205,7 +205,7 @@ export const hiddenCaption = {
 	},
 } as const;
 
-const useStyles = tss.withName(Table.name).create(() => ({
+const useStyles = tss.withName({ Table }).create(() => ({
 	table: {
 		marginTop: "0!important",
 		marginBottom: "0!important",

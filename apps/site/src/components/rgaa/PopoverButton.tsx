@@ -86,7 +86,7 @@ export default function PopoverButton({ getOptions }: PopoverButtonProps) {
 	);
 }
 
-const useStyles = tss.withName(PopoverButton.name).create({
+const useStyles = tss.withName({ PopoverButton }).create({
 	root: {
 		position: "relative",
 		alignSelf: "flex-end",

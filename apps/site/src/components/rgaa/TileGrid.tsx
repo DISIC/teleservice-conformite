@@ -37,7 +37,7 @@ export default function TileGrid({ tiles }: TileGridProps) {
 	);
 }
 
-const useStyles = tss.withName(TileGrid.name).create({
+const useStyles = tss.withName({ TileGrid }).create({
 	tilesContainer: {
 		display: "grid",
 		gridTemplateColumns: "repeat(3, 1fr)",

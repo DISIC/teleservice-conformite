@@ -87,7 +87,7 @@ export function Part({
 }
 
 const useStyles = tss
-	.withName(Part.name)
+	.withName({ Part })
 	.withParams<{
 		readOnly: boolean;
 		grid: boolean;

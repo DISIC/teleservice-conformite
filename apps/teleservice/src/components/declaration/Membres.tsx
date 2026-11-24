@@ -179,7 +179,7 @@ export default function Membres({ declaration }: MembresProps) {
 	);
 }
 
-const useStyles = tss.withName(Membres.name).create({
+const useStyles = tss.withName({ Membres }).create({
 	adminBadge: {
 		backgroundColor:
 			fr.colors.decisions.background.contrast.purpleGlycine.default,

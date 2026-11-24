@@ -51,7 +51,7 @@ export default function ErrorPage({ deleted }: { deleted?: boolean }) {
 	);
 }
 
-const useStyles = tss.withName(ErrorPage.name).create({
+const useStyles = tss.withName({ ErrorPage }).create({
 	errorPageContainer: {
 		marginBlock: fr.spacing("24v"),
 		marginInline: fr.spacing("24v"),

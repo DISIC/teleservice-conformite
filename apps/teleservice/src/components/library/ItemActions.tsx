@@ -41,7 +41,7 @@ export function ItemActions({
 	);
 }
 
-const useStyles = tss.withName(ItemActions.name).create({
+const useStyles = tss.withName({ ItemActions }).create({
 	actions: {
 		display: "flex",
 		gap: fr.spacing("4v"),

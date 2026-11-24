@@ -62,7 +62,7 @@ export function AdvantagesSection({
 	);
 }
 
-const useStyles = tss.withName(AdvantagesSection.name).create({
+const useStyles = tss.withName({ AdvantagesSection }).create({
 	band: {
 		backgroundColor: fr.colors.options.beigeGrisGalet._975_75.default,
 		paddingBlock: fr.spacing("9w"),

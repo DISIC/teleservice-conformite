@@ -86,7 +86,7 @@ export default function MarkdownToJsx({
 	);
 }
 
-const useStyles = tss.withName(MarkdownToJsx.name).create({
+const useStyles = tss.withName({ MarkdownToJsx }).create({
 	link: {
 		color: fr.colors.decisions.text.actionHigh.blueFrance.default,
 	},

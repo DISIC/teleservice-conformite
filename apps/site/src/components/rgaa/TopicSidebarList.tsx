@@ -76,7 +76,7 @@ export default function TopicSidebarList({ topics }: TopicSidebarListProps) {
 	);
 }
 
-const useStyles = tss.withName(TopicSidebarList.name).create({
+const useStyles = tss.withName({ TopicSidebarList }).create({
 	badge: {
 		marginLeft: fr.spacing("2v"),
 	},

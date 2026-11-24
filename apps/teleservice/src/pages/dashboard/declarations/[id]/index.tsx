@@ -204,7 +204,7 @@ export default function DeclarationPage({
 	);
 }
 
-const useStyles = tss.withName(DeclarationPage.name).create({
+const useStyles = tss.withName({ DeclarationPage }).create({
 	errorSummaryWrapper: {
 		marginBottom: fr.spacing("6v"),
 	},

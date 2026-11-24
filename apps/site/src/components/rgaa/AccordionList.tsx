@@ -87,7 +87,7 @@ export default function AccordionList({
 }
 
 const useStyles = tss
-	.withName(AccordionList.name)
+	.withName({ AccordionList })
 	.withParams<{ topicAccordionBackgroundColor: string }>()
 	.create(({ topicAccordionBackgroundColor }) => ({
 		list: {

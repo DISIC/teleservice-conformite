@@ -114,7 +114,7 @@ export default function PageHero(props: PageHeroProps) {
 }
 
 const useStyles = tss
-	.withName(PageHero.name)
+	.withName({ PageHero })
 	.withParams<{ backgroundColor: string; ellipseColor?: string }>()
 	.create(({ backgroundColor, ellipseColor }) => ({
 		hero: {

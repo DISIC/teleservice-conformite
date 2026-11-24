@@ -127,7 +127,7 @@ export function SideMenu({ declaration, currentSection }: SideMenuProps) {
 	);
 }
 
-const useStyles = tss.withName(SideMenu.name).create({
+const useStyles = tss.withName({ SideMenu }).create({
 	root: {
 		marginTop: 0,
 		"& .fr-sidemenu__item > .fr-collapse.fr-collapse": {

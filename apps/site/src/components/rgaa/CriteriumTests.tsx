@@ -147,7 +147,7 @@ export default function CriteriumTests({
 }
 
 const useStyles = tss
-	.withName(CriteriumTests.name)
+	.withName({ CriteriumTests })
 	.withParams<{ accordionBackgroundColor: string }>()
 	.create(({ accordionBackgroundColor }) => ({
 		criteriaAccordion: {

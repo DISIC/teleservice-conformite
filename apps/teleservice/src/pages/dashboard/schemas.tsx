@@ -210,7 +210,7 @@ export default function SchemasPage({
 	);
 }
 
-const useStyles = tss.withName(SchemasPage.name).create({
+const useStyles = tss.withName({ SchemasPage }).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
 	},

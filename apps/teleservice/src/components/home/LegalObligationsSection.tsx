@@ -39,7 +39,7 @@ export function LegalObligationsSection() {
 	);
 }
 
-const useStyles = tss.withName(LegalObligationsSection.name).create({
+const useStyles = tss.withName({ LegalObligationsSection }).create({
 	heading: {
 		paddingRight: fr.spacing("4w"),
 	},

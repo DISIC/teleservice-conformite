@@ -30,7 +30,7 @@ export default function DisabledCriteriumAccordion({
 	);
 }
 
-const useStyles = tss.withName(DisabledCriteriumAccordion.name).create({
+const useStyles = tss.withName({ DisabledCriteriumAccordion }).create({
 	root: {
 		scrollMarginTop: belowStickyTopicHeading,
 		marginBottom: fr.spacing("6w"),

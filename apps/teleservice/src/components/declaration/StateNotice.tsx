@@ -123,7 +123,7 @@ export function StateNotice({
 	);
 }
 
-const useStyles = tss.withName(StateNotice.name).create({
+const useStyles = tss.withName({ StateNotice }).create({
 	card: {
 		display: "flex",
 		alignItems: "center",

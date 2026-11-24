@@ -30,7 +30,7 @@ export function FaqSection() {
 	);
 }
 
-const useStyles = tss.withName(FaqSection.name).create({
+const useStyles = tss.withName({ FaqSection }).create({
 	section: {
 		maxWidth: "50%",
 		paddingBlock: fr.spacing("7w"),

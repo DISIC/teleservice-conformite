@@ -323,7 +323,7 @@ export function Section({
 	);
 }
 
-const useStyles = tss.withName(Section.name).create({
+const useStyles = tss.withName({ Section }).create({
 	picker: {
 		paddingBottom: fr.spacing("4v"),
 	},

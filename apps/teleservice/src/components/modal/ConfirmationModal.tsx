@@ -119,7 +119,7 @@ export function ConfirmationModal({ actions }: ConfirmationModalProps) {
 	);
 }
 
-const useStyles = tss.withName(ConfirmationModal.name).create({
+const useStyles = tss.withName({ ConfirmationModal }).create({
 	modal: {
 		"& .fr-modal__header": {
 			padding: fr.spacing("4v"),

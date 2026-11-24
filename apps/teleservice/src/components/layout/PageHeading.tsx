@@ -50,7 +50,7 @@ export function PageHeading({
 	);
 }
 
-const useStyles = tss.withName(PageHeading.name).create({
+const useStyles = tss.withName({ PageHeading }).create({
 	band: {
 		backgroundColor: fr.colors.options.beigeGrisGalet._975_75.default,
 		paddingBlock: fr.spacing("8v"),

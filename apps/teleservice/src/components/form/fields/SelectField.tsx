@@ -85,7 +85,7 @@ export function SelectField(props: SelectFieldProps) {
 	);
 }
 
-const useStyles = tss.withName(SelectField.name).create({
+const useStyles = tss.withName({ SelectField }).create({
 	infoStateMessage: {
 		color: fr.colors.decisions.text.default.info.default,
 		margin: 0,

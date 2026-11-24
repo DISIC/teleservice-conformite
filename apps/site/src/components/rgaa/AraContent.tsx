@@ -56,7 +56,7 @@ export default function AraContent() {
 	);
 }
 
-const useStyles = tss.withName(AraContent.name).create({
+const useStyles = tss.withName({ AraContent }).create({
 	content: {
 		display: "flex",
 		flexDirection: "column",

@@ -165,7 +165,7 @@ export function SectionShell({
 	);
 }
 
-const useStyles = tss.withName(SectionShell.name).create({
+const useStyles = tss.withName({ SectionShell }).create({
 	root: {
 		display: "flex",
 		flexDirection: "column",

@@ -71,7 +71,7 @@ export function ReadOnlyField(props: ReadOnlyFieldProps) {
 }
 
 const useStyles = tss
-	.withName(ReadOnlyField.name)
+	.withName({ ReadOnlyField })
 	.withParams<{
 		valueIsArray: boolean;
 		textArea: boolean;

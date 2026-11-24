@@ -40,7 +40,7 @@ export default function DownloadCard({
 	);
 }
 
-const useStyles = tss.withName(DownloadCard.name).create({
+const useStyles = tss.withName({ DownloadCard }).create({
 	cardStyle: {
 		border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
 		padding: fr.spacing("8v"),

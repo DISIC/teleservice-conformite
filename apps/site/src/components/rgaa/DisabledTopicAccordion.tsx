@@ -33,7 +33,7 @@ export default function DisabledTopicAccordion({
 	);
 }
 
-const useStyles = tss.withName(DisabledTopicAccordion.name).create({
+const useStyles = tss.withName({ DisabledTopicAccordion }).create({
 	root: {
 		display: "flex",
 		flexDirection: "column",

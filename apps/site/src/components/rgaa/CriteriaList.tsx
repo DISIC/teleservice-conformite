@@ -90,7 +90,7 @@ export default function CriteriaList({
 }
 
 const useStyles = tss
-	.withName(CriteriaList.name)
+	.withName({ CriteriaList })
 	.withParams<{ backgroundColor: string; color: string }>()
 	.create(({ backgroundColor, color }) => ({
 		grid: {

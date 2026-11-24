@@ -13,7 +13,7 @@ export function Actions({ disabled }: { disabled?: boolean }) {
 	);
 }
 
-const useStyles = tss.withName(Actions.name).create({
+const useStyles = tss.withName({ Actions }).create({
 	container: {
 		display: "flex",
 		justifyContent: "flex-end",

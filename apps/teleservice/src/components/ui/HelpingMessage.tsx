@@ -44,7 +44,7 @@ export default function HelpingMessage({
 }
 
 const useStyles = tss
-	.withName(HelpingMessage.name)
+	.withName({ HelpingMessage })
 	.withParams<{
 		buttonsDirection: "column" | "row";
 	}>()

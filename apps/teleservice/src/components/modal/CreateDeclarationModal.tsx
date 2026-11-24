@@ -170,7 +170,7 @@ export function CreateDeclarationModal({
 	);
 }
 
-const useStyles = tss.withName(CreateDeclarationModal.name).create({
+const useStyles = tss.withName({ CreateDeclarationModal }).create({
 	hideIntro: {
 		display: "flex",
 		justifyContent: "flex-end",

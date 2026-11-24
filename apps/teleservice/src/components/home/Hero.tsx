@@ -39,7 +39,7 @@ export function Hero({ startHref, startLabel }: HeroProps) {
 	);
 }
 
-const useStyles = tss.withName(Hero.name).create({
+const useStyles = tss.withName({ Hero }).create({
 	band: {
 		backgroundColor: fr.colors.options.beigeGrisGalet._975_75.default,
 		paddingBlock: fr.spacing("13v"),

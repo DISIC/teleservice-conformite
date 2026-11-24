@@ -54,7 +54,7 @@ export function ErrorSummary({ declarationId, errors }: ErrorSummaryProps) {
 	);
 }
 
-const useStyles = tss.withName(ErrorSummary.name).create({
+const useStyles = tss.withName({ ErrorSummary }).create({
 	list: {
 		listStyle: "none",
 		margin: 0,

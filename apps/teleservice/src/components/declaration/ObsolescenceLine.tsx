@@ -58,7 +58,7 @@ export function ObsolescenceLine({
 	);
 }
 
-const useStyles = tss.withName(ObsolescenceLine.name).create({
+const useStyles = tss.withName({ ObsolescenceLine }).create({
 	line: {
 		display: "flex",
 		alignItems: "center",

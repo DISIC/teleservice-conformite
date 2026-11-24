@@ -24,7 +24,7 @@ export function LibraryList({
 	);
 }
 
-const useStyles = tss.withName(LibraryList.name).create({
+const useStyles = tss.withName({ LibraryList }).create({
 	list: {
 		listStyle: "none",
 		padding: 0,

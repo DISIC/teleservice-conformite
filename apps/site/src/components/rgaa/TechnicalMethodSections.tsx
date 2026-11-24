@@ -104,7 +104,7 @@ export default function TechnicalMethodSections({
 	);
 }
 
-const useStyles = tss.withName(TechnicalMethodSections.name).create({
+const useStyles = tss.withName({ TechnicalMethodSections }).create({
 	section: {
 		paddingBlock: fr.spacing("8w"),
 		maxWidth: "50rem",

@@ -28,7 +28,7 @@ export function AraSection() {
 	);
 }
 
-const useStyles = tss.withName(AraSection.name).create({
+const useStyles = tss.withName({ AraSection }).create({
 	block: {
 		display: "flex",
 		alignItems: "center",

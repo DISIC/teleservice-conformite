@@ -24,7 +24,7 @@ export default function TestMethodology({
 	);
 }
 
-const useStyles = tss.withName(TestMethodology.name).create({
+const useStyles = tss.withName({ TestMethodology }).create({
 	methodologyAccordion: {
 		marginLeft: fr.spacing("13v"),
 

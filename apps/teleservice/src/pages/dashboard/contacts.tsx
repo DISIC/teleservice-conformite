@@ -191,7 +191,7 @@ export default function ContactsPage({
 	);
 }
 
-const useStyles = tss.withName(ContactsPage.name).create({
+const useStyles = tss.withName({ ContactsPage }).create({
 	main: {
 		paddingBlock: fr.spacing("12v"),
 	},

@@ -133,7 +133,7 @@ export function TextField(props: TextFieldProps) {
 	);
 }
 
-const useStyles = tss.withName(TextField.name).create({
+const useStyles = tss.withName({ TextField }).create({
 	inputWrapper: {
 		"&:not(:last-child)": {
 			marginBottom: fr.spacing("4w"),

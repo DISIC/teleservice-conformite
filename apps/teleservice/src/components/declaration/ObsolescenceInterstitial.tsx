@@ -178,7 +178,7 @@ function StepColumn({ heading, steps }: { heading: string; steps: Step[] }) {
 	);
 }
 
-const useStyles = tss.withName(ObsolescenceInterstitial.name).create({
+const useStyles = tss.withName({ ObsolescenceInterstitial }).create({
 	root: {
 		display: "flex",
 		flexDirection: "column",

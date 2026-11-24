@@ -199,7 +199,7 @@ function TagField({ label, children }: { label: string; children: ReactNode }) {
 }
 
 const useAccordionStyles = tss
-	.withName(CriteriumReference.name)
+	.withName({ CriteriumReference })
 	.withParams<{ accordionBackgroundColor: string }>()
 	.create(({ accordionBackgroundColor }) => ({
 		referenceAccordion: {
