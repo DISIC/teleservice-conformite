@@ -22,11 +22,11 @@ describe("proxy", () => {
 	});
 
 	it("sends a session cookie holder from other public pages to the dashboard", () => {
-		expect(run("/declarations/12", signedIn)).toEqual({
+		expect(run("/unknown-page", signedIn)).toEqual({
 			status: 307,
 			location: "https://app.test/dashboard",
 		});
-		expect(run("/declarations/12", signedInSecure).location).toBe(
+		expect(run("/unknown-page", signedInSecure).location).toBe(
 			"https://app.test/dashboard",
 		);
 	});
@@ -43,10 +43,11 @@ describe("proxy", () => {
 		expect(run("/").status).toBe(200);
 	});
 
-	it("never touches admin, api, publish and accept-invite routes", () => {
+	it("never touches admin, api, public declaration and accept-invite routes", () => {
 		for (const path of [
 			"/admin/collections",
 			"/api/trpc/x",
+			"/declarations/dee3073f57442733",
 			"/declarations/12/publish",
 			"/accept-invite",
 		]) {

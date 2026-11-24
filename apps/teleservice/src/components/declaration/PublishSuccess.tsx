@@ -14,9 +14,13 @@ import {
 import { copyToClipboard } from "~/lib/clipboard";
 import type { Declaration, User } from "~/payload/payload-types";
 import { newTabLinkProps } from "~/lib/newTabLink";
+import { publicDeclarationPath } from "~/domain/declaration/published/publicPath";
 
 type PublishSuccessProps = {
-	declaration: Pick<Declaration, "id" | "name" | "contact"> & {
+	declaration: Pick<
+		Declaration,
+		"id" | "name" | "contact" | "published_declaration_slug"
+	> & {
 		created_by: User;
 	};
 	/** The date the server stamped on this publication, not the moment of render. */
@@ -68,7 +72,7 @@ export function PublishSuccess({
 		day: "numeric",
 	});
 
-	const publicHref = `/declarations/${declaration.id}/publish`;
+	const publicHref = publicDeclarationPath(declaration);
 	const publicUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}${publicHref}`;
 
 	const recipients = [

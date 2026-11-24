@@ -7,6 +7,7 @@ import {
 	getPopulatedDeclaration,
 	type PopulatedDeclaration,
 } from "~/server/api/utils/payload-helper";
+import { computePublishedDeclarationSlug } from "~/server/api/utils/published-declaration-slug";
 import {
 	saveSection,
 	writeDeclaration,
@@ -338,6 +339,9 @@ export const publishDeclaration = async (
 			published_at: publishedAt.toISOString(),
 			first_published_at:
 				declaration.first_published_at ?? publishedAt.toISOString(),
+			published_declaration_slug:
+				declaration.published_declaration_slug ??
+				computePublishedDeclarationSlug(declaration.name, declaration.id),
 		},
 	});
 
