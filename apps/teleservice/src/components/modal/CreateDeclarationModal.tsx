@@ -103,7 +103,7 @@ export function CreateDeclarationModal({
 
 	return (
 		<modal.Component
-			size="large"
+			size="medium"
 			title="Déposer une déclaration"
 			buttons={
 				step === "intro"
@@ -193,6 +193,9 @@ const useStyles = tss.withName(CreateDeclarationModal.name).create({
 		},
 		"&:has([data-intro]) h1": {
 			marginBottom: fr.spacing("10v"),
+		},
+		"&:has(input[type=radio]:checked) .fr-modal__content": {
+			marginBottom: fr.spacing("8v"),
 		},
 	},
 	list: {

@@ -68,7 +68,7 @@ export function OnlinePath({
 					className={fr.cx("fr-mb-6v")}
 				/>
 			)}
-			<div className={cx(fr.cx("fr-mb-6v"), classes.araNotice)}>
+			<div className={cx(fr.cx("fr-mb-10v"), classes.araNotice)}>
 				<Image src={AraLogo} alt="" className={classes.araLogo} />
 				<p className={cx(fr.cx("fr-text--xs", "fr-mb-0"), classes.araText)}>
 					Si Ara a été utilisé pour l'audit et la déclaration, l’URL de la
@@ -96,7 +96,7 @@ const useStyles = tss.withName(OnlinePath.name).create({
 	araNotice: {
 		display: "flex",
 		alignItems: "center",
-		gap: fr.spacing("4v"),
+		gap: fr.spacing("3v"),
 	},
 	araLogo: {
 		flexShrink: 0,

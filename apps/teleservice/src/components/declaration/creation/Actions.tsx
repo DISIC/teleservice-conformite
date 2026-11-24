@@ -6,12 +6,7 @@ export function Actions({ disabled }: { disabled?: boolean }) {
 
 	return (
 		<div className={classes.container}>
-			<Button
-				type="submit"
-				disabled={disabled}
-				iconId="fr-icon-arrow-right-line"
-				iconPosition="right"
-			>
+			<Button type="submit" disabled={disabled}>
 				Continuer
 			</Button>
 		</div>
