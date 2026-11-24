@@ -37,6 +37,7 @@ export function TextField(props: TextFieldProps) {
 	const {
 		readOnlyField,
 		required,
+		infoStateMessage,
 		textArea,
 		nativeInputProps,
 		nativeTextAreaProps,
@@ -107,7 +108,7 @@ export function TextField(props: TextFieldProps) {
 				<Input
 					{...commonProps}
 					label={withRequiredMark(commonProps.label, required)}
-					{...getFieldState(field.state.meta)}
+					{...getFieldState(field.state.meta, infoStateMessage)}
 					textArea={textArea}
 					nativeTextAreaProps={{
 						rows: 3,
@@ -121,7 +122,7 @@ export function TextField(props: TextFieldProps) {
 				<Input
 					{...commonProps}
 					label={withRequiredMark(commonProps.label, required)}
-					{...getFieldState(field.state.meta)}
+					{...getFieldState(field.state.meta, infoStateMessage)}
 					nativeInputProps={{
 						...nativeInputProps,
 						required: nativeInputProps?.required ?? required,

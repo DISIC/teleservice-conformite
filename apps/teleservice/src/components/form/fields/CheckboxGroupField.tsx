@@ -18,7 +18,7 @@ interface CheckboxGroupFieldProps
 }
 
 export function CheckboxGroupField(props: CheckboxGroupFieldProps) {
-	const { readOnlyField, required, ...commonProps } = props;
+	const { readOnlyField, required, infoStateMessage, ...commonProps } = props;
 	const field = useFieldContext<string[]>();
 	const valueSet = new Set(field.state.value ?? []);
 
@@ -32,7 +32,7 @@ export function CheckboxGroupField(props: CheckboxGroupFieldProps) {
 	return (
 		<Checkbox
 			{...commonProps}
-			{...getFieldState(field.state.meta)}
+			{...getFieldState(field.state.meta, infoStateMessage)}
 			legend={withRequiredMark(commonProps.legend, required)}
 			options={commonProps.options.map((option, index) => ({
 				...option,

@@ -4,8 +4,11 @@ import {
 	type RadioButtonsProps,
 } from "@codegouvfr/react-dsfr/RadioButtons";
 
-import { type DefaultFieldProps, useFieldContext } from "~/forms/context";
-import { getFieldState } from "~/forms/context";
+import {
+	type DefaultFieldProps,
+	getFieldState,
+	useFieldContext,
+} from "~/forms/context";
 import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
@@ -32,6 +35,7 @@ export function RichRadioField(props: RichRadioFieldProps) {
 	const {
 		readOnlyField,
 		required,
+		infoStateMessage,
 		onOptionChange,
 		disabled,
 		className,
@@ -49,7 +53,7 @@ export function RichRadioField(props: RichRadioFieldProps) {
 
 	return (
 		<RadioButtons
-			{...getFieldState(field.state.meta)}
+			{...getFieldState(field.state.meta, infoStateMessage)}
 			legend={withRequiredMark(label, required)}
 			name={field.name}
 			disabled={disabled}

@@ -15,7 +15,13 @@ interface NumberFieldProps
 }
 
 export function NumberField(props: NumberFieldProps) {
-	const { readOnlyField, required, nativeInputProps, ...commonProps } = props;
+	const {
+		readOnlyField,
+		required,
+		infoStateMessage,
+		nativeInputProps,
+		...commonProps
+	} = props;
 	const field = useFieldContext<number | null>();
 
 	if (readOnlyField) {
@@ -30,7 +36,7 @@ export function NumberField(props: NumberFieldProps) {
 	return (
 		<Input
 			{...commonProps}
-			{...getFieldState(field.state.meta)}
+			{...getFieldState(field.state.meta, infoStateMessage)}
 			label={withRequiredMark(commonProps.label, required)}
 			nativeInputProps={{
 				...nativeInputProps,

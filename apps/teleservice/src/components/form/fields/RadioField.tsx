@@ -25,7 +25,13 @@ interface RadioFieldProps
 }
 
 export function RadioField(props: RadioFieldProps) {
-	const { readOnlyField, required, onOptionChange, ...commonProps } = props;
+	const {
+		readOnlyField,
+		required,
+		infoStateMessage,
+		onOptionChange,
+		...commonProps
+	} = props;
 	const field = useFieldContext<TValue>();
 
 	if (readOnlyField) {
@@ -39,7 +45,7 @@ export function RadioField(props: RadioFieldProps) {
 	return (
 		<RadioButtons
 			{...commonProps}
-			{...getFieldState(field.state.meta)}
+			{...getFieldState(field.state.meta, infoStateMessage)}
 			legend={withRequiredMark(commonProps.legend, required)}
 			name={field.name}
 			className={commonProps.className ?? fr.cx("fr-mb-0")}

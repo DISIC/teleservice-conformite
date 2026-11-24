@@ -1,4 +1,5 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
+import type { ReactNode } from "react";
 
 import { CancelButton, SubscribeButton } from "~/components/form/ActionButtons";
 
@@ -38,17 +39,34 @@ export const { useAppForm, withForm } = createFormHook({
 export type DefaultFieldProps = {
 	readOnlyField?: boolean;
 	required?: boolean;
+	infoStateMessage?: ReactNode;
 };
 
+type FieldMeta = { errors: Array<{ message: string }>; isTouched: boolean };
+
 // Errors stay hidden until the field is touched, so a pristine required field
-// isn't flagged before the declarant reaches it.
-export function getFieldState(meta: {
-	errors: Array<{ message: string }>;
-	isTouched: boolean;
-}): { state: "default" | "error"; stateRelatedMessage: string } {
+// isn't flagged before the declarant reaches it. An error replaces the info message.
+export function getFieldState(meta: FieldMeta): {
+	state: "default" | "error";
+	stateRelatedMessage: string;
+};
+export function getFieldState(
+	meta: FieldMeta,
+	infoStateMessage: ReactNode,
+): { state: "default" | "error" | "info"; stateRelatedMessage: ReactNode };
+export function getFieldState(
+	meta: FieldMeta,
+	infoStateMessage?: ReactNode,
+): { state: "default" | "error" | "info"; stateRelatedMessage: ReactNode } {
 	const errors = meta.isTouched ? meta.errors : [];
-	return {
-		state: errors.length > 0 ? "error" : "default",
-		stateRelatedMessage: errors.map((e) => e.message).join(", "),
-	};
+	if (errors.length > 0) {
+		return {
+			state: "error",
+			stateRelatedMessage: errors.map((e) => e.message).join(", "),
+		};
+	}
+	if (infoStateMessage) {
+		return { state: "info", stateRelatedMessage: infoStateMessage };
+	}
+	return { state: "default", stateRelatedMessage: "" };
 }

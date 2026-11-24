@@ -7,7 +7,9 @@ import {
 import { withRequiredMark } from "../RequiredField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
-interface UploadFieldProps extends DefaultFieldProps, UploadProps {}
+// DSFR Upload has no info state.
+interface UploadFieldProps
+	extends Omit<DefaultFieldProps, "infoStateMessage">, UploadProps {}
 
 export function UploadField(props: UploadFieldProps) {
 	const { readOnlyField, required, ...commonProps } = props;

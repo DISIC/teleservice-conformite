@@ -10,7 +10,7 @@ import { ReadOnlyField } from "./ReadOnlyField";
 
 interface TagGroupFieldProps
 	extends
-		DefaultFieldProps,
+		Omit<DefaultFieldProps, "infoStateMessage">,
 		Omit<InputProps.Common, "state" | "stateRelatedMessage"> {
 	/** The chips to show, when the field also holds values shown elsewhere (e.g. checkboxes). */
 	tags?: string[];

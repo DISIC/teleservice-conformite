@@ -20,7 +20,7 @@ interface CheckboxFieldProps
 }
 
 export function CheckboxField(props: CheckboxFieldProps) {
-	const { readOnlyField, required, ...commonProps } = props;
+	const { readOnlyField, required, infoStateMessage, ...commonProps } = props;
 	const field = useFieldContext<TValue | undefined>();
 
 	if (readOnlyField) {
@@ -38,7 +38,7 @@ export function CheckboxField(props: CheckboxFieldProps) {
 	return (
 		<Checkbox
 			{...commonProps}
-			{...getFieldState(field.state.meta)}
+			{...getFieldState(field.state.meta, infoStateMessage)}
 			legend={withRequiredMark(commonProps.legend, required)}
 			className={commonProps.className ?? fr.cx("fr-mb-0")}
 			options={commonProps.options.map(({ value, ...option }) => ({
