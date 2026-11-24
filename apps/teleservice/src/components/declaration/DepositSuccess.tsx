@@ -15,12 +15,12 @@ import { copyToClipboard } from "~/lib/clipboard";
 import type { Declaration, User } from "~/payload/payload-types";
 import { newTabLinkProps } from "~/lib/newTabLink";
 
-type PublishSuccessProps = {
+type DepositSuccessProps = {
 	declaration: Pick<Declaration, "id" | "name" | "contact"> & {
 		created_by: User;
 	};
-	/** The date the server stamped on this publication, not the moment of render. */
-	publishedAt: Date;
+	/** The date the server stamped on this deposit, not the moment of render. */
+	depositedAt: Date;
 };
 
 const DECLARATIONS_LIST = "/dashboard/declarations";
@@ -50,10 +50,10 @@ const SUPPORTS: {
 	},
 ];
 
-export function PublishSuccess({
+export function DepositSuccess({
 	declaration,
-	publishedAt,
-}: PublishSuccessProps) {
+	depositedAt,
+}: DepositSuccessProps) {
 	const { classes, cx } = useStyles();
 	const heading = useRef<HTMLHeadingElement>(null);
 
@@ -61,7 +61,7 @@ export function PublishSuccess({
 		heading.current?.focus();
 	}, []);
 
-	const deadline = obsoleteSince(publishedAt).toLocaleDateString("fr-FR", {
+	const deadline = obsoleteSince(depositedAt).toLocaleDateString("fr-FR", {
 		timeZone: "UTC",
 		year: "numeric",
 		month: "long",
@@ -168,7 +168,7 @@ export function PublishSuccess({
 	);
 }
 
-const useStyles = tss.withName({ PublishSuccess }).create({
+const useStyles = tss.withName({ DepositSuccess }).create({
 	root: {
 		display: "flex",
 		flexDirection: "column",

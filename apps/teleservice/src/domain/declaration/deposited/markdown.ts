@@ -1,5 +1,5 @@
 import { appKindOptions } from "~/payload/selectOptions";
-import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
+import type { DepositedDeclaration } from "~/domain/declaration/deposited/snapshot";
 import {
 	type ConformitySeverity,
 	getConformityStatus,
@@ -14,7 +14,7 @@ import {
 /** Snapshot dates are calendar dates (YYYY-MM-DD), as the Zod contract enforces. */
 type IsoDate = string;
 
-export type PublishedMarkdownOptions = {
+export type DepositedMarkdownOptions = {
 	/** Obsolescence is a fact about the reading day, not the snapshot. */
 	today: Date;
 };
@@ -28,15 +28,15 @@ export const formatFrDate = (date: IsoDate): string => {
 	return `${day}/${month}/${year}`;
 };
 
-const obsoleteSinceDay = (publishedAt: IsoDate): IsoDate =>
-	obsoleteSince(new Date(publishedAt)).toISOString().slice(0, 10);
+const obsoleteSinceDay = (depositedAt: IsoDate): IsoDate =>
+	obsoleteSince(new Date(depositedAt)).toISOString().slice(0, 10);
 
-export const publicationLabel = (
-	d: Pick<PublishedDeclaration, "firstPublishedAt" | "publishedAt">,
+export const depositLabel = (
+	d: Pick<DepositedDeclaration, "firstPublishedAt" | "depositedAt">,
 ): string =>
-	d.publishedAt === d.firstPublishedAt
-		? `Publiée le ${formatFrDate(d.publishedAt)}`
-		: `Mise à jour : ${formatFrDate(d.publishedAt)}`;
+	d.depositedAt === d.firstPublishedAt
+		? `Publiée le ${formatFrDate(d.depositedAt)}`
+		: `Mise à jour : ${formatFrDate(d.depositedAt)}`;
 
 const hasText = (value: string | null | undefined): value is string =>
 	!!value && value.trim().length > 0;
@@ -59,7 +59,7 @@ const SERVICE_WORDING = {
 	},
 };
 
-const serviceWording = (appKindLabel: PublishedDeclaration["appKindLabel"]) => {
+const serviceWording = (appKindLabel: DepositedDeclaration["appKindLabel"]) => {
 	const kind = appKindOptions.find((o) => o.label === appKindLabel)?.value;
 	return kind === "website" || kind === "mobile_app"
 		? SERVICE_WORDING[kind]
@@ -94,7 +94,7 @@ const section = (heading: string, ...lines: (string | null)[]) => [
 	"",
 ];
 
-const introduction = (d: PublishedDeclaration): string[] => {
+const introduction = (d: DepositedDeclaration): string[] => {
 	const entity = `**${d.entityName}**`;
 	const schemaLinks = [
 		hasText(d.schema.schemaUrl)
@@ -126,7 +126,7 @@ const introduction = (d: PublishedDeclaration): string[] => {
 	];
 };
 
-const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
+const conformity = (d: DepositedDeclaration, obsolete: boolean): string[] => {
 	const subject = `${serviceWording(d.appKindLabel).subject} **${d.name}**`;
 	const version = rgaaVersionNumber(d.audit.rgaa_version);
 	const rgaa = `avec le référentiel général d’amélioration de l’accessibilité (RGAA)`;
@@ -167,7 +167,7 @@ const conformity = (d: PublishedDeclaration, obsolete: boolean): string[] => {
 	);
 };
 
-const nonAccessibleContent = (d: PublishedDeclaration): string[] => {
+const nonAccessibleContent = (d: DepositedDeclaration): string[] => {
 	if (!d.audit.isRealised) return [];
 	const parts = [
 		["### Éléments bloquants", d.audit.blockingElements],
@@ -190,14 +190,14 @@ const nonAccessibleContent = (d: PublishedDeclaration): string[] => {
 };
 
 const establishment = (
-	d: PublishedDeclaration,
+	d: DepositedDeclaration,
 	obsolete: boolean,
 ): string[] => {
 	const established = `Cette déclaration a été établie le **${formatFrDate(d.firstPublishedAt)}**.`;
 	const dates = obsolete
-		? `${established} Elle est obsolète depuis le **${formatFrDate(obsoleteSinceDay(d.publishedAt))}**.`
-		: d.publishedAt !== d.firstPublishedAt
-			? `${established} Elle a été mise à jour le **${formatFrDate(d.publishedAt)}**.`
+		? `${established} Elle est obsolète depuis le **${formatFrDate(obsoleteSinceDay(d.depositedAt))}**.`
+		: d.depositedAt !== d.firstPublishedAt
+			? `${established} Elle a été mise à jour le **${formatFrDate(d.depositedAt)}**.`
 			: established;
 
 	const auditDetails = d.audit.isRealised
@@ -240,7 +240,7 @@ const establishment = (
 	];
 };
 
-const feedbackAndContact = (d: PublishedDeclaration): string[] => {
+const feedbackAndContact = (d: DepositedDeclaration): string[] => {
 	const channels = [
 		hasText(d.contact.url)
 			? `Envoyer un message sur le formulaire : ${d.contact.url}`
@@ -288,13 +288,13 @@ const obsoleteNotice = () =>
 		"</div>",
 	].join("\n");
 
-export function buildPublishedMarkdown(
-	declaration: PublishedDeclaration,
-	{ today }: PublishedMarkdownOptions,
+export function buildDepositedMarkdown(
+	declaration: DepositedDeclaration,
+	{ today }: DepositedMarkdownOptions,
 ): string {
 	const obsolete =
-		hasText(declaration.publishedAt) &&
-		obsolescenceOf(new Date(declaration.publishedAt), today) === "obsolete";
+		hasText(declaration.depositedAt) &&
+		obsolescenceOf(new Date(declaration.depositedAt), today) === "obsolete";
 
 	return [
 		`# Déclaration d’accessibilité de ${declaration.name}`,

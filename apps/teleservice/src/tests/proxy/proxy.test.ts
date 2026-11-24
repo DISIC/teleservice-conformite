@@ -43,7 +43,7 @@ describe("proxy", () => {
 		expect(run("/").status).toBe(200);
 	});
 
-	it("never touches admin, api, publish and accept-invite routes", () => {
+	it("never touches admin, api, deposit and accept-invite routes", () => {
 		for (const path of [
 			"/admin/collections",
 			"/api/trpc/x",

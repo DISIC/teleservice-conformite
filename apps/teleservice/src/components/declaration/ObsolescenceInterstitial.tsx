@@ -11,7 +11,7 @@ import {
 } from "~/domain/declaration/obsolescence";
 
 type ObsolescenceInterstitialProps = {
-	declaration: Pick<Declaration, "id" | "name" | "published_at">;
+	declaration: Pick<Declaration, "id" | "name" | "deposited_at">;
 	obsolescence: Exclude<Obsolescence, "valid">;
 	/** Reveals the details page for this visit; nothing is persisted. */
 	onUpdate: () => void;
@@ -81,8 +81,8 @@ export function ObsolescenceInterstitial({
 	onUpdate,
 }: ObsolescenceInterstitialProps) {
 	const { classes, cx } = useStyles();
-	const deadline = declaration.published_at
-		? obsoleteSince(new Date(declaration.published_at)).toLocaleDateString(
+	const deadline = declaration.deposited_at
+		? obsoleteSince(new Date(declaration.deposited_at)).toLocaleDateString(
 				"fr-FR",
 				{ timeZone: "UTC" },
 			)

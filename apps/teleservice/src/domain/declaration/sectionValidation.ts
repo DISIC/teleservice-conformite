@@ -6,7 +6,7 @@ export type SectionValidation<TSchema extends z.ZodType = z.ZodType> = {
 	schema: TSchema;
 	fromDeclaration: (declaration: PopulatedDeclaration) => z.input<TSchema>;
 	/**
-	 * Whether this Section currently participates in the publish gate.
+	 * Whether this Section currently participates in the deposit gate.
 	 * Separate from visibility: non-realised audit Sub-sections stay navigable
 	 * but their fields are not applicable yet.
 	 */

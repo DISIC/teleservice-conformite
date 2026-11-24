@@ -54,7 +54,7 @@ function hasCustomContent(
 
 /**
  * Derives the selected radio option from persisted state — no stored `mode`.
- * `null` means Undecided: nothing chosen yet, so the publish gate must block.
+ * `null` means Undecided: nothing chosen yet, so the deposit gate must block.
  */
 export function deriveSourceMode(
 	kind: LibrarySectionKind,
@@ -66,7 +66,7 @@ export function deriveSourceMode(
 	return null;
 }
 
-/** What the publish gate must do for a Library Section: ask for a choice, ask for an item, skip it, or check its content. */
+/** What the deposit gate must do for a Library Section: ask for a choice, ask for an item, skip it, or check its content. */
 export type SourceGate = "undecided" | "unlinked" | "skipped" | "content";
 
 /** An unsaved radio choice supersedes the persisted mode, but only a persisted parent counts as linked. */

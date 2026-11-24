@@ -37,7 +37,7 @@ export function DeclarationHeading({
 	} | null>(null);
 	const [confirmationModalActions] = useState<ConfirmationModalActions>({});
 
-	const isPublished = getDeclarationStatus(declaration) === "published";
+	const isDeposited = getDeclarationStatus(declaration) === "deposited";
 	const publicHref = `/declarations/${declaration.id}/publish`;
 
 	const { mutate: deleteDeclaration } = api.declaration.delete.useMutation({
@@ -106,7 +106,7 @@ export function DeclarationHeading({
 				badge={<StatusBadge declaration={declaration} />}
 				actions={
 					<>
-						{isPublished && (
+						{isDeposited && (
 							<>
 								<Button
 									priority="tertiary"

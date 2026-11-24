@@ -11,9 +11,9 @@ const MATRIX: [SeedState, DeclarationState | null][] = [
 	["brouillon-incomplete", "incomplete"],
 	["to-verify", "to-verify"],
 	["brouillon-ready", "ready"],
-	["publiee", null],
-	["modifiee", "published-modified"],
-	["published-incomplete", "published-incomplete"],
+	["deposee", null],
+	["modifiee", "deposited-modified"],
+	["deposited-incomplete", "deposited-incomplete"],
 ];
 
 const STATES = Object.keys(STATE_PRESENTATION) as DeclarationState[];
@@ -53,7 +53,7 @@ test("Declaration state matrix: each state shows its notice, badge and actions",
 		await expect(
 			page.getByRole("button", { name: "Prévisualiser et publier" }),
 			seedState,
-		).toHaveCount(actions.includes("publish") ? 1 : 0);
+		).toHaveCount(actions.includes("deposit") ? 1 : 0);
 		await a11y.check(`details page in state ${state}`);
 	}
 });

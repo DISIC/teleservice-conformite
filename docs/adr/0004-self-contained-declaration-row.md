@@ -3,6 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-06-10
 - **Amends:** ADR-0002 (persistence target), ADR-0003 (gate scope)
+- **Amended 2026-11-24 (ADR-0007):** what this ADR calls "publish" and "published" is now the **dépôt** and "deposited" (Status Déposée); Publiée now means "link verified". The identifiers cited here were renamed accordingly (`publishedContent` → `depositedContent`, `revertToPublished` → `revertToDeposited`, `extractDeclarationContentToPublish` → `extractDeclarationContentToDeposit`). The decision itself stands.
 
 ## Context
 
@@ -51,7 +52,7 @@ Not change for its own sake; here is what each shape actually costs and buys.
 
 **Pros:**
 
-- A declaration is **one read, one shape** — the row mirrors the Section tree in CONTEXT.md. `PopulatedDeclaration`, join hydration, and relation unions disappear from the main path.
+- A declaration is **one read, one shape** — the row mirrors the Section tree in GLOSSARY.md. `PopulatedDeclaration`, join hydration, and relation unions disappear from the main path.
 - Invariants become structural: exactly one audit per declaration (it's a group), copies survive parent deletion (they're already local), sections always exist (just empty) — no cascade hook, no service-layer uniqueness guard.
 - One save pattern everywhere: every section save is "patch fields on the declarations row"; the only extra gesture is link/unlink of a parent.
 - Publish snapshot and `validateDeclaration` read the same single object the forms write — no mapper layer reconciling row shapes.

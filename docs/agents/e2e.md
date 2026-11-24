@@ -1,6 +1,6 @@
 # End-to-end suite — area map
 
-Navigational map of the Playwright suite of the teleservice (`apps/teleservice/e2e/`). It drives the real application in Chromium, Firefox and WebKit against a throwaway Postgres, signed in through the ProConnect integration environment, and runs axe at chosen checkpoints. Vocabulary is defined in `CONTEXT.md`; this file only says **where things are** and which rules keep the suite small and stable.
+Navigational map of the Playwright suite of the teleservice (`apps/teleservice/e2e/`). It drives the real application in Chromium, Firefox and WebKit against a throwaway Postgres, signed in through the ProConnect integration environment, and runs axe at chosen checkpoints. Vocabulary is defined in `GLOSSARY.md`; this file only says **where things are** and which rules keep the suite small and stable.
 
 ## The 60-second map
 
@@ -29,7 +29,7 @@ playwright.config.ts              projects: chromium / firefox / webkit (depend 
 | How a run is assembled            | `e2e/run.js` (container, migrations, stale session removed, `NODE_ENV=production` for the runner, setup project before UI mode) → `playwright.config.ts` |
 | How tests are signed in           | `e2e/auth.setup.ts` (the `setup` project every browser project depends on) → `e2e/support/proconnect.ts`; tests load the saved session and never log in  |
 | How a Declaration reaches a state | `e2e/support/seed.ts` (`SEED_STATES`, `advance`) → `server/api/routers/declaration/service.ts`, `server/api/utils/section-write.ts`                      |
-| Which flow covers what            | `brouillon-to-publiee`, `publiee-edits`, `published-incomplete`, `obsolescence`, `state-matrix` — one spec each, named after the glossary                |
+| Which flow covers what            | `brouillon-to-deposee`, `deposee-edits`, `deposited-incomplete`, `obsolescence`, `state-matrix` — one spec each, named after the glossary                |
 | Waiting for a save                | `waitForSave(page, "<router>.<procedure>", "<value the request carries>")` in `declarationPage.ts`                                                       |
 | Accessibility checks              | `a11y.ts` (tags, soft assertion, attachment, animation settle) → `a11yAllowlist.ts`                                                                      |
 | Where copy comes from             | `domain/declaration/state.ts` (`STATE_PRESENTATION`, `SECTION_BADGE`), `sections.ts` (`SECTION_TITLES`), `obsolescence.ts` (`OBSOLESCENCE_PRESENTATION`) |
@@ -38,8 +38,8 @@ playwright.config.ts              projects: chromium / firefox / webkit (depend 
 ## Rules
 
 - **A core, not a net.** About ten tests at most. Each flow is one linear story through real screens; the state matrix is a single test looping over seeded states. A regression that a unit test can catch belongs in `src/tests/`.
-- **Waves.** First wave: the sequential walkthrough and publish gate, Publiée edits (Modifiée, revert, republish), published-incomplete, Obsolescence, the Declaration state matrix. Second wave: Library and Source mode. Out of scope: Import ARA and Import IA (server-side fetch to external APIs), Membres and invitations, the Payload admin.
-- **Seed, don't click.** Any starting state comes from `seed.declaration(state)`. It is valid by construction because the seeder calls the same functions as the routers. Only public snapshot fields drift a Publiée row: the contact email or URL, never the contact name.
+- **Waves.** First wave: the sequential walkthrough and deposit gate, Déposée edits (Modifiée, revert, redeposit), deposited-incomplete, Obsolescence, the Declaration state matrix. Second wave: Library and Source mode. Out of scope: Import ARA and Import IA (server-side fetch to external APIs), Membres and invitations, the Payload admin.
+- **Seed, don't click.** Any starting state comes from `seed.declaration(state)`. It is valid by construction because the seeder calls the same functions as the routers. Only public snapshot fields drift a Déposée row: the contact email or URL, never the contact name.
 - **One shared user, uniquely named rows.** The `setup` project signs in once per run and every browser project loads its session. Every test uses the same identity; isolation is a unique Declaration name per test (`uniqueName`). Find a list row with `openListRow(page, name)`, never count rows, never delete or rename data another test may read. UI-created rows attach to the shared ProConnect entity: a sector chosen in one test is visible to the others, so gate checks hinge on per-Declaration fields, not on the entity.
 - **Locators.** Role and accessible name first, copy imported from the domain constants, never a DSFR class name, test ids only as a last resort (none so far). DSFR draws radios on the label, which overlays the input: use `checkRadio`.
 - **Waits.** No `waitForTimeout`. A save is proven by its tRPC answer and by the effect on the page.

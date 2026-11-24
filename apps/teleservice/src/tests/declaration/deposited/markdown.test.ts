@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest";
-import type { PublishedDeclaration } from "~/domain/declaration/published/snapshot";
+import type { DepositedDeclaration } from "~/domain/declaration/deposited/snapshot";
 import {
-	buildPublishedMarkdown,
-	publicationLabel,
-} from "~/domain/declaration/published/markdown";
+	buildDepositedMarkdown,
+	depositLabel,
+} from "~/domain/declaration/deposited/markdown";
 
 const TODAY = new Date("2026-09-07T12:00:00.000Z");
 
 /** The Figma reference declaration: full audit, schema links, both contact channels. */
-function publishedDeclaration(
-	overrides: Partial<PublishedDeclaration> = {},
-): PublishedDeclaration {
+function depositedDeclaration(
+	overrides: Partial<DepositedDeclaration> = {},
+): DepositedDeclaration {
 	return {
 		name: "Impôts particulier (SIP)",
 		entityName: "La Direction Générale des Finances (DGFIP)",
@@ -31,7 +31,7 @@ function publishedDeclaration(
 		appKindLabel: "Site web",
 		url: "www.impotspparticulier.gouv.fr",
 		firstPublishedAt: "2025-03-24",
-		publishedAt: "2025-03-27",
+		depositedAt: "2025-03-27",
 		audit: {
 			isRealised: true,
 			rgaa_version: "RGAA 5",
@@ -64,19 +64,19 @@ function publishedDeclaration(
 
 const snapshot = (name: string) => `./__snapshots__/markdown/${name}.md`;
 
-describe("buildPublishedMarkdown", () => {
-	it("renders the full, republished declaration", async () => {
+describe("buildDepositedMarkdown", () => {
+	it("renders the full, redeposited declaration", async () => {
 		await expect(
-			buildPublishedMarkdown(publishedDeclaration(), { today: TODAY }),
-		).toMatchFileSnapshot(snapshot("full-republished"));
+			buildDepositedMarkdown(depositedDeclaration(), { today: TODAY }),
+		).toMatchFileSnapshot(snapshot("full-redeposited"));
 	});
 
 	it("renders a declaration whose audit was not performed", async () => {
 		await expect(
-			buildPublishedMarkdown(
-				publishedDeclaration({
+			buildDepositedMarkdown(
+				depositedDeclaration({
 					firstPublishedAt: "2026-08-27",
-					publishedAt: "2026-08-27",
+					depositedAt: "2026-08-27",
 					audit: {
 						isRealised: false,
 						rgaa_version: "RGAA 4",
@@ -99,10 +99,10 @@ describe("buildPublishedMarkdown", () => {
 
 	it("renders an obsolete declaration", async () => {
 		await expect(
-			buildPublishedMarkdown(
-				publishedDeclaration({
+			buildDepositedMarkdown(
+				depositedDeclaration({
 					firstPublishedAt: "2023-03-24",
-					publishedAt: "2023-03-24",
+					depositedAt: "2023-03-24",
 				}),
 				{ today: TODAY },
 			),
@@ -111,10 +111,10 @@ describe("buildPublishedMarkdown", () => {
 
 	describe("dates sentence", () => {
 		it("states only the establishment date on a first publication", () => {
-			const md = buildPublishedMarkdown(
-				publishedDeclaration({
+			const md = buildDepositedMarkdown(
+				depositedDeclaration({
 					firstPublishedAt: "2026-08-27",
-					publishedAt: "2026-08-27",
+					depositedAt: "2026-08-27",
 				}),
 				{ today: TODAY },
 			);
@@ -124,9 +124,9 @@ describe("buildPublishedMarkdown", () => {
 			expect(md).not.toContain("mise à jour");
 		});
 
-		it("adds the update date once republished", () => {
+		it("adds the update date once redeposited", () => {
 			expect(
-				buildPublishedMarkdown(publishedDeclaration(), { today: TODAY }),
+				buildDepositedMarkdown(depositedDeclaration(), { today: TODAY }),
 			).toContain(
 				"établie le **24/03/2025**. Elle a été mise à jour le **27/03/2025**.",
 			);
@@ -136,14 +136,14 @@ describe("buildPublishedMarkdown", () => {
 	describe("conformity", () => {
 		it("badges the conformity status from the audit rate", () => {
 			expect(
-				buildPublishedMarkdown(publishedDeclaration(), { today: TODAY }),
+				buildDepositedMarkdown(depositedDeclaration(), { today: TODAY }),
 			).toContain(
 				'<p class="fr-badge fr-badge--new fr-badge--sm fr-badge--no-icon">Partiellement conforme</p>',
 			);
 			expect(
-				buildPublishedMarkdown(
-					publishedDeclaration({
-						audit: { ...publishedDeclaration().audit, rate: 100 },
+				buildDepositedMarkdown(
+					depositedDeclaration({
+						audit: { ...depositedDeclaration().audit, rate: 100 },
 					}),
 					{ today: TODAY },
 				),
@@ -151,10 +151,10 @@ describe("buildPublishedMarkdown", () => {
 		});
 
 		it("deems an obsolete declaration non compliant whatever its rate", () => {
-			const md = buildPublishedMarkdown(
-				publishedDeclaration({
+			const md = buildDepositedMarkdown(
+				depositedDeclaration({
 					firstPublishedAt: "2023-03-24",
-					publishedAt: "2023-03-24",
+					depositedAt: "2023-03-24",
 				}),
 				{ today: TODAY },
 			);
@@ -165,9 +165,9 @@ describe("buildPublishedMarkdown", () => {
 		});
 
 		it("states non-conformity in the test results when no audit was performed", () => {
-			const md = buildPublishedMarkdown(
-				publishedDeclaration({
-					audit: { ...publishedDeclaration().audit, isRealised: false },
+			const md = buildDepositedMarkdown(
+				depositedDeclaration({
+					audit: { ...depositedDeclaration().audit, isRealised: false },
 				}),
 				{ today: TODAY },
 			);
@@ -186,9 +186,9 @@ describe("buildPublishedMarkdown", () => {
 
 	describe("test results", () => {
 		it("states non-conformity instead of the rate below 50%", () => {
-			const md = buildPublishedMarkdown(
-				publishedDeclaration({
-					audit: { ...publishedDeclaration().audit, rate: 49 },
+			const md = buildDepositedMarkdown(
+				depositedDeclaration({
+					audit: { ...depositedDeclaration().audit, rate: 49 },
 				}),
 				{ today: TODAY },
 			);
@@ -199,10 +199,10 @@ describe("buildPublishedMarkdown", () => {
 		});
 
 		it("states non-conformity from 50% when there are blocking elements", () => {
-			const md = buildPublishedMarkdown(
-				publishedDeclaration({
+			const md = buildDepositedMarkdown(
+				depositedDeclaration({
 					audit: {
-						...publishedDeclaration().audit,
+						...depositedDeclaration().audit,
 						rate: 80,
 						blockingElements: "Paiement inaccessible au clavier",
 					},
@@ -226,9 +226,9 @@ describe("buildPublishedMarkdown", () => {
 		});
 
 		it("reports the audit rate from 50%", () => {
-			const md = buildPublishedMarkdown(
-				publishedDeclaration({
-					audit: { ...publishedDeclaration().audit, rate: 50 },
+			const md = buildDepositedMarkdown(
+				depositedDeclaration({
+					audit: { ...depositedDeclaration().audit, rate: 50 },
 				}),
 				{ today: TODAY },
 			);
@@ -239,15 +239,15 @@ describe("buildPublishedMarkdown", () => {
 	describe("scope sentence", () => {
 		it("names the service type", () => {
 			expect(
-				buildPublishedMarkdown(publishedDeclaration(), { today: TODAY }),
+				buildDepositedMarkdown(depositedDeclaration(), { today: TODAY }),
 			).toContain(
 				"s’applique au **site web [Impôts particulier (SIP)](https://www.impotspparticulier.gouv.fr)**",
 			);
 		});
 
 		it("names a mobile application with its own article", () => {
-			const md = buildPublishedMarkdown(
-				publishedDeclaration({ appKindLabel: "Application mobile" }),
+			const md = buildDepositedMarkdown(
+				depositedDeclaration({ appKindLabel: "Application mobile" }),
 				{ today: TODAY },
 			);
 			expect(md).toContain(
@@ -256,8 +256,8 @@ describe("buildPublishedMarkdown", () => {
 		});
 
 		it("omits the catch-all « Autre »", () => {
-			const md = buildPublishedMarkdown(
-				publishedDeclaration({ appKindLabel: "Autre" }),
+			const md = buildDepositedMarkdown(
+				depositedDeclaration({ appKindLabel: "Autre" }),
 				{ today: TODAY },
 			);
 			expect(md).toContain(
@@ -268,7 +268,7 @@ describe("buildPublishedMarkdown", () => {
 		});
 
 		it("names the service without a link when it has no URL", () => {
-			const md = buildPublishedMarkdown(publishedDeclaration({ url: "" }), {
+			const md = buildDepositedMarkdown(depositedDeclaration({ url: "" }), {
 				today: TODAY,
 			});
 			expect(md).toContain(
@@ -278,8 +278,8 @@ describe("buildPublishedMarkdown", () => {
 		});
 
 		it("keeps the link intact when the name or URL holds link syntax", () => {
-			const md = buildPublishedMarkdown(
-				publishedDeclaration({
+			const md = buildDepositedMarkdown(
+				depositedDeclaration({
 					name: "Portail [beta]",
 					url: "https://example.fr/a (b)",
 				}),
@@ -292,8 +292,8 @@ describe("buildPublishedMarkdown", () => {
 	});
 
 	it("labels unnamed schema links with a generic name", () => {
-		const md = buildPublishedMarkdown(
-			publishedDeclaration({
+		const md = buildDepositedMarkdown(
+			depositedDeclaration({
 				schema: {
 					schemaName: "",
 					schemaUrl: "https://schema.gouv.fr",
@@ -309,21 +309,21 @@ describe("buildPublishedMarkdown", () => {
 	});
 });
 
-describe("publicationLabel", () => {
+describe("depositLabel", () => {
 	it("says « Publiée le » on a first publication", () => {
 		expect(
-			publicationLabel({
+			depositLabel({
 				firstPublishedAt: "2026-08-27",
-				publishedAt: "2026-08-27",
+				depositedAt: "2026-08-27",
 			}),
 		).toBe("Publiée le 27/08/2026");
 	});
 
-	it("says « Mise à jour » once republished", () => {
+	it("says « Mise à jour » once redeposited", () => {
 		expect(
-			publicationLabel({
+			depositLabel({
 				firstPublishedAt: "2025-03-24",
-				publishedAt: "2026-08-27",
+				depositedAt: "2026-08-27",
 			}),
 		).toBe("Mise à jour : 27/08/2026");
 	});

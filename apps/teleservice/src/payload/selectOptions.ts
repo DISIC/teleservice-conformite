@@ -60,12 +60,12 @@ export const mobilePlatformOptions = [
 export const declarationStatusOptions = [
 	{
 		label: "Publiée",
-		value: "published",
+		value: "deposited",
 	},
 
 	{
 		label: "Brouillon",
-		value: "unpublished",
+		value: "undeposited",
 	},
 ] as const;
 

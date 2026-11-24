@@ -36,11 +36,11 @@ export const Declarations: CollectionConfig = {
 			name: "status",
 			type: "select",
 			label: { fr: "Statut" },
-			defaultValue: "unpublished",
+			defaultValue: "undeposited",
 			options: [...declarationStatusOptions],
 		},
 		{
-			name: "published_at",
+			name: "deposited_at",
 			type: "date",
 			label: { fr: "Date de publication" },
 			admin: {
@@ -105,7 +105,7 @@ export const Declarations: CollectionConfig = {
 			options: [...kindOptions],
 		},
 		{
-			name: "publishedContent",
+			name: "depositedContent",
 			type: "text",
 			label: { fr: "Contenu publié" },
 			required: false,

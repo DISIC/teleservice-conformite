@@ -3,6 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-06-15
 - **Extends:** ADR-0003 (gate predicate), ADR-0004 (Library sourcing modes)
+- **Amended 2026-11-24 (ADR-0007):** what this ADR calls "publish" is now the **dépôt**; read "gated at publish" and "publish gate" as "gated at the dépôt" and "deposit gate". Publiée now means "link verified". The decision itself stands.
 
 ## Context
 

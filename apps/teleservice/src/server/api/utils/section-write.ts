@@ -1,6 +1,6 @@
 import type { Payload } from "payload";
 import z from "zod";
-import { NO_AUDIT } from "~/domain/declaration/published/noAudit";
+import { NO_AUDIT } from "~/domain/declaration/deposited/noAudit";
 import type { LibrarySectionKind } from "~/domain/declaration/sourceMode";
 import {
 	getDeclarationStatus,
@@ -74,7 +74,7 @@ const MERGERS: { [K in SectionKind]: SectionMerger<K> } = {
 				}
 			: {}),
 		url: general.url,
-		// The initial publication date is frozen by the first publish action.
+		// The initial publication date is frozen by the first deposit action.
 		...(general.firstPublishedAt && getDeclarationStatus(current) === "draft"
 			? { first_published_at: general.firstPublishedAt }
 			: {}),

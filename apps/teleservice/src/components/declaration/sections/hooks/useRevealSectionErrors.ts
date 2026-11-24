@@ -3,11 +3,11 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import type { SourceModeValue } from "~/domain/declaration/sourceMode";
 
-// After a publish attempt, or when arriving from the error summary (`field` param),
+// After a deposit attempt, or when arriving from the error summary (`field` param),
 // reveal every error in the Section, not only the focused field.
 export function useRevealSectionErrors(
 	form: AnyFormApi,
-	publishAttempted: boolean,
+	depositAttempted: boolean,
 	/** A Library Section mounts its fields only in custom mode, so re-reveal when the body swaps. */
 	bodyMode: SourceModeValue | null,
 ) {
@@ -15,7 +15,7 @@ export function useRevealSectionErrors(
 	const fieldParam =
 		typeof router.query.field === "string" ? router.query.field : null;
 
-	const reveal = publishAttempted || fieldParam !== null;
+	const reveal = depositAttempted || fieldParam !== null;
 
 	useEffect(() => {
 		if (!reveal) return;

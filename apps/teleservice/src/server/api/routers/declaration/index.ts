@@ -76,13 +76,13 @@ export const declarationRouter = createTRPCRouter({
 				input.name,
 			),
 		})),
-	publish: declarationProcedure.mutation(async ({ ctx }) => ({
-		data: await service.publishDeclaration(ctx.payload, ctx.declaration),
+	deposit: declarationProcedure.mutation(async ({ ctx }) => ({
+		data: await service.depositDeclaration(ctx.payload, ctx.declaration),
 	})),
-	getPreviousPublishedRate: declarationProcedure.query(({ ctx }) =>
-		service.getPreviousPublishedRate(ctx.payload, ctx.declaration),
+	getPreviousDepositedRate: declarationProcedure.query(({ ctx }) =>
+		service.getPreviousDepositedRate(ctx.payload, ctx.declaration),
 	),
-	revertToPublished: declarationProcedure.mutation(async ({ ctx }) => ({
-		data: await service.revertToPublished(ctx.payload, ctx.declaration),
+	revertToDeposited: declarationProcedure.mutation(async ({ ctx }) => ({
+		data: await service.revertToDeposited(ctx.payload, ctx.declaration),
 	})),
 });

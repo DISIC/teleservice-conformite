@@ -66,21 +66,21 @@ export default function DeclarationPage({
 		declaration.fromSource !== "manual",
 	);
 
-	// The interstitial gates an unchanged, ageing publication until the declarant
+	// The interstitial gates an unchanged, ageing deposit until the declarant
 	// starts updating it; once the row is Modifiée they are already acting.
 	const obsolescence = getObsolescence(declaration, new Date());
 	const [updateRevealed, setUpdateRevealed] = useState(false);
 	const showInterstitial =
 		obsolescence !== "valid" &&
-		declaration.status !== "unpublished" &&
+		declaration.status !== "undeposited" &&
 		!updateRevealed;
 
 	// Set by "Prévisualiser et publier"; from then on the error summary re-derives on every save.
-	const [publishAttempted, setPublishAttempted] = useScopedState(
+	const [depositAttempted, setDepositAttempted] = useScopedState(
 		declaration.id,
 		false,
 	);
-	const onPublishAttempt = () => setPublishAttempted(() => true);
+	const onDepositAttempt = () => setDepositAttempted(() => true);
 
 	const [pendingSourceModes, updatePendingSourceModes] = useScopedState(
 		declaration.id,
@@ -98,10 +98,10 @@ export default function DeclarationPage({
 	);
 	const declarationErrors = useMemo(
 		() =>
-			publishAttempted
+			depositAttempted
 				? validateDeclaration(declaration, pendingSourceModes)
 				: [],
-		[publishAttempted, declaration, pendingSourceModes],
+		[depositAttempted, declaration, pendingSourceModes],
 	);
 
 	// Focus the errored field on first mount, then drop the param so it neither
@@ -162,7 +162,7 @@ export default function DeclarationPage({
 					<PendingSourceModesProvider value={pendingSourceModesValue}>
 						<StateNotice
 							declaration={declaration}
-							onPublishAttempt={onPublishAttempt}
+							onDepositAttempt={onDepositAttempt}
 							onReverted={() => router.reload()}
 						/>
 
@@ -191,8 +191,8 @@ export default function DeclarationPage({
 										currentSection={currentSection}
 										onDeclarationChange={setDeclaration}
 										mode={editingMode}
-										onPublishAttempt={onPublishAttempt}
-										publishAttempted={publishAttempted}
+										onDepositAttempt={onDepositAttempt}
+										depositAttempted={depositAttempted}
 									/>
 								</div>
 							</div>

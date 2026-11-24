@@ -33,7 +33,7 @@ import type {
 	DeclarationChangeFn,
 } from "./defineSection";
 import { useAutosave } from "./hooks/useAutosave";
-import { usePublishAttempt } from "./hooks/usePublishAttempt";
+import { useDepositAttempt } from "./hooks/useDepositAttempt";
 import { useRevealSectionErrors } from "./hooks/useRevealSectionErrors";
 import { useSourceMode } from "./hooks/useSourceMode";
 import { SectionShell } from "./Shell";
@@ -47,10 +47,10 @@ type SectionProps = {
 	mode: EditingMode;
 	prevHref: string | null;
 	nextHref: string | null;
-	/** Flips the page's "publish attempted" flag so the error summary appears. */
-	onPublishAttempt: () => void;
-	/** Once a publish was attempted, every Section reveals its errors on mount. */
-	publishAttempted: boolean;
+	/** Flips the page's "deposit attempted" flag so the error summary appears. */
+	onDepositAttempt: () => void;
+	/** Once a deposit was attempted, every Section reveals its errors on mount. */
+	depositAttempted: boolean;
 };
 
 /**
@@ -64,8 +64,8 @@ export function Section({
 	mode,
 	prevHref,
 	nextHref,
-	onPublishAttempt,
-	publishAttempted,
+	onDepositAttempt,
+	depositAttempted,
 }: SectionProps) {
 	const { slug, library } = definition;
 	const title = SECTIONS[slug].title;
@@ -83,9 +83,9 @@ export function Section({
 		declaration,
 		onDeclarationChange,
 	});
-	const { attemptPublish } = usePublishAttempt({
+	const { attemptDeposit } = useDepositAttempt({
 		declaration,
-		onPublishAttempt,
+		onDepositAttempt,
 	});
 
 	const hideActions = definition.hideActions?.(declaration) ?? false;
@@ -127,20 +127,20 @@ export function Section({
 		onSubmit: async ({ value }) => {
 			const saved = editing.isCustomEdit ? await save(value) : undefined;
 			if (editing.isTerminal) {
-				attemptPublish(saved?.data);
+				attemptDeposit(saved?.data);
 				return;
 			}
 			afterSave();
 		},
 	});
 
-	// The publish gate is declaration-wide, so it must not stall on this Section's
+	// The deposit gate is declaration-wide, so it must not stall on this Section's
 	// own validators; flush any pending custom edit so it validates fresh values.
-	const publish = async () => {
+	const deposit = async () => {
 		const saved = editing.isCustomEdit
 			? await save(form.state.values)
 			: undefined;
-		attemptPublish(saved?.data);
+		attemptDeposit(saved?.data);
 	};
 
 	const values = useStore(form.store, (state) => state.values);
@@ -149,9 +149,9 @@ export function Section({
 		values,
 		save,
 	});
-	useRevealSectionErrors(form, publishAttempted, editing.bodyMode);
+	useRevealSectionErrors(form, depositAttempted, editing.bodyMode);
 
-	// A `?field=` naming the source radio means the publish gate routed here. The
+	// A `?field=` naming the source radio means the deposit gate routed here. The
 	// page strips the param once it has focused the field, so latch the reveal.
 	const [sourceModeRevealed, setSourceModeRevealed] = useState(false);
 	useEffect(() => {
@@ -160,7 +160,7 @@ export function Section({
 		}
 	}, [router.query.field, library]);
 	const revealSource =
-		(sourceModeRevealed || publishAttempted) && editing.showRadio;
+		(sourceModeRevealed || depositAttempted) && editing.showRadio;
 	const sourceModeError =
 		revealSource && source?.gate === "undecided"
 			? SECTIONS[slug].validation.sourceMode?.message
@@ -306,7 +306,7 @@ export function Section({
 				setReadOnly(true);
 			}}
 			onSave={() => form.handleSubmit()}
-			onPublish={editing.isTerminal ? publish : undefined}
+			onDeposit={editing.isTerminal ? deposit : undefined}
 			// Sequential mode autosaves silently — no pending indicator.
 			isSaving={isSequential ? false : isPending}
 			prevHref={prevHref}

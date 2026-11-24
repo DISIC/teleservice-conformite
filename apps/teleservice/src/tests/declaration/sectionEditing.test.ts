@@ -55,12 +55,12 @@ describe("resolveSectionEditing — a Section without a Library", () => {
 		).toBe(false);
 	});
 
-	it("ends the walkthrough with the publish gate on the last Section", () => {
+	it("ends the walkthrough with the deposit gate on the last Section", () => {
 		expect(plain({ isLast: true }).isTerminal).toBe(true);
 		expect(plain({ isLast: true, mode: "standalone" }).isTerminal).toBe(false);
 	});
 
-	it("neither autosaves nor publishes when there is nothing to save", () => {
+	it("neither autosaves nor deposits when there is nothing to save", () => {
 		expect(plain({ hideActions: true, isLast: true })).toMatchObject({
 			autosave: false,
 			isTerminal: false,

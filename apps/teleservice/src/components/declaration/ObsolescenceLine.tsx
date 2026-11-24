@@ -7,13 +7,13 @@ import {
 } from "~/domain/declaration/obsolescence";
 
 type ObsolescenceLineProps = {
-	declaration: Pick<Declaration, "publishedContent" | "published_at">;
+	declaration: Pick<Declaration, "depositedContent" | "deposited_at">;
 	/** Outside the list's Statut cell, the deadline shows only once Bientôt obsolète or Obsolète. */
 	inStatusCell?: boolean;
 };
 
-const formatDeadline = (publishedAt: string) =>
-	obsoleteSince(new Date(publishedAt)).toLocaleDateString("fr-FR", {
+const formatDeadline = (depositedAt: string) =>
+	obsoleteSince(new Date(depositedAt)).toLocaleDateString("fr-FR", {
 		timeZone: "UTC",
 	});
 
@@ -23,9 +23,9 @@ export function ObsolescenceLine({
 }: ObsolescenceLineProps) {
 	const { classes, cx } = useStyles();
 	const obsolescence = getObsolescence(declaration, new Date());
-	if (!declaration.publishedContent || !declaration.published_at) return null;
-	if (Number.isNaN(new Date(declaration.published_at).getTime())) return null;
-	const deadline = formatDeadline(declaration.published_at);
+	if (!declaration.depositedContent || !declaration.deposited_at) return null;
+	if (Number.isNaN(new Date(declaration.deposited_at).getTime())) return null;
+	const deadline = formatDeadline(declaration.deposited_at);
 
 	if (obsolescence === "valid") {
 		if (!inStatusCell) return null;

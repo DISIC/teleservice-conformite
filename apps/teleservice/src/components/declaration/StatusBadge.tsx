@@ -8,14 +8,14 @@ const STATUS_PRESENTATION: Record<
 	{ label: string; severity?: "success" }
 > = {
 	draft: { label: "Brouillon" },
-	published: { label: "Publiée", severity: "success" },
+	deposited: { label: "Publiée", severity: "success" },
 };
 
 type StatusBadgeProps = {
-	declaration: Pick<Declaration, "publishedContent" | "published_at">;
+	declaration: Pick<Declaration, "depositedContent" | "deposited_at">;
 };
 
-// Obsolète replaces Publiée; Bientôt obsolète keeps it and is signalled next to the badge.
+// Obsolète replaces the Status badge; Bientôt obsolète keeps it and is signalled next to the badge.
 export function StatusBadge({ declaration }: StatusBadgeProps) {
 	if (getObsolescence(declaration, new Date()) === "obsolete") {
 		return (

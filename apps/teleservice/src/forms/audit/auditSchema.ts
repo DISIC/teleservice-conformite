@@ -18,7 +18,7 @@ import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
  * Four independent audit forms — one per Sub-section. Every schema validates
  * only the fields its Sub-section owns.
  *
- * Each `auditTo*Values` mapper sits next to its schema/defaults so the publish
+ * Each `auditTo*Values` mapper sits next to its schema/defaults so the deposit
  * gate validates the exact shape its form feeds — keep them in sync.
  */
 

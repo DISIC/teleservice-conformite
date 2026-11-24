@@ -5,7 +5,7 @@ import {
 	expectPreview,
 	footer,
 	goToNextSection,
-	publishFromPreview,
+	depositFromPreview,
 	openListRow,
 	sectionHeading,
 	stateNotice,
@@ -90,11 +90,11 @@ test("Brouillon to Publiée through the sequential walkthrough", async ({
 		.click();
 	await expectPreview(page);
 	await a11y.check("preview page");
-	await publishFromPreview(page);
+	await depositFromPreview(page);
 	await a11y.check("publication confirmation screen");
 
 	await page.goto(`/dashboard/declarations/${id}`);
-	await a11y.check("details page after publishing");
+	await a11y.check("details page after depositing");
 
 	// Publiée: standalone mode, no notice, public page live, list badge swapped.
 	await expect(page.getByText("Publiée", { exact: true })).toBeVisible();

@@ -3,7 +3,7 @@
 - **Statut :** compréhension partagée, rien n'est encore mis en œuvre.
 - **Session :** 11–14 septembre 2026.
 - **Remplace :** les choix techniques du document de cadrage « Intégration du site RGAA5 dans téléservice conformité ». Les objectifs de ce document (contenu versionné en fichiers, contributions par PR, bascule en deux temps, redirections) sont conservés ; plusieurs de ses choix d'architecture sont remplacés, voir § 2.
-- **Vocabulaire :** les termes Référentiel, Critère, Test, Thématique, Terme, Version et Données publiées sont définis dans `CONTEXT.md` (groupe « RGAA 5 référentiel »). Ce document les utilise sans les redéfinir.
+- **Vocabulaire :** les termes Référentiel, Critère, Test, Thématique, Terme, Version et Données publiées sont définis dans `GLOSSARY.md` (groupe « RGAA 5 référentiel »). Ce document les utilise sans les redéfinir.
 
 ## 1. Résumé
 
@@ -62,7 +62,7 @@ Chaque décision indique les alternatives écartées et la raison du choix.
 
 ### 3.3 Modèle de contenu
 
-Décisions enregistrées dans `CONTEXT.md` ; rappel des choix et des alternatives.
+Décisions enregistrées dans `GLOSSARY.md` ; rappel des choix et des alternatives.
 
 - **Un Critère est une entité unique** (numéro, intitulé, niveau, Thématique partagés), applicable à un, deux ou trois Référentiels. _Écarté :_ trois listes de critères indépendantes (dérive de rédaction, triple correction). L'intitulé ne varie pas par Référentiel ; seuls les Tests varient.
 - **Un Test appartient à un couple (Critère, Référentiel)** ; sa numérotation repart à 1 par Référentiel. Le Test 1.2.1 de Mobile n'est pas le Test 1.2.1 de Bureautique.
@@ -186,7 +186,7 @@ _Écarté :_ le hook pre-commit du dépôt RGAA 4, qui ne s'exécutait pas pour 
 ### 3.9 Hors périmètre ou différé
 
 - Alignement de `app_kind` du téléservice avec les Référentiels (« Autre » n'est pas « Bureautique » ; une Déclaration ne nomme pas le Référentiel suivi par son audit). À traiter à la mise en service de RGAA 5 ; pas de champ libre intermédiaire.
-- Second contexte de domaine avec carte de contextes : un seul `CONTEXT.md` à la racine, deux groupes de glossaire.
+- Second contexte de domaine avec carte de contextes : un seul `GLOSSARY.md` à la racine, deux groupes de glossaire.
 - Tout travail sur le site 4.1.2 au-delà du DNS.
 
 ## 4. Plan de construction
@@ -229,7 +229,7 @@ apps/site/            Next.js App Router, export statique, domaine racine ; copi
 apps/teleservice/     application actuelle, Pages Router, sous-domaine
 packages/content/     loader : lit rgaa/content/, écrit rgaa/data/ ; schémas, contrôles, script `check` pour la CI
 docs/                 documentation d'équipe (ce document, ADR)
-CONTEXT.md            glossaire unique, deux groupes
+GLOSSARY.md            glossaire unique, deux groupes
 ```
 
 ## Annexe B — Pourquoi les sources sont en markdown à frontmatter et non en YAML

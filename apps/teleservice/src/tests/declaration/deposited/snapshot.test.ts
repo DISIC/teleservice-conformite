@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
-	extractDeclarationContentToPublish,
-	parsePublishedDeclaration,
-} from "~/domain/declaration/published/snapshot";
+	extractDeclarationContentToDeposit,
+	parseDepositedDeclaration,
+} from "~/domain/declaration/deposited/snapshot";
 import { completeDeclaration } from "../declaration.fixture";
 
-describe("extractDeclarationContentToPublish", () => {
-	it("publishes human-readable labels, not stored values", () => {
-		const content = extractDeclarationContentToPublish(
+describe("extractDeclarationContentToDeposit", () => {
+	it("deposits human-readable labels, not stored values", () => {
+		const content = extractDeclarationContentToDeposit(
 			completeDeclaration({
 				audit: {
 					isRealised: true,
@@ -23,20 +23,20 @@ describe("extractDeclarationContentToPublish", () => {
 		expect(content.audit.testEnvironments).toEqual(["VoiceOver (Safari)"]);
 	});
 
-	it("previews a manual draft as a first publication on the publish day", () => {
-		const content = extractDeclarationContentToPublish(
+	it("previews a manual draft as a first publication on the deposit day", () => {
+		const content = extractDeclarationContentToDeposit(
 			completeDeclaration({
 				fromSource: "manual",
 				first_published_at: null,
 			}),
-			{ publishedAt: new Date("2026-11-10T09:00:00.000Z") },
+			{ depositedAt: new Date("2026-11-10T09:00:00.000Z") },
 		);
 		expect(content.firstPublishedAt).toBe("2026-11-10");
-		expect(content.publishedAt).toBe("2026-11-10");
+		expect(content.depositedAt).toBe("2026-11-10");
 	});
 
 	it("leaves the assessment tools out of an RGAA 5 declaration", () => {
-		const content = extractDeclarationContentToPublish(
+		const content = extractDeclarationContentToDeposit(
 			completeDeclaration({
 				audit: {
 					isRealised: true,
@@ -49,13 +49,13 @@ describe("extractDeclarationContentToPublish", () => {
 		expect(content.audit.usedTools).toEqual([]);
 	});
 
-	it("publishes only the contact's reachable channels, not their name", () => {
-		const content = extractDeclarationContentToPublish(completeDeclaration());
+	it("deposits only the contact's reachable channels, not their name", () => {
+		const content = extractDeclarationContentToDeposit(completeDeclaration());
 		expect(content.contact).toEqual({ email: "a11y@example.fr", url: "" });
 	});
 
 	it("never fails on an empty declaration — everything coalesces", () => {
-		const content = extractDeclarationContentToPublish(
+		const content = extractDeclarationContentToDeposit(
 			completeDeclaration({
 				name: null,
 				entity: null,
@@ -69,26 +69,26 @@ describe("extractDeclarationContentToPublish", () => {
 		expect(content.schema.actionPlanUrls).toEqual([]);
 	});
 
-	it("dates the snapshot with the publish action, falling back to the row", () => {
-		const explicit = extractDeclarationContentToPublish(
+	it("dates the snapshot with the deposit action, falling back to the row", () => {
+		const explicit = extractDeclarationContentToDeposit(
 			completeDeclaration({ first_published_at: "2024-03-24T10:00:00.000Z" }),
-			{ publishedAt: new Date("2026-08-27T09:30:00.000Z") },
+			{ depositedAt: new Date("2026-08-27T09:30:00.000Z") },
 		);
-		expect(explicit.publishedAt).toBe("2026-08-27");
+		expect(explicit.depositedAt).toBe("2026-08-27");
 		expect(explicit.firstPublishedAt).toBe("2024-03-24");
 
-		const fromRow = extractDeclarationContentToPublish(
+		const fromRow = extractDeclarationContentToDeposit(
 			completeDeclaration({
 				first_published_at: null,
-				published_at: "2026-08-27T09:30:00.000Z",
+				deposited_at: "2026-08-27T09:30:00.000Z",
 			}),
 		);
-		expect(fromRow.publishedAt).toBe("2026-08-27");
+		expect(fromRow.depositedAt).toBe("2026-08-27");
 		expect(fromRow.firstPublishedAt).toBe("2026-08-27");
 	});
 
-	it("publishes no audit detail when no audit was realised", () => {
-		const content = extractDeclarationContentToPublish(
+	it("deposits no audit detail when no audit was realised", () => {
+		const content = extractDeclarationContentToDeposit(
 			completeDeclaration({
 				audit: {
 					isRealised: false,
@@ -121,12 +121,12 @@ describe("extractDeclarationContentToPublish", () => {
 		});
 	});
 
-	it("publishes blocking elements only when an RGAA 5 audit found some", () => {
+	it("deposits blocking elements only when an RGAA 5 audit found some", () => {
 		const withBlocking = (
 			hasBlockingElements: boolean,
 			rgaa_version: "rgaa_4" | "rgaa_5" = "rgaa_5",
 		) =>
-			extractDeclarationContentToPublish(
+			extractDeclarationContentToDeposit(
 				completeDeclaration({
 					audit: {
 						isRealised: true,
@@ -142,13 +142,13 @@ describe("extractDeclarationContentToPublish", () => {
 		expect(withBlocking(true, "rgaa_4")).toBe("");
 	});
 
-	it("reads a snapshot published before blocking elements as having none", () => {
-		const snapshot = extractDeclarationContentToPublish(completeDeclaration(), {
-			publishedAt: new Date("2026-08-27T09:30:00.000Z"),
+	it("reads a snapshot deposited before blocking elements as having none", () => {
+		const snapshot = extractDeclarationContentToDeposit(completeDeclaration(), {
+			depositedAt: new Date("2026-08-27T09:30:00.000Z"),
 		});
 		const { blockingElements: _, ...legacyAudit } = snapshot.audit;
 		expect(
-			parsePublishedDeclaration(
+			parseDepositedDeclaration(
 				JSON.stringify({ ...snapshot, audit: legacyAudit }),
 			)?.audit.blockingElements,
 		).toBe("");
@@ -156,11 +156,11 @@ describe("extractDeclarationContentToPublish", () => {
 
 	it("records whether an audit was performed", () => {
 		expect(
-			extractDeclarationContentToPublish(completeDeclaration()).audit
+			extractDeclarationContentToDeposit(completeDeclaration()).audit
 				.isRealised,
 		).toBe(false);
 		expect(
-			extractDeclarationContentToPublish(
+			extractDeclarationContentToDeposit(
 				completeDeclaration({
 					audit: { isRealised: true, realisedBy: "Orion", rate: 74 },
 				} as never),
@@ -169,19 +169,19 @@ describe("extractDeclarationContentToPublish", () => {
 	});
 });
 
-describe("parsePublishedDeclaration", () => {
+describe("parseDepositedDeclaration", () => {
 	it("round-trips a snapshot written by the extractor", () => {
-		const snapshot = extractDeclarationContentToPublish(completeDeclaration(), {
-			publishedAt: new Date("2026-08-27T09:30:00.000Z"),
+		const snapshot = extractDeclarationContentToDeposit(completeDeclaration(), {
+			depositedAt: new Date("2026-08-27T09:30:00.000Z"),
 		});
-		expect(parsePublishedDeclaration(JSON.stringify(snapshot))).toEqual(
+		expect(parseDepositedDeclaration(JSON.stringify(snapshot))).toEqual(
 			snapshot,
 		);
 	});
 
 	it("treats anything off-contract as no snapshot", () => {
-		expect(parsePublishedDeclaration(null)).toBeNull();
-		expect(parsePublishedDeclaration("not json")).toBeNull();
-		expect(parsePublishedDeclaration('{"name":"legacy"}')).toBeNull();
+		expect(parseDepositedDeclaration(null)).toBeNull();
+		expect(parseDepositedDeclaration("not json")).toBeNull();
+		expect(parseDepositedDeclaration('{"name":"legacy"}')).toBeNull();
 	});
 });

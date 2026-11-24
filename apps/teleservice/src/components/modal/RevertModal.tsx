@@ -16,8 +16,8 @@ interface RevertModalProps {
 
 /**
  * Confirmation gate for "Annuler les modifications". Owns the
- * `revertToPublished` mutation, which transactionally restores every Section
- * from `publishedContent` — so the modal warns the changes are permanently
+ * `revertToDeposited` mutation, which transactionally restores every Section
+ * from `depositedContent` — so the modal warns the changes are permanently
  * lost before firing it.
  */
 export function RevertModal({
@@ -34,8 +34,8 @@ export function RevertModal({
 		}),
 	);
 
-	const { mutate: revertToPublished, isPending } =
-		api.declaration.revertToPublished.useMutation({
+	const { mutate: revertToDeposited, isPending } =
+		api.declaration.revertToDeposited.useMutation({
 			onSuccess: () => {
 				modal.close();
 				onReverted();
@@ -63,7 +63,7 @@ export function RevertModal({
 					doClosesModal: false,
 					disabled: isPending,
 					onClick: () => {
-						revertToPublished({ declarationId });
+						revertToDeposited({ declarationId });
 					},
 				},
 			]}

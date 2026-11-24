@@ -4,7 +4,7 @@ import {
 	expectPreview,
 	obsolescenceNotice,
 	openListRow,
-	publishFromPreview,
+	depositFromPreview,
 	sectionHeading,
 } from "./support/declarationPage";
 import { expect, test } from "./support/fixtures";
@@ -67,14 +67,14 @@ test("Obsolescence: list, header, interstitial, notice, public page and renewal"
 	).toBeVisible();
 	await a11y.check("public page of an Obsolète declaration");
 
-	// Republishing an unchanged Obsolète row renews it for another three years.
+	// Redepositing an unchanged Obsolète row renews it for another three years.
 	await page.goto(declarationPath(obsolete.id));
 	await page
 		.getByRole("button", { name: "Mettre à jour ma déclaration" })
 		.click();
 	await page.getByRole("button", { name: "Prévisualiser et publier" }).click();
 	await expectPreview(page);
-	await publishFromPreview(page);
+	await depositFromPreview(page);
 
 	await page.goto(declarationPath(obsolete.id));
 	await expect(sectionHeading(page, "infos")).toBeVisible();

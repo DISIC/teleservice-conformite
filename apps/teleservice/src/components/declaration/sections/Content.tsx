@@ -38,9 +38,9 @@ type SectionContentProps = {
 	currentSection: SectionSlug;
 	onDeclarationChange: DeclarationChangeFn;
 	mode: EditingMode;
-	/** Flips the page's "publish attempted" flag so the error summary appears. */
-	onPublishAttempt: () => void;
-	publishAttempted: boolean;
+	/** Flips the page's "deposit attempted" flag so the error summary appears. */
+	onDepositAttempt: () => void;
+	depositAttempted: boolean;
 };
 
 /** Mounts the runtime for the current slug; the key forces a fresh mount per Section. */
@@ -49,8 +49,8 @@ export function SectionContent({
 	currentSection,
 	onDeclarationChange,
 	mode,
-	onPublishAttempt,
-	publishAttempted,
+	onDepositAttempt,
+	depositAttempted,
 }: SectionContentProps) {
 	const { prev, next } = getPrevNextSections(currentSection, SECTION_SLUGS);
 
@@ -63,8 +63,8 @@ export function SectionContent({
 			mode={mode}
 			prevHref={prev ? sectionHref(declaration.id, prev) : null}
 			nextHref={next ? sectionHref(declaration.id, next) : null}
-			onPublishAttempt={onPublishAttempt}
-			publishAttempted={publishAttempted}
+			onDepositAttempt={onDepositAttempt}
+			depositAttempted={depositAttempted}
 		/>
 	);
 }

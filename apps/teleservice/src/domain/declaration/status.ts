@@ -1,12 +1,12 @@
 import type { Declaration } from "~/payload/payload-types";
 import {
-	extractDeclarationContentToPublish,
-	parsePublishedDeclaration,
-} from "~/domain/declaration/published/snapshot";
+	extractDeclarationContentToDeposit,
+	parseDepositedDeclaration,
+} from "~/domain/declaration/deposited/snapshot";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
 
-/** Brouillon until the first publish action, Publiée forever after — even while modified. */
-export type Status = "draft" | "published";
+/** Brouillon until the first deposit, Déposée forever after — even while modified. */
+export type Status = "draft" | "deposited";
 
 /**
  * How the declaration details page presents its Sections for editing. Derived
@@ -14,38 +14,38 @@ export type Status = "draft" | "published";
  */
 export type EditingMode = "sequential" | "standalone";
 
-/** `sequential` for a never-published Brouillon, `standalone` afterwards. */
+/** `sequential` for a never-deposited Brouillon, `standalone` afterwards. */
 export function getEditingMode(status: Status): EditingMode {
 	return status === "draft" ? "sequential" : "standalone";
 }
 
 export function getDeclarationStatus(
-	declaration: Pick<Declaration, "publishedContent">,
+	declaration: Pick<Declaration, "depositedContent">,
 ): Status {
-	return declaration.publishedContent ? "published" : "draft";
+	return declaration.depositedContent ? "deposited" : "draft";
 }
 
 /** Returns `false` when no snapshot exists — a draft has nothing to differ from. */
-export function hasContentChangedSincePublish(
+export function hasContentChangedSinceDeposit(
 	declaration: PopulatedDeclaration,
 ): boolean {
-	if (!declaration.publishedContent) return false;
-	const published = parsePublishedDeclaration(declaration.publishedContent);
-	// An unreadable snapshot can only be repaired by republishing.
-	if (!published) return true;
-	// The publish date is set by publishing itself, so it is never a content change.
-	const current = extractDeclarationContentToPublish(declaration, {
-		publishedAt: new Date(published.publishedAt),
+	if (!declaration.depositedContent) return false;
+	const deposited = parseDepositedDeclaration(declaration.depositedContent);
+	// An unreadable snapshot can only be repaired by redepositing.
+	if (!deposited) return true;
+	// The deposit date is set by depositing itself, so it is never a content change.
+	const current = extractDeclarationContentToDeposit(declaration, {
+		depositedAt: new Date(deposited.depositedAt),
 	});
-	return JSON.stringify(current) !== JSON.stringify(published);
+	return JSON.stringify(current) !== JSON.stringify(deposited);
 }
 
-// Published: Modifiée when the row drifts from its snapshot, Publiée when restored. Brouillon: unchanged.
+// Deposited: Modifiée when the row drifts from its snapshot, clean again when restored. Brouillon: unchanged.
 export function statusAfterEdit(
 	declaration: PopulatedDeclaration,
-): "published" | "unpublished" {
-	if (!declaration.publishedContent) return declaration.status ?? "unpublished";
-	return hasContentChangedSincePublish(declaration)
-		? "unpublished"
-		: "published";
+): "deposited" | "undeposited" {
+	if (!declaration.depositedContent) return declaration.status ?? "undeposited";
+	return hasContentChangedSinceDeposit(declaration)
+		? "undeposited"
+		: "deposited";
 }
