@@ -160,9 +160,11 @@ export function CreateDeclarationModal({
 				<>
 					<RequiredFieldsNotice />
 					<PathPicker
-						onCreated={(declarationId) =>
-							push(`/dashboard/declarations/${declarationId}`)
-						}
+						onCreated={(declarationId) => {
+							// A modal left open keeps DSFR's focus trap and scroll lock on the next page.
+							modal.close();
+							push(`/dashboard/declarations/${declarationId}`);
+						}}
 					/>
 				</>
 			)}
