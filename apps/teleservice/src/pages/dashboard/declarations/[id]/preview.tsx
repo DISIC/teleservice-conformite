@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
@@ -13,6 +13,10 @@ import { DeclarationHeading } from "~/components/declaration/DeclarationHeading"
 import { DepositSuccess } from "~/components/declaration/DepositSuccess";
 import type { Entity, User } from "~/payload/payload-types";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import {
+	type NotFoundProps,
+	orNotFound,
+} from "~/components/layout/NotFoundPage";
 import { api } from "~/lib/api";
 import { guardDeclaration } from "~/lib/server-guards";
 import type { DepositedDeclaration } from "~/domain/declaration/deposited/snapshot";
@@ -29,9 +33,11 @@ type RequiredPopulatedDeclaration = Omit<
 	created_by: User;
 };
 
-export default function DeclarationPreviewPage({
+function DeclarationPreviewPage({
 	declaration,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+}: {
+	declaration: RequiredPopulatedDeclaration;
+}) {
 	const { classes } = useStyles();
 
 	// Depositing stamps today, so the preview must not inherit an old, possibly obsolete, date.
@@ -197,7 +203,8 @@ const useStyles = tss.withName({ DeclarationPreviewPage }).create({
 
 export const getServerSideProps = (async (context) => {
 	const guarded = await guardDeclaration(context);
-	if (!guarded.props) return { redirect: guarded.redirect };
+	if ("redirect" in guarded) return guarded;
+	if ("notFound" in guarded.props) return { props: guarded.props };
 
 	const { declaration } = guarded.props;
 	const { entity, created_by } = declaration;
@@ -229,6 +236,8 @@ export const getServerSideProps = (async (context) => {
 			declaration: declaration as RequiredPopulatedDeclaration,
 		},
 	};
-}) satisfies GetServerSideProps<{
-	declaration: RequiredPopulatedDeclaration;
-}>;
+}) satisfies GetServerSideProps<
+	{ declaration: RequiredPopulatedDeclaration } | NotFoundProps
+>;
+
+export default orNotFound(DeclarationPreviewPage);

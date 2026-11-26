@@ -3,6 +3,10 @@ import config from "@payload-config";
 import { getSessionCookie } from "better-auth/cookies";
 import type { GetServerSidePropsContext, Redirect } from "next";
 import { getPayload } from "payload";
+import type {
+	NotFoundProps,
+	NotFoundReason,
+} from "~/components/layout/NotFoundPage";
 import type { Contact, Entity, Schema } from "~/payload/payload-types";
 import {
 	loadOwnedDeclaration,
@@ -46,6 +50,15 @@ export async function readPageSession(context: GetServerSidePropsContext) {
 		setCookie.push(...expiredSessionCookies);
 	if (setCookie.length > 0) context.res.setHeader("Set-Cookie", setCookie);
 	return response;
+}
+
+export function notFoundResponse(
+	context: GetServerSidePropsContext,
+	notFound: NotFoundReason,
+	isAuthenticated: boolean,
+): { props: NotFoundProps } {
+	context.res.statusCode = 404;
+	return { props: { notFound, isAuthenticated } };
 }
 
 export async function loadEntityForPage(context: GetServerSidePropsContext) {
@@ -97,31 +110,26 @@ export async function loadDeclarationForPage(
 export async function guardDeclaration(
 	context: GetServerSidePropsContext,
 	options?: {
-		redirectUrl?: string;
-		trash?: boolean;
 		includeLibrary?: boolean;
 		/** Marks this visit and returns `hasVisitedBefore` alongside the declaration. */
 		trackVisit?: boolean;
 	},
-) {
-	const {
-		redirectUrl = "/dashboard/declarations",
-		trash = false,
-		includeLibrary = false,
-		trackVisit = false,
-	} = options ?? {};
-
-	const redirect: Redirect = {
-		destination: redirectUrl,
-		permanent: false,
-	};
+): Promise<
+	| { redirect: Redirect }
+	| { props: NotFoundProps }
+	| { props: DeclarationProps & Partial<LibraryProps> & Partial<VisitProps> }
+> {
+	const { includeLibrary = false, trackVisit = false } = options ?? {};
 
 	const { payload, session, declaration } = await loadDeclarationForPage(
 		context,
-		{ trash },
+		{ trash: true },
 	);
 
-	if (!session || !declaration) return { redirect };
+	if (!session) return { redirect: { destination: "/", permanent: false } };
+	if (!declaration) return notFoundResponse(context, "page", true);
+	if (declaration.deletedAt)
+		return notFoundResponse(context, "deletedDeclaration", true);
 
 	const props: DeclarationProps & Partial<LibraryProps> & Partial<VisitProps> =
 		{ declaration };

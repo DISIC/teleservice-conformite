@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -17,6 +17,10 @@ import {
 } from "~/domain/declaration/status";
 import { SectionContent } from "~/components/declaration/sections/Content";
 import type { PopulatedDeclaration } from "~/server/api/utils/payload-helper";
+import {
+	type NotFoundProps,
+	orNotFound,
+} from "~/components/layout/NotFoundPage";
 import { api } from "~/lib/api";
 import { parseSectionFromQuery, SECTIONS } from "~/domain/declaration/sections";
 import { getObsolescence } from "~/domain/declaration/obsolescence";
@@ -38,12 +42,16 @@ import { useScopedState } from "~/hooks/useScopedState";
 
 const NO_PENDING_MODES: PendingSourceModes = {};
 
-export default function DeclarationPage({
+type DeclarationPageProps = DeclarationProps &
+	Partial<LibraryProps> &
+	Partial<VisitProps>;
+
+function DeclarationPage({
 	declaration: initialDeclaration,
 	libraryContacts,
 	librarySchemas,
 	hasVisitedBefore,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+}: DeclarationPageProps) {
 	const router = useRouter();
 	const apiUtils = api.useUtils();
 	// Seed the SSR-fetched Library lists into the query cache before the sections
@@ -234,6 +242,6 @@ export const getServerSideProps = (async (context) =>
 	guardDeclaration(context, {
 		includeLibrary: true,
 		trackVisit: true,
-	})) satisfies GetServerSideProps<
-	DeclarationProps & Partial<LibraryProps> & Partial<VisitProps>
->;
+	})) satisfies GetServerSideProps<DeclarationPageProps | NotFoundProps>;
+
+export default orNotFound(DeclarationPage);

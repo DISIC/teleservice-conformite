@@ -2,11 +2,14 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type { GetServerSideProps, Redirect } from "next";
 import Head from "next/head";
 import { tss } from "tss-react";
-import ErrorPage from "~/components/declaration/ErrorPage";
 import { DepositedHeader } from "~/components/declaration/DepositedHeader";
 import DepositedTemplate from "~/components/declaration/DepositedTemplate";
+import {
+	type NotFoundProps,
+	orNotFound,
+} from "~/components/layout/NotFoundPage";
 import type { PageWithHeader } from "~/components/layout/pageHeader";
-import { loadDeclarationForPage } from "~/lib/server-guards";
+import { loadDeclarationForPage, notFoundResponse } from "~/lib/server-guards";
 import {
 	parseDepositedDeclaration,
 	type DepositedDeclaration,
@@ -14,21 +17,12 @@ import {
 import { pageTitle } from "~/lib/serviceName";
 
 type PublishPageProps = {
-	depositedContent: DepositedDeclaration | null;
-	deleted?: boolean;
+	depositedContent: DepositedDeclaration;
 	today: string;
 };
 
-const PublishPage: PageWithHeader<PublishPageProps> = ({
-	depositedContent,
-	deleted,
-	today,
-}) => {
+function PublishPage({ depositedContent, today }: PublishPageProps) {
 	const { classes } = useStyles();
-
-	if (!depositedContent) {
-		return <ErrorPage deleted={deleted} />;
-	}
 
 	return (
 		<>
@@ -50,15 +44,21 @@ const PublishPage: PageWithHeader<PublishPageProps> = ({
 			</section>
 		</>
 	);
-};
+}
+
+const PublishRoute: PageWithHeader<PublishPageProps | NotFoundProps> =
+	orNotFound(PublishPage);
 
 // The public page describes the document, not the téléservice.
-PublishPage.renderHeader = ({ depositedContent, today }) =>
-	depositedContent ? (
-		<DepositedHeader declaration={depositedContent} today={new Date(today)} />
-	) : null;
+PublishRoute.renderHeader = (props) =>
+	"notFound" in props ? null : (
+		<DepositedHeader
+			declaration={props.depositedContent}
+			today={new Date(props.today)}
+		/>
+	);
 
-export default PublishPage;
+export default PublishRoute;
 
 const useStyles = tss.withName("PublishPage").create({
 	depositedDeclarationContainer: {
@@ -66,9 +66,9 @@ const useStyles = tss.withName("PublishPage").create({
 	},
 });
 
-export const getServerSideProps: GetServerSideProps<PublishPageProps> = async (
-	context,
-) => {
+export const getServerSideProps: GetServerSideProps<
+	PublishPageProps | NotFoundProps
+> = async (context) => {
 	const redirect: Redirect = {
 		destination: "/",
 		permanent: false,
@@ -80,15 +80,15 @@ export const getServerSideProps: GetServerSideProps<PublishPageProps> = async (
 
 	if (!session) return { redirect };
 
-	const depositedContent = declaration?.deletedAt
-		? null
-		: parseDepositedDeclaration(declaration?.depositedContent);
+	if (declaration?.deletedAt)
+		return notFoundResponse(context, "deletedDeclaration", true);
+
+	const depositedContent = parseDepositedDeclaration(
+		declaration?.depositedContent,
+	);
+	if (!depositedContent) return notFoundResponse(context, "page", true);
 
 	return {
-		props: {
-			depositedContent,
-			deleted: !!declaration?.deletedAt,
-			today: new Date().toISOString(),
-		},
+		props: { depositedContent, today: new Date().toISOString() },
 	};
 };
