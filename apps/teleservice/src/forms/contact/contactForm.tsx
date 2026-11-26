@@ -14,8 +14,8 @@ export const ContactTypeForm = withForm({
 				<form.AppField name="name">
 					{(field) => (
 						<field.TextField
-							label="Nom du contact"
-							hintText="Ce nom vous aidera à retrouver ce contact (ex: « Référent accessibilité - DSI »)"
+							label="Nom de l’entité responsable du service en ligne"
+							hintText="Ce libellé vous aidera à retrouver ce contact (ex: « Référent accessibilité - DSI »)"
 							readOnlyField={readOnly}
 							required
 						/>
